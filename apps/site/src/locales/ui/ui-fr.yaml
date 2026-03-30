@@ -906,7 +906,7 @@ entries:
   Découvrez les ateliers de l’ABC, ouvrir dans une nouvelle fenêtre: Découvrez les ateliers de l’ABC, ouvrir dans une nouvelle fenêtre
   endPage.blogArticles.lireArticle: Ouvrir l'article dans une nouvelle fenêtre
   endPage.carboneTarget.enSavoirPlus: Ouvrir la page dans une nouvelle fenêtre
-  endPage.waterActions.lireArticle: Les 9 manières d'améliorer l'empreinte eau de mon assiette, ouvrir l'article dans une nouvelle fenêtre
+  endPage.waterActions.lireArticle: Ouvrir l'article dans une nouvelle fenêtre
   international.electricityMaps.ariaLabel: Visiter le site Electricity Maps (s'ouvre dans un nouvel onglet)
   l'objectif pour 2050: l'objectif pour 2050
   organisations.ourTools.newTab: Ouvrir dans une nouvelle fenêtre
@@ -1361,22 +1361,22 @@ entries:
   fin.seeGroupResultsBanner.text: Découvrez les résultats du test collectif
   fin.seeGroupResultsBanner.title: Merci d'avoir complété le test !
   common.co2eAn: CO₂e / an
-  common.parAn: / an
+  common.parAn: par an
   common.vous: Vous
   Objectif 2050: Objectif 2050
   results.objective.chart.trajectory: Trajectoire proposée par Nos Gestes Climat
   results.objective.collectiveEffort.society: Toute la société
   results.objective.collectiveEffort.societyDescription: 'Diminution de l’empreinte des biens et des services par l’effort combiné des entreprises et collectivités. '
   results.objective.collectiveEffort.state: L'État français
-  results.objective.collectiveEffort.stateDescription: Il peut accélérer la <1>décarbonation</1> de la société en <3>votant des lois</3> et des <6>aides financières ciblées</6>, ainsi qu'au travers de ses investissements.
+  results.objective.collectiveEffort.stateDescription: Réduction des services sociétaux (aujourd’hui à 1,55T) et décarbonation des infrastructures.
   results.objective.collectiveEffort.title: "Important : c'est aussi un effort collectif"
-  results.objective.description: L'objectif de la France pour atteindre la neutralité carbone en 2050 et aider à limiter le réchauffement mondial à + 2 °C.
+  results.objective.description: L'objectif de la France pour atteindre la neutralité carbone en 2050 et aider à limiter le réchauffement mondial à +2 °C.
   results.objective.over4.description: Bravo, aujourd'hui vous êtes déjà <2>en transition vers l'objectif intermédiaire</2> de <5>{{secondObjectiveNumber}}T en {{year}}</5>
-  results.objective.over7.description: Aujourd’hui, <1>vous êtes au-dessus des 7 tonnes</1>, l’objectif intermédiaire que nous proposons pour 2030.
+  results.objective.over7.description: Aujourd'hui, vous êtes <2>au-dessus de la moyenne nationale </2>
   results.objective.reduction.over4.description: Votre rythme indicatif pour parvenir à <2>{{secondObjectiveNumber}}T en {{year}}</2>
   results.objective.reduction.over7.description: Votre rythme indicatif pour parvenir à <2>{{firstObjectiveNumber}}T en {{year}}</2>
-  results.objective.title: 'Objectif national : <2>2T de CO₂e</2> par personne en 2050'
-  results.objective.under4.description.body: Avec le travail de l’État et toute la société dans les années à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des 2 tonnes.
+  results.objective.title: 'Objectif national : <1>2T</1> par personne en 2050'
+  results.objective.under4.description.body: Avec le travail de l'Etat et toute la société dans les décennies à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des {{thirdObjectiveNumber}}T. Ce qu'il vous reste à faire ? Persévérer dans votre être et… convaincre les autres !
   results.objective.under4.description.title: Vous êtes déjà sous les {{secondObjectiveNumber}} tonnes, bravo !
   Vous aujourd'hui: Vous aujourd'hui
   Accédez à votre espace organisation pour diffuser facilement Nos Gestes Climat: Accédez à votre espace organisation pour diffuser facilement Nos Gestes Climat
@@ -1394,90 +1394,17 @@ entries:
   faq.doTheTest.started: Vous avez commencé votre test, <2><0>cliquez ici pour le reprendre !</0></2>
   tutoriel.title: <0>10 minutes</0> chrono pour calculer votre empreinte carbone et eau
   nos-relais.title: Ils relaient <2>Nos Gestes Climat</2>
-  consommation en kWh: consommation en kWh
-  coût: coût
-  Découvrez des conseils pratiques pour réduire votre empreinte écologique.: Découvrez des conseils pratiques pour réduire votre empreinte écologique.
-  Landing page thématique - Nos Gestes Climat: Landing page thématique - Nos Gestes Climat
-  simulator.assistanceSwitch.ariaLabel: Sélectionner le mode de saisie, {{currentUnit}} sélectionné
-  common.carbonFootprint: Empreinte carbone
-  common.waterFootprint: Empreinte eau
-  eau.resultats.isItALot.text1: En règle générale, les valeurs d'empreinte eau varient entre <2>3 000 et 9 000 litres</2> par jour. Contrairement au carbone, il n'existe pas d'objectif chiffré pour l'empreinte eau.
-  eau.resultats.isItALot.text2: Nous n'affichons pas la valeur par défaut en début de test. En effet, notre modèle eau étant le premier du genre en France, nous ne voulons pas qu'elle soit perçue comme la valeur moyenne nationale.
-  eau.resultats.isItALot.title: Est-ce que c'est beaucoup ?
-  eau.resultats.waterFootprintDetail.title: D’où vient votre résultat ?
-  endpage.meta.title.carbon: Mon empreinte carbone - Nos Gestes Climat
-  endPage.waterActions.article1Title: Les 4 réflexes à adopter pour une garde-robe économe en eau
-  endPage.waterActions.article2Title: Les 9 manières d'améliorer l'empreinte eau de mon assiette
-  endPage.waterActions.description1: <0>La majeure partie de l'empreinte eau concerne la pousse des végétaux,</0> que ce soit pour nous alimenter, pour nourrir le bétail, ou pour obtenir la matière première de nombre de nos vêtements.
-  endPage.waterActions.description2: 'Retrouvez nos conseils dans ces articles :'
-  endPage.waterActions.readArticle: Lire l'article
-  endPage.waterActions.title: Comment agir ?
-  simulation.carbone.title: 'Vos émissions annuelles :'
-  simulation.eau.climateAndWater.description1: Les activités humaines menacent les équilibres naturels de notre planète.
-  simulation.eau.climateAndWater.description2: "Comme le climat, <2>le cycle de l'eau est fortement impacté partout dans le monde</2> : accès à l'eau potable, disparition et migration d'espèces (animales et végétales), déplacement de populations."
-  simulation.eau.climateAndWater.title: Eau, climat, même combat ?
-  simulation.eau.documentation.description: Notre calculateur repose sur un modèle de données, dont l'intégralité des calculs est documentée ; les données affichées sont directement associées à votre test.
-  simulation.eau.documentation.link: Comprendre le calcul
-  simulation.eau.documentation.title: Comment est calculée votre empreinte ?
-  simulation.eau.saveBlock.title: 'Retrouvez facilement vos résultats '
-  simulation.eau.title: L’empreinte eau qui sert à produire ce que vous consommez
-  simulation.eau.whatIsWaterFootprint.description: "L'empreinte eau, c'est <2>l'ensemble de l'eau consommée</2> pour <5>produire</5>et <7>distribuer</7> les biens et services de votre quotidien. Par exemple il faut de l'eau pour :"
-  simulation.eau.whatIsWaterFootprint.list.animals: l'alimentation des <1>animaux</1> que vous consommez
-  simulation.eau.whatIsWaterFootprint.list.cotton: la culture du <1>coton</1> que vous portez
-  simulation.eau.whatIsWaterFootprint.list.digitalDevices: l'extraction des matériaux de vos <2>appareils numériques</2>
-  simulation.eau.whatIsWaterFootprint.list.domesticWater: "<0>attention</0> : l'eau domestique (par exemple l'eau de vos douches) ne fait pas partie de l'empreinte eau"
-  simulation.eau.whatIsWaterFootprint.list.electricity: la production de votre <1>électricité</1>
-  simulation.eau.whatIsWaterFootprint.list.fruitsAndVegetables: les <1>fruits, légumes</1> et <4>céréales</4> que vous mangez
-  simulation.eau.whatIsWaterFootprint.showerWater.average: La moyenne française est de <2>{{average}} litres par jour</2>
-  simulation.eau.whatIsWaterFootprint.showerWater.description1: L’eau domestique, à savoir, celle qui sort de vos robinets n'est pas comprise dans votre empreinte eau, puisqu’elle est restituée. Par exemple, l’eau de votre douche, après dépollution, est rendue aux cours d’eau de votre territoire.
-  simulation.eau.whatIsWaterFootprint.showerWater.description2: L’eau domestique peut avoir <1>un impact très fort</1> selon la <4>saison</4> et la <6>localisation</6>.
-  simulation.eau.whatIsWaterFootprint.showerWater.mainText: <0>Vous utilisez</0><1><0>{{formattedValue}} {{unit}}</0> <2>d'eau domestique par jour</2></1>
-  simulation.eau.whatIsWaterFootprint.showerWater.title: Et l'eau de ma douche dans tout ça ?
-  simulation.eau.whatIsWaterFootprint.title: L'empreinte eau, c'est quoi ?
-  simulation.eau.whatIsWaterFootprint.vigieEau: Rendez-vous sur VigiEau pour en savoir plus.
-  "Les activités humaines menacent les équilibres naturels de notre planète. Comme le climat, <2>le cycle de l'eau est fortement impacté partout dans le monde</2>: accès à l'eau potable, disparition et migration d'espèces (animales et végétales), déplacement de populations.": "Les activités humaines menacent les équilibres naturels de notre planète. Comme le climat, <2>le cycle de l'eau est fortement impacté partout dans le monde</2>: accès à l'eau potable, disparition et migration d'espèces (animales et végétales), déplacement de populations."
-  simulation.eau.whatIsWaterFootprint.titleInsec: L'empreinte eau, c'est quoi ?
-  results.footprintsLinks.ariaLabel: Sélecteur de type d'empreinte
-  carbonResults.objective.description: <0>Vous avez votre rôle à jouer.</0> Nous sommes là pour vous aider.
-  carbonResults.saveBlock.title: Retrouvez facilement vos résultats
-  common.alimentation: Alimentation
-  common.housing: Logement
-  common.transport: Transport
-  results.actions.linkLabel: Découvrir mes actions
-  results.actions.subtitle: Découvrez des gestes concrets pour y arriver
-  results.actions.text: Nous avons préparé des <1>actions personnalisées</1> pour vous aider à aller plus loin
-  results.actions.title: Votre plan d'action
-  results.where.title: D’où vient votre résultat ?
-  carbonResults.tendency.decrease: <0>En baisse depuis</0><1>votre dernier résultat</1>
-  carbonResults.tendency.increase: <0>En hausse depuis</0><1>votre dernier résultat</1>
-  mon-espace.resultsDetail.breadcrumb.waterFootprint: Empreinte eau
-  results.saveResults.title: 'Retrouvez facilement vos résultats '
-  pages.result.notfound: <0>Impossible de retrouver ces résultats</0><1>Cela signifie qu'ils n'existent pas, ou qu'ils ne sont pas reliés à votre e-mail.</1><2>Dans ce dernier cas, vous pouvez essayer de vous re-connecter avec d'autres identifiants.</2><3>Retour à mon espace</3>
-  pages.result.unauthorized: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connecter avec le même e-mail que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
-  results.groupThankYou.cta: Voir les résultats
-  results.groupThankYou.title: Merci d'avoir complété le test !
-  results.year: an
-  common.navigation.nextQuestion.loading.label: Terminer le test et accéder à la page de résultats, chargement en cours
-  results.saveResults.buttonLabel.authenticated.noPreviousResults: Accéder à mon espace
-  results.saveResults.buttonLabel.authenticated.withPreviousResults: Voir l’évolution de mon résultat
-  simulator.navigation.nextButton.loading: <0></0> Terminer
-  Commencer un nouveau test: Commencer un nouveau test
-  Rejoindre une campagne - Nos Gestes Climat: Rejoindre une campagne - Nos Gestes Climat
-  Utiliser mes données existantes: Utiliser mes données existantes
-  Vous avez déjà réalisé le test Nos Gestes Climat !: Vous avez déjà réalisé le test Nos Gestes Climat !
-  Vous pouvez utiliser vos données existantes, ou recommencer le test.: Vous pouvez utiliser vos données existantes, ou recommencer le test.
-  results.groupThankYou.description: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
-  results.objective.collectiveEffort.collectivities: Les collectivités
-  results.objective.collectiveEffort.collectivitiesDescription: Par leurs choix d’aménagements du territoire, elles participent à <2>l'adoption de nouvelles pratiques plus durables</2> à l’échelle locale.
-  results.objective.collectiveEffort.companies: Les entreprises
-  results.objective.collectiveEffort.companiesDescription: Sous l'impulsion de l'État et des citoyens, les entreprises travaillent à la <2>réduction progressive de l'empreinte des biens et services</2>.
-  Chargement...: Chargement...
-  banner.link.ariaLabel: "{{label}}, s'ouvre dans une nouvelle fenêtre"
   cookies.management.required.detail.description1: Choix de langue
   cookies.management.required.detail.description2: Authentification sur l'espace personnel
   cookies.management.required.detail.description3: Sauvegarde des données de simulation en local
   cookies.management.required.detail.description4: Sauvegarde des préférences de cookie (cette bannière)
   cookies.management.required.detail.title: Voir le détail des cookies
-  organisations.askDemo.iframe.title: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
+  Découvrez des conseils pratiques pour réduire votre empreinte écologique.: Découvrez des conseils pratiques pour réduire votre empreinte écologique.
+  Landing page thématique - Nos Gestes Climat: Landing page thématique - Nos Gestes Climat
   results.tabs.groups: Test collectif
   results.tabs.myGroups: Créer un test collectif
+  banner.link.ariaLabel: "{{label}}, s'ouvre dans une nouvelle fenêtre"
+  organisations.askDemo.iframe.title: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
+  mySpace.resultList.item.delete.mainButton.label: Supprimer
+  mySpace.resultList.item.delete.modal.confirm: Confirmer la suppression
+  mySpace.resultList.item.delete.modal.title: Êtes-vous sûr(e) de vouloir supprimer ce résultat ?

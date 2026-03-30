@@ -2013,3 +2013,9 @@ entries:
   results.tabs.myGroups.lock: Créer un test collectif
   organisations.askDemo.iframe.title: Form - book an appointment for a demo of our functions for organisations
   organisations.askDemo.iframe.title.lock: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
+  mySpace.resultList.item.delete.mainButton.label: Delete
+  mySpace.resultList.item.delete.mainButton.label.lock: Supprimer
+  mySpace.resultList.item.delete.modal.confirm: Confirm deletion
+  mySpace.resultList.item.delete.modal.confirm.lock: Confirmer la suppression
+  mySpace.resultList.item.delete.modal.title: Are you sure you want to delete this result?
+  mySpace.resultList.item.delete.modal.title.lock: Êtes-vous sûr(e) de vouloir supprimer ce résultat ?
