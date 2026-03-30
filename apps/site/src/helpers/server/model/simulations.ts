@@ -1,55 +1,52 @@
 'use server'
 
 import { SIMULATION_URL } from '@/constants/urls/main'
-import type { Simulation } from '@/publicodes-state/types'
-import { getUser, type AppUser } from '../dal/user'
-import { fetchServer } from '../fetchServer'
-import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
+import { MON_ESPACE_PATH } from '@/constants/urls/paths'
+import { getInitialExtendedSituation } from '@/helpers/modelFetching/getInitialExtendedSituation'
+import { mapNewSimulationToOld } from '@/helpers/simulation/mapNewSimulation'
+import type { Simulation as ClientSimulation } from '@/publicodes-state/types'
+import type { Simulation as ServerSimulation } from '@/types/organisations'
+import { revalidatePath } from 'next/cache'
+import { fetchServer } from './fetchServer'
 
-interface SimulationFilter {
-  completedOnly?: boolean
-  pageSize?: number
-}
-
-export async function getSimulations(
-  {
-    user,
-  }: {
-    user: AppUser
-  },
-  { completedOnly = false, pageSize = 50 }: SimulationFilter = {}
-): Promise<Simulation[]> {
-  const serverSimulations = await fetchServer<Simulation[]>(
-    `${SIMULATION_URL}/${user.id}?completedOnly=${completedOnly}&pageSize=${pageSize}`
+export async function getUserSimulations({
+  userId,
+}: {
+  userId: string
+}): Promise<ClientSimulation[]> {
+  const serverSimulations = await fetchServer<ServerSimulation[]>(
+    `${SIMULATION_URL}/${userId}?pageSize=50`
   )
 
   // Map from server format to client format
   const simulations = serverSimulations.map((simulation) => {
-    const updatedSimulation = setDefaultExtendedSituation(simulation)
+    const mappedSimulation = mapNewSimulationToOld(simulation)
 
-    return updatedSimulation
+    // Ensure extendedSituation is always defined (for old simulations that might not have it)
+    if (!mappedSimulation.extendedSituation) {
+      mappedSimulation.extendedSituation = getInitialExtendedSituation()
+    }
+
+    return mappedSimulation
   })
 
-  return simulations
-}
-
-export async function getSimulation({
-  user,
-  simulationId,
-}: {
-  user: AppUser
-  simulationId: string
-}): Promise<Simulation> {
-  const simulation = await fetchServer<Simulation>(
-    `${SIMULATION_URL}/${user.id}/${simulationId}`
+  const sortedSimulations = simulations.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )
-
-  const updatedSimulation = setDefaultExtendedSituation(simulation)
-
-  return updatedSimulation
+  return sortedSimulations
 }
 
-export async function getUserSimulations(simulationFilter?: SimulationFilter) {
-  const user = await getUser()
-  return getSimulations({ user }, simulationFilter)
+// This is a soft delete
+export async function deleteSimulation({
+  simulationId,
+  userId,
+}: {
+  simulationId: string
+  userId: string
+}) {
+  await fetchServer(`${SIMULATION_URL}/${userId}/${simulationId}/delete`, {
+    method: 'DELETE',
+  })
+
+  revalidatePath(MON_ESPACE_PATH)
 }

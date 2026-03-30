@@ -2,15 +2,40 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
+import Loader from '@/design-system/layout/Loader'
 import Modal from '@/design-system/modals/Modal'
-import { useState } from 'react'
+import { deleteSimulation } from '@/helpers/server/model/simulations'
+import { useState, useTransition } from 'react'
 
 interface Props {
   simulationBlock: React.ReactNode
+  simulationId: string
+  userId: string
 }
 
-export function DeleteSimulationButton({ simulationBlock }: Props) {
+export function DeleteSimulationButton({
+  simulationBlock,
+  simulationId,
+  userId,
+}: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isError, setIsError] = useState(false)
+  const [isPending, startTransition] = useTransition()
+
+  const handleDeleteSimulation = () => {
+    startTransition(async () => {
+      try {
+        await deleteSimulation({
+          simulationId,
+          userId,
+        })
+
+        setIsModalOpen(false)
+      } catch {
+        setIsError(true)
+      }
+    })
+  }
 
   return (
     <>
@@ -26,8 +51,14 @@ export function DeleteSimulationButton({ simulationBlock }: Props) {
       <Modal
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
+        isLoading={isPending}
         buttons={[
-          <Button key="submit" color="red">
+          <Button
+            disabled={isPending}
+            onClick={handleDeleteSimulation}
+            key="submit"
+            color="red">
+            {isPending && <Loader color="light" className="mr-2" />}
             <Trans i18nKey="mySpace.resultList.item.delete.modal.confirm">
               Confirmer la suppression
             </Trans>
@@ -40,6 +71,15 @@ export function DeleteSimulationButton({ simulationBlock }: Props) {
         </h2>
 
         {simulationBlock}
+
+        {isError && (
+          <p className="mt-2 text-red-700">
+            <Trans i18nKey="mySpace.resultList.item.delete.modal.error">
+              Une erreur s'est produite au moment de supprimer votre résultat.
+              Veuillez réessayer.
+            </Trans>
+          </p>
+        )}
       </Modal>
     </>
   )

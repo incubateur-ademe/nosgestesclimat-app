@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
 import type { Simulation } from '@/publicodes-state/types'
 import { DeleteSimulationButton } from './resultsList/DeleteSimulationButton'
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default async function ResultsList({ locale, simulations }: Props) {
-  const { t } = await getServerTranslation({ locale })
+  const user = await getUser()
 
   return (
     <div className="mb-8 md:mb-10">
@@ -37,6 +37,8 @@ export default async function ResultsList({ locale, simulations }: Props) {
                     <>
                       <SeeListItemDetailLink simulationId={simulation.id} />
                       <DeleteSimulationButton
+                        userId={user.id}
+                        simulationId={simulation.id}
                         simulationBlock={
                           <ResultListItem
                             simulation={simulation}
