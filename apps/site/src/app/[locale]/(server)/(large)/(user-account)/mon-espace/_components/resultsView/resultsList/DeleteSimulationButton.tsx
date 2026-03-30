@@ -23,6 +23,8 @@ export function DeleteSimulationButton({
   const [isPending, startTransition] = useTransition()
 
   const handleDeleteSimulation = () => {
+    setIsError(false)
+
     startTransition(async () => {
       try {
         await deleteSimulation({
