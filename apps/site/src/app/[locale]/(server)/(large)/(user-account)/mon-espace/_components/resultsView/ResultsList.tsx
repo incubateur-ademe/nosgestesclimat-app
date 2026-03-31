@@ -38,13 +38,8 @@ export default async function ResultsList({ locale, simulations }: Props) {
                       <SeeListItemDetailLink simulationId={simulation.id} />
                       <DeleteSimulationButton
                         userId={user.id}
-                        simulationId={simulation.id}
-                        simulationBlock={
-                          <ResultListItem
-                            simulation={simulation}
-                            locale={locale}
-                          />
-                        }
+                        simulation={simulation}
+                        locale={locale}
                       />
                     </>
                   }

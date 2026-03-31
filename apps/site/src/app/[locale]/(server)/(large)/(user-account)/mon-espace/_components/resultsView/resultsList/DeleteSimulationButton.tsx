@@ -5,19 +5,18 @@ import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import Modal from '@/design-system/modals/Modal'
 import { deleteSimulation } from '@/helpers/server/model/simulations'
+import type { Locale } from '@/i18nConfig'
+import type { Simulation } from '@/publicodes-state/types'
 import { useState, useTransition } from 'react'
+import { ResultListItem } from './ResultListItem'
 
 interface Props {
-  simulationBlock: React.ReactNode
-  simulationId: string
+  simulation: Simulation
   userId: string
+  locale: Locale
 }
 
-export function DeleteSimulationButton({
-  simulationBlock,
-  simulationId,
-  userId,
-}: Props) {
+export function DeleteSimulationButton({ simulation, userId, locale }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isError, setIsError] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -28,7 +27,7 @@ export function DeleteSimulationButton({
     startTransition(async () => {
       try {
         await deleteSimulation({
-          simulationId,
+          simulationId: simulation.id,
           userId,
         })
 
@@ -72,7 +71,7 @@ export function DeleteSimulationButton({
           </Trans>
         </h2>
 
-        {simulationBlock}
+        <ResultListItem simulation={simulation} locale={locale} />
 
         {isError && (
           <p className="mt-2 text-red-700">

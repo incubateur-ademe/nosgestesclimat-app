@@ -49,4 +49,5 @@ export async function deleteSimulation({
   })
 
   revalidatePath(MON_ESPACE_PATH)
+  revalidatePath(`${MON_ESPACE_PATH}/resultats/${simulationId}`)
 }
