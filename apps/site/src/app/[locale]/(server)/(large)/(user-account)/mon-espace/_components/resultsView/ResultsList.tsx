@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { getUser } from '@/helpers/server/model/user'
+import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
 import type { Simulation } from '@/publicodes-state/types'
 import { DeleteSimulationButton } from './resultsList/DeleteSimulationButton'

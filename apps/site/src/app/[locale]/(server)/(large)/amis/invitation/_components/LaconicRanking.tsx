@@ -3,6 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { carboneMetric } from '@/constants/model/metric'
 import Emoji from '@/design-system/utils/Emoji'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export default function LaconicRanking({ group }: Props) {
+  const { t } = useClientTranslation()
+
   // If only one participant
   if (group.participants.length === 1) {
     return (
@@ -79,7 +82,12 @@ export default function LaconicRanking({ group }: Props) {
                 {rank}
                 {!isFirstThree && '. '}
               </span>{' '}
-              {participant.name}
+              {participant.simulation.user?.id
+                ? participant.name
+                : t(
+                    'groups.results.rankingMember.simulationDeleted',
+                    'Utilisateur anonyme (données supprimées par le participant)'
+                  )}
             </li>
           )
         })}

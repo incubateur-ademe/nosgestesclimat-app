@@ -2021,3 +2021,5 @@ entries:
   mySpace.resultList.item.delete.modal.title.lock: Êtes-vous sûr(e) de vouloir supprimer ce résultat ?
   mySpace.resultList.item.delete.modal.error: An error has occurred while deleting your result. Please try again.
   mySpace.resultList.item.delete.modal.error.lock: Une erreur s'est produite au moment de supprimer votre résultat. Veuillez réessayer.
+  groups.results.rankingMember.simulationDeleted: Anonymous user (data deleted by participant)
+  groups.results.rankingMember.simulationDeleted.lock: Utilisateur anonyme (données supprimées par le participant)

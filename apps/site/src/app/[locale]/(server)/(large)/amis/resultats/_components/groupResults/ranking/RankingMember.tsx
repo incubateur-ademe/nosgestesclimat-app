@@ -110,6 +110,13 @@ export default function RankingMember({
     }
   }
 
+  const participantName = participant.simulation.user?.id
+    ? participant.name
+    : t(
+        'groups.results.rankingMember.simulationDeleted',
+        'Utilisateur anonyme (données supprimées par le participant)'
+      )
+
   return (
     <li className="flex items-center justify-between gap-2">
       <div className="flex flex-1 items-center justify-between">
@@ -126,7 +133,7 @@ export default function RankingMember({
               : getRank(index)}
           </span>
 
-          <span className={textColor}>{participant.name}</span>
+          <span className={textColor}>{participantName}</span>
 
           {isCurrentMember && (
             <Badge className="text-secondary-800 ml-2 inline rounded-xl border-pink-100 bg-pink-200 text-xs font-bold">
@@ -157,7 +164,7 @@ export default function RankingMember({
                 textColor
               )}
               aria-label={t('{{name}}, supprimer cette participation', {
-                name,
+                name: participantName,
               })}>
               <TrashIcon
                 className={twMerge(
