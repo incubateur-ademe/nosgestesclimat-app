@@ -44,7 +44,7 @@ export async function deleteSimulation({
   simulationId: string
   userId: string
 }) {
-  await fetchServer(`${SIMULATION_URL}/${userId}/${simulationId}/delete`, {
+  await fetchServer(`${SIMULATION_URL}/${userId}/${simulationId}`, {
     method: 'DELETE',
   })
 

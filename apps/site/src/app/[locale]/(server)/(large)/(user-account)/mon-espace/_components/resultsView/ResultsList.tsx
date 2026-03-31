@@ -38,8 +38,15 @@ export default async function ResultsList({ locale, simulations }: Props) {
                       <SeeListItemDetailLink simulationId={simulation.id} />
                       <DeleteSimulationButton
                         userId={user.id}
-                        simulation={simulation}
-                        locale={locale}
+                        simulationId={simulation.id}
+                        simulationBlock={
+                          // We need to pass this server component as a prop
+                          // because DeleteSimulationButton is a client component
+                          <ResultListItem
+                            simulation={simulation}
+                            locale={locale}
+                          />
+                        }
                       />
                     </>
                   }
