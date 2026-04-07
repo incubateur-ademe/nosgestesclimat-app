@@ -13,7 +13,7 @@ export default function ModeleStatsBlock() {
 
   const numberOfRules = Object.keys(rules).length
   const numberOfQuestions = Object.values(rules).filter(
-    (el) => el && el.question
+    (el) => el?.question
   ).length
 
   const NumberOfRules = () => <span>{numberOfRules}</span>

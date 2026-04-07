@@ -121,7 +121,6 @@ test.describe('A user with a completed test that joined a poll', () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage()
-    skipOnSafari(browser)
     const adminContext = await browser.newContext({
       storageState: ORGANISATION_ADMIN_STATE,
     })
@@ -149,11 +148,18 @@ test.describe('A user with a completed test that joined a poll', () => {
     await expect(page).toHaveURL(/\/fin/)
   })
 
-  test('sees the poll confirmation block on the end page', async () => {
+  test('sees the poll confirmation block on the end page', async ({
+    browser,
+  }) => {
+    skipOnSafari(browser)
     await expect(page.getByTestId('poll-confirmation-block')).toBeVisible()
   })
 
-  test('can access the poll dashboard from the end page', async ({ poll }) => {
+  test('can access the poll dashboard from the end page', async ({
+    poll,
+    browser,
+  }) => {
+    skipOnSafari(browser)
     await page.goto('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(poll.url)

@@ -358,9 +358,9 @@ export default function MentionsLegalesPage() {
             environnemental français (AE) ainsi qu’à l’éco-conception ;
           </li>
           <li>
-            Les jeux données Base Empreinte® qui sont des résultats
-            d'évaluation du cycle de vie multicritères provenant majoritairement
-            de la base de données ecoinvent et d’autres fournisseurs de données.
+            Les jeux données Base Empreinte® qui sont des résultats d'évaluation
+            du cycle de vie multicritères provenant majoritairement de la base
+            de données ecoinvent et d’autres fournisseurs de données.
           </li>
         </ul>
       </p>

@@ -5,8 +5,10 @@ import Separator from './Separator'
 
 type Sizes = 'xl' | 'lg' | 'md'
 
-export interface TitleProps
-  extends Omit<HTMLAttributes<HTMLHeadingElement>, 'title'> {
+export interface TitleProps extends Omit<
+  HTMLAttributes<HTMLHeadingElement>,
+  'title'
+> {
   title?: string | JSX.Element
   subtitle?: string | JSX.Element
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'

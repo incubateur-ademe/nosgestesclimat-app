@@ -174,7 +174,7 @@ export default function CookieConsentForm({
                   </li>
 
                   <li>
-                    <pre className="block font-bold">ngcjwt2</pre>
+                    <pre className="block font-bold">ngc_server_auth_jwt</pre>
                     <Trans i18nKey="cookies.management.required.detail.description2">
                       Authentification sur l'espace personnel
                     </Trans>
@@ -193,6 +193,14 @@ export default function CookieConsentForm({
                     </pre>
                     <Trans i18nKey="cookies.management.required.detail.description4">
                       Sauvegarde des préférences de cookie (cette bannière)
+                    </Trans>
+                  </li>
+
+                  <li>
+                    <pre className="block font-bold">ngc_anon_user</pre>
+                    <Trans i18nKey="cookies.management.required.detail.description2">
+                      Sauvegarde de la session anonyme (pour retrouver les
+                      simulations précedentes)
                     </Trans>
                   </li>
                 </ul>

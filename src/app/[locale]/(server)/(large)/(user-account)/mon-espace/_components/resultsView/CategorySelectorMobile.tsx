@@ -67,7 +67,7 @@ export default function CategorySelectorMobile({
 
       <Alert
         type="default"
-        className="mt-4 text-sm"
+        className="mt-4 text-sm sm:hidden"
         description={
           <strong>
             <Trans i18nKey="mon-espace.evolutionGraph.selectView.description">

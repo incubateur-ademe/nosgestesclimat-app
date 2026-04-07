@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/nextjs'
 import posthog from 'posthog-js'
+import { APP_ENV } from '../config/app-env'
 
 declare global {
   interface Window {
@@ -9,13 +10,8 @@ declare global {
 
 Sentry.init({
   dsn: 'https://75dcf9dfe74c4439977a517be2805122@sentry.incubateur.net/118',
-
-  // Only for previews including preprod
-  debug: process.env.NODE_ENV !== 'production',
-
-  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1,
-
-  // Disable sentry for development based on local data
+  environment: APP_ENV,
+  sampleRate: APP_ENV === 'production' ? 0.1 : 1,
   enabled: process.env.NODE_ENV !== 'development',
 })
 

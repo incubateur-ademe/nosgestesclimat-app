@@ -1,11 +1,14 @@
 import type { NextConfig } from 'next'
+import { version } from './package.json'
 
 import createMDX from '@next/mdx'
-import { withSentryConfig } from '@sentry/nextjs'
+import { SentryBuildOptions, withSentryConfig } from '@sentry/nextjs'
 
 import redirects from './config/redirects.js'
 
 import { remoteImagesPatterns } from './config/remoteImagesPatterns'
+import { PROXY_SERVER } from './config/urls'
+import { APP_ENV } from './config/app-env'
 
 const withMDX = createMDX({
   extension: /\.mdx$/,
@@ -13,11 +16,8 @@ const withMDX = createMDX({
 
 
 // Use rewrite rules to proxy requests from the client to the server when both are on different domain (preview app / local)
-let serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://localhost:3001'
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://localhost:3000'
-const sameOrigin = new URL(serverUrl).origin.endsWith(new URL(siteUrl).origin)
 
-const rewrites = !sameOrigin ? {
+const rewrites = PROXY_SERVER? {
   rewrites: () => [{
     source: '/api/server/:path*',
     destination: `${process.env.NEXT_PUBLIC_SERVER_URL}/:path*`,
@@ -25,7 +25,7 @@ const rewrites = !sameOrigin ? {
 } : {}
 
 
-const nextConfig: NextConfig = {
+const nextConfig = withMDX({
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   reactStrictMode: true,
   images: {
@@ -73,29 +73,30 @@ const nextConfig: NextConfig = {
 
     return config
   },
-}
+} satisfies NextConfig)
 
-const sentryConfig = {
-  // Suppresses source map uploading logs during build
-  silent: true,
+const releaseName = `${process.env.SOURCE_VERSION ?? version}-${process.env.APP ?? APP_ENV}`
+const sentryConfig: SentryBuildOptions = {
+  // Suppresses source map uploading logs during dev build
+  silent: APP_ENV !== 'production',
   org: 'incubateur-ademe',
   project: 'nosgestesclimat-nextjs',
-
+  release: {
+    name: releaseName,
+    setCommits: {
+      auto: true
+    },
+    deploy: {
+      env: APP_ENV,
+    },
+  },
   authToken: process.env.SENTRY_AUTH_TOKEN,
 
   // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: process.env.NODE_ENV !== 'development',
-
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
-
-  telemetry: process.env.NODE_ENV !== 'development',
-
-  autoDiscoverRelease: true,
-  include: '.',
-  ignore: ['node_modules', '.next', 'cypress'],
+  widenClientFileUpload: APP_ENV !== 'development',
+  telemetry: false,
 }
 
-export default process.env.NODE_ENV !== 'development'
-  ? withSentryConfig(withMDX(nextConfig), sentryConfig)
-  : withMDX(nextConfig)
+export default process.env.NODE_ENV === 'production'
+  ? withSentryConfig(nextConfig, sentryConfig)
+  : nextConfig
