@@ -1,8 +1,9 @@
+import { DeleteButtonWithConfirmModal } from '@/components/interactions/DeleteButtonWithConfirmModal'
 import Trans from '@/components/translation/trans/TransServer'
 import { getUser } from '@/helpers/server/dal/user'
+import { deleteSimulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import type { Simulation } from '@/publicodes-state/types'
-import { DeleteSimulationButton } from './resultsList/DeleteSimulationButton'
 import { ResultListItem } from './resultsList/ResultListItem'
 import SeeListItemDetailLink from './resultsList/SeeListItemDetailLink'
 
@@ -36,18 +37,28 @@ export default async function ResultsList({ locale, simulations }: Props) {
                   buttons={
                     <>
                       <SeeListItemDetailLink simulationId={simulation.id} />
-                      <DeleteSimulationButton
+                      <DeleteButtonWithConfirmModal
                         userId={user.id}
                         simulationId={simulation.id}
-                        simulationBlock={
-                          // We need to pass this server component as a prop
-                          // because DeleteSimulationButton is a client component
-                          <ResultListItem
-                            simulation={simulation}
+                        deleteSimulation={deleteSimulation.bind(null, {
+                          simulationId: simulation.id,
+                          userId: user.id,
+                        })}>
+                        <h2 className="mb-8 text-2xl font-normal">
+                          <Trans
                             locale={locale}
-                          />
-                        }
-                      />
+                            i18nKey="mySpace.resultList.item.delete.modal.title">
+                            Êtes-vous sûr(e) de vouloir supprimer ce
+                            résultat&nbsp;?
+                          </Trans>
+                        </h2>
+                        {/* We need to pass this server component as a prop
+                            because DeleteSimulationButton is a client component*/}
+                        <ResultListItem
+                          simulation={simulation}
+                          locale={locale}
+                        />
+                      </DeleteButtonWithConfirmModal>
                     </>
                   }
                 />

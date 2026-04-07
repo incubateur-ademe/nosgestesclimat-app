@@ -16,7 +16,11 @@ export async function ResultListItem({
   locale,
 }: Props) {
   const { formattedValue, unit } = formatFootprint(
-    simulation.computedResults.carbone.bilan
+    simulation.computedResults.carbone.bilan,
+    {
+      localize: true,
+      locale,
+    }
   )
   const { t } = await getServerTranslation({ locale })
 
