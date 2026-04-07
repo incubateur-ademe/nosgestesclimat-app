@@ -5,18 +5,20 @@ import Card from '@/design-system/layout/Card'
 import { shareDataWithIntegrator } from '@/helpers/iframe/shareDataWithIntegrator'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
-import { useCurrentSimulation } from '@/publicodes-state'
+import type { ComputedResults } from '@/publicodes-state/types'
 import { useEffect, useRef, useState } from 'react'
+
+interface Props {
+  computedResults: ComputedResults
+}
 
 // We let iframe integrators ask the user if he wants to share its simulation data to the parent window
 const shareDataPopupTimeout = 3500
 
-export default function IframeDataShareModal() {
+export default function IframeDataShareModal({ computedResults }: Props) {
   const { t } = useClientTranslation()
 
   const [isOpen, setIsOpen] = useState(false)
-
-  const { computedResults } = useCurrentSimulation()
 
   const { isIframeShareData, isIntegratorAllowedToBypassConsentDataShare } =
     useIframe()
@@ -125,7 +127,7 @@ export default function IframeDataShareModal() {
             })}
           </p>
         </div>
-        <div className="flex gap-4">
+        <div className="mt-4 flex gap-4">
           <Button
             color="secondary"
             onClick={onReject}
