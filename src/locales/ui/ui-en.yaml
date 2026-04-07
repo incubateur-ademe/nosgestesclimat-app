@@ -1850,6 +1850,16 @@ entries:
   tutoriel.title.lock: <0>10 minutes</0> chrono pour calculer votre empreinte carbone et eau
   nos-relais.title: They relay <2>Our Gestes Climat</2>
   nos-relais.title.lock: Ils relaient <2>Nos Gestes Climat</2>
+  coût: cost
+  consommation en kWh: consumption in kWh
+  Landing page thématique - Nos Gestes Climat: Thematic landing page - Nos Gestes Climat
+  Découvrez des conseils pratiques pour réduire votre empreinte écologique.: Discover practical tips for reducing your ecological footprint.
+  simulator.assistanceSwitch.ariaLabel: Select input mode, {{currentUnit}} selected
+  simulator.assistanceSwitch.ariaLabel.lock: Sélectionner le mode de saisie, {{currentUnit}} sélectionné
+  cookies.management.required.detail.title: See details of cookies
+  cookies.management.required.detail.title.lock: Voir le détail des cookies
+  cookies.management.required.detail.description3: Local backup of simulation data
+  cookies.management.required.detail.description3.lock: Sauvegarde des données de simulation en local
   common.carbonFootprint: Carbon footprint
   common.carbonFootprint.lock: Empreinte carbone
   simulation.eau.saveBlock.title: 'Find your results easily '
@@ -1892,7 +1902,6 @@ entries:
   eau.resultats.waterFootprintDetail.title.lock: D’où vient votre résultat ?
   simulation.eau.climateAndWater.title: Water, climate, same battle?
   simulation.eau.climateAndWater.title.lock: Eau, climat, même combat ?
-  Landing page thématique - Nos Gestes Climat: Thematic landing page - Nos Gestes Climat
   endpage.meta.title.carbon: My carbon footprint - Nos Gestes Climat
   endpage.meta.title.carbon.lock: Mon empreinte carbone - Nos Gestes Climat
   simulation.eau.title: The water footprint used to produce what you consume
@@ -1901,7 +1910,6 @@ entries:
   simulation.eau.whatIsWaterFootprint.vigieEau.lock: Rendez-vous sur VigiEau pour en savoir plus.
   simulation.eau.documentation.title: How is your footprint calculated?
   simulation.eau.documentation.title.lock: Comment est calculée votre empreinte ?
-  Découvrez des conseils pratiques pour réduire votre empreinte écologique.: Discover practical tips for reducing your ecological footprint.
   simulation.eau.whatIsWaterFootprint.list.cotton: the <1>cotton</1> you wear
   simulation.eau.whatIsWaterFootprint.list.cotton.lock: la culture du <1>coton</1> que vous portez
   simulation.eau.climateAndWater.description1: Human activities are threatening the natural balance of our planet.
@@ -1997,15 +2005,11 @@ entries:
   cookies.management.required.detail.description2.lock: Authentification sur l'espace personnel
   cookies.management.required.detail.description1: Choice of language
   cookies.management.required.detail.description1.lock: Choix de langue
-  cookies.management.required.detail.description3: Local backup of simulation data
-  cookies.management.required.detail.description3.lock: Sauvegarde des données de simulation en local
-  results.tabs.myGroups: Create a group test
-  results.tabs.myGroups.lock: Créer un test collectif
-  cookies.management.required.detail.title: See details of cookies
-  cookies.management.required.detail.title.lock: Voir le détail des cookies
-  results.tabs.groups: Group test
-  results.tabs.groups.lock: Test collectif
   cookies.management.required.detail.description4: Saving cookie preferences (this banner)
   cookies.management.required.detail.description4.lock: Sauvegarde des préférences de cookie (cette bannière)
+  results.tabs.groups: Group test
+  results.tabs.groups.lock: Test collectif
+  results.tabs.myGroups: Create a group test
+  results.tabs.myGroups.lock: Créer un test collectif
   organisations.askDemo.iframe.title: Form - book an appointment for a demo of our functions for organisations
   organisations.askDemo.iframe.title.lock: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations

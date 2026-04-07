@@ -19,7 +19,7 @@ export default async function FootprintsLinks({
 
   return (
     <Switch
-      className="mb-12 text-center md:text-right"
+      className="mb-12 inline text-center md:text-right"
       aria-label={t(
         'results.footprintsLinks.ariaLabel',
         "Sélecteur de type d'empreinte"
