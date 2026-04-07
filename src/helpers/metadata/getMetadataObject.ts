@@ -33,13 +33,14 @@ const BASE_URL =
     ? 'http://localhost:3000'
     : 'https://nosgestesclimat.fr'
 
+const getLocalePrefix = (locale: string) =>
+  locale === 'fr' ? '' : `/${locale}`
+
 const buildURL = ({
   params,
   searchParams,
   locale,
 }: Pick<Props, 'params' | 'searchParams'> & { locale: string }) => {
-  const localePart = locale === 'fr' ? '' : `/${locale}`
-
   const paramsPart =
     params && Object.values(params).length > 0
       ? Object.values(params).map((value) => `/${value}`)
@@ -55,8 +56,11 @@ const buildURL = ({
         )}`
       : ''
 
-  return `${BASE_URL}${localePart}${paramsPart}${searchParamsPart}`
+  return `${BASE_URL}${getLocalePrefix(locale)}${paramsPart}${searchParamsPart}`
 }
+
+const buildAlternateUrl = (path: string, locale: string) =>
+  `${BASE_URL}${getLocalePrefix(locale)}${path}`
 
 export function getMetadataObject({
   title,
@@ -77,24 +81,29 @@ export function getMetadataObject({
 
   const locales = localesProp ?? i18nConfig.locales
 
-  let alternatesWithLanguages = null
+  const definitiveAlternates: {
+    canonical?: string
+    languages?: Record<string, string>
+  } = {}
 
+  // Form canonical URL
   if (alternates) {
-    const canonical = alternates.canonical
+    definitiveAlternates.canonical = buildAlternateUrl(
+      alternates.canonical,
+      locale
+    )
 
-    // We set the alternates url for each language
-    const languages: Record<string, string> = {}
+    // Only create hreflang if the page has an english version
+    if (locales.length > 1) {
+      // We set the alternates url for each language
+      const languages: Record<string, string> = {}
 
-    locales.map((locale) => {
-      languages[locale] =
-        `${BASE_URL}${locale === 'fr' ? '' : `/${locale}`}${canonical}`
-    })
+      locales.map((locale) => {
+        languages[locale] = buildAlternateUrl(alternates.canonical, locale)
+      })
 
-    // We return the alternates object with the canonical url and the languages alternates
-    alternatesWithLanguages = {
-      canonical:
-        BASE_URL + (locale === 'fr' ? canonical : `/${locale}${canonical}`),
-      languages,
+      // We return the alternates object with the canonical url and the languages alternates
+      definitiveAlternates.languages = languages
     }
   }
 
@@ -111,7 +120,7 @@ export function getMetadataObject({
         ? image
         : 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/metadata_1749c11cdc.png',
     },
-    alternates: alternatesWithLanguages,
+    alternates: definitiveAlternates,
     ...props,
     ...(process.env.NEXT_PUBLIC_ENV !== 'production'
       ? { robots: noIndexObject }
