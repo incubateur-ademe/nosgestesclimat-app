@@ -4,7 +4,7 @@ import Script from 'next/script'
  *
  * @deprecated Matomo tracking is deprecated and will be removed at one point
  */
-export default function MatomoServerTracker__deprecated() {
+export default function MatomoScript__deprecated() {
   return (
     <>
       {

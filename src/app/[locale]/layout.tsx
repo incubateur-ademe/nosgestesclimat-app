@@ -1,54 +1,16 @@
 import Trackers from '@/components/tracking/Trackers'
-import MatomoServerTracker__deprecated from '@/hooks/tracking/MatomoServerTracker'
+import MatomoScript__deprecated from '@/hooks/tracking/MatomoServerTracker'
 import '@/locales/initClient'
 import '@/locales/initServer'
 import type { DefaultPageProps } from '@/types'
 import { dir } from 'i18next'
-import localFont from 'next/font/local'
 import Script from 'next/script'
 import { Suspense } from 'react'
 
 import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
 import { BODY_ID } from './_components/mainLayoutProviders/IframeOptionsContext'
 import './globals.css'
-
-export const marianne = localFont({
-  src: [
-    {
-      path: '../../../public/fonts/Marianne-Thin.woff2',
-      weight: '100',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Light.woff2',
-      weight: '300',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Regular.woff2',
-      weight: 'normal',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Bold.woff2',
-      weight: 'bold',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-ExtraBold.woff2',
-      weight: '800',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-marianne',
-  display: 'swap',
-  preload: true,
-})
+import { marianne } from './marianne'
 
 export default async function RootLayout({
   children,
@@ -74,7 +36,7 @@ export default async function RootLayout({
 
         <meta name="theme-color" content="#4949ba" />
 
-        <MatomoServerTracker__deprecated />
+        <MatomoScript__deprecated />
         <Suspense>
           <Trackers locale={locale} />
         </Suspense>

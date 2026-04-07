@@ -1,13 +1,10 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { pollDashboardClickQRCodeDownload } from '@/constants/tracking/pages/pollDashboard'
+
 import { captureDownloadPollQRCode } from '@/constants/tracking/posthogTrackers'
 import Button from '@/design-system/buttons/Button'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import JSZip from 'jszip'
 import { useRef } from 'react'
 import QRCodeLib from 'react-qr-code'
@@ -27,7 +24,6 @@ export default function QRCode({ value, className }: QRCodeProps) {
     const svg = qrRef.current.querySelector('svg')
     if (!svg) return
 
-    trackMatomoEvent__deprecated(pollDashboardClickQRCodeDownload)
     trackPosthogEvent(captureDownloadPollQRCode)
 
     const zip = new JSZip()
