@@ -1,3 +1,4 @@
+import ContentLarge from '@/components/layout/ContentLarge'
 import { noIndexObject } from '@/constants/metadata'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
@@ -15,5 +16,5 @@ export const generateMetadata = getCommonMetadata({
 })
 
 export default function Layout({ children }: PropsWithChildren) {
-  return <>{children}</>
+  return <ContentLarge className="px-4 lg:px-0">{children}</ContentLarge>
 }
