@@ -4,19 +4,18 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import Modal from '@/design-system/modals/Modal'
-import { deleteSimulation } from '@/helpers/server/model/simulations'
 import { useState, useTransition } from 'react'
 
 interface Props {
+  children: React.ReactNode
   simulationId: string
-  simulationBlock: React.ReactNode
   userId: string
+  deleteSimulation: () => Promise<void>
 }
 
-export function DeleteSimulationButton({
-  simulationBlock,
-  simulationId,
-  userId,
+export function DeleteButtonWithConfirmModal({
+  children,
+  deleteSimulation,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isError, setIsError] = useState(false)
@@ -27,10 +26,7 @@ export function DeleteSimulationButton({
 
     startTransition(async () => {
       try {
-        await deleteSimulation({
-          simulationId,
-          userId,
-        })
+        await deleteSimulation()
 
         setIsModalOpen(false)
       } catch {
@@ -66,18 +62,12 @@ export function DeleteSimulationButton({
             </Trans>
           </Button>,
         ]}>
-        <h2 className="mb-8 text-2xl font-normal">
-          <Trans i18nKey="mySpace.resultList.item.delete.modal.title">
-            Êtes-vous sûr(e) de vouloir supprimer ce résultat&nbsp;?
-          </Trans>
-        </h2>
-
-        {simulationBlock}
+        {children}
 
         {isError && (
           <p className="mt-2 text-red-700">
             <Trans i18nKey="mySpace.resultList.item.delete.modal.error">
-              Une erreur s'est produite au moment de supprimer votre résultat.
+              Une erreur s'est produite au moment de supprimer cet élément.
               Veuillez réessayer.
             </Trans>
           </p>
