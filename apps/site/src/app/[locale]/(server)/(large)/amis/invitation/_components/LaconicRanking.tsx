@@ -5,6 +5,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
+import { getParticipantName } from '../../_helpers/getParticipantName'
 
 interface Props {
   group: Group
@@ -82,12 +83,7 @@ export default function LaconicRanking({ group }: Props) {
                 {rank}
                 {!isFirstThree && '. '}
               </span>{' '}
-              {participant.simulation.user?.id
-                ? participant.name
-                : t(
-                    'groups.results.rankingMember.simulationDeleted',
-                    'Utilisateur anonyme (données supprimées par le participant)'
-                  )}
+              {getParticipantName({ t, participant })}
             </li>
           )
         })}
