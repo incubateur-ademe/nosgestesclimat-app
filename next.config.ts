@@ -6,6 +6,7 @@ import { withSentryConfig } from '@sentry/nextjs'
 import redirects from './config/redirects.js'
 
 import { remoteImagesPatterns } from './config/remoteImagesPatterns'
+import { PROXY_SERVER } from './config/urls'
 
 const withMDX = createMDX({
   extension: /\.mdx$/,
@@ -13,11 +14,8 @@ const withMDX = createMDX({
 
 
 // Use rewrite rules to proxy requests from the client to the server when both are on different domain (preview app / local)
-let serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://localhost:3001'
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://localhost:3000'
-const sameOrigin = new URL(serverUrl).origin.endsWith(new URL(siteUrl).origin)
 
-const rewrites = !sameOrigin ? {
+const rewrites = PROXY_SERVER? {
   rewrites: () => [{
     source: '/api/server/:path*',
     destination: `${process.env.NEXT_PUBLIC_SERVER_URL}/:path*`,

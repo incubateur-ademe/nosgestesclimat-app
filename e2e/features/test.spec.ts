@@ -10,10 +10,6 @@ for (const persona of Object.values(personas)) {
     ngcTest,
     page,
   }) => {
-    if (['Nolan'].includes(persona.nom)) {
-      // @TODO fix question climatiseur appears at the end of the test
-      test.skip()
-    }
     await ngcTest.goto()
     await ngcTest.answerTest(persona.situation)
     await expect(page).toHaveURL(/\/fin/)
