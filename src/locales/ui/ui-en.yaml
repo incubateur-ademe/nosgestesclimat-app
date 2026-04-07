@@ -1963,8 +1963,8 @@ entries:
   results.groupThankYou.cta.lock: Voir les résultats
   results.groupThankYou.title: Thank you for completing the test!
   results.groupThankYou.title.lock: Merci d'avoir complété le test !
-  pages.result.unauthorized: <0>These results are protected</0><1>To access them, you need to log in with the same email address you used to save them.</1><2>Connect me</2>
-  pages.result.unauthorized.lock: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connectez avec le même email que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
+  pages.result.unauthorized: <0>These results are protected</0><1>To access them, you need to log in with the same e-mail address you used to save them.</1><2>Connect me</2>
+  pages.result.unauthorized.lock: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connecter avec le même e-mail que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
   pages.result.notfound: <0>Impossible to find these results</0><1>This means that they do not exist, or that they are not linked to your e-mail.</1><2>In the latter case, you can try logging in again with a different username and password.</2><3>Back to my space</3>
   pages.result.notfound.lock: <0>Impossible de retrouver ces résultats</0><1>Cela signifie qu'ils n'existent pas, ou qu'ils ne sont pas reliés à votre e-mail.</1><2>Dans ce dernier cas, vous pouvez essayer de vous re-connecter avec d'autres identifiants.</2><3>Retour à mon espace</3>
   simulator.navigation.nextButton.loading: <0></0> Finish

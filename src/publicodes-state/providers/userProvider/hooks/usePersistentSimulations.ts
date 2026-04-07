@@ -16,17 +16,20 @@ export default function usePersistentSimulations({
 }: Props) {
   const [initSimulations, initCurrentSimulationId] = useMemo(() => {
     const parsedStorage = getCurrentStorage()
-
     let initSimulations: Simulation[] = parsedStorage.simulations
-
     if (serverSimulations?.length) {
-      initSimulations = serverSimulations
+      // Merge existing localStorage simulations with server simulations
+      // (using server simulations when conflicts occur)
+      initSimulations = Object.values(
+        Object.groupBy(
+          [...serverSimulations, ...initSimulations],
+          (simulation) => simulation.id
+        )
+      ).map((simulations) => simulations![0])
     }
-
-    if (!initSimulations?.length) {
+    if (!initSimulations.length) {
       initSimulations = [generateSimulation()]
     }
-
     initSimulations = initSimulations.sort((a, b) => {
       return new Date(b.date).getTime() - new Date(a.date).getTime()
     })
@@ -43,7 +46,6 @@ export default function usePersistentSimulations({
   }, [migrationInstructions, serverSimulations])
 
   const [simulations, setSimulations] = useState<Simulation[]>(initSimulations)
-
   const [currentSimulationId, setCurrentSimulationId] = useState<string>(
     initCurrentSimulationId
   )
@@ -68,7 +70,12 @@ function getCurrentStorage(): {
   simulations: Simulation[]
   currentSimulationId: string
 } {
-  return JSON.parse(safeLocalStorage.getItem(STORAGE_KEY) || '{}')
+  return (
+    JSON.parse(safeLocalStorage.getItem(STORAGE_KEY) ?? 'null') ?? {
+      simulations: [],
+      currentSimulationId: '',
+    }
+  )
 }
 
 function saveSimulations(simulations: Simulation[]) {

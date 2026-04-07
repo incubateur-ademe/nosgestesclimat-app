@@ -2,7 +2,7 @@
 
 import { SERVER_URL } from '@/constants/urls/main'
 import { cookies } from 'next/headers'
-import { AUTHENTICATED_COOKIE_NAME } from './dal/authCookie'
+import { SERVER_AUTH_COOKIE_NAME } from './dal/authCookie'
 import {
   ForbiddenError,
   InternalServerError,
@@ -34,7 +34,7 @@ export async function fetchServer<T = unknown>(
   }
 
   const cookieStore = await cookies()
-  const ngcCookie = cookieStore.get(AUTHENTICATED_COOKIE_NAME)
+  const ngcCookie = cookieStore.get(SERVER_AUTH_COOKIE_NAME)
   if (ngcCookie) {
     headers.cookie = `${ngcCookie.name}=${ngcCookie.value}`
   }

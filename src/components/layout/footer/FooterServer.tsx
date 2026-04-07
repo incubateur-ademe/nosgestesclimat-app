@@ -1,5 +1,6 @@
 import Ademe from '@/components/images/partners/Ademe'
 import Marianne from '@/components/images/partners/Marianne'
+import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
 import Link from '@/components/Link'
 import Logo from '@/components/misc/Logo'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
@@ -42,7 +43,6 @@ import type { Locale } from '@/i18nConfig'
 import { cacheLife } from 'next/cache'
 import { twMerge } from 'tailwind-merge'
 import HideInIframe from '../HideInIframe'
-import ThematicPagesSection from '../ThematicPagesSection'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
 
@@ -245,7 +245,7 @@ export default async function FooterServer({
               </ul>
             </div>
             <div className="flex flex-col gap-y-2">
-              <ThematicPagesSection />
+              <ThematicPagesSection locale={locale} />
             </div>
           </div>
           {locale === 'fr' ? (

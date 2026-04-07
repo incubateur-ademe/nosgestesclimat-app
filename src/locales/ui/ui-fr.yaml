@@ -1450,7 +1450,7 @@ entries:
   mon-espace.resultsDetail.breadcrumb.waterFootprint: Empreinte eau
   results.saveResults.title: 'Retrouvez facilement vos résultats '
   pages.result.notfound: <0>Impossible de retrouver ces résultats</0><1>Cela signifie qu'ils n'existent pas, ou qu'ils ne sont pas reliés à votre e-mail.</1><2>Dans ce dernier cas, vous pouvez essayer de vous re-connecter avec d'autres identifiants.</2><3>Retour à mon espace</3>
-  pages.result.unauthorized: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connectez avec le même email que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
+  pages.result.unauthorized: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connecter avec le même e-mail que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
   results.groupThankYou.cta: Voir les résultats
   results.groupThankYou.title: Merci d'avoir complété le test !
   results.year: an

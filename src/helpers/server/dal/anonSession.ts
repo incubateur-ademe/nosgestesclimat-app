@@ -16,7 +16,7 @@ const TWO_YEARS_IN_SECONDS = 60 * 60 * 24 * 365 * 2
 
 export const anonSessionOptions: SessionOptions = {
   password: process.env.IRON_SESSION_PASSWORD,
-  cookieName: 'ngc_anon_session',
+  cookieName: 'ngc_anon_user',
   ttl: TWO_YEARS_IN_SECONDS,
   cookieOptions: DEFAULT_COOKIE_OPTION,
 }

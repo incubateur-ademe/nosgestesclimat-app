@@ -1,12 +1,11 @@
 import ActionDetail from '@/components/actions/ActionDetail'
 import Trans from '@/components/translation/trans/TransClient'
-import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
+import { END_PAGE_ACTIONS_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getRules } from '@/helpers/modelFetching/getRules'
-import { throwNextError } from '@/helpers/server/error'
-import { getAuthUser } from '@/helpers/server/model/user'
+import { getUser } from '@/helpers/server/dal/user'
 import { EngineProvider, UserProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
@@ -26,19 +25,19 @@ export async function generateMetadata({
       'Découvrez les actions que vous pouvez mettre en place pour réduire votre empreinte carbone.'
     ),
     alternates: {
-      canonical: `${MON_ESPACE_ACTIONS_PATH}/${dottedName.join('/')}`,
+      canonical: `${END_PAGE_ACTIONS_PATH}/${dottedName.join('/')}`,
     },
   })
 }
 
 export default async function ActionDetailPage({
   params,
-}: PageProps<'/[locale]/mon-espace/actions/[...dottedName]'>) {
+}: PageProps<'/[locale]/fin/actions/[...dottedName]'>) {
   const { dottedName } = await params
 
   const rules = await getRules()
 
-  const user = await throwNextError(getAuthUser)
+  const user = await getUser()
 
   return (
     <UserProvider serverUserId={user.id}>
@@ -47,7 +46,7 @@ export default async function ActionDetailPage({
           <ButtonLink
             size="sm"
             color="text"
-            href={MON_ESPACE_ACTIONS_PATH}
+            href={END_PAGE_ACTIONS_PATH}
             className="flex items-center">
             <span role="img" className="pr-2 text-[0.5rem]!" aria-hidden>
               ◀

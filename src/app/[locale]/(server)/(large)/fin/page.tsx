@@ -67,7 +67,12 @@ export default async function FinPage({
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!simulation) {
-    captureException(new NotFoundError())
+    captureException(new NotFoundError(), {
+      level: 'warning',
+      extra: {
+        simulations,
+      },
+    })
     redirect('/')
   }
   const simulationResult = await throwNextError(async () => {
