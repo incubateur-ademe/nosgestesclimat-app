@@ -12,7 +12,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useDeleteGroup } from '@/hooks/groups/useDeleteGroup'
 import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -41,7 +41,7 @@ export default function OwnerAdminSection({ group }: Props) {
   }, [])
 
   async function handleDelete() {
-    trackEvent(amisDashboardOpenDeleteGroup)
+    trackMatomoEvent__deprecated(amisDashboardOpenDeleteGroup)
     if (!group) return
 
     try {
@@ -106,7 +106,7 @@ export default function OwnerAdminSection({ group }: Props) {
         <Button
           color="link"
           onClick={() => {
-            trackEvent(amisDashboardValidateDeleteGroup)
+            trackMatomoEvent__deprecated(amisDashboardValidateDeleteGroup)
             setIsConfirming(true)
           }}
           data-testid="button-delete-group">

@@ -18,7 +18,10 @@ import {
   useEngine,
   useFormState,
 } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { trackGTMEvent } from '@/utils/analytics/trackGTMEvent'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { useEffect } from 'react'
@@ -74,7 +77,7 @@ export function useTrackSimulator() {
       foldedSteps.length === 0 &&
       !getTrackingState(simulationId, FIRST_QUESTION_SEEN)
     ) {
-      trackEvent(simulationSimulationFirstQuestionSeen)
+      trackMatomoEvent__deprecated(simulationSimulationFirstQuestionSeen)
 
       trackPosthogEvent(
         captureSimulationFirstQuestionSeen({
@@ -93,7 +96,7 @@ export function useTrackSimulator() {
       foldedSteps.length === 1 &&
       !getTrackingState(simulationId, FIRST_QUESTION_ANSWERED)
     ) {
-      trackEvent(simulationSimulationStarted)
+      trackMatomoEvent__deprecated(simulationSimulationStarted)
 
       // Track GTM event if available
       if (cookieState.googleTag === 'accepted') {
@@ -125,7 +128,7 @@ export function useTrackSimulator() {
       const bilan = getNumericValue('bilan')
 
       // Track Matomo event
-      trackEvent(simulationSimulationCompleted(bilan))
+      trackMatomoEvent__deprecated(simulationSimulationCompleted(bilan))
 
       // Track GTM event if available
       if (cookieState.googleTag === 'accepted') {
@@ -155,11 +158,11 @@ export function useTrackSimulator() {
     if (!currentCategory) return
 
     if (isFirstQuestionOfCategory) {
-      trackEvent(simulationCategoryStarted(currentCategory))
+      trackMatomoEvent__deprecated(simulationCategoryStarted(currentCategory))
     }
 
     if (isLastQuestionOfCategory) {
-      trackEvent(simulationCategoryCompleted(currentCategory))
+      trackMatomoEvent__deprecated(simulationCategoryCompleted(currentCategory))
     }
   }, [currentCategory, isFirstQuestionOfCategory, isLastQuestionOfCategory])
 }

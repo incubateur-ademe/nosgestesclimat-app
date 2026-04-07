@@ -8,7 +8,7 @@ import { useState } from 'react'
 import type { NumberFormatValues, SourceInfo } from 'react-number-format'
 import { useNumberInputState } from './useNumberInputState'
 
-export interface NumberInputWithAssistanceStateProps {
+interface NumberInputWithAssistanceStateProps {
   question: DottedName
   unit: string
   value: Evaluation<number>

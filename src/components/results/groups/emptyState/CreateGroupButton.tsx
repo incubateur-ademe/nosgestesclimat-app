@@ -5,13 +5,16 @@ import { linkToGroupCreation } from '@/constants/group'
 import { captureClickDashboardGroupPageNoGroupsCreate } from '@/constants/tracking/posthogTrackers'
 import { clickDashboardGroupPageNoGroupsCreate } from '@/constants/tracking/user-account'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 
 export default function CreateGroupButton() {
   return (
     <ButtonLink
       onClick={() => {
-        trackEvent(clickDashboardGroupPageNoGroupsCreate)
+        trackMatomoEvent__deprecated(clickDashboardGroupPageNoGroupsCreate)
         trackPosthogEvent(captureClickDashboardGroupPageNoGroupsCreate)
       }}
       data-testid="create-group-button"

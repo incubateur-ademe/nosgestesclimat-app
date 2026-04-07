@@ -1,6 +1,6 @@
 'use client'
 
-import { marianne } from '@/app/[locale]/layout'
+import { marianne } from '@/app/[locale]/marianne'
 import CheckCircleIcon from '@/components/icons/status/CheckCircleIcon'
 import Trans from '@/components/translation/trans/TransClient'
 

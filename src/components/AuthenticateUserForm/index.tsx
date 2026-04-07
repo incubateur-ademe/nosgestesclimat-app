@@ -12,7 +12,10 @@ import Button from '@/design-system/buttons/Button'
 import useLogin from '@/hooks/authentication/useLogin'
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useUser } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import type { UseMutationResult } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
@@ -77,7 +80,7 @@ export default function AuthenticateUserForm({
       setIsRedirecting(true)
 
       if (trackers) {
-        trackEvent(trackers.matomo)
+        trackMatomoEvent__deprecated(trackers.matomo)
         trackPosthogEvent(trackers.posthog)
       }
       await onComplete?.(user)
@@ -135,7 +138,7 @@ export default function AuthenticateUserForm({
       mode={mode}
       onCodeSent={(pendingVerification) => {
         registerVerification(pendingVerification)
-        trackEvent(signinTrackEvent(mode))
+        trackMatomoEvent__deprecated(signinTrackEvent(mode))
         trackPosthogEvent(captureClickSubmitEmail({ mode }))
       }}
       inputLabel={inputLabel}

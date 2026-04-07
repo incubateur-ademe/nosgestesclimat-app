@@ -1,10 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  infosCommencerClickCtaCommencer,
-  infosCommencerClickNewTest,
-} from '@/constants/tracking/pages/infos'
+
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
@@ -13,7 +10,6 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
 import { useCurrentSimulation, useUser } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { endTestAction } from '../../../simulateur/[root]/_actions/endTestAction'
@@ -55,10 +51,9 @@ export default function Commencer() {
         </Trans>
       </p>
 
-      <div className="flex flex-col items-start gap-6">
+      <div className="flex flex-col items-start gap-6" data-track>
         <Button
           onClick={() => {
-            trackEvent(infosCommencerClickCtaCommencer)
             void endTestAction({
               ...currentSimulation,
               polls: [...(polls ?? []), poll],
@@ -72,7 +67,6 @@ export default function Commencer() {
         <Button
           color="secondary"
           onClick={() => {
-            trackEvent(infosCommencerClickNewTest)
             initSimulation({ polls: [poll] })
             router.push(
               getLinkToSimulateurPage({

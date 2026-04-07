@@ -2,14 +2,14 @@
 
 import Link from '@/components/Link'
 import { clickContactEvent } from '@/constants/tracking/pages/faq'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 export default function ContactUsLink() {
   return (
     <Link
       href="/contact"
       onClick={() => {
-        trackEvent(clickContactEvent)
+        trackMatomoEvent__deprecated(clickContactEvent)
       }}>
       accéder à notre page de contact
     </Link>

@@ -30,7 +30,10 @@ import {
   useUser,
 } from '@/publicodes-state'
 import type { Action } from '@/publicodes-state/types'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { encodeRuleName } from '@/utils/publicodes/encodeRuleName'
 import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import { usePathname } from 'next/navigation'
@@ -122,7 +125,7 @@ export default function ActionCard({
     handleUpdatePersistedActions()
 
     if (!isSelected) {
-      trackEvent(actionsClickYes(dottedName))
+      trackMatomoEvent__deprecated(actionsClickYes(dottedName))
       trackPosthogEvent(captureActionsClickYes({ action: dottedName }))
     }
   }, [
@@ -143,7 +146,7 @@ export default function ActionCard({
     handleUpdatePersistedActions()
 
     if (!isSelected) {
-      trackEvent(actionsClickNo(dottedName))
+      trackMatomoEvent__deprecated(actionsClickNo(dottedName))
       trackPosthogEvent(captureActionsClickNo({ action: dottedName }))
     }
   }
@@ -169,7 +172,7 @@ export default function ActionCard({
         <Link
           className="z-10 w-full underline"
           onClick={() => {
-            trackEvent(actionsOpenAction(dottedName))
+            trackMatomoEvent__deprecated(actionsOpenAction(dottedName))
             trackPosthogEvent(captureActionsOpenAction({ action: dottedName }))
           }}
           href={`${pathname}/${encodeRuleName(dottedName)}`}>

@@ -9,7 +9,10 @@ import {
 } from '@/constants/tracking/pages/signin'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { useState } from 'react'
 
 interface Props {
@@ -33,7 +36,7 @@ export default function ResendButton({
       return
     }
 
-    trackEvent(clickResendCode)
+    trackMatomoEvent__deprecated(clickResendCode)
     trackPosthogEvent(captureClickResendCode())
 
     await onResendVerificationCode()

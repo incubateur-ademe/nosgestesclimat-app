@@ -12,7 +12,7 @@ import {
 } from '@/helpers/getCategoryColorClass'
 import { useDebug } from '@/hooks/useDebug'
 import { useCurrentSimulation, useFormState, useRule } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
 
@@ -82,7 +82,7 @@ export default function Question({
         // Reset the scroll position to the top of the page
         window.scrollTo({ top: 0, behavior: 'instant' })
 
-        trackEvent(simulateurClickSommaireQuestion)
+        trackMatomoEvent__deprecated(simulateurClickSommaireQuestion)
 
         toggleQuestionList()
       }}>

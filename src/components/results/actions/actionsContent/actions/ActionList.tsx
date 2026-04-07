@@ -10,7 +10,7 @@ import {
   useUser,
 } from '@/publicodes-state'
 import type { Action } from '@/publicodes-state/types'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type {
   NGCRuleNode,
   NGCRules,
@@ -143,7 +143,9 @@ export default function ActionList({
                           toggleActionChoice(action.dottedName)
 
                           if (!actionChoices[action.dottedName]) {
-                            trackEvent(actionsClickYes(action.dottedName))
+                            trackMatomoEvent__deprecated(
+                              actionsClickYes(action.dottedName)
+                            )
                           }
                           setActionWithFormOpen('')
                         }}

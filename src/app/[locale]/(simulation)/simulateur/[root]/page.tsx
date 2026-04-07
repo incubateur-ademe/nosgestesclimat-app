@@ -8,7 +8,7 @@ import {
 import { useTrackSimulator } from '@/hooks/tracking/useTrackSimulator'
 import { useIframe } from '@/hooks/useIframe'
 import { useEngine } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useCallback, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Simulateur from './_components/Simulateur'
@@ -25,7 +25,7 @@ export default function SimulateurPage() {
   const [isQuestionListOpen, setIsQuestionListOpen] = useState(false)
   const toggleQuestionList = useCallback(() => {
     setIsQuestionListOpen((prevIsQuestionListOpen) => {
-      trackEvent(
+      trackMatomoEvent__deprecated(
         prevIsQuestionListOpen
           ? simulateurCloseSommaire
           : simulateurOpenSommaire

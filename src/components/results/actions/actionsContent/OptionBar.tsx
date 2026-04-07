@@ -8,7 +8,10 @@ import Button from '@/design-system/buttons/Button'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Action } from '@/publicodes-state/types'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { useState } from 'react'
 import ActionsChosenIndicator from './ActionsChosenIndicator'
 
@@ -32,7 +35,7 @@ export default function OptionBar({ actions, setRadical, radical }: Props) {
           title={t('Ouvrir les options de tri')}
           onClick={() => {
             setIsOpen(true)
-            trackEvent(trackingActionClickSortingButton)
+            trackMatomoEvent__deprecated(trackingActionClickSortingButton)
             trackPosthogEvent(captureActionClickSortingButton)
           }}
           className="text-orange-dark focus:ring-primary-700 focus:ring-2 focus:ring-offset-3 focus:outline-hidden">

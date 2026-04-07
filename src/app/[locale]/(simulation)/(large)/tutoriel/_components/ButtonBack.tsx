@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { tutorielClickPrecedent } from '@/constants/tracking/pages/tutoriel'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useRouter } from 'next/navigation'
 
 export default function ButtonBack() {
@@ -15,7 +15,7 @@ export default function ButtonBack() {
       color="secondary"
       title={t("Revenir à l'accueil")}
       onClick={() => {
-        trackEvent(tutorielClickPrecedent)
+        trackMatomoEvent__deprecated(tutorielClickPrecedent)
         back()
       }}>
       ← <Trans>Précédent</Trans>

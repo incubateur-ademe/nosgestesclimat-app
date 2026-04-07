@@ -10,23 +10,11 @@
     "check-memory.mjs"
   ],
   "ignore": [
-    "**/*.test.{ts,tsx,js,jsx}",
-    "**/*.spec.{ts,tsx,js,jsx}",
-    "**/__tests__/**",
-    "**/__mocks__/**",
-    "tests/**",
-    "src/helpers/tests/**",
-    "**/*.stories.{ts,tsx,js,jsx}",
     "public/**",
-    ".next/**",
-    "node_modules/**",
-    "vitest.setup.ts",
-    "vitest-globals.d.ts",
     "src/locales/nouveautes/**",
     "scripts/**",
     "src/constants/ab-test.ts",
-    "e2e/**",
-    "src/locales/initClient.ts"
+    "e2e/**"
   ],
   "ignoreDependencies": [
     "@axe-core/playwright",

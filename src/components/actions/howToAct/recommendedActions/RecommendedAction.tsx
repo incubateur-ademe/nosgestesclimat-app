@@ -9,7 +9,7 @@ import {
   getBorderColor,
 } from '@/helpers/getCategoryColorClass'
 import { useRule } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 export default function RecommendedAction({
@@ -27,7 +27,9 @@ export default function RecommendedAction({
         footprintAvoided={numericValue}
         tag={Link}
         href={`${MON_ESPACE_ACTIONS_PATH}/${actionDottedName}`}
-        onClick={() => trackEvent(endClickAction(actionDottedName))}
+        onClick={() =>
+          trackMatomoEvent__deprecated(endClickAction(actionDottedName))
+        }
         className={`border-2 ${getBorderColor(actionDottedName.split('.')[0])} ${getBackgroundLightColor(actionDottedName.split('.')[0])} transition-opacity hover:opacity-80`}
       />
     </li>
