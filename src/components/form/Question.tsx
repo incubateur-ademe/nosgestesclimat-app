@@ -73,6 +73,26 @@ export default function Question({
 
   const [isOpen, setIsOpen] = useState(showInputsLabel ? false : true)
   const locale = useLocale()
+
+  const numberInputProps = {
+    question,
+    unit,
+    value: situationValue as Evaluation<number>,
+    setValue: (value: number | string | undefined) => {
+      setValue(value, { questionDottedName: question })
+    },
+    placeholder:
+      isMissing && typeof value === 'number'
+        ? value.toLocaleString(locale, {
+            maximumFractionDigits: value < 10 ? 1 : 0,
+          })
+        : '',
+    'data-testid': question,
+    id: DEFAULT_FOCUS_ELEMENT_ID,
+    'aria-describedby': `${QUESTION_DESCRIPTION_BUTTON_ID}-content warning-message notification-message`,
+    'aria-labelledby': 'question-label',
+  }
+
   return (
     <>
       <div className={twMerge('mb-6 flex flex-col items-start', className)}>
@@ -104,44 +124,13 @@ export default function Question({
             {type === 'number' &&
               (assistance ? (
                 <NumberInputWithAssistance
-                  question={question}
+                  {...numberInputProps}
+                  // Unit is required on assistance mode
                   unit={unit!}
-                  value={situationValue as Evaluation<number>}
-                  setValue={(value) => {
-                    setValue(value, { questionDottedName: question })
-                  }}
-                  placeholder={
-                    isMissing && typeof value === 'number'
-                      ? value.toLocaleString(locale, {
-                          maximumFractionDigits: value < 10 ? 1 : 0,
-                        })
-                      : ''
-                  }
-                  data-testid={question}
-                  id={DEFAULT_FOCUS_ELEMENT_ID}
-                  aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content warning-message notification-message`}
-                  aria-labelledby="question-label"
                   assistance={assistance}
                 />
               ) : (
-                <NumberInput
-                  unit={unit}
-                  value={situationValue as Evaluation<number>}
-                  setValue={(value) => {
-                    setValue(value, { questionDottedName: question })
-                  }}
-                  placeholder={
-                    isMissing && typeof value === 'number'
-                      ? value.toLocaleString(locale, {
-                          maximumFractionDigits: value < 10 ? 1 : 0,
-                        })
-                      : ''
-                  }
-                  data-testid={question}
-                  id={DEFAULT_FOCUS_ELEMENT_ID}
-                  aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content warning-message notification-message`}
-                  aria-labelledby="question-label"
-                />
+                <NumberInput {...numberInputProps} />
               ))}
 
             {type === 'boolean' && (

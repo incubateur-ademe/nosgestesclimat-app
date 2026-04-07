@@ -46,8 +46,7 @@ export class NGCTest {
         await this.page
           .getByTestId(dottedName)
           .fill(String(value).replace('.', ','))
-        // Wait for debounce to complete (300ms in useNumberInputState)
-        await this.page.waitForTimeout(400)
+
         isAnswered = true
         continue
       }
