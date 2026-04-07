@@ -1481,5 +1481,5 @@ entries:
   mySpace.resultList.item.delete.mainButton.label: Supprimer
   mySpace.resultList.item.delete.modal.confirm: Confirmer la suppression
   mySpace.resultList.item.delete.modal.title: Êtes-vous sûr(e) de vouloir supprimer ce résultat ?
-  mySpace.resultList.item.delete.modal.error: Une erreur s'est produite au moment de supprimer votre résultat. Veuillez réessayer.
+  mySpace.resultList.item.delete.modal.error: Une erreur s'est produite au moment de supprimer cet élément. Veuillez réessayer.
   groups.results.rankingMember.simulationDeleted: Utilisateur anonyme (données supprimées par le participant)

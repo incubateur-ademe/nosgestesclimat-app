@@ -18,6 +18,7 @@ import type { QueryObserverResult } from '@tanstack/react-query'
 import isMobile from 'is-mobile'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { getParticipantName } from '../../../../_helpers/getParticipantName'
 
 const getRank = (index: number) => {
   switch (index) {
@@ -110,12 +111,7 @@ export default function RankingMember({
     }
   }
 
-  const participantName = participant.simulation.user?.id
-    ? participant.name
-    : t(
-        'groups.results.rankingMember.simulationDeleted',
-        'Utilisateur anonyme (données supprimées par le participant)'
-      )
+  const participantName = getParticipantName({ t, participant })
 
   return (
     <li className="flex items-center justify-between gap-2">
