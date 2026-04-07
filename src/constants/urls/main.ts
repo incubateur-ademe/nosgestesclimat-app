@@ -1,30 +1,24 @@
-let serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3001'
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-const sameOrigin = new URL(serverUrl).origin.endsWith(new URL(siteUrl).origin)
+import { SERVER_URL } from '../../../config/urls'
 
-if (!sameOrigin) {
-  serverUrl = siteUrl + '/api/server'
-}
+export { SERVER_URL }
 
-export const SERVER_URL = serverUrl
+export const AUTHENTICATION_URL = SERVER_URL + '/authentication/v1'
 
-export const AUTHENTICATION_URL = serverUrl + '/authentication/v1'
+export const GROUP_URL = SERVER_URL + '/groups/v1'
 
-export const GROUP_URL = serverUrl + '/groups/v1'
+export const ORGANISATION_URL = SERVER_URL + '/organisations/v1'
 
-export const ORGANISATION_URL = serverUrl + '/organisations/v1'
+export const SIMULATION_URL = SERVER_URL + '/simulations/v1'
 
-export const SIMULATION_URL = serverUrl + '/simulations/v1'
+export const VERIFICATION_CODE_URL = SERVER_URL + '/verification-codes/v1'
 
-export const VERIFICATION_CODE_URL = serverUrl + '/verification-codes/v1'
+export const MODELE_URL = SERVER_URL + '/modele/v1'
 
-export const MODELE_URL = serverUrl + '/modele/v1'
+export const INTEGRATION_URL = SERVER_URL + '/integrations/v1'
 
-export const INTEGRATION_URL = serverUrl + '/integrations/v1'
+export const USER_URL = SERVER_URL + '/users/v1'
 
-export const USER_URL = serverUrl + '/users/v1'
-
-export const NEWSLETTER_URL = serverUrl + '/newsletters/v1'
+export const NEWSLETTER_URL = SERVER_URL + '/newsletters/v1'
 
 export const getPreviewUrl = (PRNumber: string | number) => {
   return `https://nosgestesclimat-dev.s3.fr-par.scw.cloud/model/${PRNumber}`

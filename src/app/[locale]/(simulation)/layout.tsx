@@ -1,4 +1,3 @@
-import Footer from '@/components/layout/Footer'
 import EngineProviders from '@/components/providers/EngineProviders'
 import { getUser } from '@/helpers/server/dal/user'
 import type { DefaultPageProps } from '@/types'
@@ -19,10 +18,7 @@ export default async function SimulateurLayout({
       skipLinksDisplayed={new Set(['main', 'footer'])}
       locale={locale}
       serverUserId={serverUserId}>
-      <EngineProviders>
-        {children}
-        <Footer locale={locale} />
-      </EngineProviders>
+      <EngineProviders>{children}</EngineProviders>
     </ClientLayout>
   )
 }

@@ -13,7 +13,7 @@ import { InvalidInputError } from '../error'
  */
 export async function migrateAnonSession(userId: string) {
   if (!validate(userId)) {
-    throw new InvalidInputError('Invalid userId: must be a valid UUID')
+    throw new InvalidInputError(`Invalid userId: ${userId} is not a valid UUID`)
   }
 
   const session = await getAnonSession()

@@ -19,7 +19,7 @@ export function useMigrateAnonSession({
   currentUserId: string
 }) {
   useEffect(() => {
-    if (serverUserId && serverUserId !== currentUserId) {
+    if (serverUserId && currentUserId && serverUserId !== currentUserId) {
       void migrateAnonSession(currentUserId)
     }
   }, [serverUserId, currentUserId])
