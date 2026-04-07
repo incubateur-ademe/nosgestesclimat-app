@@ -1,3 +1,4 @@
+import IframeDataShareModal from '@/components/iframe/IframeDataShareModal'
 import CarbonFootprintResults from '@/components/results/carbonFootprint/CarbonFootprintResults'
 import FootprintsLinks from '@/components/results/FootprintsLinks'
 import { noIndexObject } from '@/constants/metadata'
@@ -103,6 +104,10 @@ export default async function FinPage({
         hasPreviousSimulation={!!previousSimulation}
         locale={locale as Locale}
         tendency={tendency}
+      />
+
+      <IframeDataShareModal
+        computedResults={simulationResult.computedResults}
       />
     </>
   )

@@ -1,3 +1,4 @@
+import type { ComputedResults } from '@/publicodes-state/types'
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
@@ -45,13 +46,7 @@ const mockComputedResults = {
       'services sociétaux': 0,
     },
   },
-}
-
-vi.mock('@/publicodes-state', () => ({
-  useCurrentSimulation: () => ({
-    computedResults: mockComputedResults,
-  }),
-}))
+} as ComputedResults
 
 describe('IframeDataShareModal', () => {
   beforeEach(() => {
@@ -75,14 +70,16 @@ describe('IframeDataShareModal', () => {
       isIntegratorAllowedToBypassConsentDataShare: false,
     })
 
-    const { container } = render(<IframeDataShareModal />)
+    const { container } = render(
+      <IframeDataShareModal computedResults={mockComputedResults} />
+    )
 
     expect(container.firstChild).toBeNull()
   })
 
   describe('standard consent flow (isIframeShareData: true, bypass: false)', () => {
     it('does not show the modal before the 3500ms timeout', () => {
-      render(<IframeDataShareModal />)
+      render(<IframeDataShareModal computedResults={mockComputedResults} />)
 
       expect(
         screen.queryByTestId('iframe-datashare-modal')
@@ -90,7 +87,7 @@ describe('IframeDataShareModal', () => {
     })
 
     it('shows the modal after the 3500ms timeout', () => {
-      render(<IframeDataShareModal />)
+      render(<IframeDataShareModal computedResults={mockComputedResults} />)
 
       act(() => {
         vi.advanceTimersByTime(3500)
@@ -100,14 +97,14 @@ describe('IframeDataShareModal', () => {
     })
 
     it('locks the body scroll as soon as the component mounts', () => {
-      render(<IframeDataShareModal />)
+      render(<IframeDataShareModal computedResults={mockComputedResults} />)
 
       expect(document.body.style.overflow).toBe('hidden')
     })
 
     describe('actions from the open modal', () => {
       beforeEach(() => {
-        render(<IframeDataShareModal />)
+        render(<IframeDataShareModal computedResults={mockComputedResults} />)
         act(() => {
           vi.advanceTimersByTime(3500)
         })
@@ -167,7 +164,7 @@ describe('IframeDataShareModal', () => {
     })
 
     it('shares data immediately without waiting for the timeout', () => {
-      render(<IframeDataShareModal />)
+      render(<IframeDataShareModal computedResults={mockComputedResults} />)
 
       expect(mockShareDataWithIntegrator).toHaveBeenCalledWith(
         mockComputedResults
@@ -175,7 +172,7 @@ describe('IframeDataShareModal', () => {
     })
 
     it('never shows the modal, even after the timeout', () => {
-      render(<IframeDataShareModal />)
+      render(<IframeDataShareModal computedResults={mockComputedResults} />)
 
       act(() => {
         vi.advanceTimersByTime(3500)
@@ -187,7 +184,7 @@ describe('IframeDataShareModal', () => {
     })
 
     it('does not lock the body scroll', () => {
-      render(<IframeDataShareModal />)
+      render(<IframeDataShareModal computedResults={mockComputedResults} />)
 
       expect(document.body.style.overflow).not.toBe('hidden')
     })
