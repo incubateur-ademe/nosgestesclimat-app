@@ -110,26 +110,6 @@ export const captureSimulationCompleted = ({
   }
 }
 
-// Iframe
-
-export const captureIframeVisit = ({ url }: PosthogProps) => {
-  return {
-    eventName: 'iframe visit',
-    properties: {
-      referrerUrl: url,
-    },
-  }
-}
-
-export const captureIframeInteraction = ({ url }: PosthogProps) => {
-  return {
-    eventName: 'iframe interaction',
-    properties: {
-      referrerUrl: url,
-    },
-  }
-}
-
 // Orga
 
 export const captureClickFunFactsPlus = {
@@ -220,17 +200,6 @@ export const captureEndClickCategory = ({ category }: PosthogProps) => ({
     category,
   },
 })
-
-export const captureEndClickActions = ({ subcategory }: PosthogProps) => ({
-  eventName: 'Fin click Actions',
-  properties: {
-    subcategory,
-  },
-})
-
-export const captureEndClickDomesticWater = {
-  eventName: 'Fin click Eau domestique',
-}
 
 // Landing
 

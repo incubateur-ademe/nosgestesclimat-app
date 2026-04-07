@@ -4,12 +4,6 @@ type MonEspaceTab = 'results' | 'actions' | 'groups' | 'settings'
 export const monEspaceTabTrackEventServer = (tab: MonEspaceTab) =>
   `MonEspace|Click Tab|${tab.charAt(0).toUpperCase() + tab.slice(1)}`
 
-export const clickJagisActionBanner = [
-  'trackEvent',
-  'Mon Espace - Actions',
-  'Click Jagis action banner',
-]
-
 export const clickMySpaceNoResultsStartTest =
   'MonEspace|Click passer le test pas de résultats'
 

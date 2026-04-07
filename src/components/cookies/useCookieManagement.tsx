@@ -68,9 +68,9 @@ export function useCookieManagement(): {
   const onChange = (cookieState: CookieState) => {
     setCookieBannerDisplayState('hidden')
     setCookieState(cookieState)
+    saveCookieState(cookieState)
     posthog.update(cookieState.posthog)
     googleTagManager.update(cookieState.googleTag)
-    saveCookieState(cookieState)
 
     trackPosthogEvent(captureCookieBannerStatus({ cookieState }))
   }

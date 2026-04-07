@@ -19,15 +19,15 @@ export let isCookieStateInitialized: boolean
 
 try {
   const json = safeLocalStorage.getItem(COOKIE_STATE_KEY)
-  savedCookieState = json
-    ? (JSON.parse(json) as CookieState)
-    : DEFAULT_COOKIE_STATE
+  if (!json) {
+    throw new Error()
+  }
+  savedCookieState = JSON.parse(json) as CookieState
   isCookieStateInitialized = true
 } catch {
   savedCookieState = DEFAULT_COOKIE_STATE
   isCookieStateInitialized = false
 }
-
 export function saveCookieState(state: CookieState) {
   savedCookieState = state
   safeLocalStorage.setItem(COOKIE_STATE_KEY, JSON.stringify(state))
