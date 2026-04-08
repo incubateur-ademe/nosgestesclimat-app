@@ -1,4 +1,5 @@
 export const countries = [
+  { name: 'Scolaire', code: 'ED' },
   { name: 'Afghanistan', code: 'AF' },
   { name: 'Åland Islands', code: 'AX' },
   { name: 'Albania', code: 'AL' },
