@@ -68,7 +68,7 @@ const getSubmitButtonText = ({
           ? // @TODO: remove after AB Test is finished
             isTestVersion
             ? t(
-                'common.navigation.nextQuestion.next.label',
+                'common.navigation.nextQuestion.next.labelDisabled',
                 'Aller à la question suivante, désactivé, veuillez répondre à la question avant de passer à la suivante'
               )
             : t(

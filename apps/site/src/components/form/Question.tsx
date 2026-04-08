@@ -214,7 +214,7 @@ export default function Question({
         />
       )}
 
-      {isTestVersion && <DontKnowButton />}
+      {isTestVersion && <DontKnowButton question={question} />}
     </>
   )
 }
