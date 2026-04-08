@@ -28,12 +28,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ steps.get_bearer_token.outputs.bearer_token }}" \
             -X POST "https://api.osc-fr1.scalingo.com/v1/apps/${{ vars.SCALINGO_APP_NAME }}/deployments" \
-            -d '{
-              "deployment": {
-                "git_ref": "${{ github.sha }}",
-                "source_url": "https://github.com/${{ github.repository }}/archive/${{ github.sha }}.tar.gz"
-              }
-            }')
+            )
           DEPLOYMENT_ID=$(echo "$RESPONSE" | jq -r '.deployment.id')
           echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
 

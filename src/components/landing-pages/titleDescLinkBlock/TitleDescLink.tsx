@@ -1,7 +1,7 @@
 'use client'
 
 import Link from '@/components/Link'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { ReactNode } from 'react'
 
 export default function TitleDescLink({
@@ -17,7 +17,9 @@ export default function TitleDescLink({
     <Link
       className="text-[13px] md:text-base"
       href={href}
-      onClick={() => trackingEvent && trackEvent(trackingEvent)}>
+      onClick={() =>
+        trackingEvent && trackMatomoEvent__deprecated(trackingEvent)
+      }>
       {text}
     </Link>
   )

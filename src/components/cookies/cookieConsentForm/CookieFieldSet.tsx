@@ -1,8 +1,8 @@
 import Trans from '@/components/translation/trans/TransClient'
+import type { CookieState } from '@/services/tracking/cookieStateStore'
 import Link from 'next/link'
 import type { ComponentPropsWithoutRef } from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
-import type { CookieState } from '../useCookieManagement'
 
 interface RadioProps extends ComponentPropsWithoutRef<'input'> {
   label: string | React.ReactNode

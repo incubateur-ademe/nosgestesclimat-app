@@ -14,7 +14,10 @@ import { usePendingVerification } from '@/hooks/authentication/usePendingVerific
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
 import { captureException } from '@sentry/nextjs'
 import { type ReactNode } from 'react'
@@ -51,7 +54,7 @@ export default function UserEmailForm({ submitLabel, className }: Props) {
     useCreateVerificationCode({ onComplete: registerVerification })
 
   const createCodeIfEmailChanged: SubmitHandler<Inputs> = async (data) => {
-    trackEvent(clickUpdateUserEmail)
+    trackMatomoEvent__deprecated(clickUpdateUserEmail)
     trackPosthogEvent(captureClickUpdateUserEmail)
     try {
       const nextEmail = formatEmail(data.email)

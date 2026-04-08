@@ -1,55 +1,16 @@
 import Trackers from '@/components/tracking/Trackers'
+import MatomoScript__deprecated from '@/hooks/tracking/MatomoServerTracker'
 import '@/locales/initClient'
 import '@/locales/initServer'
 import type { DefaultPageProps } from '@/types'
 import { dir } from 'i18next'
-import localFont from 'next/font/local'
 import Script from 'next/script'
 import { Suspense } from 'react'
-import {
-  BODY_ID,
-  IframeOptionsProvider,
-} from './_components/mainLayoutProviders/IframeOptionsContext'
-import ServerTracking from './_components/scripts/ServerTracking'
-import './globals.css'
 
-export const marianne = localFont({
-  src: [
-    {
-      path: '../../../public/fonts/Marianne-Thin.woff2',
-      weight: '100',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Light.woff2',
-      weight: '300',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Regular.woff2',
-      weight: 'normal',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-Bold.woff2',
-      weight: 'bold',
-      style: 'normal',
-    },
-    {
-      path: '../../../public/fonts/Marianne-ExtraBold.woff2',
-      weight: '800',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-marianne',
-  display: 'swap',
-  preload: true,
-})
+import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
+import { BODY_ID } from './_components/mainLayoutProviders/IframeOptionsContext'
+import './globals.css'
+import { marianne } from './marianne'
 
 export default async function RootLayout({
   children,
@@ -75,69 +36,22 @@ export default async function RootLayout({
 
         <meta name="theme-color" content="#4949ba" />
 
+        <MatomoScript__deprecated />
         <Suspense>
           <Trackers locale={locale} />
         </Suspense>
 
-        {
-          // Matomo Prod
-          process.env.NEXT_PUBLIC_MATOMO_ID === '1' && (
-            <Script id="matomo">
-              {`
-                  var _paq = window._paq = window._paq || [];
-                  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-                  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
-                  _paq.push(["setCookieDomain", "*.nosgestesclimat.fr"]);
-                  _paq.push(['setCookieSameSite', 'None']);
-                  _paq.push(['enableLinkTracking']);
-                  (function() {
-                    var u="https://stats.beta.gouv.fr/";
-                    _paq.push(['setTrackerUrl', u+'matomo.php']);
-                    _paq.push(['setSiteId', '20']);
-                    _paq.push(['addTracker', 'https://stats.data.gouv.fr/matomo.php', '153'])
-                    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-                  })();
-                `}
-            </Script>
-          )
-        }
-
-        {
-          // Matomo Pre-prod
-          process.env.NEXT_PUBLIC_MATOMO_ID === '2' && (
-            <Script id="matomo">
-              {`
-                var _paq = window._paq = window._paq || [];
-                /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-                _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
-                _paq.push(["setCookieDomain", "${process.env.NEXT_PUBLIC_MATOMO_DOMAIN}"]);
-                _paq.push(['setCookieSameSite', 'None']);
-                _paq.push(['enableLinkTracking']);
-                (function() {
-                  var u="https://stats.beta.gouv.fr/";
-                  _paq.push(['setTrackerUrl', u+'matomo.php']);
-                  _paq.push(['setSiteId', '79']);
-                  var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                  g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-                })();
-              `}
-            </Script>
-          )
-        }
         <Script
           src="https://tally.so/widgets/embed.js"
           strategy="lazyOnload"></Script>
-
-        <ServerTracking />
       </head>
-      <IframeOptionsProvider>
+      <DefaultProvider>
         <body
           id={BODY_ID}
           className={`${marianne.className} text-default bg-white transition-colors duration-700`}>
           {children}
         </body>
-      </IframeOptionsProvider>
+      </DefaultProvider>
     </html>
   )
 }

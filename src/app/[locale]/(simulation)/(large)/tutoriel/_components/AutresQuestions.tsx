@@ -6,7 +6,7 @@ import {
   tutorielClickQuestion,
 } from '@/constants/tracking/pages/tutoriel'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Image from 'next/image'
 import OrganisationPrivacy from './autresQuestions/OrganisationPrivacy'
 
@@ -26,7 +26,7 @@ export default function AutresQuestions() {
               tabIndex={0}
               aria-expanded="false"
               onClick={() =>
-                trackEvent(
+                trackMatomoEvent__deprecated(
                   tutorielClickQuestion("C'est quoi mon empreinte carbone ?")
                 )
               }
@@ -36,7 +36,7 @@ export default function AutresQuestions() {
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackEvent(
+                  trackMatomoEvent__deprecated(
                     tutorielClickQuestion("C'est quoi mon empreinte carbone ?")
                   )
                 }
@@ -83,7 +83,9 @@ export default function AutresQuestions() {
               tabIndex={0}
               aria-expanded="false"
               onClick={() =>
-                trackEvent(tutorielClickQuestion('Comment on la mesure ?'))
+                trackMatomoEvent__deprecated(
+                  tutorielClickQuestion('Comment on la mesure ?')
+                )
               }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -91,7 +93,9 @@ export default function AutresQuestions() {
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackEvent(tutorielClickQuestion('Comment on la mesure ?'))
+                  trackMatomoEvent__deprecated(
+                    tutorielClickQuestion('Comment on la mesure ?')
+                  )
                 }
               }}>
               <Trans>Comment on la mesure ?</Trans>
@@ -135,7 +139,7 @@ export default function AutresQuestions() {
                     tabIndex={0}
                     aria-expanded="false"
                     onClick={() =>
-                      trackEvent(
+                      trackMatomoEvent__deprecated(
                         tutorielClickQuestion('Mais que veut dire ce petit e ?')
                       )
                     }
@@ -145,7 +149,7 @@ export default function AutresQuestions() {
                         const details = e.currentTarget
                           .parentElement as HTMLDetailsElement
                         details.open = !details.open
-                        trackEvent(
+                        trackMatomoEvent__deprecated(
                           tutorielClickQuestion(
                             'Mais que veut dire ce petit e ?'
                           )
@@ -192,7 +196,9 @@ export default function AutresQuestions() {
               tabIndex={0}
               aria-expanded="false"
               onClick={() =>
-                trackEvent(tutorielClickQuestion("D'où vient mon empreinte ?"))
+                trackMatomoEvent__deprecated(
+                  tutorielClickQuestion("D'où vient mon empreinte ?")
+                )
               }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -200,7 +206,7 @@ export default function AutresQuestions() {
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackEvent(
+                  trackMatomoEvent__deprecated(
                     tutorielClickQuestion("D'où vient mon empreinte ?")
                   )
                 }
@@ -231,7 +237,9 @@ export default function AutresQuestions() {
               tabIndex={0}
               aria-expanded="false"
               onClick={() =>
-                trackEvent(tutorielClickQuestion("D'où vient mon empreinte ?"))
+                trackMatomoEvent__deprecated(
+                  tutorielClickQuestion("D'où vient mon empreinte ?")
+                )
               }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -239,7 +247,7 @@ export default function AutresQuestions() {
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackEvent(
+                  trackMatomoEvent__deprecated(
                     tutorielClickQuestion("D'où vient mon empreinte ?")
                   )
                 }

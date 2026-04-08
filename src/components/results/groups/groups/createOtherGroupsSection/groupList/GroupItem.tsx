@@ -8,7 +8,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
 import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 interface Props {
   group: Group
@@ -24,7 +24,7 @@ export default function GroupItem({ group }: Props) {
       className="hover:bg-primary-100 mb-3 rounded-xl bg-gray-100 px-5 py-2 no-underline decoration-auto transition-colors"
       href={getLinkToGroupDashboard({ groupId: group.id })}
       onClick={() =>
-        trackEvent(
+        trackMatomoEvent__deprecated(
           classementClickGroup({
             isAdministator,
             numParticipants: group.participants.length,

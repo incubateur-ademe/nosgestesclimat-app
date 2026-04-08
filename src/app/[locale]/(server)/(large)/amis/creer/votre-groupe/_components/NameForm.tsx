@@ -14,7 +14,7 @@ import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useCurrentSimulation } from '@/publicodes-state'
 import type { Simulation } from '@/publicodes-state/types'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 import { useForm as useReactHookForm, type Control } from 'react-hook-form'
@@ -76,7 +76,7 @@ export default function NameForm({
         groupToAdd: group.id,
       })
 
-      trackEvent(amisCreationEtapeVotreGroupeSuivant)
+      trackMatomoEvent__deprecated(amisCreationEtapeVotreGroupeSuivant)
 
       if (lastSimulation) {
         router.push('/amis/resultats?groupId=' + group.id)

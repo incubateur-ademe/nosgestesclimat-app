@@ -1,12 +1,6 @@
 import * as Sentry from '@sentry/nextjs'
-import posthog from 'posthog-js'
 import { APP_ENV } from '../config/app-env'
-
-declare global {
-  interface Window {
-    posthog?: typeof posthog
-  }
-}
+import { PostHog } from './services/tracking/Posthog'
 
 Sentry.init({
   dsn: 'https://75dcf9dfe74c4439977a517be2805122@sentry.incubateur.net/118',
@@ -17,7 +11,4 @@ Sentry.init({
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
 
-// Expose posthog globally for inline scripts
-if (typeof window !== 'undefined') {
-  window.posthog = posthog
-}
+new PostHog().init()

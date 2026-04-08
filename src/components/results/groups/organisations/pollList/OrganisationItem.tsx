@@ -6,7 +6,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { classementClickOrganisation } from '@/constants/tracking/pages/classements'
 import Badge from '@/design-system/layout/Badge'
 import type { Organisation } from '@/types/organisations'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 export default function OrganisationItem({
   organisation,
@@ -17,7 +17,7 @@ export default function OrganisationItem({
     <Link
       href={`/organisations/${organisation?.slug}`}
       className="hover:bg-primary-100 mb-6 rounded-xl bg-gray-100 px-5 py-2 no-underline decoration-auto transition-colors"
-      onClick={() => trackEvent(classementClickOrganisation)}>
+      onClick={() => trackMatomoEvent__deprecated(classementClickOrganisation)}>
       <div className="flex items-center justify-between py-4">
         <div className="flex w-full items-center gap-4">
           <div>

@@ -21,7 +21,7 @@ import Card from '@/design-system/layout/Card'
 import { getShareTrackEvent } from '@/helpers/tracking/share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { PublicOrganisationPoll } from '@/types/organisations'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -169,7 +169,7 @@ export default function ShareSection({ poll, className, title }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 href={link}
-                onClick={() => trackEvent(eventTracked)}>
+                onClick={() => trackMatomoEvent__deprecated(eventTracked)}>
                 <span className="flex items-center gap-2">
                   {label}
                   {icon}

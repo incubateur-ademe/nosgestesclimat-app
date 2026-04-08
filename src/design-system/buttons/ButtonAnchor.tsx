@@ -1,7 +1,7 @@
 'use client'
 
 import type { ButtonSize } from '@/types/values'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type {
   HtmlHTMLAttributes,
   KeyboardEvent,
@@ -44,7 +44,7 @@ export default function ButtonAnchor({
           onClick(e)
         }
         if (trackingEvent) {
-          trackEvent(trackingEvent)
+          trackMatomoEvent__deprecated(trackingEvent)
         }
       }}
       onKeyDown={(e) => {
@@ -53,7 +53,7 @@ export default function ButtonAnchor({
         }
 
         if (trackingEvent) {
-          trackEvent(trackingEvent)
+          trackMatomoEvent__deprecated(trackingEvent)
         }
       }}
       title={title}

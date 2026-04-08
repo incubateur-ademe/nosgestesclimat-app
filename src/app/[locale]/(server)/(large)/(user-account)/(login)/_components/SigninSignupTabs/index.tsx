@@ -10,7 +10,10 @@ import { CONNEXION_PATH, INSCRIPTION_PATH } from '@/constants/urls/paths'
 import Tabs, { type TabItem } from '@/design-system/layout/Tabs'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AuthenticationMode } from '@/types/authentication'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 
 interface Props {
   mode: AuthenticationMode
@@ -28,7 +31,7 @@ export default function SigninSignupTabs({ mode, className }: Props) {
       isActive: mode === SIGNIN_MODE,
       onClick: () => {
         if (mode !== SIGNIN_MODE) {
-          trackEvent(tabTrackEvent('connexion'))
+          trackMatomoEvent__deprecated(tabTrackEvent('connexion'))
           trackPosthogEvent(captureClickTab({ tab: 'connexion' }))
         }
       },
@@ -42,7 +45,7 @@ export default function SigninSignupTabs({ mode, className }: Props) {
       isActive: mode === SIGNUP_MODE,
       onClick: () => {
         if (mode !== SIGNUP_MODE) {
-          trackEvent(tabTrackEvent('inscription'))
+          trackMatomoEvent__deprecated(tabTrackEvent('inscription'))
           trackPosthogEvent(captureClickTab({ tab: 'inscription' }))
         }
       },

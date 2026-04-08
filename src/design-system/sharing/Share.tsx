@@ -6,7 +6,7 @@ import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import { getShareTrackEvent } from '@/helpers/tracking/share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import getIsMobile from 'is-mobile'
 import { type ReactNode, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -102,7 +102,7 @@ export default function Share({
                 className="max-h-10"
                 color="secondary"
                 onCopied={() =>
-                  trackEvent(
+                  trackMatomoEvent__deprecated(
                     getShareTrackEvent({
                       page: 'Fin',
                       target: 'Copier-coller',
@@ -134,7 +134,9 @@ export default function Share({
                       target="_blank"
                       rel="noopener noreferrer"
                       href={link}
-                      onClick={() => trackEvent(eventTracked)}>
+                      onClick={() =>
+                        trackMatomoEvent__deprecated(eventTracked)
+                      }>
                       <span className="flex items-center gap-2">
                         {label}
                         {icon}

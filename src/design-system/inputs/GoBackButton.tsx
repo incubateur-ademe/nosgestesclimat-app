@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 interface Props {
   className?: string
@@ -13,7 +13,7 @@ export default function GoBackButton({ className, eventTracked }: Props) {
     <button
       onClick={() => {
         if (eventTracked) {
-          trackEvent(eventTracked)
+          trackMatomoEvent__deprecated(eventTracked)
         }
         if (typeof window !== 'undefined') {
           window.history.back()

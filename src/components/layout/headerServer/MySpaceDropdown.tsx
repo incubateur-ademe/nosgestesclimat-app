@@ -18,7 +18,10 @@ import Button from '@/design-system/buttons/Button'
 import { resetLocalState } from '@/helpers/user/resetLocalState'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import posthog from 'posthog-js'
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react'
@@ -148,7 +151,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
   }, [isOpen])
 
   const handleToggleMenu = () => {
-    trackEvent(headerClickMonEspaceAuthenticatedServer)
+    trackMatomoEvent__deprecated(headerClickMonEspaceAuthenticatedServer)
     trackPosthogEvent(captureClickHeaderMonEspaceAuthenticatedServer)
     setIsOpen((prev) => {
       const willOpen = !prev
@@ -201,7 +204,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
   }
 
   const handleLogout = async () => {
-    trackEvent(headerClickLogoutAuthenticatedServer)
+    trackMatomoEvent__deprecated(headerClickLogoutAuthenticatedServer)
     trackPosthogEvent(captureClickHeaderLogoutAuthenticatedServer)
     setIsOpen(false)
 
@@ -276,7 +279,9 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
                 )}
                 onClick={() => {
                   setIsOpen(false)
-                  trackEvent(headerClickAccessMySpaceAuthenticatedServer)
+                  trackMatomoEvent__deprecated(
+                    headerClickAccessMySpaceAuthenticatedServer
+                  )
                   trackPosthogEvent(
                     captureClickHeaderAccessMySpaceAuthenticatedServer
                   )
@@ -284,7 +289,9 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     setIsOpen(false)
-                    trackEvent(headerClickAccessMySpaceAuthenticatedServer)
+                    trackMatomoEvent__deprecated(
+                      headerClickAccessMySpaceAuthenticatedServer
+                    )
                     trackPosthogEvent(
                       captureClickHeaderAccessMySpaceAuthenticatedServer
                     )

@@ -11,7 +11,7 @@ import { MATOMO_CAMPAIGN_KEY } from '@/constants/urls/utm'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import CTACard from './CTACard'
 
 export default function OurTools() {
@@ -36,7 +36,7 @@ export default function OurTools() {
             }>
             <ButtonLink
               onClick={() => {
-                trackEvent(organisationsDashboardDownloadKit)
+                trackMatomoEvent__deprecated(organisationsDashboardDownloadKit)
               }}
               className="mt-auto w-full justify-center align-bottom"
               color="secondary"

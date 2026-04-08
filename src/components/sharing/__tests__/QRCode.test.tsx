@@ -1,6 +1,6 @@
 import QRCode from '@/components/sharing/QRCode'
-import { pollDashboardClickQRCodeDownload } from '@/constants/tracking/pages/pollDashboard'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { captureDownloadPollQRCode } from '@/constants/tracking/posthogTrackers'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -158,7 +158,7 @@ describe('QRCode', () => {
     // Wait for async operations
     await vi.runAllTimersAsync()
 
-    expect(trackEvent).toHaveBeenCalledWith(pollDashboardClickQRCodeDownload)
+    expect(trackPosthogEvent).toHaveBeenCalledWith(captureDownloadPollQRCode)
 
     // Restore original createElement
     document.createElement = originalCreateElement
@@ -290,7 +290,7 @@ describe('QRCode', () => {
 
     // The tracking event is called before the context check, so it will be called
     // This is the actual behavior of the component
-    expect(trackEvent).toHaveBeenCalledWith(pollDashboardClickQRCodeDownload)
+    expect(trackPosthogEvent).toHaveBeenCalledWith(captureDownloadPollQRCode)
 
     // Restore original createElement
     document.createElement = originalCreateElement
@@ -313,7 +313,7 @@ describe('QRCode', () => {
     fireEvent.click(button)
 
     expect(createElementSpy).not.toHaveBeenCalledWith('canvas')
-    expect(trackEvent).not.toHaveBeenCalled()
+    expect(trackPosthogEvent).not.toHaveBeenCalled()
   })
 
   it('does not download when SVG element is not found', () => {
@@ -333,7 +333,7 @@ describe('QRCode', () => {
     fireEvent.click(button)
 
     expect(createElementSpy).not.toHaveBeenCalledWith('canvas')
-    expect(trackEvent).not.toHaveBeenCalled()
+    expect(trackPosthogEvent).not.toHaveBeenCalled()
   })
 
   it('has correct SVG attributes', () => {

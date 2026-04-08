@@ -13,7 +13,10 @@ import Button from '@/design-system/buttons/Button'
 import Trans from '@/components/translation/trans/TransClient'
 import Loader from '@/design-system/layout/Loader'
 import type { ListIds, Newsletters } from '@/helpers/server/model/newsletter'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import Form from 'next/form'
 import { useActionState } from 'react'
 
@@ -50,7 +53,7 @@ export default function NewsletterSettings({
           className="mt-8 h-14 w-72"
           disabled={pending}
           onClick={() => {
-            trackEvent(clickUpdateUserNewsletters)
+            trackMatomoEvent__deprecated(clickUpdateUserNewsletters)
             trackPosthogEvent(captureClickUpdateUserNewsletters)
           }}>
           {pending ? (
