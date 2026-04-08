@@ -1,19 +1,115 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
+import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
+import { questionClickPass } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useFormState } from '@/publicodes-state'
+import {
+  useCurrentSimulation,
+  useEngine,
+  useFormState,
+  useRule,
+} from '@/publicodes-state'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { useCallback } from 'react'
 
-export default function DontKnowButton() {
+interface Props {
+  question: DottedName
+}
+
+export default function DontKnowButton({ question }: Props) {
   const { gotoNextQuestion } = useFormState()
 
   const { t } = useClientTranslation()
 
+  const { updateCurrentSimulation, situation } = useCurrentSimulation()
+
+  const { value, questionsOfMosaicFromParent, isMissing } = useRule(question)
+
+  const { getValue, engine } = useEngine()
+
+  const handleAnswerQuestion = useCallback(() => {
+    // Reset if !isMissing
+    if (!isMissing) {
+      const newSituation = { ...situation }
+
+      if (questionsOfMosaicFromParent.length > 0) {
+        questionsOfMosaicFromParent.forEach((question) => {
+          delete newSituation[question]
+        })
+      }
+
+      delete newSituation[question]
+
+      // Necessary to actually trigger computedResults recalculation
+      engine?.setSituation(newSituation)
+
+      updateCurrentSimulation({
+        situation: newSituation,
+      })
+      return
+    }
+
+    // Default logic
+    if (questionsOfMosaicFromParent.length > 0) {
+      questionsOfMosaicFromParent.forEach((question) => {
+        updateCurrentSimulation({
+          foldedStepToAdd: {
+            foldedStep: question,
+            value: getValue(question),
+            isMosaicChild: true,
+          },
+        })
+      })
+    }
+
+    updateCurrentSimulation({
+      foldedStepToAdd: {
+        foldedStep: question,
+        value: value,
+        isMosaicParent: questionsOfMosaicFromParent.length > 0,
+      },
+    })
+  }, [
+    engine,
+    isMissing,
+    situation,
+    getValue,
+    question,
+    questionsOfMosaicFromParent,
+    updateCurrentSimulation,
+    value,
+  ])
+
+  const handleClick = () => {
+    trackMatomoEvent__deprecated(
+      // Dummy time for AB test
+      questionClickPass({ question, timeSpentOnQuestion: 0 })
+    )
+    trackPosthogEvent(
+      captureClickFormNav({
+        actionType: 'passer',
+        question,
+        answer: value,
+        // Dummy time for AB test
+        timeSpentOnQuestion: 0,
+      })
+    )
+
+    handleAnswerQuestion()
+
+    gotoNextQuestion()
+  }
+
   return (
     <div className="mt-4 flex flex-col items-start gap-4 md:flex-row">
       <Button
-        onClick={gotoNextQuestion}
+        onClick={handleClick}
         className="text-sm!"
         color="borderless"
         aria-label={t(

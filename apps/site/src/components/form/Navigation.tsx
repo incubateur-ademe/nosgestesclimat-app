@@ -265,7 +265,7 @@ export default function Navigation({
       const endTime = Date.now()
       const timeSpentOnQuestion = endTime - startTime
 
-      if (isMissing) {
+      if (isMissing && !isTestVersion) {
         trackMatomoEvent__deprecated(
           questionClickPass({ question, timeSpentOnQuestion })
         )
