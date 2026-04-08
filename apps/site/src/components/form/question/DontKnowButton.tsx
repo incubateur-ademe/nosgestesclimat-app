@@ -27,41 +27,48 @@ export default function DontKnowButton({ question }: Props) {
 
   const { t } = useClientTranslation()
 
-  const { updateCurrentSimulation, situation } = useCurrentSimulation()
+  const { situation, updateCurrentSimulation } = useCurrentSimulation()
 
   const { value, questionsOfMosaicFromParent, isMissing } = useRule(question)
 
   const { getValue, engine } = useEngine()
 
-  const handleAnswerQuestion = useCallback(() => {
-    // Reset if !isMissing
+  const handleResetAndSkipQuestion = useCallback(() => {
+    // If the question has already been answered, remove the user's answer
+    // from the situation so that it returns to the "skipped" state
     if (!isMissing) {
-      const newSituation = { ...situation }
+      const situationWithoutAnswer = { ...situation }
 
+      // Remove mosaic children answers from the situation
       if (questionsOfMosaicFromParent.length > 0) {
-        questionsOfMosaicFromParent.forEach((question) => {
-          delete newSituation[question]
+        questionsOfMosaicFromParent.forEach((mosaicChild) => {
+          delete situationWithoutAnswer[mosaicChild]
         })
       }
 
-      delete newSituation[question]
+      delete situationWithoutAnswer[question]
 
-      // Necessary to actually trigger computedResults recalculation
-      engine?.setSituation(newSituation)
+      // Set the engine situation directly (addToEngineSituation merges and can't remove keys)
+      engine?.setSituation(situationWithoutAnswer)
 
-      updateCurrentSimulation({
-        situation: newSituation,
-      })
-      return
+      updateCurrentSimulation({ situation: situationWithoutAnswer })
     }
+  }, [
+    isMissing,
+    situation,
+    question,
+    questionsOfMosaicFromParent,
+    engine,
+    updateCurrentSimulation,
+  ])
 
-    // Default logic
+  const handleFoldWithDefaultValue = useCallback(() => {
     if (questionsOfMosaicFromParent.length > 0) {
-      questionsOfMosaicFromParent.forEach((question) => {
+      questionsOfMosaicFromParent.forEach((mosaicChild) => {
         updateCurrentSimulation({
           foldedStepToAdd: {
-            foldedStep: question,
-            value: getValue(question),
+            foldedStep: mosaicChild,
+            value: getValue(mosaicChild),
             isMosaicChild: true,
           },
         })
@@ -71,20 +78,13 @@ export default function DontKnowButton({ question }: Props) {
     updateCurrentSimulation({
       foldedStepToAdd: {
         foldedStep: question,
-        value: value,
+        // Use getValue to read the current engine state (after potential reset)
+        // rather than the stale `value` from the render closure
+        value: getValue(question),
         isMosaicParent: questionsOfMosaicFromParent.length > 0,
       },
     })
-  }, [
-    engine,
-    isMissing,
-    situation,
-    getValue,
-    question,
-    questionsOfMosaicFromParent,
-    updateCurrentSimulation,
-    value,
-  ])
+  }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
     trackMatomoEvent__deprecated(
@@ -101,7 +101,11 @@ export default function DontKnowButton({ question }: Props) {
       })
     )
 
-    handleAnswerQuestion()
+    // Reset the answer if the question was already answered
+    handleResetAndSkipQuestion()
+
+    // Fold the step with the default value (skip behavior)
+    handleFoldWithDefaultValue()
 
     gotoNextQuestion()
   }
@@ -123,7 +127,7 @@ export default function DontKnowButton({ question }: Props) {
 
       <p className="text-primary-600 w-80 max-w-full text-sm">
         <Trans i18nKey="simulator.dontKnow.button.reassurance">
-          Pas d’inquiétude, on prend des données moyennes pour garder vos
+          Pas d'inquiétude, on prend des données moyennes pour garder vos
           résultats fiables.
         </Trans>
       </p>

@@ -141,6 +141,7 @@ export default function Navigation({
 
   const {
     isMissing,
+    isFolded,
     plancher,
     plafond,
     situationValue,
@@ -328,6 +329,7 @@ export default function Navigation({
       handleAnswerQuestion,
       setCurrentQuestion,
       gotoNextQuestion,
+      isTestVersion,
     ]
   )
 
@@ -430,7 +432,7 @@ export default function Navigation({
           disabled={
             // @TODO: remove after AB Test is finished
             isTestVersion
-              ? isNextDisabled || isPending || isMissing
+              ? isNextDisabled || isPending || !isFolded
               : isNextDisabled || isPending
           }
           className="p-3 text-sm"
