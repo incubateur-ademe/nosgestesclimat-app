@@ -73,6 +73,8 @@ export default function ClientCTAButtons({
   const { progression } = useCurrentSimulation()
   const { simulations, initSimulation } = useUser()
 
+  const [isHover, setIsHover] = useState(false)
+
   const userIsAuthenticatedAndHasMultipleSimulations =
     isAuthenticated && simulations.length > 1
 
@@ -164,19 +166,23 @@ export default function ClientCTAButtons({
         <ButtonLink
           size="xl"
           className={twMerge(
-            'group hover:bg-primary-900 h-16 w-full transition-all duration-300',
+            'hover:bg-primary-900 w-full transition-all duration-300',
             className
           )}
           href={mainButtonHref}
           aria-disabled={isPending}
           data-testid="do-the-test-link"
+          onMouseEnter={() => setIsHover(true)}
+          onMouseLeave={() => setIsHover(false)}
           onClick={handleMainButtonClick}>
           <>
             {isPending && <Loader color="light" size="sm" className="mr-2" />}
             <span
               className={twMerge(
-                'leading-none',
-                'group-hover:bg-rainbow group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
+                isHover
+                  ? 'bg-rainbow animate-rainbow-fast bg-clip-text! text-transparent! duration-1000 motion-reduce:animate-none'
+                  : '',
+                'leading-none'
               )}>
               <Trans>{mainButtonLabel}</Trans>
             </span>
@@ -189,14 +195,13 @@ export default function ClientCTAButtons({
           <ButtonLink
             size="xl"
             color="secondary"
-            className="h-16 px-6"
+            className="h-full px-6"
+            trackingEvent={trackingEvents.createCollectiveTest}
             data-testid="organisation-link"
             href={ORGANISATION_CREATE_PATH}>
-            <span className="leading-none">
-              <Trans i18nKey="ctaButtons.collective.label">
-                Créer un test collectif
-              </Trans>
-            </span>
+            <Trans i18nKey="ctaButtons.collective.label">
+              Créer un test collectif
+            </Trans>
           </ButtonLink>
         </li>
       )}
@@ -205,7 +210,9 @@ export default function ClientCTAButtons({
           <ButtonLink
             data-testid="restart-link"
             className="mt-1 w-full text-base"
-            trackingEvent={trackingEvents.restart}
+            trackingEvent={
+              progression !== 1 ? trackingEvents.resume : trackingEvents.restart
+            }
             href={getLinkToSimulateurPage({
               newSimulation: progression === 1,
             })}
