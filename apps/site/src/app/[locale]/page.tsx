@@ -94,7 +94,10 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
                       trackingActionClickCTA
                     ),
                     createCollectiveTest:
-                      getLandingClickCTACreateCollectiveTest('/'),
+                      getLandingClickCTACreateCollectiveTest(
+                        '/',
+                        trackingActionClickCTA
+                      ),
                   }}
                 />
               </Suspense>
