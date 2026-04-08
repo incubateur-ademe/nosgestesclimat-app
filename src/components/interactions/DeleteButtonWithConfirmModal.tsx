@@ -10,23 +10,23 @@ interface Props {
   children: React.ReactNode
   simulationId: string
   userId: string
-  deleteSimulation: () => Promise<void>
+  deleteAction: () => Promise<void>
 }
 
 export function DeleteButtonWithConfirmModal({
   children,
-  deleteSimulation,
+  deleteAction,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isError, setIsError] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  const handleDeleteSimulation = () => {
+  const handleDeleteAction = () => {
     setIsError(false)
 
     startTransition(async () => {
       try {
-        await deleteSimulation()
+        await deleteAction()
 
         setIsModalOpen(false)
       } catch {
@@ -53,7 +53,7 @@ export function DeleteButtonWithConfirmModal({
         buttons={[
           <Button
             disabled={isPending}
-            onClick={handleDeleteSimulation}
+            onClick={handleDeleteAction}
             key="submit"
             color="red">
             {isPending && <Loader color="light" className="mr-2" />}
