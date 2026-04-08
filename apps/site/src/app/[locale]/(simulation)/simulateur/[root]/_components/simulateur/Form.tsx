@@ -9,7 +9,6 @@ import { getBgCategoryColor } from '@/helpers/getCategoryColorClass'
 import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
 import { useQuestionInQueryParams } from '@/hooks/useQuestionInQueryParams'
-
 import { useFormState } from '@/publicodes-state'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -36,7 +35,11 @@ export default function Form() {
   const { isIframe } = useIframe()
 
   useEffect(() => {
-    if (!relevantAnsweredQuestions || currentQuestion) {
+    if (
+      !relevantAnsweredQuestions ||
+      remainingQuestions.length === 0 ||
+      currentQuestion === remainingQuestions[0]
+    ) {
       return
     }
     if (
