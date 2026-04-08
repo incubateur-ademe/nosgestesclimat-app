@@ -10,6 +10,7 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
 import {
+  getLandingClickCTACreateCollectiveTest,
   getLandingClickCTARestart,
   getLandingClickCTAResults,
   getLandingClickCTAResume,
@@ -22,7 +23,6 @@ import CollectivelyCommit from './_components/CollectivelyCommit'
 import DecryptChallenges from './_components/DecryptChallenges'
 import DidYouKnowMainLanding from './_components/DidYouKnowMainLanding'
 import HomePageDescription from './_components/HomePageDescription'
-import HomepageSubtitle from './_components/HomepageSubtitle'
 import InteractiveIllustration from './_components/InteractiveIllustration'
 import Mobilise from './_components/Mobilise'
 import ModelInfo from './_components/ModelInfo'
@@ -77,6 +77,7 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
             <div className="flex flex-col items-center gap-6 md:order-2 md:mt-0 md:items-start">
               <Suspense fallback={<CTAButtonsPlaceholder />}>
                 <DynamicCTAButtons
+                  withCollectiveTest
                   trackingEvents={{
                     start: getLandingClickCTAStart('/', trackingActionClickCTA),
                     resume: getLandingClickCTAResume(
@@ -91,6 +92,10 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
                       '/',
                       trackingActionClickCTA
                     ),
+                    createCollectiveTest:
+                      getLandingClickCTACreateCollectiveTest(
+                        '/',
+                      ),
                   }}
                 />
               </Suspense>
@@ -101,11 +106,6 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
                 <div className="mx-auto mt-4 max-w-80 md:mt-0">
                   <InteractiveIllustration />
                 </div>
-              </div>
-
-              {/* Displayed on desktop only */}
-              <div className="hidden md:block">
-                <HomepageSubtitle locale={locale} />
               </div>
             </div>
           </div>
