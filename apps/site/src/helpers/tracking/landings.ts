@@ -38,6 +38,16 @@ export const getLandingClickCTARestart = (pathname: string, action: string) => [
   'Click Recommencer',
 ]
 
+export const getLandingClickCTACreateCollectiveTest = (
+  pathname: string,
+  action: string
+) => [
+  'trackEvent',
+  getLandingCategory(pathname),
+  action,
+  'Click Créer un test collectif',
+]
+
 // Did you know slider
 export const getLandingDidYouKnowSliderValue = (number: number) =>
   `Passer le test écran ${number}`
