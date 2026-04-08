@@ -1,4 +1,3 @@
-import ContentLarge from '@/components/layout/ContentLarge'
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -19,11 +18,11 @@ export const generateMetadata = getCommonMetadata({
 export default async function Page({ params }: DefaultPageProps) {
   const { locale } = await params
   return (
-    <ContentLarge className="px-4 lg:px-0">
+    <>
       <Title>
         <Trans locale={locale}>Questions</Trans>
       </Title>
       <Questions />
-    </ContentLarge>
+    </>
   )
 }

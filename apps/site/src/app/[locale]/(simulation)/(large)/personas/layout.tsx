@@ -1,4 +1,3 @@
-import ContentLarge from '@/components/layout/ContentLarge'
 import EngineProviders from '@/components/providers/EngineProviders'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
@@ -15,9 +14,5 @@ export const generateMetadata = getCommonMetadata({
 })
 
 export default function PersonasLayout({ children }: PropsWithChildren) {
-  return (
-    <EngineProviders>
-      <ContentLarge className="px-4 lg:px-0">{children}</ContentLarge>
-    </EngineProviders>
-  )
+  return <EngineProviders>{children}</EngineProviders>
 }
