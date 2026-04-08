@@ -50,7 +50,7 @@ export default async function SimulationPage({
   })
 
   return (
-    <div data-track>
+    <div data-track className="flex flex-col">
       <FootprintsLinks
         locale={locale as Locale}
         currentPage="eau"
