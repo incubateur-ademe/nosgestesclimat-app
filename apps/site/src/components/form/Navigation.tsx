@@ -265,6 +265,7 @@ export default function Navigation({
       const endTime = Date.now()
       const timeSpentOnQuestion = endTime - startTime
 
+      // @TODO: remove after AB test is finished
       if (isMissing && !isTestVersion) {
         trackMatomoEvent__deprecated(
           questionClickPass({ question, timeSpentOnQuestion })
