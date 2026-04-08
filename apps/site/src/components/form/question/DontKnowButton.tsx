@@ -27,40 +27,11 @@ export default function DontKnowButton({ question }: Props) {
 
   const { t } = useClientTranslation()
 
-  const { situation, updateCurrentSimulation } = useCurrentSimulation()
+  const { updateCurrentSimulation } = useCurrentSimulation()
 
   const { value, questionsOfMosaicFromParent, isMissing } = useRule(question)
 
-  const { getValue, engine } = useEngine()
-
-  const handleResetAndSkipQuestion = useCallback(() => {
-    // If the question has already been answered, remove the user's answer
-    // from the situation so that it returns to the "skipped" state
-    if (!isMissing) {
-      const situationWithoutAnswer = { ...situation }
-
-      // Remove mosaic children answers from the situation
-      if (questionsOfMosaicFromParent.length > 0) {
-        questionsOfMosaicFromParent.forEach((mosaicChild) => {
-          delete situationWithoutAnswer[mosaicChild]
-        })
-      }
-
-      delete situationWithoutAnswer[question]
-
-      // Set the engine situation directly (addToEngineSituation merges and can't remove keys)
-      engine?.setSituation(situationWithoutAnswer)
-
-      updateCurrentSimulation({ situation: situationWithoutAnswer })
-    }
-  }, [
-    isMissing,
-    situation,
-    question,
-    questionsOfMosaicFromParent,
-    engine,
-    updateCurrentSimulation,
-  ])
+  const { getValue } = useEngine()
 
   const handleFoldWithDefaultValue = useCallback(() => {
     if (questionsOfMosaicFromParent.length > 0) {
@@ -101,9 +72,6 @@ export default function DontKnowButton({ question }: Props) {
       })
     )
 
-    // Reset the answer if the question was already answered
-    handleResetAndSkipQuestion()
-
     // Fold the step with the default value (skip behavior)
     handleFoldWithDefaultValue()
 
@@ -116,6 +84,7 @@ export default function DontKnowButton({ question }: Props) {
         onClick={handleClick}
         className="text-sm!"
         color="borderless"
+        disabled={!isMissing}
         aria-label={t(
           'common.navigation.nextQuestion.dontKnow.title',
           'Je ne sais pas répondre, passer et aller à la question suivante'
