@@ -3,7 +3,7 @@
 import { carboneMetric } from '@/constants/model/metric'
 import { safeEvaluateHelper } from '@/publicodes-state/helpers/safeEvaluateHelper'
 import { safeGetRuleHelper } from '@/publicodes-state/helpers/safeGetRuleHelper'
-import type { Metric, SafeEvaluate } from '@/publicodes-state/types'
+import type { Metric, SafeEvaluate, Situation } from '@/publicodes-state/types'
 import type {
   DottedName,
   NGCRuleNode,
@@ -21,10 +21,11 @@ import { useCallback, useMemo } from 'react'
  *
  * And a pristine engine wich can be used to assess rules without any situation (for exemple, we can reliably sort the subcategories this way)
  */
-export function useEngine(rules?: Partial<NGCRules>) {
+export function useEngine(
+  rules: Partial<NGCRules>,
+  initialSituation: Situation
+) {
   const engine = useMemo(() => {
-    if (!rules) return undefined
-
     const nbRules = Object.keys(rules).length
     console.time(`⚙️ Parsing ${nbRules}`)
     const engine = new Engine<DottedName>(rules, {
@@ -62,10 +63,15 @@ export function useEngine(rules?: Partial<NGCRules>) {
       },
     })
     console.timeEnd(`⚙️ Parsing ${nbRules}`)
+    engine.setSituation(initialSituation)
     return engine
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rules])
 
-  const pristineEngine = useMemo(() => engine?.shallowCopy(), [engine])
+  const pristineEngine = useMemo(
+    () => engine.shallowCopy().setSituation({}),
+    [engine]
+  )
 
   const safeEvaluate = useCallback(
     (expr: PublicodesExpression, metric: Metric = carboneMetric) => {
@@ -80,7 +86,7 @@ export function useEngine(rules?: Partial<NGCRules>) {
               },
             }
 
-      return safeEvaluateHelper(exprWithContext, engine ?? new Engine())
+      return safeEvaluateHelper(exprWithContext, engine)
     },
     [engine]
   ) as SafeEvaluate
@@ -89,7 +95,7 @@ export function useEngine(rules?: Partial<NGCRules>) {
     (ruleName: DottedName) => NGCRuleNode | undefined
   >(
     () => (ruleName: DottedName) =>
-      safeGetRuleHelper(ruleName, engine ?? new Engine()) ?? undefined,
+      safeGetRuleHelper(ruleName, engine) ?? undefined,
     [engine]
   )
 

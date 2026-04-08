@@ -8,6 +8,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
+    env: {
+      NEXT_PUBLIC_SITE_URL: 'http://localhost:3000',
+    },
     css: true,
     exclude: ['**/node_modules/**', '**/e2e/**', '**/.next/**'],
     coverage: {

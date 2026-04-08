@@ -4,6 +4,7 @@ import { postSimulation } from '@/helpers/simulation/postSimulation'
 import type { Locale } from '@/i18nConfig'
 import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
 import axios from 'axios'
+import { InternalServerError } from '../server/error'
 
 export interface SaveSimulationPayload {
   simulation: Simulation
@@ -18,9 +19,9 @@ export async function saveSimulation({
   locale,
   name,
 }: SaveSimulationPayload): Promise<Simulation | undefined> {
-  // Prevent persona saving on production
-  if (process.env.NEXT_PUBLIC_ENV === 'production' && !!simulation.persona)
-    return
+  if (simulation.computedResults.carbone.bilan === 0) {
+    throw new InternalServerError()
+  }
 
   const { groups = [], polls = [] } = simulation
 

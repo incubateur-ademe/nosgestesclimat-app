@@ -9,7 +9,9 @@ import {
 } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import Markdown from '@/design-system/utils/Markdown'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useCurrentSimulation } from '@/publicodes-state'
 import { MUST_SHOW_DESCRIPTION } from '@/publicodes-state/constants/questions'
 import type { QuestionSize } from '@/types/values'
 import {
@@ -50,6 +52,10 @@ export default function Label({
   const [isOpen, setIsOpen] = useState(false)
 
   const { t } = useClientTranslation()
+
+  const mustShowDescription =
+    getSimulationMode(useCurrentSimulation()) === 'scolaire' ||
+    MUST_SHOW_DESCRIPTION.has(question)
 
   if (!label) return
   return (
@@ -103,7 +109,7 @@ export default function Label({
             <Markdown>{label}</Markdown>
           </h3>
         )}
-        {description && !MUST_SHOW_DESCRIPTION.has(question) ? (
+        {description && !mustShowDescription ? (
           <Button
             type="button"
             onClick={() => {
@@ -147,7 +153,7 @@ export default function Label({
         ) : null}
       </label>
       {description &&
-        (MUST_SHOW_DESCRIPTION.has(question) ? (
+        (mustShowDescription ? (
           <div
             id={`${QUESTION_DESCRIPTION_BUTTON_ID}-content`}
             role="region"

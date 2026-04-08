@@ -6,7 +6,10 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUser } from '@/helpers/server/dal/user'
 import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
-import { getSimulations } from '@/helpers/server/model/simulations'
+import {
+  getCompletedSimulations,
+  getCurrentSimulation,
+} from '@/helpers/server/model/simulations'
 import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 import RotatingArrowIcon from '../icons/RotatingArrowIcon'
@@ -35,18 +38,25 @@ async function ServerCTAButtons({
   locale,
 }: Props) {
   const user = await getUser()
-  const currentSimulation = (await getSimulations({ user }, { pageSize: 1 }))[0]
+  const [currentSimulation, completedSimulations] = await Promise.all([
+    getCurrentSimulation({ user }),
+    getCompletedSimulations({ user }, { pageSize: 1 }),
+  ])
   const { t } = await getServerTranslation({ locale })
 
   const showRestart =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     withRestart && currentSimulation && currentSimulation.progression > 0
   const isButtonList = withCollectiveTest || showRestart
 
   const ContainerTag = isButtonList ? 'ul' : 'div'
   const MainButtonContainerTag = isButtonList ? 'li' : 'div'
 
-  const mainButton = getMainCTA({ currentSimulation, user, t })
+  const mainButton = getMainCTA({
+    currentSimulation,
+    completedSimulations,
+    user,
+    t,
+  })
 
   return (
     <ContainerTag

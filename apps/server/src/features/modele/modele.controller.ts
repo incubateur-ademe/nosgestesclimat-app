@@ -16,7 +16,6 @@ router
   .get(validateRequest(GeolocationFetchValidator), (req, res) => {
     try {
       const country = getModeleCountry(req.clientIp)
-
       return res.status(StatusCodes.OK).json(country)
     } catch (err) {
       if (err instanceof EntityNotFoundException) {

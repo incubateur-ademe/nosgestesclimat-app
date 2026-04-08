@@ -1,9 +1,12 @@
 import { getIronSession, type SessionOptions } from 'iron-session'
 import { cookies } from 'next/headers'
+import type { UserRegion } from '../model/models'
 import { DEFAULT_COOKIE_OPTION } from './authCookie'
 
 export interface AnonSessionData {
   userId?: string
+  region?: UserRegion
+  initialRegion?: UserRegion
 }
 
 if (!process.env.IRON_SESSION_PASSWORD) {

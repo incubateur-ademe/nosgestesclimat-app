@@ -1,5 +1,6 @@
 'use client'
 
+import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
 import { useIframe } from '@/hooks/useIframe'
 import { useFormState } from '@/publicodes-state'
 import { twMerge } from 'tailwind-merge'
@@ -23,7 +24,6 @@ export default function TopBar({
   const { isIframe, isIframeOnlySimulation } = useIframe()
 
   const { currentCategory } = useFormState()
-
   return (
     <header
       className={twMerge(
@@ -48,8 +48,10 @@ export default function TopBar({
                 size="lg"
                 className="flex-row items-baseline bg-white md:gap-1"
               />
-            ) : (
+            ) : currentCategory ? (
               <Category category={currentCategory} />
+            ) : (
+              <BlockSkeleton className="h-12 w-40 pt-4" />
             )}
           </div>
           {toggleQuestionList ? (

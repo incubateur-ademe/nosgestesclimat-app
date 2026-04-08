@@ -29,7 +29,6 @@ function createSimulation({ persona }: { persona?: string }) {
     actionChoices: {},
     situation: {},
     computedResults: getComputedResults({
-      metrics: ['carbone', 'eau'],
       categories: orderedCategories,
       subcategories: getSubcategories({
         categories: orderedCategories,
@@ -40,8 +39,8 @@ function createSimulation({ persona }: { persona?: string }) {
         safeGetRule: (dottedName) =>
           safeGetRuleHelper(dottedName, engine) ?? undefined,
       }),
-      getNumericValue: (dottedName) =>
-        engine.evaluate(dottedName).nodeValue as number,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+      safeEvaluate: (dottedName) => engine.evaluate(dottedName) as any,
     }),
     progression: 1,
   }

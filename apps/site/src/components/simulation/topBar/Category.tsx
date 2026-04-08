@@ -4,12 +4,8 @@ import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
 
-export default function Category({
-  category,
-}: {
-  category: DottedName | null
-}) {
-  const { icons, title } = useRule(category || 'transport')
+export default function Category({ category }: { category: DottedName }) {
+  const { icons, title } = useRule(category)
 
   return (
     <div className="flex">

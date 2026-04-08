@@ -1,6 +1,7 @@
 import { getIronSession } from 'iron-session'
 import type { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
+import { getGeolocation, supportedRegions } from '../model/models'
 import {
   type AnonSessionData,
   anonSessionOptions,
@@ -19,7 +20,14 @@ export async function userMiddleware(
   next: (req: NextRequest) => NextResponse
 ) {
   const session = await getAnonSession()
+
   if (session.userId) {
+    if (!session.region || !(session.region in supportedRegions)) {
+      const region = await getGeolocation()
+      session.region = region
+      session.initialRegion = region
+      await session.save()
+    }
     return next(request)
   }
 
@@ -34,13 +42,18 @@ export async function userMiddleware(
   // 3. x-anon-user-id header, when no cookie is set (first visit)
   // This logic is mirrored in ./user.ts
   request.headers.set(ANON_USER_ID_HEADER, userId)
+
   const response = next(request)
+
   const newSession = await getIronSession<AnonSessionData>(
     request,
     response,
     anonSessionOptions
   )
+
   newSession.userId = userId
+  newSession.region = session.region
+  newSession.initialRegion = session.initialRegion
 
   await newSession.save()
 

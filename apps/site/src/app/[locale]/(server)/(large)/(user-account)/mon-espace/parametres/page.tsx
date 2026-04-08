@@ -2,7 +2,9 @@ import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutPro
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
+import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import { throwNextError } from '@/helpers/server/error'
+import type { UserRegion } from '@/helpers/server/model/models'
 import {
   getNewsletters,
   getNewsletterSubscriptions,
@@ -15,10 +17,18 @@ import Localisation from './_components/Localisation'
 import NewsletterSettings from './_components/NewsletterSettings'
 import UserEmail from './_components/UserEmail'
 
+export async function updateRegion(region: UserRegion) {
+  'use server'
+  const session = await getAnonSession()
+  session.region = region
+  await session.save()
+}
+
 export default async function SettingsPage({ params }: DefaultPageProps) {
   const { locale } = await params
-  const [subscriptions, newsletters, user] = await throwNextError(() =>
+  const [session, subscriptions, newsletters, user] = await throwNextError(() =>
     Promise.all([
+      getAnonSession(),
       getNewsletterSubscriptions(),
       getNewsletters({ locale }),
       getAuthUser(),
@@ -65,11 +75,13 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
         </div>
       </section>
       <section className="mt-2">
-        <QueryClientProviderWrapper>
-          <UserProvider serverUserId={user.id}>
-            <Localisation />
-          </UserProvider>
-        </QueryClientProviderWrapper>
+        {session.initialRegion && session.region ? (
+          <Localisation
+            updateRegionAction={updateRegion}
+            initialRegion={session.initialRegion}
+            region={session.region}
+          />
+        ) : null}
       </section>
     </div>
   )

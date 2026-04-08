@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
 import { NGCTest } from '../fixtures/ngc-test'
-import { skipOnSafari } from '../helpers/skip-on-safari'
 
 test.describe('/demo-iframe-datashare.html', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,9 +8,7 @@ test.describe('/demo-iframe-datashare.html', () => {
 
   test('displays the data-share modal when simulation is complete', async ({
     page,
-    browser,
   }) => {
-    skipOnSafari(browser)
     const iframe = page.frameLocator('iframe').first()
 
     await iframe.getByTestId('main-cta').first().click({

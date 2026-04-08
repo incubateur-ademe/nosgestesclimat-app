@@ -1,4 +1,3 @@
-import PasserTestBanner from '@/components/layout/PasserTestBanner'
 import Trans from '@/components/translation/trans/TransServer'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
@@ -28,9 +27,7 @@ export default function DocumentationServer({
   ruleName,
 }: Props) {
   return (
-    <div className="mt-12 w-full max-w-4xl p-4 md:mx-auto md:py-8">
-      <PasserTestBanner locale={locale} />
-
+    <>
       <Title
         title={`${rule.icônes ?? ''} ${capitalizeString(
           getRuleTitle({ ...rule, dottedName: ruleName })
@@ -74,6 +71,6 @@ export default function DocumentationServer({
       <ButtonLaunch />
 
       <PagesProches rules={rules} ruleName={ruleName} />
-    </div>
+    </>
   )
 }

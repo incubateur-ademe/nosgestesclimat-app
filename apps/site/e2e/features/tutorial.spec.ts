@@ -34,7 +34,7 @@ test.describe('when a user starts to answer test', () => {
     await page.waitForTimeout(3000)
   })
 
-  test('it should redirect to the current test when accessed', async ({
+  test('it should not be displayed if the user continue the test', async ({
     page,
     tutorialPage,
   }) => {
@@ -42,11 +42,34 @@ test.describe('when a user starts to answer test', () => {
     await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
   })
 
-  test('it should not be displayed when the user restart a new test', async ({
+  test('it should be displayed when the user restart a new test', async ({
     page,
     tutorialPage,
   }) => {
     await tutorialPage.start()
+    await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
+  })
+})
+
+test.describe('when a user completes a test', () => {
+  test.beforeEach(async ({ page, ngcTest }) => {
+    await ngcTest.skipAll()
+    await page.waitForURL('/fin')
+  })
+
+  test('it should redirect to the fin page when accessed directly', async ({
+    page,
+    tutorialPage,
+  }) => {
+    await tutorialPage.goto()
+    await expect(page).toHaveURL(new RegExp('/fin'))
+  })
+
+  test('it should not be displayed when starting a new test', async ({
+    page,
+  }) => {
+    await page.goto('/')
+    await page.getByTestId('restart-link').click()
     await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
   })
 })

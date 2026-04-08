@@ -8,48 +8,48 @@ import {
   profilOpenRegions,
 } from '@/constants/tracking/pages/profil'
 import Card from '@/design-system/layout/Card'
-import Loader from '@/design-system/layout/Loader'
 import Emoji from '@/design-system/utils/Emoji'
-import { sortSupportedRegions } from '@/helpers/localisation/sortSupportedRegions'
+import {
+  supportedRegions,
+  type UserRegion,
+} from '@/helpers/server/model/models'
 import { useLocale } from '@/hooks/useLocale'
-import { useRules } from '@/hooks/useRules'
 import { useUser } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
-import type { SupportedRegions } from '@incubateur-ademe/nosgestesclimat'
 import { useState } from 'react'
 
 interface Props {
   isOpen?: boolean
-  supportedRegions: SupportedRegions
+  updateRegion: (code: UserRegion) => Promise<void>
+  region: UserRegion
 }
 
 export default function RegionSelector({
   isOpen = false,
-  supportedRegions,
+  updateRegion,
+  region,
 }: Props) {
-  const [isUpdateSuccess, setIsUpdateSuccess] = useState(false)
   const locale = useLocale()
+  const numberOfRegions = Object.values(supportedRegions).filter(
+    (region) => locale in region
+  ).length
 
-  const orderedSupportedRegions = sortSupportedRegions({
-    supportedRegions,
-    currentLocale: locale,
-  })
+  const { hideTutorial } = useUser()
+  const [currentRegion, setCurrentRegion] = useState(region)
+  async function onUpdate(code: UserRegion) {
+    setCurrentRegion(code)
+    trackMatomoEvent__deprecated(profilClickRegion(code))
 
-  const numberOfRegions = Object.entries(orderedSupportedRegions).length
+    await updateRegion(code)
 
-  const { updateRegion, user, hideTutorial } = useUser()
-
-  const { region } = user
-
-  const { isLoading } = useRules()
+    hideTutorial('localisation-banner')
+  }
 
   return (
     <>
       <details open={isOpen} className="rounded-xl bg-gray-100 p-2">
         <summary
-          className={`middle w-auto cursor-pointer p-4 ${
-            isLoading ? 'pointer-events-none opacity-60' : ''
-          }`}
+          className="middle w-auto cursor-pointer p-4"
           onClick={() => trackMatomoEvent__deprecated(profilOpenRegions)}
           aria-expanded={isOpen}
           aria-controls="region-grid"
@@ -67,9 +67,7 @@ export default function RegionSelector({
               ({numberOfRegions} <Trans>disponibles</Trans>)
             </small>
           </span>
-          {isLoading && (
-            <Loader size="sm" color="dark" className="ml-4 text-right" />
-          )}
+
           <span className="sr-only">
             <Trans>Cliquez pour ouvrir la liste des régions disponibles</Trans>
           </span>
@@ -77,35 +75,11 @@ export default function RegionSelector({
 
         <RegionGrid
           id="region-grid"
-          supportedRegions={supportedRegions}
-          updateCurrentRegion={(code: string) => {
-            setIsUpdateSuccess(false)
-            trackMatomoEvent__deprecated(profilClickRegion(code))
-
-            updateRegion({
-              code,
-              name: supportedRegions[code][locale]?.nom as unknown as string,
-            })
-
-            hideTutorial('localisation-banner')
-
-            setIsUpdateSuccess(true)
-          }}
-          selectedRegionCode={region?.code}
-          className={isLoading ? 'pointer-events-none opacity-60' : ''}
+          updateCurrentRegion={onUpdate as (code: string) => void}
+          selectedRegionCode={currentRegion}
           role="region"
           aria-label="Liste des régions disponibles"
         />
-
-        {isUpdateSuccess && (
-          <p
-            aria-live="polite"
-            role="status"
-            aria-atomic="true"
-            className="mt-4 mb-4 ml-2 text-sm text-green-700">
-            <Trans>Votre région a bien été mise à jour.</Trans>
-          </p>
-        )}
 
         <Card className="mt-4 flex-row items-center border-none bg-transparent shadow-none">
           <Emoji className="mr-2">🌐</Emoji>

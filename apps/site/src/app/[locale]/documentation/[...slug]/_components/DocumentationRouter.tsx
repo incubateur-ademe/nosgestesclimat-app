@@ -1,38 +1,46 @@
 'use client'
-
-import EngineProviders from '@/components/providers/EngineProviders'
-import { useCurrentSimulation } from '@/publicodes-state'
-import type { JSX } from 'react'
-import { useContext, useEffect } from 'react'
+import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
+import type { Simulation } from '@/helpers/server/model/simulations'
+import { EngineProvider } from '@/publicodes-state'
+import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
+import dynamic from 'next/dynamic'
+import { useContext, type JSX } from 'react'
 import { IsDocumentationClientContext } from '../../_contexts/DocumentationStateContext'
-import DocumentationClient from './documentationRouter/DocumentationClient'
 
 interface Props {
   slug: string[]
   serverComponent: JSX.Element
+  rules: NGCRules
+  currentSimulation?: Simulation
 }
 
-export default function DocumentationRouter({ slug, serverComponent }: Props) {
-  const { isDocumentationClient, setIsDocumentationClient } = useContext(
-    IsDocumentationClientContext
+const DocumentationClient = dynamic(
+  () => import('./documentationRouter/DocumentationClient'),
+  {
+    ssr: false,
+    loading: () => <BlockSkeleton />,
+  }
+)
+
+export default function DocumentationRouter({
+  slug,
+  serverComponent,
+  rules,
+  currentSimulation,
+}: Props) {
+  const { isDocumentationClient } = useContext(IsDocumentationClientContext)
+
+  if (
+    isDocumentationClient ||
+    (currentSimulation && currentSimulation.progression > 0)
   )
-
-  const { progression } = useCurrentSimulation()
-
-  // Switch to client side documentation if the simulation has been started
-  useEffect(() => {
-    if (!progression) return
-
-    if (progression > 0) {
-      setIsDocumentationClient(true)
-    }
-  }, [progression, setIsDocumentationClient])
-
-  if (isDocumentationClient)
     return (
-      <EngineProviders isOptim={false}>
-        <DocumentationClient slugs={slug} />
-      </EngineProviders>
+      <EngineProvider rules={rules}>
+        <DocumentationClient
+          slugs={slug}
+          currentSimulation={currentSimulation}
+        />
+      </EngineProvider>
     )
 
   return serverComponent
