@@ -18,7 +18,9 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
 
   return (
     <div data-track className="flex flex-col">
-      {showWelcomeBanner && <WelcomeBanner locale={locale} />}
+      {showWelcomeBanner && simulations.length > 0 && (
+        <WelcomeBanner locale={locale} />
+      )}
 
       <ResultsView locale={locale} simulations={simulations} />
     </div>
