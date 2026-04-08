@@ -23,6 +23,7 @@ import CollectivelyCommit from './_components/CollectivelyCommit'
 import DecryptChallenges from './_components/DecryptChallenges'
 import DidYouKnowMainLanding from './_components/DidYouKnowMainLanding'
 import HomePageDescription from './_components/HomePageDescription'
+import HomepageSubtitle from './_components/HomepageSubtitle'
 import InteractiveIllustration from './_components/InteractiveIllustration'
 import Mobilise from './_components/Mobilise'
 import ModelInfo from './_components/ModelInfo'
@@ -93,9 +94,7 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
                       trackingActionClickCTA
                     ),
                     createCollectiveTest:
-                      getLandingClickCTACreateCollectiveTest(
-                        '/',
-                      ),
+                      getLandingClickCTACreateCollectiveTest('/'),
                   }}
                 />
               </Suspense>
@@ -106,6 +105,11 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
                 <div className="mx-auto mt-4 max-w-80 md:mt-0">
                   <InteractiveIllustration />
                 </div>
+              </div>
+
+              {/* Displayed on desktop only */}
+              <div className="hidden md:block">
+                <HomepageSubtitle locale={locale} />
               </div>
             </div>
           </div>
