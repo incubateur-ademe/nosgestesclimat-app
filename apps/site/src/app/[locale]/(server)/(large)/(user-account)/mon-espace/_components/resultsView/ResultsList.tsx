@@ -40,7 +40,7 @@ export default async function ResultsList({ locale, simulations }: Props) {
                       <DeleteButtonWithConfirmModal
                         userId={user.id}
                         simulationId={simulation.id}
-                        deleteSimulation={deleteSimulation.bind(null, {
+                        deleteAction={deleteSimulation.bind(null, {
                           simulationId: simulation.id,
                           userId: user.id,
                         })}>
