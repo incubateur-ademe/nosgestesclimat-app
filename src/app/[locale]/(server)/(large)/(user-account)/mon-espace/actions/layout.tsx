@@ -16,10 +16,12 @@ export default async function Layout({
     { completedOnly: true, pageSize: 1 }
   )
   return (
-    <UserProvider serverSimulations={simulations} serverUserId={user.id}>
-      <QueryClientProviderWrapper>
-        <EngineProvider rules={rules}>{children}</EngineProvider>
-      </QueryClientProviderWrapper>
-    </UserProvider>
+    <div data-track>
+      <UserProvider serverSimulations={simulations} serverUserId={user.id}>
+        <QueryClientProviderWrapper>
+          <EngineProvider rules={rules}>{children}</EngineProvider>
+        </QueryClientProviderWrapper>
+      </UserProvider>
+    </div>
   )
 }
