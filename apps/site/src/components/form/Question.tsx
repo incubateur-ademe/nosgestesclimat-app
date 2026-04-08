@@ -22,6 +22,7 @@ import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransClient'
+import DontKnowButton from './question/DontKnowButton'
 import NumberInputWithAssistance from './question/NumberInputWithAssistance'
 import Warning from './question/Warning'
 
@@ -203,6 +204,8 @@ export default function Question({
           notification={activeNotifications[activeNotifications.length - 1]}
         />
       )}
+
+      <DontKnowButton />
     </>
   )
 }
