@@ -155,7 +155,7 @@ export default function ClientCTAButtons({
             'hover:bg-primary-900 transition-all duration-300',
             className
           )}
-          href={'/tutoriel/jeune'}
+          href={mainButtonHref}
           aria-disabled={isPending}
           data-testid="do-the-test-link"
           onMouseEnter={() => setIsHover(true)}
