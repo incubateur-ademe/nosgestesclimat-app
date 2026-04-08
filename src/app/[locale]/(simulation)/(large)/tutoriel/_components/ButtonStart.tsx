@@ -8,7 +8,7 @@ import Loader from '@/design-system/layout/Loader'
 import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
 import { useCurrentSimulation, useUser } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -84,7 +84,7 @@ export default function ButtonStart({
 
         const endTime = Date.now()
         const timeSpentOnPage = endTime - startTime
-        trackEvent(tutorielClickSuivant(timeSpentOnPage))
+        trackMatomoEvent__deprecated(tutorielClickSuivant(timeSpentOnPage))
       }}>
       {isLoading ? (
         <Loader size="sm" />

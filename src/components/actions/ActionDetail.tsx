@@ -23,7 +23,10 @@ import {
   useUser,
 } from '@/publicodes-state'
 import type { Action } from '@/publicodes-state/types'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { encodeRuleName } from '@/utils/publicodes/encodeRuleName'
 import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
@@ -106,7 +109,9 @@ export default function ActionDetail({
               color="secondary"
               href={'/documentation/' + encodeRuleName(dottedName)}
               onClick={() => {
-                trackEvent(actionsClickUnderstandCalculation(dottedName))
+                trackMatomoEvent__deprecated(
+                  actionsClickUnderstandCalculation(dottedName)
+                )
                 trackPosthogEvent(
                   captureActionsClickUnderstandCalculation({
                     action: dottedName,
@@ -139,7 +144,7 @@ export default function ActionDetail({
                   setPersistedRemainingQuestions(undefined)
 
                   if (!actionChoices[dottedName]) {
-                    trackEvent(actionsClickYes(dottedName))
+                    trackMatomoEvent__deprecated(actionsClickYes(dottedName))
                     trackPosthogEvent(
                       captureActionsClickYes({ action: dottedName })
                     )

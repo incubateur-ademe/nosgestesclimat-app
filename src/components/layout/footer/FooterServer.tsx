@@ -1,48 +1,17 @@
 import Ademe from '@/components/images/partners/Ademe'
 import Marianne from '@/components/images/partners/Marianne'
+import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
 import Link from '@/components/Link'
 import Logo from '@/components/misc/Logo'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Trans from '@/components/translation/trans/TransServer'
-import {
-  footerClickAmbassadeursServer,
-  footerClickBlogServer,
-  footerClickContactServer,
-  footerClickDiffusionServer,
-  footerClickDocumentationServer,
-  footerClickFAQServer,
-  footerClickImpactco2Server,
-  footerClickInternationalServer,
-  footerClickLogoServer,
-  footerClickNouveautesServer,
-  footerClickOrganisationsServer,
-  footerClickPlanSiteServer,
-  footerClickQuiSommesNousServer,
-  footerClickStatsServer,
-} from '@/constants/tracking/layout'
-import {
-  captureFooterClickAmbassadeurs,
-  captureFooterClickBlog,
-  captureFooterClickContact,
-  captureFooterClickDiffusion,
-  captureFooterClickDocumentation,
-  captureFooterClickFAQ,
-  captureFooterClickImpactco2,
-  captureFooterClickInternational,
-  captureFooterClickLogo,
-  captureFooterClickNouveautes,
-  captureFooterClickOrganisations,
-  captureFooterClickPlanSite,
-  captureFooterClickQuiSommesNous,
-  captureFooterClickStats,
-} from '@/constants/tracking/posthogTrackers'
+
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { cacheLife } from 'next/cache'
 import { twMerge } from 'tailwind-merge'
 import HideInIframe from '../HideInIframe'
-import ThematicPagesSection from '../ThematicPagesSection'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
 
@@ -67,6 +36,7 @@ export default async function FooterServer({
   return (
     <footer
       id="footer"
+      data-track
       tabIndex={-1}
       role="contentinfo"
       className={twMerge(
@@ -78,8 +48,6 @@ export default async function FooterServer({
         <div className="mb-8 flex items-center justify-between">
           <Link
             href="/"
-            data-track-event={footerClickLogoServer}
-            data-track-posthog={captureFooterClickLogo()}
             data-testid="home-logo-link"
             className="flex items-center justify-center no-underline">
             <Logo size="md" />
@@ -106,8 +74,6 @@ export default async function FooterServer({
                     target="_blank"
                     aria-label={t('Qui sommes-nous - Nouvelle fenêtre')}
                     rel="noopener noreferrer"
-                    data-track-event={footerClickQuiSommesNousServer}
-                    data-track-posthog={captureFooterClickQuiSommesNous()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Qui sommes-nous</Trans>
                   </InlineLink>
@@ -115,8 +81,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/plan-du-site"
-                    data-track-event={footerClickPlanSiteServer}
-                    data-track-posthog={captureFooterClickPlanSite()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Plan du site</Trans>
                   </InlineLink>
@@ -124,8 +88,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/contact"
-                    data-track-event={footerClickContactServer}
-                    data-track-posthog={captureFooterClickContact()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Contact</Trans>
                   </InlineLink>
@@ -133,8 +95,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/international"
-                    data-track-event={footerClickInternationalServer}
-                    data-track-posthog={captureFooterClickInternational()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>International</Trans>
                   </InlineLink>
@@ -142,8 +102,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/stats"
-                    data-track-event={footerClickStatsServer}
-                    data-track-posthog={captureFooterClickStats()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Statistiques</Trans>
                   </InlineLink>
@@ -161,8 +119,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/diffuser"
-                    data-track-event={footerClickDiffusionServer}
-                    data-track-posthog={captureFooterClickDiffusion()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Diffuser Nos Gestes Climat</Trans>
                   </InlineLink>
@@ -171,8 +127,6 @@ export default async function FooterServer({
                   <InlineLink
                     href="/organisations"
                     data-testid="organisations-link"
-                    data-track-event={footerClickOrganisationsServer}
-                    data-track-posthog={captureFooterClickOrganisations()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Organisations</Trans>
                   </InlineLink>
@@ -180,8 +134,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/nos-relais"
-                    data-track-event={footerClickAmbassadeursServer}
-                    data-track-posthog={captureFooterClickAmbassadeurs()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Relais et partenaires</Trans>
                   </InlineLink>
@@ -199,8 +151,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/blog"
-                    data-track-event={footerClickBlogServer}
-                    data-track-posthog={captureFooterClickBlog()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Blog</Trans>
                   </InlineLink>
@@ -208,8 +158,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/documentation"
-                    data-track-event={footerClickDocumentationServer}
-                    data-track-posthog={captureFooterClickDocumentation()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Documentation</Trans>
                   </InlineLink>
@@ -217,8 +165,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/questions-frequentes"
-                    data-track-event={footerClickFAQServer}
-                    data-track-posthog={captureFooterClickFAQ()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>FAQ</Trans>
                   </InlineLink>
@@ -226,8 +172,6 @@ export default async function FooterServer({
                 <li>
                   <InlineLink
                     href="/nouveautes"
-                    data-track-event={footerClickNouveautesServer}
-                    data-track-posthog={captureFooterClickNouveautes()}
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Nouveautés</Trans>
                   </InlineLink>
@@ -236,8 +180,6 @@ export default async function FooterServer({
                   <InlineLink
                     href="https://impactco2.fr"
                     target="_blank"
-                    data-track-event={footerClickImpactco2Server}
-                    data-track-posthog={captureFooterClickImpactco2()}
                     className="text-default text-sm no-underline hover:underline">
                     Impact CO2
                   </InlineLink>
@@ -245,7 +187,7 @@ export default async function FooterServer({
               </ul>
             </div>
             <div className="flex flex-col gap-y-2">
-              <ThematicPagesSection />
+              <ThematicPagesSection locale={locale} />
             </div>
           </div>
           {locale === 'fr' ? (

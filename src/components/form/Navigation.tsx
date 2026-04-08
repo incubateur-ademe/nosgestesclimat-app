@@ -22,7 +22,10 @@ import {
   useRule,
 } from '@/publicodes-state'
 import getValueIsOverFloorOrCeiling from '@/publicodes-state/helpers/getValueIsOverFloorOrCeiling'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { TFunction } from 'i18next'
 import type { MouseEvent } from 'react'
@@ -243,7 +246,9 @@ export default function Navigation({
       const timeSpentOnQuestion = endTime - startTime
 
       if (isMissing) {
-        trackEvent(questionClickPass({ question, timeSpentOnQuestion }))
+        trackMatomoEvent__deprecated(
+          questionClickPass({ question, timeSpentOnQuestion })
+        )
         trackPosthogEvent(
           captureClickFormNav({
             actionType: 'passer',
@@ -253,7 +258,7 @@ export default function Navigation({
           })
         )
       } else {
-        trackEvent(
+        trackMatomoEvent__deprecated(
           questionClickSuivant({
             question,
             answer: value,
@@ -315,7 +320,7 @@ export default function Navigation({
 
       const endTime = Date.now()
       const timeSpentOnQuestion = endTime - startTime
-      trackEvent(questionClickPrevious({ question }))
+      trackMatomoEvent__deprecated(questionClickPrevious({ question }))
       trackPosthogEvent(
         captureClickFormNav({
           actionType: 'précédent',

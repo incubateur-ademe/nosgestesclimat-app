@@ -1,7 +1,7 @@
 'use client'
 
 import { FILTER_SEARCH_PARAM_KEY } from '@/constants/filtering'
-import { trackingCategoryFilter } from '@/constants/tracking/misc'
+
 import { captureTrackingCategoryFilter } from '@/constants/tracking/posthogTrackers'
 import { baseClassNames } from '@/design-system/buttons/Button'
 import {
@@ -11,10 +11,10 @@ import {
   getTextDarkColor,
 } from '@/helpers/getCategoryColorClass'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { encodeDottedNameAsURI } from '@/utils/format/encodeDottedNameAsURI'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
@@ -41,27 +41,28 @@ export default function CategoryFilter({
   const router = useRouter()
   const { t } = useClientTranslation()
 
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const encodedDottedName = encodeDottedNameAsURI(dottedName)
 
   const isSelected =
     categorySelected && encodedDottedName === categorySelected ? true : false
 
   const buildURL = () => {
-    const siteURL = new URL(window.location.href)
+    const params = new URLSearchParams(searchParams.toString())
 
     if (encodedDottedName === categorySelected) {
-      siteURL.searchParams.delete(FILTER_SEARCH_PARAM_KEY)
+      params.delete(FILTER_SEARCH_PARAM_KEY)
     } else {
-      siteURL.searchParams.set(FILTER_SEARCH_PARAM_KEY, encodedDottedName)
+      params.set(FILTER_SEARCH_PARAM_KEY, encodedDottedName)
     }
 
-    return siteURL.toString()
+    return `${pathname}?${params.toString()}`
   }
 
   const handleClick = () => {
     onTabActivate()
-    trackEvent(trackingCategoryFilter(dottedName, window.location.pathname))
-
     trackPosthogEvent(captureTrackingCategoryFilter({ category: dottedName }))
 
     router.replace(buildURL(), {

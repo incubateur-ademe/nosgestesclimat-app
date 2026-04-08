@@ -104,8 +104,8 @@ test.describe('A new user', () => {
     group,
     browser,
   }) => {
-    test.setTimeout(60_000)
     skipOnSafari(browser)
+    test.setTimeout(60_000)
     const user = new User(page)
     await group.joinWithInviteLink(user)
     await tutorialPage.skip()
@@ -124,8 +124,8 @@ test.describe('A new user', () => {
     group,
     browser,
   }) => {
-    test.setTimeout(60_000)
     skipOnSafari(browser)
+    test.setTimeout(60_000)
     await group.joinWithInviteLink(user)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
@@ -143,7 +143,6 @@ test.describe('A user with a completed test that joined a group', () => {
   test.setTimeout(60_000)
   let page: Page
   test.beforeAll(async ({ browser }) => {
-    skipOnSafari(browser)
     page = await browser.newPage()
     await new NGCTest(page).skipAll()
 
@@ -181,14 +180,20 @@ test.describe('A user with a completed test that joined a group', () => {
 
   test('can go to the group from the end page of his test', async ({
     group,
+    browser,
   }) => {
+    skipOnSafari(browser)
     await page.goto('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(group.url)
     await expect(page.locator('h1')).toContainText(group.name)
   })
 
-  test('can see the group in the « mes groupes » tab', async ({ group }) => {
+  test('can see the group in the « mes groupes » tab', async ({
+    group,
+    browser,
+  }) => {
+    skipOnSafari(browser)
     await page.goto('/fin')
     await group.goFromGroupTabs(page)
     await expect(page).toHaveURL(group.url)
@@ -203,7 +208,8 @@ test.describe('A user with a completed test that joined a group', () => {
     await expect(page.locator('h1')).toContainText(group.name)
   })
 
-  test('can leave a group', async ({ group }) => {
+  test('can leave a group', async ({ group, browser }) => {
+    skipOnSafari(browser)
     await page.goto(group.url)
     await group.leave(page)
     await page.goto('/fin')

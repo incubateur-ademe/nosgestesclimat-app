@@ -6,12 +6,12 @@ import Button from '@/design-system/buttons/Button'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Modal from '@/design-system/modals/Modal'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { CookieConsentKey } from '@/types/cookies'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import type { CookieState } from '@/services/tracking/cookieStateStore'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { CookieFieldset, CookieRadio } from './cookieConsentForm/CookieFieldSet'
-import { useCookieManagement, type CookieState } from './useCookieManagement'
+import { useCookieManagement } from './useCookieManagement'
 
 export default function CookieConsentForm({
   onCancel,
@@ -57,7 +57,9 @@ export default function CookieConsentForm({
         </div>
         <form
           onSubmit={(e) => {
-            trackEvent(cookieBannerClick('Confirmer mes choix'))
+            trackMatomoEvent__deprecated(
+              cookieBannerClick('Confirmer mes choix')
+            )
             void handleSubmit(confirmChoices)(e)
           }}
           data-testid="cookie-form">
@@ -85,7 +87,9 @@ export default function CookieConsentForm({
                     type="button"
                     color="secondary"
                     onClick={() => {
-                      trackEvent(cookieBannerClick('Tout refuser'))
+                      trackMatomoEvent__deprecated(
+                        cookieBannerClick('Tout refuser')
+                      )
                       rejectAll()
                     }}
                     size="sm"
@@ -100,7 +104,9 @@ export default function CookieConsentForm({
                     type="button"
                     color="primary"
                     onClick={() => {
-                      trackEvent(cookieBannerClick('Tout accepter'))
+                      trackMatomoEvent__deprecated(
+                        cookieBannerClick('Tout accepter')
+                      )
                       acceptAll()
                     }}
                     size="sm"
@@ -174,7 +180,7 @@ export default function CookieConsentForm({
                   </li>
 
                   <li>
-                    <pre className="block font-bold">ngcjwt2</pre>
+                    <pre className="block font-bold">ngc_server_auth_jwt</pre>
                     <Trans i18nKey="cookies.management.required.detail.description2">
                       Authentification sur l'espace personnel
                     </Trans>
@@ -193,6 +199,14 @@ export default function CookieConsentForm({
                     </pre>
                     <Trans i18nKey="cookies.management.required.detail.description4">
                       Sauvegarde des préférences de cookie (cette bannière)
+                    </Trans>
+                  </li>
+
+                  <li>
+                    <pre className="block font-bold">ngc_anon_user</pre>
+                    <Trans i18nKey="cookies.management.required.detail.description2">
+                      Sauvegarde de la session anonyme (pour retrouver les
+                      simulations précedentes)
                     </Trans>
                   </li>
                 </ul>
@@ -215,7 +229,7 @@ export default function CookieConsentForm({
                 'Voir le site officiel'
               )}
               defaultValue={defaultValues?.googleTag ?? 'refused'}
-              register={register(CookieConsentKey.googleTag)}
+              register={register('googleTag')}
             />
 
             <CookieFieldset
@@ -234,7 +248,7 @@ export default function CookieConsentForm({
                 'Voir le site officiel'
               )}
               defaultValue={defaultValues?.posthog ?? 'refused'}
-              register={register(CookieConsentKey.posthog)}
+              register={register('posthog')}
               className="mt-6"
             />
           </div>

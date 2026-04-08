@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { tutorielClickQuestion } from '@/constants/tracking/pages/tutoriel'
 import { usePollQueryParams } from '@/hooks/organisations/usePollQueryParams'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 export default function OrganisationPrivacy() {
   const { pollSlug } = usePollQueryParams()
@@ -25,7 +25,7 @@ export default function OrganisationPrivacy() {
           tabIndex={0}
           aria-expanded="false"
           onClick={() =>
-            trackEvent(
+            trackMatomoEvent__deprecated(
               tutorielClickQuestion('Mes données restent-elles privées ?')
             )
           }
@@ -35,7 +35,7 @@ export default function OrganisationPrivacy() {
               const details = e.currentTarget
                 .parentElement as HTMLDetailsElement
               details.open = !details.open
-              trackEvent(
+              trackMatomoEvent__deprecated(
                 tutorielClickQuestion('Mes données restent-elles privées ?')
               )
             }

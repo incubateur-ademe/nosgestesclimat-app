@@ -1850,6 +1850,16 @@ entries:
   tutoriel.title.lock: <0>10 minutes</0> chrono pour calculer votre empreinte carbone et eau
   nos-relais.title: They relay <2>Our Gestes Climat</2>
   nos-relais.title.lock: Ils relaient <2>Nos Gestes Climat</2>
+  coût: cost
+  consommation en kWh: consumption in kWh
+  Landing page thématique - Nos Gestes Climat: Thematic landing page - Nos Gestes Climat
+  Découvrez des conseils pratiques pour réduire votre empreinte écologique.: Discover practical tips for reducing your ecological footprint.
+  simulator.assistanceSwitch.ariaLabel: Select input mode, {{currentUnit}} selected
+  simulator.assistanceSwitch.ariaLabel.lock: Sélectionner le mode de saisie, {{currentUnit}} sélectionné
+  cookies.management.required.detail.title: See details of cookies
+  cookies.management.required.detail.title.lock: Voir le détail des cookies
+  cookies.management.required.detail.description3: Local backup of simulation data
+  cookies.management.required.detail.description3.lock: Sauvegarde des données de simulation en local
   common.carbonFootprint: Carbon footprint
   common.carbonFootprint.lock: Empreinte carbone
   simulation.eau.saveBlock.title: 'Find your results easily '
@@ -1892,7 +1902,6 @@ entries:
   eau.resultats.waterFootprintDetail.title.lock: D’où vient votre résultat ?
   simulation.eau.climateAndWater.title: Water, climate, same battle?
   simulation.eau.climateAndWater.title.lock: Eau, climat, même combat ?
-  Landing page thématique - Nos Gestes Climat: Thematic landing page - Nos Gestes Climat
   endpage.meta.title.carbon: My carbon footprint - Nos Gestes Climat
   endpage.meta.title.carbon.lock: Mon empreinte carbone - Nos Gestes Climat
   simulation.eau.title: The water footprint used to produce what you consume
@@ -1901,7 +1910,6 @@ entries:
   simulation.eau.whatIsWaterFootprint.vigieEau.lock: Rendez-vous sur VigiEau pour en savoir plus.
   simulation.eau.documentation.title: How is your footprint calculated?
   simulation.eau.documentation.title.lock: Comment est calculée votre empreinte ?
-  Découvrez des conseils pratiques pour réduire votre empreinte écologique.: Discover practical tips for reducing your ecological footprint.
   simulation.eau.whatIsWaterFootprint.list.cotton: the <1>cotton</1> you wear
   simulation.eau.whatIsWaterFootprint.list.cotton.lock: la culture du <1>coton</1> que vous portez
   simulation.eau.climateAndWater.description1: Human activities are threatening the natural balance of our planet.
@@ -1963,8 +1971,8 @@ entries:
   results.groupThankYou.cta.lock: Voir les résultats
   results.groupThankYou.title: Thank you for completing the test!
   results.groupThankYou.title.lock: Merci d'avoir complété le test !
-  pages.result.unauthorized: <0>These results are protected</0><1>To access them, you need to log in with the same email address you used to save them.</1><2>Connect me</2>
-  pages.result.unauthorized.lock: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connectez avec le même email que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
+  pages.result.unauthorized: <0>These results are protected</0><1>To access them, you need to log in with the same e-mail address you used to save them.</1><2>Connect me</2>
+  pages.result.unauthorized.lock: <0>Ces résultats sont protégés</0><1>Pour y accéder, vous devez vous connecter avec le même e-mail que celui utilisé lors de leur sauvegarde.</1><2>Me connecter</2>
   pages.result.notfound: <0>Impossible to find these results</0><1>This means that they do not exist, or that they are not linked to your e-mail.</1><2>In the latter case, you can try logging in again with a different username and password.</2><3>Back to my space</3>
   pages.result.notfound.lock: <0>Impossible de retrouver ces résultats</0><1>Cela signifie qu'ils n'existent pas, ou qu'ils ne sont pas reliés à votre e-mail.</1><2>Dans ce dernier cas, vous pouvez essayer de vous re-connecter avec d'autres identifiants.</2><3>Retour à mon espace</3>
   simulator.navigation.nextButton.loading: <0></0> Finish
@@ -1997,16 +2005,12 @@ entries:
   cookies.management.required.detail.description2.lock: Authentification sur l'espace personnel
   cookies.management.required.detail.description1: Choice of language
   cookies.management.required.detail.description1.lock: Choix de langue
-  cookies.management.required.detail.description3: Local backup of simulation data
-  cookies.management.required.detail.description3.lock: Sauvegarde des données de simulation en local
-  results.tabs.myGroups: Create a group test
-  results.tabs.myGroups.lock: Créer un test collectif
-  cookies.management.required.detail.title: See details of cookies
-  cookies.management.required.detail.title.lock: Voir le détail des cookies
-  results.tabs.groups: Group test
-  results.tabs.groups.lock: Test collectif
   cookies.management.required.detail.description4: Saving cookie preferences (this banner)
   cookies.management.required.detail.description4.lock: Sauvegarde des préférences de cookie (cette bannière)
+  results.tabs.groups: Group test
+  results.tabs.groups.lock: Test collectif
+  results.tabs.myGroups: Create a group test
+  results.tabs.myGroups.lock: Créer un test collectif
   organisations.askDemo.iframe.title: Form - book an appointment for a demo of our functions for organisations
   organisations.askDemo.iframe.title.lock: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
   mySpace.resultList.item.delete.mainButton.label: Delete

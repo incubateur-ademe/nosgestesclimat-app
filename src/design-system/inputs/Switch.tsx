@@ -26,11 +26,11 @@ interface Props {
 function isButtonOptions(
   options: LinkOption[] | ButtonOption[]
 ): options is ButtonOption[] {
-  return 'onClick' in options[0]
+  return options.length > 0 && 'onClick' in options[0]
 }
 
 const commonClassName =
-  'border border-slate-300 text-sm font-medium no-underline py-1 px-3'
+  'border border-slate-300 text-sm font-medium no-underline py-1 px-3 flex-1'
 
 const selectedClassName =
   'border-primary-600 text-primary-600 rounded-sm border bg-white relative'
@@ -60,7 +60,10 @@ export default function Switch({
 }: Props) {
   if (isButtonOptions(options)) {
     return (
-      <div role="group" aria-label={ariaLabel} className={className}>
+      <div
+        role="group"
+        aria-label={ariaLabel}
+        className={twMerge('flex', className)}>
         {options.map(({ label, isSelected, ...props }, index) => (
           <button
             key={`switch-${index}`}
@@ -76,7 +79,7 @@ export default function Switch({
   }
 
   return (
-    <nav aria-label={ariaLabel} className={className}>
+    <nav aria-label={ariaLabel} className={twMerge('flex', className)}>
       {options.map(({ label, isSelected, ...props }, index) => (
         <Link
           key={`switch-${index}`}

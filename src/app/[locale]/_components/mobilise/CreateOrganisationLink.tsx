@@ -3,14 +3,14 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { createOrganisationLink } from '@/constants/tracking/pages/mainLanding'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 export default function CreateOrganisationLink() {
   return (
     <ButtonLink
       color="secondary"
       href="/organisations"
-      onClick={() => trackEvent(createOrganisationLink)}>
+      onClick={() => trackMatomoEvent__deprecated(createOrganisationLink)}>
       <Trans>Créer une campagne</Trans>
     </ButtonLink>
   )

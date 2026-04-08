@@ -12,8 +12,8 @@ export default async function Unauthorized() {
       <Trans i18nKey="pages.result.unauthorized" locale={locale}>
         <Title tag="h1">Ces résultats sont protégés</Title>
         <p>
-          Pour y accéder, vous devez vous connectez avec le même email que celui
-          utilisé lors de leur sauvegarde.
+          Pour y accéder, vous devez vous connecter avec le même e-mail que
+          celui utilisé lors de leur sauvegarde.
         </p>
         <ButtonLink href={CONNEXION_PATH}>Me connecter</ButtonLink>
       </Trans>

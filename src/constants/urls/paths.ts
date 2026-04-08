@@ -5,6 +5,7 @@ export const MON_ESPACE_PATH = '/mon-espace'
 export const POLL_START_PATH = '/simulateur/commencer'
 
 export const END_PAGE_PATH = '/fin'
+export const END_PAGE_ACTIONS_PATH = '/fin/actions'
 export const END_PAGE_GROUPS_PATH = '/fin/groupes'
 
 export const EMAIL_PAGE_PATH = '/simulateur/email'

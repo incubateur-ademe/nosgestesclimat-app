@@ -1,12 +1,15 @@
+'use client'
 import { trackingLocale } from '@/constants/tracking/misc'
-import { captureLocale } from '@/constants/tracking/posthogTrackers'
 import type { Locale } from '@/i18nConfig'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
+import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
 export function useTrackLocale({ locale }: { locale: Locale }) {
   useEffect(() => {
-    trackEvent(trackingLocale(locale))
-    trackPosthogEvent(captureLocale({ locale }))
+    trackMatomoEvent__deprecated(trackingLocale(locale))
+    posthog.register_for_session({
+      locale,
+    })
   }, [locale])
 }

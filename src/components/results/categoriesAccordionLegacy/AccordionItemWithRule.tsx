@@ -13,7 +13,10 @@ import { getBackgroundColor } from '@/helpers/getCategoryColorClass'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useEngine, useRule } from '@/publicodes-state'
 import type { Metric } from '@/publicodes-state/types'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import SubcategoriesList from './accordionItemWithRule/SubcategoriesList'
 
@@ -42,7 +45,7 @@ export default function AccordionItemWithRule({
   return (
     <AccordionItemLegacy
       onClick={() => {
-        trackEvent(endClickCategory(dottedName))
+        trackMatomoEvent__deprecated(endClickCategory(dottedName))
         trackPosthogEvent(captureEndClickCategory({ category: dottedName }))
       }}
       title={

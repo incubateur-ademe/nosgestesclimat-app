@@ -17,10 +17,10 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
   })
 
   return (
-    <>
+    <div data-track>
       {showWelcomeBanner && <WelcomeBanner locale={locale} />}
 
       <ResultsView locale={locale} simulations={simulations} />
-    </>
+    </div>
   )
 }

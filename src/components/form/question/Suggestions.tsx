@@ -13,7 +13,10 @@ import {
   getTextCategoryColor,
 } from '@/helpers/getCategoryColorClass'
 import { useFormState, useRule } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { capitalizeString } from '@/utils/capitalizeString'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
@@ -48,7 +51,7 @@ export default function Suggestions({ question, setValue }: Props) {
             getCategoryFocusRingClassName(currentCategory ?? '')
           )}
           onClick={() => {
-            trackEvent(
+            trackMatomoEvent__deprecated(
               questionClickSuggestion({ question, answer: suggestion.label })
             )
             trackPosthogEvent(

@@ -3,7 +3,10 @@ import { orderedCategories } from '@/constants/model/orderedCategories'
 import { captureClickCategorySelector } from '@/constants/tracking/posthogTrackers'
 import { clickCategorySelector } from '@/constants/tracking/user-account'
 import Tabs, { type TabItem } from '@/design-system/layout/Tabs'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
 
@@ -35,7 +38,7 @@ export default function CategorySelector({
       onClick: () => {
         if (!disabled) {
           setActiveTab('global')
-          trackEvent(clickCategorySelector('bilan'))
+          trackMatomoEvent__deprecated(clickCategorySelector('bilan'))
           trackPosthogEvent(captureClickCategorySelector({ category: 'bilan' }))
         }
       },
@@ -50,7 +53,7 @@ export default function CategorySelector({
         onClick: () => {
           if (!disabled) {
             setActiveTab(category)
-            trackEvent(clickCategorySelector(category))
+            trackMatomoEvent__deprecated(clickCategorySelector(category))
             trackPosthogEvent(captureClickCategorySelector({ category }))
           }
         },

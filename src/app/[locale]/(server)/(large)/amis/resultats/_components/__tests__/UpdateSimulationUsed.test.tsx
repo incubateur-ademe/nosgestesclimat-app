@@ -117,9 +117,8 @@ describe('UpdateSimulationUsed', () => {
 
   it('should display success alert when update is successful', async () => {
     // Given
-    const { updateGroupParticipant } = await import(
-      '@/services/groups/updateGroupParticipant'
-    )
+    const { updateGroupParticipant } =
+      await import('@/services/groups/updateGroupParticipant')
     vi.mocked(updateGroupParticipant).mockResolvedValue({
       data: {
         success: true,
@@ -152,9 +151,8 @@ describe('UpdateSimulationUsed', () => {
 
   it('should display error alert when update fails', async () => {
     // Given
-    const { updateGroupParticipant } = await import(
-      '@/services/groups/updateGroupParticipant'
-    )
+    const { updateGroupParticipant } =
+      await import('@/services/groups/updateGroupParticipant')
     vi.mocked(updateGroupParticipant).mockRejectedValue(
       new Error('Update failed')
     )

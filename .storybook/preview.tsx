@@ -5,13 +5,12 @@ import '../src/app/[locale]/globals.css'
 import '../src/design-system/marianne.css'
 import '../src/locales/initClient'
 
-// Initialize MSW
+// Initialize MSW for GitHub Pages
+// Custom domain (storybook.nosgestesclimat.fr) serves from root,
+// so no repository prefix is needed.
 initialize({
   serviceWorker: {
-    url:
-      process.env.NODE_ENV === 'production'
-        ? '/nosgestesclimat-site-nextjs/mockServiceWorker.js'
-        : '/mockServiceWorker.js',
+    url: '/mockServiceWorker.js',
   },
 })
 
@@ -51,4 +50,3 @@ const preview: Preview = {
 }
 
 export default preview
-

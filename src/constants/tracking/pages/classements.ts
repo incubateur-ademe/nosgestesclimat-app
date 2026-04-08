@@ -8,13 +8,6 @@ export const classementCreateGroup = [
   'Create Group',
 ]
 
-// Figma comment #84
-export const classementCreateOrganisation = [
-  'trackEvent',
-  'Classements',
-  'Create Organisation',
-]
-
 interface ClassementClickItem {
   isAdministator: boolean
   numParticipants?: number

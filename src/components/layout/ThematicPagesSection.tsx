@@ -1,37 +1,27 @@
-'use client'
-
-import Trans from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransServer'
 import InlineLink from '@/design-system/inputs/InlineLink'
-import { useLocale } from '@/hooks/useLocale'
+import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
-import type { ThematicLandingPageSummary } from '@/services/cms/fetchThematicLandingPages'
 import { fetchThematicLandingPages } from '@/services/cms/fetchThematicLandingPages'
-import { useEffect, useState } from 'react'
 
-export default function ThematicPagesSection() {
-  const locale = useLocale()
+export default async function ThematicPagesSection({
+  locale,
+}: {
+  locale: Locale
+}) {
+  if (locale !== i18nConfig.defaultLocale) {
+    return null
+  }
 
-  const [thematicPages, setThematicPages] = useState<
-    ThematicLandingPageSummary[]
-  >([])
+  let thematicPages
+  try {
+    const result = await fetchThematicLandingPages()
+    thematicPages = result?.thematicLandingPages ?? []
+  } catch {
+    return null
+  }
 
-  useEffect(() => {
-    const loadThematicPages = async () => {
-      try {
-        const result = await fetchThematicLandingPages()
-        if (result?.thematicLandingPages) {
-          setThematicPages(result.thematicLandingPages)
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error loading thematic pages:', error)
-      }
-    }
-
-    loadThematicPages()
-  }, [])
-
-  if (thematicPages.length === 0 || locale !== i18nConfig.defaultLocale) {
+  if (thematicPages.length === 0) {
     return null
   }
 
@@ -40,7 +30,7 @@ export default function ThematicPagesSection() {
       <p
         id="thematic-pages-section"
         className="text-default mb-0 text-sm font-bold">
-        <Trans i18nKey="footer.thematicLandingPages.title">
+        <Trans i18nKey="footer.thematicLandingPages.title" locale={locale}>
           Pages thématiques
         </Trans>
       </p>

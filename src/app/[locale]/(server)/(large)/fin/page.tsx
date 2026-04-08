@@ -1,3 +1,4 @@
+import IframeDataShareModal from '@/components/iframe/IframeDataShareModal'
 import CarbonFootprintResults from '@/components/results/carbonFootprint/CarbonFootprintResults'
 import FootprintsLinks from '@/components/results/FootprintsLinks'
 import { noIndexObject } from '@/constants/metadata'
@@ -67,7 +68,12 @@ export default async function FinPage({
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!simulation) {
-    captureException(new NotFoundError())
+    captureException(new NotFoundError(), {
+      level: 'warning',
+      extra: {
+        simulations,
+      },
+    })
     redirect('/')
   }
   const simulationResult = await throwNextError(async () => {
@@ -86,7 +92,7 @@ export default async function FinPage({
   }
 
   return (
-    <>
+    <div data-track>
       <FootprintsLinks
         locale={locale as Locale}
         currentPage="carbone"
@@ -99,6 +105,10 @@ export default async function FinPage({
         locale={locale as Locale}
         tendency={tendency}
       />
-    </>
+
+      <IframeDataShareModal
+        computedResults={simulationResult.computedResults}
+      />
+    </div>
   )
 }

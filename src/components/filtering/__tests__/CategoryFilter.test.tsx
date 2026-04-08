@@ -10,11 +10,15 @@ const mockRouter = {
 
 const mockSearchParams = {
   get: vi.fn(),
+  toString: vi.fn(() => ''),
 }
+
+const mockPathname = '/test-path'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => mockRouter,
   useSearchParams: () => mockSearchParams,
+  usePathname: () => mockPathname,
 }))
 
 // Mock trackEvent

@@ -6,8 +6,7 @@ import {
   anonSessionOptions,
   getAnonSession,
 } from './anonSession'
-
-export const ANON_USER_ID_HEADER = 'x-anon-user-id'
+import { ANON_USER_ID_HEADER } from './constants'
 
 /**
  * Middleware that ensures an encrypted anonymous session cookie exists for
@@ -42,6 +41,7 @@ export async function userMiddleware(
     anonSessionOptions
   )
   newSession.userId = userId
+
   await newSession.save()
 
   return response

@@ -82,22 +82,6 @@ export function getBorderColor(category?: string | null) {
       return 'border-primary-700'
   }
 }
-export function getBorderLightColor(category?: string | null) {
-  switch (category) {
-    case 'transport':
-      return `border-transport-100`
-    case 'alimentation':
-      return `border-alimentation-100`
-    case 'logement':
-      return `border-logement-100`
-    case 'divers':
-      return `border-divers-100`
-    case 'services sociétaux':
-      return `border-servicessocietaux-100`
-    default:
-      return 'border-primary-100'
-  }
-}
 
 export function getBorderDarkColor(category?: string | null) {
   switch (category) {

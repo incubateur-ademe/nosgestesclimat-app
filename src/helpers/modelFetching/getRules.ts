@@ -41,11 +41,6 @@ export async function getRules({
     ? regionCode
     : 'FR'
 
-  // eslint-disable-next-line no-console
-  console.log(
-    `Getting rules with parameters: isOptim=${isOptim}, regionCode=${regionCodeToProvide}, locale=${locale}, PRNumber=${PRNumber}, ABtesting=${ABtesting}`
-  )
-
   let fileName = ''
 
   if (PRNumber) {

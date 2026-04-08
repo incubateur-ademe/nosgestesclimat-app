@@ -5,7 +5,10 @@ import { captureSubQuestion } from '@/constants/tracking/posthogTrackers'
 import { openSubQuestion } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useState } from 'react'
 import PencilIcon from '../icons/PencilIcon'
@@ -26,7 +29,7 @@ export default function Voiture({ question, ...props }: Props) {
           color="link"
           size="xs"
           onClick={() => {
-            trackEvent(openSubQuestion({ question }))
+            trackMatomoEvent__deprecated(openSubQuestion({ question }))
             trackPosthogEvent(
               captureSubQuestion({
                 question,

@@ -13,7 +13,6 @@ export const enum CREATE_VERIFICATION_CODE_ERROR {
   SIGNIN_USER_DOES_NOT_EXIST = 'User does not exist',
   SIGNUP_USER_ALREADY_EXISTS = 'User already exists',
   UNKNOWN_ERROR = 'An unknown error occurred',
-  INTERNAL_ERROR = 'Internal Server Error',
 }
 
 export function useCreateVerificationCode({

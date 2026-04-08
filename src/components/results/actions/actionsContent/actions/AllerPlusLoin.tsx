@@ -7,7 +7,10 @@ import { actionsClickAdeme } from '@/constants/tracking/pages/actions'
 import { captureActionsClickAdeme } from '@/constants/tracking/posthogTrackers'
 import Card from '@/design-system/layout/Card'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 
 export default function AllerPlusLoin() {
   const { t } = useClientTranslation()
@@ -29,7 +32,7 @@ export default function AllerPlusLoin() {
               className="hover:text-primary-200 block text-white underline"
               href="https://agirpourlatransition.ademe.fr/particuliers/"
               onClick={() => {
-                trackEvent(actionsClickAdeme)
+                trackMatomoEvent__deprecated(actionsClickAdeme)
                 trackPosthogEvent(captureActionsClickAdeme)
               }}
               aria-label={t(

@@ -5,7 +5,10 @@ import { organisationsDashboardExportData } from '@/constants/tracking/pages/org
 import { captureExportPollData } from '@/constants/tracking/posthogTrackers'
 import type { ComputedResults } from '@/publicodes-state/types'
 import type { PublicOrganisationPoll } from '@/types/organisations'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { ReactNode } from 'react'
 import ExportDataButton from './ExportDataButton'
@@ -40,7 +43,7 @@ export default function PollStatistics({
             poll={poll}
             color="borderless"
             onClick={() => {
-              trackEvent(organisationsDashboardExportData)
+              trackMatomoEvent__deprecated(organisationsDashboardExportData)
               trackPosthogEvent(captureExportPollData)
             }}
             className="h-14"

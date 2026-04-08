@@ -13,7 +13,10 @@ import {
   type ListIds,
   type Newsletters,
 } from '@/helpers/server/model/newsletter'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import Form from 'next/form'
 import { useActionState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -65,7 +68,7 @@ export default function NewsletterForm({ newsletters }: NewsletterFormProps) {
           className="mb-8 h-14 w-60"
           disabled={pending}
           onClick={() => {
-            trackEvent(clickUpdateUserNewsletters)
+            trackMatomoEvent__deprecated(clickUpdateUserNewsletters)
             trackPosthogEvent(captureClickUpdateUserNewsletters)
           }}>
           {pending ? (

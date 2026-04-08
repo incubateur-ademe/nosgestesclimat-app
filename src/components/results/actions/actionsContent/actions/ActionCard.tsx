@@ -13,7 +13,6 @@ import {
   captureActionsClickYes,
   captureActionsOpenAction,
 } from '@/constants/tracking/posthogTrackers'
-import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import Emoji from '@/design-system/utils/Emoji'
 import { filterRelevantMissingVariables } from '@/helpers/actions/filterRelevantMissingVariables'
 import { getIsActionDisabled } from '@/helpers/actions/getIsActionDisabled'
@@ -31,9 +30,13 @@ import {
   useUser,
 } from '@/publicodes-state'
 import type { Action } from '@/publicodes-state/types'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { encodeRuleName } from '@/utils/publicodes/encodeRuleName'
 import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
+import { usePathname } from 'next/navigation'
 import { useCallback } from 'react'
 import { twMerge } from 'tailwind-merge'
 import ActionValue from './ActionValue'
@@ -55,6 +58,8 @@ export default function ActionCard({
   handleUpdatePersistedActions,
 }: Props) {
   const { t } = useClientTranslation()
+
+  const pathname = usePathname()
 
   const {
     everyQuestions,
@@ -120,7 +125,7 @@ export default function ActionCard({
     handleUpdatePersistedActions()
 
     if (!isSelected) {
-      trackEvent(actionsClickYes(dottedName))
+      trackMatomoEvent__deprecated(actionsClickYes(dottedName))
       trackPosthogEvent(captureActionsClickYes({ action: dottedName }))
     }
   }, [
@@ -141,7 +146,7 @@ export default function ActionCard({
     handleUpdatePersistedActions()
 
     if (!isSelected) {
-      trackEvent(actionsClickNo(dottedName))
+      trackMatomoEvent__deprecated(actionsClickNo(dottedName))
       trackPosthogEvent(captureActionsClickNo({ action: dottedName }))
     }
   }
@@ -167,10 +172,10 @@ export default function ActionCard({
         <Link
           className="z-10 w-full underline"
           onClick={() => {
-            trackEvent(actionsOpenAction(dottedName))
+            trackMatomoEvent__deprecated(actionsOpenAction(dottedName))
             trackPosthogEvent(captureActionsOpenAction({ action: dottedName }))
           }}
-          href={`${MON_ESPACE_ACTIONS_PATH}/${encodeRuleName(dottedName)}`}>
+          href={`${pathname}/${encodeRuleName(dottedName)}`}>
           {icons && (
             <Emoji className="inline-flex justify-center">{icons}</Emoji>
           )}

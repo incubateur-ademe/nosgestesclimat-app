@@ -2,7 +2,7 @@
 
 import { questionChooseAnswer } from '@/constants/tracking/question'
 import { useRule } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import MosaicBooleanInput from './mosaicQuestion/MosaicBooleanInput'
 import MosaicNumberInput from './mosaicQuestion/MosaicNumberInput'
@@ -57,7 +57,7 @@ export default function MosaicQuestion({
           value={value}
           setValue={(value) => {
             setValue(question, value)
-            trackEvent(
+            trackMatomoEvent__deprecated(
               questionChooseAnswer({
                 question: parent,
                 answer: value,

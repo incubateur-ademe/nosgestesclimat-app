@@ -7,7 +7,10 @@ import { revalidatePathAction } from '@/helpers/server/revalidate'
 import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useCurrentSimulation, useUser } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { MouseEvent } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -107,7 +110,7 @@ export default function ClientCTAButtons({
   }
   const handleMainButtonClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (progression === 1 || userIsAuthenticatedAndHasMultipleSimulations) {
-      trackEvent(trackingEvents.results)
+      trackMatomoEvent__deprecated(trackingEvents.results)
       if (trackingEvents.resultsPosthog) {
         trackPosthogEvent(trackingEvents.resultsPosthog)
       }
@@ -120,14 +123,14 @@ export default function ClientCTAButtons({
     }
 
     if (progression > 0) {
-      trackEvent(trackingEvents.resume)
+      trackMatomoEvent__deprecated(trackingEvents.resume)
       if (trackingEvents.resumePosthog) {
         trackPosthogEvent(trackingEvents.resumePosthog)
       }
       return
     }
 
-    trackEvent(trackingEvents.start)
+    trackMatomoEvent__deprecated(trackingEvents.start)
     if (trackingEvents.startPosthog) {
       trackPosthogEvent(trackingEvents.startPosthog)
     }
