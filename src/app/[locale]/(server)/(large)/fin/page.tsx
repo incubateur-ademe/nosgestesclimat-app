@@ -92,7 +92,7 @@ export default async function FinPage({
   }
 
   return (
-    <>
+    <div data-track>
       <FootprintsLinks
         locale={locale as Locale}
         currentPage="carbone"
@@ -109,6 +109,6 @@ export default async function FinPage({
       <IframeDataShareModal
         computedResults={simulationResult.computedResults}
       />
-    </>
+    </div>
   )
 }

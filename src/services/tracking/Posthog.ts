@@ -1,12 +1,9 @@
 import posthog, { type PostHogConfig } from 'posthog-js'
+import { APP_ENV } from '../../../config/app-env'
 import { savedCookieState } from './cookieStateStore'
 import { getIframeInformation } from './iframeInformation'
 
 export type PostHogCookieState = 'accepted' | 'refused' | 'do_not_track'
-
-const SHOW_DEBUG_TRACE =
-  process.env.NODE_ENV === 'development' ||
-  process.env.NEXT_PUBLIC_SITE_URL !== 'https://nosgesteclimat.fr'
 
 export class PostHog {
   private INTERSECTION_OBSERVER_THRESHOLD = 0.1
@@ -72,7 +69,7 @@ export class PostHog {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
       cookieless_mode: 'on_reject',
       defaults: '2026-01-30',
-      debug: SHOW_DEBUG_TRACE,
+      debug: APP_ENV !== 'production',
       person_profiles: 'identified_only',
       /** Unfortunatly, NextJS router.replace does not trigger `history.pushState` systematically, so we need to capture pageview with React */
       capture_pageview: false,
