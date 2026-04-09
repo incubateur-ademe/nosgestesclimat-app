@@ -8,6 +8,9 @@ inputs:
   scalingo-app-name:
     description: Name of the Scalingo application to deploy
     required: true
+  scalingo-api-host:
+    description: Host of scalingo API used to trigger deploy
+    default: api.osc-fr1.scalingo.com
   git-ref:
     description: Git ref to deploy (e.g. "preprod", "main")
     required: true
@@ -32,6 +35,7 @@ runs:
         SCALINGO_APP_NAME: ${{ inputs.scalingo-app-name }}
         GIT_REF: ${{ inputs.git-ref }}
         GIT_REPO: ${{ inputs.git-repo }}
+        SCALINGO_API_HOST: ${{ inputs.scalingo-api-host }}
       shell: bash
       run: bash ${{ github.action_path }}/../../scripts/scalingo-trigger-deployment.sh
 
@@ -40,5 +44,6 @@ runs:
         BEARER_TOKEN: ${{ steps.get_bearer_token.outputs.bearer_token }}
         DEPLOYMENT_ID: ${{ steps.trigger_deployment.outputs.deployment_id }}
         SCALINGO_APP_NAME: ${{ inputs.scalingo-app-name }}
+        SCALINGO_API_HOST: ${{ inputs.scalingo-api-host }}
       shell: bash
       run: bash ${{ github.action_path }}/../../scripts/scalingo-monitor-deployment.sh

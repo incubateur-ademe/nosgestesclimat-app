@@ -9,7 +9,8 @@
 #   SCALINGO_APP_NAME — name of the Scalingo app
 #   GIT_REF           — git ref to deploy (e.g. "preprod")
 #   GIT_REPO          — Github repo to deploy (<orga>/<repo>)
-#
+#   SCALINGO_API_HOST – Base URL of the Scalingo API (default: https://api.osc-fr1.scalingo.com)
+
 # Outputs (when running in GitHub Actions):
 #   deployment_id  — the ID of the triggered deployment
 
@@ -19,6 +20,8 @@ set -euo pipefail
 : "${SCALINGO_APP_NAME:?SCALINGO_APP_NAME is required}"
 : "${GIT_REF:?GIT_REF is required}"
 : "${GIT_REPO:?GIT_REPO is required}"
+: "${SCALINGO_API_HOST:?SCALINGO_API_HOST is required}"
+
 
 if [ "$BEARER_TOKEN" = "null" ]; then
   echo "::error::Scalingo bearer token is empty. Check SCALINGO_API_TOKEN secret and token exchange response."
@@ -26,7 +29,7 @@ if [ "$BEARER_TOKEN" = "null" ]; then
 fi
 
 SOURCE_URL="https://github.com/${GIT_REPO}/archive/${GIT_REF}.tar.gz"
-API="https://api.osc-fr1.scalingo.com/v1/apps/${SCALINGO_APP_NAME}/deployments"
+API="https://${SCALINGO_API_HOST}/v1/apps/${SCALINGO_APP_NAME}/deployments"
 
 PAYLOAD=$(jq -n \
   --arg ref "$GIT_REF" \

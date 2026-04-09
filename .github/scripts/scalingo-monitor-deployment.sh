@@ -9,9 +9,9 @@
 #   BEARER_TOKEN      – Scalingo bearer token
 #   DEPLOYMENT_ID     – ID of the deployment to monitor
 #   SCALINGO_APP_NAME – Name of the Scalingo application
+#   SCALINGO_API_HOST – Base URL of the Scalingo API
 #
 # Optional environment variables:
-#   SCALINGO_API_HOST – Base URL of the Scalingo API (default: https://api.osc-fr1.scalingo.com)
 #   POLL_INTERVAL     – Seconds between status checks (default: 10)
 
 set -euo pipefail
@@ -19,11 +19,11 @@ set -euo pipefail
 : "${BEARER_TOKEN:?BEARER_TOKEN is required}"
 : "${DEPLOYMENT_ID:?DEPLOYMENT_ID is required}"
 : "${SCALINGO_APP_NAME:?SCALINGO_APP_NAME is required}"
+: "${SCALINGO_API_HOST:?SCALINGO_API_HOST is required}"
 
-SCALINGO_API_HOST="${SCALINGO_API_HOST:-https://api.osc-fr1.scalingo.com}"
 POLL_INTERVAL="${POLL_INTERVAL:-10}"
 
-API_URL="${SCALINGO_API_HOST}/v1/apps/${SCALINGO_APP_NAME}/deployments/${DEPLOYMENT_ID}"
+API_URL="https://${SCALINGO_API_HOST}/v1/apps/${SCALINGO_APP_NAME}/deployments/${DEPLOYMENT_ID}"
 
 PRINTED_LINES=0
 
