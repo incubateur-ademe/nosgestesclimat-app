@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - preprod
+      - main
 
 jobs:
   deploy-preprod:
@@ -11,67 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: Preprod
     steps:
-      - name: Exchange token for Bearer token
-        id: get_bearer_token
-        run: |
-          BEARER_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type: application/json" \
-            -u ":${{ secrets.SCALINGO_API_TOKEN }}" \
-            -X POST https://auth.scalingo.com/v1/tokens/exchange | jq -r '.token')
-          echo "::add-mask::$BEARER_TOKEN"
-          echo "bearer_token=$BEARER_TOKEN" >> $GITHUB_OUTPUT
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Deploy to Scalingo
+        uses: ./.github/actions/deploy-scalingo
+        with:
+          scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
+          scalingo-app-name: ${{ vars.SCALINGO_APP_NAME }}
+          git-ref: preprod
+          git-repo: ${{ github.repository }}
 
-      - name: Trigger deployment
-        id: trigger_deployment
-        run: |
-          RESPONSE=$(curl -s --fail-with-body \
-            -H "Accept: application/json" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ steps.get_bearer_token.outputs.bearer_token }}" \
-            -X POST "https://api.osc-fr1.scalingo.com/v1/apps/${{ vars.SCALINGO_APP_NAME }}/deployments" \
-            )
-          DEPLOYMENT_ID=$(echo "$RESPONSE" | jq -r '.deployment.id')
-          echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
-
-      - name: Monitor deployment
-        run: |
-          BEARER_TOKEN="${{ steps.get_bearer_token.outputs.bearer_token }}"
-          DEPLOYMENT_ID="${{ steps.trigger_deployment.outputs.deployment_id }}"
-          API_URL="https://api.osc-fr1.scalingo.com/v1/apps/${{ vars.SCALINGO_APP_NAME }}/deployments/$DEPLOYMENT_ID"
-
-          PRINTED_LINES=0
-
-          while true; do
-            # Get deployment status
-            STATUS=$(curl -s -H "Accept: application/json" \
-              -H "Authorization: Bearer $BEARER_TOKEN" \
-              "$API_URL" | jq -r '.deployment.status')
-
-            # Get deployment logs and print only new lines
-            LOGS=$(curl -s -H "Accept: text/plain" \
-              -H "Authorization: Bearer $BEARER_TOKEN" \
-              "$API_URL/output")
-
-            TOTAL_LINES=$(echo "$LOGS" | wc -l)
-
-            if [ "$TOTAL_LINES" -gt "$PRINTED_LINES" ]; then
-              echo "$LOGS" | tail -n +$((PRINTED_LINES + 1))
-              PRINTED_LINES=$TOTAL_LINES
-            fi
-
-            # Check terminal statuses
-            case "$STATUS" in
-              success)
-                echo "::notice::Deployment completed successfully!"
-                exit 0
-                ;;
-              crashed-error|timeout-error|build-error|aborted)
-                echo "::error::Deployment failed with status: $STATUS"
-                exit 1
-                ;;
-            esac
-
-            sleep 10
-          done
 
   e2e-preprod:
     needs: deploy-preprod
@@ -80,3 +30,21 @@ jobs:
       is_preprod: true
     secrets:
       MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
+
+  deploy-main:
+    name: Deploy to Scalingo (main)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: e2e-preprod
+    environment: Prod
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Scalingo
+        uses: ./.github/actions/deploy-scalingo
+        with:
+          scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
+          scalingo-app-name: ${{ vars.SCALINGO_APP_NAME }}
+          git-ref: main
+          git-repo: ${{ github.repository }}

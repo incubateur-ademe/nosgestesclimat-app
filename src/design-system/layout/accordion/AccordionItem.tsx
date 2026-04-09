@@ -34,6 +34,8 @@ export default function AccordionItem({
       <button
         type="button"
         id={buttonId}
+        data-ph-capture-attribute-action={isOpen ? 'Fermer' : 'Ouvrir'}
+        data-ph-capture-attribute-label={ariaLabel ?? name}
         aria-label={ariaLabel ?? name}
         title={`${ariaLabel ?? name} - ${isOpen ? t('Fermer') : t('Ouvrir')}`}
         onClick={() => {

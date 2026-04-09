@@ -8,6 +8,19 @@ interface Props {
 }
 
 export default function Question({ question }: Props) {
-  const { label } = useRule(question)
-  return <li>{label}</li>
+  const { label, type, choices } = useRule(question)
+  return (
+    <li>
+      <strong>- {question}</strong>
+      <div>question: {label} </div>
+      <div>type: {type} </div>
+      {choices && (
+        <ul>
+          {Object.entries(choices).map(([key, value]) => (
+            <li key={key}>- {value}</li>
+          ))}
+        </ul>
+      )}
+    </li>
+  )
 }
