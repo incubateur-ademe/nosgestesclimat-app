@@ -14,6 +14,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
@@ -21,7 +22,6 @@ jobs:
           scalingo-app-name: ${{ vars.SCALINGO_APP_NAME }}
           git-ref: preprod
           git-repo: ${{ github.repository }}
-
 
   e2e-preprod:
     needs: deploy-preprod
