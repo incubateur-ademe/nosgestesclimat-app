@@ -1,57 +1,22 @@
 'use client'
 
 import { captureCookieBannerStatus } from '@/constants/tracking/posthogTrackers'
+import { GoogleTagManager } from '@/services/tracking/GoogleTagManager'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
-import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import type { PropsWithChildren } from 'react'
-import { createContext, useContext, useEffect, useState } from 'react'
-import { PostHog, type PostHogCookieState } from './Posthog'
-
-export const COOKIE_STATE_KEY = 'cookie-management-state'
-
-export interface CookieState {
-  posthog: PostHogCookieState
-  googleTag: 'accepted' | 'refused'
-}
+import { createContext, useContext, useState } from 'react'
+import {
+  isCookieStateInitialized,
+  saveCookieState,
+  savedCookieState,
+  type CookieState,
+} from '../../services/tracking/cookieStateStore'
+import { PostHog } from '../../services/tracking/Posthog'
 
 type CookieBannerDisplayState = 'hidden' | 'banner' | 'form'
 
-const DEFAULT_COOKIE_STATE: CookieState = {
-  posthog: 'refused',
-  googleTag: 'refused',
-}
-
-function getLocalStorageState(): CookieState {
-  try {
-    const json = safeLocalStorage.getItem(COOKIE_STATE_KEY)
-    return json ? (JSON.parse(json) as CookieState) : DEFAULT_COOKIE_STATE
-  } catch {
-    return DEFAULT_COOKIE_STATE
-  }
-}
-
-const LOCAL_STORAGE_STATE = getLocalStorageState()
-
-const posthog = new PostHog(LOCAL_STORAGE_STATE.posthog)
-
-const handleUpdateGoogleTag = (cookieState: CookieState['googleTag']) => {
-  switch (cookieState) {
-    case 'accepted':
-      window.gtag?.('consent', 'update', {
-        ad_storage: 'granted',
-        ad_user_data: 'granted',
-        ad_personalization: 'granted',
-      })
-      break
-    case 'refused':
-      window.gtag?.('consent', 'update', {
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied',
-      })
-      break
-  }
-}
+const posthog = new PostHog()
+const googleTagManager = new GoogleTagManager()
 
 const CookieConsentContext = createContext<{
   cookieBannerDisplayState: CookieBannerDisplayState
@@ -61,22 +26,16 @@ const CookieConsentContext = createContext<{
 }>({
   cookieBannerDisplayState: 'hidden',
   setCookieBannerDisplayState: () => {},
-  cookieState: DEFAULT_COOKIE_STATE,
+  cookieState: savedCookieState,
   setCookieState: () => {},
 })
 
 export const CookieConsentProvider = ({ children }: PropsWithChildren) => {
   const [cookieBannerDisplayState, setCookieBannerDisplayState] =
     useState<CookieBannerDisplayState>(
-      !safeLocalStorage.getItem(COOKIE_STATE_KEY) ? 'banner' : 'hidden'
+      isCookieStateInitialized ? 'hidden' : 'banner'
     )
-  const [cookieState, setCookieState] =
-    useState<CookieState>(LOCAL_STORAGE_STATE)
-
-  // Restore GTM consent on mount for returning users who already made a choice
-  useEffect(() => {
-    handleUpdateGoogleTag(LOCAL_STORAGE_STATE.googleTag)
-  }, [])
+  const [cookieState, setCookieState] = useState(savedCookieState)
 
   return (
     <CookieConsentContext
@@ -109,9 +68,10 @@ export function useCookieManagement(): {
   const onChange = (cookieState: CookieState) => {
     setCookieBannerDisplayState('hidden')
     setCookieState(cookieState)
+    saveCookieState(cookieState)
     posthog.update(cookieState.posthog)
-    handleUpdateGoogleTag(cookieState.googleTag)
-    safeLocalStorage.setItem(COOKIE_STATE_KEY, JSON.stringify(cookieState))
+    googleTagManager.update(cookieState.googleTag)
+
     trackPosthogEvent(captureCookieBannerStatus({ cookieState }))
   }
 

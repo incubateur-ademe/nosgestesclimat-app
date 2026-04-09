@@ -21,9 +21,3 @@ export const simulateurClickSommaireQuestion = [
   'Simulateur',
   'Click Sommaire question',
 ]
-
-export const simulationClickSaveShortcut = [
-  'trackEvent',
-  'Simulateur',
-  'Click Save shortcut',
-]

@@ -5,7 +5,7 @@ import { getCarbonFootprint } from '@/helpers/actions/getCarbonFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useRule } from '@/publicodes-state'
 import type { TranslationFunctionType } from '@/types/translation'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { getCorrectedValue } from '@/utils/getCorrectedValue'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { i18n as I18nType } from 'i18next'
@@ -113,7 +113,9 @@ export default function ActionValue({
               'Répondre aux questions restantes'
             )}
             onClick={() => {
-              trackEvent(actionsClickAdditionalQuestion(dottedName))
+              trackMatomoEvent__deprecated(
+                actionsClickAdditionalQuestion(dottedName)
+              )
               setActionWithFormOpen(dottedName)
             }}>
             <Trans i18nKey="actions.actionCard.actionValue.answerButton.label">

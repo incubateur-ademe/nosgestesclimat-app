@@ -7,7 +7,10 @@ import Emoji from '@/design-system/utils/Emoji'
 import { updateLangCookie } from '@/helpers/language/updateLangCookie'
 import { useIsClient } from '@/hooks/useIsClient'
 import i18nConfig, { type Locale } from '@/i18nConfig'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import { useCurrentLocale } from 'next-i18n-router/client'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -35,7 +38,7 @@ const generateLanguageUrl = (newLocale: Locale): string => {
 }
 
 const handleLanguageClick = (newLocale: Locale) => {
-  trackEvent(footerClickLanguage(newLocale))
+  trackMatomoEvent__deprecated(footerClickLanguage(newLocale))
   trackPosthogEvent(captureFooterClickLanguage({ locale: newLocale }))
   updateLangCookie(newLocale)
 }

@@ -21,7 +21,7 @@ export interface SubcategoryDisplayData {
   displayPercentage: string
 }
 
-export interface CategoryDisplayData extends SubcategoryDisplayData {
+interface CategoryDisplayData extends SubcategoryDisplayData {
   icon: ReactNode
   bgBarClassName: string
   bgLightClassName: string

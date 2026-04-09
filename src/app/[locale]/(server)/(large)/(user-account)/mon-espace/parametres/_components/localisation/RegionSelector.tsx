@@ -14,7 +14,7 @@ import { sortSupportedRegions } from '@/helpers/localisation/sortSupportedRegion
 import { useLocale } from '@/hooks/useLocale'
 import { useRules } from '@/hooks/useRules'
 import { useUser } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { SupportedRegions } from '@incubateur-ademe/nosgestesclimat'
 import { useState } from 'react'
 
@@ -50,7 +50,7 @@ export default function RegionSelector({
           className={`middle w-auto cursor-pointer p-4 ${
             isLoading ? 'pointer-events-none opacity-60' : ''
           }`}
-          onClick={() => trackEvent(profilOpenRegions)}
+          onClick={() => trackMatomoEvent__deprecated(profilOpenRegions)}
           aria-expanded={isOpen}
           aria-controls="region-grid"
           role="button"
@@ -58,7 +58,7 @@ export default function RegionSelector({
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault()
-              trackEvent(profilOpenRegions)
+              trackMatomoEvent__deprecated(profilOpenRegions)
             }
           }}>
           <span>
@@ -80,7 +80,7 @@ export default function RegionSelector({
           supportedRegions={supportedRegions}
           updateCurrentRegion={(code: string) => {
             setIsUpdateSuccess(false)
-            trackEvent(profilClickRegion(code))
+            trackMatomoEvent__deprecated(profilClickRegion(code))
 
             updateRegion({
               code,

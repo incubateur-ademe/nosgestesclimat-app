@@ -14,7 +14,7 @@ import Card from '@/design-system/layout/Card'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { capitalizeString } from '@/utils/capitalizeString'
 import type { SupportedRegions } from '@incubateur-ademe/nosgestesclimat'
 import { usePathname } from 'next/navigation'
@@ -138,7 +138,7 @@ export default function LocalisationBanner({ supportedRegions }: Props) {
             onClick={() => {
               hideTutorial('localisationBanner')
 
-              trackEvent(trackingClickRegionBanner)
+              trackMatomoEvent__deprecated(trackingClickRegionBanner)
             }}>
             <Trans>J'ai compris</Trans>
           </Button>

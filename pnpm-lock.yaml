@@ -134,9 +134,6 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
-      use-count-up:
-        specifier: ^3.0.1
-        version: 3.0.1(react@19.2.4)
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -195,9 +192,6 @@ importers:
       '@types/mdx':
         specifier: ^2.0.10
         version: 2.0.13
-      '@types/micromatch':
-        specifier: ^4.0.10
-        version: 4.0.10
       '@types/node':
         specifier: ^24.12.0
         version: 24.12.0
@@ -273,9 +267,6 @@ importers:
       mailisk:
         specifier: ^2.2.2
         version: 2.2.2
-      micromatch:
-        specifier: ^4.0.8
-        version: 4.0.8
       msw:
         specifier: ^2.12.14
         version: 2.12.14(@types/node@24.12.0)(typescript@5.9.3)
@@ -3233,9 +3224,6 @@ packages:
   '@types/babel__traverse@7.28.0':
     resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
 
-  '@types/braces@3.0.5':
-    resolution: {integrity: sha512-SQFof9H+LXeWNz8wDe7oN5zu7ket0qwMu5vZubW4GCJ8Kkeh6nBWUz87+KTz/G3Kqsrp0j/W253XJb3KMEeg3w==}
-
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
 
@@ -3307,9 +3295,6 @@ packages:
 
   '@types/mdx@2.0.13':
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
-
-  '@types/micromatch@4.0.10':
-    resolution: {integrity: sha512-5jOhFDElqr4DKTrTEbnW8DZ4Hz5LRUEmyrGpCMrD/NphYv3nUnaF08xmSLx1rGGnyEs/kFnhiw6dCgcDqMr5PQ==}
 
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
@@ -7990,16 +7975,6 @@ packages:
     resolution: {integrity: sha512-oCwdVC7mTuWiPyjLUz/COz5TLk6wgp0RCsN+wHZ2Ekneac9w8uuV0njcbbie2ME+Vs+d6duwmYuR3HgQXs1fOg==}
     engines: {node: '>= 0.4'}
 
-  use-count-up@3.0.1:
-    resolution: {integrity: sha512-jlVsXJYje6jh+xwQaCEYrwHoB+nRyillNEmr21bhe9kw7tpRzyrSq9jQs9UOlo+8hCFkuOmjUihL3IjEK/piVg==}
-    peerDependencies:
-      react: '>=16.8.0'
-
-  use-elapsed-time@3.0.2:
-    resolution: {integrity: sha512-2EY9lJ5DWbAvT8wWiEp6Ztnl46DjXz2j78uhWbXaz/bg3OfpbgVucCAlcN8Bih6hTJfFTdVYX9L6ySMn5py/wQ==}
-    peerDependencies:
-      react: '>=16.8.0'
-
   use-isomorphic-layout-effect@1.2.1:
     resolution: {integrity: sha512-tpZZ+EX0gaghDAiFR37hj5MgY6ZN55kLiPkJsKxBMZ6GZdOSPJXiOzPM984oPYZ5AnehYx5WQp1+ME8I/P/pRA==}
     peerDependencies:
@@ -11530,8 +11505,6 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.5
 
-  '@types/braces@3.0.5': {}
-
   '@types/chai@5.2.2':
     dependencies:
       '@types/deep-eql': 4.0.2
@@ -11603,10 +11576,6 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/mdx@2.0.13': {}
-
-  '@types/micromatch@4.0.10':
-    dependencies:
-      '@types/braces': 3.0.5
 
   '@types/minimatch@3.0.5': {}
 
@@ -17145,15 +17114,6 @@ snapshots:
     dependencies:
       punycode: 1.4.1
       qs: 6.14.0
-
-  use-count-up@3.0.1(react@19.2.4):
-    dependencies:
-      react: 19.2.4
-      use-elapsed-time: 3.0.2(react@19.2.4)
-
-  use-elapsed-time@3.0.2(react@19.2.4):
-    dependencies:
-      react: 19.2.4
 
   use-isomorphic-layout-effect@1.2.1(@types/react@19.2.2)(react@19.2.4):
     dependencies:

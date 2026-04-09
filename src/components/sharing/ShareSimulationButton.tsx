@@ -11,7 +11,10 @@ import {
 import Share from '@/design-system/sharing/Share'
 import { getShareTrackEvent } from '@/helpers/tracking/share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import FacebookIcon from '../icons/share/FacebookIcon'
 import LinkedinIcon from '../icons/share/LinkedinIcon'
 import MailIcon from '../icons/share/MailIcon'
@@ -34,7 +37,7 @@ export default function ShareSimulationButton({
   return (
     <Share
       onClick={() => {
-        trackEvent(clickShareSimulationButton)
+        trackMatomoEvent__deprecated(clickShareSimulationButton)
         trackPosthogEvent(captureClickShareSimulationButton)
       }}
       buttonLabel={buttonLabel ?? t('Partager')}

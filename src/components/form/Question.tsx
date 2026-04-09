@@ -1,6 +1,5 @@
 'use client'
 
-import Assistance from '@/components/form/question/Assistance'
 import BooleanInput from '@/components/form/question/BooleanInput'
 import ChoicesInput from '@/components/form/question/ChoicesInput'
 import Label from '@/components/form/question/Label'
@@ -17,12 +16,13 @@ import Button from '@/design-system/buttons/Button'
 import { useUpdatePageTitle } from '@/hooks/simulation/useUpdatePageTitle'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransClient'
+import NumberInputWithAssistance from './question/NumberInputWithAssistance'
 import Warning from './question/Warning'
 
 interface Props {
@@ -73,6 +73,26 @@ export default function Question({
 
   const [isOpen, setIsOpen] = useState(showInputsLabel ? false : true)
   const locale = useLocale()
+
+  const numberInputProps = {
+    question,
+    unit,
+    value: situationValue as Evaluation<number>,
+    setValue: (value: number | string | undefined) => {
+      setValue(value, { questionDottedName: question })
+    },
+    placeholder:
+      isMissing && typeof value === 'number'
+        ? value.toLocaleString(locale, {
+            maximumFractionDigits: value < 10 ? 1 : 0,
+          })
+        : '',
+    'data-testid': question,
+    id: DEFAULT_FOCUS_ELEMENT_ID,
+    'aria-describedby': `${QUESTION_DESCRIPTION_BUTTON_ID}-content warning-message notification-message`,
+    'aria-labelledby': 'question-label',
+  }
+
   return (
     <>
       <div className={twMerge('mb-6 flex flex-col items-start', className)}>
@@ -101,26 +121,17 @@ export default function Question({
         ) : null}
         {isOpen && (
           <>
-            {type === 'number' && (
-              <NumberInput
-                unit={unit}
-                value={situationValue as Evaluation<number>}
-                setValue={(value) => {
-                  setValue(value, { questionDottedName: question })
-                }}
-                placeholder={
-                  isMissing && typeof value === 'number'
-                    ? value.toLocaleString(locale, {
-                        maximumFractionDigits: value < 10 ? 1 : 0,
-                      })
-                    : ''
-                }
-                data-testid={question}
-                id={DEFAULT_FOCUS_ELEMENT_ID}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content warning-message notification-message`}
-                aria-labelledby="question-label"
-              />
-            )}
+            {type === 'number' &&
+              (assistance ? (
+                <NumberInputWithAssistance
+                  {...numberInputProps}
+                  // Unit is required on assistance mode
+                  unit={unit!}
+                  assistance={assistance}
+                />
+              ) : (
+                <NumberInput {...numberInputProps} />
+              ))}
 
             {type === 'boolean' && (
               <BooleanInput
@@ -128,7 +139,7 @@ export default function Question({
                 setValue={(value: string | undefined) => {
                   {
                     setValue(value, { questionDottedName: question })
-                    trackEvent(
+                    trackMatomoEvent__deprecated(
                       questionChooseAnswer({ question, answer: value })
                     )
                   }
@@ -149,7 +160,7 @@ export default function Question({
                 setValue={(value) => {
                   {
                     setValue(value, { questionDottedName: question })
-                    trackEvent(
+                    trackMatomoEvent__deprecated(
                       questionChooseAnswer({ question, answer: value })
                     )
                   }
@@ -175,6 +186,7 @@ export default function Question({
           </>
         )}
       </div>
+
       {typeof situationValue === 'number' && (
         <Warning
           type={type}
@@ -185,10 +197,6 @@ export default function Question({
           unit={unit}
         />
       )}
-
-      {assistance ? (
-        <Assistance question={question} assistance={assistance} />
-      ) : null}
 
       {activeNotifications.length > 0 && (
         <Notification

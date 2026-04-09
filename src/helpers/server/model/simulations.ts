@@ -6,7 +6,7 @@ import { getUser, type AppUser } from '../dal/user'
 import { fetchServer } from '../fetchServer'
 import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
 
-export interface SimulationFilter {
+interface SimulationFilter {
   completedOnly?: boolean
   pageSize?: number
 }

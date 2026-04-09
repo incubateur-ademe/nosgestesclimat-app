@@ -12,7 +12,10 @@ import Markdown from '@/design-system/utils/Markdown'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { MUST_SHOW_DESCRIPTION } from '@/publicodes-state/constants/questions'
 import type { QuestionSize } from '@/types/values'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
@@ -105,12 +108,12 @@ export default function Label({
             type="button"
             onClick={() => {
               if (isOpen) {
-                trackEvent(questionCloseInfo({ question }))
+                trackMatomoEvent__deprecated(questionCloseInfo({ question }))
                 trackPosthogEvent(
                   captureClickInfo({ question, state: 'closed' })
                 )
               } else {
-                trackEvent(questionOpenInfo({ question }))
+                trackMatomoEvent__deprecated(questionOpenInfo({ question }))
                 trackPosthogEvent(
                   captureClickInfo({ question, state: 'opened' })
                 )
@@ -169,7 +172,7 @@ export default function Label({
                 size="xs"
                 color="secondary"
                 onClick={() => {
-                  trackEvent(questionCloseInfo({ question }))
+                  trackMatomoEvent__deprecated(questionCloseInfo({ question }))
                   setIsOpen(false)
                 }}
                 title={t('Fermer')}>

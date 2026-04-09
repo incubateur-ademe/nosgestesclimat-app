@@ -18,40 +18,42 @@ export default async function FootprintsLinks({
   const { t } = await getServerTranslation({ locale })
 
   return (
-    <Switch
-      className="mb-12 text-center md:text-right"
-      aria-label={t(
-        'results.footprintsLinks.ariaLabel',
-        "Sélecteur de type d'empreinte"
-      )}
-      options={[
-        {
-          label: (
-            <span className="whitespace-nowrap">
-              <Trans locale={locale} i18nKey="common.carbonFootprint">
-                Empreinte carbone
-              </Trans>
-            </span>
-          ),
-          href: basePathname,
-          'data-testid': 'carbon-footprint-link',
-          isSelected: currentPage === 'carbone',
-        },
-        {
-          'data-testid': 'water-footprint-link',
-          label: (
-            <span className="whitespace-nowrap">
-              <Trans locale={locale} i18nKey="common.waterFootprint">
-                Empreinte eau
-              </Trans>
-              &nbsp;
-              <Emoji className="text-base">💧</Emoji>
-            </span>
-          ),
-          href: `${basePathname}/eau`,
-          isSelected: currentPage === 'eau',
-        },
-      ]}
-    />
+    <div className="text-center md:text-right">
+      <Switch
+        className="mb-12 inline-flex"
+        aria-label={t(
+          'results.footprintsLinks.ariaLabel',
+          "Sélecteur de type d'empreinte"
+        )}
+        options={[
+          {
+            label: (
+              <span className="whitespace-nowrap">
+                <Trans locale={locale} i18nKey="common.carbonFootprint">
+                  Empreinte carbone
+                </Trans>
+              </span>
+            ),
+            href: basePathname,
+            'data-testid': 'carbon-footprint-link',
+            isSelected: currentPage === 'carbone',
+          },
+          {
+            'data-testid': 'water-footprint-link',
+            label: (
+              <span className="whitespace-nowrap">
+                <Trans locale={locale} i18nKey="common.waterFootprint">
+                  Empreinte eau
+                </Trans>
+                &nbsp;
+                <Emoji className="text-base">💧</Emoji>
+              </span>
+            ),
+            href: `${basePathname}/eau`,
+            isSelected: currentPage === 'eau',
+          },
+        ]}
+      />
+    </div>
   )
 }

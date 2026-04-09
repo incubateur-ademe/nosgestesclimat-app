@@ -7,7 +7,7 @@ import {
   organisationsAccueilClickDemo,
 } from '@/constants/tracking/pages/organisationsAccueil'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Image from 'next/image'
 
 export default function HeroSection() {
@@ -38,7 +38,7 @@ export default function HeroSection() {
               color="text"
               href="/organisations/demander-demo"
               onClick={() => {
-                trackEvent(organisationsAccueilClickDemo)
+                trackMatomoEvent__deprecated(organisationsAccueilClickDemo)
               }}>
               <Trans>Demander une démo</Trans>
             </ButtonLink>

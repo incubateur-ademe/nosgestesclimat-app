@@ -14,7 +14,7 @@ import { useIsGroupOwner } from '@/hooks/groups/useIsGroupOwner'
 import { useUpdateGroup } from '@/hooks/groups/useUpdateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useState } from 'react'
 
@@ -56,7 +56,7 @@ export default function EditableGroupTitle({ group }: { group: Group }) {
             name="group-name-input"
             onClose={() => {
               setIsEditingTitle(false)
-              trackEvent(amisDashboardValidateEditName)
+              trackMatomoEvent__deprecated(amisDashboardValidateEditName)
             }}
             onSubmit={handleSubmit}
             isLoading={isSubmitting}
@@ -78,7 +78,7 @@ export default function EditableGroupTitle({ group }: { group: Group }) {
                     aria-label={t('Modifier le nom du groupe')}
                     onClick={() => {
                       setIsEditingTitle(true)
-                      trackEvent(amisDashboardOpenEditName)
+                      trackMatomoEvent__deprecated(amisDashboardOpenEditName)
                     }}
                     color="secondary"
                     data-testid="group-name-edit-button">

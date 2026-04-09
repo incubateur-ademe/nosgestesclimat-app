@@ -2,7 +2,7 @@
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransClient'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 interface Props {
   href: string
@@ -16,7 +16,7 @@ export default function GoBackLink({ className, href, eventTracked }: Props) {
       href={href}
       onClick={() => {
         if (eventTracked) {
-          trackEvent(eventTracked)
+          trackMatomoEvent__deprecated(eventTracked)
         }
       }}
       className={`${className} text-primary-700 inline-block px-0 text-[1rem]! no-underline transition-opacity hover:opacity-80`}>

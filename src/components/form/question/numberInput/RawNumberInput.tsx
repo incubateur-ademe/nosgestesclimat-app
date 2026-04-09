@@ -3,7 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import type { Evaluation } from 'publicodes'
 import { type ComponentProps } from 'react'
-import type { NumberFormatValues } from 'react-number-format'
+import type { NumberFormatValues, SourceInfo } from 'react-number-format'
 import { NumericFormat } from 'react-number-format'
 import { twMerge } from 'tailwind-merge'
 
@@ -11,7 +11,7 @@ interface Props {
   unit?: string
   value?: Evaluation<number> | string
   placeholder?: string
-  handleValueChange: (value: NumberFormatValues) => void
+  handleValueChange: (value: NumberFormatValues, sourceInfo: SourceInfo) => void
   id?: string
   className?: string
 }

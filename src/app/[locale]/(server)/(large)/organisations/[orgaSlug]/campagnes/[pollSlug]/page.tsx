@@ -14,7 +14,10 @@ import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPo
 import useFetchOrganisation from '@/hooks/organisations/useFetchOrganisation'
 import { useHandleRedirectFromLegacy } from '@/hooks/organisations/useHandleRedirectFromLegacy'
 import { useUser } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 import dayjs from 'dayjs'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
@@ -102,7 +105,7 @@ export default function CampagnePage() {
               <ButtonLink
                 href={`/organisations/${orgaSlug}/campagnes/${pollSlug}/parametres`}
                 onClick={() => {
-                  trackEvent(pollDashboardClickParameters)
+                  trackMatomoEvent__deprecated(pollDashboardClickParameters)
                   trackPosthogEvent(captureClickPollSettings)
                 }}
                 color="secondary"

@@ -9,7 +9,10 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getCarbonFootprint } from '@/helpers/actions/getCarbonFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useCurrentSimulation, useEngine, useUser } from '@/publicodes-state'
-import { trackEvent, trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import {
+  trackMatomoEvent__deprecated,
+  trackPosthogEvent,
+} from '@/utils/analytics/trackEvent'
 
 export default function ActionsTutorial() {
   const { t, i18n } = useClientTranslation()
@@ -86,7 +89,7 @@ export default function ActionsTutorial() {
       <Button
         onClick={() => {
           hideTutorial('actions')
-          trackEvent(actionsClickStart)
+          trackMatomoEvent__deprecated(actionsClickStart)
           trackPosthogEvent(captureActionsClickStart)
         }}>
         <Trans>Démarrer</Trans>

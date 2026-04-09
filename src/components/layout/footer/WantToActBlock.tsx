@@ -1,6 +1,4 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { footerNewsletterCTAClick } from '@/constants/tracking/layout'
-import { captureFooterNewsletterClick } from '@/constants/tracking/posthogTrackers'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import type { Locale } from '@/i18nConfig'
 
@@ -20,11 +18,7 @@ export default function WantToActBlock({ locale }: { locale: Locale }) {
         </Trans>
       </p>
 
-      <ButtonLink
-        color="secondary"
-        data-track-event={footerNewsletterCTAClick}
-        data-track-posthog={captureFooterNewsletterClick()}
-        href="/gestion-infolettres">
+      <ButtonLink color="secondary" href="/gestion-infolettres">
         <Trans locale={locale} i18nKey="footer.wantToAct.button">
           Je choisis mes infolettres
         </Trans>

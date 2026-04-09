@@ -6,7 +6,7 @@ import { UTM_MEDIUM_KEY, UTM_SOURCE_KEY } from '@/constants/urls/utm'
 import Button from '@/design-system/buttons/Button'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Group } from '@/types/groups'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useEffect, useRef, useState } from 'react'
 
 const SubmitButton = ({
@@ -22,7 +22,7 @@ const SubmitButton = ({
     <Button
       className="flex justify-center whitespace-nowrap"
       onClick={() => {
-        trackEvent(amisDashboardCopyLink)
+        trackMatomoEvent__deprecated(amisDashboardCopyLink)
 
         handleShare()
       }}
