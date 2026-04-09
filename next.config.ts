@@ -20,7 +20,7 @@ const withMDX = createMDX({
 const rewrites = PROXY_SERVER? {
   rewrites: () => [{
     source: '/api/server/:path*',
-    destination: `${serverUrl}/:path*`,
+    destination: `${process.env.NEXT_PUBLIC_SERVER_URL}/:path*`,
   }]
 } : {}
 
