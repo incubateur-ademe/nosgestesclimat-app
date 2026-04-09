@@ -13,7 +13,7 @@ jobs:
     environment: Preprod
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
@@ -34,17 +34,18 @@ jobs:
   deploy-main:
     name: Deploy to Scalingo (main)
     if: github.ref == 'refs/heads/main'
+    needs: e2e-deploy
     runs-on: ubuntu-latest
-    needs: e2e-preprod
     environment: Prod
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
           scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
           scalingo-app-name: ${{ vars.SCALINGO_APP_NAME }}
+          scalingo-api-host: ${{ vars.SCALINGO_API_HOST }}
           git-ref: main
           git-repo: ${{ github.repository }}
