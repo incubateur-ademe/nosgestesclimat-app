@@ -3,7 +3,6 @@ name: Deploy
 on:
   push:
     branches:
-      - preprod
       - main
 
 jobs:
@@ -20,7 +19,7 @@ jobs:
         with:
           scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
           scalingo-app-name: ${{ vars.SCALINGO_APP_NAME }}
-          git-ref: preprod
+          git-ref: main
           git-repo: ${{ github.repository }}
 
   e2e-preprod:
@@ -33,8 +32,7 @@ jobs:
 
   deploy-main:
     name: Deploy to Scalingo (main)
-    if: github.ref == 'refs/heads/main'
-    needs: e2e-deploy
+    needs: e2e-preprod
     runs-on: ubuntu-latest
     environment: Prod
     steps:
