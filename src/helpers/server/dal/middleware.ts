@@ -26,7 +26,7 @@ export async function userMiddleware(
   const userId = randomUUID()
 
   // We cannot set a session in the request object directly (like we would have done in any normal framework)
-  // In that case, we need to pass this information in the header.
+  // In that case, we need to pass this information thought the header.
   //
   // So the priority for getting the userId in the app is :
   // 1. Server session cookie (API)

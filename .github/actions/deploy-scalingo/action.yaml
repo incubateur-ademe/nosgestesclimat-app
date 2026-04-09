@@ -1,0 +1,44 @@
+name: Deploy to Scalingo
+description: Exchange token, trigger deployment, and monitor it on Scalingo
+
+inputs:
+  scalingo-api-token:
+    description: Scalingo API token used to authenticate
+    required: true
+  scalingo-app-name:
+    description: Name of the Scalingo application to deploy
+    required: true
+  git-ref:
+    description: Git ref to deploy (e.g. "preprod", "main")
+    required: true
+  git-repo:
+    description: GitHub repository (<org>/<repo>)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Exchange token for Bearer token
+      id: get_bearer_token
+      env:
+        SCALINGO_API_TOKEN: ${{ inputs.scalingo-api-token }}
+      shell: bash
+      run: bash ${{ github.action_path }}/../../scripts/scalingo-exchange-token.sh
+
+    - name: Trigger deployment
+      id: trigger_deployment
+      env:
+        BEARER_TOKEN: ${{ steps.get_bearer_token.outputs.bearer_token }}
+        SCALINGO_APP_NAME: ${{ inputs.scalingo-app-name }}
+        GIT_REF: ${{ inputs.git-ref }}
+        GIT_REPO: ${{ inputs.git-repo }}
+      shell: bash
+      run: bash ${{ github.action_path }}/../../scripts/scalingo-trigger-deployment.sh
+
+    - name: Monitor deployment
+      env:
+        BEARER_TOKEN: ${{ steps.get_bearer_token.outputs.bearer_token }}
+        DEPLOYMENT_ID: ${{ steps.trigger_deployment.outputs.deployment_id }}
+        SCALINGO_APP_NAME: ${{ inputs.scalingo-app-name }}
+      shell: bash
+      run: bash ${{ github.action_path }}/../../scripts/scalingo-monitor-deployment.sh

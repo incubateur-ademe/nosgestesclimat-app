@@ -50,7 +50,7 @@ export default async function SimulationPage({
   })
 
   return (
-    <div data-track>
+    <>
       <FootprintsLinks
         locale={locale as Locale}
         currentPage="eau"
@@ -62,6 +62,6 @@ export default async function SimulationPage({
         locale={locale as Locale}
         hideSaveBlock={user.isAuth}
       />
-    </div>
+    </>
   )
 }

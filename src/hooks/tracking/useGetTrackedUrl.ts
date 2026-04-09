@@ -1,6 +1,6 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 
-export function useGetTrackedUrl() {
+export function useGetTrackedPathname() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -30,6 +30,9 @@ export function useGetTrackedUrl() {
   if (search) {
     pathnameUpdated += `?${search}`
   }
+
+  // Remove trailing slash
+  pathnameUpdated = pathnameUpdated.replace(/\/$/, '')
 
   return pathnameUpdated
 }
