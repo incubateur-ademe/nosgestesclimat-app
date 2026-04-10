@@ -193,8 +193,8 @@ export default function MentionsLegalesPage() {
         <a
           target="_blank"
           rel="noreferrer noopener nofollow"
-          href="https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/main/LICENSE">
-          https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/main/LICENSE
+          href="https://github.com/incubateur-ademe/nosgestesclimat-app/blob/main/LICENSE">
+          https://github.com/incubateur-ademe/nosgestesclimat-app/blob/main/LICENSE
         </a>
         , l’ADEME est propriétaire des droits de propriété intellectuelle ou
         détient les droits d’usage sur tous les éléments accessibles sur le

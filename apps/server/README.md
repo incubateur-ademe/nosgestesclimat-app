@@ -1,12 +1,23 @@
-# nosgestesclimat-server
+# API du site Web nosgestesclimat.fr
 
-Une application express qui gère l'API de [nosgestesclimat-site-nextjs](https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs).
+Une application express qui gère l'API de [nosgestesclimat-app](https://github.com/incubateur-ademe/nosgestesclimat-app).
 
-## Pré-requis
+## Installation
 
-Ce projet utilise [node](https://nodejs.org), [pnpm](https://pnpm.io/), [docker](https://www.docker.com/) et [docker compose](https://docs.docker.com/compose/).
+Pré-requis :
 
-Pour l'utiliser en local, cloner ce repo et créer un fichier .env contenant les variables contenues dans le fichier [`.env.development`](./.env.development).
+- [node](https://nodejs.org)
+- [pnpm](https://pnpm.io/)
+- [docker](https://www.docker.com/)
+- [docker compose](https://docs.docker.com/compose/)
+
+```bash
+pnpm install
+
+cp .env.template .env
+
+# Puis, ajoutez manuellement les variables d'environnement et secrets requis dans le fichier .env
+```
 
 ## Commandes utiles
 
@@ -16,40 +27,40 @@ Installe les dépendances
 pnpm install
 ```
 
-Lance les services bases de données
+Lance les services bases de données avec devcontainers via [l'extension VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`Cmd+Shift+P` > `Dev Containers: Reopen in Container`) ou via [la ligne de commande](https://github.com/devcontainers/cli) :
 
 ```bash
-docker compose up
+devcontainer up
 ```
 
 Lance les tests (requiert les dépendances)
 
 ```bash
-pnpm test
+pnpm -F server test
 ```
 
 Builde le projet (requiert les dépendances)
 
 ```bash
-pnpm build
+pnpm -F server build
 ```
 
 Migre la base de donnée (requiert les dépendances, l'env et les services)
 
 ```bash
-pnpm db:migrate
+pnpm -F server db:migrate
 ```
 
 Lance le service en mode développement (requiert les services, l'env et la migration)
 
 ```bash
-pnpm dev
+pnpm -F server dev
 ```
 
 Lance le service en mode production (requiert le build, les services, l'env et la migration)
 
 ```bash
-pnpm start
+pnpm -F server start
 ```
 
 ## Scalingo
