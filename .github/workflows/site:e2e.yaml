@@ -29,7 +29,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     environment: 'Test E2E'
     runs-on: ubuntu-latest
-    name: Build & Setup Tests
+    name: Build & Setup
     defaults:
       run:
         working-directory: ./apps/site
@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: e2e-state
-          path: e2e/state/*.json
+          path: apps/site/e2e/state/*.json
           retention-days: 1
 
       # We archive the Next.js build because ":" in filenames are not allowed by upload-artifact

@@ -2,7 +2,7 @@ name: Server
 
 on:
   pull_request:
-    branches: [preprod]
+    branches: [main]
     paths: [apps/server/**]
 
 jobs:
