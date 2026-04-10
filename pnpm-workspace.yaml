@@ -1,6 +1,9 @@
+packages:
+  - packages/*
+  - apps/*
 minimumReleaseAge: 10080 # 7 days
 minimumReleaseAgeExclude:
   - '@incubateur-ademe/nosgestesclimat'
-packages:
-  - 'packages/*'
-  - 'apps/*'
+onlyBuiltDependencies:
+  - msw
+  - prisma
