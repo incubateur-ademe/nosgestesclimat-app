@@ -1,15 +1,19 @@
-name: Tests
+name: Site / Test
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths: [apps/site/**]
   pull_request:
+    paths: [apps/site/**]
 
 jobs:
   test:
     name: Unit test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/site
 
     steps:
       - name: Checkout repository
@@ -24,6 +28,9 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/site
 
     steps:
       - name: Checkout repository
@@ -40,6 +47,9 @@ jobs:
   type:
     name: Typecheck
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/site
 
     steps:
       - name: Checkout repository
@@ -56,6 +66,9 @@ jobs:
   translations:
     name: Translations
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/site
 
     steps:
       - name: Checkout repository

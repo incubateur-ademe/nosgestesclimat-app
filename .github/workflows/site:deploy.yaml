@@ -1,9 +1,9 @@
-name: Deploy
+name: Site / Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths: [apps/site/**]
 
 jobs:
   deploy-preprod:

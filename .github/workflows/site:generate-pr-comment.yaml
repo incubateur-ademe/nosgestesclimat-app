@@ -2,13 +2,16 @@
 #
 # TODO: to factorize with the model's CI.
 
-name: Generate PR comment
+name: Site / Generate PR comment
 permissions:
   pull-requests: write
+
 on:
   pull_request:
+    paths: [apps/site/**]
     types: [opened, synchronize]
   push:
+    paths: [apps/site/**]
     branches:
       - '!main'
       - '!preprod'
@@ -18,6 +21,10 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       check-ui-result: ${{ steps.check-ui.outputs.result }}
+    defaults:
+      run:
+        working-directory: ./apps/site
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

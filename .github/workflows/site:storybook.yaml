@@ -1,4 +1,4 @@
-name: Storybook
+name: Site / Storybook
 
 on:
   workflow_dispatch:
@@ -16,6 +16,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: ./apps/site
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -28,12 +32,10 @@ jobs:
         run: pnpm storybook:build:github-pages
         env:
           NEXT_PUBLIC_SITE_URL: https://storybook.nosgestesclimat.fr
-
       - name: Upload artifact 📦
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./storybook-static
-
+          path: ./apps/site/storybook-static
       - name: Deploy to GitHub Pages 🚀
         id: deployment
         uses: actions/deploy-pages@v4

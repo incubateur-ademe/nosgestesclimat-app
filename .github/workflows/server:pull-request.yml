@@ -1,12 +1,15 @@
-name: Pull Request server
+name: Server
 
 on:
   pull_request:
     branches: [preprod]
+    paths: [apps/server/**]
 
 jobs:
   check:
-    working-directory: ./apps/server
+    defaults:
+      run:
+        working-directory: ./apps/server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -15,19 +18,19 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: "./package.json"
-          cache: "pnpm"
+          node-version-file: './app/server/package.json'
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
 
       - name: Generate Prisma client
         run: pnpm prisma generate
 
-      - name: "Lint"
+      - name: 'Lint'
         run: pnpm lint
 
-      - name: "Test"
+      - name: 'Test'
         run: pnpm test
 
-      - name: "Build"
+      - name: 'Build'
         run: pnpm build
