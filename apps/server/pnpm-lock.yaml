@@ -1,0 +1,1 @@
+# This is a necessary dummy pnpm-lock so scalingo build pack uses pnpm during build (otherwise it uses npm)

@@ -43,6 +43,7 @@ const nextConfig = withMDX({
     '*': ['.next/cache/webpack', '.git/**/*', 'cypress/**/*'],
   },
   turbopack: {
+    root: new URL('../../', import.meta.url).pathname,
     rules: {
       '*.yaml': {
         loaders: ['yaml-loader'],
