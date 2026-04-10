@@ -1,0 +1,19 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    ".env*": "dotenv"
+  },
+  "workbench.colorCustomizations": {
+    "editor.findMatchBackground": "#ffe900",
+    "editor.findMatchHighlightBackground": "#ff7b00a1",
+    "activityBar.background": "#302166",
+    "titleBar.activeBackground": "#432F8F",
+    "titleBar.activeForeground": "#FAF9FD"
+  }
+}

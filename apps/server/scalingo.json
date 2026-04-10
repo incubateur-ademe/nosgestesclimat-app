@@ -1,0 +1,12 @@
+{
+  "formation": {
+    "web": {
+      "amount": 2,
+      "size": "L"
+    },
+    "worker": {
+      "amount": 1,
+      "size": "M"
+    }
+  }
+}

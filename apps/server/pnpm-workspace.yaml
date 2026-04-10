@@ -1,0 +1,13 @@
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - '@tailwindcss/oxide'
+  - unrs-resolver
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@incubateur-ademe/nosgestesclimat'
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - esbuild
+  - msw
+  - prisma

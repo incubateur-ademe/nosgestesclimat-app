@@ -1,0 +1,4 @@
+- ngcValue: false
+  mapsTo: 'FALSE'
+- ngcValue: true
+  mapsTo: 'TRUE'

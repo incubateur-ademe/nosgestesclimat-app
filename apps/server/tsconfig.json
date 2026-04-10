@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/node22",
+  "compilerOptions": {
+    "outDir": "dist",
+    "checkJs": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "types": ["node"]
+  },
+  "exclude": ["node_modules", "dist", "coverage"]
+}
