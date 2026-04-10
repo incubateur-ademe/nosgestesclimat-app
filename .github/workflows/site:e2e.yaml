@@ -105,6 +105,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: nextjs-build
+          path: ./apps/site
 
       - name: Extract Next.js build
         if: ${{ env.LOCAL_TEST == 'true'}}
@@ -117,7 +118,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: e2e-state
-          path: e2e/state
+          path: apps/site/e2e/state
 
       - name: Run E2E tests (${{ matrix.project }})
         env:
@@ -153,7 +154,7 @@ jobs:
       - name: Download blob reports
         uses: actions/download-artifact@v6
         with:
-          path: all-blob-reports
+          path: apps/site/all-blob-reports
           pattern: blob-report-*
           merge-multiple: true
 
