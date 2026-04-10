@@ -5,3 +5,6 @@ minimumReleaseAgeExclude:
   - 'react-dom'
   - 'next'
   - '@next/*'
+packages:
+  - 'packages/*'
+  - 'apps/*'
