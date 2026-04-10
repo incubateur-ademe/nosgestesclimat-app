@@ -1,5 +1,5 @@
 {
-  "name": "nosgestesclimat-server",
+  "name": "@nosgestesclimat/server",
   "version": "3.0.2",
   "description": "The server part of the website nosgestesclimat.fr",
   "main": "./dist/index.js",
@@ -21,6 +21,7 @@
     "jobs:recoverMatomoStats": "node dist/src/jobs/recover-matomo-stats.js",
     "jobs:recoverNewsletterStats": "node dist/src/jobs/recover-newsletter-stats.js",
     "lint": "prettier --check \"**/*.{js,ts,md,json}\" && eslint . --ext .js,.ts && tsc -p .",
+    "typecheck": "tsc --noEmit",
     "prestart": "pnpm db:doc",
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/index.js",
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/worker.js",

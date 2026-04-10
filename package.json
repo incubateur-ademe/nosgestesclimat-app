@@ -19,7 +19,8 @@
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r run test -- --coverage",
-    "format": "pnpm -r run format"
+    "format": "pnpm -r run format",
+    "typecheck": "pnpm -r run typecheck"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",

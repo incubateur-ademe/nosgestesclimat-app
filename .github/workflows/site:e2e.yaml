@@ -71,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: nextjs-build
-          path: nextjs-build.tar
+          path: ./apps/site/nextjs-build.tar
           retention-days: 1
 
   # Project-based test jobs - runs on 3 machines in parallel
@@ -88,7 +88,7 @@ jobs:
           - project: Mobile Safari
             browser: webkit
     runs-on: ubuntu-latest
-    name: E2E ${{ matrix.project }}
+    name: ${{ matrix.project }}
     needs: [build-and-setup]
     defaults:
       run:
@@ -142,7 +142,7 @@ jobs:
     if: ${{ !cancelled() && needs.e2e-tests.result != 'skipped' }}
     needs: [e2e-tests]
     runs-on: ubuntu-latest
-    name: Merge E2E Reports
+    name: Merge reports
     defaults:
       run:
         working-directory: ./apps/site

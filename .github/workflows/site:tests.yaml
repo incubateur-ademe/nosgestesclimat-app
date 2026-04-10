@@ -61,7 +61,7 @@ jobs:
       - name: Run typecheck
         run: |
           pnpm next typegen;
-          pnpm lint:types
+          pnpm typecheck
 
   translations:
     name: Translations
