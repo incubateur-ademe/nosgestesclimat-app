@@ -88,20 +88,20 @@ const eslintConfig = defineConfig(
     extends: [playwright.configs['flat/recommended']],
   },
   globalIgnores([
-      '.next/**',
-      'build/**',
-      'next-env.d.ts',
-      'coverage/**',
-      '*.config.{js,ts}',
-      'check-memory.mjs',
-      'scripts/**/*',
-      'public/**/*',
-      '**/*.stories.tsx',
-      '.storybook/**',
-      'playwright-report/**',
-      'storybook-static/**',
-      'pnpm-lock.yaml',
-    ])
+    '.next/**',
+    'build/**',
+    'next-env.d.ts',
+    'coverage/**',
+    '*.config.{js,ts}',
+    'check-memory.mjs',
+    'scripts/**/*',
+    'public/**/*',
+    '**/*.stories.tsx',
+    '.storybook/**',
+    'playwright-report/**',
+    'storybook-static/**',
+    'pnpm-lock.yaml',
+  ])
 )
 
 export default eslintConfig

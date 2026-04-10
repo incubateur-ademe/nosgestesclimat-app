@@ -12,6 +12,7 @@
     "node": "22.14"
   },
   "scripts": {
+    "prepare": "husky",
     "preinstall": "npx only-allow pnpm",
     "start": "pnpm -r --parallel run start",
     "dev": "pnpm -r --parallel run dev",
@@ -25,7 +26,8 @@
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "husky": "^9.1.7"
   },
   "msw": {
     "workerDirectory": [

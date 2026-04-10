@@ -2,14 +2,14 @@ import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import type supertest from 'supertest'
 import { vi } from 'vitest'
+import { brevoSendEmail } from '../../../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
+import { prisma } from '../../../../../../adapters/prisma/client.js'
 import {
   ApiScopeName,
   type IntegrationApiScope,
   type IntegrationWhitelist,
   type PrismaClient,
 } from '../../../../../../adapters/prisma/generated.js'
-import { brevoSendEmail } from '../../../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../../../../adapters/prisma/client.js'
 import {
   mswServer,
   resetMswServer,

@@ -22,7 +22,7 @@ const meta: Meta<typeof FootprintBlock> = {
     tendency: {
       control: 'radio',
       options: ['increase', 'decrease', undefined],
-      description: "Tendance par rapport au résultat précédent",
+      description: 'Tendance par rapport au résultat précédent',
     },
     value: {
       control: 'number',
@@ -79,7 +79,7 @@ export const EauEnBaisse: Story = {
   args: {
     locale: 'fr',
     value: 3500,
-    title: "Votre empreinte eau",
+    title: 'Votre empreinte eau',
     metric: 'eau',
     unitSuffix: '/ jour',
     tendency: 'decrease',
@@ -91,7 +91,7 @@ export const EauEnHausse: Story = {
   args: {
     locale: 'fr',
     value: 5200,
-    title: "Votre empreinte eau",
+    title: 'Votre empreinte eau',
     metric: 'eau',
     unitSuffix: '/ jour',
     tendency: 'increase',
@@ -103,7 +103,7 @@ export const EauSansTendance: Story = {
   args: {
     locale: 'fr',
     value: 4100,
-    title: "Votre empreinte eau",
+    title: 'Votre empreinte eau',
     metric: 'eau',
     unitSuffix: '/ jour',
     tendency: undefined,

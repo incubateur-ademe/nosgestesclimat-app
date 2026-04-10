@@ -1,15 +1,15 @@
 import { isAxiosError } from 'axios'
 import dayjs from 'dayjs'
-import {
-  MatomoStatsDevice,
-  MatomoStatsSource,
-  StatsKind,
-} from '../../adapters/prisma/generated.js'
 import { fetchNewsletter } from '../../adapters/brevo/client.js'
 import { ListIds } from '../../adapters/brevo/constant.js'
 import { ReferrerKind } from '../../adapters/matomo/client.js'
 import { clients } from '../../adapters/matomo/index.js'
 import { prisma } from '../../adapters/prisma/client.js'
+import {
+  MatomoStatsDevice,
+  MatomoStatsSource,
+  StatsKind,
+} from '../../adapters/prisma/generated.js'
 import { isPrismaErrorUniqueConstraintFailed } from '../../core/typeguards/isPrismaError.js'
 import logger from '../../logger.js'
 import {

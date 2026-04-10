@@ -255,11 +255,13 @@ export default {
         'button-lift': {
           '0%': {
             transform: 'scale(1)',
-            boxShadow: '0 1px 3px 0 rgba(73, 73, 186, 0.2), 0 1px 2px -1px rgba(73, 73, 186, 0.15)',
+            boxShadow:
+              '0 1px 3px 0 rgba(73, 73, 186, 0.2), 0 1px 2px -1px rgba(73, 73, 186, 0.15)',
           },
           '100%': {
             transform: 'scale(1.03)',
-            boxShadow: '0 8px 16px -4px rgba(73, 73, 186, 0.32), 0 4px 8px -2px rgba(73, 73, 186, 0.2)',
+            boxShadow:
+              '0 8px 16px -4px rgba(73, 73, 186, 0.32), 0 4px 8px -2px rgba(73, 73, 186, 0.2)',
           },
         },
         'float-badge': {
@@ -287,8 +289,10 @@ export default {
         'bar-grow-horizontal': 'bar-grow-horizontal 0.8s ease-out forwards',
         'slide-in-from-bottom':
           'slide-in-from-bottom 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
-        'fade-in-slide-from-top': 'fade-in-slide-from-top 0.3s ease-out forwards',
-        'button-lift': 'button-lift 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        'fade-in-slide-from-top':
+          'fade-in-slide-from-top 0.3s ease-out forwards',
+        'button-lift':
+          'button-lift 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         'float-leaf-1': 'float-badge 4s ease-in-out infinite',
         'float-leaf-2': 'float-badge 5.5s ease-in-out 0.8s infinite',
         'float-leaf-3': 'float-badge 4.8s ease-in-out 1.5s infinite',

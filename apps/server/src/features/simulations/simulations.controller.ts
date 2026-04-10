@@ -8,21 +8,21 @@ import { EventBus } from '../../core/event-bus/event-bus.js'
 import { withPaginationHeaders } from '../../core/pagination.js'
 import logger from '../../logger.js'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.js'
+import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
 import { validateRequest } from '../../middlewares/validateRequest.js'
 import {
   COOKIE_NAME,
   getCookieOptions,
 } from '../authentication/authentication.service.js'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.js'
 import { publishRedisEvent } from './handlers/publish-redis-event.js'
 import { sendSimulationUpserted } from './handlers/send-simulation-upserted.js'
 import { updateBrevoContact } from './handlers/update-brevo-contact.js'
 import {
   createSimulation,
-  softDeleteSimulation,
   fetchSimulation,
   fetchSimulations,
+  softDeleteSimulation,
 } from './simulations.service.js'
 import type {
   SimulationCreateQuery,

@@ -1,11 +1,11 @@
 import type { Request } from 'express'
-import type { User } from '../../adapters/prisma/generated.js'
 import type { BrevoContact } from '../../adapters/brevo/client.js'
 import {
   fetchContact,
   fetchContactOrThrow,
 } from '../../adapters/brevo/client.js'
 import { prisma } from '../../adapters/prisma/client.js'
+import type { User } from '../../adapters/prisma/generated.js'
 import {
   defaultUserSelection,
   defaultVerifiedUserSelection,

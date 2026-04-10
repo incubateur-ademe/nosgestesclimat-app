@@ -6,8 +6,8 @@ import jwt from 'jsonwebtoken'
 import { config } from '../config.js'
 import {
   COOKIE_NAME,
-  getCookieOptions,
   createToken,
+  getCookieOptions,
 } from '../features/authentication/authentication.service.js'
 const isValidResult = (
   result?: string | JwtPayload | undefined

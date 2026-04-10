@@ -6,24 +6,26 @@ import { SentryBuildOptions, withSentryConfig } from '@sentry/nextjs'
 
 import redirects from './config/redirects.js'
 
+import { APP_ENV } from './config/app-env'
 import { remoteImagesPatterns } from './config/remoteImagesPatterns'
 import { PROXY_SERVER } from './config/urls'
-import { APP_ENV } from './config/app-env'
 
 const withMDX = createMDX({
   extension: /\.mdx$/,
 })
 
-
 // Use rewrite rules to proxy requests from the client to the server when both are on different domain (preview app / local)
 
-const rewrites = PROXY_SERVER? {
-  rewrites: () => [{
-    source: '/api/server/:path*',
-    destination: `${process.env.NEXT_PUBLIC_SERVER_URL}/:path*`,
-  }]
-} : {}
-
+const rewrites = PROXY_SERVER
+  ? {
+      rewrites: () => [
+        {
+          source: '/api/server/:path*',
+          destination: `${process.env.NEXT_PUBLIC_SERVER_URL}/:path*`,
+        },
+      ],
+    }
+  : {}
 
 const nextConfig = withMDX({
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
@@ -84,7 +86,7 @@ const sentryConfig: SentryBuildOptions = {
   release: {
     name: releaseName,
     setCommits: {
-      auto: true
+      auto: true,
     },
     deploy: {
       env: APP_ENV,

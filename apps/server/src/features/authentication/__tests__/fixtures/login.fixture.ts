@@ -1,5 +1,5 @@
-import { StatusCodes } from 'http-status-codes'
 import { faker } from '@faker-js/faker'
+import { StatusCodes } from 'http-status-codes'
 
 import type supertest from 'supertest'
 import {

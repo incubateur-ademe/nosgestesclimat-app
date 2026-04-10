@@ -8,9 +8,8 @@ import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRule
 import dayjs from 'dayjs'
 import type { Request } from 'express'
 import type Engine from 'publicodes'
-import type { JsonValue, Prisma } from '../../adapters/prisma/generated.js'
 import { prisma } from '../../adapters/prisma/client.js'
-import { createAccountOrSignin } from '../authentication/authentication.service.js'
+import type { JsonValue, Prisma } from '../../adapters/prisma/generated.js'
 import type { Session } from '../../adapters/prisma/transaction.js'
 import { transaction } from '../../adapters/prisma/transaction.js'
 import { redis } from '../../adapters/redis/client.js'
@@ -20,7 +19,13 @@ import { EntityNotFoundException } from '../../core/errors/EntityNotFoundExcepti
 import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
 import { EventBus } from '../../core/event-bus/event-bus.js'
 import type { Locales } from '../../core/i18n/constant.js'
+import { createAccountOrSignin } from '../authentication/authentication.service.js'
 
+import {
+  defaultUserSelection,
+  defaultVerifiedUserSelection,
+  simulationSelection,
+} from '../../adapters/prisma/selection.js'
 import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.js'
 import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.js'
 import { findOrganisationPublicPollBySlugOrId } from '../organisations/organisations.repository.js'
@@ -29,17 +34,14 @@ import type {
   PublicPollParams,
 } from '../organisations/organisations.validator.js'
 import {
-  simulationSelection,
-  defaultUserSelection,
-  defaultVerifiedUserSelection,
-} from '../../adapters/prisma/selection.js'
-import {
   createOrUpdateUser,
   fetchVerifiedUser,
 } from '../users/users.repository.js'
 import type { UserParams } from '../users/users.validator.js'
+import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.js'
+import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.js'
+import { carbonMetric, waterMetric } from './simulation.constant.js'
 import {
-  softDeleteSimulation as softDeleteSimulationFunc,
   batchPollSimulations,
   countOrganisationPublicPollSimulations,
   createParticipantSimulation,
@@ -47,10 +49,8 @@ import {
   fetchPollSimulations,
   fetchSimulationById,
   fetchUserSimulations,
+  softDeleteSimulation as softDeleteSimulationFunc,
 } from './simulations.repository.js'
-import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.js'
-import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.js'
-import { carbonMetric, waterMetric } from './simulation.constant.js'
 import type {
   SimulationCreateDto,
   SimulationCreateQuery,

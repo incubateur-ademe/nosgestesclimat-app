@@ -10,12 +10,12 @@ import {
   test,
   vi,
 } from 'vitest'
+import { brevoSendEmail } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
+import { prisma } from '../../../adapters/prisma/client.js'
 import {
   VerificationCodeMode,
   type VerifiedUser,
 } from '../../../adapters/prisma/generated.js'
-import { brevoSendEmail } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
 import app from '../../../app.js'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'

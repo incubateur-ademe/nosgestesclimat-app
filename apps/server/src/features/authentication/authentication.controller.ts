@@ -5,20 +5,20 @@ import { EntityNotFoundException } from '../../core/errors/EntityNotFoundExcepti
 import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
 import { EventBus } from '../../core/event-bus/event-bus.js'
 import logger from '../../logger.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
+import { validateRequest } from '../../middlewares/validateRequest.js'
 import {
   COOKIE_NAME,
   getCookieOptions,
   login,
 } from './authentication.service.js'
 import { LoginValidator } from './authentication.validator.js'
-import { LoginEvent } from './events/Login.event.js'
-import { sendBrevoWelcomeEmail } from './handlers/send-welcome-email.js'
-import { updateBrevoContact } from './handlers/update-brevo-contact.js'
 import { AccountCreatedEvent } from './events/AccountCreated.event.js'
-import { syncUserDataAfterAccountCreated } from './handlers/sync-user-data-after-account-created.js'
+import { LoginEvent } from './events/Login.event.js'
 import { reconcileSimulationsAfterLogin } from './handlers/reconcile-simulations-after-login.js'
+import { sendBrevoWelcomeEmail } from './handlers/send-welcome-email.js'
+import { syncUserDataAfterAccountCreated } from './handlers/sync-user-data-after-account-created.js'
+import { updateBrevoContact } from './handlers/update-brevo-contact.js'
 
 const router = express.Router()
 

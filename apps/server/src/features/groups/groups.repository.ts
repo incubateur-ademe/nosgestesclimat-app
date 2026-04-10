@@ -1,8 +1,8 @@
 import {
   defaultGroupParticipantSelection,
   defaultGroupSelection,
-  simulationSelectionWithPolls,
   defaultUserSelection,
+  simulationSelectionWithPolls,
 } from '../../adapters/prisma/selection.js'
 import type { Session } from '../../adapters/prisma/transaction.js'
 import { createParticipantSimulation } from '../simulations/simulations.repository.js'

@@ -41,7 +41,9 @@ const preview: Preview = {
     (Story) => {
       // Apply the font-sans class and set the variable for Storybook
       return (
-        <div className="font-sans" style={{ '--font-marianne': '"Marianne"' } as React.CSSProperties}>
+        <div
+          className="font-sans"
+          style={{ '--font-marianne': '"Marianne"' } as React.CSSProperties}>
           <Story />
         </div>
       )

@@ -8,7 +8,6 @@
     "node": "^22"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "prebuild": "pnpm clean && prisma generate",
     "build": "tsc -p tsconfig.build.json",
     "clean": "rimraf dist/*",
@@ -26,8 +25,7 @@
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/index.js",
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/worker.js",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "test:coverage": "vitest run --coverage"
   },
   "author": "",
   "license": "MIT",
@@ -92,7 +90,6 @@
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.5",
-    "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "msw": "^2.12.14",
     "pglite-prisma-adapter": "^0.6.1",

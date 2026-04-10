@@ -47,4 +47,3 @@ export const Under4Tons: Story = {
     carbonFootprint: 4000,
   },
 }
-

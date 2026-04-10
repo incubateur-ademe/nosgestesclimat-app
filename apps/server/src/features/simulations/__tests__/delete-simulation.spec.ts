@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
-import supertest from 'supertest'
 import { StatusCodes } from 'http-status-codes'
+import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { prisma } from '../../../adapters/prisma/client.js'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'

@@ -4,15 +4,15 @@ import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
-  PollDefaultAdditionalQuestionType,
-  SimulationAdditionalQuestionAnswerType,
-} from '../../../adapters/prisma/generated.js'
-import {
   brevoRemoveFromList,
   brevoSendEmail,
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
 import { prisma } from '../../../adapters/prisma/client.js'
+import {
+  PollDefaultAdditionalQuestionType,
+  SimulationAdditionalQuestionAnswerType,
+} from '../../../adapters/prisma/generated.js'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
 import app from '../../../app.js'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'

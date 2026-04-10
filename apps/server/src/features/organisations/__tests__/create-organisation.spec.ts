@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes'
 import slugify from 'slugify'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { OrganisationType } from '../../../adapters/prisma/generated.js'
 import {
   brevoRemoveFromList,
   brevoSendEmail,
@@ -11,6 +10,7 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
 import { connectUpdateContact } from '../../../adapters/connect/__tests__/fixtures/server.fixture.js'
 import { prisma } from '../../../adapters/prisma/client.js'
+import { OrganisationType } from '../../../adapters/prisma/generated.js'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
 import app from '../../../app.js'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import type {
-  Job as PrismaJob,
   InputJsonValue,
+  Job as PrismaJob,
 } from '../../adapters/prisma/generated.js'
 import { JobStatus } from '../../adapters/prisma/generated.js'
 import { defaultJobSelection } from '../../adapters/prisma/selection.js'

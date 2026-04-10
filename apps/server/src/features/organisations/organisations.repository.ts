@@ -1,7 +1,7 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { Request } from 'express'
 import slugify from 'slugify'
-import type { Prisma, JsonValue } from '../../adapters/prisma/generated.js'
+import type { JsonValue, Prisma } from '../../adapters/prisma/generated.js'
 import {
   defaultOrganisationSelection,
   defaultOrganisationSelectionWithoutPolls,

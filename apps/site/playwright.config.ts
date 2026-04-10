@@ -3,8 +3,7 @@ import dotenv from 'dotenv'
 import { FixturesOptions } from './e2e/fixtures/options'
 import { NEW_VISITOR_STATE } from './e2e/state'
 
-dotenv.config({quiet: true})
-
+dotenv.config({ quiet: true })
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -25,7 +24,6 @@ export default defineConfig<FixturesOptions>({
   reporter: process.env.CI
     ? [['blob'], ['line']]
     : [['line'], ['html', { outputFolder: 'playwright-report' }]],
-
 
   /* Configure projects for major browsers */
   projects: [

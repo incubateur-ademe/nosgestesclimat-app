@@ -1,5 +1,5 @@
-import type { Prisma } from './generated.js'
 import { prisma } from './client.js'
+import type { Prisma } from './generated.js'
 
 export type Session = Prisma.TransactionClient
 

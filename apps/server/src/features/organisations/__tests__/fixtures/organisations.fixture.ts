@@ -4,7 +4,6 @@ import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
-import { OrganisationType } from '../../../../adapters/prisma/generated.js'
 import {
   brevoRemoveFromList,
   brevoSendEmail,
@@ -12,6 +11,7 @@ import {
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
 import { connectUpdateContact } from '../../../../adapters/connect/__tests__/fixtures/server.fixture.js'
 import { prisma } from '../../../../adapters/prisma/client.js'
+import { OrganisationType } from '../../../../adapters/prisma/generated.js'
 import {
   mswServer,
   resetMswServer,

@@ -1,5 +1,5 @@
-import type { User } from '../../../adapters/prisma/generated.js'
 import type { BrevoContact } from '../../../adapters/brevo/client.js'
+import type { User } from '../../../adapters/prisma/generated.js'
 import { EventBusEvent } from '../../../core/event-bus/event.js'
 
 export class UserUpdatedEvent extends EventBusEvent<{

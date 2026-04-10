@@ -1,11 +1,12 @@
 import type { CookieOptions } from 'express'
 import jwt from 'jsonwebtoken'
+import { prisma } from '../../adapters/prisma/client.js'
 import {
   type VerificationCode,
   VerificationCodeMode,
   type VerifiedUser,
 } from '../../adapters/prisma/generated.js'
-import { prisma } from '../../adapters/prisma/client.js'
+import { defaultVerifiedUserSelection } from '../../adapters/prisma/selection.js'
 import type { Session } from '../../adapters/prisma/transaction.js'
 import { transaction } from '../../adapters/prisma/transaction.js'
 import { config } from '../../config.js'
@@ -18,14 +19,13 @@ import {
   createOrUpdateVerifiedUser,
   fetchVerifiedUser,
 } from '../users/users.repository.js'
-import { defaultVerifiedUserSelection } from '../../adapters/prisma/selection.js'
 import type { LoginDto } from './authentication.validator.js'
+import { AccountCreatedEvent } from './events/AccountCreated.event.js'
 import { LoginEvent } from './events/Login.event.js'
 import {
   findVerificationCode,
   invalidateVerificationCode,
 } from './verification-codes.repository.js'
-import { AccountCreatedEvent } from './events/AccountCreated.event.js'
 
 export const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 61 // 2 months
 
