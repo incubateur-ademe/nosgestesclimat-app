@@ -18,3 +18,4 @@ public/**/*.html
 .storybook/**
 playwright-report/**
 storybook-static/**
+**/prisma/generated/**
