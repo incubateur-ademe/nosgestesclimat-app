@@ -27,7 +27,7 @@ export default async function ResultsList({
       </h2>
 
       {hasMigratedSimulations && (
-        <p>
+        <p className="mb-4">
           <Trans
             locale={locale}
             i18nKey="mon-espace.resultsList.hasMigratedSimulations">
