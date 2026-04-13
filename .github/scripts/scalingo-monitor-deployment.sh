@@ -6,36 +6,36 @@
 # reaches a terminal status (success or failure).
 #
 # Required environment variables:
-#   BEARER_TOKEN      – Scalingo bearer token
+#   FGP_DEPLOY_TOKEN  – FGP deploy token
 #   DEPLOYMENT_ID     – ID of the deployment to monitor
 #   SCALINGO_APP_NAME – Name of the Scalingo application
-#   SCALINGO_API_HOST – Base URL of the Scalingo API
+#   FGP_DEPLOY_URL    – URL to the FGP that triggers the deploy
 #
 # Optional environment variables:
 #   POLL_INTERVAL     – Seconds between status checks (default: 10)
 
 set -euo pipefail
 
-: "${BEARER_TOKEN:?BEARER_TOKEN is required}"
+: "${FGP_DEPLOY_TOKEN:?FGP_DEPLOY_TOKEN is required}"
 : "${DEPLOYMENT_ID:?DEPLOYMENT_ID is required}"
 : "${SCALINGO_APP_NAME:?SCALINGO_APP_NAME is required}"
-: "${SCALINGO_API_HOST:?SCALINGO_API_HOST is required}"
+: "${FGP_DEPLOY_URL:?FGP_DEPLOY_URL is required}"
 
 POLL_INTERVAL="${POLL_INTERVAL:-10}"
 
-API_URL="https://${SCALINGO_API_HOST}/v1/apps/${SCALINGO_APP_NAME}/deployments/${DEPLOYMENT_ID}"
+API_URL="${FGP_DEPLOY_URL}/v1/apps/${SCALINGO_APP_NAME}/deployments/${DEPLOYMENT_ID}"
 
 PRINTED_LINES=0
 
 while true; do
   # Get deployment status
   STATUS=$(curl -s -H "Accept: application/json" \
-    -H "Authorization: Bearer ${BEARER_TOKEN}" \
+    -H "X-FGP-Key: ${FGP_DEPLOY_TOKEN}" \
     "${API_URL}" | jq -r '.deployment.status')
 
   # Get deployment logs and print only new lines
   LOGS=$(curl -s -H "Accept: text/plain" \
-    -H "Authorization: Bearer ${BEARER_TOKEN}" \
+    -H "X-FGP-Key: ${FGP_DEPLOY_TOKEN}" \
     "${API_URL}/output")
 
   TOTAL_LINES=$(echo "$LOGS" | wc -l)

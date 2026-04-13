@@ -12,14 +12,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
-          scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
           scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}
           git-ref: main
-          git-repo: ${{ github.repository }}
+          # git-repo: ${{ github.repository }}
 
   deploy-server-preprod:
     name: Deploy server to preprod
@@ -32,10 +32,11 @@ jobs:
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
-          scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
           scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}
           git-ref: main
-          git-repo: ${{ github.repository }}
+          # git-repo: ${{ github.repository }}
 
   e2e-preprod:
     name: Tests on preprod
@@ -58,11 +59,11 @@ jobs:
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
-          scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
           scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}
-          scalingo-api-host: ${{ vars.SCALINGO_API_HOST }}
           git-ref: main
-          git-repo: ${{ github.repository }}
+          # git-repo: ${{ github.repository }}
 
   deploy-server-prod:
     name: Deploy server to prod
@@ -76,8 +77,8 @@ jobs:
       - name: Deploy to Scalingo
         uses: ./.github/actions/deploy-scalingo
         with:
-          scalingo-api-token: ${{ secrets.SCALINGO_API_TOKEN }}
-          scalingo-app-name: ${{ vars.SCALINGO_SITE_SERVER_NAME }}
-          scalingo-api-host: ${{ vars.SCALINGO_API_HOST }}
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+          scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}
           git-ref: main
-          git-repo: ${{ github.repository }}
+          # git-repo: ${{ github.repository }}
