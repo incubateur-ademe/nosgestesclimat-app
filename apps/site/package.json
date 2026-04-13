@@ -41,7 +41,7 @@
     "storybook:build": "storybook build",
     "storybook:build:github-pages": "cp .storybook/main.github-pages.ts .storybook/main.ts && cp .storybook/preview.github-pages.tsx .storybook/preview.tsx && storybook build && git checkout .storybook/main.ts .storybook/preview.tsx",
     "build-storybook": "storybook build",
-    "scalingo-postbuild": "pnpm prune --prod",
+    "scalingo-postbuild": "pnpm run build && pnpm --filter=@nosgesteclimat/site --prod deploy .",
     "knip": "knip"
   },
   "dependencies": {
