@@ -2024,3 +2024,8 @@ entries:
   actions.jva.banner.text1.lock: 'Dépollution, sensibilisation, soin aux animaux, ateliers de réparation et potager urbain. '
   actions.jva.banner.title: Volunteer to help protect the environment
   actions.jva.banner.title.lock: Faites du bénévolat pour préserver l’environnement
+  ctaButtons.collective.label: Create a group test
+  ctaButtons.collective.label.lock: Créer un test collectif
+  ctaButtons.retake.label: Take the test again
+  ctaButtons.retake.label.lock: Repasser le test
+  Résultats immédiats, confidentiel et gratuit.: Instant results, confidential and free.
