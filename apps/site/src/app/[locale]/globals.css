@@ -753,3 +753,11 @@ a[name='variations'] {
 #documentation-rule-root article h2 {
   @apply text-base! font-normal!;
 }
+
+/*
+** Default focus
+*/
+a,
+button {
+  @apply focus-visible:ring-primary-700 focus-visible:ring-2 focus-visible:ring-offset-3 focus-visible:outline-hidden;
+}
