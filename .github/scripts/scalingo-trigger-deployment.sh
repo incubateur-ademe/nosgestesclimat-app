@@ -5,36 +5,36 @@
 # Triggers a deployment on Scalingo and outputs the deployment ID.
 #
 # Required environment variables:
-#   BEARER_TOKEN      — Scalingo bearer token
+#   FGP_DEPLOY_TOKEN  — FGP deploy token
 #   SCALINGO_APP_NAME — name of the Scalingo app
 #   GIT_REF           — git ref to deploy (e.g. "preprod")
 #   GIT_REPO          — Github repo to deploy (<orga>/<repo>)
-#   SCALINGO_API_HOST – Base URL of the Scalingo API (default: https://api.osc-fr1.scalingo.com)
+#   FGP_DEPLOY_URL    – URL to the FGP that triggers the deploy
 
 # Outputs (when running in GitHub Actions):
 #   deployment_id  — the ID of the triggered deployment
 
 set -euo pipefail
 
-: "${BEARER_TOKEN:?BEARER_TOKEN is required}"
+: "${FGP_DEPLOY_TOKEN:?FGP_DEPLOY_TOKEN is required}"
 : "${SCALINGO_APP_NAME:?SCALINGO_APP_NAME is required}"
 : "${GIT_REF:?GIT_REF is required}"
-: "${GIT_REPO:?GIT_REPO is required}"
-: "${SCALINGO_API_HOST:?SCALINGO_API_HOST is required}"
+: "${FGP_DEPLOY_URL:?FGP_DEPLOY_URL is required}"
 
 
-if [ "$BEARER_TOKEN" = "null" ]; then
-  echo "::error::Scalingo bearer token is empty. Check SCALINGO_API_TOKEN secret and token exchange response."
+if [ "$FGP_DEPLOY_TOKEN" = "null" ]; then
+  echo "::error::FGP deploy token is empty. Check FGP_DEPLOY_TOKEN secret."
   exit 1
 fi
 
-SOURCE_URL="https://github.com/${GIT_REPO}/archive/${GIT_REF}.tar.gz"
-API="https://${SCALINGO_API_HOST}/v1/apps/${SCALINGO_APP_NAME}/deployments"
+SOURCE_URL="https://github.com/incubateur-ademe/nosgestesclimat-app/archive/${GIT_REF}.tar.gz"
+API="${FGP_DEPLOY_URL}/v1/apps/${SCALINGO_APP_NAME}/deployments"
 
 PAYLOAD=$(jq -n \
   --arg ref "$GIT_REF" \
   --arg url "$SOURCE_URL" \
   '{ deployment: { git_ref: $ref, source_url: $url } }')
+
 
 # Capture body + status without losing the error details
 HTTP_BODY="$(mktemp)"
@@ -43,7 +43,7 @@ trap 'rm -f "$HTTP_BODY"' EXIT
 HTTP_CODE=$(curl -sS -o "$HTTP_BODY" -w "%{http_code}" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $BEARER_TOKEN" \
+  -H "X-FGP-Key: $FGP_DEPLOY_TOKEN" \
   -X POST "$API" \
   -d "$PAYLOAD" || true)
 
