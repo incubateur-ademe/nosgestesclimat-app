@@ -1,0 +1,38 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "workspaces": {
+    ".": {
+      "entry": [],
+      "project": [],
+      "ignore": ["**/*"]
+    },
+    "apps/site": {
+      "entry": [
+        "sentry.*.config.ts",
+        ".storybook/**/*.{ts,tsx,js,jsx}",
+        "scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}",
+        "src/i18nConfig.ts",
+        "public/scripts/**/*.{ts,tsx,js,jsx}",
+        "check-memory.mjs"
+      ],
+      "ignore": [
+        "public/**",
+        "src/locales/nouveautes/**",
+        "scripts/**",
+        "src/constants/ab-test.ts",
+        "e2e/**"
+      ],
+      "ignoreDependencies": [
+        "@axe-core/playwright",
+        "i18next-parser",
+        "yaml-loader",
+        "playwright-core",
+        "react-tooltip",
+        "eslint-plugin-react-hooks"
+      ],
+      "ignoreBinaries": ["only-allow"]
+    }
+  },
+  "ignoreWorkspaces": ["apps/server"]
+}

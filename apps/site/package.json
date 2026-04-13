@@ -41,8 +41,7 @@
     "storybook:build": "storybook build",
     "storybook:build:github-pages": "cp .storybook/main.github-pages.ts .storybook/main.ts && cp .storybook/preview.github-pages.tsx .storybook/preview.tsx && storybook build && git checkout .storybook/main.ts .storybook/preview.tsx",
     "build-storybook": "storybook build",
-    "scalingo-postbuild": "pnpm run build && pnpm --filter=@nosgesteclimat/site --prod deploy .",
-    "knip": "knip"
+    "scalingo-postbuild": "pnpm run build && pnpm --filter=@nosgesteclimat/site --prod deploy ."
   },
   "dependencies": {
     "@incubateur-ademe/nosgestesclimat": "4.10.2",
@@ -121,7 +120,6 @@
     "happy-dom": "^20.8.9",
     "i18next-parser": "^9.4.0",
     "jsdom": "^27.4.0",
-    "knip": "^5.88.1",
     "mailisk": "^2.2.2",
     "msw": "^2.12.14",
     "msw-storybook-addon": "^2.0.5",

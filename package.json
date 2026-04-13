@@ -19,12 +19,13 @@
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r run test -- --coverage",
     "format": "pnpm -r run format",
-    "typecheck": "pnpm -r run typecheck"
+    "typecheck": "pnpm -r run typecheck",
+    "knip": "knip"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@next/eslint-plugin-next": "^16.2.3",
-    "@types/node": "^24.12.0",
+    "@types/node": "^24.12.2",
     "@vitest/eslint-plugin": "^1.6.14",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.3",
@@ -36,6 +37,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react-hooks": "6.1.1",
     "husky": "^9.1.7",
+    "knip": "^6.4.1",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
