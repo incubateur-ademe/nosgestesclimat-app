@@ -17,23 +17,17 @@ async function uploadLocalSimulations({
 }: {
   simulations: Simulation[]
   userId: string
-}): Promise<boolean> {
-  const simulationsToUpload = simulations.filter(
-    (simulation) => new Date(simulation.date) < LIMIT_DATE
+}) {
+  return Promise.allSettled(
+    simulations
+      .filter((simulation) => new Date(simulation.date) < LIMIT_DATE)
+      .map((simulation) =>
+        postSimulation({
+          simulation: sanitizeSimulation(simulation),
+          userId,
+        })
+      )
   )
-
-  if (simulationsToUpload.length === 0) return false
-
-  const results = await Promise.allSettled(
-    simulationsToUpload.map((simulation) =>
-      postSimulation({
-        simulation: sanitizeSimulation(simulation),
-        userId,
-      })
-    )
-  )
-
-  return results.some((result) => result.status === 'fulfilled')
 }
 
 async function loadServerSimulation({
@@ -68,7 +62,6 @@ export async function reconcileUserOnAuth({
   user: ReturnType<typeof useUser>
   cookieState: CookieState
 }) {
-  let hasMigratedSimulations = false
   const {
     user: localUser,
     updateSimulations,
@@ -81,7 +74,7 @@ export async function reconcileUserOnAuth({
 
   if (userId === localUser.userId) {
     // We only sync if localuserId is the same as distant userId
-    hasMigratedSimulations = await uploadLocalSimulations({
+    await uploadLocalSimulations({
       simulations,
       userId,
     })
@@ -101,6 +94,4 @@ export async function reconcileUserOnAuth({
   if (cookieState.posthog === 'accepted') {
     posthog.identify(userId)
   }
-
-  return hasMigratedSimulations
 }
