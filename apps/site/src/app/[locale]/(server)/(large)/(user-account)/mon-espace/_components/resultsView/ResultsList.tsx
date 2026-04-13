@@ -1,19 +1,22 @@
-import { DeleteButtonWithConfirmModal } from '@/components/interactions/DeleteButtonWithConfirmModal'
 import Trans from '@/components/translation/trans/TransServer'
-import { getUser } from '@/helpers/server/dal/user'
-import { deleteSimulation } from '@/helpers/server/model/simulations'
+import { formatFootprint } from '@/helpers/formatters/formatFootprint'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { Simulation } from '@/publicodes-state/types'
-import { ResultListItem } from './resultsList/ResultListItem'
 import SeeListItemDetailLink from './resultsList/SeeListItemDetailLink'
 
 interface Props {
   locale: Locale
   simulations: Simulation[]
+  hasMigratedSimulations: boolean
 }
 
-export default async function ResultsList({ locale, simulations }: Props) {
-  const user = await getUser()
+export default async function ResultsList({
+  locale,
+  simulations,
+  hasMigratedSimulations,
+}: Props) {
+  const { t } = await getServerTranslation({ locale })
 
   return (
     <div className="mb-8 md:mb-10">
@@ -23,45 +26,60 @@ export default async function ResultsList({ locale, simulations }: Props) {
         </Trans>
       </h2>
 
+      {hasMigratedSimulations && (
+        <p>
+          <Trans
+            locale={locale}
+            i18nKey="mon-espace.resultsList.hasMigratedSimulations">
+            Nous avons retrouvé des simulations sur ce navigateur et les avons
+            ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
+          </Trans>
+        </p>
+      )}
+
       <ul className="flex flex-col gap-2">
         {simulations
           .sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
           )
           .map((simulation) => {
+            const { formattedValue, unit } = formatFootprint(
+              simulation.computedResults.carbone.bilan,
+              { t }
+            )
             return (
               <li key={simulation.id}>
-                <ResultListItem
-                  simulation={simulation}
-                  locale={locale}
-                  buttons={
-                    <>
-                      <SeeListItemDetailLink simulationId={simulation.id} />
-                      <DeleteButtonWithConfirmModal
-                        userId={user.id}
-                        simulationId={simulation.id}
-                        deleteAction={deleteSimulation.bind(null, {
-                          simulationId: simulation.id,
-                          userId: user.id,
-                        })}>
-                        <h2 className="mb-8 text-2xl font-normal">
-                          <Trans
-                            locale={locale}
-                            i18nKey="mySpace.resultList.item.delete.modal.title">
-                            Êtes-vous sûr(e) de vouloir supprimer ce
-                            résultat&nbsp;?
-                          </Trans>
-                        </h2>
-                        {/* We need to pass this server component as a prop
-                            because DeleteSimulationButton is a client component*/}
-                        <ResultListItem
-                          simulation={simulation}
-                          locale={locale}
-                        />
-                      </DeleteButtonWithConfirmModal>
-                    </>
-                  }
-                />
+                <article className="flex flex-col items-baseline gap-2 rounded-lg border border-slate-200 px-6 py-4 md:flex-row">
+                  <div className="flex flex-col items-baseline gap-1 sm:flex-row md:w-[420px]">
+                    <h1 className="mb-0 text-base md:text-lg">
+                      {t(
+                        'mon-espace.resultsList.result.title',
+                        'Le {{date}} :',
+                        {
+                          date: new Date(simulation.date).toLocaleDateString(
+                            locale,
+                            {
+                              day: '2-digit',
+                              month: 'long',
+                              year: 'numeric',
+                            }
+                          ),
+                        }
+                      )}
+                    </h1>
+
+                    <span className="mr-6 inline-block text-base font-bold md:text-lg">
+                      {formattedValue} {unit}{' '}
+                      <Trans
+                        locale={locale}
+                        i18nKey="mon-espace.resultsList.result.unit">
+                        CO₂e / an
+                      </Trans>
+                    </span>
+                  </div>
+
+                  <SeeListItemDetailLink simulationId={simulation.id} />
+                </article>
               </li>
             )
           })}

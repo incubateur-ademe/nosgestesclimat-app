@@ -8,6 +8,7 @@ import {
   captureClickSubmitEmail,
   signinTrackEvent,
 } from '@/constants/tracking/pages/signin'
+import { HAS_MIGRATED_SIMULATIONS_QUERY_PARAM } from '@/constants/urls/params'
 import Button from '@/design-system/buttons/Button'
 import useLogin from '@/hooks/authentication/useLogin'
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
@@ -30,7 +31,7 @@ interface Props {
   buttonColor?: ButtonColor
   inputLabel?: ReactNode | string
   mode?: AuthenticationMode
-  redirectURL?: string
+  redirectPathname?: string
   onEmailEntered?: (email: string) => void
   additionnalButton?: ReactNode
   onEmailEmpty?: () => void
@@ -59,7 +60,7 @@ export default function AuthenticateUserForm({
   buttonColor = 'primary',
   additionnalButton,
   inputLabel,
-  redirectURL,
+  redirectPathname,
   mode,
   onComplete,
   required = true,
@@ -75,7 +76,13 @@ export default function AuthenticateUserForm({
 
   // Called upon code verification
   const complete = useCallback(
-    async (user: { email: string; userId: string }) => {
+    async (
+      user: {
+        email: string
+        userId: string
+      },
+      hasMigratedSimulations: boolean
+    ) => {
       safeSessionStorage.removeItem(EMAIL_PENDING_AUTHENTICATION_KEY)
       setIsRedirecting(true)
 
@@ -85,12 +92,18 @@ export default function AuthenticateUserForm({
       }
       await onComplete?.(user)
 
-      if (redirectURL) {
-        router.push(redirectURL)
+      if (redirectPathname) {
+        const [path, existingSearch] = redirectPathname.split('?')
+        const params = new URLSearchParams(existingSearch)
+        if (hasMigratedSimulations) {
+          params.set(HAS_MIGRATED_SIMULATIONS_QUERY_PARAM, 'true')
+        }
+        const search = params.toString()
+        router.push(search ? `${path}?${search}` : path)
       }
       router.refresh()
     },
-    [redirectURL, onComplete, router, trackers]
+    [redirectPathname, onComplete, router, trackers]
   )
 
   const {
@@ -99,8 +112,8 @@ export default function AuthenticateUserForm({
     resetVerification,
     completeVerification,
   } = usePendingVerification({
-    onComplete: (data) => {
-      void complete(data)
+    onComplete: (user, hasMigratedSimulations) => {
+      void complete(user, hasMigratedSimulations)
     },
   })
 
