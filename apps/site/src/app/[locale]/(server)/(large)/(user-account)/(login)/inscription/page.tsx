@@ -52,7 +52,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
             <AuthenticateUserForm
               mode="signUp"
               buttonLabel={t('signup.button.label', "M'inscrire")}
-              redirectURL={`${MON_ESPACE_PATH}?${SHOW_WELCOME_BANNER_QUERY_PARAM}=true`}
+              redirectPathname={`${MON_ESPACE_PATH}?${SHOW_WELCOME_BANNER_QUERY_PARAM}=true`}
               trackers={{
                 matomo: signupComplete,
                 posthog: captureSignupComplete,

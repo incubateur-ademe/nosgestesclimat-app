@@ -1,4 +1,7 @@
-import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
+import {
+  HAS_MIGRATED_SIMULATIONS_QUERY_PARAM,
+  SHOW_WELCOME_BANNER_QUERY_PARAM,
+} from '@/constants/urls/params'
 import { throwNextError } from '@/helpers/server/error'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
@@ -8,8 +11,10 @@ import WelcomeBanner from './_components/WelcomeBanner'
 
 export default async function Page({ params, searchParams }: DefaultPageProps) {
   const { locale } = await params
-  const { [SHOW_WELCOME_BANNER_QUERY_PARAM]: showWelcomeBanner } =
-    (await searchParams) ?? {}
+  const {
+    [SHOW_WELCOME_BANNER_QUERY_PARAM]: showWelcomeBanner,
+    [HAS_MIGRATED_SIMULATIONS_QUERY_PARAM]: hasMigratedSimulations,
+  } = (await searchParams) ?? {}
 
   const simulations = await throwNextError(async () => {
     const user = await getAuthUser()
@@ -20,7 +25,11 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
     <div data-track>
       {showWelcomeBanner && <WelcomeBanner locale={locale} />}
 
-      <ResultsView locale={locale} simulations={simulations} />
+      <ResultsView
+        locale={locale}
+        simulations={simulations}
+        hasMigratedSimulations={Boolean(hasMigratedSimulations)}
+      />
     </div>
   )
 }

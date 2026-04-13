@@ -57,7 +57,7 @@ export default function Email() {
             <Trans>Passer</Trans>
           </ButtonLink>
         }
-        redirectURL={END_PAGE_PATH}
+        redirectPathname={END_PAGE_PATH}
       />
     </>
   )
