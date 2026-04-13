@@ -23,7 +23,7 @@ export function ActionPage({ simulations, locale }: Props) {
 
           <TopBar className="mb-6" simulationMode={false} showTotal />
 
-          <JVABanner locale={locale} />
+          <JVABanner />
 
           <ActionsTutorial />
 
