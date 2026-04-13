@@ -26,7 +26,8 @@
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/index.js",
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/worker.js",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "scalingo-postbuild": "pnpm run build && pnpm --filter=@nosgestesclimat/server --prod deploy ../deploy && rm -rf * && mv ../deploy/* ."
   },
   "author": "",
   "license": "MIT",
