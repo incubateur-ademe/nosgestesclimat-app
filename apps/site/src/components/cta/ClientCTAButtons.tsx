@@ -190,7 +190,6 @@ export default function ClientCTAButtons({
             size="xl"
             color="secondary"
             className="group h-16 px-6"
-            trackingEvent={trackingEvents.createCollectiveTest}
             data-testid="organisation-link"
             href={ORGANISATION_CREATE_PATH}>
             <span
