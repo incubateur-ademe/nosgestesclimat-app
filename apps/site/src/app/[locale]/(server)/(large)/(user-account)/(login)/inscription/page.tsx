@@ -1,11 +1,16 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/AuthenticateUserForm'
+import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNUP_MODE } from '@/constants/authentication/modes'
 import { signupComplete } from '@/constants/tracking/pages/mon-espace'
 import { captureSignupComplete } from '@/constants/tracking/posthogTrackers'
 import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
-import { MON_ESPACE_PATH } from '@/constants/urls/paths'
+import {
+  CONNEXION_PATH,
+  INSCRIPTION_PATH,
+  MON_ESPACE_PATH,
+} from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -14,7 +19,6 @@ import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
-import SigninSignupTabs from '../_components/SigninSignupTabs'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Création de compte - Nos Gestes Climat'),
@@ -36,6 +40,10 @@ export default async function Connexion({ params }: DefaultPageProps) {
         <SigninSignupTabs
           className="-order-1 mb-8 lg:mb-14"
           mode={SIGNUP_MODE}
+          paths={{
+            sign_in: CONNEXION_PATH,
+            sign_up: INSCRIPTION_PATH,
+          }}
         />
 
         <Title
