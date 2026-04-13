@@ -75,6 +75,8 @@ export default function ClientCTAButtons({
 
   const [isHover, setIsHover] = useState(false)
 
+  const [isHoverSecondary, setIsHoverSecondary] = useState(false)
+
   const userIsAuthenticatedAndHasMultipleSimulations =
     isAuthenticated && simulations.length > 1
 
@@ -166,7 +168,7 @@ export default function ClientCTAButtons({
         <ButtonLink
           size="xl"
           className={twMerge(
-            'hover:bg-primary-900 w-full transition-all duration-300',
+            'hover:bg-primary-900 h-16 w-full transition-all duration-300',
             className
           )}
           href={mainButtonHref}
@@ -195,13 +197,23 @@ export default function ClientCTAButtons({
           <ButtonLink
             size="xl"
             color="secondary"
-            className="h-full px-6"
+            className="h-16 px-6"
             trackingEvent={trackingEvents.createCollectiveTest}
             data-testid="organisation-link"
+            onMouseEnter={() => setIsHoverSecondary(true)}
+            onMouseLeave={() => setIsHoverSecondary(false)}
             href={ORGANISATION_CREATE_PATH}>
-            <Trans i18nKey="ctaButtons.collective.label">
-              Créer un test collectif
-            </Trans>
+            <span
+              className={twMerge(
+                isHoverSecondary
+                  ? 'bg-rainbow-dark animate-rainbow-fast bg-clip-text! text-transparent! transition-colors duration-1000 motion-reduce:animate-none'
+                  : '',
+                'leading-none'
+              )}>
+              <Trans i18nKey="ctaButtons.collective.label">
+                Créer un test collectif
+              </Trans>{' '}
+            </span>
           </ButtonLink>
         </li>
       )}
@@ -210,9 +222,7 @@ export default function ClientCTAButtons({
           <ButtonLink
             data-testid="restart-link"
             className="mt-1 w-full text-base"
-            trackingEvent={
-              progression !== 1 ? trackingEvents.resume : trackingEvents.restart
-            }
+            trackingEvent={trackingEvents.restart}
             href={getLinkToSimulateurPage({
               newSimulation: progression === 1,
             })}
