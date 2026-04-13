@@ -29,10 +29,10 @@ export default function JVABanner() {
   }
 
   return (
-    <div className="bg-primary-100 relative flex flex-col gap-4 rounded-2xl p-6 pt-12 md:flex-row md:justify-between md:gap-8 md:pt-6">
+    <div className="bg-primary-100 relative mb-6 flex flex-col gap-4 rounded-2xl p-6 pt-12 md:flex-row md:justify-between md:gap-8 md:pt-6">
       <button
         aria-label={t('actions.jva.banner.close', 'Cacher la bannière')}
-        className="absolute top-2 right-3"
+        className="absolute top-4 right-5"
         onClick={handleCloseBanner}>
         <CloseIcon />
       </button>
@@ -81,7 +81,7 @@ export default function JVABanner() {
           src={
             'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg'
           }
-          width={220}
+          width={200}
           height={300}
           className="md:mx-4"
           alt=""
