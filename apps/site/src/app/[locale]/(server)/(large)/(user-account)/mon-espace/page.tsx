@@ -28,7 +28,7 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
       <ResultsView
         locale={locale}
         simulations={simulations}
-        hasMigratedSimulations={Boolean(hasMigratedSimulations)}
+        hasMigratedSimulations={hasMigratedSimulations === 'true'}
       />
     </div>
   )

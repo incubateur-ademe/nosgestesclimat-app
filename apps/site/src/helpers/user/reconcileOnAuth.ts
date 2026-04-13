@@ -68,7 +68,7 @@ export async function reconcileUserOnAuth({
   user: ReturnType<typeof useUser>
   cookieState: CookieState
 }) {
-  let hasMigratedSimulation = false
+  let hasMigratedSimulations = false
   const {
     user: localUser,
     updateSimulations,
@@ -81,7 +81,7 @@ export async function reconcileUserOnAuth({
 
   if (userId === localUser.userId) {
     // We only sync if localuserId is the same as distant userId
-    hasMigratedSimulation = await uploadLocalSimulations({
+    hasMigratedSimulations = await uploadLocalSimulations({
       simulations,
       userId,
     })
@@ -102,5 +102,5 @@ export async function reconcileUserOnAuth({
     posthog.identify(userId)
   }
 
-  return hasMigratedSimulation
+  return hasMigratedSimulations
 }
