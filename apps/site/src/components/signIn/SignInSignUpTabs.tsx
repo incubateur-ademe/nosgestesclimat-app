@@ -17,16 +17,20 @@ import {
 interface Props {
   mode: AuthenticationMode
   className?: string
+  paths: {
+    sign_in: string
+    sign_up: string
+  }
 }
 
-export default function SigninSignupTabs({ mode, className }: Props) {
+export default function SigninSignupTabs({ mode, className, paths }: Props) {
   const { t } = useClientTranslation()
 
   const tabItems: TabItem[] = [
     {
       id: 'connexion',
       label: <Trans i18nKey="login.list.login.label">Se connecter</Trans>,
-      href: './connexion',
+      href: paths.sign_in,
       isActive: mode === SIGNIN_MODE,
       onClick: () => {
         if (mode !== SIGNIN_MODE) {
@@ -40,7 +44,7 @@ export default function SigninSignupTabs({ mode, className }: Props) {
     {
       id: 'inscription',
       label: <Trans i18nKey="login.list.signin.label">Créer un compte</Trans>,
-      href: './inscription',
+      href: paths.sign_up,
       isActive: mode === SIGNUP_MODE,
       onClick: () => {
         if (mode !== SIGNUP_MODE) {
