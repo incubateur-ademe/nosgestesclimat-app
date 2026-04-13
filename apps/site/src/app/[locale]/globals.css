@@ -525,7 +525,7 @@ html[data-useragent*='Trident'] #js {
   }
 }
 
-@utility bg-rainbow {
+.bg-rainbow {
   background: linear-gradient(
     270deg,
     #a2d2fd,
@@ -543,7 +543,7 @@ html[data-useragent*='Trident'] #js {
   background-size: 200% 200%;
 }
 
-@utility bg-rainbow-dark {
+.bg-rainbow-dark {
   background: linear-gradient(
     270deg,
     #2563eb,
@@ -559,6 +559,26 @@ html[data-useragent*='Trident'] #js {
     #2563eb
   );
   background-size: 200% 200%;
+}
+
+.text-rainbow-dark {
+  background: linear-gradient(
+    270deg,
+    #2563eb,
+    #059669,
+    #d97706,
+    #dc2626,
+    #db2777,
+    #2563eb,
+    #059669,
+    #d97706,
+    #dc2626,
+    #db2777,
+    #2563eb
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .bg-total-chart {
