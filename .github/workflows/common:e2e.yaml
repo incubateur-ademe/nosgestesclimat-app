@@ -1,9 +1,8 @@
-name: Site / E2E
+name: E2E
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths: [apps/site/**]
   workflow_call:
     inputs:
       is_preprod:
@@ -135,7 +134,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ matrix.project }}
-          path: blob-report
+          path: apps/site/blob-report
           retention-days: 1
 
   # Merge reports from all shards
@@ -165,5 +164,5 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: playwright-report
-          path: playwright-report/
+          path: apps/site/playwright-report/
           retention-days: 30

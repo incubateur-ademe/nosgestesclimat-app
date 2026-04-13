@@ -23,3 +23,5 @@ onlyBuiltDependencies:
   - '@sentry/cli'
   - msw
   - prisma
+
+nodeLinker: hoisted
