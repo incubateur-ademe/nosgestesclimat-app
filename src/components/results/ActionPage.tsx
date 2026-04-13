@@ -1,6 +1,7 @@
 import type { Locale } from '@/i18nConfig'
 import { FormProvider } from '@/publicodes-state'
 import type { Simulation } from '@/publicodes-state/types'
+import JVABanner from '../actions/JVABanner'
 import NoResultsBlock from '../dashboard/NoResultsBlock'
 import TopBar from '../simulation/TopBar'
 import ActionAutoSave from './actions/ActionAutoSave'
@@ -21,6 +22,8 @@ export function ActionPage({ simulations, locale }: Props) {
           <ActionAutoSave />
 
           <TopBar className="mb-6" simulationMode={false} showTotal />
+
+          <JVABanner locale={locale} />
 
           <ActionsTutorial />
 

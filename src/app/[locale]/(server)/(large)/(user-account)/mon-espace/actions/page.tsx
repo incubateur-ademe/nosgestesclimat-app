@@ -1,3 +1,4 @@
+import JVABanner from '@/components/actions/JVABanner'
 import { ActionPage } from '@/components/results/ActionPage'
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
@@ -24,6 +25,8 @@ export default async function MonEspaceActionsPage({
           Mes actions
         </Trans>
       </h1>
+
+      <JVABanner />
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
       <ActionPage simulations={simulations} locale={locale} />
