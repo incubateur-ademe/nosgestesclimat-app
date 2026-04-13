@@ -13,13 +13,7 @@ export interface PendingVerification {
 export function usePendingVerification({
   onComplete,
 }: {
-  onComplete?: (
-    user: {
-      email: string
-      userId: string
-    },
-    hasMigratedSimulations: boolean
-  ) => void | Promise<void>
+  onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
 }) {
   const user = useUser()
 
@@ -41,7 +35,7 @@ export function usePendingVerification({
       }
 
       try {
-        const hasMigratedSimulations = await reconcileUserOnAuth({
+        await reconcileUserOnAuth({
           userId,
           email: pendingVerification.email,
           user,
@@ -49,13 +43,10 @@ export function usePendingVerification({
         })
 
         user.updatePendingVerification(undefined)
-        await onComplete?.(
-          {
-            email: pendingVerification.email,
-            userId,
-          },
-          hasMigratedSimulations
-        )
+        await onComplete?.({
+          email: pendingVerification.email,
+          userId,
+        })
       } catch (error) {
         captureException(error)
       }

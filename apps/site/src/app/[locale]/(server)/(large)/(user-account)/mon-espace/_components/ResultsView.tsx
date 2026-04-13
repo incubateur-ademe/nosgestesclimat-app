@@ -11,13 +11,13 @@ import ShareSimulator from './resultsView/ShareSimulator'
 interface Props {
   locale: Locale
   simulations: Simulation[]
-  hasMigratedSimulations: boolean
+  isNewAccount: boolean
 }
 
 export default function ResultsView({
   locale,
   simulations,
-  hasMigratedSimulations,
+  isNewAccount,
 }: Props) {
   if (simulations.length === 0) {
     return <NoResultsView locale={locale} />
@@ -34,7 +34,7 @@ export default function ResultsView({
       <ResultsList
         locale={locale}
         simulations={simulations}
-        hasMigratedSimulations={hasMigratedSimulations}
+        isNewAccount={isNewAccount}
       />
 
       <EvolutionGraph

@@ -8,7 +8,6 @@ import {
   captureClickSubmitEmail,
   signinTrackEvent,
 } from '@/constants/tracking/pages/signin'
-import { HAS_MIGRATED_SIMULATIONS_QUERY_PARAM } from '@/constants/urls/params'
 import Button from '@/design-system/buttons/Button'
 import useLogin from '@/hooks/authentication/useLogin'
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
@@ -76,13 +75,7 @@ export default function AuthenticateUserForm({
 
   // Called upon code verification
   const complete = useCallback(
-    async (
-      user: {
-        email: string
-        userId: string
-      },
-      hasMigratedSimulations: boolean
-    ) => {
+    async (user: { email: string; userId: string }) => {
       safeSessionStorage.removeItem(EMAIL_PENDING_AUTHENTICATION_KEY)
       setIsRedirecting(true)
 
@@ -93,13 +86,7 @@ export default function AuthenticateUserForm({
       await onComplete?.(user)
 
       if (redirectPathname) {
-        const [path, existingSearch] = redirectPathname.split('?')
-        const params = new URLSearchParams(existingSearch)
-        if (hasMigratedSimulations) {
-          params.set(HAS_MIGRATED_SIMULATIONS_QUERY_PARAM, 'true')
-        }
-        const search = params.toString()
-        router.push(search ? `${path}?${search}` : path)
+        router.push(redirectPathname)
       }
       router.refresh()
     },
@@ -112,8 +99,8 @@ export default function AuthenticateUserForm({
     resetVerification,
     completeVerification,
   } = usePendingVerification({
-    onComplete: (user, hasMigratedSimulations) => {
-      void complete(user, hasMigratedSimulations)
+    onComplete: (data) => {
+      void complete(data)
     },
   })
 
