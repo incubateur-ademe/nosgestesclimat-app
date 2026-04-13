@@ -1474,10 +1474,12 @@ entries:
   Chargement...: Chargement...
   banner.link.ariaLabel: "{{label}}, s'ouvre dans une nouvelle fenêtre"
   cookies.management.required.detail.description1: Choix de langue
-  cookies.management.required.detail.description2: Authentification sur l'espace personnel
+  cookies.management.required.detail.description2: Sauvegarde de la session anonyme (pour retrouver les simulations précedentes)
   cookies.management.required.detail.description3: Sauvegarde des données de simulation en local
   cookies.management.required.detail.description4: Sauvegarde des préférences de cookie (cette bannière)
   cookies.management.required.detail.title: Voir le détail des cookies
   organisations.askDemo.iframe.title: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
   results.tabs.groups: Test collectif
   results.tabs.myGroups: Créer un test collectif
+  mon-espace.resultsList.hasMigratedSimulations: Nous avons retrouvé des simulations sur ce navigateur et les avons ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
+  Retour à la liste: Retour à la liste

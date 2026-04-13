@@ -2001,8 +2001,8 @@ entries:
   Chargement...: Loading...
   banner.link.ariaLabel: '{{label}}opens in a new window'
   banner.link.ariaLabel.lock: "{{label}}, s'ouvre dans une nouvelle fenêtre"
-  cookies.management.required.detail.description2: Authentication on the personal space
-  cookies.management.required.detail.description2.lock: Authentification sur l'espace personnel
+  cookies.management.required.detail.description2: Saving the anonymous session (to retrieve previous simulations)
+  cookies.management.required.detail.description2.lock: Sauvegarde de la session anonyme (pour retrouver les simulations précedentes)
   cookies.management.required.detail.description1: Choice of language
   cookies.management.required.detail.description1.lock: Choix de langue
   cookies.management.required.detail.description4: Saving cookie preferences (this banner)
@@ -2013,3 +2013,6 @@ entries:
   results.tabs.myGroups.lock: Créer un test collectif
   organisations.askDemo.iframe.title: Form - book an appointment for a demo of our functions for organisations
   organisations.askDemo.iframe.title.lock: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
+  Retour à la liste: Back to the list
+  mon-espace.resultsList.hasMigratedSimulations: We have found simulations on this browser and added them to your space. You can delete them at any time.
+  mon-espace.resultsList.hasMigratedSimulations.lock: Nous avons retrouvé des simulations sur ce navigateur et les avons ajoutées à votre espace. Vous pouvez les supprimer à tout moment.

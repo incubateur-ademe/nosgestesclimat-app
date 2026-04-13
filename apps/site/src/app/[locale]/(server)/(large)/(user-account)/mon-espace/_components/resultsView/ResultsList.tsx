@@ -8,9 +8,14 @@ import SeeListItemDetailLink from './resultsList/SeeListItemDetailLink'
 interface Props {
   locale: Locale
   simulations: Simulation[]
+  hasMigratedSimulations: boolean
 }
 
-export default async function ResultsList({ locale, simulations }: Props) {
+export default async function ResultsList({
+  locale,
+  simulations,
+  hasMigratedSimulations,
+}: Props) {
   const { t } = await getServerTranslation({ locale })
 
   return (
@@ -20,6 +25,17 @@ export default async function ResultsList({ locale, simulations }: Props) {
           Tous mes résultats
         </Trans>
       </h2>
+
+      {hasMigratedSimulations && (
+        <p>
+          <Trans
+            locale={locale}
+            i18nKey="mon-espace.resultsList.hasMigratedSimulations">
+            Nous avons retrouvé des simulations sur ce navigateur et les avons
+            ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
+          </Trans>
+        </p>
+      )}
 
       <ul className="flex flex-col gap-2">
         {simulations

@@ -46,7 +46,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
           <UserProvider serverUserId={initialUserId}>
             <AuthenticateUserForm
               mode="signIn"
-              redirectURL={MON_ESPACE_PATH}
+              redirectPathname={MON_ESPACE_PATH}
               trackers={{
                 matomo: loginComplete,
                 posthog: captureLoginComplete,
