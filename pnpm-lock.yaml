@@ -322,9 +322,6 @@ importers:
       next-i18n-router:
         specifier: ^5.5.6
         version: 5.5.6(next@16.1.5(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
-      postcss:
-        specifier: 8.5.6
-        version: 8.5.6
       posthog-js:
         specifier: ^1.364.1
         version: 1.364.1
@@ -491,6 +488,9 @@ importers:
       playwright-core:
         specifier: ^1.58.2
         version: 1.58.2
+      postcss:
+        specifier: 8.5.6
+        version: 8.5.6
       ramda:
         specifier: ^0.32.0
         version: 0.32.0

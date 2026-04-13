@@ -36,7 +36,9 @@ export default function UnderstandToAct({
         {description && (
           <section
             className="mb-10 text-center text-sm md:mx-auto md:max-w-[850px] md:text-lg"
-            dangerouslySetInnerHTML={{ __html: description }}
+            dangerouslySetInnerHTML={{
+              __html: description as unknown as string,
+            }}
           />
         )}
 

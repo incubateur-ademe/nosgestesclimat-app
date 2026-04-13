@@ -1,4 +1,9 @@
 {
+  "$schema": "https://raw.githubusercontent.com/Scalingo/developers-documentation/refs/heads/master/scalingo.schema.json",
+  "name": "nosgestesclimat-server",
+  "logo": "https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png",
+  "repository": "https://github.com/incubateur-ademe/nosgestesclimat-app",
+  "website": "https://server.nosgestesclimat.fr",
   "formation": {
     "web": {
       "amount": 2,
@@ -7,6 +12,14 @@
     "worker": {
       "amount": 1,
       "size": "M"
+    }
+  },
+  "env": {
+    "DATABASE_READONLY_ROLES": {
+      "value": ""
+    },
+    "DATABASE_ANON_ROLES": {
+      "value": ""
     }
   }
 }

@@ -27,7 +27,8 @@
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/worker.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "scalingo-postbuild": "pnpm run build && pnpm --filter=@nosgestesclimat/server --prod deploy ../deploy && rm -rf * && mv ../deploy/* ."
+    "scalingo:remove-unused-dependencies": "pnpm --filter=@nosgestesclimat/server --prod deploy /tmp/deploy && rm -rf node_modules ../../node_modules && mv -f /tmp/deploy/node_modules .",
+    "scalingo-postbuild": "pnpm run build && pnpm run scalingo:remove-unused-dependencies"
   },
   "author": "",
   "license": "MIT",
@@ -93,5 +94,5 @@
     "tsx": "^4.21.0",
     "vitest": "^4.1.2"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a"
 }

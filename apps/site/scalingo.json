@@ -14,6 +14,10 @@
     "NEXT_PUBLIC_SITE_URL": {
       "generator": "url"
     },
+    "NEXT_PUBLIC_SERVER_URL": {
+      "generator": "template",
+      "template": "https://%APP%.osc-fr1.scalingo.io"
+    },
     "NEXT_PUBLIC_MATOMO_DOMAIN": {
       "value": "*.osc-fr1.scalingo.io",
       "description": "Matomo domain for Scalingo review apps"
