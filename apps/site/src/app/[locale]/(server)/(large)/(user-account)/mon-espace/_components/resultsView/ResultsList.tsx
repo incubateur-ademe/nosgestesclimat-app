@@ -3,18 +3,46 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { Simulation } from '@/publicodes-state/types'
+import dayjs from 'dayjs'
 import SeeListItemDetailLink from './resultsList/SeeListItemDetailLink'
 
 interface Props {
   locale: Locale
   simulations: Simulation[]
-  hasMigratedSimulations: boolean
+  isNewAccount: boolean
+}
+
+type SimulationWithMetadata = Simulation & { updated_at: string }
+
+interface FuncProps {
+  isNewAccount: boolean
+  simulations: SimulationWithMetadata[]
+}
+
+const getShouldDisplayHelperText = ({
+  isNewAccount,
+  simulations,
+}: FuncProps) => {
+  // Only show text to newcomers
+  if (!isNewAccount) return false
+
+  // That either have more than one simulation
+  if (simulations.length > 1) return true
+
+  // Or that have one simulation created in the past
+  if (
+    simulations.length === 1 &&
+    dayjs(simulations[0].updated_at).isBefore(dayjs())
+  )
+    return true
+
+  return false
 }
 
 export default async function ResultsList({
   locale,
   simulations,
-  hasMigratedSimulations,
+  isNewAccount,
 }: Props) {
   const { t } = await getServerTranslation({ locale })
 
@@ -26,7 +54,10 @@ export default async function ResultsList({
         </Trans>
       </h2>
 
-      {hasMigratedSimulations && (
+      {getShouldDisplayHelperText({
+        isNewAccount,
+        simulations: simulations as SimulationWithMetadata[],
+      }) && (
         <p className="mb-4">
           <Trans
             locale={locale}
