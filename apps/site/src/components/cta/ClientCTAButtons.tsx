@@ -73,10 +73,6 @@ export default function ClientCTAButtons({
   const { progression } = useCurrentSimulation()
   const { simulations, initSimulation } = useUser()
 
-  const [isHover, setIsHover] = useState(false)
-
-  const [isHoverSecondary, setIsHoverSecondary] = useState(false)
-
   const userIsAuthenticatedAndHasMultipleSimulations =
     isAuthenticated && simulations.length > 1
 
@@ -168,23 +164,19 @@ export default function ClientCTAButtons({
         <ButtonLink
           size="xl"
           className={twMerge(
-            'hover:bg-primary-900 h-16 w-full transition-all duration-300',
+            'group hover:bg-primary-900 h-16 w-full transition-all duration-300',
             className
           )}
           href={mainButtonHref}
           aria-disabled={isPending}
           data-testid="do-the-test-link"
-          onMouseEnter={() => setIsHover(true)}
-          onMouseLeave={() => setIsHover(false)}
           onClick={handleMainButtonClick}>
           <>
             {isPending && <Loader color="light" size="sm" className="mr-2" />}
             <span
               className={twMerge(
-                isHover
-                  ? 'bg-rainbow animate-rainbow-fast bg-clip-text! text-transparent! duration-1000 motion-reduce:animate-none'
-                  : '',
-                'leading-none'
+                'leading-none',
+                'group-hover:bg-rainbow group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
               )}>
               <Trans>{mainButtonLabel}</Trans>
             </span>
@@ -197,22 +189,18 @@ export default function ClientCTAButtons({
           <ButtonLink
             size="xl"
             color="secondary"
-            className="h-16 px-6"
+            className="group h-16 px-6"
             trackingEvent={trackingEvents.createCollectiveTest}
             data-testid="organisation-link"
-            onMouseEnter={() => setIsHoverSecondary(true)}
-            onMouseLeave={() => setIsHoverSecondary(false)}
             href={ORGANISATION_CREATE_PATH}>
             <span
               className={twMerge(
-                isHoverSecondary
-                  ? 'bg-rainbow-dark animate-rainbow-fast bg-clip-text! text-transparent! transition-colors duration-1000 motion-reduce:animate-none'
-                  : '',
-                'leading-none'
+                'leading-none',
+                'group-hover:bg-rainbow-dark group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
               )}>
               <Trans i18nKey="ctaButtons.collective.label">
                 Créer un test collectif
-              </Trans>{' '}
+              </Trans>
             </span>
           </ButtonLink>
         </li>
