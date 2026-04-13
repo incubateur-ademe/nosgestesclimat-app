@@ -204,9 +204,9 @@ export default function CreationForm() {
 
       {isErrorUpdateOrga && <DefaultSubmitErrorMessage className="mt-4" />}
 
-      <div className="mt-12">
+      <div className="mt-8">
         <Button type="submit" data-testid="create-organisation-button">
-          <Trans>Créer ma première campagne</Trans>
+          <Trans>Créer mon premier test collectif</Trans>
         </Button>
       </div>
     </form>
