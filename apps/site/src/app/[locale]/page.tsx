@@ -10,7 +10,6 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
 import {
-  getLandingClickCTACreateCollectiveTest,
   getLandingClickCTARestart,
   getLandingClickCTAResults,
   getLandingClickCTAResume,
@@ -93,11 +92,6 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
                       '/',
                       trackingActionClickCTA
                     ),
-                    createCollectiveTest:
-                      getLandingClickCTACreateCollectiveTest(
-                        '/',
-                        trackingActionClickCTA
-                      ),
                   }}
                 />
               </Suspense>
