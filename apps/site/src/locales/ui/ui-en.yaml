@@ -2001,8 +2001,8 @@ entries:
   Chargement...: Loading...
   banner.link.ariaLabel: '{{label}}opens in a new window'
   banner.link.ariaLabel.lock: "{{label}}, s'ouvre dans une nouvelle fenêtre"
-  cookies.management.required.detail.description2: Authentication on the personal space
-  cookies.management.required.detail.description2.lock: Authentification sur l'espace personnel
+  cookies.management.required.detail.description2: Saving the anonymous session (to retrieve previous simulations)
+  cookies.management.required.detail.description2.lock: Sauvegarde de la session anonyme (pour retrouver les simulations précédentes)
   cookies.management.required.detail.description1: Choice of language
   cookies.management.required.detail.description1.lock: Choix de langue
   cookies.management.required.detail.description4: Saving cookie preferences (this banner)
@@ -2013,3 +2013,14 @@ entries:
   results.tabs.myGroups.lock: Créer un test collectif
   organisations.askDemo.iframe.title: Form - book an appointment for a demo of our functions for organisations
   organisations.askDemo.iframe.title.lock: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
+  actions.jva.banner.close: Hide banner
+  actions.jva.banner.close.lock: Cacher la bannière
+  Retour à la liste: Back to the list
+  actions.jva.banner.cta: Let's go!
+  actions.jva.banner.cta.lock: J'y vais !
+  actions.jva.banner.text2: 'Join the Spring for the Planet campaign on <2>JeVeuxAider.gouv.fr</2> '
+  actions.jva.banner.text2.lock: 'Rejoignez l’opération Printemps pour la planète sur <2>JeVeuxAider.gouv.fr</2> '
+  actions.jva.banner.text1: 'Clean-up, awareness-raising, animal care, repair workshops and an urban vegetable garden. '
+  actions.jva.banner.text1.lock: 'Dépollution, sensibilisation, soin aux animaux, ateliers de réparation et potager urbain. '
+  actions.jva.banner.title: Volunteer to help protect the environment
+  actions.jva.banner.title.lock: Faites du bénévolat pour préserver l’environnement
