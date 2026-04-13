@@ -1474,10 +1474,17 @@ entries:
   Chargement...: Chargement...
   banner.link.ariaLabel: "{{label}}, s'ouvre dans une nouvelle fenêtre"
   cookies.management.required.detail.description1: Choix de langue
-  cookies.management.required.detail.description2: Authentification sur l'espace personnel
+  cookies.management.required.detail.description2: Sauvegarde de la session anonyme (pour retrouver les simulations précédentes)
   cookies.management.required.detail.description3: Sauvegarde des données de simulation en local
   cookies.management.required.detail.description4: Sauvegarde des préférences de cookie (cette bannière)
   cookies.management.required.detail.title: Voir le détail des cookies
   organisations.askDemo.iframe.title: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
   results.tabs.groups: Test collectif
   results.tabs.myGroups: Créer un test collectif
+  actions.jva.banner.close: Cacher la bannière
+  actions.jva.banner.cta: J'y vais !
+  actions.jva.banner.text1: 'Dépollution, sensibilisation, soin aux animaux, ateliers de réparation et potager urbain. '
+  actions.jva.banner.text2: 'Rejoignez l’opération Printemps pour la planète sur <2>JeVeuxAider.gouv.fr</2> '
+  actions.jva.banner.title: Faites du bénévolat pour préserver l’environnement
+  J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: ''
+  Retour à la liste: Retour à la liste
