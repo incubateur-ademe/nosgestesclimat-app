@@ -145,6 +145,24 @@ describe('Given a NGC user', () => {
         })
       })
 
+      describe('And invalid mode', () => {
+        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+          await agent
+            .post(
+              url.replace(
+                ':organisationIdOrSlug',
+                faker.database.mongodbObjectId()
+              )
+            )
+            .set('cookie', cookie)
+            .send({
+              name: faker.company.buzzNoun(),
+              mode: 'invalid-mode',
+            })
+            .expect(StatusCodes.BAD_REQUEST)
+        })
+      })
+
       describe('And invalid customAdditionalQuestions', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
@@ -266,6 +284,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             computedResults: null,
@@ -325,6 +344,7 @@ describe('Given a NGC user', () => {
               funFacts: true,
               organisationId: true,
               expectedNumberOfParticipants: true,
+              mode: true,
               createdAt: true,
               updatedAt: true,
             },
@@ -336,6 +356,7 @@ describe('Given a NGC user', () => {
             funFacts: null,
             slug: slugify.default(payload.name.toLowerCase(), { strict: true }),
             organisationId,
+            mode: 'standard',
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
             defaultAdditionalQuestions: payload.defaultAdditionalQuestions?.map(
@@ -564,6 +585,7 @@ describe('Given a NGC user', () => {
               defaultAdditionalQuestions: [],
               customAdditionalQuestions: [],
               expectedNumberOfParticipants: null,
+              mode: 'standard',
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
               computedResults: null,
@@ -693,6 +715,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             computedResults: null,
