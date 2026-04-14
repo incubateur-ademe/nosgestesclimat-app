@@ -718,11 +718,6 @@ html[data-useragent*='Trident'] #js {
   @apply ring-primary-700! ring-2! ring-offset-3! outline-hidden!;
 }
 
-/* Focus styles for all links - same as Button component */
-a:focus-visible {
-  @apply ring-primary-700! ring-2! ring-offset-3! outline-hidden!;
-}
-
 /* Custom short screen utilities to replace short: breakpoint */
 @media (max-height: 600px) {
   .short\:gap-2 {
@@ -752,4 +747,12 @@ a[name='variations'] {
 #documentation-rule-root article > h1,
 #documentation-rule-root article h2 {
   @apply text-base! font-normal!;
+}
+
+/*
+** Default focus for links and buttons
+*/
+a,
+button {
+  @apply focus-visible:ring-primary-700 focus-visible:ring-2 focus-visible:ring-offset-3 focus-visible:outline-hidden;
 }

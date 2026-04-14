@@ -35,7 +35,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1023.0",
     "@aws-sdk/s3-request-presigner": "^3.1023.0",
-    "@incubateur-ademe/nosgestesclimat": "4.10.2",
+    "@incubateur-ademe/nosgestesclimat": "4.10.3",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "@prisma/driver-adapter-utils": "^6.19.3",
