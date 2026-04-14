@@ -6,7 +6,6 @@ import NoResultsBlock from '../dashboard/NoResultsBlock'
 import TopBar from '../simulation/TopBar'
 import ActionAutoSave from './actions/ActionAutoSave'
 import ActionsContent from './actions/ActionsContent'
-import ActionsTutorial from './actions/ActionsTutorial'
 
 interface Props {
   simulations: Simulation[]
@@ -25,7 +24,7 @@ export function ActionPage({ simulations, locale }: Props) {
 
           <JVABanner />
 
-          <ActionsTutorial />
+          {/* Disabled during partnership with je veux aider.fr <ActionsTutorial />*/}
 
           <ActionsContent />
         </FormProvider>
