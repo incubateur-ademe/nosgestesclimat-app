@@ -1,51 +1,24 @@
+import { DeleteButtonWithConfirmModal } from '@/components/interactions/DeleteButtonWithConfirmModal'
 import Trans from '@/components/translation/trans/TransServer'
-import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import type { Simulation } from '@/publicodes-state/types'
 import dayjs from 'dayjs'
+import { ResultListItem } from './resultsList/ResultListItem'
 import SeeListItemDetailLink from './resultsList/SeeListItemDetailLink'
 
 interface Props {
   locale: Locale
   simulations: Simulation[]
+  onSimulationDelete: (id: string) => Promise<void>
   isNewAccount: boolean
 }
 
-type SimulationWithMetadata = Simulation & { updated_at: string }
-
-interface FuncProps {
-  isNewAccount: boolean
-  simulations: SimulationWithMetadata[]
-}
-
-const getShouldDisplayHelperText = ({
-  isNewAccount,
-  simulations,
-}: FuncProps) => {
-  // Only show text to newcomers
-  if (!isNewAccount) return false
-
-  // That either have more than one simulation
-  if (simulations.length > 1) return true
-
-  // Or that have one simulation created in the past
-  if (
-    simulations.length === 1 &&
-    dayjs(simulations[0].updated_at).isBefore(dayjs())
-  )
-    return true
-
-  return false
-}
-
-export default async function ResultsList({
+export default function ResultsList({
   locale,
   simulations,
+  onSimulationDelete,
   isNewAccount,
 }: Props) {
-  const { t } = await getServerTranslation({ locale })
-
   return (
     <div className="mb-8 md:mb-10">
       <h2 className="mb-6 text-2xl md:mb-8">
@@ -56,7 +29,7 @@ export default async function ResultsList({
 
       {getShouldDisplayHelperText({
         isNewAccount,
-        simulations: simulations as SimulationWithMetadata[],
+        simulations,
       }) && (
         <p className="mb-4">
           <Trans
@@ -74,47 +47,62 @@ export default async function ResultsList({
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
           )
           .map((simulation) => {
-            const { formattedValue, unit } = formatFootprint(
-              simulation.computedResults.carbone.bilan,
-              { t }
-            )
             return (
               <li key={simulation.id}>
-                <article className="flex flex-col items-baseline gap-2 rounded-lg border border-slate-200 px-6 py-4 md:flex-row">
-                  <div className="flex flex-col items-baseline gap-1 sm:flex-row md:w-[420px]">
-                    <h1 className="mb-0 text-base md:text-lg">
-                      {t(
-                        'mon-espace.resultsList.result.title',
-                        'Le {{date}} :',
-                        {
-                          date: new Date(simulation.date).toLocaleDateString(
-                            locale,
-                            {
-                              day: '2-digit',
-                              month: 'long',
-                              year: 'numeric',
-                            }
-                          ),
-                        }
-                      )}
-                    </h1>
-
-                    <span className="mr-6 inline-block text-base font-bold md:text-lg">
-                      {formattedValue} {unit}{' '}
-                      <Trans
-                        locale={locale}
-                        i18nKey="mon-espace.resultsList.result.unit">
-                        CO₂e / an
-                      </Trans>
-                    </span>
-                  </div>
-
-                  <SeeListItemDetailLink simulationId={simulation.id} />
-                </article>
+                <ResultListItem
+                  simulation={simulation}
+                  locale={locale}
+                  buttons={
+                    <>
+                      <SeeListItemDetailLink simulationId={simulation.id} />
+                      <DeleteButtonWithConfirmModal
+                        deleteAction={async () => {
+                          'use server'
+                          await onSimulationDelete(simulation.id)
+                        }}>
+                        <h2 className="mb-8 text-2xl font-normal">
+                          <Trans
+                            locale={locale}
+                            i18nKey="mySpace.resultList.item.delete.modal.title">
+                            Êtes-vous sûr(e) de vouloir supprimer ce
+                            résultat&nbsp;?
+                          </Trans>
+                        </h2>
+                        <ResultListItem
+                          simulation={simulation}
+                          locale={locale}
+                        />
+                      </DeleteButtonWithConfirmModal>
+                    </>
+                  }
+                />
               </li>
             )
           })}
       </ul>
     </div>
   )
+}
+
+const getShouldDisplayHelperText = ({
+  isNewAccount,
+  simulations,
+}: {
+  isNewAccount: boolean
+  simulations: Simulation[]
+}) => {
+  // Only show text to newcomers
+  if (!isNewAccount) return false
+
+  // That either have more than one simulation
+  if (simulations.length > 1) return true
+
+  // Or that have one simulation created in the past
+  if (
+    simulations.length === 1 &&
+    dayjs(simulations[0].updated_at).isBefore(dayjs())
+  )
+    return true
+
+  return false
 }

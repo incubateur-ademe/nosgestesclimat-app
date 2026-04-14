@@ -1,9 +1,7 @@
 'use server'
 
 import { SIMULATION_URL } from '@/constants/urls/main'
-import { MON_ESPACE_PATH } from '@/constants/urls/paths'
-import type { Simulation } from '@/publicodes-state/types'
-import { revalidatePath } from 'next/cache'
+import type { Simulation as LocalStorageSimulation } from '@/publicodes-state/types'
 import { getUser, type AppUser } from '../dal/user'
 import { fetchServer } from '../fetchServer'
 import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
@@ -11,6 +9,11 @@ import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation
 interface SimulationFilter {
   completedOnly?: boolean
   pageSize?: number
+}
+
+export interface Simulation extends LocalStorageSimulation {
+  /** ISO 8601 date string */
+  updated_at: string
 }
 
 export async function getSimulations(
@@ -58,16 +61,13 @@ export async function getUserSimulations(simulationFilter?: SimulationFilter) {
 
 // This is a soft delete
 export async function deleteSimulation({
+  user,
   simulationId,
-  userId,
 }: {
+  user: AppUser
   simulationId: string
-  userId: string
 }) {
-  await fetchServer(`${SIMULATION_URL}/${userId}/${simulationId}`, {
+  await fetchServer(`${SIMULATION_URL}/${user.id}/${simulationId}`, {
     method: 'DELETE',
   })
-
-  revalidatePath(MON_ESPACE_PATH)
-  revalidatePath(`${MON_ESPACE_PATH}/resultats/${simulationId}`)
 }

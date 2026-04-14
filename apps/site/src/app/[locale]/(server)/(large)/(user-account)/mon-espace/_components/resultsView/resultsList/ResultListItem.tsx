@@ -26,7 +26,7 @@ export async function ResultListItem({
 
   return (
     <article className="flex flex-col items-baseline gap-2 rounded-lg border border-slate-200 px-6 py-4 md:flex-row">
-      <div className="flex flex-col items-baseline gap-1 sm:flex-row md:w-[420px]">
+      <div className="flex flex-col items-baseline gap-1 sm:flex-row md:w-105">
         <h1 className="mb-0 text-base md:text-lg">
           {t('mon-espace.resultsList.result.title', 'Le {{date}} :', {
             date: new Date(simulation.date).toLocaleDateString(locale, {
@@ -44,6 +44,7 @@ export async function ResultListItem({
           </Trans>
         </span>
       </div>
+
       {buttons}
     </article>
   )

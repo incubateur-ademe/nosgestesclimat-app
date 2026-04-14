@@ -23,11 +23,9 @@ export function DeleteButtonWithConfirmModal({
 
   const handleDeleteAction = () => {
     setIsError(false)
-
     startTransition(async () => {
       try {
         await deleteAction()
-
         setIsModalOpen(false)
       } catch {
         setIsError(true)

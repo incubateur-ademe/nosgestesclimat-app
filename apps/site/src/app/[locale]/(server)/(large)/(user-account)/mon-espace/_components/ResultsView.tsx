@@ -1,6 +1,6 @@
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import type { Simulation } from '@/publicodes-state/types'
 import LatestResults from './LatestResults'
 import NoResultsView from './NoResultsView'
 import ProfileTab from './ProfileTabs'
@@ -12,12 +12,14 @@ interface Props {
   locale: Locale
   simulations: Simulation[]
   isNewAccount: boolean
+  onSimulationDelete: (simulationId: string) => Promise<void>
 }
 
 export default function ResultsView({
   locale,
   simulations,
   isNewAccount,
+  onSimulationDelete,
 }: Props) {
   if (simulations.length === 0) {
     return <NoResultsView locale={locale} />
@@ -35,6 +37,7 @@ export default function ResultsView({
         locale={locale}
         simulations={simulations}
         isNewAccount={isNewAccount}
+        onSimulationDelete={onSimulationDelete}
       />
 
       <EvolutionGraph

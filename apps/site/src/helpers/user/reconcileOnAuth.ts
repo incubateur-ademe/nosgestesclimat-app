@@ -40,7 +40,7 @@ async function loadServerSimulation({
   hideTutorial: (tutorialId: string) => void
 }) {
   // Fetch simulations from server
-  let simulations = await getUserSimulations()
+  let simulations: Simulation[] = await getUserSimulations()
 
   if (simulations.length === 0) {
     simulations = [generateSimulation()]
