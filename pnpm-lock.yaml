@@ -229,6 +229,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.2
         version: 4.1.4(vitest@4.1.4)
+      '@vitest/mocker':
+        specifier: ^4.1.4
+        version: 4.1.4(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       msw:
         specifier: ^2.12.14
         version: 2.12.14(@types/node@18.19.130)(typescript@5.9.3)
