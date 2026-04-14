@@ -1,7 +1,27 @@
+packages:
+  - packages/*
+  - apps/*
+
+ignoredBuiltDependencies:
+  - '@scarf/scarf'
+  - core-js
+  - core-js-pure
+  - esbuild
+  - protobufjs
+  - sharp
+  - unrs-resolver
+
+injectWorkspacePackages: true
 minimumReleaseAge: 10080 # 7 days
+
 minimumReleaseAgeExclude:
   - '@incubateur-ademe/nosgestesclimat'
-  - 'react'
-  - 'react-dom'
-  - 'next'
-  - '@next/*'
+
+onlyBuiltDependencies:
+  - '@incubateur-ademe/nosgestesclimat'
+  - '@prisma/engines'
+  - '@sentry/cli'
+  - msw
+  - prisma
+
+nodeLinker: hoisted

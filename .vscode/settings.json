@@ -16,8 +16,11 @@
     "editor.findMatchBackground": "#ffe900",
     "editor.findMatchHighlightBackground": "#ff7b00a1",
     "activityBar.background": "#296c36",
+    "activityBar.foreground": "#FAF9FD",
+    "activityBar.inactiveForeground": "#cceecc",
     "titleBar.activeBackground": "#296c36",
-    "titleBar.activeForeground": "#FAF9FD"
+    "titleBar.activeForeground": "#FAF9FD",
+    "titleBar.inactiveForeground": "#cceecc"
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

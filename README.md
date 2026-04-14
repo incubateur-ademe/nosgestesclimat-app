@@ -1,4 +1,4 @@
-## Le site Web nosgestesclimat.fr
+# Le site Web nosgestesclimat.fr
 
 ## C'est quoi ?
 
@@ -6,42 +6,79 @@ Un calculateur d'empreinte climat individuelle de consommation à l'année, util
 
 Pour contribuer au modèle, données sous-jacentes et textes du questionnaire (calculs, facteurs d'émission, infos, questions, réponses, suggestions de saisie), [suivez le guide de contribution](https://github.com/incubateur-ademe/nosgestesclimat/blob/master/CONTRIBUTING.md).
 
-Pour tout ce qui touche à l'interface (style d'un bouton, graphique de résultat, code JavaScript, etc.) c'est ici [sur le dépôt du _site_](https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/issues).
+Pour tout le reste (style d'un bouton, graphique de résultat, code JavaScript, logique etc.) c'est ici [sur le dépôt du _site_](https://github.com/incubateur-ademe/nosgestesclimat-app/issues).
 
-> 🇬🇧 Most of the documentation (including issues and the wiki) is written in French, please raise an [issue](https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/issues/new) if you are interested and do not speak French.
+> 🇬🇧 Most of the documentation (including issues and the wiki) is written in French, please raise an [issue](https://github.com/incubateur-ademe/nosgestesclimat-app/issues/new) if you are interested and do not speak French.
 
 ## Et techniquement ?
 
-Le code utilise Next.js / TypeScript / React / Tailwind CSS, entre autres.
+Le code utilise Next.js, TypeScript, React, Tailwind CSS, PostgreSQL, Redis, entre autres.
 
-### Installation
+## Installation
 
-#### Pré requis
+Pré-requis :
 
 - [Node.js 22.14.0](https://nodejs.org/fr/download)
 - [pnpm](https://pnpm.io/installation)
-- Copier le fichier `.env.template`en `.env.local` et récupérer les variables d'environnement nécessaires
 
-#### Lancement
+### Via devcontainers (recommandé)
 
-> Ce dépôt ne contient pas les règles de calcul. Le site importe, depuis le [paquet npm `@incubateur-ademe/nosgestesclimat`](https://www.npmjs.com/package/@incubateur-ademe/nosgestesclimat), les règles compilées issues [des fichiers Publi.codes du modèle](https://github.com/incubateur-ademe/nosgestesclimat/tree/master/data).
+Lance les devcontainers via [l'extension VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`Cmd+Shift+P` > `Dev Containers: Reopen in Container`) ou via [la ligne de commande](https://github.com/devcontainers/cli) :
 
-Pour lancer le site, utilisant le dernier modèle de calcul publié, il suffit de lancer :
-
-```
-pnpm install && pnpm dev
+```bash
+devcontainer up
 ```
 
-### Tests
+Pour lancer les devcontainers avec un build de production :
 
-#### Tests end-to-end
+```bash
+echo "DEVCONTAINER_START_MODE=production" > .devcontainer/.env
+```
 
-Nous utilisons [Playwright](https://playwright.dev/) pour les tests end-to-end.
+### Manuellement
 
-Pour lancer les tests :
+Installez les dépendances du monorepo :
 
-1. lancez le serveur local : `pnpm dev`
-2. dans un autre terminal, lancez `pnpm run e2e` pour ouvrir l'interface Playwright.
+```bash
+pnpm install
+```
+
+Puis, suivez les instructions d'installation dans les README de chaque application :
+
+- [Serveur API](./apps/server/README.md)
+- [Site Web](./apps/site/README.md)
+
+## Commandes utiles
+
+Installe les dépendances
+
+```bash
+pnpm install
+```
+
+Migre la base de donnée (requiert les dépendances, les .env et les services)
+
+```bash
+pnpm -F server db:migrate
+```
+
+Lance toutes les applications en mode développement (requiert les services, les .env et la migration)
+
+```bash
+pnpm dev
+```
+
+Builde toutes les applications (requiert les dépendances)
+
+```bash
+pnpm build
+```
+
+Lance toutes les applications en mode production (requiert le build, les services, les .env et la migration)
+
+```bash
+pnpm start
+```
 
 ## Réutilisations de ce code
 

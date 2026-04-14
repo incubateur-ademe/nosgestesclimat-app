@@ -1,0 +1,77 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/deploy
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+.tags*
+.tmp
+.DS_Store
+yarn-error.log
+
+node_modules/
+.env
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+# They are automatically generated when running tests
+/tests/e2e/test-completion/persona-*.spec.ts
+dist
+
+# Sentry Config File
+.sentryclirc
+
+# Build analysis
+/analyze
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+coverage
+
+.husky/pre-push-custom
+
+*.log
+
+storybook-static
+package-lock.json
+
+# IDE
+.history/

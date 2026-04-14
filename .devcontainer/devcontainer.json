@@ -1,0 +1,56 @@
+// Dev Container — Docker Compose setup
+{
+  "name": "nosgestesclimat",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/nosgestesclimat",
+  "remoteUser": "root",
+
+  "postCreateCommand": {
+    "pnpm": "corepack enable && corepack install && pnpm install"
+  },
+
+  "postStartCommand": ".devcontainer/start.sh",
+
+  "forwardPorts": [3000, 3001, 5432, 6379],
+  "portsAttributes": {
+    "3000": {
+      "label": "Site",
+      "onAutoForward": "notify",
+      "elevateIfNeeded": false,
+      "requireLocalPort": false,
+      "protocol": "http"
+    },
+    "3001": {
+      "label": "Server",
+      "onAutoForward": "notify",
+      "elevateIfNeeded": false,
+      "requireLocalPort": false,
+      "protocol": "http"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent",
+      "elevateIfNeeded": false,
+      "requireLocalPort": false,
+      "protocol": "http"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent",
+      "elevateIfNeeded": false,
+      "requireLocalPort": false,
+      "protocol": "http"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "prisma.prisma"
+      ]
+    }
+  }
+}

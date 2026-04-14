@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Scalingo/developers-documentation/refs/heads/master/scalingo.schema.json",
+  "name": "nosgestesclimat-site",
+  "logo": "https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png",
+  "repository": "https://github.com/incubateur-ademe/nosgestesclimat-app",
+  "website": "https://nosgestesclimat.fr",
+  "formation": {
+    "web": {
+      "amount": 1,
+      "size": "M"
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": {
+      "generator": "url"
+    },
+    "NEXT_PUBLIC_SERVER_URL": {
+      "generator": "template",
+      "template": "https://%APP%.osc-fr1.scalingo.io"
+    },
+    "NEXT_PUBLIC_MATOMO_DOMAIN": {
+      "value": "*.osc-fr1.scalingo.io",
+      "description": "Matomo domain for Scalingo review apps"
+    }
+  }
+}

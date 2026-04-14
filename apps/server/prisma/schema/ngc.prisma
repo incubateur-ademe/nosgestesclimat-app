@@ -1,0 +1,449 @@
+model Answer {
+  id         String   @id @db.Uuid
+  survey     String
+  total      Float    @db.DoublePrecision
+  progress   Float    @db.Real
+  byCategory Json
+  context    Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([id, survey])
+  @@schema("ngc")
+}
+
+model BrevoNewsletterStats {
+  id            String   @id @default(uuid()) @db.Uuid
+  date          DateTime @db.Date
+  newsletter    Int
+  subscriptions Int      @db.Integer
+
+  @@unique([date, newsletter])
+  @@schema("ngc")
+}
+
+model BudgetStats {
+  id                String    @id @default(uuid()) @db.Uuid
+  year              Int       @db.Integer
+  month             Int       @db.Integer
+  kind              StatsKind
+  referrer          String    @default("all")
+  totalBudget       Int       @db.Integer
+  acquisitionBudget Int       @db.Integer
+
+  @@unique([year, month, kind, referrer])
+  @@schema("ngc")
+}
+
+model EmailSimulation {
+  id        String   @id @default(cuid())
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("ngc")
+}
+
+model Group {
+  id            String              @id @default(cuid())
+  name          String
+  emoji         String
+  administrator GroupAdministrator?
+  participants  GroupParticipant[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@schema("ngc")
+}
+
+model GroupAdministrator {
+  id        String   @id @default(uuid()) @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.Uuid
+  group     Group    @relation(fields: [groupId], onDelete: Cascade, references: [id])
+  groupId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("ngc")
+}
+
+model GroupParticipant {
+  id           String     @id @default(uuid()) @db.Uuid
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String     @db.Uuid
+  simulationId String     @db.Uuid
+  group        Group      @relation(fields: [groupId], onDelete: Cascade, references: [id])
+  simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  groupId      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([groupId, userId])
+  @@schema("ngc")
+}
+
+enum ApiScopeName {
+  ngc
+  agir
+  two_tons
+
+  @@schema("ngc")
+}
+
+model IntegrationApiScope {
+  name        ApiScopeName           @id
+  description String
+  whitelists  IntegrationWhitelist[]
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  @@schema("ngc")
+}
+
+model IntegrationWhitelist {
+  id           String              @id @default(uuid()) @db.Uuid
+  emailPattern String
+  description  String
+  apiScopeName ApiScopeName
+  apiScope     IntegrationApiScope @relation(fields: [apiScopeName], references: [name])
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@unique([emailPattern, apiScopeName])
+  @@schema("ngc")
+}
+
+enum JobStatus {
+  pending
+  running
+  success
+  failure
+
+  @@schema("ngc")
+}
+
+model Job {
+  id         String         @id @db.VarChar(64)
+  status     JobStatus
+  params     Json
+  result     Json?
+  executions JobExecution[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@schema("ngc")
+}
+
+model JobExecution {
+  id    String   @id @default(uuid()) @db.Uuid
+  jobId String   @db.VarChar(64)
+  job   Job      @relation(fields: [jobId], onDelete: Cascade, references: [id])
+  date  DateTime @db.Date
+
+  @@unique([id, jobId])
+  @@schema("ngc")
+}
+
+enum MatomoStatsSource {
+  beta
+  data
+
+  @@schema("ngc")
+}
+
+enum MatomoStatsDevice {
+  desktop
+  all
+
+  @@schema("ngc")
+}
+
+model MatomoStats {
+  id                  String            @id @default(uuid()) @db.Uuid
+  date                DateTime          @db.Date
+  source              MatomoStatsSource
+  kind                StatsKind
+  referrer            String            @default("all")
+  device              MatomoStatsDevice
+  iframe              Boolean
+  visits              Int               @db.Integer
+  firstAnswer         Int               @db.Integer
+  finishedSimulations Int               @db.Integer
+
+  @@unique([date, source, kind, referrer, device, iframe])
+  @@schema("ngc")
+}
+
+enum NorthstarRatingType {
+  learned
+  actions
+
+  @@schema("ngc")
+}
+
+model NorthstarRating {
+  id           String              @id @default(cuid())
+  simulationId String              @unique @db.Uuid
+  type         NorthstarRatingType
+  value        Int?                @db.SmallInt
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@schema("ngc")
+}
+
+enum OrganisationType {
+  association
+  company
+  cooperative
+  groupOfFriends
+  other
+  publicOrRegionalAuthority
+  universityOrSchool
+
+  @@schema("ngc")
+}
+
+model Organisation {
+  id                    String                      @id @default(cuid())
+  name                  String                      @db.VarChar(100)
+  slug                  String                      @unique @db.VarChar(105)
+  type                  OrganisationType            @default(other)
+  administrators        OrganisationAdministrator[]
+  numberOfCollaborators Int?                        @db.Integer
+  polls                 Poll[]
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+
+  @@schema("ngc")
+}
+
+model OrganisationAdministrator {
+  id             String       @id @default(uuid())
+  user           VerifiedUser @relation(fields: [userEmail], references: [email])
+  userEmail      String       @unique
+  organisation   Organisation @relation(fields: [organisationId], onDelete: Cascade, references: [id])
+  organisationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@schema("ngc")
+}
+
+model Poll {
+  id                           String                          @id @default(cuid())
+  name                         String                          @db.VarChar(150)
+  slug                         String                          @unique @db.VarChar(155)
+  funFacts                     Json?
+  computedResults              Json?
+  expectedNumberOfParticipants Int?                            @db.Integer
+  customAdditionalQuestions    Json
+  defaultAdditionalQuestions   PollDefaultAdditionalQuestion[]
+  organisationId               String
+  organisation                 Organisation                    @relation(fields: [organisationId], onDelete: Cascade, references: [id])
+  simulations                  SimulationPoll[]
+  computeRealTimeStats         Boolean                         @default(true)
+  createdAt                    DateTime                        @default(now())
+  updatedAt                    DateTime                        @updatedAt
+
+  @@schema("ngc")
+}
+
+enum PollDefaultAdditionalQuestionType {
+  postalCode
+  birthdate
+
+  @@schema("ngc")
+}
+
+model PollDefaultAdditionalQuestion {
+  id        String                            @id @default(uuid())
+  pollId    String
+  poll      Poll                              @relation(fields: [pollId], onDelete: Cascade, references: [id])
+  type      PollDefaultAdditionalQuestionType
+  createdAt DateTime                          @default(now())
+  updatedAt DateTime                          @updatedAt
+
+  @@unique([pollId, type])
+  @@schema("ngc")
+}
+
+enum QuizzAnswerIsAnswerCorrect {
+  correct
+  almost
+  wrong
+
+  @@schema("ngc")
+}
+
+model QuizzAnswer {
+  id              String                     @id @default(cuid())
+  simulationId    String                     @db.Uuid
+  isAnswerCorrect QuizzAnswerIsAnswerCorrect
+  answer          String
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+
+  @@unique([simulationId, answer])
+  @@schema("ngc")
+}
+
+model Simulation {
+  id                         String                               @id @default(uuid()) @db.Uuid
+  date                       DateTime
+  progression                Float                                @db.Real
+  model                      String                               @default("FR-fr-0.0.0")
+  computedResults            Json
+  actionChoices              Json
+  situation                  Json
+  extendedSituation          Json?
+  foldedSteps                Json[]
+  states                     SimulationState[]
+  additionalQuestionsAnswers SimulationAdditionalQuestionAnswer[]
+  polls                      SimulationPoll[]
+  groups                     GroupParticipant[]
+  userId                     String?                              @db.Uuid
+  user                       User?                                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userEmail                  String?
+  verifiedUser               VerifiedUser?                        @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+  createdAt                  DateTime                             @default(now())
+  updatedAt                  DateTime                             @updatedAt
+
+  @@index([userId])
+  @@index([userEmail])
+  @@schema("ngc")
+}
+
+model SimulationState {
+  id           String     @id @default(uuid()) @db.Uuid
+  date         DateTime
+  simulationId String     @db.Uuid
+  simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  progression  Float      @db.Real
+
+  @@unique([date, simulationId])
+  @@schema("ngc")
+}
+
+enum SimulationAdditionalQuestionAnswerType {
+  custom
+  default
+
+  @@schema("ngc")
+}
+
+model SimulationAdditionalQuestionAnswer {
+  id           String                                 @id @default(uuid()) @db.Uuid
+  type         SimulationAdditionalQuestionAnswerType
+  simulationId String                                 @db.Uuid
+  simulation   Simulation                             @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  key          String
+  answer       String
+  createdAt    DateTime                               @default(now())
+  updatedAt    DateTime                               @updatedAt
+
+  @@schema("ngc")
+}
+
+model SimulationPoll {
+  id           String     @id @default(uuid()) @db.Uuid
+  pollId       String
+  poll         Poll       @relation(fields: [pollId], onDelete: Cascade, references: [id])
+  simulationId String     @db.Uuid
+  simulation   Simulation @relation(fields: [simulationId], onDelete: Cascade, references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([simulationId, pollId])
+  @@schema("ngc")
+}
+
+enum StatsKind {
+  campaign
+  direct
+  search
+  social
+  website
+  aiAgent
+  all
+
+  @@schema("ngc")
+}
+
+model Survey {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  contextFile String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@schema("ngc")
+}
+
+model User {
+  id            String               @id @db.Uuid
+  name          String?
+  email         String?
+  administrator GroupAdministrator[]
+  member        GroupParticipant[]
+  simulations   Simulation[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@schema("ngc")
+}
+
+enum VerificationCodeMode {
+  signIn
+  signUp
+
+  @@schema("ngc")
+}
+
+model VerificationCode {
+  id             String                @id @default(uuid()) @db.Uuid
+  email          String
+  mode           VerificationCodeMode?
+  code           String                @db.VarChar(6)
+  expirationDate DateTime
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@schema("ngc")
+}
+
+model VerifiedUser {
+  email                    String                      @id
+  id                       String                      @db.Uuid
+  name                     String?
+  telephone                String?
+  position                 String?
+  optedInForCommunications Boolean                     @default(false)
+  administrator            OrganisationAdministrator[]
+  simulations              Simulation[]
+  createdAt                DateTime                    @default(now())
+  updatedAt                DateTime                    @updatedAt
+
+  @@schema("ngc")
+}
+
+view ComputedResultsView {
+  id                  String   @unique @default(uuid()) @db.Uuid
+  date                DateTime
+  progression         Float    @db.Real
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  bilanCarbone        Float
+  transportCarbone    Float
+  alimentationCarbone Float
+  logementCarbone     Float
+  diversCarbone       Float
+  bilanEauJour        Float
+  transportEauJour    Float
+  alimentationEauJour Float
+  logementEauJour     Float
+  diversEauJour       Float
+
+  @@schema("ngc")
+}

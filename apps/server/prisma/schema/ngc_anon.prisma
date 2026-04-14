@@ -1,0 +1,83 @@
+view AnonSimulation {
+  id              String   @unique @db.Uuid
+  date            DateTime
+  progression     Float    @db.Real
+  model           String
+  computedResults Json
+  actionChoices   Json
+  situation       Json
+  foldedSteps     Json[]
+  userId          String   @db.Uuid
+  userEmail       String?
+  createdAt       DateTime
+  updatedAt       DateTime
+
+  @@map("Simulation")
+  @@schema("ngc_anon")
+}
+
+view AnonVerifiedUser {
+  id                       String   @unique
+  user_id                  String   @db.Uuid
+  name                     String?
+  telephone                String?
+  position                 String?
+  optedInForCommunications Boolean
+  createdAt                DateTime
+  updatedAt                DateTime
+
+  @@map("VerifiedUser")
+  @@schema("ngc_anon")
+}
+
+view AnonOrganisation {
+  id                    String   @unique
+  name                  String
+  slug                  String
+  type                  OrganisationType
+  numberOfCollaborators Int?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("Organisation")
+  @@schema("ngc_anon")
+}
+
+view AnonOrganisationAdministrator {
+  id             String   @unique
+  userEmail      String
+  organisationId String
+  createdAt      DateTime
+  updatedAt      DateTime
+
+  @@map("OrganisationAdministrator")
+  @@schema("ngc_anon")
+}
+
+view AnonPoll {
+  id                           String   @unique
+  name                         String
+  slug                         String   @unique
+  funFacts                     Json?
+  computedResults              Json?
+  expectedNumberOfParticipants Int?
+  customAdditionalQuestions    Json
+  computeRealTimeStats         Boolean
+  organisationId               String
+  createdAt                    DateTime
+  updatedAt                    DateTime
+
+  @@map("Poll")
+  @@schema("ngc_anon")
+}
+
+view AnonSimulationPoll {
+  id           String   @unique @db.Uuid
+  pollId       String
+  simulationId String   @db.Uuid
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  @@map("SimulationPoll")
+  @@schema("ngc_anon")
+}

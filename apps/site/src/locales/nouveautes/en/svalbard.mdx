@@ -1,0 +1,102 @@
+---
+title: The Svalbard
+date: 2024-02-19T16:50:31Z
+image: https://github.com/incubateur-ademe/nosgestesclimat-app/assets/144152881/db0bec84-5cc2-4123-b990-d434f1234545
+---
+
+#The Svalbard
+
+What's new in January and February 2024
+
+![Le Svalbard](https://github.com/incubateur-ademe/nosgestesclimat-app/assets/144152881/db0bec84-5cc2-4123-b990-d434f1234545)
+
+> Svalbard, a Norwegian archipelago close to Greenland in the heart of the Arctic Ocean, is a particularly popular destination for glaciologists, including French glaciologist Heïdi Sevestre.
+> In <a href="https://www.radiofrance.fr/franceculture/podcasts/le-biais-d-heidi-sevestre/voyage-a-l-interieur-d-un-glacier-4570455">this episode</a> of her weekly column on France Culture, Heïdi Sevestre describes her expeditions to the heart of one of the archipelago's glaciers: both superb and terrifying, as direct witnesses to climate change, of which glaciers are among the first victims.
+>
+> - Heidi Sevestre's weekly column on <a href="https://www.radiofrance.fr/franceculture/podcasts/le-biais-d-heidi-sevestre">the France Culture website</a>
+
+### The latest changes in brief
+
+- ✨ A brand new home page
+- 🤓 New blog posts
+- 🧱 Technical improvements
+- 🧮 Additions to the calculation model
+- ✊ An overhaul of the actions proposed at the end of the test
+- 🪲 And always: bugs fixed
+
+### ✨ A new home page
+
+We loved our little cityscape, but now it's time for something new: a clearer, simpler message, and as didactic as ever, here's our new homepage!
+
+As an added bonus, we've also added a few new interactive features:
+
+- always access the simulation (new or in progress) from the menu bar, thanks to the new button in the menu
+- menu icons are now bold when you select them - we like the visual uniformity here 😀
+- and, because at Nos Gestes Climat we like to have fun while we're learning ... a little easter egg has crept into our home page for the more playful among you
+
+<img width="1288" alt="page d'accueil v2 - easter egg" src="https://github.com/incubateur-ademe/nosgestesclimat-site/assets/144152881/71316ff6-4b90-4bab-a7f0-ab26a5d64694">
+
+### 🤓 We'll keep you informed about the climate
+
+Two blog posts have appeared in recent weeks, so don't hesitate to take a look:
+
+- <a href="https://nosgestesclimat.fr/blog/mobilites/alternatives-voiture-individuelle">
+    Alternatives to the private car
+  </a>
+- <a href="https://nosgestesclimat.fr/blog/actualites-et-fonctionnalites/challenge-tes-amis">
+    Challenge your friends on their carbon footprint
+  </a>
+
+Oh, and we've also updated the list of our ambassadors on the <a href="https://nosgestesclimat.fr/ambassadeurs">dedicated page</a>.
+
+### 🧱 We're solidifying technology
+
+- Without going into too much technical detail, we used to use an API to load the template in numerous places on the site. We've replaced this with a more appropriate mechanism, capable of holding the load and preventing the site from _crashing_ 💥 when traffic peaks (as we experienced in December during France Inter's Carbon Day).
+- We've improved the way we manage model migrations
+- And also improved our E2E tests
+
+### 🧮 The model has been further completed and refined
+
+The following additions have been made to the carbon calculation in recent weeks:
+
+- lPG fuel (following numerous requests via our <a href="https://nosgestesclimat.fr/contact">contact page</a>)
+- your garden accessories for the lucky house dwellers
+- additions to drinks: chicory for hot drinks in particular
+- more detailed calculations have been added for emission factors relating to swimming pools and heating with pellets
+
+We've also improved one behaviour: inputs are limited: you can no longer enter extravagant values in the input fields
+
+### ✊ We've reviewed all the proposed actions
+
+First of all, the actions page is working again, and in particular the 'additional questions' feature, which was acting up
+
+Secondly, we've completed the proposed actions following the <a href="https://nosgestesclimat.fr/simulateur/bilan?mtm_campaign=nouveautes-simu">test</a> on all categories
+
+- food :
+  - new actions have been added
+  - and within this category, we have mainly :
+    - reviewed the display conditions for each feed action
+    - renamed the actions correctly
+    - fixed a bug that made the 'become vegetarian' action negative
+    - added a few details about the vegan diet incentive, qualifying its benefits: excellent for carbon impact, it can be dangerous for your health without sufficient monitoring, and depending on your situation
+- housing, additions include: thermostat, switching to wood, solar water heater, shared housing, heat pump, etc
+- transport, additions include: car-sharing, making your car last longer, choosing a smaller car, etc
+- miscellaneous: buy half as much clothing, reduce your consumption of hygiene products, buy second-hand rather than new, etc
+
+### 🪲 We've fixed _NOT SOME_ of the bugs that have a nasty habit of creeping in
+
+- in the simulator:
+  - if you change your answer to a previously answered question, subsequent questions will adapt correctly
+  - the click zone for answering questions has been reduced, as it was creating errors
+  - the calculation of the average number of passengers in a car has been fixed
+- in the site in general:
+  - pages, particularly the tutorial, no longer load twice: no more flickering!
+  - we've fixed our Swiss partners' access to certain functions (for their site https://geneve.nosgestesclimat.ch/)
+
+<div className="text-center">
+  <a
+    href="https://nosgestesclimat.fr/simulateur/bilan?mtm_campaign=nouveautes-simu"
+    className="transition-color border-primary-500 bg-primary-500 hover:bg-primary-700 focus:ring-primary-700 mx-auto inline-flex items-center rounded-md border-2 !p-4 font-bold whitespace-nowrap !text-white no-underline shadow-sm transition-colors hover:text-white focus:ring-2 focus:ring-offset-3 focus:outline-none aria-disabled:opacity-50">
+    What's your footprint?
+  </a>
+</div>

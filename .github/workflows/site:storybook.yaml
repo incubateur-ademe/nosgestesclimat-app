@@ -1,0 +1,41 @@
+name: Site / Storybook
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'preprod'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: ./apps/site
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build 🔧
+        run: pnpm storybook:build:github-pages
+        env:
+          NEXT_PUBLIC_SITE_URL: https://storybook.nosgestesclimat.fr
+      - name: Upload artifact 📦
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./apps/site/storybook-static
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v4
