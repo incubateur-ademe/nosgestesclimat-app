@@ -23,10 +23,12 @@ vi.mock('react-qr-code', () => ({
 
 // Mock JSZip
 vi.mock('jszip', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    file: vi.fn(),
-    generateAsync: vi.fn().mockResolvedValue(new Blob(['mock-zip-content'])),
-  })),
+  default: vi.fn(function () {
+    return {
+      file: vi.fn(),
+      generateAsync: vi.fn().mockResolvedValue(new Blob(['mock-zip-content'])),
+    }
+  }),
 }))
 
 // Mock trackEvent
@@ -137,9 +139,11 @@ describe('QRCode', () => {
     })
 
     // Mock XMLSerializer
-    global.XMLSerializer = vi.fn(() => ({
-      serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
-    })) as unknown as typeof XMLSerializer
+    global.XMLSerializer = vi.fn(function () {
+      return {
+        serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
+      }
+    }) as unknown as typeof XMLSerializer
 
     // Mock getBoundingClientRect
     const mockRect = { width: 100, height: 100 }
@@ -174,7 +178,9 @@ describe('QRCode', () => {
       JSZip as unknown as {
         mockImplementation: (fn: () => typeof mockZipInstance) => void
       }
-    ).mockImplementation(() => mockZipInstance)
+    ).mockImplementation(function () {
+      return mockZipInstance
+    })
 
     // Mock the necessary DOM APIs
     const mockCanvas = {
@@ -216,9 +222,11 @@ describe('QRCode', () => {
       return originalCreateElement.call(document, tagName)
     })
 
-    global.XMLSerializer = vi.fn(() => ({
-      serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
-    })) as unknown as typeof XMLSerializer
+    global.XMLSerializer = vi.fn(function () {
+      return {
+        serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
+      }
+    }) as unknown as typeof XMLSerializer
 
     const mockRect = { width: 100, height: 100 }
     Element.prototype.getBoundingClientRect = vi.fn(() => mockRect as DOMRect)
@@ -275,9 +283,11 @@ describe('QRCode', () => {
       return originalCreateElement.call(document, tagName)
     })
 
-    global.XMLSerializer = vi.fn(() => ({
-      serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
-    })) as unknown as typeof XMLSerializer
+    global.XMLSerializer = vi.fn(function () {
+      return {
+        serializeToString: vi.fn(() => '<svg>mock-svg</svg>'),
+      }
+    }) as unknown as typeof XMLSerializer
 
     render(<QRCode value="https://example.com" />)
 

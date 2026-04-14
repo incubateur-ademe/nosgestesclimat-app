@@ -42,6 +42,7 @@ const adapter = new PrismaPGlite(pgClient)
         switch (cause.code) {
           case '23505': {
             cause.kind = 'UniqueConstraintViolation'
+            cause.code = 'P2002'
             const fields = (cause.detail as string)
               ?.match(/Key \(([^)]+)\)/)
               ?.at(1)
@@ -51,6 +52,7 @@ const adapter = new PrismaPGlite(pgClient)
           }
           case '23503': {
             cause.kind = 'ForeignKeyConstraintViolation'
+            cause.code = 'P2003'
             cause.constraint = cause.column
               ? { fields: [cause.column] }
               : undefined
@@ -68,8 +70,39 @@ redis.get = promisify(redis.get.bind(redis)) as unknown as (typeof redis)['get']
 redis.exists = promisify(
   redis.exists.bind(redis)
 ) as unknown as (typeof redis)['exists']
+// Map raw PostgreSQL error codes to Prisma P-codes.
+// With Prisma v7 + driver adapters, the runtime creates PrismaClientKnownRequestError
+// instances but populates `code` with the raw PG code instead of the expected P-code.
+// The onError patch above fixes `cause.kind` so the right error *class* is used,
+// but the `code` property still leaks the PG code. We use `$extends` to translate
+// it after the fact so that our `isPrismaError*` typeguards work.
+const PG_TO_PRISMA_CODE: Record<string, string> = {
+  '23505': 'P2002', // UniqueConstraintFailed
+  '23503': 'P2003', // ForeignKeyConstraintFailed
+  '22P02': 'P2023', // InconsistentColumnData
+}
+
 // @ts-expect-error : works with older @prisma/driver-adapter-utils
-const prisma = new PrismaClient({ adapter })
+const basePrisma = new PrismaClient({ adapter })
+const prisma = basePrisma.$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ args, query }) {
+        try {
+          return await query(args)
+        } catch (err) {
+          if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            const mapped = PG_TO_PRISMA_CODE[err.code]
+            if (mapped) {
+              ;(err as { code: string }).code = mapped
+            }
+          }
+          throw err
+        }
+      },
+    },
+  },
+})
 const prismaMigrationDir = path.join(
   import.meta.dirname,
   'prisma',
