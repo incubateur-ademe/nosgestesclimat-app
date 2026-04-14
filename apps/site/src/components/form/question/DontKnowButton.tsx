@@ -22,6 +22,9 @@ interface Props {
   question: DottedName
 }
 
+const HIDE_DONT_KNOW_BUTTON_QUESTION: DottedName =
+  'logement . chauffage . saisie précision consommation'
+
 export default function DontKnowButton({ question }: Props) {
   const { gotoNextQuestion } = useFormState()
 
@@ -77,6 +80,8 @@ export default function DontKnowButton({ question }: Props) {
 
     gotoNextQuestion()
   }
+
+  if (question === HIDE_DONT_KNOW_BUTTON_QUESTION) return null
 
   return (
     <div className="mt-4 flex flex-col items-start gap-4 md:flex-row">
