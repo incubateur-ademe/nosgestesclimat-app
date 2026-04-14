@@ -3,7 +3,7 @@ name: Server
 on:
   pull_request:
     branches: [main]
-    paths: [apps/server/**]
+    paths: [apps/server/**, .github/**]
 
 jobs:
   check:
@@ -17,9 +17,9 @@ jobs:
         uses: pnpm/action-setup@v4
       - name: Use Node.js
         uses: actions/setup-node@v6
-        # with:
-        #   node-version-file: './apps/server/package.json'
-        #   cache: 'pnpm'
+        with:
+          node-version-file: './apps/server/package.json'
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
 
