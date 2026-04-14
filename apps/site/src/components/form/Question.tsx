@@ -22,7 +22,7 @@ import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useFeatureFlagVariantKey } from '@posthog/react'
+import posthog from 'posthog-js'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -70,7 +70,7 @@ export default function Question({
   const refCurrentCategoryQuestions = useRef(currentCategoryQuestions)
 
   const isTestVersion =
-    useFeatureFlagVariantKey(DONT_KNOW_EXPERIMENT_KEY) ===
+    posthog.getFeatureFlag(DONT_KNOW_EXPERIMENT_KEY) ===
     DEFAULT_TEST_VARIANT_KEY
 
   // Set dynamically the page title

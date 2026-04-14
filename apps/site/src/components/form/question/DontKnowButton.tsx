@@ -32,7 +32,7 @@ export default function DontKnowButton({ question }: Props) {
 
   const { updateCurrentSimulation } = useCurrentSimulation()
 
-  const { value, questionsOfMosaicFromParent, isMissing } = useRule(question)
+  const { questionsOfMosaicFromParent, isMissing } = useRule(question)
 
   const { getValue } = useEngine()
 
@@ -69,7 +69,7 @@ export default function DontKnowButton({ question }: Props) {
       captureClickFormNav({
         actionType: 'passer',
         question,
-        answer: value,
+        answer: getValue(question),
         // Dummy time for AB test
         timeSpentOnQuestion: 0,
       })

@@ -31,8 +31,8 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useFeatureFlagVariantKey } from '@posthog/react'
 import type { TFunction } from 'i18next'
+import posthog from 'posthog-jg'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -128,7 +128,7 @@ export default function Navigation({
   const persistedRemainingQuestionsRef = useRef(remainingQuestions)
 
   const isTestVersion =
-    useFeatureFlagVariantKey(DONT_KNOW_EXPERIMENT_KEY) ===
+    posthog.getFeatureFlag(DONT_KNOW_EXPERIMENT_KEY) ===
     DEFAULT_TEST_VARIANT_KEY
 
   const {
