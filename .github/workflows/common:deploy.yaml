@@ -79,6 +79,6 @@ jobs:
         with:
           fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
           fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
-          scalingo-app-name: ${{ vars.SCALINGO_SITE_SERVER_NAME }}
+          scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}
           git-ref: main
           # git-repo: ${{ github.repository }}

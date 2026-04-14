@@ -21,6 +21,22 @@ Pré-requis :
 - [Node.js 22.14.0](https://nodejs.org/fr/download)
 - [pnpm](https://pnpm.io/installation)
 
+### Via devcontainers (recommandé)
+
+Lance les devcontainers via [l'extension VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`Cmd+Shift+P` > `Dev Containers: Reopen in Container`) ou via [la ligne de commande](https://github.com/devcontainers/cli) :
+
+```bash
+devcontainer up
+```
+
+Pour lancer les devcontainers avec un build de production :
+
+```bash
+echo "DEVCONTAINER_START_MODE=production" > .devcontainer/.env
+```
+
+### Manuellement
+
 Installez les dépendances du monorepo :
 
 ```bash
@@ -38,12 +54,6 @@ Installe les dépendances
 
 ```bash
 pnpm install
-```
-
-Lance les services bases de données avec devcontainers via [l'extension VSCode](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`Cmd+Shift+P` > `Dev Containers: Reopen in Container`) ou via [la ligne de commande](https://github.com/devcontainers/cli) :
-
-```bash
-devcontainer up
 ```
 
 Migre la base de donnée (requiert les dépendances, les .env et les services)
