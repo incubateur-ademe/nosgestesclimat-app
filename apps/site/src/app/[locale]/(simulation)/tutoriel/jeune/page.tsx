@@ -2,13 +2,9 @@ import ContentLarge from '@/components/layout/ContentLarge'
 import type { Locale } from '@/i18nConfig'
 import YouthTutorial from './_components/YouthTutorial'
 
-type TutorialMode = 'default' | 'youth'
-
 export default async function YouthTutorialPage({
   params,
-}: PageProps<'/[locale]/tutoriel'> & {
-  searchParams: Promise<{ mode: TutorialMode }>
-}) {
+}: PageProps<'/[locale]/tutoriel'>) {
   const { locale } = await params
 
   return (
