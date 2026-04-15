@@ -36,7 +36,7 @@ export default function DontKnowButton({ question }: Props) {
 
   const { getValue } = useEngine()
 
-  @TODO: refacto this with the logic from https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/ddf31819dfb0628c0e883cec90113cb2f823afe0/apps/site/src/components/form/Navigation.tsx#L240-L311
+  // @TODO: refacto this with the logic from https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/ddf31819dfb0628c0e883cec90113cb2f823afe0/apps/site/src/components/form/Navigation.tsx#L240-L311
   const handleFoldWithDefaultValue = useCallback(() => {
     if (questionsOfMosaicFromParent.length > 0) {
       questionsOfMosaicFromParent.forEach((mosaicChild) => {
