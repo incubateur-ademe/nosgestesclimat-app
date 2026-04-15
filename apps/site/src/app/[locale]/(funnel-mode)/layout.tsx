@@ -1,6 +1,6 @@
 import ContentLarge from '@/components/layout/ContentLarge'
 
-export default async function NoChromeLayout({
+export default function FunnelModeLayout({
   children,
 }: LayoutProps<'/[locale]'>) {
   return (

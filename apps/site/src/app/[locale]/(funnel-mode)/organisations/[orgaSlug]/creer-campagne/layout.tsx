@@ -22,7 +22,7 @@ export async function generateMetadata({
   })
 }
 /* global LayoutProps */
-export default async function Layout({
+export default function Layout({
   children,
 }: LayoutProps<'/[locale]/organisations/[orgaSlug]/creer-campagne'>) {
   return children
