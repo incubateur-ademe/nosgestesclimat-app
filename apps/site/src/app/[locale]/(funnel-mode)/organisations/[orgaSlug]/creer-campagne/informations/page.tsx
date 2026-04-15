@@ -1,11 +1,10 @@
 import StepsDisplay from '@/components/groups/StepsDisplay'
-import CloseIcon from '@/components/icons/Close'
 import Trans from '@/components/translation/trans/TransServer'
-import Button from '@/design-system/buttons/Button'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { organisationAdminGuard } from '../../organisation-guard'
+import CloseButton from '../_components/CloseButton'
 import PollNameForm from '../_components/PollNameForm'
 
 /* global PageProps */
@@ -16,19 +15,11 @@ export default async function CreerCampagneInformationsPage({
   const { organisation } = await organisationAdminGuard(orgaSlug)
   const { t } = await getServerTranslation({ locale })
   return (
-    <>
-      <div className="mt-8 mb-4 flex flex-row justify-between">
+    <div className="mt-4 mb-16 md:mt-8">
+      <div className="mb-4 flex flex-row justify-between">
         <GoBackLink href={`/organisations/${orgaSlug}`} />
 
-        <Button
-          color="secondary"
-          aria-label={t(
-            'organisations.createPoll.type.closeButton',
-            "Abandonner le processus de création de test collectif et revenir à la page d'accueil de votre organisation"
-          )}
-          className="h-10 w-10 rounded-full p-0!">
-          <CloseIcon className="fill-primary-800 max-h-6 min-w-6" />
-        </Button>
+        <CloseButton t={t} />
       </div>
 
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
@@ -58,6 +49,6 @@ export default async function CreerCampagneInformationsPage({
 
         <PollNameForm organisation={organisation} />
       </div>
-    </>
+    </div>
   )
 }

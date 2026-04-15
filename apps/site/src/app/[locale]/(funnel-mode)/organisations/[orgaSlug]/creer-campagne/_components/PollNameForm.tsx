@@ -48,7 +48,7 @@ export default function PollNameForm({ organisation }: Props) {
       // Fake delay to improve UX
       setTimeout(() => {
         // Go to step 2
-        router.push(`/organisations/${organisation.slug}/creer-campagne/type`)
+        router.push(`/organisations/${organisation.slug}/creer-campagne/mode`)
       }, 1000)
     } catch (error) {
       captureException(error)
@@ -66,9 +66,15 @@ export default function PollNameForm({ organisation }: Props) {
             Choisissez un nom pour votre test collectif
           </Trans>
         }
-        placeholder={t('ex : Défi climat équipe RH, Classe 5ème A…')}
+        placeholder={t(
+          'collectiveTest.form.name.placeholder',
+          'ex : Défi climat équipe RH, Classe 5ème A…'
+        )}
         {...register('name', {
-          required: t('Veuillez renseigner un nom'),
+          required: t(
+            'collectiveTest.form.name.required',
+            'Veuillez renseigner un nom'
+          ),
         })}
         error={errors.name?.message}
         data-testid="poll-name-input"
@@ -81,7 +87,7 @@ export default function PollNameForm({ organisation }: Props) {
               <Trans>Précisez le nombre de participants attendus</Trans>
             </span>
             <span className="text-secondary-700 font-bold">
-              <Trans>facultatif</Trans>
+              <Trans i18nKey="common.facultatif">facultatif</Trans>
             </span>
           </p>
         }
@@ -103,7 +109,7 @@ export default function PollNameForm({ organisation }: Props) {
         data-testid="poll-form-name-button"
         form="poll-form"
         className="self-start">
-        <Trans>Suivant</Trans>{' '}
+        <Trans i18nKey="common.suivant">Suivant</Trans>
         <span aria-hidden className="ml-2 inline-block">
           →
         </span>
