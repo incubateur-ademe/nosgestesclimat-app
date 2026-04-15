@@ -27,8 +27,10 @@ function isValidDraft(data: unknown): data is CampaignDraft {
     return false
   }
 
+  // expectedNumberOfParticipants can be undefined, null (from JSON.stringify(NaN)), or a number
   if (
     draft.expectedNumberOfParticipants !== undefined &&
+    draft.expectedNumberOfParticipants !== null &&
     typeof draft.expectedNumberOfParticipants !== 'number'
   ) {
     return false
