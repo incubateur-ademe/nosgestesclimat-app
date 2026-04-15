@@ -1,102 +1,28 @@
 'use client'
 
+import { useCreateCampaignStep2 } from '@/app/[locale]/(funnel-mode)/organisations/[orgaSlug]/creer-campagne/_hooks/useCreateCampaignStep2'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
-import { useCreatePoll } from '@/hooks/organisations/polls/useCreatePoll'
 import type { Organisation } from '@/types/organisations'
-import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-import { captureException } from '@sentry/nextjs'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useForm as useReactHookForm } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
-import { POLL_DATA_KEY } from '../_constants/sessionStorage'
 import { revalidationOrganisationPath } from './actions/revalidationOrganisationPath'
 
 interface Props {
   organisation: Organisation
 }
 
-interface Inputs {
-  mode: 'standard' | 'scolaire'
-}
-
-export default function PollTypeForm({ organisation }: Props) {
-  const router = useRouter()
-
-  const { handleSubmit, register, watch } = useReactHookForm<Inputs>({})
-
-  const selectedMode = watch('mode')
-
-  const {
-    mutateAsync: createPoll,
-    isError,
-    isPending,
-  } = useCreatePoll(organisation.slug)
-
-  async function onSubmit({ mode }: Inputs) {
-    try {
-      const firstStepData = JSON.parse(
-        safeSessionStorage.getItem(POLL_DATA_KEY) || ''
-      )
-
-      if (!firstStepData) {
-        router.push(
-          `/organisations/${organisation.slug}/creer-campagne/informations`
-        )
-        return
-      }
-
-      const { name, expectedNumberOfParticipants } = firstStepData
-
-      const pollCreated = await createPoll({
-        name,
-        expectedNumberOfParticipants: expectedNumberOfParticipants || undefined,
-        mode,
-      })
-
-      revalidationOrganisationPath(organisation.slug)
-
-      safeSessionStorage.removeItem(POLL_DATA_KEY)
-
-      router.push(
-        `/organisations/${organisation.slug}/campagnes/${pollCreated.slug}`
-      )
-    } catch (error) {
-      console.log(error)
-      captureException(error)
-    }
-  }
-
-  const modes = [
-    {
-      value: 'standard' as const,
-      titleKey: 'collectiveTest.mode.standard.title',
-      titleDefault: 'Mode standard',
-      descriptionKey: 'collectiveTest.mode.standard.description',
-      descriptionDefault:
-        'Le test classique, pour tous les citoyennes et citoyens',
-      imageSrc:
-        'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_carbone_achats_be9fd99289.svg',
-      imageAlt: 'Illustration mode standard',
-    },
-    {
-      value: 'scolaire' as const,
-      titleKey: 'collectiveTest.mode.scolaire.title',
-      titleDefault: 'Mode scolaire',
-      descriptionKey: 'collectiveTest.mode.scolaire.description',
-      descriptionDefault:
-        'Le test adapté aux jeunes (collège, lycée, étudiants...)',
-      imageSrc:
-        'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_children_holding_hand_6951392e78.png',
-      imageAlt: 'Illustration mode scolaire',
-    },
-  ]
+export default function PollModeForm({ organisation }: Props) {
+  const { register, onSubmit, isPending, isError, selectedMode, modes } =
+    useCreateCampaignStep2({
+      organisationSlug: organisation.slug,
+      revalidatePath: revalidationOrganisationPath,
+    })
 
   return (
     <form
       className="mt-8"
-      onSubmit={isPending ? () => {} : handleSubmit(onSubmit)}
+      onSubmit={isPending ? () => {} : onSubmit}
       id="poll-form">
       <fieldset>
         <legend className="sr-only">
