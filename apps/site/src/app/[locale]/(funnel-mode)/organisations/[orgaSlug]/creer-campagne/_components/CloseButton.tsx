@@ -1,16 +1,20 @@
+'use client'
+
 import CloseIcon from '@/components/icons/Close'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import type { TFunction } from 'i18next'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { clearDraft } from '../_hooks/createCampaignDraft'
 
 interface Props {
   organisationSlug: string
-  t: TFunction
 }
 
-export default function CloseButton({ t, organisationSlug }: Props) {
+export default function CloseButton({ organisationSlug }: Props) {
+  const { t } = useClientTranslation()
   return (
     <ButtonLink
       href={`/organisations/${organisationSlug}`}
+      onClick={() => clearDraft()}
       color="secondary"
       aria-label={t(
         'organisations.createPoll.type.closeButton.aria',

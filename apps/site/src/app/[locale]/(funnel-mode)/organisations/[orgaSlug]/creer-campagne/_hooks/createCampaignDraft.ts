@@ -1,6 +1,5 @@
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-
-const POLL_DATA_KEY = 'poll_temp_form_data'
+import { POLL_DATA_KEY } from '../_constants/sessionStorage'
 
 export interface CampaignDraft {
   name: string
