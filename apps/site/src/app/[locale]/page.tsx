@@ -77,6 +77,7 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
             <div className="flex flex-col items-center gap-6 md:order-2 md:mt-0 md:items-start">
               <Suspense fallback={<CTAButtonsPlaceholder />}>
                 <DynamicCTAButtons
+                  withCollectiveTest
                   trackingEvents={{
                     start: getLandingClickCTAStart('/', trackingActionClickCTA),
                     resume: getLandingClickCTAResume(

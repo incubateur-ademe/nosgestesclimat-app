@@ -525,7 +525,7 @@ html[data-useragent*='Trident'] #js {
   }
 }
 
-.bg-rainbow {
+@utility bg-rainbow {
   background: linear-gradient(
     270deg,
     #a2d2fd,
@@ -539,6 +539,24 @@ html[data-useragent*='Trident'] #js {
     #ffdbbc,
     #fd69d0,
     #a2d2fd
+  );
+  background-size: 200% 200%;
+}
+
+@utility bg-rainbow-dark {
+  background: linear-gradient(
+    270deg,
+    #2563eb,
+    #059669,
+    #d97706,
+    #dc2626,
+    #db2777,
+    #2563eb,
+    #059669,
+    #d97706,
+    #dc2626,
+    #db2777,
+    #2563eb
   );
   background-size: 200% 200%;
 }

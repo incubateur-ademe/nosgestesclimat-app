@@ -18,3 +18,5 @@ export const MON_ESPACE_GROUPS_PATH = '/mon-espace/groupes'
 export const MON_ESPACE_SETTINGS_PATH = '/mon-espace/parametres'
 export const MON_ESPACE_RESULTS_DETAIL_PATH =
   '/mon-espace/resultats/:simulationId'
+
+export const ORGANISATION_CREATE_PATH = '/organisations/creer'
