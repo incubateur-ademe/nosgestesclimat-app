@@ -26,11 +26,14 @@ export default function PollNameForm({ organisation }: Props) {
 
   const { t } = useClientTranslation()
 
+  const previousData = safeSessionStorage.getItem(POLL_DATA_KEY)
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useReactHookForm<Inputs>()
+  } = useReactHookForm<Inputs>({
+    defaultValues: previousData ? JSON.parse(previousData) : {},
+  })
 
   const [isPending, setIsPending] = useState(false)
 
@@ -38,12 +41,7 @@ export default function PollNameForm({ organisation }: Props) {
     try {
       setIsPending(true)
 
-      safeSessionStorage.setItem(
-        POLL_DATA_KEY,
-        JSON.stringify({
-          data,
-        })
-      )
+      safeSessionStorage.setItem(POLL_DATA_KEY, JSON.stringify(data))
 
       // Fake delay to improve UX
       setTimeout(() => {
@@ -58,6 +56,7 @@ export default function PollNameForm({ organisation }: Props) {
   return (
     <form
       className="flex flex-col gap-8"
+      noValidate
       onSubmit={isPending ? () => {} : handleSubmit(onSubmit)}
       id="poll-form">
       <TextInput
@@ -92,6 +91,13 @@ export default function PollNameForm({ organisation }: Props) {
           </p>
         }
         type="number"
+        inputMode="numeric"
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
+          if (!allowedKeys.includes(e.key) && !/^\d$/.test(e.key)) {
+            e.preventDefault()
+          }
+        }}
         {...register('expectedNumberOfParticipants', {
           valueAsNumber: true,
           min: {
