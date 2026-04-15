@@ -14,6 +14,7 @@ const colorClassNames = {
   yellow: 'border-yellow-300 text-yellow-800 bg-yellow-50',
   blue: 'border-blue-300 text-blue-800 bg-blue-50',
   orange: 'border-orange-300 text-orange-800 bg-orange-50',
+  light: 'border-0 bg-primary-100 text-primary-800',
 }
 const sizeClassNames = {
   xs: 'text-xs py-0.5',
