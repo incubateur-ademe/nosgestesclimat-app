@@ -206,7 +206,7 @@ export default function CookieConsentForm({
                     <pre className="block font-bold">ngc_anon_user</pre>
                     <Trans i18nKey="cookies.management.required.detail.description2">
                       Sauvegarde de la session anonyme (pour retrouver les
-                      simulations précedentes)
+                      simulations précédentes)
                     </Trans>
                   </li>
                 </ul>

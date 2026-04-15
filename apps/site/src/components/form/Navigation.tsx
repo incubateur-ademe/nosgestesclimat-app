@@ -1,6 +1,10 @@
 'use client'
 
 import {
+  DEFAULT_TEST_VARIANT_KEY,
+  DONT_KNOW_EXPERIMENT_KEY,
+} from '@/constants/ab-test'
+import {
   DEFAULT_FOCUS_ELEMENT_ID,
   QUESTION_DESCRIPTION_BUTTON_ID,
 } from '@/constants/accessibility'
@@ -28,6 +32,7 @@ import {
 } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { TFunction } from 'i18next'
+import posthog from 'posthog-js'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -36,8 +41,9 @@ import Trans from '../translation/trans/TransClient'
 interface FuncProps {
   isPending?: boolean
   finalNoNextQuestion?: boolean
-  isMissing?: boolean
+  isMissing: boolean
   t: TFunction<string, string>
+  isTestVersion: boolean
 }
 
 const getSubmitButtonText = ({
@@ -45,6 +51,7 @@ const getSubmitButtonText = ({
   finalNoNextQuestion,
   isMissing,
   t,
+  isTestVersion,
 }: FuncProps) => {
   return {
     title: isPending
@@ -58,10 +65,16 @@ const getSubmitButtonText = ({
             'Terminer le test et accéder à la page de résultats'
           )
         : isMissing
-          ? t(
-              'common.navigation.nextQuestion.dontKnow.title',
-              'Je ne sais pas, passer et aller à la question suivante'
-            )
+          ? // @TODO: remove after AB Test is finished
+            isTestVersion
+            ? t(
+                'common.navigation.nextQuestion.next.labelDisabled',
+                'Aller à la question suivante, désactivé, veuillez répondre à la question avant de passer à la suivante'
+              )
+            : t(
+                'common.navigation.nextQuestion.dontKnow.title',
+                'Je ne sais pas, passer et aller à la question suivante'
+              )
           : t(
               'common.navigation.nextQuestion.next.label',
               'Aller à la question suivante'
@@ -78,7 +91,8 @@ const getSubmitButtonText = ({
           Terminer
         </Trans>
       </span>
-    ) : isMissing ? (
+    ) : // @TODO: remove after AB test is finished
+    isMissing && !isTestVersion ? (
       <span data-testid="skip-question-button">
         <Trans i18nKey="simulator.navigation.nextButton.dontKnow.label">
           Je ne sais pas
@@ -113,6 +127,10 @@ export default function Navigation({
 
   const persistedRemainingQuestionsRef = useRef(remainingQuestions)
 
+  const isTestVersion =
+    posthog.getFeatureFlag(DONT_KNOW_EXPERIMENT_KEY) ===
+    DEFAULT_TEST_VARIANT_KEY
+
   const {
     gotoPrevQuestion,
     gotoNextQuestion,
@@ -123,6 +141,7 @@ export default function Navigation({
 
   const {
     isMissing,
+    isFolded,
     plancher,
     plafond,
     situationValue,
@@ -147,7 +166,9 @@ export default function Navigation({
   }, [hasActiveNotifications, setNotificationValue])
 
   const { updateCurrentSimulation } = useCurrentSimulation()
+
   let isNextDisabled = false
+
   if (typeof situationValue === 'number') {
     const { isBelowFloor, isOverCeiling } = getValueIsOverFloorOrCeiling({
       value: situationValue,
@@ -245,7 +266,8 @@ export default function Navigation({
       const endTime = Date.now()
       const timeSpentOnQuestion = endTime - startTime
 
-      if (isMissing) {
+      // @TODO: remove after AB test is finished
+      if (isMissing && !isTestVersion) {
         trackMatomoEvent__deprecated(
           questionClickPass({ question, timeSpentOnQuestion })
         )
@@ -307,6 +329,7 @@ export default function Navigation({
       handleAnswerQuestion,
       setCurrentQuestion,
       gotoNextQuestion,
+      isTestVersion,
     ]
   )
 
@@ -369,12 +392,13 @@ export default function Navigation({
     finalNoNextQuestion,
     isMissing,
     t,
+    isTestVersion,
   })
 
   return (
     <div
       className={twMerge(
-        'fixed right-0 bottom-0 left-0 z-50 min-h-[66px] bg-gray-100 py-3',
+        'fixed right-0 bottom-0 left-0 z-50 min-h-16.5 bg-gray-100 py-3',
         isEmbedded && 'static bg-transparent p-0',
         isIframe &&
           'relative right-auto bottom-auto left-auto z-0 bg-transparent'
@@ -401,8 +425,16 @@ export default function Navigation({
         </Button>
 
         <Button
-          color={isMissing ? 'secondary' : 'primary'}
-          disabled={isNextDisabled || isPending}
+          color={
+            // @TODO: remove after AB Test is finished
+            isTestVersion ? 'primary' : isMissing ? 'secondary' : 'primary'
+          }
+          disabled={
+            // @TODO: remove after AB Test is finished
+            isTestVersion
+              ? isNextDisabled || isPending || !isFolded
+              : isNextDisabled || isPending
+          }
           className="p-3 text-sm"
           size="md"
           title={title}
