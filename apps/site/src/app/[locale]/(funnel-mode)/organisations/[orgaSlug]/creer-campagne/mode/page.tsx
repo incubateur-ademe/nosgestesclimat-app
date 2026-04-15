@@ -24,7 +24,7 @@ export default async function CreerCampagneTypePage({
           href={`/organisations/${orgaSlug}/creer-campagne/informations`}
         />
 
-        <CloseButton organisationSlug={orgaSlug} t={t} />
+        <CloseButton organisationSlug={orgaSlug} />
       </div>
 
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
