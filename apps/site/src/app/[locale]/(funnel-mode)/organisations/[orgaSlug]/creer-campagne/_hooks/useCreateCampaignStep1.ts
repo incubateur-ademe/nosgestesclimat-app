@@ -28,8 +28,7 @@ export function useCreateCampaignStep1({
   function saveAndNavigate(data: CampaignDraft) {
     writeDraft(data)
 
-    // Small delay to improve UX (show loading state)
-    setTimeout(() => {
+    startTransition(() => {
       // Small delay to improve UX (show loading state)
       setTimeout(
         () =>
