@@ -10,9 +10,7 @@ export default async function Layout({
   return (
     <>
       <HeaderServer locale={locale} />
-      <ContentLarge className="mt-4 px-4 md:mt-10 lg:px-0">
-        {children}
-      </ContentLarge>
+      <ContentLarge className="px-4 lg:px-0">{children}</ContentLarge>
     </>
   )
 }
