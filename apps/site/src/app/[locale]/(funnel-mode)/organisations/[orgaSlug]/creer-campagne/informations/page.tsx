@@ -19,7 +19,7 @@ export default async function CreerCampagneInformationsPage({
       <div className="mb-4 flex flex-row justify-between">
         <GoBackLink href={`/organisations/${orgaSlug}`} />
 
-        <CloseButton t={t} organisationSlug={orgaSlug} />
+        <CloseButton organisationSlug={orgaSlug} />
       </div>
 
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
