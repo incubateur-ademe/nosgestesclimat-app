@@ -1,4 +1,4 @@
-import { TEST_INTRO_TUTO_KEY } from '@/app/[locale]/(simulation)/(large)/tutoriel/_components/ButtonStart'
+import { TEST_INTRO_TUTO_KEY } from '@/app/[locale]/(simulation)/tutoriel/_components/ButtonStart'
 import type { useUser } from '@/publicodes-state'
 import type { Simulation } from '@/publicodes-state/types'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
