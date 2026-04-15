@@ -24,7 +24,7 @@ export default async function CreerCampagneTypePage({
           href={`/organisations/${orgaSlug}/creer-campagne/informations`}
         />
 
-        <CloseButton t={t} />
+        <CloseButton organisationSlug={orgaSlug} t={t} />
       </div>
 
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
@@ -35,6 +35,7 @@ export default async function CreerCampagneTypePage({
               Choisissez le mode du test
             </Trans>
           }
+          size="lg"
         />
 
         <PollModeForm organisation={organisation} />
