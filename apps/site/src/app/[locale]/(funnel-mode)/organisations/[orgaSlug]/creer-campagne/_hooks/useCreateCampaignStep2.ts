@@ -56,7 +56,11 @@ export function useCreateCampaignStep2({
 }: UseCreateCampaignStep2Props) {
   const router = useRouter()
 
-  const { handleSubmit, register, watch } = useForm<Step2Inputs>({})
+  const { handleSubmit, register, watch } = useForm<Step2Inputs>({
+    defaultValues: {
+      mode: 'standard',
+    },
+  })
 
   const selectedMode = watch('mode')
 
