@@ -46,9 +46,15 @@ export class Poll {
   }
 
   async create() {
-    await expect(this.page).toHaveURL(this.createUrl)
+    // Step 1: Fill poll name and go to step 2
+    await expect(this.page).toHaveURL(/\/creer-campagne\/informations/)
     await this.page.getByTestId('poll-name-input').fill(this.name)
-    await this.page.getByTestId('poll-create-button').click()
+    await this.page.getByTestId('poll-form-name-button').click()
+
+    // Step 2: Select mode and create the poll
+    await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
+    await this.page.getByTestId('poll-mode-standard').click()
+    await this.page.getByTestId('poll-form-type-button').click()
 
     // Retrieve the poll slug
     const pollUrl = /\/campagnes\/([a-z0-9\-]*)/
