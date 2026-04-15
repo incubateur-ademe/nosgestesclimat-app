@@ -79,7 +79,6 @@ export default forwardRef(function TextInput(
         ref={ref}
         readOnly={readOnly}
         name={name}
-        type={type}
         placeholder={placeholder}
         onChange={debouncedOnChange}
         defaultValue={value}
@@ -88,8 +87,9 @@ export default forwardRef(function TextInput(
         autoComplete={autoComplete}
         data-testid={`${props['data-testid']}`}
         {...props}
+        type={type}
         className={twMerge(
-          'w-full max-w-[30rem] p-4 text-base',
+          'w-full max-w-120 p-4 text-base',
           defaultInputStyleClassNames,
           error ? 'border-red-200! bg-red-50! ring-2 ring-red-700!' : '',
           disabled ? 'cursor-not-allowed opacity-50' : '',

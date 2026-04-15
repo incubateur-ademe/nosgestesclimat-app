@@ -9,6 +9,7 @@ import { captureException } from '@sentry/nextjs'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useForm as useReactHookForm } from 'react-hook-form'
+import { twMerge } from 'tailwind-merge'
 import { POLL_DATA_KEY } from '../_constants/sessionStorage'
 import { revalidationOrganisationPath } from './actions/revalidationOrganisationPath'
 
@@ -23,9 +24,7 @@ interface Inputs {
 export default function PollTypeForm({ organisation }: Props) {
   const router = useRouter()
 
-  const { handleSubmit, register, watch } = useReactHookForm<Inputs>({
-    defaultValues: { mode: 'standard' },
-  })
+  const { handleSubmit, register, watch } = useReactHookForm<Inputs>({})
 
   const selectedMode = watch('mode')
 
@@ -58,6 +57,8 @@ export default function PollTypeForm({ organisation }: Props) {
       })
 
       revalidationOrganisationPath(organisation.slug)
+
+      safeSessionStorage.removeItem(POLL_DATA_KEY)
 
       router.push(
         `/organisations/${organisation.slug}/campagnes/${pollCreated.slug}`
@@ -100,17 +101,19 @@ export default function PollTypeForm({ organisation }: Props) {
         <legend className="sr-only">
           <Trans>Choisissez le mode du test</Trans>
         </legend>
-        <div className="flex flex-col items-center gap-8 md:flex-row">
-          {modes.map((mode) => {
+        <div className="flex flex-col items-center gap-8 md:flex-row md:items-stretch">
+          {modes.map((mode, index) => {
             const isSelected = selectedMode === mode.value
             return (
               <label
                 key={mode.value}
-                className={`relative flex w-60 cursor-pointer flex-col items-center rounded-xl border-2 p-6 transition-colors ${
+                className={twMerge(
+                  'relative flex w-60 cursor-pointer flex-col items-center rounded-xl border-2 p-6 transition-colors',
                   isSelected
-                    ? 'border-primary-700 bg-primary-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                }`}
+                    ? 'border-primary-700'
+                    : 'border-transparent hover:border-gray-200',
+                  index === 0 ? 'bg-primary-50' : 'bg-slate-50'
+                )}
                 data-testid={`poll-mode-${mode.value}`}>
                 <input
                   type="radio"
@@ -154,6 +157,7 @@ export default function PollTypeForm({ organisation }: Props) {
           })}
         </div>
       </fieldset>
+
       {isError && (
         <p className="mt-4 text-red-800">
           <Trans>
@@ -168,8 +172,8 @@ export default function PollTypeForm({ organisation }: Props) {
         disabled={isPending}
         data-testid="poll-form-type-button"
         form="poll-form"
-        className="mt-8 w-full md:self-start">
-        <Trans>Créer le test collectif</Trans>
+        className="mt-8 w-full sm:w-auto md:self-start">
+        <Trans>Créer mon lien de test</Trans>
 
         <span aria-hidden className="ml-2 inline-block">
           →
