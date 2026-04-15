@@ -5,7 +5,7 @@ import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { organisationAdminGuard } from '../../organisation-guard'
 import CloseButton from '../_components/CloseButton'
-import PollTypeForm from '../_components/PollTypeForm'
+import PollModeForm from '../_components/PollModeForm'
 
 /* global PageProps */
 export default async function CreerCampagneTypePage({
@@ -37,7 +37,7 @@ export default async function CreerCampagneTypePage({
           }
         />
 
-        <PollTypeForm organisation={organisation} />
+        <PollModeForm organisation={organisation} />
       </div>
     </div>
   )
