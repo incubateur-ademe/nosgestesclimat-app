@@ -47,8 +47,7 @@ export default function PollTypeForm({ organisation }: Props) {
         return
       }
 
-      const { data } = firstStepData
-      const { name, expectedNumberOfParticipants } = data
+      const { name, expectedNumberOfParticipants } = firstStepData
 
       const pollCreated = await createPoll({
         name,
@@ -64,6 +63,7 @@ export default function PollTypeForm({ organisation }: Props) {
         `/organisations/${organisation.slug}/campagnes/${pollCreated.slug}`
       )
     } catch (error) {
+      console.log(error)
       captureException(error)
     }
   }
@@ -95,6 +95,7 @@ export default function PollTypeForm({ organisation }: Props) {
 
   return (
     <form
+      className="mt-8"
       onSubmit={isPending ? () => {} : handleSubmit(onSubmit)}
       id="poll-form">
       <fieldset>
@@ -108,9 +109,9 @@ export default function PollTypeForm({ organisation }: Props) {
               <label
                 key={mode.value}
                 className={twMerge(
-                  'relative flex w-60 cursor-pointer flex-col items-center rounded-xl border-2 p-6 transition-colors',
+                  'relative flex w-60 cursor-pointer flex-col items-center rounded-xl border-2 p-6 transition-all',
                   isSelected
-                    ? 'border-primary-700'
+                    ? 'border-primary-700 shadow-lg'
                     : 'border-transparent hover:border-gray-200',
                   index === 0 ? 'bg-primary-50' : 'bg-slate-50'
                 )}
@@ -159,7 +160,7 @@ export default function PollTypeForm({ organisation }: Props) {
       </fieldset>
 
       {isError && (
-        <p className="mt-4 text-red-800">
+        <p role="alert" aria-live="polite" className="mt-4 text-red-800">
           <Trans>
             Une erreur s'est produite lors de la création de votre test
             collectif. Veuillez réessayer.

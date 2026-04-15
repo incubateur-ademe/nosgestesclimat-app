@@ -95,11 +95,11 @@ export default function MyPolls({ polls }: Props) {
           color="link">
           {isMinified ? (
             <span>
-              + <Trans>Voir toutes les campagnes</Trans>
+              + <Trans>Voir tous les tests collectifs</Trans>
             </span>
           ) : (
             <span>
-              - <Trans>Masquer les autres campagnes</Trans>
+              - <Trans>Masquer les autres tests collectifs</Trans>
             </span>
           )}
         </Button>

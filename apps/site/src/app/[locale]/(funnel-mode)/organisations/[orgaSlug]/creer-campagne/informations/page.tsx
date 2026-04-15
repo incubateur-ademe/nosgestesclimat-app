@@ -19,7 +19,7 @@ export default async function CreerCampagneInformationsPage({
       <div className="mb-4 flex flex-row justify-between">
         <GoBackLink href={`/organisations/${orgaSlug}`} />
 
-        <CloseButton t={t} />
+        <CloseButton t={t} organisationSlug={orgaSlug} />
       </div>
 
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
@@ -31,6 +31,7 @@ export default async function CreerCampagneInformationsPage({
               Choisissez un nom pour votre test collectif
             </Trans>
           }
+          size="lg"
         />
 
         <p className="mb-2">
