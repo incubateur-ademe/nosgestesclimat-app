@@ -26,9 +26,9 @@ const evaluateSituationDottedName = ({
       : +rawValue
 }
 
-type Operator = '<' | '>' | '=' | '>=' | '<='
+type Operator = '<' | '>' | '=' | '>=' | '<=' | '!='
 
-const OPERATORS = new Set(['>', '<', '=', '>=', '<='])
+const OPERATORS = new Set(['>', '<', '=', '>=', '<=', '!='])
 
 const isOperator = (raw: string): raw is Operator => OPERATORS.has(raw)
 
@@ -50,6 +50,8 @@ const evaluateConditions = (
       return left >= right
     case '<=':
       return left <= right
+    case '!=':
+      return left !== right
   }
 }
 
@@ -66,7 +68,7 @@ const checkIfConditionIsTrue = ({
   }
 
   const [dottedName, operator, value] = conditionDottedName
-    .split(/(\s*(?:>=|<=|[=<>])\s*)/)
+    .split(/(\s*(?:>=|<=|!=|[=<>])\s*)/)
     .map((s) => s.trim())
 
   if (
