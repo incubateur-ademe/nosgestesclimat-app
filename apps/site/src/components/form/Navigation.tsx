@@ -32,7 +32,7 @@ import {
 } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { TFunction } from 'i18next'
-import posthog from 'posthog-jg'
+import posthog from 'posthog-js'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
