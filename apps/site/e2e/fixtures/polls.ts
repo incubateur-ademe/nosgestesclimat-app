@@ -57,10 +57,10 @@ export class Poll {
     await modeLabel.click()
     // Wait for the radio input inside the label to be checked
     await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
-    
+
     const submitButton = this.page.getByTestId('poll-form-type-button')
     await submitButton.click()
-    
+
     // Wait for the button to be disabled (form is submitting)
     await expect(submitButton).toBeDisabled()
 
