@@ -49,7 +49,7 @@ export default function MyPolls({ polls }: Props) {
     <section className="mb-12">
       <div className="flex flex-wrap items-center justify-between sm:flex-nowrap">
         <Title tag="h2">
-          <Trans>Mes campagnes</Trans>
+          <Trans>Mes tests collectifs</Trans>
         </Title>
 
         {pollsSorted.length > 0 && (

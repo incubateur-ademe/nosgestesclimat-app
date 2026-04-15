@@ -1,0 +1,113 @@
+'use client'
+
+import Trans from '@/components/translation/trans/TransClient'
+import Button from '@/design-system/buttons/Button'
+import TextInput from '@/design-system/inputs/TextInput'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
+import type { Organisation } from '@/types/organisations'
+import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
+import { captureException } from '@sentry/nextjs'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm as useReactHookForm } from 'react-hook-form'
+import { POLL_DATA_KEY } from '../_constants/sessionStorage'
+
+interface Props {
+  organisation: Organisation
+}
+
+interface Inputs {
+  name: string
+  expectedNumberOfParticipants: number
+}
+
+export default function PollNameForm({ organisation }: Props) {
+  const router = useRouter()
+
+  const { t } = useClientTranslation()
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useReactHookForm<Inputs>()
+
+  const [isPending, setIsPending] = useState(false)
+
+  function onSubmit(data: Inputs) {
+    try {
+      setIsPending(true)
+
+      safeSessionStorage.setItem(
+        POLL_DATA_KEY,
+        JSON.stringify({
+          data,
+        })
+      )
+
+      // Fake delay to improve UX
+      setTimeout(() => {
+        // Go to step 2
+        router.push(`/organisations/${organisation.slug}/creer-campagne/type`)
+      }, 1000)
+    } catch (error) {
+      captureException(error)
+    }
+  }
+
+  return (
+    <form
+      className="flex flex-col gap-8"
+      onSubmit={isPending ? () => {} : handleSubmit(onSubmit)}
+      id="poll-form">
+      <TextInput
+        label={
+          <Trans i18nKey="collectiveTest.form.name.label">
+            Choisissez un nom pour votre test collectif
+          </Trans>
+        }
+        placeholder={t('ex : Défi climat équipe RH, Classe 5ème A…')}
+        {...register('name', {
+          required: t('Veuillez renseigner un nom'),
+        })}
+        error={errors.name?.message}
+        data-testid="poll-name-input"
+      />
+
+      <TextInput
+        label={
+          <p className="mb-0 flex w-full justify-between">
+            <span>
+              <Trans>Précisez le nombre de participants attendus</Trans>
+            </span>
+            <span className="text-secondary-700 font-bold">
+              <Trans>facultatif</Trans>
+            </span>
+          </p>
+        }
+        type="number"
+        {...register('expectedNumberOfParticipants', {
+          valueAsNumber: true,
+          min: {
+            value: 1,
+            message: t('Le nombre de participants doit être supérieur à 0'),
+          },
+        })}
+        error={errors.expectedNumberOfParticipants?.message}
+        data-testid="poll-expected-number-of-participants-input"
+      />
+
+      <Button
+        type="submit"
+        disabled={isPending}
+        data-testid="poll-form-name-button"
+        form="poll-form"
+        className="self-start">
+        <Trans>Suivant</Trans>{' '}
+        <span aria-hidden className="ml-2 inline-block">
+          →
+        </span>
+      </Button>
+    </form>
+  )
+}

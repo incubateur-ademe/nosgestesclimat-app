@@ -46,7 +46,9 @@ export default async function OrganisationPage({
             <Trans>Sur l'espace organisation de </Trans>{' '}
             <strong className="text-secondary-700">{organisation?.name}</strong>
             .{' '}
-            <Trans>Retrouvez vos campagnes et suivez leurs statistiques.</Trans>
+            <Trans>
+              Retrouvez vos tests collectifs et suivez leurs statistiques.
+            </Trans>
           </p>
         </div>
         <ButtonLink

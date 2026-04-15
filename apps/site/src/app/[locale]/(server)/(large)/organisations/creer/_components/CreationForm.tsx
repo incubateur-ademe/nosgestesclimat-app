@@ -73,7 +73,9 @@ export default function CreationForm() {
         slug: organisationUpdated?.slug,
       })
 
-      router.push(`/organisations/${organisationUpdated?.slug}/creer-campagne`)
+      router.push(
+        `/organisations/${organisationUpdated?.slug}/creer-campagne/informations`
+      )
     } catch (error: unknown) {
       captureException(error)
     }

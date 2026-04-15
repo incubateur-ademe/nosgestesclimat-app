@@ -12,7 +12,7 @@ export async function generateMetadata({
 
   return getMetadataObject({
     locale,
-    title: t('Créer une campagne pour mon organisation - Nos Gestes Climat'),
+    title: t('Créer un test collectif - Nos Gestes Climat'),
     description: t(
       'Accédez à des services sur mesure pour sensibiliser vos partenaires au sein de votre organisation.'
     ),
