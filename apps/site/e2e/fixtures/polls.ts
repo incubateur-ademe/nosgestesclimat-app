@@ -53,7 +53,10 @@ export class Poll {
 
     // Step 2: Select mode and create the poll
     await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
-    await this.page.getByTestId('poll-mode-standard').click()
+    const modeLabel = this.page.getByTestId('poll-mode-standard')
+    await modeLabel.click()
+    // Wait for the radio input inside the label to be checked
+    await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
     await this.page.getByTestId('poll-form-type-button').click()
 
     // Retrieve the poll slug
