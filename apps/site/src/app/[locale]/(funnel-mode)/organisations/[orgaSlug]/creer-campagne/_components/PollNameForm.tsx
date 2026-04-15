@@ -1,63 +1,27 @@
 'use client'
 
+import { useCreateCampaignStep1 } from '@/app/[locale]/(funnel-mode)/organisations/[orgaSlug]/creer-campagne/_hooks/useCreateCampaignStep1'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Organisation } from '@/types/organisations'
-import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-import { captureException } from '@sentry/nextjs'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { useForm as useReactHookForm } from 'react-hook-form'
-import { POLL_DATA_KEY } from '../_constants/sessionStorage'
 
 interface Props {
   organisation: Organisation
 }
 
-interface Inputs {
-  name: string
-  expectedNumberOfParticipants: number
-}
-
 export default function PollNameForm({ organisation }: Props) {
-  const router = useRouter()
-
   const { t } = useClientTranslation()
-
-  const previousData = safeSessionStorage.getItem(POLL_DATA_KEY)
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useReactHookForm<Inputs>({
-    defaultValues: previousData ? JSON.parse(previousData) : {},
+  const { register, errors, onSubmit, isPending } = useCreateCampaignStep1({
+    organisationSlug: organisation.slug,
   })
-
-  const [isPending, setIsPending] = useState(false)
-
-  function onSubmit(data: Inputs) {
-    try {
-      setIsPending(true)
-
-      safeSessionStorage.setItem(POLL_DATA_KEY, JSON.stringify(data))
-
-      // Fake delay to improve UX
-      setTimeout(() => {
-        // Go to step 2
-        router.push(`/organisations/${organisation.slug}/creer-campagne/mode`)
-      }, 1000)
-    } catch (error) {
-      captureException(error)
-    }
-  }
 
   return (
     <form
       className="flex flex-col gap-8"
       noValidate
-      onSubmit={isPending ? () => {} : handleSubmit(onSubmit)}
+      onSubmit={isPending ? () => {} : onSubmit}
       id="poll-form">
       <TextInput
         label={
@@ -93,7 +57,15 @@ export default function PollNameForm({ organisation }: Props) {
         type="number"
         inputMode="numeric"
         onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-          const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
+          const allowedKeys = [
+            'Backspace',
+            'Delete',
+            'Tab',
+            'ArrowLeft',
+            'ArrowRight',
+            'ArrowUp',
+            'ArrowDown',
+          ]
           if (!allowedKeys.includes(e.key) && !/^\d$/.test(e.key)) {
             e.preventDefault()
           }
