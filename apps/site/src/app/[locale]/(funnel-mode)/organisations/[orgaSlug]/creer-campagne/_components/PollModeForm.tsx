@@ -46,6 +46,7 @@ export default function PollModeForm({ organisation }: Props) {
                   type="radio"
                   value={mode.value}
                   className="sr-only"
+                  defaultChecked={mode.value === 'standard'}
                   {...register('mode')}
                 />
                 <h3 className="mb-2 text-lg font-bold text-gray-900">
