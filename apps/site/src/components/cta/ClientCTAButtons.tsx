@@ -1,6 +1,10 @@
 'use client'
 import { useEndTest } from '@/app/[locale]/(simulation)/simulateur/[root]/_hooks/useEndPage'
-import { END_PAGE_PATH, MON_ESPACE_PATH } from '@/constants/urls/paths'
+import {
+  END_PAGE_PATH,
+  MON_ESPACE_PATH,
+  ORGANISATION_CREATE_PATH,
+} from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Loader from '@/design-system/layout/Loader'
 import { revalidatePathAction } from '@/helpers/server/revalidate'
@@ -14,16 +18,11 @@ import {
 import type { MouseEvent } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import RestartIcon from '../icons/RestartIcon'
+import RotatingArrowIcon from '../icons/RotatingArrowIcon'
 import Trans from '../translation/trans/TransClient'
 import CTAButtonsPlaceholder from './CTAButtonsPlaceholder'
 
-export default function ClientCTAButtons({
-  className,
-  trackingEvents,
-  withRestart = true,
-  isAuthenticated,
-}: {
+interface Props {
   className?: string
   trackingEvents: {
     start: string[]
@@ -46,10 +45,20 @@ export default function ClientCTAButtons({
       eventName: string
       properties?: Record<string, string | number | boolean | null | undefined>
     }
+    createCollectiveTest?: string[]
   }
   withRestart?: boolean
+  withCollectiveTest?: boolean
   isAuthenticated: boolean
-}) {
+}
+
+export default function ClientCTAButtons({
+  className,
+  trackingEvents,
+  withRestart = true,
+  withCollectiveTest = false,
+  isAuthenticated,
+}: Props) {
   const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
@@ -63,8 +72,6 @@ export default function ClientCTAButtons({
 
   const { progression } = useCurrentSimulation()
   const { simulations, initSimulation } = useUser()
-
-  const [isHover, setIsHover] = useState(false)
 
   const userIsAuthenticatedAndHasMultipleSimulations =
     isAuthenticated && simulations.length > 1
@@ -143,32 +150,33 @@ export default function ClientCTAButtons({
     }
   }
 
-  const ContainerTag = showBothButtons ? 'ul' : 'div'
-  const MainButtonContainerTag = showBothButtons ? 'li' : 'div'
+  const ContainerTag = withCollectiveTest || showBothButtons ? 'ul' : 'div'
+  const MainButtonContainerTag =
+    withCollectiveTest || showBothButtons ? 'li' : 'div'
 
   return (
-    <ContainerTag className="flex flex-col flex-wrap items-center justify-center gap-2 md:items-start lg:flex-row lg:flex-nowrap">
-      <MainButtonContainerTag>
+    <ContainerTag
+      className={twMerge(
+        'flex flex-col flex-wrap items-center justify-center gap-2 md:items-start lg:flex-row',
+        (withCollectiveTest || showBothButtons) && 'lg:grid lg:grid-cols-2'
+      )}>
+      <MainButtonContainerTag className="w-full lg:col-span-1 lg:w-auto">
         <ButtonLink
           size="xl"
           className={twMerge(
-            'hover:bg-primary-900 transition-all duration-300',
+            'group hover:bg-primary-900 h-16 w-full transition-all duration-300',
             className
           )}
           href={mainButtonHref}
           aria-disabled={isPending}
           data-testid="do-the-test-link"
-          onMouseEnter={() => setIsHover(true)}
-          onMouseLeave={() => setIsHover(false)}
           onClick={handleMainButtonClick}>
           <>
             {isPending && <Loader color="light" size="sm" className="mr-2" />}
             <span
               className={twMerge(
-                isHover
-                  ? 'bg-rainbow animate-rainbow-fast bg-clip-text! text-transparent! duration-1000 motion-reduce:animate-none'
-                  : '',
-                'leading-none'
+                'leading-none',
+                'group-hover:bg-rainbow group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
               )}>
               <Trans>{mainButtonLabel}</Trans>
             </span>
@@ -176,28 +184,36 @@ export default function ClientCTAButtons({
         </ButtonLink>
       </MainButtonContainerTag>
 
-      {showBothButtons && (
-        <li>
+      {withCollectiveTest && (
+        <li className="h-full lg:col-span-1 lg:w-auto">
           <ButtonLink
             size="xl"
             color="secondary"
-            className="leading-none"
-            trackingEvent={
-              progression !== 1 ? trackingEvents.resume : trackingEvents.restart
-            }
-            onClick={handleRestartClick}
+            className="h-16 px-6"
+            data-testid="organisation-link"
+            href={ORGANISATION_CREATE_PATH}>
+            <span className="leading-none">
+              <Trans i18nKey="ctaButtons.collective.label">
+                Créer un test collectif
+              </Trans>
+            </span>
+          </ButtonLink>
+        </li>
+      )}
+      {showBothButtons && (
+        <li className="w-full text-center lg:col-span-1 lg:w-auto">
+          <ButtonLink
             data-testid="restart-link"
+            className="mt-1 w-full text-base"
+            trackingEvent={trackingEvents.restart}
             href={getLinkToSimulateurPage({
               newSimulation: progression === 1,
-            })}>
-            {progression !== 1 ? (
-              <Trans>Reprendre mon test</Trans>
-            ) : (
-              <>
-                <RestartIcon className="fill-primary-700 mr-2" />
-                <Trans>Recommencer</Trans>
-              </>
-            )}
+            })}
+            onClick={handleRestartClick}
+            color="link"
+            size="sm">
+            <Trans i18nKey="ctaButtons.retake.label">Repasser le test</Trans>
+            <RotatingArrowIcon className="fill-primary-900 ml-3 w-4" />
           </ButtonLink>
         </li>
       )}
