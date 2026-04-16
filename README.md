@@ -27,12 +27,14 @@ Lance les devcontainers via [l'extension VSCode](https://marketplace.visualstudi
 
 ```bash
 devcontainer up
+devcontainer exec pnpm run dev
 ```
 
-Pour lancer les devcontainers avec un build de production :
+Pour lancer un build de production :
 
 ```bash
-echo "DEVCONTAINER_START_MODE=production" > .devcontainer/.env
+devcontainer exec pnpm run build
+devcontainer exec pnpm run start
 ```
 
 ### Manuellement
