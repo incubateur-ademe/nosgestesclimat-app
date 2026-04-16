@@ -7,10 +7,6 @@ import {
   captureOrganisationsLoginComplete,
   organisationsLoginComplete,
 } from '@/constants/tracking/pages/organisationsConnexion'
-import {
-  ORGANISATION_SIGN_IN_PATH,
-  ORGANISATION_SIGN_UP_PATH,
-} from '@/constants/urls/paths'
 import Separator from '@/design-system/layout/Separator'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
@@ -69,10 +65,6 @@ export default async function Page({
             <SigninSignupTabs
               className="-order-1 mb-8 lg:mb-14"
               mode={SIGNIN_MODE}
-              paths={{
-                sign_in: ORGANISATION_SIGN_IN_PATH,
-                sign_up: ORGANISATION_SIGN_UP_PATH,
-              }}
             />
             <AuthenticateUserForm
               onComplete={redirectAfterLogin}

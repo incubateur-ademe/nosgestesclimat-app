@@ -5,11 +5,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { SIGNIN_MODE } from '@/constants/authentication/modes'
 import { loginComplete } from '@/constants/tracking/pages/mon-espace'
 import { captureLoginComplete } from '@/constants/tracking/posthogTrackers'
-import {
-  CONNEXION_PATH,
-  INSCRIPTION_PATH,
-  MON_ESPACE_PATH,
-} from '@/constants/urls/paths'
+import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
@@ -35,10 +31,6 @@ export default async function Connexion({ params }: DefaultPageProps) {
         <SigninSignupTabs
           className="-order-1 mb-8 lg:mb-14"
           mode={SIGNIN_MODE}
-          paths={{
-            sign_in: CONNEXION_PATH,
-            sign_up: INSCRIPTION_PATH,
-          }}
         />
 
         <Title
