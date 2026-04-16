@@ -3,7 +3,7 @@
 import CloseIcon from '@/components/icons/Close'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { clearDraft } from '../_hooks/createCampaignDraft'
+import { clearDraft } from '../_hooks/createPollDraft'
 
 interface Props {
   organisationSlug: string

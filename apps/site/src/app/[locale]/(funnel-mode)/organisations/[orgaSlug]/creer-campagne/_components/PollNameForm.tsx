@@ -1,6 +1,6 @@
 'use client'
 
-import { useCreateCampaignStep1 } from '@/app/[locale]/(funnel-mode)/organisations/[orgaSlug]/creer-campagne/_hooks/useCreateCampaignStep1'
+import { useCreatePollStep1 } from '@/app/[locale]/(funnel-mode)/organisations/[orgaSlug]/creer-campagne/_hooks/useCreatePollStep1'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
@@ -13,7 +13,7 @@ interface Props {
 
 export default function PollNameForm({ organisation }: Props) {
   const { t } = useClientTranslation()
-  const { register, errors, onSubmit, isPending } = useCreateCampaignStep1({
+  const { register, errors, onSubmit, isPending } = useCreatePollStep1({
     organisationSlug: organisation.slug,
   })
 
