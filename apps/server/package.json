@@ -22,7 +22,6 @@
     "jobs:recoverNewsletterStats": "node dist/src/jobs/recover-newsletter-stats.js",
     "lint": "prettier --check \"**/*.{js,ts,md,json}\" && eslint . --ext .js,.ts && tsc -p .",
     "typecheck": "tsc --noEmit",
-    "prestart": "pnpm db:doc",
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/index.js",
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/worker.js",
     "test": "vitest run",
