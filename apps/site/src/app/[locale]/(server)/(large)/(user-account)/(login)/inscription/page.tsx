@@ -6,11 +6,7 @@ import { SIGNUP_MODE } from '@/constants/authentication/modes'
 import { signupComplete } from '@/constants/tracking/pages/mon-espace'
 import { captureSignupComplete } from '@/constants/tracking/posthogTrackers'
 import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
-import {
-  CONNEXION_PATH,
-  INSCRIPTION_PATH,
-  MON_ESPACE_PATH,
-} from '@/constants/urls/paths'
+import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -40,10 +36,6 @@ export default async function Connexion({ params }: DefaultPageProps) {
         <SigninSignupTabs
           className="-order-1 mb-8 lg:mb-14"
           mode={SIGNUP_MODE}
-          paths={{
-            sign_in: CONNEXION_PATH,
-            sign_up: INSCRIPTION_PATH,
-          }}
         />
 
         <Title
