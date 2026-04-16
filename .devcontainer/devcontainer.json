@@ -5,12 +5,7 @@
   "service": "app",
   "workspaceFolder": "/workspaces/nosgestesclimat",
   "remoteUser": "root",
-
-  "postCreateCommand": {
-    "pnpm": "corepack enable && corepack install && pnpm install"
-  },
-
-  "postStartCommand": ".devcontainer/start.sh",
+  "postCreateCommand": ".devcontainer/create.sh",
 
   "forwardPorts": [3000, 3001, 5432, 6379],
   "portsAttributes": {

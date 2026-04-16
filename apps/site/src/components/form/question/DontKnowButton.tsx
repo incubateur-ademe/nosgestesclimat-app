@@ -91,6 +91,7 @@ export default function DontKnowButton({ question }: Props) {
         className="text-sm!"
         color="borderless"
         disabled={!isMissing}
+        data-testid="skip-question-button"
         aria-label={t(
           'common.navigation.nextQuestion.dontKnow.title',
           'Je ne sais pas répondre, passer et aller à la question suivante'
