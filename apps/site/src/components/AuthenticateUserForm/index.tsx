@@ -30,7 +30,7 @@ interface Props {
   buttonColor?: ButtonColor
   inputLabel?: ReactNode | string
   mode?: AuthenticationMode
-  redirectURL?: string
+  redirectPathname?: string
   onEmailEntered?: (email: string) => void
   additionnalButton?: ReactNode
   onEmailEmpty?: () => void
@@ -59,7 +59,7 @@ export default function AuthenticateUserForm({
   buttonColor = 'primary',
   additionnalButton,
   inputLabel,
-  redirectURL,
+  redirectPathname,
   mode,
   onComplete,
   required = true,
@@ -85,12 +85,12 @@ export default function AuthenticateUserForm({
       }
       await onComplete?.(user)
 
-      if (redirectURL) {
-        router.push(redirectURL)
+      if (redirectPathname) {
+        router.push(redirectPathname)
       }
       router.refresh()
     },
-    [redirectURL, onComplete, router, trackers]
+    [redirectPathname, onComplete, router, trackers]
   )
 
   const {

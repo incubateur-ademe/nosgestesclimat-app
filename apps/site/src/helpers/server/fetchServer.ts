@@ -20,7 +20,7 @@ export async function fetchServer<T = unknown>(
     body,
     next,
   }: {
-    method?: 'GET' | 'POST' | 'PUT'
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
     body?: Record<string, unknown>
     next?: NextFetchRequestConfig
   } = {}

@@ -1,5 +1,5 @@
 import { getInitialExtendedSituation } from '@/helpers/modelFetching/getInitialExtendedSituation'
-import type { Simulation } from '@/publicodes-state/types'
+import type { Simulation } from '../simulations'
 
 export const setDefaultExtendedSituation = (simulation: Simulation) => {
   const updatedSimulation = { ...simulation }

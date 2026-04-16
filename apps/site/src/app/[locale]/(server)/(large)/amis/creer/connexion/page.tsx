@@ -47,7 +47,7 @@ export default async function GroupConnexionPage({ params }: DefaultPageProps) {
       />
 
       <AuthenticateUserForm
-        redirectURL={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
+        redirectPathname={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
         buttonLabel={t('auth.verifyemail', 'Vérifier mon adresse email')}
         trackers={{
           matomo: amisCreationConnexionComplete,

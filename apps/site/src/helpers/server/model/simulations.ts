@@ -1,7 +1,7 @@
 'use server'
 
 import { SIMULATION_URL } from '@/constants/urls/main'
-import type { Simulation } from '@/publicodes-state/types'
+import type { Simulation as LocalStorageSimulation } from '@/publicodes-state/types'
 import { getUser, type AppUser } from '../dal/user'
 import { fetchServer } from '../fetchServer'
 import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
@@ -9,6 +9,11 @@ import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation
 interface SimulationFilter {
   completedOnly?: boolean
   pageSize?: number
+}
+
+export interface Simulation extends LocalStorageSimulation {
+  /** ISO 8601 date string */
+  updated_at: string
 }
 
 export async function getSimulations(
@@ -52,4 +57,17 @@ export async function getSimulation({
 export async function getUserSimulations(simulationFilter?: SimulationFilter) {
   const user = await getUser()
   return getSimulations({ user }, simulationFilter)
+}
+
+// This is a soft delete
+export async function deleteSimulation({
+  user,
+  simulationId,
+}: {
+  user: AppUser
+  simulationId: string
+}) {
+  await fetchServer(`${SIMULATION_URL}/${user.id}/${simulationId}`, {
+    method: 'DELETE',
+  })
 }

@@ -43,7 +43,10 @@ export function usePendingVerification({
         })
 
         user.updatePendingVerification(undefined)
-        await onComplete?.({ email: pendingVerification.email, userId })
+        await onComplete?.({
+          email: pendingVerification.email,
+          userId,
+        })
       } catch (error) {
         captureException(error)
       }
