@@ -102,7 +102,13 @@ export class NGCTest {
   async answerTest(situation: Situation) {
     // @TODO : test that there are no unit warning in publicodes
     while (!(await this.isLastQuestion())) {
-      await this.answerQuestion(situation)
+      await this.answerQuestion(
+        // @TODO when Je ne sais pas  AB test is over, fix this
+        {
+          'logement . chauffage . saisie précision consommation': "'aide'",
+          ...situation,
+        }
+      )
     }
     await this.page.getByTestId('end-test-button').click()
   }
