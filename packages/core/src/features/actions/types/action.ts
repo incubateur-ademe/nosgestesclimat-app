@@ -53,7 +53,6 @@ interface ActionAssessment {
 
 export interface PersonalizedAction {
   userId: string
-  userType: 'anonymous' | 'registered'
   action: Action
   choice: ActionChoice | null
   assessment: ActionAssessment
