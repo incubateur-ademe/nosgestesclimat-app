@@ -1,6 +1,6 @@
 'use client'
 
-import { useCreateCampaignStep2 } from '@/app/[locale]/(funnel-mode)/organisations/[orgaSlug]/creer-campagne/_hooks/useCreateCampaignStep2'
+import { useCreatePollStep2 } from '@/app/[locale]/(funnel-mode)/organisations/[orgaSlug]/creer-campagne/_hooks/useCreatePollStep2'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import type { Organisation } from '@/types/organisations'
@@ -13,11 +13,10 @@ interface Props {
 }
 
 export default function PollModeForm({ organisation }: Props) {
-  const { register, onSubmit, isPending, isError, modes } =
-    useCreateCampaignStep2({
-      organisationSlug: organisation.slug,
-      revalidatePath: revalidationOrganisationPath,
-    })
+  const { register, onSubmit, isPending, isError, modes } = useCreatePollStep2({
+    organisationSlug: organisation.slug,
+    revalidatePath: revalidationOrganisationPath,
+  })
 
   return (
     <form

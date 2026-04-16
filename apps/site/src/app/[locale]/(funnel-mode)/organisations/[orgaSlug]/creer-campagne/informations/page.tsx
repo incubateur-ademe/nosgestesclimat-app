@@ -2,7 +2,6 @@ import StepsDisplay from '@/components/groups/StepsDisplay'
 import Trans from '@/components/translation/trans/TransServer'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Title from '@/design-system/layout/Title'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { organisationAdminGuard } from '../../organisation-guard'
 import CloseButton from '../_components/CloseButton'
 import PollNameForm from '../_components/PollNameForm'
@@ -13,7 +12,6 @@ export default async function CreerCampagneInformationsPage({
 }: PageProps<'/[locale]/organisations/[orgaSlug]/creer-campagne/informations'>) {
   const { orgaSlug, locale } = await params
   const { organisation } = await organisationAdminGuard(orgaSlug)
-  const { t } = await getServerTranslation({ locale })
   return (
     <div className="mt-4 mb-16 md:mt-8">
       <div className="mb-4 flex flex-row justify-between">

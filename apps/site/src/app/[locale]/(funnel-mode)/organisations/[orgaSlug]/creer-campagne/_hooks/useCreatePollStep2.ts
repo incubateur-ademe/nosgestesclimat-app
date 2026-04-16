@@ -6,9 +6,9 @@ import {
   buildCreatePollPayload,
   clearDraft,
   readDraft,
-} from './createCampaignDraft'
+} from './createPollDraft'
 
-interface UseCreateCampaignStep2Props {
+interface UseCreatePollStep2Props {
   organisationSlug: string
   revalidatePath: (slug: string) => void
 }
@@ -50,10 +50,10 @@ export type PollMode = (typeof pollModes)[number]
 /**
  * Hook for managing the second step of campaign creation (mode selection)
  */
-export function useCreateCampaignStep2({
+export function useCreatePollStep2({
   organisationSlug,
   revalidatePath,
-}: UseCreateCampaignStep2Props) {
+}: UseCreatePollStep2Props) {
   const router = useRouter()
 
   const { handleSubmit, register } = useForm<Step2Inputs>({

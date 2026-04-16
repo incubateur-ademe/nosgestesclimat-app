@@ -1,21 +1,19 @@
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { POLL_DATA_KEY } from '../_constants/sessionStorage'
 
-export interface CampaignDraft {
+export interface PollDraft {
   name: string
   expectedNumberOfParticipants?: number
 }
 
-export interface CreatePollPayload {
-  name: string
-  expectedNumberOfParticipants?: number
+export interface CreatePollPayload extends PollDraft {
   mode: 'standard' | 'scolaire'
 }
 
 /**
- * Validates if an object matches the CampaignDraft shape
+ * Validates if an object matches the PollDraft shape
  */
-function isValidDraft(data: unknown): data is CampaignDraft {
+function isValidDraft(data: unknown): data is PollDraft {
   if (typeof data !== 'object' || data === null) {
     return false
   }
@@ -42,7 +40,7 @@ function isValidDraft(data: unknown): data is CampaignDraft {
  * Reads the campaign draft from session storage
  * Returns null if no draft exists or if it's invalid
  */
-export function readDraft(): CampaignDraft | null {
+export function readDraft(): PollDraft | null {
   try {
     const raw = safeSessionStorage.getItem(POLL_DATA_KEY)
 
@@ -67,7 +65,7 @@ export function readDraft(): CampaignDraft | null {
 /**
  * Writes the campaign draft to session storage
  */
-export function writeDraft(data: CampaignDraft): void {
+export function writeDraft(data: PollDraft): void {
   safeSessionStorage.setItem(POLL_DATA_KEY, JSON.stringify(data))
 }
 
@@ -83,7 +81,7 @@ export function clearDraft(): void {
  * Combines step 1 (draft) and step 2 (mode) data
  */
 export function buildCreatePollPayload(
-  draft: CampaignDraft,
+  draft: PollDraft,
   mode: 'standard' | 'scolaire'
 ): CreatePollPayload {
   return {

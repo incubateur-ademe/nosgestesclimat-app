@@ -1,31 +1,27 @@
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
-import {
-  readDraft,
-  writeDraft,
-  type CampaignDraft,
-} from './createCampaignDraft'
+import { readDraft, writeDraft, type PollDraft } from './createPollDraft'
 
-interface UseCreateCampaignStep1Props {
+interface UseCreatePollStep1Props {
   organisationSlug: string
 }
 
-export function useCreateCampaignStep1({
+export function useCreatePollStep1({
   organisationSlug,
-}: UseCreateCampaignStep1Props) {
+}: UseCreatePollStep1Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
   const previousData = readDraft()
 
-  const form = useForm<CampaignDraft>({
+  const form = useForm<PollDraft>({
     defaultValues: previousData ?? {},
   })
 
   const { handleSubmit, register, formState } = form
 
-  function saveAndNavigate(data: CampaignDraft) {
+  function saveAndNavigate(data: PollDraft) {
     writeDraft(data)
 
     startTransition(() => {
