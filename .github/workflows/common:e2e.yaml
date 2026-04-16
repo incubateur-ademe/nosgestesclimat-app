@@ -1,44 +1,31 @@
 name: E2E
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_call:
     inputs:
-      is_preprod:
-        description: 'Whether this is a preprod test run'
-        required: false
-        type: boolean
-        default: false
-    secrets:
-      MAILISK_API_KEY:
+      site_url:
+        description: 'URL of the site to test'
         required: true
+        type: string
 
 env:
-  NEXT_PUBLIC_SERVER_URL: ${{ vars.NEXT_PUBLIC_SERVER_URL }}
-  LOCAL_TEST: ${{ !inputs.is_preprod }}
-  NEXT_PUBLIC_SITE_URL: ${{ inputs.is_preprod && 'https://preprod.nosgestesclimat.fr' || 'http://localhost:3000' }}
-  SERVER_AUTH_COOKIE_NAME: preprod_server_auth_jwt
-  IRON_SESSION_PASSWORD: ${{ secrets.IRON_SESSION_PASSWORD }}
+  NEXT_PUBLIC_SITE_URL: ${{ inputs.site_url }}
 
 jobs:
-  # Build and setup job - runs on a single machine
-  build-and-setup:
+  # Setup job - runs on a single machine
+  setup:
     # Skip entire workflow if PR is a draft (all other jobs depend on this one)
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
-    environment: 'Test E2E'
     runs-on: ubuntu-latest
-    name: Build & Setup
+    name: Setup
     defaults:
       run:
         working-directory: ./apps/site
 
     steps:
       - uses: actions/checkout@v6
-      - name: Setup and Build
+      - name: Setup
         uses: ./.github/actions/setup
-        with:
-          build: ${{ env.LOCAL_TEST }}
 
       - name: Install Playwright
         run: pnpm playwright install chromium
@@ -47,10 +34,7 @@ jobs:
         env:
           MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
           MAILISK_NAMESPACE: ${{ vars.MAILISK_NAMESPACE }}
-          CMS_TOKEN: ${{ env.LOCAL_TEST && secrets.CMS_TOKEN || '' }}
-          CMS_URL: ${{ env.LOCAL_TEST && secrets.CMS_URL || '' }}
         run: |
-          ${{ env.LOCAL_TEST == 'true' && 'pnpm start &' || '' }}
           pnpm playwright test --project="global setup"
 
       - name: Upload state artifacts
@@ -60,22 +44,8 @@ jobs:
           path: apps/site/e2e/state/*.json
           retention-days: 1
 
-      # We archive the Next.js build because ":" in filenames are not allowed by upload-artifact
-      - name: Archive Next.js build
-        if: ${{ env.LOCAL_TEST == 'true' }}
-        run: tar -cf nextjs-build.tar .next
-
-      - name: Upload Next.js build
-        if: ${{ env.LOCAL_TEST == 'true' }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: nextjs-build
-          path: ./apps/site/nextjs-build.tar
-          retention-days: 1
-
   # Project-based test jobs - runs on 3 machines in parallel
   e2e-tests:
-    environment: 'Test E2E'
     strategy:
       fail-fast: false
       matrix:
@@ -88,7 +58,7 @@ jobs:
             browser: webkit
     runs-on: ubuntu-latest
     name: ${{ matrix.project }}
-    needs: [build-and-setup]
+    needs: [setup]
     defaults:
       run:
         working-directory: ./apps/site
@@ -98,17 +68,6 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
-
-      - name: Download Next.js build
-        if: ${{ env.LOCAL_TEST == 'true'}}
-        uses: actions/download-artifact@v6
-        with:
-          name: nextjs-build
-          path: ./apps/site
-
-      - name: Extract Next.js build
-        if: ${{ env.LOCAL_TEST == 'true'}}
-        run: tar -xf nextjs-build.tar
 
       - name: Install Playwright
         run: pnpm playwright install ${{ matrix.browser }} ${{ matrix.browser == 'webkit' && '--with-deps' || '' }}
@@ -123,10 +82,7 @@ jobs:
         env:
           MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
           MAILISK_NAMESPACE: ${{ vars.MAILISK_NAMESPACE }}
-          CMS_TOKEN: ${{ env.LOCAL_TEST && secrets.CMS_TOKEN || '' }}
-          CMS_URL: ${{ env.LOCAL_TEST && secrets.CMS_URL || '' }}
         run: |
-          ${{ env.LOCAL_TEST && 'pnpm start &' || ''}}
           pnpm playwright test --no-deps --project="${{ matrix.project }}"
 
       - name: Upload blob report

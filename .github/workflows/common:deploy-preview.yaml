@@ -1,0 +1,66 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  deploy-site-preview:
+    name: Deploy site preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    environment: Preview app
+    outputs:
+      site_url: https://${{ vars.SCALINGO_SITE_APP_NAME }}-pr${{ github.event.pull_request.number }}.osc-fr1.scalingo.io
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Ensure review app exists
+        env:
+          FGP_DEPLOY_TOKEN: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          FGP_DEPLOY_URL: ${{ vars.FGP_DEPLOY_URL }}
+          SCALINGO_APP_NAME: ${{ vars.SCALINGO_SITE_APP_NAME }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/scalingo-ensure-review-app.sh
+
+      - name: Deploy to Scalingo
+        uses: ./.github/actions/deploy-scalingo
+        with:
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+          scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}-pr${{ github.event.pull_request.number }}
+          git-ref: ${{ github.event.pull_request.head.sha }}
+
+  deploy-server-preview:
+    name: Deploy server preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    environment: Preview app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Ensure review app exists
+        env:
+          FGP_DEPLOY_TOKEN: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          FGP_DEPLOY_URL: ${{ vars.FGP_DEPLOY_URL }}
+          SCALINGO_APP_NAME: ${{ vars.SCALINGO_SERVER_APP_NAME }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/scalingo-ensure-review-app.sh
+
+      - name: Deploy to Scalingo
+        uses: ./.github/actions/deploy-scalingo
+        with:
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+          scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}-pr${{ github.event.pull_request.number }}
+          git-ref: ${{ github.event.pull_request.head.sha }}
+
+  e2e-preview:
+    name: Tests on preview
+    needs: [deploy-site-preview, deploy-server-preview]
+    uses: ./.github/workflows/common:e2e.yaml
+    with:
+      site_url: ${{ needs.deploy-site-preview.outputs.site_url }}
+    secrets: inherit

@@ -43,9 +43,8 @@ jobs:
     needs: [deploy-site-preprod, deploy-server-preprod]
     uses: ./.github/workflows/common:e2e.yaml
     with:
-      is_preprod: true
-    secrets:
-      MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
+      site_url: 'https://preprod.nosgestesclimat.fr'
+    secrets: inherit
 
   deploy-site-prod:
     name: Deploy site to prod

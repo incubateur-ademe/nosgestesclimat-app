@@ -29,14 +29,14 @@ PRINTED_LINES=0
 
 while true; do
   # Get deployment status
-  STATUS=$(curl -s -H "Accept: application/json" \
+  STATUS=$(curl -s -f -H "Accept: application/json" \
     -H "X-FGP-Key: ${FGP_DEPLOY_TOKEN}" \
     "${API_URL}" | jq -r '.deployment.status')
 
   # Get deployment logs and print only new lines
-  LOGS=$(curl -s -H "Accept: text/plain" \
+  LOGS=$(curl -s -f -H "Accept: text/plain" \
     -H "X-FGP-Key: ${FGP_DEPLOY_TOKEN}" \
-    "${API_URL}/output")
+    "${API_URL}/output" || echo "")
 
   TOTAL_LINES=$(echo "$LOGS" | wc -l)
 
