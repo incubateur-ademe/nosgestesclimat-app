@@ -1,0 +1,113 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  urls:
+    name: Compute preview URLs
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    environment: Preview app
+    outputs:
+      server_url: https://${{ vars.SCALINGO_SERVER_APP_NAME }}-pr${{ github.event.pull_request.number }}.osc-fr1.scalingo.io
+      site_url: https://${{ vars.SCALINGO_SERVER_APP_NAME }}-pr${{ github.event.pull_request.number }}.osc-fr1.scalingo.io
+
+    steps:
+      - run: echo "Server URL computed"
+
+  build-e2e:
+    name: Build for E2E
+    needs: [urls]
+    runs-on: ubuntu-latest
+    environment:
+      name: Test E2E
+      deployment: false
+    env:
+      NEXT_PUBLIC_SERVER_URL: ${{ needs.urls.outputs.server_url }}
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+      CMS_URL: ${{ vars.CMS_URL }}
+      CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
+      IRON_SESSION_PASSWORD: ${{ vars.IRON_SESSION_PASSWORD }}
+      SERVER_AUTH_COOKIE_NAME: ${{ vars.SERVER_AUTH_COOKIE_NAME }}
+
+    defaults:
+      run:
+        working-directory: ./apps/site
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build
+        run: pnpm build
+      # We archive the Next.js build because ":" in filenames are not allowed by upload-artifact
+      - name: Archive Next.js build
+        run: tar -cf nextjs-build.tar .next
+      - name: Upload Next.js build
+        uses: actions/upload-artifact@v6
+        with:
+          name: nextjs-build
+          path: ./apps/site/nextjs-build.tar
+          retention-days: 1
+
+  deploy-site-preview:
+    name: Deploy site preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    environment:
+      name: Preview app
+      url: ${{ needs.urls.outputs.site_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Ensure review app exists
+        env:
+          FGP_DEPLOY_TOKEN: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          FGP_DEPLOY_URL: ${{ vars.FGP_DEPLOY_URL }}
+          SCALINGO_APP_NAME: ${{ vars.SCALINGO_SITE_APP_NAME }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/scalingo-ensure-review-app.sh
+
+      - name: Deploy to Scalingo
+        uses: ./.github/actions/deploy-scalingo
+        with:
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+          scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}-pr${{ github.event.pull_request.number }}
+          git-ref: ${{ github.event.pull_request.head.sha }}
+
+  deploy-server-preview:
+    name: Deploy server preview
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    environment: Preview app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Ensure review app exists
+        env:
+          FGP_DEPLOY_TOKEN: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          FGP_DEPLOY_URL: ${{ vars.FGP_DEPLOY_URL }}
+          SCALINGO_APP_NAME: ${{ vars.SCALINGO_SERVER_APP_NAME }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/scalingo-ensure-review-app.sh
+
+      - name: Deploy to Scalingo
+        uses: ./.github/actions/deploy-scalingo
+        with:
+          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+          scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}-pr${{ github.event.pull_request.number }}
+          git-ref: ${{ github.event.pull_request.head.sha }}
+
+  e2e:
+    name: Tests on preview
+    needs: [urls, build-e2e, deploy-server-preview]
+    uses: ./.github/workflows/site:e2e.yaml
+    secrets: inherit
+    with:
+      server_url: ${{ needs.urls.outputs.server_url }}
