@@ -29,17 +29,6 @@ function prefixConfigs(configs, dir) {
       next.ignores = config.ignores.map((p) => `${dir}/${p}`)
     }
 
-    // Inject tsconfigRootDir for any config that uses projectService
-    if (config.languageOptions?.parserOptions?.projectService !== undefined) {
-      next.languageOptions = {
-        ...config.languageOptions,
-        parserOptions: {
-          ...config.languageOptions.parserOptions,
-          tsconfigRootDir: appRoot,
-        },
-      }
-    }
-
     return next
   })
 }
