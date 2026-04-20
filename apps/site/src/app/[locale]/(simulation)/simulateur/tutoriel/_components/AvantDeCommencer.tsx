@@ -2,7 +2,6 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import Emoji from '@/design-system/utils/Emoji'
-import OrganisationDisclaimer from './avantDeCommencer/OrganisationDisclaimer'
 
 export default function AvantDeCommencer() {
   return (
@@ -16,7 +15,8 @@ export default function AvantDeCommencer() {
       <h2 className="z-10">
         <Trans>Avant de commencer</Trans>
       </h2>
-      <OrganisationDisclaimer />
+      {/*@TOFIX*/}
+      {/*<OrganisationDisclaimer />*/}
       <div className="relative pl-8">
         <h3 className="relative overflow-visible font-bold">
           <Emoji className="absolute top-0 -left-8">🏡</Emoji>

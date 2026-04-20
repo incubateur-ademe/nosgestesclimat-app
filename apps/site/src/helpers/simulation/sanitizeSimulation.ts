@@ -1,4 +1,4 @@
-import type { Simulation } from '@/publicodes-state/types'
+import type { Simulation } from '@/helpers/server/model/simulations'
 
 export function sanitizeSimulation(simulation: Simulation): Simulation {
   // Strip unrecognized keys before mapping and posting

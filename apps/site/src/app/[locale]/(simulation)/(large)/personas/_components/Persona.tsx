@@ -25,7 +25,7 @@ interface Props {
 export default function Persona({ persona, personaDottedName }: Props) {
   const router = useRouter()
 
-  const { initSimulation, hideTutorial, currentSimulation } = useUser()
+  const { initSimulation, currentSimulation } = useUser()
 
   const {
     pristineEngine,
@@ -100,7 +100,6 @@ export default function Persona({ persona, personaDottedName }: Props) {
 
               initSimulation(simulation)
               saveSimulation({ simulation })
-              hideTutorial('testIntro')
               router.refresh()
             })
           }}>

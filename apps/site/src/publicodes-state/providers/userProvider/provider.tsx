@@ -5,10 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { STORAGE_KEY } from '@/constants/storage'
 import { getGeolocation } from '@/helpers/api/getGeolocation'
-import type {
-  RegionFromGeolocation,
-  Simulation,
-} from '@/publicodes-state/types'
+import { Simulation } from '@/helpers/server/model/simulations'
+import type { RegionFromGeolocation } from '@/publicodes-state/types'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import UserContext from './context'
 import { useMigrateAnonSession } from './hooks/useMigrateAnonSession'
