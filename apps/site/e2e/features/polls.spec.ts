@@ -37,7 +37,7 @@ test.describe('A poll admin', () => {
       await page.getByText('Supprimer cette campagne').click()
       await page.getByText('Confirmer').click()
       await expect(page).toHaveURL(organisation.url)
-      await expect(page.getByText(newPoll.name)).not.toBeVisible()
+      await expect(page.getByText(newPoll.name)).toBeHidden()
     })
   })
 })
@@ -56,7 +56,7 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
     baseURL,
   }) => {
     const clipboardContent = await poll.copyInviteLink()
-    expect(clipboardContent).toMatch(new RegExp('^' + baseURL))
+    expect(clipboardContent).toMatch(new RegExp(`^${baseURL}`))
     expect(clipboardContent).toMatch(/utm_medium=sharelink/)
     expect(clipboardContent).toMatch(/utm_source=NGC/)
   })
@@ -168,7 +168,7 @@ test.describe('A user with a completed test that joined a poll', () => {
   test('cannot redo the test with the invite link', async ({ poll }) => {
     await page.goto(poll.inviteLink)
 
-    await expect(page.getByTestId('skip-tutorial-button')).not.toBeVisible()
+    await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()
 
     await expect(page.locator(`a[href="${poll.url}"]`)).toBeVisible()
   })

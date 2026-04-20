@@ -13,7 +13,7 @@ test.describe('Cookie Consent Management', () => {
     // Refuse all on banner
     await expect(page.getByTestId('cookie-banner-title')).toBeVisible()
     await page.getByTestId('cookie-banner-refuse-button').click()
-    await expect(page.getByTestId('cookie-banner-title')).not.toBeVisible()
+    await expect(page.getByTestId('cookie-banner-title')).toBeHidden()
 
     // Open settings
     await page.getByTestId('cookie-footer-button').click()
@@ -30,7 +30,7 @@ test.describe('Cookie Consent Management', () => {
     // Accept all on banner
     await expect(page.getByTestId('cookie-banner-title')).toBeVisible()
     await page.getByTestId('cookie-banner-accept-button').click()
-    await expect(page.getByTestId('cookie-banner-title')).not.toBeVisible()
+    await expect(page.getByTestId('cookie-banner-title')).toBeHidden()
 
     // Open settings
     await page.getByTestId('cookie-footer-button').click()
@@ -47,12 +47,12 @@ test.describe('Cookie Consent Management', () => {
     // Accept all on banner
     await expect(page.getByTestId('cookie-banner-title')).toBeVisible()
     await page.getByTestId('cookie-banner-accept-button').click()
-    await expect(page.getByTestId('cookie-banner-title')).not.toBeVisible()
+    await expect(page.getByTestId('cookie-banner-title')).toBeHidden()
 
     await page.reload()
 
     // Banner should not reappear
-    await expect(page.getByTestId('cookie-banner-title')).not.toBeVisible()
+    await expect(page.getByTestId('cookie-banner-title')).toBeHidden()
 
     // Open settings
     await page.getByTestId('cookie-footer-button').click()

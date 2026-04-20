@@ -37,7 +37,12 @@ export default defineConfig([
     },
     settings: {
       'import/resolver': {
-        typescript: true,
+        typescript: {
+          project: [
+            'apps/**/tsconfig.json',
+            'packages/**/tsconfig.json'
+          ],
+        },
         node: {
           extensions: ['.js', '.ts', '.json'],
         },
@@ -114,6 +119,13 @@ export default defineConfig([
       'jsx-a11y/no-redundant-roles': 'warn',
     }
   },
+  {
+    files: ['**/*.{jsx,tsx}'],
+    rules: {
+      // TODO: Decide whether we prefer to allow convenient whitespace in JSX or enforce `&nbsp;` and such.
+      'no-irregular-whitespace': 'off',
+    }
+  },
   // Extra rules from the previous Site eslint config
   // TODO: merge those rules with the root ts rules progressively
   {
@@ -126,19 +138,22 @@ export default defineConfig([
       '@typescript-eslint/consistent-type-imports': 'error',
 
       // @TODO : these should be error by default
+      // recommended overrides
       '@typescript-eslint/no-unsafe-argument': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
-      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
-      '@typescript-eslint/no-empty-function': 'warn',
-      '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-misused-promises': 'warn',
       '@typescript-eslint/no-base-to-string': 'warn',
       '@typescript-eslint/restrict-template-expressions': 'warn',
       '@typescript-eslint/unbound-method': 'warn',
       '@typescript-eslint/no-unsafe-enum-comparison': 'warn',
+      // stylistic overrides
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/no-empty-function': 'warn',
+      // project specific rules
+      '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unnecessary-condition': 'warn',
     },
   },
@@ -153,7 +168,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['tests/e2e/**/*.ts'],
+    files: ['apps/site/e2e/**/*.ts'],
     extends: [playwright.configs['flat/recommended']],
   },
   // Must be last to ensure compatibility with Prettier

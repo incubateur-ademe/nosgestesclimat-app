@@ -76,10 +76,11 @@ async function testDeselectAnswer(
 
   //  6. Vérifier que la valeur du bilan est identique au 2.
   await page.waitForTimeout(2000)
-  const carbonFootprintValueAfterChange =
-    await getCarbonFootprintElem(page).innerText()
+  const carbonFootprintValueAfterChange = getCarbonFootprintElem(page)
 
-  expect(carbonFootprintValueAfterChange).toBe(carbonFootprintValueBeforeChange)
+  await expect(carbonFootprintValueAfterChange).toHaveText(
+    carbonFootprintValueBeforeChange
+  )
 
   //  7. Vérifier que le bouton « je ne sais pas » est affiché
   await expect(ngcTest.page.getByTestId('skip-question-button')).toBeVisible()

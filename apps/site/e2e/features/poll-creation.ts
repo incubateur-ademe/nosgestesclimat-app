@@ -36,6 +36,7 @@ test.describe('The dashboard', () => {
       page.getByText(`Bienvenue ${organisation.admin.fullName}`)
     ).toBeVisible()
   })
+
   test('should display the name of the organisation twice (the breadcrumb and description)', async ({
     page,
     organisation,
@@ -118,7 +119,7 @@ test.describe('The parameters page', () => {
     const code = await admin.mailbox.getVerificationCode()
 
     await verificationCodeInput.fill(code)
-    await expect(verificationCodeInput).not.toBeVisible()
+    await expect(verificationCodeInput).toBeHidden()
 
     await expect(page.getByTestId('success-message')).toBeVisible()
 

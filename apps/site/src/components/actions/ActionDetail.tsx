@@ -107,7 +107,7 @@ export default function ActionDetail({
           <div className="mt-8">
             <ButtonLink
               color="secondary"
-              href={'/documentation/' + encodeRuleName(dottedName)}
+              href={`/documentation/${encodeRuleName(dottedName)}`}
               onClick={() => {
                 trackMatomoEvent__deprecated(
                   actionsClickUnderstandCalculation(dottedName)
@@ -166,7 +166,7 @@ export default function ActionDetail({
               <li key={`relatedAction${index}`}>
                 <ButtonLink
                   color="secondary"
-                  href={'/actions/' + encodeRuleName(action.dottedName)}
+                  href={`/actions/${encodeRuleName(action.dottedName)}`}
                   size="sm">
                   {action.title}
                 </ButtonLink>

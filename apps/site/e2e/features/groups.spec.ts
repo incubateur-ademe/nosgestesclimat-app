@@ -40,7 +40,7 @@ test.describe('A group admin', () => {
     test.afterEach(async ({ page }) => {
       await newGroup.delete()
       await expect(page).toHaveURL('/mon-espace/groupes')
-      await expect(page.getByText(newGroup.name)).not.toBeVisible()
+      await expect(page.getByText(newGroup.name)).toBeHidden()
     })
   })
 
@@ -67,7 +67,7 @@ test.describe('The group result page, when accessed by an admin', () => {
     baseURL,
   }) => {
     const clipboardContent = await group.copyInviteLink()
-    expect(clipboardContent).toMatch(new RegExp('^' + baseURL))
+    expect(clipboardContent).toMatch(new RegExp(`^${baseURL}`))
     expect(clipboardContent).toMatch(/utm_medium=sharelink/)
     expect(clipboardContent).toMatch(/utm_source=NGC/)
   })
@@ -142,6 +142,7 @@ test.describe('A user with a completed test that joined a group', () => {
   test.describe.configure({ mode: 'default' })
   test.setTimeout(60_000)
   let page: Page
+
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage()
     await new NGCTest(page).skipAll()
@@ -214,6 +215,6 @@ test.describe('A user with a completed test that joined a group', () => {
     await group.leave(page)
     await page.goto('/fin')
     await page.getByTestId('my-groups-tab').click()
-    await expect(page.getByText(group.name)).not.toBeVisible()
+    await expect(page.getByText(group.name)).toBeHidden()
   })
 })

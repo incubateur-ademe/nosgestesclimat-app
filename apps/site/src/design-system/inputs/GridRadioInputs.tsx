@@ -84,7 +84,7 @@ export default function GridRadioInputs({
                 return (
                   <label
                     key={item.value}
-                    data-testid={dataCypressId + '-' + item.value}
+                    data-testid={`${dataCypressId}-${item.value}`}
                     aria-label={item.ariaLabel}
                     title={`${item.ariaLabel} - ${value === item.value ? t('Sélectionné') : t('Sélectionner cette option')}`}
                     className={twMerge(

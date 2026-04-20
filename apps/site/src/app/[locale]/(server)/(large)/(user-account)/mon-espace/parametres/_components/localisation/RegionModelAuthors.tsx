@@ -31,7 +31,7 @@ export default function RegionModelAuthors({
                 <Link href={author?.url ?? '#'} target="_blank">
                   {author.nom}
                 </Link>
-                {i !== authors.length - 1 && ' ' + t('et') + ' '}
+                {i !== authors.length - 1 && ` ${t('et')} `}
               </span>
             )
           })}

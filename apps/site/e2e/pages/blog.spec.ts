@@ -15,6 +15,6 @@ test('displays a list of articles, which are themselves displayed correctly', as
 
   await page.getByTestId('blog-list').locator('a').first().click()
 
-  await expect(page).toHaveURL(/blog\/[a-z0-9\/]+/)
+  await expect(page).toHaveURL(/blog\/[a-z0-9/]+/)
   expect(page.locator('h1')).toBeDefined()
 })

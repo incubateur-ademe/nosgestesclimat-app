@@ -56,7 +56,7 @@ test.describe('Given a user that completed a test without an account', () => {
     page,
   }) => {
     await page.waitForTimeout(3500)
-    await expect(page.getByTestId('tendency-indicator')).not.toBeVisible()
+    await expect(page.getByTestId('tendency-indicator')).toBeHidden()
   })
 })
 

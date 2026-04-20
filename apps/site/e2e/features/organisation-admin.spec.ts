@@ -15,6 +15,7 @@ test('can access the organisation dashboard from the user account', async ({
   await page.getByText(organisation.name).click()
   await expect(page).toHaveURL(organisation.url)
 })
+
 test('is redirected to the dashboard when going to /organisation/connexion', async ({
   page,
   organisation,
@@ -33,6 +34,7 @@ test.describe('The dashboard', () => {
       page.getByText(`Bienvenue ${organisation.admin.fullName}`)
     ).toBeVisible()
   })
+
   test('displays the name of the organisation twice (the breadcrumb and description)', async ({
     page,
     organisation,
@@ -107,7 +109,7 @@ test.describe('The parameters page', () => {
     const code = await admin.mailbox.getVerificationCode()
 
     await verificationCodeInput.fill(code)
-    await expect(verificationCodeInput).not.toBeVisible()
+    await expect(verificationCodeInput).toBeHidden()
 
     await expect(page.getByTestId('success-message')).toBeVisible()
 

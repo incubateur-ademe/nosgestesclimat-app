@@ -48,7 +48,7 @@ export default async function FinPage({
   // Legacy feature, allowed to load a simulation data by passing an sid param in the URL, used in transactionnal e-mailing
   if (sid) {
     redirect(
-      `${MON_ESPACE_RESULTS_DETAIL_PATH.replace(':simulationId', sid as string)}`
+      MON_ESPACE_RESULTS_DETAIL_PATH.replace(':simulationId', sid as string)
     )
   }
 

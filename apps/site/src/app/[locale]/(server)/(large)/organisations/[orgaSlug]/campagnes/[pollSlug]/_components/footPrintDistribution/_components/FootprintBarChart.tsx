@@ -88,38 +88,35 @@ export default function FootprintBarChart({
       'pollResults.footprintBarChart.accessibleDescription.chart',
       'Graphique en barres montrant la comparaison des empreintes carbone. '
     )
-    description +=
-      t(
-        'pollResults.footprintBarChart.accessibleDescription.groupFootprint',
-        "L'empreinte moyenne du groupe est de {{value}} {{unit}}.",
-        {
-          value: groupFormatted.formattedValue,
-          unit: groupFormatted.unit,
-        }
-      ) + ' '
+    description += `${t(
+      'pollResults.footprintBarChart.accessibleDescription.groupFootprint',
+      "L'empreinte moyenne du groupe est de {{value}} {{unit}}.",
+      {
+        value: groupFormatted.formattedValue,
+        unit: groupFormatted.unit,
+      }
+    )} `
 
     if (userFootprint) {
-      description +=
-        t(
-          'pollResults.footprintBarChart.accessibleDescription.userFootprint',
-          'Votre empreinte personnelle est de {{value}} {{unit}}.',
-          {
-            value: userFormatted?.formattedValue,
-            unit: userFormatted?.unit,
-          }
-        ) + ' '
+      description += `${t(
+        'pollResults.footprintBarChart.accessibleDescription.userFootprint',
+        'Votre empreinte personnelle est de {{value}} {{unit}}.',
+        {
+          value: userFormatted?.formattedValue,
+          unit: userFormatted?.unit,
+        }
+      )} `
     }
 
-    description +=
-      t(
-        'pollResults.footprintBarChart.accessibleDescription.target',
-        "L'objectif à atteindre d'ici {{year}} est de {{value}} {{unit}}.",
-        {
-          year: '2050',
-          value: '2',
-          unit: 'tonnes',
-        }
-      ) + ' '
+    description += `${t(
+      'pollResults.footprintBarChart.accessibleDescription.target',
+      "L'objectif à atteindre d'ici {{year}} est de {{value}} {{unit}}.",
+      {
+        year: '2050',
+        value: '2',
+        unit: 'tonnes',
+      }
+    )} `
 
     if (userFootprint) {
       const comparison =
@@ -132,14 +129,13 @@ export default function FootprintBarChart({
               'pollResults.footprintBarChart.accessibleDescription.lower',
               'inférieure'
             )
-      description +=
-        t(
-          'pollResults.footprintBarChart.accessibleDescription.userComparison',
-          'Votre empreinte est {{comparison}} à celle du groupe.',
-          {
-            comparison,
-          }
-        ) + ' '
+      description += `${t(
+        'pollResults.footprintBarChart.accessibleDescription.userComparison',
+        'Votre empreinte est {{comparison}} à celle du groupe.',
+        {
+          comparison,
+        }
+      )} `
     }
 
     const groupVsTarget =

@@ -40,7 +40,10 @@ export default async function DetailledResultsPage({
             ),
           },
           {
-            href: `${MON_ESPACE_RESULTS_DETAIL_PATH.replace(':simulationId', simulationId)}`,
+            href: MON_ESPACE_RESULTS_DETAIL_PATH.replace(
+              ':simulationId',
+              simulationId
+            ),
             label: t(
               'mon-espace.resultsDetail.breadcrumb.resultDetail',
               'Détail des résultats'
