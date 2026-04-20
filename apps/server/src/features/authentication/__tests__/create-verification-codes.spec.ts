@@ -128,6 +128,7 @@ describe('Given a NGC user', () => {
       ).toBe(0)
     })
 
+    // eslint-disable-next-line vitest/expect-expect
     test('Then it sends an email with the code', async () => {
       const email = faker.internet.email().toLocaleLowerCase()
 
@@ -156,6 +157,7 @@ describe('Given a NGC user', () => {
     })
 
     describe(`And ${Locales.en} locale`, () => {
+      // eslint-disable-next-line vitest/expect-expect
       test('Then it sends an email with the code', async () => {
         const email = faker.internet.email().toLocaleLowerCase()
 

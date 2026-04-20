@@ -1,21 +1,22 @@
-import eslint from '@eslint/js';
-import nextPlugin from '@next/eslint-plugin-next';
-import vitest from '@vitest/eslint-plugin';
-import nextVanilla from 'eslint-config-next';
-import eslintConfigPrettier from "eslint-config-prettier/flat";
-import eslintPluginImport from 'eslint-plugin-import';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import playwright from 'eslint-plugin-playwright';
-import { defineConfig, globalIgnores } from 'eslint/config';
-import typescriptEslint from 'typescript-eslint';
+import eslint from '@eslint/js'
+import nextPlugin from '@next/eslint-plugin-next'
+import vitest from '@vitest/eslint-plugin'
+import nextVanilla from 'eslint-config-next'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import eslintPluginImport from 'eslint-plugin-import'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
+import playwright from 'eslint-plugin-playwright'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import typescriptEslint from 'typescript-eslint'
 
-const {import: _import, ...nextPlugins} = nextVanilla[0].plugins;
+// Avoid duplicate import plugin setup which fails
+const { import: _import, ...nextPlugins } = nextVanilla[0].plugins
 
 export default defineConfig([
   globalIgnores([
-    'node_modules',
-    'coverage',
-    'dist',
+    'eslint.config.js',
+    '**/coverage/**',
+    '**/dist/**',
     'apps/site/.next/**',
     'apps/site/build/**',
     'apps/site/next-env.d.ts',
@@ -38,10 +39,7 @@ export default defineConfig([
     settings: {
       'import/resolver': {
         typescript: {
-          project: [
-            'apps/**/tsconfig.json',
-            'packages/**/tsconfig.json'
-          ],
+          project: ['apps/**/tsconfig.json', 'packages/**/tsconfig.json'],
         },
         node: {
           extensions: ['.js', '.ts', '.json'],
@@ -117,14 +115,14 @@ export default defineConfig([
       ],
       ...jsxA11y.configs.strict.rules,
       'jsx-a11y/no-redundant-roles': 'warn',
-    }
+    },
   },
   {
     files: ['**/*.{jsx,tsx}'],
     rules: {
       // TODO: Decide whether we prefer to allow convenient whitespace in JSX or enforce `&nbsp;` and such.
       'no-irregular-whitespace': 'off',
-    }
+    },
   },
   // Extra rules from the previous Site eslint config
   // TODO: merge those rules with the root ts rules progressively
@@ -158,13 +156,22 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.test.{ts,tsx}','**/*.spec.{ts,tsx}'],
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
     ignores: ['**/e2e/**'],
     plugins: {
       vitest,
     },
     rules: {
       ...vitest.configs.recommended.rules,
+      'vitest/expect-expect': [
+        'error',
+        {
+          assertFunctionNames: [
+            'expect',
+            '**.expect', // supertest support
+          ],
+        },
+      ],
     },
   },
   {
@@ -173,4 +180,4 @@ export default defineConfig([
   },
   // Must be last to ensure compatibility with Prettier
   eslintConfigPrettier,
-]);
+])

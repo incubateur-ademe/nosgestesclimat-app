@@ -3,12 +3,11 @@
   "compilerOptions": {
     "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
     "target": "es2022",
-    "noEmit": false,
-    "outDir": "dist",
     "checkJs": true,
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"]
   },
+  "include": ["./**/*"],
   "exclude": ["node_modules", "dist", "coverage"]
 }

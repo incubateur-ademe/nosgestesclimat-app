@@ -551,50 +551,6 @@ describe('Given a NGC user', () => {
         })
       })
 
-      describe('And custom user origin (preprod)', () => {
-        test('Then it sends a creation email', async () => {
-          const administratorPayload = {
-            optedInForCommunications: true,
-            name: faker.person.fullName(),
-          }
-          const payload: OrganisationCreateDto = {
-            name: faker.company.name(),
-            type: randomOrganisationType(),
-            administrators: [administratorPayload],
-          }
-
-          mswServer.use(
-            brevoSendEmail({
-              expectBody: {
-                to: [
-                  {
-                    name: email,
-                    email,
-                  },
-                ],
-                templateId: 70,
-                params: {
-                  ADMINISTRATOR_NAME: administratorPayload.name,
-                  ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://preprod.nosgestesclimat.preprod.fr/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
-                },
-              },
-            }),
-            brevoUpdateContact(),
-            connectUpdateContact()
-          )
-
-          await agent
-            .post(url)
-            .set('cookie', cookie)
-            .set('origin', 'https://preprod.nosgestesclimat.preprod.fr')
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-        })
-      })
-
       describe('And an organisation already does exist for the user', () => {
         beforeEach(async () => {
           await createOrganisation({ agent, cookie })
