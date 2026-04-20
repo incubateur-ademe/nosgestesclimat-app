@@ -25,8 +25,9 @@ export default function Baseline() {
       </strong>
        :{' '}
       <Trans>
-        vous souhaitez lancer une campagne Nos Gestes Climat et sensibiliser
-        toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !
+        vous souhaitez lancer un test collectif Nos Gestes Climat et
+        sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100%
+        gratuits !
       </Trans>
     </p>
   )

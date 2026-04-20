@@ -55,10 +55,10 @@ export default async function Mobilise({ locale }: { locale: string }) {
             height={500}
           />
         </div>
-        <div className="md:max-w-[500px]">
+        <div className="md:max-w-125">
           <h3 className="mb-4 text-xl md:text-2xl">
             <Trans locale={locale}>
-              Lancez une campagne dans votre organisation
+              Lancez un test collectif dans votre organisation
             </Trans>
           </h3>
 
@@ -68,7 +68,7 @@ export default async function Mobilise({ locale }: { locale: string }) {
               <strong className="text-primary-600">
                 engagez votre organisation dans une démarche durable
               </strong>{' '}
-              avec une campagne Nos Gestes Climat. Sensibilisez vos parties
+              avec un test collectif Nos Gestes Climat. Sensibilisez vos parties
               prenantes à l’empreinte carbone et à l’empreinte eau{' '}
               <strong className="text-primary-600">
                 grâce à nos outils clés en main

@@ -9,25 +9,25 @@ export default function IllustratedPointsList({ locale }: { locale: string }) {
         <section className="flex flex-wrap items-center justify-between gap-8">
           <div className="mx-auto max-w-full md:w-[34rem] lg:ml-0">
             <h2 className="mb-2 text-base text-pink-600">
-              <Trans locale={locale}>Campagne personnalisée</Trans>
+              <Trans locale={locale}>Test collectif personnalisé</Trans>
             </h2>
 
             <h3 className="text-2xl leading-10 md:text-3xl">
               <Trans locale={locale}>
-                Lancez une campagne Nos Gestes Climat personnalisée
+                Lancez un test collectif Nos Gestes Climat personnalisé
               </Trans>
             </h3>
 
             <p className="text-base md:text-lg">
               <Trans locale={locale}>
-                Créez une campagne Nos Gestes Climat personnalisée au sein de
-                votre organisation et accédez à un kit clé en main pour
+                Créez un test collectif Nos Gestes Climat personnalisé au sein
+                de votre organisation et accédez à un kit clé en main pour
                 sensibiliser vos partenaires au sein de votre organisation.
               </Trans>
             </p>
           </div>
 
-          <div className="mx-auto flex max-w-full items-end overflow-hidden rounded-xl bg-gray-100 px-6 pt-6 md:w-[26rem]">
+          <div className="mx-auto flex max-w-full items-end overflow-hidden rounded-xl bg-gray-100 px-6 pt-6 md:w-104">
             <div className="mx-auto mt-4 flex items-end rounded-t-md bg-white p-4 pb-0 shadow-xs">
               <Image
                 src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_tutoriel_276d608be8.png"
@@ -42,7 +42,7 @@ export default function IllustratedPointsList({ locale }: { locale: string }) {
 
       <li>
         <section className="flex flex-wrap items-center justify-between gap-8">
-          <div className="mx-auto max-w-full md:w-[34rem] lg:ml-0">
+          <div className="mx-auto max-w-full md:w-136 lg:ml-0">
             <h2 className="mb-2 text-base text-pink-600">
               <Trans locale={locale}>Tableau de bord</Trans>
             </h2>
@@ -64,7 +64,7 @@ export default function IllustratedPointsList({ locale }: { locale: string }) {
             </p>
           </div>
 
-          <div className="mx-auto flex max-w-full items-end overflow-hidden rounded-xl bg-gray-100 px-6 pt-6 md:w-[26rem]">
+          <div className="mx-auto flex max-w-full items-end overflow-hidden rounded-xl bg-gray-100 px-6 pt-6 md:w-104">
             <div className="w-full">
               <Image
                 src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_orga_visuel_2_43f01617de.png"
@@ -79,7 +79,7 @@ export default function IllustratedPointsList({ locale }: { locale: string }) {
 
       <li>
         <section className="flex flex-wrap items-center justify-between gap-8">
-          <div className="mx-auto max-w-full md:w-[34rem] lg:ml-0">
+          <div className="mx-auto max-w-full md:w-136 lg:ml-0">
             <h2 className="mb-2 text-base text-pink-600">
               <Trans locale={locale}>Lien personnalisé & iframes</Trans>
             </h2>
@@ -100,7 +100,7 @@ export default function IllustratedPointsList({ locale }: { locale: string }) {
             </p>
           </div>
 
-          <div className="mx-auto flex w-[26rem] max-w-full items-end overflow-hidden rounded-xl bg-gray-100 px-6 pt-6 md:w-[26rem]">
+          <div className="mx-auto flex w-104 max-w-full items-end overflow-hidden rounded-xl bg-gray-100 px-6 pt-6 md:w-104">
             <VisuelIframe />
           </div>
         </section>

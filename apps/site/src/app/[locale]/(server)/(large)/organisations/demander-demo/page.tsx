@@ -20,7 +20,7 @@ export default async function DemanderDemoPage({
           href: `/organisations/demander-demo`,
         }}
       />
-      <section className="w-full bg-[#fff]">
+      <section className="w-full bg-white">
         <div className="mx-auto max-w-5xl py-10">
           <Title
             title={
@@ -49,7 +49,7 @@ export default async function DemanderDemoPage({
               width="110%"
               height="1000px"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-              className="mt-8 -ml-[5%] rounded-lg sm:h-[600px]"
+              className="mt-8 -ml-[5%] rounded-lg sm:h-150"
               src="https://rdv.incubateur.ademe.fr/team/nos-gestes-climat/demo?overlayCalendar=true&month=2026-04&theme=light"
             />
           </div>

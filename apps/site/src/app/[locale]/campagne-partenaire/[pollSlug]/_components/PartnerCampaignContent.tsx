@@ -66,7 +66,7 @@ export default function PartnerCampaignContent({
                   description={
                     <Trans>
                       Oups ! Une erreur s'est produite au moment de récupérer
-                      les informations de la campagne. Veuillez réessayer
+                      les informations du test collectif. Veuillez réessayer
                       ultérieurement.
                     </Trans>
                   }

@@ -1,6 +1,8 @@
 import AuthenticateUserForm from '@/components/AuthenticateUserForm'
 import OrganisationFilAriane from '@/components/layout/FilAriane'
+import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
+import { SIGNIN_MODE } from '@/constants/authentication/modes'
 import {
   captureOrganisationsLoginComplete,
   organisationsLoginComplete,
@@ -42,22 +44,28 @@ export default async function Page({
         }}
       />
 
-      <section className="w-full bg-[#fff]">
+      <section className="w-full bg-white">
         <div className="max-w-5xl lg:px-0">
           <h1>
-            <Trans locale={locale}>
-              Accédez à votre espace organisation pour diffuser facilement Nos
-              Gestes Climat
+            <Trans i18nKey="organisations.connexion.title" locale={locale}>
+              Connectez-vous pour diffuser un lien collectif
             </Trans>
           </h1>
-          <p>
-            <Trans locale={locale}>
-              Diffusez un lien collectif depuis votre espace personnel et
-              accédez à des bilans visuels chiffrés de votre impact.
+          <p className="max-w-full md:w-160">
+            <Trans i18nKey="organisations.connexion.subtitle" locale={locale}>
+              Pour diffuser un test collectif à vos élèves, vos étudiants, vos
+              collègues ou encore vos clients, il vous suffit de vous connecter
+              à votre espace personnel.
             </Trans>
           </p>
+
           <Separator />
-          <div className="max-w-full md:w-[40rem]">
+
+          <div className="max-w-full md:w-160">
+            <SigninSignupTabs
+              className="-order-1 mb-8 lg:mb-14"
+              mode={SIGNIN_MODE}
+            />
             <AuthenticateUserForm
               onComplete={redirectAfterLogin}
               trackers={{

@@ -88,7 +88,7 @@ export default function CampagnePage() {
             subtitle={
               poll ? (
                 <span>
-                  <Trans>Campagne créée par</Trans>{' '}
+                  <Trans>Test collectif créé par</Trans>{' '}
                   <strong className="text-primary-700">
                     {pollOrganisation?.name}
                   </strong>
@@ -137,7 +137,7 @@ export default function CampagnePage() {
               simulationsCount={simulations?.finished ?? 0}
               computedResults={computedResults}
               funFacts={funFacts}
-              title={<Trans>Résultats de campagne</Trans>}
+              title={<Trans>Résultats de votre test collectif</Trans>}
               poll={poll}
               isAdmin={isAdmin}
             />

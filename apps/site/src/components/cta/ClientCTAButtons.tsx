@@ -189,10 +189,14 @@ export default function ClientCTAButtons({
           <ButtonLink
             size="xl"
             color="secondary"
-            className="h-16 px-6"
+            className="group h-16 px-6"
             data-testid="organisation-link"
             href={ORGANISATION_CREATE_PATH}>
-            <span className="leading-none">
+            <span
+              className={twMerge(
+                'leading-none',
+                'group-hover:bg-rainbow-dark group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
+              )}>
               <Trans i18nKey="ctaButtons.collective.label">
                 Créer un test collectif
               </Trans>
