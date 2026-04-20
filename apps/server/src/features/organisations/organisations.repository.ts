@@ -352,6 +352,7 @@ type SimulationsInfo = {
     }
   | {
       hasParticipated: true
+      progression: number
       userComputedResults: ComputedResultSchema
     }
 )
@@ -390,6 +391,7 @@ const fetchPollSimulationsInfo = async (
         simulation: {
           select: {
             computedResults: true,
+            progression: true,
           },
         },
       },
@@ -411,6 +413,7 @@ const fetchPollSimulationsInfo = async (
     ...(userComputedResults.success
       ? {
           hasParticipated: true,
+          progression: userSimulation!.simulation.progression,
           userComputedResults: userComputedResults.data,
         }
       : {

@@ -1,4 +1,3 @@
-import HeaderServer from '@/components/layout/HeaderServer'
 import { noIndexObject } from '@/constants/metadata'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
@@ -13,15 +12,6 @@ export const generateMetadata = getCommonMetadata({
   robots: noIndexObject,
 })
 
-export default async function TutorielLayout({
-  children,
-  params,
-}: PropsWithChildren<LayoutProps<'/[locale]/tutoriel'>>) {
-  const { locale } = await params
-  return (
-    <>
-      <HeaderServer locale={locale} />
-      {children}
-    </>
-  )
+export default function TutorielLayout({ children }: PropsWithChildren) {
+  return children
 }

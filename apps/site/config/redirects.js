@@ -129,7 +129,7 @@ const redirects = [
   },
   {
     source: '/o/:organisation/:poll',
-    destination: '/tutoriel/?poll=:poll&organisation=:organisation',
+    destination: '/simulateur/campagne/:poll',
     permanent: true,
   },
   {

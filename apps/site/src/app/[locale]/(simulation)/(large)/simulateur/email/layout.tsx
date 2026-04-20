@@ -1,3 +1,4 @@
+import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import { noIndexObject } from '@/constants/metadata'
 import { EMAIL_PAGE_PATH } from '@/constants/urls/paths'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -16,5 +17,5 @@ export const generateMetadata = getCommonMetadata({
 })
 
 export default function Layout({ children }: PropsWithChildren) {
-  return <>{children}</>
+  return <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
 }
