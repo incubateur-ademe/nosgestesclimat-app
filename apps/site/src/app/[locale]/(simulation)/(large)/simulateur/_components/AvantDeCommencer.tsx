@@ -3,9 +3,13 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Emoji from '@/design-system/utils/Emoji'
 
-export default function AvantDeCommencer() {
+export default function AvantDeCommencer({
+  disclaimer = null,
+}: {
+  disclaimer?: React.ReactNode
+}) {
   return (
-    <div className="border-rainbow relative mt-6 mb-8 flex flex-col rounded-xl bg-gray-100 p-7 md:mt-10">
+    <div className="border-rainbow relative mt-6 mb-8 flex flex-col gap-4 rounded-xl bg-gray-100 p-7 md:mt-10">
       <div
         role="presentation"
         aria-hidden
@@ -15,8 +19,7 @@ export default function AvantDeCommencer() {
       <h2 className="z-10">
         <Trans>Avant de commencer</Trans>
       </h2>
-      {/*@TOFIX*/}
-      {/*<OrganisationDisclaimer />*/}
+      {disclaimer}
       <div className="relative pl-8">
         <h3 className="relative overflow-visible font-bold">
           <Emoji className="absolute top-0 -left-8">🏡</Emoji>

@@ -1,9 +1,10 @@
+import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getUser } from '@/helpers/server/dal/user'
-import { getSimulations, isScolaire } from '@/helpers/server/model/simulations'
+import { getSimulations } from '@/helpers/server/model/simulations'
 import { redirect } from 'next/navigation'
-import Tutorial from './_components/Tutorial'
-import YouthTutorial from './_components/YouthTutorial'
+import Tutorial from '../_components/Tutorial'
 
 export default async function TutorielPage({
   params,
@@ -24,9 +25,18 @@ export default async function TutorielPage({
     redirect(SIMULATOR_PATH)
   }
 
-  if (isScolaire(currentSimulation)) {
-    return <YouthTutorial locale={locale} />
-  }
-
-  return <Tutorial locale={locale} />
+  return (
+    <Tutorial
+      locale={locale}
+      buttonNext={
+        <ButtonLink
+          href={SIMULATOR_PATH}
+          data-testid="skip-tutorial-button"
+          className="min-w-42!">
+          <Trans locale={locale}>C'est parti !</Trans>{' '}
+          <span aria-hidden="true">→</span>
+        </ButtonLink>
+      }
+    />
+  )
 }
