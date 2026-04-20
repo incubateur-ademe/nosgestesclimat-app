@@ -1,6 +1,4 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
@@ -8,6 +6,7 @@ import Image from 'next/image'
 
 interface Props {
   locale: string
+  buttonNext: React.ReactNode
 }
 
 const MiniCard = ({
@@ -35,7 +34,7 @@ const MiniCard = ({
 }
 
 // Version displayed for pupils and students
-export default function YouthTutorial({ locale }: Props) {
+export default function YouthTutorial({ locale, buttonNext }: Props) {
   return (
     <div className="mb-16 flex flex-col">
       <section className="order-0 mt-8 mb-8 w-xl max-w-full md:mx-auto md:mb-10">
@@ -168,23 +167,7 @@ export default function YouthTutorial({ locale }: Props) {
         />
       </ul>
 
-      <div className="order-0 mb-8 text-center md:mb-0">
-        <ButtonLink
-          size="lg"
-          aria-describedby="subtitle-cta"
-          href={SIMULATOR_PATH}>
-          <Trans locale={locale} i18nKey="youthTutorial.cta.label">
-            Allez, c'est parti
-          </Trans>
-        </ButtonLink>
-
-        <p id="subtitle-cta" className="mt-2 text-sm text-slate-700">
-          <Trans locale={locale} i18nKey="youthTutorial.cta.helper">
-            Ça prend seulement quelques minutes
-          </Trans>{' '}
-          <Emoji>⏱️</Emoji>
-        </p>
-      </div>
+      <div className="order-0 mb-8 text-center md:mb-0">{buttonNext}</div>
     </div>
   )
 }

@@ -315,6 +315,7 @@ const pollToDto = ({
   },
   ...(simulationsInfos.hasParticipated
     ? {
+        progression: simulationsInfos.progression,
         userComputedResults: simulationsInfos.userComputedResults,
         ...(poll.computedResults
           ? {

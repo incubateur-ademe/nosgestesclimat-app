@@ -1,14 +1,19 @@
 import ContentLarge from '@/components/layout/ContentLarge'
 import Trans from '@/components/translation/trans/TransServer'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
-import { twMerge } from 'tailwind-merge'
 import AutresQuestions from './AutresQuestions'
 import AvantDeCommencer from './AvantDeCommencer'
 import ButtonBack from './ButtonBack'
 
-export default function Tutorial({ locale }: { locale: string }) {
+export default function Tutorial({
+  locale,
+  disclaimer,
+  buttonNext,
+}: {
+  locale: string
+  disclaimer?: React.ReactNode
+  buttonNext: React.ReactNode
+}) {
   return (
     <ContentLarge className="mt-8 px-4 lg:px-0">
       <div className="mx-auto flex max-w-3xl flex-col overflow-auto">
@@ -23,16 +28,10 @@ export default function Tutorial({ locale }: { locale: string }) {
           }
         />
 
-        <AvantDeCommencer />
-        <div className={twMerge('mb-12 flex w-full gap-4 sm:px-4 md:px-0')}>
+        <AvantDeCommencer disclaimer={disclaimer} />
+        <div className="mb-12 flex w-full items-end gap-4 sm:px-4 md:px-0">
           <ButtonBack />
-          <ButtonLink
-            href={SIMULATOR_PATH}
-            data-testid="skip-tutorial-button"
-            className="min-w-42!">
-            <Trans locale={locale}>C'est parti !</Trans>{' '}
-            <span aria-hidden="true">→</span>
-          </ButtonLink>{' '}
+          {buttonNext}
         </div>
         <AutresQuestions />
       </div>
