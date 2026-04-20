@@ -1,4 +1,4 @@
-import { ActionFile } from '../../types/action.js'
+import type { ActionFile } from '../../types/action.js'
 import { foodFr } from '../themes/index.js'
 
 export const meatReduction: ActionFile = {
