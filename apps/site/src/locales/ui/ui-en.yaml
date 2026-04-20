@@ -1761,6 +1761,7 @@ entries:
   actions.jva.banner.title: Volunteer to help protect the environment
   actions.jva.banner.title.lock: Faites du bénévolat pour préserver l’environnement
 <<<<<<< HEAD
+<<<<<<< HEAD
   groups.results.rankingMember.simulationDeleted: Anonymous user (data deleted by participant)
   groups.results.rankingMember.simulationDeleted.lock: Utilisateur anonyme (données supprimées par le participant)
   mon-espace.resultsList.hasMigratedSimulations: We have found simulations on this browser and added them to your space. You can delete them at any time.
@@ -1811,6 +1812,80 @@ entries:
   youthTutorial.title.lock: Découvre ton impact <2>sur la planète</2>
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre.lock: actions.jva.banner.cta.label
+||||||| parent of 018798082 (✨ Create new orga / collective test user flow (#1750))
+=======
+  ctaButtons.collective.label: Create a group test
+  ctaButtons.collective.label.lock: Créer un test collectif
+  ctaButtons.retake.label: Take the test again
+  ctaButtons.retake.label.lock: Repasser le test
+  Résultats immédiats, confidentiel et gratuit.: Instant results, confidential and free.
+  common.facultatif: optional
+  common.facultatif.lock: facultatif
+  common.suivant: Next
+  common.suivant.lock: Suivant
+  Voir tous les tests collectifs: See all collective tests
+  organisations.inscription.cta: Create my account
+  organisations.inscription.cta.lock: Créer mon compte
+  Test collectif personnalisé: Personalised collective test
+  collectiveTest.mode.title: Choose the test mode
+  collectiveTest.mode.title.lock: Choisissez le mode du test
+  Choisissez le mode du test: Choose the test mode
+  Créer mon premier test collectif: Creating my first collective test
+  Créer mon lien de test: Create my test link
+  Communiquez sur le test collectif: Communicate about the collective test
+  Mes tests collectifs: My collective tests
+  Créer un test collectif: Create a collective test
+  Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.: An error has occurred while creating your collective test. Please try again.
+  collectiveTest.title: Choose a name for your collective test
+  collectiveTest.title.lock: Choisissez un nom pour votre test collectif
+  Nom du test collectif: Group test name
+  collectiveTest.form.name.label: Choose a name for your collective test
+  collectiveTest.form.name.label.lock: Choisissez un nom pour votre test collectif
+  Résultats de votre test collectif: Results of your collective test
+  Masquer les autres tests collectifs: Hide other collective tests
+  collectiveTest.form.name.required: Please enter a name
+  collectiveTest.form.name.required.lock: Veuillez renseigner un nom
+  Supprimer ce test collectif ?: Delete this collective test?
+  Rejoindre un test collectif - Nos Gestes Climat: Join a collective test - Nos Gestes Climat
+  organisations.connexion.title: Log in to distribute a collective link
+  organisations.connexion.title.lock: Connectez-vous pour diffuser un lien collectif
+  collectiveTest.text1: Create a personalised link <2>to share within your organisation</2>.
+  collectiveTest.text1.lock: Créez un lien personnalisé <2>à partager dans votre organisation</2>.
+  Lancez un test collectif dans votre organisation: Launch a collective test in your organisation
+  organisations.inscription.title: Create your account to distribute a collective link
+  organisations.inscription.title.lock: Créez votre compte pour diffuser un lien collectif
+  Paramètres de mon test collectif - Nos Gestes Climat: Parameters for my collective test - Nos Gestes Climat
+  Test collectif créé par: Collective test created by
+  Supprimer ce test collectif: Delete this collective test
+  Précisez le nombre de participants attendus: Specify the number of participants expected
+  Votre e-mail, rejoindre un test collectif - Nos Gestes Climat: Your e-mail, join a collective test - Nos Gestes Climat
+  Créer un test collectif - Nos Gestes Climat: Create a collective test - Nos Gestes Climat
+  organisations.inscription.breadcrumb: Registration
+  organisations.inscription.breadcrumb.lock: Inscription
+  collectiveTest.form.name.placeholder: 'e.g.: HR team climate challenge, Class 5 A..'
+  collectiveTest.form.name.placeholder.lock: 'ex : Défi climat équipe RH, Classe 5ème A…'
+  Une erreur est survenue lors de la suppression du test.: An error occurred while deleting the test.
+  collectiveTest.text2: Participants take the test <1>anonymously</1> and you can access a <3>summary of the results</3>.
+  collectiveTest.text2.lock: Les participants passent le test <1>anonymement</1> et vous accédez à une <3>synthèse des résultats</3>.
+  organisations.createPoll.type.closeButton.aria: Abort the collective test creation process and return to your organisation's home page
+  organisations.createPoll.type.closeButton.aria.lock: Abandonner le processus de création de test collectif et revenir à la page d'accueil de votre organisation
+  Lancez un test collectif Nos Gestes Climat personnalisé: Launch a personalised Nos Gestes Climat collective test
+  organisations.createPoll.type.closeButton.title: Abort the creation of the collective test and return to your organisation's home page
+  organisations.createPoll.type.closeButton.title.lock: Abandonner la création du test collectif et revenir à la page d'accueil de votre organisation
+  vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !: you would like to launch a Nos Gestes Climat collective test and raise awareness among all your stakeholders? Discover our 100% free tools!
+  Retrouvez vos tests collectifs et suivez leurs statistiques.: Find your group tests and track their statistics.
+  (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.): (This may take a few tens of seconds for tests with a large number of participants! Thank you for your patience)
+  Résultats de mon test collectif - Nos Gestes Climat: Results of my collective test - Nos Gestes Climat
+  organisations.inscription.subtitle: To share a collective test with your pupils, students, colleagues or customers, simply create your personal space.
+  organisations.inscription.subtitle.lock: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de créer votre espace personnel.
+  Nous récupérons les données du test collectif...: We are retrieving the data from the collective test...
+  Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oops! An error has occurred while retrieving the collective test information. Please try again later.
+  organisations.connexion.subtitle: To share a collective test with your pupils, students, colleagues or customers, simply log in to your personal area.
+  organisations.connexion.subtitle.lock: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de vous connecter à votre espace personnel.
+  Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oops, we couldn't find the results of this collective test
+  Créez un test collectif Nos Gestes Climat personnalisé au sein de votre organisation et accédez à un kit clé en main pour sensibiliser vos partenaires au sein de votre organisation.: Create a personalised Nos Gestes Climat collective test within your organisation and access a turnkey kit to raise awareness among your partners.
+  'Entreprises, collectivités, associations, écoles ou festivals : <2>engagez votre organisation dans une démarche durable</2> avec un test collectif Nos Gestes Climat. Sensibilisez vos parties prenantes à l’empreinte carbone et à l’empreinte eau <6>grâce à nos outils clés en main</6>.': "Businesses, local authorities, associations, schools or festivals: <2>get your organisation involved in a sustainable approach</2> with a Nos Gestes Climat collective test. Raise your stakeholders' awareness of your carbon and water footprints <6>using our tools</6>."
+>>>>>>> 018798082 (✨ Create new orga / collective test user flow (#1750))
 ||||||| parent of 018798082 (✨ Create new orga / collective test user flow (#1750))
 =======
   ctaButtons.collective.label: Create a group test
