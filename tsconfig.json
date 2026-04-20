@@ -8,5 +8,6 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true
-  }
+  },
+  "files": ["eslint.config.js"]
 }
