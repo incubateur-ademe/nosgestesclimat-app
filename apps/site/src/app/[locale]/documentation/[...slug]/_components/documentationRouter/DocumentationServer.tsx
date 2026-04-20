@@ -29,7 +29,7 @@ export default function DocumentationServer({
 }: Props) {
   return (
     <div className="mt-12 w-full max-w-4xl p-4 md:mx-auto md:py-8">
-      <PasserTestBanner />
+      <PasserTestBanner locale={locale} />
 
       <Title
         title={`${rule.icônes ?? ''} ${capitalizeString(

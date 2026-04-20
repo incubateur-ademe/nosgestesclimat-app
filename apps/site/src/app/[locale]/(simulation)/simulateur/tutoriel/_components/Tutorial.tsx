@@ -1,17 +1,14 @@
 import ContentLarge from '@/components/layout/ContentLarge'
 import Trans from '@/components/translation/trans/TransServer'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import { twMerge } from 'tailwind-merge'
-import AutresQuestions from './_components/AutresQuestions'
-import AvantDeCommencer from './_components/AvantDeCommencer'
-import ButtonBack from './_components/ButtonBack'
-import ButtonStart from './_components/ButtonStart'
+import AutresQuestions from './AutresQuestions'
+import AvantDeCommencer from './AvantDeCommencer'
+import ButtonBack from './ButtonBack'
 
-export default async function Tutoriel({
-  params,
-}: PageProps<'/[locale]/tutoriel'>) {
-  const { locale } = await params
-
+export default function Tutorial({ locale }: { locale: string }) {
   return (
     <ContentLarge className="mt-8 px-4 lg:px-0">
       <div className="mx-auto flex max-w-3xl flex-col overflow-auto">
@@ -29,10 +26,14 @@ export default async function Tutoriel({
         <AvantDeCommencer />
         <div className={twMerge('mb-12 flex w-full gap-4 sm:px-4 md:px-0')}>
           <ButtonBack />
-
-          <ButtonStart />
+          <ButtonLink
+            href={SIMULATOR_PATH}
+            data-testid="skip-tutorial-button"
+            className="min-w-42!">
+            <Trans locale={locale}>C'est parti !</Trans>{' '}
+            <span aria-hidden="true">→</span>
+          </ButtonLink>{' '}
         </div>
-
         <AutresQuestions />
       </div>
     </ContentLarge>

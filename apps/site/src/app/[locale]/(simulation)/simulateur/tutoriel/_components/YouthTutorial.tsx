@@ -4,11 +4,10 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
-import type { Locale } from '@/i18nConfig'
 import Image from 'next/image'
 
 interface Props {
-  locale: Locale
+  locale: string
 }
 
 const MiniCard = ({

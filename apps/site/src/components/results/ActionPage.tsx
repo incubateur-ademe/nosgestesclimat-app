@@ -1,6 +1,6 @@
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { FormProvider } from '@/publicodes-state'
-import type { Simulation } from '@/publicodes-state/types'
 import JVABanner from '../actions/JVABanner'
 import NoResultsBlock from '../dashboard/NoResultsBlock'
 import TopBar from '../simulation/TopBar'

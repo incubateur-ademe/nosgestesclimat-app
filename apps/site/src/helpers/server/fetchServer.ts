@@ -21,7 +21,7 @@ export async function fetchServer<T = unknown>(
     next,
   }: {
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-    body?: Record<string, unknown>
+    body?: unknown
     next?: NextFetchRequestConfig
   } = {}
 ): Promise<T> {

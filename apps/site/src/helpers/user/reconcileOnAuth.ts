@@ -1,6 +1,5 @@
-import { TEST_INTRO_TUTO_KEY } from '@/app/[locale]/(simulation)/tutoriel/_components/ButtonStart'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { useUser } from '@/publicodes-state'
-import type { Simulation } from '@/publicodes-state/types'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
 import posthog from 'posthog-js'
 import { getUserSimulations } from '../server/model/simulations'
@@ -33,19 +32,15 @@ async function uploadLocalSimulations({
 async function loadServerSimulation({
   updateSimulations,
   setCurrentSimulationId,
-  hideTutorial,
 }: {
   updateSimulations: (simulations: Simulation[]) => void
   setCurrentSimulationId: (simulationId: string) => void
-  hideTutorial: (tutorialId: string) => void
 }) {
   // Fetch simulations from server
   let simulations: Simulation[] = await getUserSimulations()
 
   if (simulations.length === 0) {
     simulations = [generateSimulation()]
-  } else {
-    hideTutorial(TEST_INTRO_TUTO_KEY)
   }
   setCurrentSimulationId(simulations[0].id)
   updateSimulations(simulations)
@@ -69,7 +64,6 @@ export async function reconcileUserOnAuth({
     updateEmail,
     updateUserId,
     setCurrentSimulationId,
-    hideTutorial,
   } = user
 
   if (userId === localUser.userId) {
@@ -83,7 +77,6 @@ export async function reconcileUserOnAuth({
   await loadServerSimulation({
     updateSimulations,
     setCurrentSimulationId,
-    hideTutorial,
   })
 
   updateEmail(email)

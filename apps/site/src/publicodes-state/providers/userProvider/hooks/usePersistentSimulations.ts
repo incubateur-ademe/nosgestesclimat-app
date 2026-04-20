@@ -1,9 +1,9 @@
 import { STORAGE_KEY } from '@/constants/storage'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import type { Migration } from '@publicodes/tools/migration'
 import { useEffect, useMemo, useState } from 'react'
-import type { Simulation } from '../../../types'
 
 interface Props {
   migrationInstructions: Migration

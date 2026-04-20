@@ -10,7 +10,7 @@ export default function CTAButtonsPlaceholder({
   return (
     <div
       className={twMerge(
-        'my-0 h-[56px] w-[260px]',
+        'my-0 h-14 w-65',
         className,
         baseClassNames,
         colorClassNames.primary

@@ -2,10 +2,9 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { tutorielClickSuivant } from '@/constants/tracking/pages/tutoriel'
-import { POLL_START_PATH } from '@/constants/urls/paths'
+import { SIMULATOR_PATH, START_SIMULATION_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Loader from '@/design-system/layout/Loader'
-import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
 import { useCurrentSimulation, useUser } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
@@ -26,7 +25,6 @@ export default function ButtonStart({
   const searchParamsString = useSearchParams().toString()
 
   const { progression, updateCurrentSimulation, polls } = useCurrentSimulation()
-  const { getLinkToSimulateurPage } = useSimulateurPage()
 
   // When component renders, user has seen the tutorial
   useEffect(() => {
@@ -62,8 +60,8 @@ export default function ButtonStart({
     <ButtonLink
       href={
         shouldRedirectToChoicePage
-          ? `${POLL_START_PATH}?${searchParamsString}`
-          : getLinkToSimulateurPage()
+          ? `${START_SIMULATION_PATH}?${searchParamsString}`
+          : SIMULATOR_PATH
       }
       data-testid="skip-tutorial-button"
       aria-disabled={isLoading}

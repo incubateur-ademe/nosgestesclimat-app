@@ -1,9 +1,11 @@
-import DidYouKnowSliderServer from '@/components/landing-pages/DidYouKnowSliderServer'
+import CTAButtons from '@/components/cta/CTAButtons'
+import DidYouKnowSlider from '@/components/landing-pages/DidYouKnowSlider'
 import Trans from '@/components/translation/trans/TransServer'
 
 export default function DidYouKnowCarbon({ locale }: { locale: string }) {
   return (
-    <DidYouKnowSliderServer
+    <DidYouKnowSlider
+      CTAButtons={<CTAButtons locale={locale} />}
       slides={[
         {
           illustration:
