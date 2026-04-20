@@ -1737,8 +1737,8 @@ entries:
   Chargement...: Loading...
   banner.link.ariaLabel: '{{label}}opens in a new window'
   banner.link.ariaLabel.lock: "{{label}}, s'ouvre dans une nouvelle fenêtre"
-  cookies.management.required.detail.description2: Save the anonymous session (to retrieve previous simulations)
-  cookies.management.required.detail.description2.lock: Sauvegarde de la session anonyme (pour retrouver les simulations précédentes)
+  cookies.management.required.detail.description2: Saving the anonymous session (to retrieve previous simulations)
+  cookies.management.required.detail.description2.lock: Sauvegarde de la session anonyme (pour retrouver les simulations précedentes)
   cookies.management.required.detail.description1: Choice of language
   cookies.management.required.detail.description1.lock: Choix de langue
   cookies.management.required.detail.description4: Saving cookie preferences (this banner)
@@ -1760,6 +1760,7 @@ entries:
   actions.jva.banner.text1.lock: 'Dépollution, sensibilisation, soin aux animaux, ateliers de réparation et potager urbain. '
   actions.jva.banner.title: Volunteer to help protect the environment
   actions.jva.banner.title.lock: Faites du bénévolat pour préserver l’environnement
+<<<<<<< HEAD
   groups.results.rankingMember.simulationDeleted: Anonymous user (data deleted by participant)
   groups.results.rankingMember.simulationDeleted.lock: Utilisateur anonyme (données supprimées par le participant)
   mon-espace.resultsList.hasMigratedSimulations: We have found simulations on this browser and added them to your space. You can delete them at any time.
@@ -1810,6 +1811,8 @@ entries:
   youthTutorial.title.lock: Découvre ton impact <2>sur la planète</2>
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre.lock: actions.jva.banner.cta.label
+||||||| parent of 018798082 (✨ Create new orga / collective test user flow (#1750))
+=======
   ctaButtons.collective.label: Create a group test
   ctaButtons.collective.label.lock: Créer un test collectif
   ctaButtons.retake.label: Take the test again
@@ -1881,3 +1884,4 @@ entries:
   Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oops, we couldn't find the results of this collective test
   Créez un test collectif Nos Gestes Climat personnalisé au sein de votre organisation et accédez à un kit clé en main pour sensibiliser vos partenaires au sein de votre organisation.: Create a personalised Nos Gestes Climat collective test within your organisation and access a turnkey kit to raise awareness among your partners.
   'Entreprises, collectivités, associations, écoles ou festivals : <2>engagez votre organisation dans une démarche durable</2> avec un test collectif Nos Gestes Climat. Sensibilisez vos parties prenantes à l’empreinte carbone et à l’empreinte eau <6>grâce à nos outils clés en main</6>.': "Businesses, local authorities, associations, schools or festivals: <2>get your organisation involved in a sustainable approach</2> with a Nos Gestes Climat collective test. Raise your stakeholders' awareness of your carbon and water footprints <6>using our tools</6>."
+>>>>>>> 018798082 (✨ Create new orga / collective test user flow (#1750))
