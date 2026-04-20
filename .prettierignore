@@ -5,8 +5,6 @@ build/**
 next-env.d.ts
 coverage/**
 cypress/**
-*.config.js
-*.config.ts
 *.setup.ts
 *.setup.tsx
 check-memory.mjs

@@ -300,7 +300,7 @@ describe('Given a NGC integrations API user', () => {
         })
       })
 
-      describe('And filtering with the emailPattern queryParam ', () => {
+      describe('And filtering with the emailPattern queryParam', () => {
         test(`Then it returns a ${StatusCodes.OK} code and an empty list of email whitelists`, async () => {
           const [, emailDomain] = emailWhitelist.emailPattern.split('@')
 
