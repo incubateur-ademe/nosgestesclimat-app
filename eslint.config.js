@@ -133,8 +133,6 @@ export default defineConfig([
       typescriptEslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      '@typescript-eslint/consistent-type-imports': 'error',
-
       // @TODO : these should be error by default
       // recommended overrides
       '@typescript-eslint/no-unsafe-argument': 'warn',
