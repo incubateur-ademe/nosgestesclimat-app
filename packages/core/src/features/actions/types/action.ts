@@ -37,6 +37,8 @@ export type ActionFile = Omit<Action, 'theme'> & {
 
 interface ActionChoice {
   id: string
+  userId: string
+  actionId: string
   // TODO: update when product has decided possible choices
   type: 'committed' | 'rejected'
   chosenAt: Date
@@ -45,6 +47,7 @@ interface ActionChoice {
 interface ActionAssessment {
   id: string
   simulationId: string
+  actionId: string
   /** The impact of the action for the user, in kgCO2e */
   impact: number
   /** Whether the action is applicable for the user or not */
