@@ -57,9 +57,10 @@ export async function fetchServer<T = unknown>(
         throw new ForbiddenError()
       case 429:
         throw new TooManyRequestsError()
-      case 400:
+      case 400: {
         const error = (await response.json()) as unknown
         throw new InvalidInputError(error)
+      }
       case 500:
         throw new InternalServerError()
       default:

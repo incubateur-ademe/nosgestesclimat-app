@@ -6,7 +6,7 @@ interface Props {
   question: DottedName
 }
 export default function ChoicesValue({ value, question }: Props) {
-  const { title, icons } = useRule((question + ' . ' + value) as DottedName)
+  const { title, icons } = useRule(`${question} . ${value}` as DottedName)
 
   return (
     <>

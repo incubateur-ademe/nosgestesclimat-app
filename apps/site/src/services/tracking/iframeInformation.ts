@@ -33,7 +33,9 @@ export function getIframeInformation(): IframeInformation {
   try {
     const url = new URL(referrer)
     referringDomain = url.hostname
-  } catch {}
+  } catch {
+    //
+  }
   return {
     iframe,
     $referrer: referrer,

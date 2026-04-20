@@ -32,7 +32,7 @@ export default function DocumentationLandingCard({
   return (
     <Card
       tag={Link}
-      href={'/documentation/' + utils.encodeRuleName(dottedName)}
+      href={`/documentation/${utils.encodeRuleName(dottedName)}`}
       className={`relative h-[12rem] flex-auto justify-center rounded-xl border-2 text-center text-base shadow-none ${getBorderColor(category)} ${getTextDarkColor(category)} no-underline ${getBackgroundLightColor(
         category
       )}`}>

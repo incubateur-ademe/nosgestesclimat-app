@@ -10,7 +10,7 @@ export function useGetTrackedPathname() {
   const questionParams = searchParams.get('question')
   if (questionParams) {
     const category = questionParams.split('.')[0]
-    const question = questionParams.replace(category + '.', '')
+    const question = questionParams.replace(`${category}.`, '')
     pathnameUpdated += `/${category}/${question}`
   }
 

@@ -27,7 +27,7 @@ export default function HorizontalBarChartItemLegacy({
       <div
         className="mb-1.5 flex justify-between text-sm"
         style={{
-          minWidth: (minTitleWidth ?? 10) + 'rem',
+          minWidth: `${minTitleWidth ?? 10}rem`,
         }}>
         <div className="flex items-center gap-1">
           {icon} <p className={`mb-0`}>{title}</p>

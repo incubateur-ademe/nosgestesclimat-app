@@ -79,7 +79,7 @@ export default function NameForm({
       trackMatomoEvent__deprecated(amisCreationEtapeVotreGroupeSuivant)
 
       if (lastSimulation) {
-        router.push('/amis/resultats?groupId=' + group.id)
+        router.push(`/amis/resultats?groupId=${group.id}`)
       } else {
         router.push(getLinkToSimulateurPage())
       }

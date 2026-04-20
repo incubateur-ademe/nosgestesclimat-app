@@ -5,9 +5,9 @@ import {
   getPlaywrightState,
   savePlaywrightState,
 } from '../helpers/save-context'
+import { ORGANISATION_ADMIN_STATE } from '../state'
 import type { Organisation } from './organisations'
 
-import { ORGANISATION_ADMIN_STATE } from '../state'
 import { test as base, expect } from './organisations'
 
 interface Data {
@@ -51,7 +51,7 @@ export class Poll {
     await this.page.getByTestId('poll-create-button').click()
 
     // Retrieve the poll slug
-    const pollUrl = /\/campagnes\/([a-z0-9\-]*)/
+    const pollUrl = /\/campagnes\/([a-z0-9-]*)/
     await expect(this.page).toHaveURL(pollUrl)
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }

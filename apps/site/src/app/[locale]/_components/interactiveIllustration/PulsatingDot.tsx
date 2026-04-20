@@ -84,13 +84,13 @@ export default function PulsatingDot({
           { itemTitle, carbonScore }
         )}${
           waterScore
-            ? `${t(
+            ? t(
                 'homePage.interactiveIllustration.waterScore',
                 ' et empreinte eau notée {{waterScore}} sur 5',
                 {
                   waterScore,
                 }
-              )}`
+              )
             : ''
         }`}
         aria-label={`${t(
@@ -99,13 +99,13 @@ export default function PulsatingDot({
           { itemTitle, carbonScore }
         )}${
           waterScore
-            ? `${t(
+            ? t(
                 'homePage.interactiveIllustration.waterScore',
                 ' et empreinte eau notée {{waterScore}} sur 5',
                 {
                   waterScore,
                 }
-              )}`
+              )
             : ''
         }`}>
         <div

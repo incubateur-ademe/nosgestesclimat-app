@@ -42,7 +42,7 @@ export default function Badge({
         'inline-block rounded-sm border-2 px-2 leading-none font-black whitespace-nowrap',
         sizeClassNames[size],
         category
-          ? getBorderColor(category) + ' ' + getTextDarkColor(category)
+          ? `${getBorderColor(category)} ${getTextDarkColor(category)}`
           : colorClassNames[color],
         className
       )}>

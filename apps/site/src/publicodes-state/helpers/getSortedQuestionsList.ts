@@ -34,8 +34,8 @@ export default function getSortedQuestionsList({
 
     // then by subcategory
     const categoryOfBothQuestions = aSplittedName[0]
-    const aCategoryAndSubcategory = aSplittedName[0] + ' . ' + aSplittedName[1]
-    const bCategoryAndSubcategory = bSplittedName[0] + ' . ' + bSplittedName[1]
+    const aCategoryAndSubcategory = `${aSplittedName[0]} . ${aSplittedName[1]}`
+    const bCategoryAndSubcategory = `${bSplittedName[0]} . ${bSplittedName[1]}`
 
     const subcategoriesOfBothQuestions = getSubcatsOfCategory(
       categoryOfBothQuestions as DottedName,

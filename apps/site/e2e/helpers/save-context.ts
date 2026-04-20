@@ -9,7 +9,7 @@ export async function getPlaywrightState<T = unknown>(
   const localStorage =
     (await page.context().storageState()).origins[0]?.localStorage ?? []
   const item = localStorage.find(
-    (item) => item.name === E2E_TEST_DATA_KEY + '::' + key
+    (item) => item.name === `${E2E_TEST_DATA_KEY}::${key}`
   )?.value
   return item ? JSON.parse(item) : undefined
 }
@@ -23,7 +23,7 @@ export async function savePlaywrightState(
     ([key, value]) => {
       localStorage.setItem(key as string, JSON.stringify(value))
     },
-    [E2E_TEST_DATA_KEY + '::' + key, value]
+    [`${E2E_TEST_DATA_KEY}::${key}`, value]
   )
 }
 

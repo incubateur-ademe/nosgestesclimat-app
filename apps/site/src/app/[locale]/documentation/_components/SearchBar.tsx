@@ -86,7 +86,7 @@ export default function SearchBar({ rules }: { rules: Partial<NGCRules> }) {
 
     const fuse = fuseSearchRef.current()
 
-    const results = [...fuse.search(input + '|' + input.replace(/ /g, '|'))]
+    const results = [...fuse.search(`${input}|${input.replace(/ /g, '|')}`)]
 
     setResults(results)
     setIsExpanded(true)

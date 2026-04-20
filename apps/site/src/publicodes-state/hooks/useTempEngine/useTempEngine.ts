@@ -3,10 +3,10 @@ import type {
   NGCRuleNode,
   NGCRules,
 } from '@incubateur-ademe/nosgestesclimat'
-import useCurrentSimulation from '../useCurrentSimulation/useCurrentSimulation'
 
 import { useEngine } from '@/publicodes-state'
 import type { EvaluatedNode } from 'publicodes'
+import useCurrentSimulation from '../useCurrentSimulation/useCurrentSimulation'
 /**
  * This is temporary and should be put to death as soon as possible
  */

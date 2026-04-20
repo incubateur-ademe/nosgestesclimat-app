@@ -22,7 +22,7 @@ export default function Choice({
   ...props
 }: Props) {
   const { title, description, icons } = useRule(
-    (question + ' . ' + choice) as DottedName
+    `${question} . ${choice}` as DottedName
   )
 
   return (

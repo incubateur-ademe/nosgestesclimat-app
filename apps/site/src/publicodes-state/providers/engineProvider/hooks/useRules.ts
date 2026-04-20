@@ -1,5 +1,9 @@
-import type { Engine, Entries, ParsedRules } from '@/publicodes-state/types'
-import type { MissingVariables } from '@/publicodes-state/types.d'
+import type {
+  Engine,
+  Entries,
+  MissingVariables,
+  ParsedRules,
+} from '@/publicodes-state/types'
 import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
 import { useMemo } from 'react'

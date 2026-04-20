@@ -87,17 +87,16 @@ export default function CategoryRadarChart({
         ? t('pollResults.radarChart.accessibleDescription.higher', 'supérieur')
         : t('pollResults.radarChart.accessibleDescription.lower', 'inférieur')
 
-      description +=
-        t(
-          'pollResults.radarChart.accessibleDescription.category',
-          '{{category}}: vos résultats {{user}} {{comparison}} à la moyenne {{average}}.',
-          {
-            category: item.nameFull,
-            user: `${item.userFormatted.formattedValue} ${item.userFormatted.unit ?? ''}`,
-            average: `${item.averageFormatted.formattedValue} ${item.averageFormatted.unit ?? ''}`,
-            comparison,
-          }
-        ) + ' '
+      description += `${t(
+        'pollResults.radarChart.accessibleDescription.category',
+        '{{category}}: vos résultats {{user}} {{comparison}} à la moyenne {{average}}.',
+        {
+          category: item.nameFull,
+          user: `${item.userFormatted.formattedValue} ${item.userFormatted.unit ?? ''}`,
+          average: `${item.averageFormatted.formattedValue} ${item.averageFormatted.unit ?? ''}`,
+          comparison,
+        }
+      )} `
     })
 
     return description

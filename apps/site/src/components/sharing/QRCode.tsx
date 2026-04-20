@@ -81,7 +81,7 @@ export default function QRCode({ value, className }: QRCodeProps) {
     }
 
     const encodedSvg = encodeURIComponent(svgData)
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodedSvg
+    img.src = `data:image/svg+xml;charset=utf-8,${encodedSvg}`
   }
 
   return (
