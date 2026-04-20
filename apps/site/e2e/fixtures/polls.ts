@@ -46,13 +46,37 @@ export class Poll {
   }
 
   async create() {
-    await expect(this.page).toHaveURL(this.createUrl)
+    // Step 1: Fill poll name and go to step 2
+    await expect(this.page).toHaveURL(/\/creer-campagne\/informations/)
     await this.page.getByTestId('poll-name-input').fill(this.name)
-    await this.page.getByTestId('poll-create-button').click()
+    await this.page.getByTestId('poll-form-name-button').click()
 
+<<<<<<< HEAD
     // Retrieve the poll slug
     const pollUrl = /\/campagnes\/([a-z0-9-]*)/
     await expect(this.page).toHaveURL(pollUrl)
+||||||| parent of 018798082 (✨ Create new orga / collective test user flow (#1750))
+    // Retrieve the poll slug
+    const pollUrl = /\/campagnes\/([a-z0-9\-]*)/
+    await expect(this.page).toHaveURL(pollUrl)
+=======
+    // Step 2: Select mode and create the poll
+    await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
+    const modeLabel = this.page.getByTestId('poll-mode-standard')
+    await modeLabel.click()
+    // Wait for the radio input inside the label to be checked
+    await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
+
+    const submitButton = this.page.getByTestId('poll-form-type-button')
+    await submitButton.click()
+
+    // Wait for the button to be disabled (form is submitting)
+    await expect(submitButton).toBeDisabled()
+
+    // Retrieve the poll slug (allow more time for the API call)
+    const pollUrl = /\/campagnes\/([a-z0-9\-]*)/
+    await expect(this.page).toHaveURL(pollUrl, { timeout: 30000 })
+>>>>>>> 018798082 (✨ Create new orga / collective test user flow (#1750))
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 

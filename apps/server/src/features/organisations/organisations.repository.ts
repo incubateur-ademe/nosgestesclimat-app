@@ -441,6 +441,7 @@ export const createOrganisationPoll = async (
     expectedNumberOfParticipants,
     defaultAdditionalQuestions,
     customAdditionalQuestions,
+    mode,
   }: OrganisationPollCreateDto,
   user: NonNullable<Request['user']>,
   { session }: { session: Session }
@@ -459,6 +460,7 @@ export const createOrganisationPoll = async (
           name,
           customAdditionalQuestions: customAdditionalQuestions ?? [],
           expectedNumberOfParticipants,
+          mode,
           ...(defaultAdditionalQuestions?.length
             ? {
                 defaultAdditionalQuestions: {
@@ -506,6 +508,7 @@ export const updateOrganisationPoll = async (
     expectedNumberOfParticipants,
     defaultAdditionalQuestions,
     customAdditionalQuestions: updateCustomAdditionalQuestions,
+    mode,
   }: OrganisationPollUpdateDto,
   user: NonNullable<Request['user']>,
   { session }: { session: Session }
@@ -535,6 +538,7 @@ export const updateOrganisationPoll = async (
     data: {
       name,
       expectedNumberOfParticipants,
+      mode,
       ...(customAdditionalQuestions
         ? {
             customAdditionalQuestions,
