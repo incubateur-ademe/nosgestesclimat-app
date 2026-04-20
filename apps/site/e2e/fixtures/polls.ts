@@ -46,13 +46,30 @@ export class Poll {
   }
 
   async create() {
-    await expect(this.page).toHaveURL(this.createUrl)
+    // Step 1: Fill poll name and go to step 2
+    await expect(this.page).toHaveURL(/\/creer-campagne\/informations/)
     await this.page.getByTestId('poll-name-input').fill(this.name)
-    await this.page.getByTestId('poll-create-button').click()
+    await this.page.getByTestId('poll-form-name-button').click()
+
+    // Step 2: Select mode and create the poll
+    await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
+    const modeLabel = this.page.getByTestId('poll-mode-standard')
+    await modeLabel.click()
+    // Wait for the radio input inside the label to be checked
+    await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
+
+    const submitButton = this.page.getByTestId('poll-form-type-button')
+    await submitButton.click()
+
+    // Wait for the button to be disabled (form is submitting)
+    await expect(submitButton).toBeDisabled()
+
+    // Retrieve the poll slug (allow more time for the API call)
 
     // Retrieve the poll slug
     const pollUrl = /\/campagnes\/([a-z0-9-]*)/
     await expect(this.page).toHaveURL(pollUrl)
+
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 

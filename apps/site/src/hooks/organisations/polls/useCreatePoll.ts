@@ -10,6 +10,7 @@ interface PollToCreate {
   expectedNumberOfParticipants?: number
   defaultAdditionalQuestions?: PollDefaultAdditionalQuestion[]
   customAdditionalQuestions?: { question: string; isEnabled: boolean }[]
+  mode?: 'standard' | 'scolaire'
 }
 
 export function useCreatePoll(organisationIdOrSlug: string) {

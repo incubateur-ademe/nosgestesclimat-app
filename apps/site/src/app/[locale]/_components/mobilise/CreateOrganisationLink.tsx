@@ -11,7 +11,7 @@ export default function CreateOrganisationLink() {
       color="secondary"
       href="/organisations"
       onClick={() => trackMatomoEvent__deprecated(createOrganisationLink)}>
-      <Trans>Créer une campagne</Trans>
+      <Trans>Créer un test collectif</Trans>
     </ButtonLink>
   )
 }
