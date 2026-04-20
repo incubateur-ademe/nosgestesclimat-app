@@ -5,7 +5,7 @@ import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import type { PropsWithChildren } from 'react'
 
 export const generateMetadata = getCommonMetadata({
-  title: t('Votre e-mail, rejoindre une campagne - Nos Gestes Climat'),
+  title: t('Votre e-mail, rejoindre un test collectif - Nos Gestes Climat'),
   description: t(
     'Comprenez comment calculer votre empreinte sur le climat en 10min chrono.'
   ),

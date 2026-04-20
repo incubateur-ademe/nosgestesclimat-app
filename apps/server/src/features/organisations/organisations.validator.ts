@@ -2,6 +2,7 @@ import { z } from 'zod'
 import {
   OrganisationType,
   PollDefaultAdditionalQuestionType,
+  PollMode,
 } from '../../adapters/prisma/generated.js'
 import { LocaleQuery } from '../../core/i18n/lang.validator.js'
 import { PaginationQuery } from '../../core/pagination.js'
@@ -152,6 +153,7 @@ const OrganisationPollCreateDto = z
       .max(MAX_CUSTOM_ADDITIONAL_QUESTIONS)
       .optional()
       .nullable(),
+    mode: z.nativeEnum(PollMode).optional().default(PollMode.standard),
   })
   .strict()
 

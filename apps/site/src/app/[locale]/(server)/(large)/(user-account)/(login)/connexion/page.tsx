@@ -1,5 +1,6 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/AuthenticateUserForm'
+import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNIN_MODE } from '@/constants/authentication/modes'
 import { loginComplete } from '@/constants/tracking/pages/mon-espace'
@@ -12,7 +13,6 @@ import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
-import SigninSignupTabs from '../_components/SigninSignupTabs'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Connexion à votre espace - Nos Gestes Climat'),
