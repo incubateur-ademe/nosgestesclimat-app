@@ -41,11 +41,10 @@ jobs:
   e2e-preprod:
     name: Tests on preprod
     needs: [deploy-site-preprod, deploy-server-preprod]
-    uses: ./.github/workflows/common:e2e.yaml
+    uses: ./.github/workflows/site:e2e.yaml
+    secrets: inherit
     with:
-      is_preprod: true
-    secrets:
-      MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
+      site_url: 'https://preprod.nosgestesclimat.fr'
 
   deploy-site-prod:
     name: Deploy site to prod

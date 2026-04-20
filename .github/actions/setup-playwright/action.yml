@@ -1,0 +1,30 @@
+name: 'Setup Playwright and App'
+description: 'Sets up Next.js build and installs Playwright'
+inputs:
+  browser:
+    description: 'Browser to install'
+    required: true
+    default: 'chromium'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup
+      uses: ./.github/actions/setup
+
+    - name: Download Next.js build
+      if: ${{ env.LOCAL_TEST == 'true' }}
+      uses: actions/download-artifact@v6
+      with:
+        name: nextjs-build
+        path: ./apps/site
+
+    - name: Extract Next.js build
+      if: ${{ env.LOCAL_TEST == 'true' }}
+      shell: bash
+      working-directory: ./apps/site
+      run: tar -xf nextjs-build.tar
+
+    - name: Install Playwright
+      shell: bash
+      working-directory: ./apps/site
+      run: pnpm playwright install ${{ inputs.browser }} ${{ inputs.browser == 'webkit' && '--with-deps' || '' }}

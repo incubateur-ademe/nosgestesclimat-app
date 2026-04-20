@@ -1,11 +1,5 @@
-name: 'Setup'
+name: 'Setup site'
 description: 'Setup Node.js, install dependencies, and build the Next.js app'
-
-inputs:
-  build:
-    description: 'Include the build step'
-    required: false
-    default: 'false'
 
 runs:
   using: 'composite'
@@ -27,12 +21,7 @@ runs:
       uses: actions/cache@v5
       with:
         path: |
-          ${{ github.workspace }}/.next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('src/**/*.{js,jsx,ts,tsx}') }}
+          ${{ github.workspace }}/apps/site/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/site/src/**/*.{js,jsx,ts,tsx}') }}
         restore-keys: |
           ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-
-    - name: Build
-      if: ${{ inputs.build == 'true' }}
-      shell: bash
-      run: pnpm build
