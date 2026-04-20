@@ -1,23 +1,15 @@
-import CTAButtonsPlaceholder from '@/components/cta/CTAButtonsPlaceholder'
-import DynamicCTAButtons from '@/components/cta/DynamicCTAButtons'
+import CTAButtons from '@/components/cta/CTAButtons'
+
 import Partners from '@/components/landing-pages/Partners'
 import Footer from '@/components/layout/Footer'
 import JSONLD from '@/components/seo/JSONLD'
 import Trans from '@/components/translation/trans/TransServer'
-import { trackingActionClickCTA } from '@/constants/tracking/actions'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
-import {
-  getLandingClickCTARestart,
-  getLandingClickCTAResults,
-  getLandingClickCTAResume,
-  getLandingClickCTAStart,
-} from '@/helpers/tracking/landings'
 import type { DefaultPageProps } from '@/types'
 import Image from 'next/image'
-import { Suspense } from 'react'
 import { ClientLayout } from '../../../components/layout/ClientLayout'
 import DailyGestureCarbonFootprint from './_components/DailyGestureCarbonFootprint'
 import DidYouKnowCarbon from './_components/DidYouKnowCarbonFootprint'
@@ -94,28 +86,7 @@ export default async function CarbonFootprintLandingPage({
               </Trans>
             </p>
             <div className="flex w-full justify-center md:justify-start">
-              <Suspense fallback={<CTAButtonsPlaceholder />}>
-                <DynamicCTAButtons
-                  trackingEvents={{
-                    start: getLandingClickCTAStart(
-                      '/empreinte-carbone',
-                      trackingActionClickCTA
-                    ),
-                    resume: getLandingClickCTAResume(
-                      '/empreinte-carbone',
-                      trackingActionClickCTA
-                    ),
-                    results: getLandingClickCTAResults(
-                      '/empreinte-carbone',
-                      trackingActionClickCTA
-                    ),
-                    restart: getLandingClickCTARestart(
-                      '/empreinte-carbone',
-                      trackingActionClickCTA
-                    ),
-                  }}
-                />
-              </Suspense>
+              <CTAButtons locale={locale} />
             </div>
 
             <div className="mx-auto mt-4 max-w-80 md:mt-0 md:hidden">

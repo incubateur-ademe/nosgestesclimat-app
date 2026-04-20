@@ -1,4 +1,5 @@
-import type { ComputedResults, Simulation } from '@/publicodes-state/types'
+import type { Simulation } from '@/helpers/server/model/simulations'
+import type { ComputedResults } from '@/publicodes-state/types'
 import type { AppUser } from '../dal/user'
 import { getGroup } from './groups'
 import { getPublicPoll } from './poll'

@@ -1,6 +1,6 @@
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { saveSimulation } from '@/helpers/simulation/saveSimulation'
 import { useUser } from '@/publicodes-state'
-import type { Simulation } from '@/publicodes-state/types'
 import { useMutation } from '@tanstack/react-query'
 import { useLocale } from '../useLocale'
 

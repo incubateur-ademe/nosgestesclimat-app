@@ -1,10 +1,10 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
-import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useCurrentSimulation, useUser } from '@/publicodes-state'
 import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
@@ -31,7 +31,6 @@ export default function InvitationForm({ group }: { group: Group }) {
   const currentSimulation = useCurrentSimulation()
   const hasCompletedTest = currentSimulation.progression === 1
 
-  const { getLinkToSimulateurPage } = useSimulateurPage()
   const router = useRouter()
 
   async function onSubmit({ guestName }: Inputs) {
@@ -41,6 +40,7 @@ export default function InvitationForm({ group }: { group: Group }) {
     } // Update user info
     updateName(guestName)
     // Update current simulation with group id (to redirect after test completion)
+
     currentSimulation.update({
       groupToAdd: group.id,
     })
@@ -53,7 +53,8 @@ export default function InvitationForm({ group }: { group: Group }) {
       })
       router.push(getLinkToGroupDashboard({ groupId: group.id }))
     } else {
-      router.push(getLinkToSimulateurPage())
+      // @TOFIX the simulation is really created ?
+      router.push(SIMULATOR_PATH)
     }
   }
 

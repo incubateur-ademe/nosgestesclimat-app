@@ -1,9 +1,9 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Locale } from '@/i18nConfig'
-import type { Simulation } from '@/publicodes-state/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useState } from 'react'
 import CategorySelector from './CategorySelector'

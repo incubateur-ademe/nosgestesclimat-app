@@ -1,5 +1,5 @@
 import { GROUP_URL } from '@/constants/urls/main'
-import type { Simulation } from '@/publicodes-state/types'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import axios from 'axios'
 
 export const updateGroupParticipant = async ({
