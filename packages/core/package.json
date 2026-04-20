@@ -23,8 +23,8 @@
     }
   },
   "scripts": {
-    "lint": "eslint ./**/*.{js,jsx,ts,tsx}",
-    "format": "prettier --write ./**/*.{js,jsx,ts,tsx,json,md,yml}",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
+    "format": "prettier --write ./**/*.{js,ts,tsx,json,md}",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
