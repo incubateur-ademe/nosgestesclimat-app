@@ -34,4 +34,4 @@ jobs:
         run: pnpm --filter "...[origin/main]" typecheck
 
       - name: Run unit and integration tests
-        run: pnpm --filter "...[origin/main]" test --coverage
+        run: pnpm --filter "...[origin/main]" test
