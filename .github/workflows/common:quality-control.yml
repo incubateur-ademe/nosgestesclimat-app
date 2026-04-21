@@ -1,0 +1,33 @@
+name: Quality Control
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality-control:
+    name: Quality Control job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Generate types, db client…
+        run: pnpm --filter "...[origin/main]" generate
+
+      - name: Lint
+        run: pnpm --filter "[origin/main]" lint
+
+      - name: Typecheck
+        run: pnpm --filter "...[origin/main]" typecheck
+
+      - name: Build
+        run: pnpm --filter "...[origin/main]" build
+
+      - name: Run unit and integration tests
+        run: pnpm --filter "...[origin/main]" test --coverage

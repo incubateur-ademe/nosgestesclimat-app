@@ -25,6 +25,8 @@
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
     "start": "node .next/standalone/apps/site/server.js",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
+    "typegen": "next typegen",
+    "generate": "pnpm typegen",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test --ui",
     "iframe-healthcheck": "node scripts/healthchecks/iframes.js",
