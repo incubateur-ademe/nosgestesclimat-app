@@ -30,6 +30,7 @@ const rewrites = PROXY_SERVER
 const nextConfig = withMDX({
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   reactStrictMode: true,
+  transpilePackages: ['@nosgestesclimat/core'],
   images: {
     remotePatterns: remoteImagesPatterns,
     minimumCacheTTL: 60 * 60 * 24 * 30,

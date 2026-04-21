@@ -21,7 +21,7 @@ set -euo pipefail
 : "${SCALINGO_APP_NAME:?SCALINGO_APP_NAME is required}"
 : "${FGP_DEPLOY_URL:?FGP_DEPLOY_URL is required}"
 
-POLL_INTERVAL="${POLL_INTERVAL:-10}"
+POLL_INTERVAL="${POLL_INTERVAL:-15}"
 
 API_URL="${FGP_DEPLOY_URL}/v1/apps/${SCALINGO_APP_NAME}/deployments/${DEPLOYMENT_ID}"
 
@@ -31,8 +31,8 @@ while true; do
   # Get deployment status
   STATUS=$(curl -s -f -H "Accept: application/json" \
     -H "X-FGP-Key: ${FGP_DEPLOY_TOKEN}" \
-    "${API_URL}" | jq -r '.deployment.status')
-
+    "${API_URL}" | jq -r '.deployment.status' || echo "api-error")
+  sleep 5
   # Get deployment logs and print only new lines
   LOGS=$(curl -s -f -H "Accept: text/plain" \
     -H "X-FGP-Key: ${FGP_DEPLOY_TOKEN}" \
@@ -54,6 +54,9 @@ while true; do
     crashed-error|timeout-error|build-error|aborted|hook-error)
       echo "::error::Deployment failed with status: $STATUS"
       exit 1
+      ;;
+    api-error)
+      echo "::error::Failed to retrieve deployment status, retrying..."
       ;;
   esac
   sleep "$POLL_INTERVAL"
