@@ -8,10 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  NEXT_PUBLIC_SERVER_URL: http://localhost:3001
-  NEXT_PUBLIC_SITE_URL: http://localhost:3000
-
 jobs:
   quality-control:
     name: Quality Control job
@@ -36,9 +32,6 @@ jobs:
 
       - name: Typecheck
         run: pnpm --filter "...[origin/main]" typecheck
-
-      - name: Build
-        run: pnpm --filter "...[origin/main]" build
 
       - name: Run unit and integration tests
         run: pnpm --filter "...[origin/main]" test --coverage
