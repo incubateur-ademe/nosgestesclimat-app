@@ -6,7 +6,8 @@
     "checkJs": true,
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "types": ["node"]
+    "types": ["node"],
+    "incremental": true
   },
   "include": ["./**/*"],
   "exclude": ["node_modules", "dist", "coverage"]

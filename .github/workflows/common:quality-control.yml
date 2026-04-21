@@ -33,6 +33,15 @@ jobs:
             packages/*/node_modules/.cache/eslint
           key: ${{ runner.os }}-eslint-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('eslint.config.js') }}
 
+      - name: Cache TypeScript
+        uses: actions/cache@v5
+        with:
+          path: |
+            tsconfig.tsbuildinfo
+            apps/*/tsconfig.tsbuildinfo
+            packages/*/tsconfig.tsbuildinfo
+          key: ${{ runner.os }}-tsc-${{ hashFiles('apps/*/tsconfig.json', 'packages/*/tsconfig.json') }}
+
       - name: Generate types, db client…
         run: pnpm --filter "...[origin/main]" generate
 
