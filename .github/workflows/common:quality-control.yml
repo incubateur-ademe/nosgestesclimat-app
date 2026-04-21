@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 env:
   NEXT_PUBLIC_SERVER_URL: http://localhost:3001
   NEXT_PUBLIC_SITE_URL: http://localhost:3000
@@ -13,6 +16,7 @@ jobs:
   quality-control:
     name: Quality Control job
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
