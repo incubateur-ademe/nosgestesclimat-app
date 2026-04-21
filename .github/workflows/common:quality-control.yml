@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  NEXT_PUBLIC_SERVER_URL: http://localhost:3001
+  NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
 jobs:
   quality-control:
     name: Quality Control job
