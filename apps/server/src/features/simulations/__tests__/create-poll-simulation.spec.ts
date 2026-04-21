@@ -50,7 +50,7 @@ describe('Given a NGC user', () => {
   })
 
   describe(`And ${nom} persona situation`, () => {
-    describe('When creating a simulation in a poll ', () => {
+    describe('When creating a simulation in a poll', () => {
       describe('And invalid user Id', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent

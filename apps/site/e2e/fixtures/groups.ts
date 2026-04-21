@@ -48,6 +48,7 @@ export class Group {
     await this.page.getByTestId('group-name').fill(this.name)
     await this.page.getByTestId(`group-select-emoji-🍒`).click()
     await this.page.getByTestId('button-validate-create-group').click()
+    // eslint-disable-next-line playwright/no-networkidle
     await this.page.waitForLoadState('networkidle')
     await expect(this.page).toHaveURL(/groupId=.*/)
     this.data.url = this.page.url()
@@ -63,6 +64,7 @@ export class Group {
     await this.page.getByTestId('group-name-edit-button').click()
     await this.page.getByTestId('group-edit-input-name').fill(newName)
     await this.page.getByTestId('button-inline-input').click()
+    // eslint-disable-next-line playwright/no-networkidle
     await this.page.waitForLoadState('networkidle')
     this.data.name = newName
   }

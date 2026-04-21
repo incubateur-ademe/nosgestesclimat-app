@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
-import { test as base, expect } from './options'
 
 import {
   getPlaywrightState,
   savePlaywrightState,
 } from '../helpers/save-context'
 import { UserMailbox } from '../helpers/user-mailbox'
+import { test as base, expect } from './options'
 
 function generateUserData() {
   const firstName = faker.person.firstName()
@@ -15,7 +15,7 @@ function generateUserData() {
     firstName,
     lastName,
     email: faker.internet.email({
-      provider: process.env.MAILISK_NAMESPACE! + '.mailisk.net',
+      provider: `${process.env.MAILISK_NAMESPACE!}.mailisk.net`,
       firstName,
       lastName,
     }),

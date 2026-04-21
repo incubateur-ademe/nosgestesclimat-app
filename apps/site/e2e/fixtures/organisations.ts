@@ -57,7 +57,7 @@ export class Organisation {
     await this.page.getByTestId('create-organisation-button').click()
 
     // Retrieve the organization slug
-    const orgaUrl = /\/organisations\/([a-z0-9\-]*)\/.*/
+    const orgaUrl = /\/organisations\/([a-z0-9-]*)\/.*/
     await expect(this.page).toHaveURL(orgaUrl)
     this.data.slug = orgaUrl.exec(this.page.url())![1]
   }

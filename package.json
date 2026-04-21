@@ -19,6 +19,7 @@
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r run test -- --coverage",
     "format": "pnpm -r run format",
+    "lint": "pnpm -r run lint",
     "typecheck": "pnpm -r run typecheck",
     "knip": "knip"
   },

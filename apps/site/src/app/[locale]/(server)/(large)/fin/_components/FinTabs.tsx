@@ -15,7 +15,7 @@ import { twMerge } from 'tailwind-merge'
 export default function FinTabs() {
   const pathname = usePathname()
   const { t } = useClientTranslation()
-  const resultsHref = `${END_PAGE_PATH}`
+  const resultsHref = END_PAGE_PATH
   const actionsHref = `${END_PAGE_PATH}/actions`
   const groupsHref = `${END_PAGE_PATH}/groupes`
 

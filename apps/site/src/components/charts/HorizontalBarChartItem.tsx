@@ -29,7 +29,7 @@ export default function HorizontalBarChartItem({
       <div
         className="mb-1.5 flex justify-between"
         style={{
-          minWidth: (minTitleWidth ?? 10) + 'rem',
+          minWidth: `${minTitleWidth ?? 10}rem`,
         }}>
         <div className="flex items-center gap-2">
           <span className={`rounded-sm p-1.5 ${bgIconClassName}`}>{icon}</span>{' '}

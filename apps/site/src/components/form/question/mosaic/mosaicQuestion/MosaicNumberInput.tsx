@@ -67,7 +67,7 @@ export default function MosaicNumberInput({
         {!shouldNotContainButtons && (
           <Button
             disabled={!value}
-            onClick={() => setValue((!!value ? value : 0) - 1)}
+            onClick={() => setValue((value ? value : 0) - 1)}
             size="sm"
             title={t(
               'simulator.mosaicNumberInput.remove',
@@ -92,13 +92,13 @@ export default function MosaicNumberInput({
             }
             setValue(inputValue === '' ? inputValue : floatValue)
           }}
-          data-testid={`${question}`}
+          data-testid={question}
           id={`${DEFAULT_FOCUS_ELEMENT_ID}-${index}`}
         />
         {!shouldNotContainButtons && (
           <Button
             disabled={isPlusDisabled}
-            onClick={() => setValue((!!value ? value : 0) + 1)}
+            onClick={() => setValue((value ? value : 0) + 1)}
             title={t(
               'simulator.mosaicNumberInput.add',
               'Ajouter un élément : {{title}}',

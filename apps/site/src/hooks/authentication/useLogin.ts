@@ -14,7 +14,7 @@ export default function useLogin() {
     mutationFn: ({ email, code }: { email: string; code: string }) =>
       axios
         .post(
-          AUTHENTICATION_URL + '/login',
+          `${AUTHENTICATION_URL}/login`,
           {
             code,
             email,

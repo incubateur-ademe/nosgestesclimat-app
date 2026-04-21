@@ -14,7 +14,9 @@ export default function usePersistentTutorials() {
       if (parsedStorage.tutorials) {
         localTutorials = parsedStorage.tutorials
       }
-    } catch {}
+    } catch {
+      //
+    }
   }
 
   const [tutorials, setTutorials] = useState<Tutorials>(localTutorials)

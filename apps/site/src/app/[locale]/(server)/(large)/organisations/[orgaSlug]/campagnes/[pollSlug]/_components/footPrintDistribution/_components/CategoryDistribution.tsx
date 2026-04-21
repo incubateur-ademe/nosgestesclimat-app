@@ -48,8 +48,8 @@ export default function CategoryDistribution({
       t,
     })
     return {
-      name: `${categoryLabels[key as Categories]}`,
-      nameFull: `${categoryLabelsFull[key as Categories]}`,
+      name: categoryLabels[key as Categories],
+      nameFull: categoryLabelsFull[key as Categories],
       value: value,
       color: COLORS[key as Categories],
       formattedValue,
@@ -62,16 +62,15 @@ export default function CategoryDistribution({
       'Graphique en donut montrant la répartition des émissions par catégorie. '
     )
     formattedData.forEach((item) => {
-      description +=
-        t(
-          'pollResults.categoryDistribution.accessibleDescription.category',
-          '{{name}}: {{value}} {{unit}}.',
-          {
-            name: item.nameFull,
-            value: item.formattedValue.formattedValue,
-            unit: item.formattedValue.unit,
-          }
-        ) + ' '
+      description += `${t(
+        'pollResults.categoryDistribution.accessibleDescription.category',
+        '{{name}}: {{value}} {{unit}}.',
+        {
+          name: item.nameFull,
+          value: item.formattedValue.formattedValue,
+          unit: item.formattedValue.unit,
+        }
+      )} `
     })
     return description
   }

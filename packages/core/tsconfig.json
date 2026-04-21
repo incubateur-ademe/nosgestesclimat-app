@@ -5,7 +5,8 @@
     "target": "es2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "types": ["node"]
+    "types": ["node"],
+    "incremental": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

@@ -79,7 +79,7 @@ export default function ModeleDemoBlock() {
           <li key={el} className="mb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Link href={'/documentation/' + encodeRuleName(el)}>{el}</Link>
+                <Link href={`/documentation/${encodeRuleName(el)}`}>{el}</Link>
                 <label htmlFor={`input-${el}`} className="sr-only">
                   Valeur pour {el}
                 </label>

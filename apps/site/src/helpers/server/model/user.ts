@@ -11,7 +11,7 @@ export interface AuthUser extends UserServer {
 }
 
 export async function getAuthUser(): Promise<AuthUser> {
-  const user = await fetchServer<UserServer>(USER_URL + '/me')
+  const user = await fetchServer<UserServer>(`${USER_URL}/me`)
   return {
     ...user,
     isAuth: true,
@@ -20,7 +20,7 @@ export async function getAuthUser(): Promise<AuthUser> {
 
 export async function isUserAuthenticated(): Promise<boolean> {
   try {
-    const user = await fetchServer<UserServer>(USER_URL + '/me')
+    const user = await fetchServer<UserServer>(`${USER_URL}/me`)
     return !!user
   } catch {
     return false

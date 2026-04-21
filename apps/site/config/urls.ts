@@ -5,7 +5,7 @@ export const PROXY_SERVER = !new URL(serverUrl).host.endsWith(
 )
 
 if (PROXY_SERVER) {
-  serverUrl = siteUrl + '/api/server'
+  serverUrl = `${siteUrl}/api/server`
 }
 
 export const SERVER_URL = serverUrl
