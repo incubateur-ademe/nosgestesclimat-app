@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation'
 export default async function Commencer() {
   const user = await getUser()
   const [currentSimulation] = await getSimulations({ user }, { pageSize: 1 })
+
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!currentSimulation || currentSimulation.progression > 0) {
     await createNewSimulation({ user })

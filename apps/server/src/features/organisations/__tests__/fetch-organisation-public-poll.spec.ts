@@ -144,8 +144,8 @@ describe('Given a NGC user', () => {
                 count: 1,
                 finished: 1,
                 hasParticipated: true,
-                progression: 1,
               },
+              progression: 1,
               computedResults,
               userComputedResults: computedResults,
               otherComputedResults: deepMergeSubstract(
@@ -183,8 +183,8 @@ describe('Given a NGC user', () => {
                   count: 1,
                   finished: 1,
                   hasParticipated: true,
-                  progression: 1,
                 },
+                progression: 1,
                 computedResults,
                 userComputedResults: computedResults,
                 otherComputedResults: deepMergeSubstract(

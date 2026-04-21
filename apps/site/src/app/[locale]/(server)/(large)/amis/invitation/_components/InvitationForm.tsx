@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
@@ -44,17 +44,18 @@ export default function InvitationForm({ group }: { group: Group }) {
     currentSimulation.update({
       groupToAdd: group.id,
     })
+
+    await updateGroupParticipant({
+      groupId: group.id,
+      simulation: currentSimulation,
+      userId: user.userId,
+      name: guestName,
+    })
+
     if (hasCompletedTest) {
-      await updateGroupParticipant({
-        groupId: group.id,
-        simulation: currentSimulation,
-        userId: user.userId,
-        name: guestName,
-      })
       router.push(getLinkToGroupDashboard({ groupId: group.id }))
     } else {
-      // @TOFIX the simulation is really created ?
-      router.push(SIMULATOR_PATH)
+      router.push(TUTORIAL_PATH)
     }
   }
 

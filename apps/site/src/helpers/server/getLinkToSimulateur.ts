@@ -3,11 +3,12 @@ import {
   MON_ESPACE_PATH,
   SIMULATOR_PATH,
   START_SIMULATION_PATH,
+  TUTORIAL_PATH,
 } from '@/constants/urls/paths'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { TFunction } from 'i18next'
 import type { AppUser } from './dal/user'
-export function getLinkToSimulateur({
+export function getMainCTA({
   currentSimulation,
   user,
   t,
@@ -17,13 +18,19 @@ export function getLinkToSimulateur({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: TFunction<any, string>
 }) {
-  if (!currentSimulation || currentSimulation.progression === 0) {
+  if (!currentSimulation) {
     return {
       children: t('Commencer le test'),
       href: START_SIMULATION_PATH,
+      prefetch: false,
     }
   }
-
+  if (currentSimulation.progression === 0) {
+    return {
+      children: t('Commencer le test'),
+      href: TUTORIAL_PATH,
+    }
+  }
   if (currentSimulation.progression === 1) {
     return {
       children: t('Voir mes résultats'),

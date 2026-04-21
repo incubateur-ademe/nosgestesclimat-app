@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { STORAGE_KEY } from '@/constants/storage'
 import { getGeolocation } from '@/helpers/api/getGeolocation'
-import { Simulation } from '@/helpers/server/model/simulations'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { RegionFromGeolocation } from '@/publicodes-state/types'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import UserContext from './context'

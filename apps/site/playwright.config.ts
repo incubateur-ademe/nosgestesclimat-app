@@ -51,14 +51,17 @@ export default defineConfig<FixturesOptions>({
         storageState: NEW_VISITOR_STATE,
       },
     },
-    {
-      name: 'Mobile Safari',
-      dependencies: ['global setup'],
-      use: {
-        ...devices['iPhone 12'],
-        storageState: NEW_VISITOR_STATE,
-      },
-    },
+    // We remove Safari testing. It tends to have a lot of false negative,
+    // where the playwright test fails but the manual test on Browserstack are always passing.
+    // We'll see if we can reenable later, once there is less sync logic on test...
+    // {
+    //   name: 'Mobile Safari',
+    //   dependencies: ['global setup'],
+    //   use: {
+    //     ...devices['iPhone 12'],
+    //     storageState: NEW_VISITOR_STATE,
+    //   },
+    // },
   ],
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI

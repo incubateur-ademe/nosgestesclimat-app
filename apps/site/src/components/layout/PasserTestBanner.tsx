@@ -2,7 +2,7 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUser } from '@/helpers/server/dal/user'
-import { getLinkToSimulateur } from '@/helpers/server/getLinkToSimulateur'
+import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import Trans from '../translation/trans/TransServer'
 
@@ -23,7 +23,7 @@ export default async function PasserTestBanner({ locale }: { locale: string }) {
           top chrono.
         </Trans>
       </p>
-      <ButtonLink {...getLinkToSimulateur({ currentSimulation, user, t })} />
+      <ButtonLink {...getMainCTA({ currentSimulation, user, t })} />
     </Card>
   )
 }

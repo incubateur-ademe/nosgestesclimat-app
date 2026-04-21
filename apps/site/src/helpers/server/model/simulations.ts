@@ -1,19 +1,17 @@
 import { SIMULATION_URL } from '@/constants/urls/main'
-import { getUser, type AppUser } from '../dal/user'
-import { fetchServer } from '../fetchServer'
-import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
-
+import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import type {
   DottedName,
   ExtendedSituation,
 } from '@incubateur-ademe/nosgestesclimat'
+import type supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
 import type {
   ComputedResults,
   Situation,
 } from '../../../publicodes-state/types'
-
-import { generateSimulation } from '@/helpers/simulation/generateSimulation'
-import type supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
+import { getUser, type AppUser } from '../dal/user'
+import { fetchServer } from '../fetchServer'
+import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
 
 type Model = {
   [Region in keyof typeof supportedRegions]: `${Region & string}-${keyof (typeof supportedRegions)[Region] & string}-${string}`
@@ -111,7 +109,6 @@ export async function createNewSimulation({
       body: simulation,
     }
   )
-
   return setDefaultExtendedSituation(serverSimulation)
 }
 

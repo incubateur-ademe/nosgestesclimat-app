@@ -7,9 +7,8 @@ interface Props {
 }
 
 export const getParticipantName = ({ t, participant }: Props) =>
-  participant.simulation.user?.id
-    ? participant.name
-    : t(
-        'groups.results.rankingMember.simulationDeleted',
-        'Utilisateur anonyme (données supprimées par le participant)'
-      )
+  participant.name ??
+  t(
+    'groups.results.rankingMember.simulationDeleted',
+    'Utilisateur anonyme (données supprimées par le participant)'
+  )

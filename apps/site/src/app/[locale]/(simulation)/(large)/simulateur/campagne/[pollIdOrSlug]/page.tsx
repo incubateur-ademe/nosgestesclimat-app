@@ -6,11 +6,9 @@ import Trans from '@/components/translation/trans/TransServer'
 import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
-import {
-  createPollSimulation,
-  getPublicPoll,
-} from '@/helpers/server/model/poll'
+import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
 import { getSimulations } from '@/helpers/server/model/simulations'
+import type { Locale } from '@/i18nConfig'
 import { redirect } from 'next/navigation'
 import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
@@ -21,28 +19,38 @@ import YouthTutorial from '../../_components/YouthTutorial'
 export default async function Commencer({
   params,
 }: PageProps<'/[locale]/simulateur/campagne/[pollIdOrSlug]'>) {
-  const { pollIdOrSlug, locale } = await params
+  const { pollIdOrSlug, locale } = (await params) as {
+    pollIdOrSlug: string
+    locale: Locale
+  }
 
   const user = await getUser()
-  const [poll, [lastCompletedSimulation]] = await throwNextError(() =>
-    Promise.all([
-      getPublicPoll({ user, pollIdOrSlug }),
-      getSimulations({ user }, { completedOnly: true }),
-    ])
-  )
+  const [poll, [lastCompletedSimulation], [currentSimulation]] =
+    await throwNextError(() =>
+      Promise.all([
+        getUserPoll({ user, pollIdOrSlug }),
+        getSimulations({ user }, { completedOnly: true, pageSize: 1 }),
+        getSimulations({ user }, { completedOnly: false, pageSize: 1 }),
+      ])
+    )
+
+  if (currentSimulation.polls?.some((p) => p.id === poll.id)) {
+    redirect(SIMULATOR_PATH)
+  }
 
   async function createNewSimulation() {
     'use server'
-    await createPollSimulation({ pollId: poll.id, user })
+    await createPollSimulation({ poll, user, locale })
     redirect(SIMULATOR_PATH)
   }
 
   async function reuseSimulation() {
     'use server'
     await createPollSimulation({
-      pollId: poll.id,
+      poll,
       user,
       simulation: lastCompletedSimulation,
+      locale,
     })
     redirect(END_PAGE_PATH)
   }

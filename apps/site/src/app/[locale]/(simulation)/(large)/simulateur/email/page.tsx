@@ -1,3 +1,4 @@
+import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/AuthenticateUserForm'
 import Trans from '@/components/translation/trans/TransServer'
 import { END_PAGE_PATH } from '@/constants/urls/paths'
@@ -7,6 +8,7 @@ import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUser } from '@/helpers/server/dal/user'
 import { getSimulations } from '@/helpers/server/model/simulations'
+import { UserProvider } from '@/publicodes-state'
 import { notFound } from 'next/navigation'
 
 export default async function Email({
@@ -58,18 +60,22 @@ export default async function Email({
           </>
         }
       />
-      <AuthenticateUserForm
-        buttonLabel={t('Vérifier mon adresse email')}
-        additionnalButton={
-          <ButtonLink
-            color="secondary"
-            href={END_PAGE_PATH}
-            data-testid="skip-email-button">
-            <Trans locale={locale}>Passer</Trans>
-          </ButtonLink>
-        }
-        redirectPathname={END_PAGE_PATH}
-      />
+      <UserProvider serverUserId={user.id}>
+        <QueryClientProviderWrapper>
+          <AuthenticateUserForm
+            buttonLabel={t('Vérifier mon adresse email')}
+            additionnalButton={
+              <ButtonLink
+                color="secondary"
+                href={END_PAGE_PATH}
+                data-testid="skip-email-button">
+                <Trans locale={locale}>Passer</Trans>
+              </ButtonLink>
+            }
+            redirectPathname={END_PAGE_PATH}
+          />
+        </QueryClientProviderWrapper>
+      </UserProvider>
     </>
   )
 }

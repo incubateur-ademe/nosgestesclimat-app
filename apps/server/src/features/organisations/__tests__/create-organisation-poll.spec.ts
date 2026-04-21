@@ -300,6 +300,7 @@ describe('Given a NGC user', () => {
         test('Then it stores a poll in database', async () => {
           const payload: OrganisationPollCreateDto = {
             name: faker.company.buzzNoun(),
+            mode: 'standard',
             defaultAdditionalQuestions: [
               PollDefaultAdditionalQuestionType.postalCode,
             ],
@@ -368,6 +369,7 @@ describe('Given a NGC user', () => {
         test('Then it updates organisation administrator in brevo', async () => {
           const payload: OrganisationPollCreateDto = {
             name: faker.company.buzzNoun(),
+            mode: 'standard',
             defaultAdditionalQuestions: [
               PollDefaultAdditionalQuestionType.postalCode,
             ],
@@ -627,6 +629,7 @@ describe('Given a NGC user', () => {
         test('Then it updates organisation administrator in brevo', async () => {
           const payload: OrganisationPollCreateDto = {
             name: faker.company.buzzNoun(),
+            mode: 'standard',
             defaultAdditionalQuestions: [
               PollDefaultAdditionalQuestionType.postalCode,
             ],

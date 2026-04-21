@@ -9,8 +9,8 @@ export class NGCTest {
     public readonly tutorialPage: TutorialPage = new TutorialPage(page)
   ) {}
 
-  async goto() {
-    await this.tutorialPage.goto()
+  async start() {
+    await this.tutorialPage.start()
     await this.tutorialPage.skip()
   }
 
@@ -88,7 +88,7 @@ export class NGCTest {
   }
 
   async skipAll() {
-    await this.goto()
+    await this.start()
     await this.skipAllQuestions()
   }
 

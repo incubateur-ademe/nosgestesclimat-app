@@ -20,11 +20,11 @@ export default async function TutorielPage({
   if (!currentSimulation) {
     redirect('/')
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (currentSimulation.progression > 0 || previousSimulation) {
     redirect(SIMULATOR_PATH)
   }
-
   return (
     <Tutorial
       locale={locale}

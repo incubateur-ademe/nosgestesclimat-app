@@ -5,6 +5,7 @@ import {
   simulateurCloseSommaire,
   simulateurOpenSommaire,
 } from '@/constants/tracking/pages/simulateur'
+import { useAutoSaveSimulation } from '@/hooks/simulation/useAutoSaveSimulation'
 import { useTrackSimulator } from '@/hooks/tracking/useTrackSimulator'
 import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
@@ -17,6 +18,7 @@ import Form from './simulateur/Form'
 import Summary from './simulateur/Summary'
 
 export default function Simulateur() {
+  useAutoSaveSimulation()
   useTrackSimulator()
   const { isInitialized } = useEngine()
   const { isIframe } = useIframe()

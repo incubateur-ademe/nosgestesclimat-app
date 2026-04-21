@@ -3,10 +3,9 @@ import {
   START_SIMULATION_PATH,
 } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import Loader from '@/design-system/layout/Loader'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUser } from '@/helpers/server/dal/user'
-import { getLinkToSimulateur } from '@/helpers/server/getLinkToSimulateur'
+import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -47,8 +46,7 @@ async function ServerCTAButtons({
   const ContainerTag = isButtonList ? 'ul' : 'div'
   const MainButtonContainerTag = isButtonList ? 'li' : 'div'
 
-  const isPending = false
-  const mainButton = getLinkToSimulateur({ currentSimulation, user, t })
+  const mainButton = getMainCTA({ currentSimulation, user, t })
 
   return (
     <ContainerTag
@@ -64,10 +62,8 @@ async function ServerCTAButtons({
             className
           )}
           href={mainButton.href}
-          aria-disabled={isPending}
-          data-testid="do-the-test-link">
+          data-testid="main-cta">
           <>
-            {isPending && <Loader color="light" size="sm" className="mr-2" />}
             <span
               className={twMerge(
                 'leading-none',

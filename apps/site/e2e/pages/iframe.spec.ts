@@ -13,10 +13,10 @@ test.describe('/demo-iframe-datashare.html', () => {
     skipOnSafari(browser)
     const iframe = page.frameLocator('iframe').first()
 
-    // await expect(iframe.getByTestId('do-the-test-link')).toBeVisible({
+    // await expect(iframe.getByTestId('main-cta')).toBeVisible({
     //   timeout: 5000,
     // })
-    await iframe.getByTestId('do-the-test-link').first().click({
+    await iframe.getByTestId('main-cta').first().click({
       timeout: 3000,
     })
 
@@ -64,7 +64,7 @@ test.describe('/demo-iframe.html', () => {
 
   test('displays the iframe correctly', ({ page }) => {
     const iframe = page.frameLocator('iframe').first()
-    expect(iframe.getByTestId('do-the-test-link')).toBeDefined()
+    expect(iframe.getByTestId('main-cta')).toBeDefined()
   })
 })
 
