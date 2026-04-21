@@ -24,11 +24,20 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Cache ESLint
+        uses: actions/cache@v5
+        with:
+          path: |
+            node_modules/.cache/eslint
+            apps/*/node_modules/.cache/eslint
+            packages/*/node_modules/.cache/eslint
+          key: ${{ runner.os }}-eslint-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('eslint.config.js') }}
+
       - name: Generate types, db client…
         run: pnpm --filter "...[origin/main]" generate
 
       - name: Lint
-        run: pnpm --filter "[origin/main]" lint
+        run: pnpm --filter "[origin/main]" lint --cache-strategy content
 
       - name: Typecheck
         run: pnpm --filter "...[origin/main]" typecheck
