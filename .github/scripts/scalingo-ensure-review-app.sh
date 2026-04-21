@@ -29,9 +29,12 @@ HTTP_CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
   -X POST "${FGP_DEPLOY_URL}/v1/apps/${SCALINGO_APP_NAME}/scm_repo_link/manual_review_app" \
   -d "$PAYLOAD" || true)
 
-if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
-  echo "Review app created (HTTP $HTTP_CODE). Waiting for it to be ready..."
-  sleep 15
-else
-  echo "Review app creation returned HTTP $HTTP_CODE (already exists). Continuing."
-fi
+  if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+    echo "Review app created (HTTP $HTTP_CODE). Waiting for it to be ready..."
+    sleep 15
+  elif [ "$HTTP_CODE" -eq 500 ]; then
+    echo "Review app creation failed with HTTP 500. Exiting."
+    exit 1
+  else
+    echo "Review app creation returned HTTP $HTTP_CODE (already exists). Continuing."
+  fi

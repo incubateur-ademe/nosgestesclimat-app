@@ -16,7 +16,7 @@
     },
     "NEXT_PUBLIC_SERVER_URL": {
       "generator": "template",
-      "template": "https://%APP%.osc-fr1.scalingo.io"
+      "template": "https://nosgestesclimat-preprod-pr%PR_NUMBER%.osc-fr1.scalingo.io"
     },
     "NEXT_PUBLIC_MATOMO_DOMAIN": {
       "value": "*.osc-fr1.scalingo.io",
