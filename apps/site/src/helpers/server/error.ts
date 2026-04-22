@@ -7,6 +7,13 @@ export class NotFoundError extends Error {
   }
 }
 
+export class NoSessionFound extends Error {
+  constructor() {
+    super('No session found in cookies')
+    this.name = 'NoSessionFound'
+  }
+}
+
 export class UnauthorizedError extends Error {
   constructor() {
     super('Unauthorized')

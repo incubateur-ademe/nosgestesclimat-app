@@ -8,8 +8,9 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
+import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import { getUser } from '@/helpers/server/dal/user'
-import { NotFoundError, throwNextError } from '@/helpers/server/error'
+import { NoSessionFound, throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import {
@@ -68,12 +69,12 @@ export default async function FinPage({
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!simulation) {
-    captureException(new NotFoundError(), {
-      level: 'warning',
-      extra: {
-        simulations,
-      },
-    })
+    const session = await getAnonSession()
+    if (!session.userId) {
+      captureException(new Error('No session found'))
+    } else {
+      captureException(new NoSessionFound(), { level: 'warning' })
+    }
     redirect('/')
   }
   const simulationResult = await throwNextError(async () => {
