@@ -10,7 +10,11 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import { getUser } from '@/helpers/server/dal/user'
-import { NoSessionFound, throwNextError } from '@/helpers/server/error'
+import {
+  NoSessionFoundError,
+  NotFoundError,
+  throwNextError,
+} from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import {
@@ -71,9 +75,9 @@ export default async function FinPage({
   if (!simulation) {
     const session = await getAnonSession()
     if (!session.userId) {
-      captureException(new Error('No session found'))
+      captureException(new NoSessionFoundError())
     } else {
-      captureException(new NoSessionFound(), { level: 'warning' })
+      captureException(new NotFoundError(), { level: 'warning' })
     }
     redirect('/')
   }

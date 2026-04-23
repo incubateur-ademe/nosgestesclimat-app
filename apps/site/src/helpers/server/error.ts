@@ -7,7 +7,7 @@ export class NotFoundError extends Error {
   }
 }
 
-export class NoSessionFound extends Error {
+export class NoSessionFoundError extends Error {
   constructor() {
     super('No session found in cookies')
     this.name = 'NoSessionFound'
