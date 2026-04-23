@@ -1,4 +1,4 @@
-import { Prisma } from '../../../prisma/generated/prisma/client.js'
+import { Prisma } from '@nosgestesclimat/core/prisma/generated/client.js'
 import { PrismaErrorCodes } from '../../adapters/prisma/constant.js'
 
 const isPrismaError = (

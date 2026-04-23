@@ -1,11 +1,11 @@
 import { PGlite } from '@electric-sql/pglite'
+import { Prisma, PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
 import { readFile, readdir } from 'fs/promises'
 import path from 'path'
 import { PrismaPGlite } from 'pglite-prisma-adapter'
 import redisMock from 'redis-mock'
 import { promisify } from 'util'
 import { afterAll, afterEach, beforeAll, expect, vi } from 'vitest'
-import { Prisma, PrismaClient } from './prisma/generated/prisma/client.js'
 import {
   mswServer,
   resetMswServer,

@@ -1,6 +1,6 @@
+import { PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { redis } from '../src/adapters/redis/client.js'
-import { PrismaClient } from './generated/prisma/client.js'
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,

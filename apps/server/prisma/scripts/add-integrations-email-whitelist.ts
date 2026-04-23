@@ -1,5 +1,5 @@
-import type { PrismaClient } from '../generated/prisma/client.js'
-import { ApiScopeName } from '../generated/prisma/client.js'
+import type { PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
+import { ApiScopeName } from '@nosgestesclimat/core/prisma/generated/client.js'
 
 const parsePatterns = ({
   description,
