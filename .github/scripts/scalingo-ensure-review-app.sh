@@ -32,9 +32,6 @@ HTTP_CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
   if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
     echo "Review app created (HTTP $HTTP_CODE). Waiting for it to be ready..."
     sleep 15
-  elif [ "$HTTP_CODE" -eq 500 ]; then
-    echo "Review app creation failed with HTTP 500. Exiting."
-    exit 1
   else
-    echo "Review app creation returned HTTP $HTTP_CODE (already exists). Continuing."
+    echo "Review app creation returned HTTP $HTTP_CODE. Continuing."
   fi
