@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable react-hooks/purity */
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-
 import Trans from '@/components/translation/trans/TransServer'
 import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import { getUser } from '@/helpers/server/dal/user'
@@ -56,9 +52,11 @@ export default async function Commencer({
   }
 
   const allowToReuseExistingSimulation =
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     !!lastCompletedSimulation &&
     poll.mode === 'standard' &&
     !poll.simulations.hasParticipated &&
+    // eslint-disable-next-line react-hooks/purity
     Date.now() - new Date(lastCompletedSimulation.date as string).getTime() <
       6 * 30 * 24 * 3600 * 1000
 
@@ -78,7 +76,9 @@ export default async function Commencer({
   if (allowToReuseExistingSimulation) {
     return (
       <ReuseSimulationForPoll
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         createNewSimulation={createNewSimulation}
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         reuseSimulation={reuseSimulation}
         locale={locale}
         disclaimer={disclaimer}
@@ -89,6 +89,7 @@ export default async function Commencer({
     <PollTutorialButton
       poll={poll}
       locale={locale}
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       createSimulation={createNewSimulation}
     />
   )
@@ -98,12 +99,15 @@ export default async function Commencer({
 
       {poll.mode === 'scolaire' ? (
         <YouthTutorial locale={locale} buttonNext={buttonNext} />
-      ) : (
+      ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      poll.mode === 'standard' ? (
         <Tutorial
           locale={locale}
           disclaimer={disclaimer}
           buttonNext={buttonNext}
         />
+      ) : (
+        (poll.mode satisfies never)
       )}
     </>
   )

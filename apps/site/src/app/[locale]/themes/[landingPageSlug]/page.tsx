@@ -175,7 +175,7 @@ export default async function ThematicLandingPage({
 
         {block4 && (
           <DidYouKnowSlider
-            CTAButtons={<CTAButtons locale={locale} />}
+            ctaButtons={<CTAButtons locale={locale} />}
             slides={block4?.map(({ text, image, pinkText }) => ({
               content: <div dangerouslySetInnerHTML={{ __html: text }} />,
               illustration: image?.url ?? '',

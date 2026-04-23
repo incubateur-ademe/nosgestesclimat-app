@@ -5,7 +5,7 @@ import Trans from '@/components/translation/trans/TransServer'
 export default function DidYouKnowCarbon({ locale }: { locale: string }) {
   return (
     <DidYouKnowSlider
-      CTAButtons={<CTAButtons locale={locale} />}
+      ctaButtons={<CTAButtons locale={locale} />}
       slides={[
         {
           illustration:

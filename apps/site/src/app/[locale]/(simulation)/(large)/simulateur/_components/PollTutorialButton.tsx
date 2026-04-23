@@ -22,10 +22,13 @@ export default function PollTutorialButton({
         <p className="mb-4 text-sm text-gray-500">
           {poll.mode === 'scolaire' ? (
             <Trans locale={locale}>Tu as déja participé à ce test.</Trans>
-          ) : (
+          ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          poll.mode === 'standard' ? (
             <Trans locale={locale}>
               Vous avez déjà participé à ce sondage.
             </Trans>
+          ) : (
+            (poll.mode satisfies never)
           )}
         </p>
 

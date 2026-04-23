@@ -17,7 +17,7 @@ export default function DidYouKnowMainLanding({
     <Suspense
       fallback={<BlockSkeleton className="my-0 h-[583px] md:h-[384px]" />}>
       <DidYouKnowSlider
-        CTAButtons={<CTAButtons locale={locale} />}
+        ctaButtons={<CTAButtons locale={locale} />}
         className={className}
         titleTag={titleTag}
         slides={[

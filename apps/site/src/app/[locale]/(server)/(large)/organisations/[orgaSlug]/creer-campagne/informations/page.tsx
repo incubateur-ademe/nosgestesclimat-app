@@ -2,7 +2,7 @@ import StepsDisplay from '@/components/groups/StepsDisplay'
 import Trans from '@/components/translation/trans/TransServer'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Title from '@/design-system/layout/Title'
-import { organisationAdminGuard } from '../../organisation-guard'
+import { organisationAdminGuard } from '../../guard'
 import CloseButton from '../_components/CloseButton'
 import PollNameForm from '../_components/PollNameForm'
 

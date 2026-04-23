@@ -1,9 +1,8 @@
 'use server'
 
-import { ORGANISATION_SIGN_IN_PATH } from '@/constants/urls/paths'
+import { throwNextError } from '@/helpers/server/error'
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
-import { isUserAuthenticated } from '@/helpers/server/model/user'
-import { redirect, unauthorized } from 'next/navigation'
+import { unauthorized } from 'next/navigation'
 
 /**
  * Checks if the user is authenticated and has access to the specified organisation.
@@ -13,10 +12,7 @@ import { redirect, unauthorized } from 'next/navigation'
  */
 
 export async function organisationAdminGuard(orgaSlug: string) {
-  if (!(await isUserAuthenticated())) {
-    redirect(ORGANISATION_SIGN_IN_PATH)
-  }
-  const organisation = await getUserOrganisation()
+  const organisation = await throwNextError(getUserOrganisation)
   if (organisation?.slug !== orgaSlug) {
     unauthorized()
   }

@@ -10,7 +10,7 @@ import { capitalizeString } from '@/utils/capitalizeString'
 import MyPolls from './_components/MyPolls'
 import NousContacter from './_components/NousContacter'
 import OurTools from './_components/OurTools'
-import { organisationAdminGuard } from './organisation-guard'
+import { organisationAdminGuard } from './guard'
 
 /* global PageProps */
 

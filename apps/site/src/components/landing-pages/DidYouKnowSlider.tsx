@@ -16,13 +16,13 @@ import Trans from '../translation/trans/TransClient'
 
 export default function DidYouKnowSlider({
   slides,
-  CTAButtons,
+  ctaButtons,
   className,
   titleTag = 'h2',
 }: {
   slides: { illustration: string; content: ReactNode; highlight?: ReactNode }[]
   className?: string
-  CTAButtons: ReactNode
+  ctaButtons: ReactNode
   titleTag?: 'h2' | 'h3'
 }) {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -235,7 +235,7 @@ export default function DidYouKnowSlider({
             <div className="splide__progress__bar" />
           </div>
         </Splide>
-        <div>{CTAButtons}</div>
+        <div>{ctaButtons}</div>
       </div>
 
       <ColorLine className="bg-rainbow animate-rainbow-slow absolute bottom-0 left-0 h-[4px] w-[100%] transition-all motion-reduce:animate-none" />

@@ -17,8 +17,9 @@ export default async function Email({
   const { locale } = await params
   const { t } = await getServerTranslation({ locale })
   const user = await getUser()
-  const [currentSimulation] = await getSimulations({ user }, { pageSize: 1 })
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const currentSimulation = (
+    await getSimulations({ user }, { pageSize: 1 })
+  ).at(0)
   if (!currentSimulation) {
     notFound()
   }
