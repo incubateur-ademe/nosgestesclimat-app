@@ -21,8 +21,10 @@ import type { NorthstarStatsFetchQuery } from './stats.validator.js'
 
 const NB_VISITS_MIN = 10
 
+type RecoverSource = keyof typeof clients
+
 type BaseParams = {
-  source: MatomoStatsSource
+  source: RecoverSource
   date: string
 }
 
@@ -202,8 +204,10 @@ const recoverSourceDayStats = async ({
 
 export const recoverDayStats = async (date: string) => {
   try {
+    const sourcesToRecover = [MatomoStatsSource.beta] as const
+
     await Promise.all(
-      Object.values(MatomoStatsSource).map((source) =>
+      sourcesToRecover.map((source) =>
         recoverSourceDayStats({
           source,
           date,

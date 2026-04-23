@@ -144,7 +144,7 @@ export const matomoClientFactory = ({
       ? {
           method: 'post',
           headers: {
-            'content-type': 'application/json',
+            'content-type': 'application/x-www-form-urlencoded',
           },
         }
       : {}),
@@ -159,9 +159,8 @@ export const matomoClientFactory = ({
 
   if (secure) {
     client.interceptors.request.use((req) => {
-      req.data = JSON.stringify({
-        token_auth: token,
-      })
+      req.method = 'post'
+      req.data = new URLSearchParams({ token_auth: token }).toString()
 
       return req
     })
