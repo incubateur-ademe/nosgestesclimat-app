@@ -22,6 +22,9 @@
       "default": "./src/*.ts"
     }
   },
+  "bin": {
+    "ngc": "./bin/ngc.ts"
+  },
   "scripts": {
     "prepare": "pnpm db:generate",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
@@ -29,8 +32,8 @@
     "typecheck": "tsc --noEmit",
     "generate": "pnpm db:generate",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio"
   },
   "keywords": [],
@@ -43,6 +46,7 @@
     "prisma": "^7.8.0"
   },
   "devDependencies": {
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "tsx": "^4.21.0"
   }
 }
