@@ -61,7 +61,7 @@ pnpm install
 Migre la base de donnée (requiert les dépendances, les .env et les services)
 
 ```bash
-pnpm -F server db:migrate
+pnpm -F core db:migrate
 ```
 
 Lance toutes les applications en mode développement (requiert les services, les .env et la migration)

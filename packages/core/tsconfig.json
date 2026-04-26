@@ -8,6 +8,6 @@
     "types": ["node"],
     "incremental": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "bin/**/*"],
   "exclude": ["node_modules"]
 }
