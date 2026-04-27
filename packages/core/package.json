@@ -26,7 +26,7 @@
     "ngc": "./bin/ngc.ts"
   },
   "scripts": {
-    "postinstall": "pnpm generate",
+    "postinstall": "prisma generate",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "format": "prettier --write ./**/*.{js,ts,tsx,json,md}",
     "typecheck": "tsc --noEmit",
