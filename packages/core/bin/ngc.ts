@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env -S node --experimental-strip-types
 
 /**
  * NGC CLI — bin entry point for @nosgestesclimat/core.
