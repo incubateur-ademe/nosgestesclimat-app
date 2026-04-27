@@ -26,7 +26,6 @@
     "ngc": "./bin/ngc.ts"
   },
   "scripts": {
-    "prepare": "pnpm db:generate",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "format": "prettier --write ./**/*.{js,ts,tsx,json,md}",
     "typecheck": "tsc --noEmit",

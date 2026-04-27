@@ -27,7 +27,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "scalingo:remove-unused-dependencies": "pnpm --filter=@nosgestesclimat/server --prod deploy /tmp/deploy && rm -rf node_modules ../../node_modules && mv -f /tmp/deploy/node_modules .",
-    "scalingo-postbuild": "pnpm run build && pnpm run scalingo:remove-unused-dependencies"
+    "scalingo-postbuild": "pnpm -F \"server^...\" generate && pnpm run build && pnpm run scalingo:remove-unused-dependencies"
   },
   "author": "",
   "license": "MIT",
