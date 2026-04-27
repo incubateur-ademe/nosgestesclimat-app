@@ -19,6 +19,7 @@ minimumReleaseAgeExclude:
 
 onlyBuiltDependencies:
   - '@incubateur-ademe/nosgestesclimat'
+  - '@nosgestesclimat/core'
   - '@prisma/engines'
   - '@sentry/cli'
   - msw
