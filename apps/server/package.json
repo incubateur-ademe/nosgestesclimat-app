@@ -26,7 +26,7 @@
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node ./dist/src/worker.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "scalingo-prebuild": "ls -al /tmp && DEBUG=* pnpm --loglevel=debug install --frozen-lockfile",
+    "scalingo-prebuild": "ls -al /tmp && cat /tmp/node-build-log.* && DEBUG=* pnpm --loglevel=debug install --frozen-lockfile && cat /tmp/node-build-log.*",
     "scalingo:remove-unused-dependencies": "pnpm --filter=@nosgestesclimat/server --prod deploy /tmp/deploy && rm -rf node_modules ../../node_modules && mv -f /tmp/deploy/node_modules .",
     "scalingo-postbuild": "pnpm run build && pnpm run scalingo:remove-unused-dependencies"
   },
