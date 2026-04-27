@@ -9,7 +9,6 @@ export default () => {
   process.env.JOB_SECRET = 'mySuperTestJobSecret'
   process.env.JWT_SECRET = 'mySuperTestJwtSecret'
   process.env.MATOMO_BETA_TOKEN = 'mySuperTestMatomoBetaToken'
-  process.env.MATOMO_DATA_TOKEN = 'mySuperTestMatomoDataToken'
   process.env.TWO_TONS_URL = 'https://api.two-tons.com'
   process.env.TWO_TONS_BEARER_TOKEN = 'mySuperTestTwoTonsSecret'
   process.env.SCALEWAY_SECRET_ACCESS_KEY = 'mySuperTestScalewaySecretAccessKey'

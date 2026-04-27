@@ -79,7 +79,7 @@ const MatomoDataSchema = MatomoInstanceBaseSchema.extend({
 const MatomoSchema = z
   .object({
     beta: MatomoBetaSchema,
-    data: MatomoDataSchema,
+    data: MatomoDataSchema.optional(),
   })
   .strict()
 
@@ -157,13 +157,10 @@ const {
     JOB_SECRET,
     JWT_SECRET,
     MATOMO_BETA_SITE_ID,
+    MATOMO_BETA_SECURE,
     MATOMO_BETA_TIMEOUT,
     MATOMO_BETA_TOKEN,
     MATOMO_BETA_URL,
-    MATOMO_DATA_SITE_ID,
-    MATOMO_DATA_TIMEOUT,
-    MATOMO_DATA_TOKEN,
-    MATOMO_DATA_URL,
     NODE_ENV,
     ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
     ORIGIN,
@@ -222,15 +219,10 @@ export const config = ConfigSchema.parse({
     matomo: {
       beta: {
         siteId: MATOMO_BETA_SITE_ID,
+        secure: MATOMO_BETA_SECURE,
         timeout: MATOMO_BETA_TIMEOUT,
         token: MATOMO_BETA_TOKEN,
         url: MATOMO_BETA_URL,
-      },
-      data: {
-        siteId: MATOMO_DATA_SITE_ID,
-        timeout: MATOMO_DATA_TIMEOUT,
-        token: MATOMO_DATA_TOKEN,
-        url: MATOMO_DATA_URL,
       },
     },
     scaleway: {
