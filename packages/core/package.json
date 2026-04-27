@@ -30,7 +30,7 @@
     "format": "prettier --write ./**/*.{js,ts,tsx,json,md}",
     "typecheck": "tsc --noEmit",
     "generate": "pnpm db:generate",
-    "db:generate": "pwd && ls -al ./node_modules && ls -al ../../node_modules && prisma generate",
+    "db:generate": "pwd && ls -al ./node_modules 2>/dev/null || echo \"1: does not exist\"; ls -al ../../node_modules 2>/dev/null || echo \"2: does not exist\"; prisma generate",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio"
