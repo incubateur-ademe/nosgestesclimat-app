@@ -60,7 +60,7 @@ export default function DocumentationClient({ slugs }: Props) {
 
   return (
     <div className="mt-4 mb-16 w-full px-2">
-      <PasserTestBanner />
+      <PasserTestBanner locale={locale} />
       <MetricSwitchButton
         metric={metric}
         setMetric={(metric) => {

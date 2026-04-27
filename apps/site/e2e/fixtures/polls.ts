@@ -38,7 +38,7 @@ export class Poll {
   }
 
   get createUrl() {
-    return `${this.organisation.url}/creer-campagne`
+    return `${this.organisation.url}/creer-campagne/informations`
   }
 
   async goto() {
@@ -47,7 +47,7 @@ export class Poll {
 
   async create() {
     // Step 1: Fill poll name and go to step 2
-    await expect(this.page).toHaveURL(/\/creer-campagne\/informations/)
+    await expect(this.page).toHaveURL(this.createUrl)
     await this.page.getByTestId('poll-name-input').fill(this.name)
     await this.page.getByTestId('poll-form-name-button').click()
 
@@ -65,11 +65,8 @@ export class Poll {
     await expect(submitButton).toBeDisabled()
 
     // Retrieve the poll slug (allow more time for the API call)
-
-    // Retrieve the poll slug
     const pollUrl = /\/campagnes\/([a-z0-9-]*)/
-    await expect(this.page).toHaveURL(pollUrl)
-
+    await expect(this.page).toHaveURL(pollUrl, { timeout: 30000 })
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 

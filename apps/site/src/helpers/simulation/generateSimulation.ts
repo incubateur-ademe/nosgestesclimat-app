@@ -1,9 +1,9 @@
 import { metrics } from '@/constants/model/metric'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { migrateSimulation } from '@/publicodes-state/helpers/migrateSimulation'
 import type {
   ComputedResults,
   ComputedResultsFootprint,
-  Simulation,
 } from '@/publicodes-state/types'
 import type { Migration } from '@publicodes/tools/migration'
 import { captureException } from '@sentry/nextjs'

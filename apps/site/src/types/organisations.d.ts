@@ -52,12 +52,14 @@ interface BaseOrganisationPoll {
   expectedNumberOfParticipants?: number
   createdAt: string
   updatedAt: string
+  mode: 'scolaire' | 'standard'
   organisation: Omit<Organisation, 'polls'> | PublicOrganisation
   simulations: {
     count: number
     finished: number
     hasParticipated: boolean
   }
+  progression?: number
   /**
    * computedResults de toutes les simulations (somme)
    */

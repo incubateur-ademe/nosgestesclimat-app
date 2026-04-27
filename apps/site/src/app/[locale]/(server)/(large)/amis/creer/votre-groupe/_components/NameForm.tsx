@@ -4,16 +4,16 @@ import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMess
 import Trans from '@/components/translation/trans/TransClient'
 import { GROUP_EMOJIS } from '@/constants/group'
 import { amisCreationEtapeVotreGroupeSuivant } from '@/constants/tracking/pages/amisCreation'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import GridRadioInputs from '@/design-system/inputs/GridRadioInputs'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import TextInput from '@/design-system/inputs/TextInput'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { AuthUser } from '@/helpers/server/model/user'
 import { useCreateGroup } from '@/hooks/groups/useCreateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useCurrentSimulation, useUser } from '@/publicodes-state'
-import type { Simulation } from '@/publicodes-state/types'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -71,11 +71,6 @@ export default function NameForm({
         },
       })
 
-      // Update current simulation with group id (to redirect after test completion)
-      currentSimulation.update({
-        groupToAdd: group.id,
-      })
-
       trackMatomoEvent__deprecated(amisCreationEtapeVotreGroupeSuivant)
 
       if (lastSimulation) {
@@ -83,7 +78,7 @@ export default function NameForm({
       } else {
         updateName(administratorName)
 
-        router.push(SIMULATOR_PATH)
+        router.push(TUTORIAL_PATH)
       }
     } catch (e) {
       captureException(e)

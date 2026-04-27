@@ -28,33 +28,8 @@ setup('complete test', async ({ page, ngcTest, cookieBanner }) => {
   await ngcTest.skipAll()
   await expect(page).toHaveURL(/\/fin/)
 
-  await page.waitForTimeout(3000)
-
   await saveContext(page, COMPLETED_TEST_STATE)
 })
-
-setup(
-  'complete test and create group',
-  async ({ page, group, ngcTest, cookieBanner }) => {
-    await page.goto('/')
-    await cookieBanner.dismiss()
-    await ngcTest.skipAll()
-
-    // Wait for simulation to be saved
-    await page.waitForTimeout(3000)
-
-    await page.getByTestId('my-groups-tab').click()
-    await page.getByTestId('create-group-button').click()
-
-    await expect(page).toHaveURL(new RegExp(Group.CREATION_URL))
-    await group.admin.fillEmailAndCompleteVerification()
-    await group.create()
-    await group.copyInviteLink()
-
-    await group.saveInContext()
-    await saveContext(page, GROUP_ADMIN_STATE)
-  }
-)
 
 setup(
   'complete test and save its simulation',
@@ -72,6 +47,26 @@ setup(
 
     await user.saveInContext()
     await saveContext(page, USER_ACCOUNT_STATE)
+  }
+)
+
+setup(
+  'complete test and create group',
+  async ({ page, group, ngcTest, cookieBanner }) => {
+    await page.goto('/')
+    await cookieBanner.dismiss()
+    await ngcTest.skipAll()
+
+    await page.getByTestId('my-groups-tab').click()
+    await page.getByTestId('create-group-button').click()
+
+    await expect(page).toHaveURL(new RegExp(Group.CREATION_URL))
+    await group.admin.fillEmailAndCompleteVerification()
+    await group.create()
+    await group.copyInviteLink()
+
+    await group.saveInContext()
+    await saveContext(page, GROUP_ADMIN_STATE)
   }
 )
 

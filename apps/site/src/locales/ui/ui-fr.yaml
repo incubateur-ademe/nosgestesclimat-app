@@ -1274,32 +1274,8 @@ entries:
   actions.jva.banner.text1: 'Dépollution, sensibilisation, soin aux animaux, ateliers de réparation et potager urbain. '
   actions.jva.banner.text2: 'Rejoignez l’opération Printemps pour la planète sur <2>JeVeuxAider.gouv.fr</2> '
   actions.jva.banner.title: Faites du bénévolat pour préserver l’environnement
-  Retour à la liste: Retour à la liste
-  common.navigation.nextQuestion.next.labelDisabled: Aller à la question suivante, désactivé, veuillez répondre à la question avant de passer à la suivante
-  groups.results.rankingMember.simulationDeleted: Utilisateur anonyme (données supprimées par le participant)
-  mon-espace.resultsList.hasMigratedSimulations: Nous avons retrouvé des simulations sur ce navigateur et les avons ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
-  mySpace.resultList.item.delete.mainButton.label: Supprimer
-  mySpace.resultList.item.delete.modal.confirm: Confirmer la suppression
-  mySpace.resultList.item.delete.modal.error: Une erreur s'est produite au moment de supprimer cet élément. Veuillez réessayer.
-  mySpace.resultList.item.delete.modal.title: Êtes-vous sûr(e) de vouloir supprimer ce résultat ?
-  simulator.dontKnow.button.label: Je ne sais pas répondre
-  simulator.dontKnow.button.reassurance: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
-  youthTutorial.cta.helper: Ça prend seulement quelques minutes
-  youthTutorial.cta.label: Allez, c'est parti
-  youthTutorial.list.advice: Conseils concrets
-  youthTutorial.list.custom: Résultat perso
-  youthTutorial.list.time: Rapide
-  youthTutorial.secondlist.dontKnow.body: Choisis "je ne sais pas", on gère
-  youthTutorial.secondlist.dontKnow.title: Pas grave si tu sais pas
-  youthTutorial.secondlist.fast.body: Quelques minutes pour tout comprendre
-  youthTutorial.secondlist.fast.title: Rapide et utile
-  youthTutorial.secondlist.forYou.body: C'est ton empreinte, pas celle de ta famille
-  youthTutorial.secondlist.forYou.title: Réponds pour toi
-  youthTutorial.secondlist.result.body: Ton score et des idées pour agir
-  youthTutorial.secondlist.result.title: Résultat + actions
-  youthTutorial.subtitle: Un test rapide pour comprendre ton empreinte carbone et agir !
-  youthTutorial.title: Découvre ton impact <2>sur la planète</2>
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
+  Retour à la liste: Retour à la liste
   ctaButtons.collective.label: Créer un test collectif
   ctaButtons.retake.label: Repasser le test
   Résultats immédiats, confidentiel et gratuit.: Résultats immédiats, confidentiel et gratuit.
@@ -1354,3 +1330,29 @@ entries:
   Voir tous les tests collectifs: Voir tous les tests collectifs
   Votre e-mail, rejoindre un test collectif - Nos Gestes Climat: Votre e-mail, rejoindre un test collectif - Nos Gestes Climat
   vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !: vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !
+  Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.: Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.
+  groups.results.rankingMember.simulationDeleted: Utilisateur anonyme (données supprimées par le participant)
+  mon-espace.resultsList.hasMigratedSimulations: Nous avons retrouvé des simulations sur ce navigateur et les avons ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
+  mySpace.resultList.item.delete.mainButton.label: Supprimer
+  mySpace.resultList.item.delete.modal.confirm: Confirmer la suppression
+  mySpace.resultList.item.delete.modal.error: Une erreur s'est produite au moment de supprimer cet élément. Veuillez réessayer.
+  mySpace.resultList.item.delete.modal.title: Êtes-vous sûr(e) de vouloir supprimer ce résultat ?
+  simulator.dontKnow.button.label: Je ne sais pas répondre
+  simulator.dontKnow.button.reassurance: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  Tu as déja participé à ce test.: Tu as déja participé à ce test.
+  Vous avez déjà participé à ce sondage.: Vous avez déjà participé à ce sondage.
+  youthTutorial.cta.helper: Ça prend seulement quelques minutes
+  youthTutorial.cta.label: Allez, c'est parti
+  youthTutorial.list.advice: Conseils concrets
+  youthTutorial.list.custom: Résultat perso
+  youthTutorial.list.time: Rapide
+  youthTutorial.secondlist.dontKnow.body: Choisis "je ne sais pas", on gère
+  youthTutorial.secondlist.dontKnow.title: Pas grave si tu sais pas
+  youthTutorial.secondlist.fast.body: Quelques minutes pour tout comprendre
+  youthTutorial.secondlist.fast.title: Rapide et utile
+  youthTutorial.secondlist.forYou.body: C'est ton empreinte, pas celle de ta famille
+  youthTutorial.secondlist.forYou.title: Réponds pour toi
+  youthTutorial.secondlist.result.body: Ton score et des idées pour agir
+  youthTutorial.secondlist.result.title: Résultat + actions
+  youthTutorial.subtitle: Un test rapide pour comprendre ton empreinte carbone et agir !
+  youthTutorial.title: Découvre ton impact <2>sur la planète</2>

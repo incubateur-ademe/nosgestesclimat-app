@@ -1,6 +1,7 @@
 'use client'
 
 import { getInitialExtendedSituation } from '@/helpers/modelFetching/getInitialExtendedSituation'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import { migrateSimulation } from '@/publicodes-state/helpers/migrateSimulation'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
@@ -12,7 +13,7 @@ import type {
 import type { Migration } from '@publicodes/tools/migration'
 import type { Dispatch, SetStateAction } from 'react'
 import { useCallback, useMemo } from 'react'
-import type { Simulation, UpdateCurrentSimulationProps } from '../../../types'
+import type { UpdateCurrentSimulationProps } from '../../../types'
 
 interface Props {
   simulations: Simulation[]

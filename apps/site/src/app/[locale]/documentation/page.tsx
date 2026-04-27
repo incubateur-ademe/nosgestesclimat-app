@@ -15,10 +15,13 @@ export const generateMetadata = getCommonMetadata({
   },
 })
 
-export default function Documentation() {
+export default async function Documentation({
+  params,
+}: PageProps<'/[locale]/documentation'>) {
+  const { locale } = await params
   return (
     <div className="w-full max-w-4xl p-4 md:mx-auto md:py-8">
-      <PasserTestBanner />
+      <PasserTestBanner locale={locale} />
 
       <DocumentationLanding />
     </div>

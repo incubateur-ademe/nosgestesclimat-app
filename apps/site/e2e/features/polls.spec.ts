@@ -74,9 +74,11 @@ test.describe('A new user', () => {
   test('can join a poll via the invite link and reach the tutorial', async ({
     poll,
     page,
+    organisation,
   }) => {
     await page.goto(poll.inviteLink)
-    await expect(page).toHaveURL(new RegExp(TutorialPage.URL))
+    await expect(page.getByText(organisation.name)).toBeVisible()
+    await expect(page).toHaveURL(new RegExp('/simulateur/campagne/'))
   })
 
   test('can leave its email after completing the test via poll invite', async ({

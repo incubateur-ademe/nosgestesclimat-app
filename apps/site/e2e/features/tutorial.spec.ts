@@ -1,8 +1,9 @@
-import { expect, test, TutorialPage } from '../fixtures/tutorial'
+import { expect, test } from '../fixtures'
+import { TutorialPage } from '../fixtures/tutorial'
 
 test('should be displayed when coming from the home', async ({ page }) => {
   await page.goto('/')
-  await page.getByTestId('do-the-test-link').first().click()
+  await page.getByTestId('main-cta').first().click()
   await expect(page).toHaveURL(TutorialPage.URL)
 })
 
@@ -10,19 +11,42 @@ test('should start test when clicking on the start button', async ({
   page,
   tutorialPage,
 }) => {
-  await tutorialPage.goto()
+  await tutorialPage.start()
   await tutorialPage.skip()
   await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
 })
 
-test('should only be displayed once when coming from home', async ({
+test('should redirect to home for new users', async ({
   page,
   tutorialPage,
 }) => {
   await tutorialPage.goto()
-  await tutorialPage.skip()
-  await page.waitForURL(/\/simulateur\/bilan\?question=/)
-  await page.goto('/')
-  await page.getByTestId('do-the-test-link').first().click()
-  await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
+  await expect(page).toHaveURL('/')
+})
+
+test.describe('when a user starts to answer test', () => {
+  test.beforeEach(async ({ page, ngcTest }) => {
+    await ngcTest.start()
+    await page.waitForURL(/\/simulateur\/bilan/)
+    await ngcTest.clickOnSkip()
+    await ngcTest.clickOnSkip()
+    // Wait for the autosave to trigger
+    await page.waitForTimeout(3000)
+  })
+
+  test('it should redirect to the current test when accessed', async ({
+    page,
+    tutorialPage,
+  }) => {
+    await tutorialPage.goto()
+    await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
+  })
+
+  test('it should not be displayed when the user restart a new test', async ({
+    page,
+    tutorialPage,
+  }) => {
+    await tutorialPage.start()
+    await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
+  })
 })
