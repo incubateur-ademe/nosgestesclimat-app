@@ -47,6 +47,11 @@ const coreDir = resolve(dirname(coreMain), '..')
 const prismaConfig = resolve(coreDir, 'prisma.config.ts')
 
 switch (command) {
+  case 'db:generate':
+    execFileSync('prisma', ['generate', '--config', prismaConfig], {
+      stdio: 'inherit',
+    })
+    break
   case 'db:migrate':
     execFileSync('prisma', ['migrate', 'deploy', '--config', prismaConfig], {
       stdio: 'inherit',
@@ -57,6 +62,7 @@ switch (command) {
     console.error('Usage: ngc <command>')
     console.error('')
     console.error('Commands:')
+    console.error('  db:generate  Run prisma generate')
     console.error('  db:migrate   Run prisma migrate deploy')
     process.exit(1)
 }
