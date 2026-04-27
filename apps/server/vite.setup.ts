@@ -1,6 +1,7 @@
 import { PGlite } from '@electric-sql/pglite'
 import { Prisma, PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
 import { readFile, readdir } from 'fs/promises'
+import { createRequire } from 'module'
 import path from 'path'
 import { PrismaPGlite } from 'pglite-prisma-adapter'
 import redisMock from 'redis-mock'
@@ -103,8 +104,11 @@ const prisma = basePrisma.$extends({
     },
   },
 })
+const require = createRequire(import.meta.url)
+const coreMain = require.resolve('@nosgestesclimat/core')
 const prismaMigrationDir = path.join(
-  import.meta.dirname,
+  path.dirname(coreMain),
+  '..',
   'prisma',
   'migrations'
 )
