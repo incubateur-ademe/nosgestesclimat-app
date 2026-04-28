@@ -11,6 +11,10 @@
     {
       "command": "0 1 * * * pnpm jobs:recoverNewsletterStats",
       "size": "M"
+    },
+    {
+      "command": "0 23 * * * pnpm jobs:syncBrevoContacts",
+      "size": "M"
     }
   ]
 }
