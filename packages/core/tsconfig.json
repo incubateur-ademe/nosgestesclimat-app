@@ -6,8 +6,9 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"],
-    "incremental": true
+    "incremental": true,
+    "allowJs": true // ./bin files
   },
-  "include": ["src/**/*", "bin/**/*"],
+  "include": ["./**/*"],
   "exclude": ["node_modules"]
 }
