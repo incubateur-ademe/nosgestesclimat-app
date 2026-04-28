@@ -23,7 +23,7 @@ export const addOrUpdateBrevoAdministratorContact: Handler<
   },
 }) => {
   const administratorHasJoined = participants?.some(
-    ({ user }) => user.id === id
+    ({ user }) => user?.id === id
   )
   const isAdministrator = participantUser?.id === id
 
@@ -55,7 +55,11 @@ export const addOrUpdateBrevoParticipantContact: Handler<
   const unsubscriptions = []
 
   if (event instanceof GroupDeletedEvent) {
-    unsubscriptions.push(...participants.map(({ user }) => user))
+    unsubscriptions.push(
+      ...participants
+        .filter((p): p is typeof p & { user: NonNullable<typeof p.user> } => p.user !== null)
+        .map(({ user }) => user)
+    )
   }
 
   if (participantUser?.email) {

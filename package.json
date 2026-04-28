@@ -15,6 +15,8 @@
     "preinstall": "npx only-allow pnpm",
     "start": "pnpm -r --parallel run start",
     "dev": "pnpm -r --parallel run dev",
+    "devcontainer:start": "devcontainer up && devcontainer exec pnpm run dev",
+    "devcontainer:stop": "devcontainer exec pkill node",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "test:coverage": "pnpm -r run test -- --coverage",

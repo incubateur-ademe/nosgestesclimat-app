@@ -46,7 +46,7 @@ const getFullClassName = ({
 }) =>
   twMerge(
     commonClassName,
-    'rounded-l-sm',
+    'rounded-l-sm flex items-center',
     index === 0 && 'border-l -mr-[1px]',
     index === options.length - 1 &&
       'border-r rounded-l-none rounded-r-sm -ml-[1px]',

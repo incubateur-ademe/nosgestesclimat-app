@@ -217,19 +217,18 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
 
   const ariaLabelTitle = isOpen
     ? t(
-        'header.monEspace.openMenuButton.open.title',
-        'Mon espace ({{email}}), ouvrir le menu',
-        {
-          email,
-        }
-      )
-    : t(
         'header.monEspace.openMenuButton.close.title',
         'Mon espace ({{email}}), fermer le menu',
         {
           email,
         }
-      )
+      ) : t(
+          'header.monEspace.openMenuButton.open.title',
+          'Mon espace ({{email}}), ouvrir le menu',
+          {
+            email,
+          }
+        )
 
   return (
     <div className="relative inline-block">

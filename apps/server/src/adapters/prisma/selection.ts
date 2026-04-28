@@ -19,6 +19,7 @@ export const defaultVerifiedUserSelection = {
 
 export const defaultGroupParticipantSelection = {
   id: true,
+  userId: true,
   user: {
     select: defaultUserSelection,
   },
@@ -146,6 +147,11 @@ export const defaultSimulationSelection = {
 
 export const simulationSelectionWithPolls = {
   ...defaultSimulationSelection,
+  user: {
+    select: {
+      name: true,
+    },
+  },
   polls: {
     select: {
       pollId: true,

@@ -22,7 +22,7 @@ export default function Email() {
     <>
       <Title
         data-testid="tutoriel-title"
-        className="text-lg md:text-2xl"
+        className="mt-10 text-lg md:text-2xl"
         title={<Trans>Votre adresse electronique</Trans>}
         subtitle={
           <>

@@ -363,10 +363,12 @@ export const softDeleteSimulation = async (
     return null
   }
 
-  await session.groupParticipant.deleteMany({
+  await session.groupParticipant.updateMany({
     where: {
-      simulationId,
-      userId,
+      simulationId: simulationId,
+    },
+    data: {
+      userId: null,
     },
   })
 

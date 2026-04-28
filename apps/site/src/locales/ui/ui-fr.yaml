@@ -1388,7 +1388,7 @@ entries:
   Vérifier mon adresse email: Vérifier mon adresse email
   error.contactSupport: Si le problème persiste, merci de <2>contacter le support.</2>
   results.groups.createFirstGroup: <0>Créez votre premier groupe</0> et invitez vos proches pour comparer vos résultats. Cela prend <4>1 minute</4> !
-  results.groups.ranking.laconic: Qui de <2>{group.participants[0].name}</2> et vous aura la plus faible empreinte ?
+  results.groups.ranking.laconic: Qui de <2>{{name}}</2> et vous aura la plus faible empreinte ?
   results.groups.invite.first: Vous êtes le premier <1>🥳</1> mais vous êtes seul·e… <4>🥲</4>
   faq.doTheTest.notStarted: Vous n'avez pas encore débuté votre test, <2><0>lancez-vous !</0></2>
   faq.doTheTest.started: Vous avez commencé votre test, <2><0>cliquez ici pour le reprendre !</0></2>
