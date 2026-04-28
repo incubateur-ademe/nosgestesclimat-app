@@ -11,7 +11,7 @@ interface Props {
   simulations: Simulation[]
   locale: Locale
 }
-export function ActionPage({ simulations, locale }: Props) {
+export function LegacyActionPage({ simulations, locale }: Props) {
   return (
     <div className="mb-20 flex flex-col">
       {simulations.length <= 0 ? (

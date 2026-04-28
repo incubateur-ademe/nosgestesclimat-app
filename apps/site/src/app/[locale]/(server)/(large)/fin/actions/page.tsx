@@ -1,4 +1,4 @@
-import { ActionPage } from '@/components/results/ActionPage'
+import { LegacyActionPage } from '@/components/results/LegacyActionPage'
 import { getUser } from '@/helpers/server/dal/user'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import type { DefaultPageProps } from '@/types'
@@ -13,5 +13,5 @@ export default async function ResultatsActionsPage({
     { completedOnly: true, pageSize: 1 }
   )
 
-  return <ActionPage simulations={simulations} locale={locale} />
+  return <LegacyActionPage simulations={simulations} locale={locale} />
 }

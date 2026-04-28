@@ -1,4 +1,4 @@
-import { ActionPage } from '@/components/results/ActionPage'
+import { LegacyActionPage } from '@/components/results/LegacyActionPage'
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import { throwNextError } from '@/helpers/server/error'
@@ -26,7 +26,7 @@ export default async function MonEspaceActionsPage({
       </h1>
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
-      <ActionPage simulations={simulations} locale={locale} />
+      <LegacyActionPage simulations={simulations} locale={locale} />
     </div>
   )
 }
