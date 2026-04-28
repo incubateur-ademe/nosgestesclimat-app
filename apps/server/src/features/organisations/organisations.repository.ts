@@ -829,6 +829,13 @@ export const getOrganisationSimulationInfo = async (
 
   const organisationPollIds = pollIds.map(({ id }) => id)
 
+  if (organisationPollIds.length === 0) {
+    return {
+      organisationSimulationsCompletedCount: 0,
+      organisationLastSimulationDate: undefined,
+    }
+  }
+
   const [simulationCount, simulationPoll] = await Promise.all([
     session.simulationPoll.count({
       where: {
