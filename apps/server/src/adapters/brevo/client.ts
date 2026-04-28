@@ -12,6 +12,7 @@ import type {
 import type {
   Group,
   Organisation,
+  OrganisationType,
   Poll,
   Simulation,
   User,
@@ -659,6 +660,9 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   administratorName,
   optedInForCommunications,
   lastPollParticipantsCount,
+  type,
+  pollsCreatedCount,
+  organisationSimulationsCompletedCount,
 }: {
   slug: string
   email: string
@@ -667,6 +671,9 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   lastPollParticipantsCount: number
   administratorName?: string | null
   optedInForCommunications?: boolean
+  type?: OrganisationType
+  pollsCreatedCount: number
+  organisationSimulationsCompletedCount: number
 }) => {
   const attributes = {
     [Attributes.USER_ID]: userId,
@@ -680,6 +687,10 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
           [Attributes.PRENOM]: administratorName,
         }
       : {}),
+    [Attributes.ORGANISATION_TYPE]: type,
+    [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
+    [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
+      organisationSimulationsCompletedCount,
   }
 
   await addOrUpdateContact({
