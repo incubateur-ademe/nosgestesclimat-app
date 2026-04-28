@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --experimental-strip-types
+#!/usr/bin/env node
 
 /**
  * NGC CLI — bin entry point for @nosgestesclimat/core.
@@ -25,7 +25,9 @@
  */
 
 import { execFileSync } from 'node:child_process'
+import console from 'node:console'
 import { dirname, resolve } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 const command = process.argv[2]
@@ -44,12 +46,13 @@ try {
 // Resolve the @nosgestesclimat/core package root via its main export (src/index.ts → src/ → root)
 const coreMain = fileURLToPath(import.meta.resolve('@nosgestesclimat/core'))
 const coreDir = resolve(dirname(coreMain), '..')
-const prismaConfig = resolve(coreDir, 'prisma.config.ts')
+const prismaConfig = resolve(coreDir, 'prisma.config.js')
 
 switch (command) {
   case 'db:generate':
     execFileSync('prisma', ['generate', '--config', prismaConfig], {
       stdio: 'inherit',
+      env: { ...process.env, TS_NODE_PROJECT: resolve(cwd, 'tsconfig.json') },
     })
     break
   case 'db:migrate':

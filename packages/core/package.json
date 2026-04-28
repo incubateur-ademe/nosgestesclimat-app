@@ -23,7 +23,7 @@
     }
   },
   "bin": {
-    "ngc": "./bin/ngc.ts"
+    "ngc": "./bin/ngc.js"
   },
   "scripts": {
     "prepare": "pnpm generate",
@@ -45,8 +45,5 @@
     "@prisma/client": "^7.8.0",
     "dotenv": "^17.4.2",
     "prisma": "^7.8.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.21.0"
   }
 }
