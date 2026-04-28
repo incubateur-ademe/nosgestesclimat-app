@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
+import dayjs from 'dayjs'
 import { z } from 'zod'
 import { config } from '../../config.js'
 import { Locales } from '../../core/i18n/constant.js'
@@ -694,7 +695,9 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
     [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
       organisationSimulationsCompletedCount,
     [Attributes.LAST_ORGANISATION_SIMULATION_DATE]:
-      organisationLastSimulationDate.toISOString(),
+      organisationLastSimulationDate
+        ? dayjs(organisationLastSimulationDate).format('YYYY-MM-DD')
+        : undefined,
   }
 
   await addOrUpdateContact({
