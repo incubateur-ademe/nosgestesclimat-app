@@ -3,7 +3,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 export interface Participant {
   id: string
-  name: string
+  name?: string
   simulation: Simulation
   userId?: string
   email?: string
