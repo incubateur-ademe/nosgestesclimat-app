@@ -146,11 +146,6 @@ export const defaultSimulationSelection = {
 
 export const simulationSelectionWithPolls = {
   ...defaultSimulationSelection,
-  user: {
-    select: {
-      name: true,
-    },
-  },
   polls: {
     select: {
       pollId: true,
