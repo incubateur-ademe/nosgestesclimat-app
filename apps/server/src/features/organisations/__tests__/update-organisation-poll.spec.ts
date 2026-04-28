@@ -211,6 +211,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationName: string
         let organisationSlug: string
+        let organisationType: string
         let pollId: string
         let pollSlug: string
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
@@ -220,10 +221,12 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
           } = await createOrganisation({
             agent,
             cookie,
           }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -293,6 +296,10 @@ describe('Given a NGC user', () => {
                   ORGANISATION_SLUG: organisationSlug,
                   LAST_POLL_PARTICIPANTS_NUMBER: 0,
                   OPT_IN: false,
+                  ORGANISATION_TYPE: organisationType,
+                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
+                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 0,
+                  LAST_ORGANISATION_SIMULATION_DATE: undefined,
                 },
                 updateEnabled: true,
               },
@@ -394,6 +401,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationName: string
         let organisationSlug: string
+        let organisationType: string
         let pollId: string
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
 
@@ -402,6 +410,7 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
           } = await createOrganisation({
             agent,
             cookie,
@@ -413,6 +422,7 @@ describe('Given a NGC user', () => {
               ],
             },
           }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -438,6 +448,10 @@ describe('Given a NGC user', () => {
                   ORGANISATION_SLUG: organisationSlug,
                   LAST_POLL_PARTICIPANTS_NUMBER: 0,
                   OPT_IN: true,
+                  ORGANISATION_TYPE: organisationType,
+                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
+                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 0,
+                  LAST_ORGANISATION_SIMULATION_DATE: undefined,
                 },
                 updateEnabled: true,
               },
