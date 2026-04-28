@@ -15,8 +15,6 @@ interface Props {
 export default function LaconicRanking({ group }: Props) {
   const { t } = useClientTranslation()
 
-  console.log(group.participants[0].name)
-
   // If only one participant
   if (group.participants.length === 1) {
     const name = group.participants[0].name

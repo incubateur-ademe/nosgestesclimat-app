@@ -23,7 +23,6 @@ export default function GroupPage() {
     isError,
     refetch: refetchGroup,
   } = useFetchGroup(groupIdInQueryParams)
-  console.log(group?.participants)
   // If we are still fetching the group (or we are redirecting the user), we display a loader
   if (isGuardRedirecting || isLoading) {
     return <GroupLoader />
