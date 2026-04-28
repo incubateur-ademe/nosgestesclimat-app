@@ -19,7 +19,6 @@ export const defaultVerifiedUserSelection = {
 
 export const defaultGroupParticipantSelection = {
   id: true,
-  userId: true,
   user: {
     select: defaultUserSelection,
   },

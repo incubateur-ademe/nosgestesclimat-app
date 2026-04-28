@@ -67,7 +67,9 @@ const participantToDto = (
     user,
     createdAt,
     updatedAt,
-  }: Partial<PopulatedParticipant> & { user: PopulatedParticipant['user'] | null },
+  }: Partial<PopulatedParticipant> & {
+    user: PopulatedParticipant['user'] | null
+  },
   connectedUser: string
 ) => {
   // Soft-deleted participant (userId set to null)
@@ -213,7 +215,7 @@ export const createParticipant = async ({
     const administrator = group.administrator!.user
 
     const groupUpdatedEvent = new GroupUpdatedEvent({
-      participantUser: user ?? undefined,
+      participantUser: user!,
       administrator,
       participants,
     })
