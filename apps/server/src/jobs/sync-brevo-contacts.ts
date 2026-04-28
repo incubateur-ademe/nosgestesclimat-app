@@ -3,7 +3,7 @@ import { prisma } from '../adapters/prisma/client.js'
 import { batchFindMany } from '../core/batch-find-many.js'
 import {
   getLastPollParticipantsCount,
-  getOrganisationSimulationData,
+  getOrganisationSimulationInfo,
   getPollsCreatedCount,
 } from '../features/organisations/organisations.repository.js'
 import logger from '../logger.js'
@@ -74,7 +74,7 @@ const main = async () => {
         ] = await Promise.all([
           getLastPollParticipantsCount(organisationId, { session: prisma }),
           getPollsCreatedCount(organisationId, { session: prisma }),
-          getOrganisationSimulationData(organisationId, { session: prisma }),
+          getOrganisationSimulationInfo(organisationId, { session: prisma }),
         ])
 
         await addOrUpdateContactAfterOrganisationChange({

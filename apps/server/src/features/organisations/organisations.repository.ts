@@ -814,7 +814,7 @@ export const getPollsCreatedCount = async (
     },
   })
 
-export const getOrganisationSimulationData = async (
+export const getOrganisationSimulationInfo = async (
   organisationId: string,
   { session }: { session: Session }
 ) => {

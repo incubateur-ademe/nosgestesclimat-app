@@ -9,7 +9,7 @@ import type { PollDeletedEvent } from '../events/PollDeletedEvent.js'
 import type { PollUpdatedEvent } from '../events/PollUpdated.event.js'
 import {
   getLastPollParticipantsCount,
-  getOrganisationSimulationData,
+  getOrganisationSimulationInfo,
   getPollsCreatedCount,
 } from '../organisations.repository.js'
 
@@ -41,6 +41,24 @@ export const addOrUpdateBrevoContact: Handler<
     },
   } = event
 
+  const {
+    lastPollParticipantsCount,
+    pollsCreatedCount,
+    organisationSimulationsCompletedCount,
+    organisationLastSimulationDate,
+  } = await transaction(async (session) => {
+    const [lastParticipants, pollsCount, simulationInfo] = await Promise.all([
+      getLastPollParticipantsCount(organisationId, { session }),
+      getPollsCreatedCount(organisationId, { session }),
+      getOrganisationSimulationInfo(organisationId, { session }),
+    ])
+    return {
+      lastPollParticipantsCount: lastParticipants,
+      pollsCreatedCount: pollsCount,
+      ...(simulationInfo ?? {}),
+    }
+  }, prisma)
+
   return addOrUpdateContactAfterOrganisationChange({
     slug,
     email,
@@ -48,19 +66,10 @@ export const addOrUpdateBrevoContact: Handler<
     organisationName,
     administratorName,
     optedInForCommunications,
-    lastPollParticipantsCount: await transaction(
-      (session) => getLastPollParticipantsCount(organisationId, { session }),
-      prisma
-    ),
+    lastPollParticipantsCount,
     type,
-    pollsCreatedCount: await transaction(
-      (session) => getPollsCreatedCount(organisationId, { session }),
-      prisma
-    ),
-    // Destructures : organisationSimulationsCompletedCount, organisationLastSimulationDate
-    ...(await transaction(
-      (session) => getOrganisationSimulationData(organisationId, { session }),
-      prisma
-    )),
+    pollsCreatedCount,
+    organisationSimulationsCompletedCount,
+    organisationLastSimulationDate,
   })
 }
