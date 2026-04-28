@@ -45,7 +45,7 @@ export class Poll {
     await this.page.goto(this.url)
   }
 
-  async create() {
+  async create(mode: 'standard' | 'scolaire' = 'standard') {
     // Step 1: Fill poll name and go to step 2
     await expect(this.page).toHaveURL(this.createUrl)
     await this.page.getByTestId('poll-name-input').fill(this.name)
@@ -53,7 +53,7 @@ export class Poll {
 
     // Step 2: Select mode and create the poll
     await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
-    const modeLabel = this.page.getByTestId('poll-mode-standard')
+    const modeLabel = this.page.getByTestId(`poll-mode-${mode}`)
     await modeLabel.click()
     // Wait for the radio input inside the label to be checked
     await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
@@ -87,12 +87,16 @@ export class Poll {
     expect(confirmationEmail).toBeDefined()
   }
 
-  async saveInContext() {
-    await savePlaywrightState(this.page, 'poll', this.data)
+  async saveInContext(key = 'poll') {
+    await savePlaywrightState(this.page, key, this.data)
   }
 
-  static async fromContext(page: Page, organisation: Organisation) {
-    const data = await getPlaywrightState<Data>(page, 'poll')
+  static async fromContext(
+    page: Page,
+    organisation: Organisation,
+    key = 'poll'
+  ) {
+    const data = await getPlaywrightState<Data>(page, key)
     return new Poll(page, organisation, data)
   }
 }

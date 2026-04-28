@@ -169,9 +169,8 @@ test.describe('A user with a completed test that joined a poll', () => {
 
   test('cannot redo the test with the invite link', async ({ poll }) => {
     await page.goto(poll.inviteLink)
-
+    await expect(page).toHaveURL(/\/simulateur\/campagne\//)
     await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()
-
     await expect(page.locator(`a[href="${poll.url}"]`)).toBeVisible()
   })
 })

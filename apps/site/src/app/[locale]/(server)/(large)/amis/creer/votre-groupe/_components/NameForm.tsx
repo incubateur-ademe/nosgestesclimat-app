@@ -13,7 +13,7 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import type { AuthUser } from '@/helpers/server/model/user'
 import { useCreateGroup } from '@/hooks/groups/useCreateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useCurrentSimulation, useUser } from '@/publicodes-state'
+import { useUser } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -50,8 +50,6 @@ export default function NameForm({
 
   const router = useRouter()
 
-  const currentSimulation = useCurrentSimulation()
-
   const { updateName } = useUser()
 
   async function onSubmit({ name, emoji, administratorName }: Inputs) {
@@ -77,7 +75,6 @@ export default function NameForm({
         router.push(`/amis/resultats?groupId=${group.id}`)
       } else {
         updateName(administratorName)
-
         router.push(TUTORIAL_PATH)
       }
     } catch (e) {

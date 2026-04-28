@@ -19,7 +19,9 @@ export default function PollTutorialButton({
   if (poll.simulations.hasParticipated && poll.progression === 1) {
     return (
       <div>
-        <p className="mb-4 text-sm text-gray-500">
+        <p
+          className="mb-4 text-sm text-gray-500"
+          data-testid="youth-tutorial-already-participated">
           {poll.mode === 'scolaire' ? (
             <Trans locale={locale}>Tu as déja participé à ce test.</Trans>
           ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -46,6 +48,7 @@ export default function PollTutorialButton({
         <Button
           size="lg"
           aria-describedby="subtitle-cta"
+          data-testid="youth-tutorial-start-button"
           onClick={createSimulation}>
           <Trans locale={locale} i18nKey="youthTutorial.cta.label">
             Allez, c'est parti

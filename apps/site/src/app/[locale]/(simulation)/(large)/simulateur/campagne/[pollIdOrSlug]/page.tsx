@@ -29,8 +29,12 @@ export default async function Commencer({
         getSimulations({ user }, { completedOnly: false, pageSize: 1 }),
       ])
     )
-
-  if (currentSimulation.polls?.some((p) => p.id === poll.id)) {
+  if (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    currentSimulation &&
+    currentSimulation.progression < 1 &&
+    currentSimulation.polls?.some((p) => p.id === poll.id)
+  ) {
     redirect(SIMULATOR_PATH)
   }
 

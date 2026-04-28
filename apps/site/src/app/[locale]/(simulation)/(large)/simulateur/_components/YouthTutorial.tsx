@@ -36,7 +36,7 @@ const MiniCard = ({
 // Version displayed for pupils and students
 export default function YouthTutorial({ locale, buttonNext }: Props) {
   return (
-    <div className="mb-16 flex flex-col">
+    <div className="mb-16 flex flex-col" data-testid="youth-tutorial">
       <section className="order-0 mt-8 mb-8 w-xl max-w-full md:mx-auto md:mb-10">
         <div className="mb-2 flex items-center md:gap-4">
           <Title hasSeparator={false} size="lg">
