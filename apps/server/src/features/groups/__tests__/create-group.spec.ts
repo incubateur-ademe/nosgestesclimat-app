@@ -361,7 +361,6 @@ describe('Given a NGC user', () => {
                 date: expect.any(String),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
-                user: { name: expect.any(String) },
                 polls: [],
                 foldedSteps: [],
                 actionChoices: {},
