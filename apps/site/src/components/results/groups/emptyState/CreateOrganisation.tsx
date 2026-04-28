@@ -13,7 +13,7 @@ import {
 
 export default function CreateOrganisation() {
   return (
-    <div className="mt-12">
+    <div className="mt-12 mb-16">
       <Title
         title={
           <Trans i18nKey="mon-espace.groups.organisation.create.title">
