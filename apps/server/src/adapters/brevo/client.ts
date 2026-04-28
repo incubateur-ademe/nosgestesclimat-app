@@ -663,6 +663,7 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   type,
   pollsCreatedCount,
   organisationSimulationsCompletedCount,
+  organisationLastSimulationDate,
 }: {
   slug: string
   email: string
@@ -674,6 +675,7 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   type?: OrganisationType
   pollsCreatedCount: number
   organisationSimulationsCompletedCount: number
+  organisationLastSimulationDate?: Date
 }) => {
   const attributes = {
     [Attributes.USER_ID]: userId,
@@ -691,6 +693,8 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
     [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
     [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
       organisationSimulationsCompletedCount,
+    [Attributes.LAST_ORGANISATION_SIMULATION_DATE]:
+      organisationLastSimulationDate.toISOString(),
   }
 
   await addOrUpdateContact({
