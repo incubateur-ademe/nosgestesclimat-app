@@ -7,7 +7,11 @@ import type { OrganisationUpdatedEvent } from '../events/OrganisationUpdated.eve
 import type { PollCreatedEvent } from '../events/PollCreated.event.js'
 import type { PollDeletedEvent } from '../events/PollDeletedEvent.js'
 import type { PollUpdatedEvent } from '../events/PollUpdated.event.js'
-import { getLastPollParticipantsCount } from '../organisations.repository.js'
+import {
+  getLastPollParticipantsCount,
+  getOrganisationSimulationData,
+  getPollsCreatedCount,
+} from '../organisations.repository.js'
 
 export const addOrUpdateBrevoContact: Handler<
   | OrganisationCreatedEvent
@@ -22,6 +26,7 @@ export const addOrUpdateBrevoContact: Handler<
         id: organisationId,
         name: organisationName,
         slug,
+        type,
         administrators: [
           {
             user: {
@@ -47,5 +52,15 @@ export const addOrUpdateBrevoContact: Handler<
       (session) => getLastPollParticipantsCount(organisationId, { session }),
       prisma
     ),
+    type,
+    pollsCreatedCount: await transaction(
+      (session) => getPollsCreatedCount(organisationId, { session }),
+      prisma
+    ),
+    // Destructures : organisationSimulationsCompletedCount, organisationLastSimulationDate
+    ...(await transaction(
+      (session) => getOrganisationSimulationData(organisationId, { session }),
+      prisma
+    )),
   })
 }
