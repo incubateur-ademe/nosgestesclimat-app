@@ -47,12 +47,16 @@ try {
 const coreMain = fileURLToPath(import.meta.resolve('@nosgestesclimat/core'))
 const coreDir = resolve(dirname(coreMain), '..')
 const prismaConfig = resolve(coreDir, 'prisma.config.js')
+const tsconfig = resolve(cwd, 'tsconfig.json')
+
+console.log('tsconfig.json path:', tsconfig)
+console.log('prisma.config.js path:', prismaConfig)
 
 switch (command) {
   case 'db:generate':
     execFileSync('prisma', ['generate', '--config', prismaConfig], {
       stdio: 'inherit',
-      env: { ...process.env, TS_NODE_PROJECT: resolve(cwd, 'tsconfig.json') },
+      env: { ...process.env, TS_NODE_PROJECT: tsconfig },
     })
     break
   case 'db:migrate':
