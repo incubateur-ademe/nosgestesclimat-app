@@ -360,6 +360,7 @@ export default function Navigation({
 
   useMagicKey({
     gotToNextQuestion: handleGoToNextQuestion,
+    isLastQuestion,
   })
 
   const submitButtonKind = getSubmitButtonKind({
