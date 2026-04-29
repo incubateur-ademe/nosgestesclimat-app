@@ -88,16 +88,14 @@ export const transferOwnershipToUser = async (
 
   const participantsToUpdate = new Set<string>()
   const participantsToDelete = new Set<string>()
-  oldUsersGroups
-    .filter((p): p is typeof p & { userId: string } => p.userId !== null)
-    .forEach(({ groupId, userId }) => {
-      if (newUserGroupIds.has(groupId)) {
-        participantsToDelete.add(userId)
-      } else {
-        newUserGroupIds.add(groupId)
-        participantsToUpdate.add(userId)
-      }
-    })
+  oldUsersGroups.forEach(({ groupId, userId }) => {
+    if (newUserGroupIds.has(groupId)) {
+      participantsToDelete.add(userId)
+    } else {
+      newUserGroupIds.add(groupId)
+      participantsToUpdate.add(userId)
+    }
+  })
 
   await Promise.all([
     session.groupAdministrator.updateMany({

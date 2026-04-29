@@ -147,7 +147,7 @@ export const joinGroup = async ({
     email ||
     existingUser?.email ||
     (administrator?.email &&
-      participants.some(({ user }) => user?.id === administrator.id))
+      participants.some(({ user }) => user.id === administrator.id))
   ) {
     mswServer.use(brevoUpdateContact())
   }

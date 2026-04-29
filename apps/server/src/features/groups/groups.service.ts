@@ -64,41 +64,29 @@ const participantToDto = (
   {
     id,
     simulation,
-    user,
+    user: { id: userId, ...rest },
     createdAt,
     updatedAt,
   }: Partial<PopulatedParticipant> & {
     user: PopulatedParticipant['user'] | null
   },
   connectedUser: string
-) => {
-  // Soft-deleted participant (userId set to null)
-  if (!user) {
-    return {
-      id,
-      simulation,
-    }
-  }
-
-  const { id: userId, ...rest } = user
-
-  return {
-    ...(userId === connectedUser
-      ? {
-          id,
-          simulation,
-          userId,
-          ...rest,
-          createdAt,
-          updatedAt,
-        }
-      : {
-          id,
-          name: rest.name,
-          simulation,
-        }),
-  }
-}
+) => ({
+  ...(userId === connectedUser
+    ? {
+        id,
+        simulation,
+        userId,
+        ...rest,
+        createdAt,
+        updatedAt,
+      }
+    : {
+        id,
+        name: rest.name,
+        simulation,
+      }),
+})
 
 const findGroupAndParticipant = async (
   params: UserGroupParticipantParams,
@@ -215,7 +203,7 @@ export const createParticipant = async ({
     const administrator = group.administrator!.user
 
     const groupUpdatedEvent = new GroupUpdatedEvent({
-      participantUser: user!,
+      participantUser: user,
       administrator,
       participants,
     })
@@ -229,7 +217,7 @@ export const createParticipant = async ({
       simulation,
       origin,
       group,
-      user: user!,
+      user: user,
     })
 
     EventBus.emit(groupUpdatedEvent).emit(simulationUpsertedEvent)
@@ -278,7 +266,7 @@ export const removeParticipant = async (params: UserGroupParticipantParams) => {
 
     const groupUpdatedEvent = new GroupUpdatedEvent({
       administrator: administrator!.user,
-      participantUser: participantUser ?? undefined,
+      participantUser,
       participants,
     })
 
