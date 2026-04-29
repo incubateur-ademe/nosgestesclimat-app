@@ -8,10 +8,6 @@ import Notification from '@/components/form/question/Notification'
 import NumberInput from '@/components/form/question/NumberInput'
 import Suggestions from '@/components/form/question/Suggestions'
 import {
-  DEFAULT_TEST_VARIANT_KEY,
-  DONT_KNOW_EXPERIMENT_KEY,
-} from '@/constants/ab-test'
-import {
   DEFAULT_FOCUS_ELEMENT_ID,
   QUESTION_DESCRIPTION_BUTTON_ID,
 } from '@/constants/accessibility'
@@ -22,7 +18,6 @@ import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import posthog from 'posthog-js'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -68,10 +63,6 @@ export default function Question({
   const currentCategoryQuestions = questionsByCategories[category]
 
   const refCurrentCategoryQuestions = useRef(currentCategoryQuestions)
-
-  const isTestVersion =
-    posthog.getFeatureFlag(DONT_KNOW_EXPERIMENT_KEY) ===
-    DEFAULT_TEST_VARIANT_KEY
 
   // Set dynamically the page title
   useUpdatePageTitle({
@@ -214,7 +205,7 @@ export default function Question({
         />
       )}
 
-      {isTestVersion && <DontKnowButton question={question} />}
+      <DontKnowButton question={question} />
     </>
   )
 }

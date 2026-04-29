@@ -22,9 +22,6 @@ interface Props {
   question: DottedName
 }
 
-const HIDE_DONT_KNOW_BUTTON_QUESTION: DottedName =
-  'logement . chauffage . saisie précision consommation'
-
 export default function DontKnowButton({ question }: Props) {
   const { gotoNextQuestion } = useFormState()
 
@@ -82,8 +79,6 @@ export default function DontKnowButton({ question }: Props) {
     gotoNextQuestion()
   }
 
-  if (question === HIDE_DONT_KNOW_BUTTON_QUESTION) return null
-
   return (
     <div className="mt-4 mb-4 flex flex-col items-start gap-4 md:flex-row">
       <Button
@@ -103,7 +98,7 @@ export default function DontKnowButton({ question }: Props) {
 
       <p className="text-primary-600 w-80 max-w-full text-sm">
         <Trans i18nKey="simulator.dontKnow.button.reassurance">
-          Pas d'inquiétude, on prend des données moyennes pour garder vos
+          Pas d'inquiétude, on prend des données moyennes pour garder les
           résultats fiables.
         </Trans>
       </p>

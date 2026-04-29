@@ -1,23 +1,17 @@
 'use client'
 
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import posthog from 'posthog-js'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import Trans from '@/components/translation/trans/TransClient'
 import {
-  DEFAULT_TEST_VARIANT_KEY,
-  DONT_KNOW_EXPERIMENT_KEY,
-} from '@/constants/ab-test'
-import {
   DEFAULT_FOCUS_ELEMENT_ID,
   QUESTION_DESCRIPTION_BUTTON_ID,
 } from '@/constants/accessibility'
 import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
 import {
-  questionClickPass,
   questionClickPrevious,
   questionClickSuivant,
 } from '@/constants/tracking/question'
@@ -38,22 +32,17 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 
-type SubmitButtonKind = 'loading' | 'finish' | 'dontKnow' | 'next'
+type SubmitButtonKind = 'loading' | 'finish' | 'next'
 
 function getSubmitButtonKind({
   isPending,
   isLastQuestion,
-  isMissing,
-  isTestVersion,
 }: {
   isPending?: boolean
   isLastQuestion?: boolean
-  isMissing: boolean
-  isTestVersion: boolean
 }): SubmitButtonKind {
   if (isPending) return 'loading'
   if (isLastQuestion) return 'finish'
-  if (isMissing && !isTestVersion) return 'dontKnow'
   return 'next'
 }
 
@@ -74,17 +63,6 @@ function SubmitButtonContent({ kind }: { kind: SubmitButtonKind }) {
         <Trans i18nKey="simulator.navigation.nextButton.finished">
           Terminer
         </Trans>
-      </span>
-    )
-  }
-
-  if (kind === 'dontKnow') {
-    return (
-      <span data-testid="skip-question-button">
-        <Trans i18nKey="simulator.navigation.nextButton.dontKnow.label">
-          Je ne sais pas
-        </Trans>{' '}
-        <span aria-hidden>→</span>
       </span>
     )
   }
@@ -115,10 +93,6 @@ export default function Navigation({
   const { isIframe } = useIframe()
 
   const [persistedRemainingQuestions] = useState(remainingQuestions)
-
-  const isTestVersion =
-    posthog.getFeatureFlag(DONT_KNOW_EXPERIMENT_KEY) ===
-    DEFAULT_TEST_VARIANT_KEY
 
   const {
     gotoPrevQuestion,
@@ -154,7 +128,8 @@ export default function Navigation({
     }
   }, [hasActiveNotifications, setNotificationValue])
 
-  const { updateCurrentSimulation } = useCurrentSimulation()
+  const { updateCurrentSimulation, progression: simulationProgression } =
+    useCurrentSimulation()
 
   // Check if the numeric value is out of bounds (floor/ceiling)
   const isNextDisabled =
@@ -229,37 +204,23 @@ export default function Navigation({
 
   const trackNextNavigation = useCallback(
     (timeSpentOnQuestion: number) => {
-      if (isMissing && !isTestVersion) {
-        trackMatomoEvent__deprecated(
-          questionClickPass({ question, timeSpentOnQuestion })
-        )
-        trackPosthogEvent(
-          captureClickFormNav({
-            actionType: 'passer',
-            question,
-            answer: value,
-            timeSpentOnQuestion,
-          })
-        )
-      } else {
-        trackMatomoEvent__deprecated(
-          questionClickSuivant({
-            question,
-            answer: value,
-            timeSpentOnQuestion,
-          })
-        )
-        trackPosthogEvent(
-          captureClickFormNav({
-            actionType: 'suivant',
-            question,
-            answer: value,
-            timeSpentOnQuestion,
-          })
-        )
-      }
+      trackMatomoEvent__deprecated(
+        questionClickSuivant({
+          question,
+          answer: value,
+          timeSpentOnQuestion,
+        })
+      )
+      trackPosthogEvent(
+        captureClickFormNav({
+          actionType: 'suivant',
+          question,
+          answer: value,
+          timeSpentOnQuestion,
+        })
+      )
     },
-    [isMissing, isTestVersion, question, value]
+    [question, value]
   )
 
   const trackPrevNavigation = useCallback(
@@ -365,8 +326,6 @@ export default function Navigation({
   const submitButtonKind = getSubmitButtonKind({
     isPending,
     isLastQuestion,
-    isMissing,
-    isTestVersion,
   })
 
   const submitButtonTitle = {
@@ -378,24 +337,15 @@ export default function Navigation({
       'common.navigation.nextQuestion.finish.label',
       'Terminer le test et accéder à la page de résultats'
     ),
-    dontKnow: t(
-      'common.navigation.nextQuestion.dontKnow.title',
-      'Je ne sais pas, passer et aller à la question suivante'
-    ),
     next: t(
       'common.navigation.nextQuestion.next.label',
       'Aller à la question suivante'
     ),
   }[submitButtonKind]
 
-  const submitButtonIsDisabled =
-    isPending || isNextDisabled || (isTestVersion ? !isFolded : false)
+  const submitButtonIsDisabled = isPending || isNextDisabled || !isFolded
 
-  const submitButtonColor = isTestVersion
-    ? 'primary'
-    : isMissing
-      ? 'secondary'
-      : 'primary'
+  const submitButtonColor = 'primary'
 
   return (
     <div
