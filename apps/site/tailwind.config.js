@@ -268,6 +268,10 @@ export default {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-8px)' },
         },
+        'bg-pulse': {
+          '0%, 100%': { backgroundColor: '#4949ba' },
+          '50%': { backgroundColor: '#373978' },
+        },
       },
       animation: {
         valuechange: 'valuechange 0.5s ease-out forwards',
@@ -296,6 +300,7 @@ export default {
         'float-leaf-1': 'float-badge 4s ease-in-out infinite',
         'float-leaf-2': 'float-badge 5.5s ease-in-out 0.8s infinite',
         'float-leaf-3': 'float-badge 4.8s ease-in-out 1.5s infinite',
+        'bg-pulse': 'bg-pulse 5s ease-in-out infinite',
       },
       screens: {
         xs: '320px',

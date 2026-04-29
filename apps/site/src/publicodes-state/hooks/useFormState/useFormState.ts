@@ -30,7 +30,6 @@ export default function useFormState() {
     isLastQuestionOfCategory,
     testAdvancement,
   } = useNavigation({
-    remainingQuestions,
     relevantQuestions,
     currentQuestion,
     setCurrentQuestion,
