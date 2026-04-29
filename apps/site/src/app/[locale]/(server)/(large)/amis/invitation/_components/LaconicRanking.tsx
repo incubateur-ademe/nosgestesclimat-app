@@ -3,7 +3,6 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { carboneMetric } from '@/constants/model/metric'
 import Emoji from '@/design-system/utils/Emoji'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
 import type { ReactNode } from 'react'
 
@@ -12,8 +11,6 @@ interface Props {
 }
 
 export default function LaconicRanking({ group }: Props) {
-  const { t } = useClientTranslation()
-
   // If only one participant
   if (group.participants.length === 1) {
     const name = group.participants[0].name
