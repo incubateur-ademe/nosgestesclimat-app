@@ -670,12 +670,12 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   email: string
   userId: string
   organisationName: string
-  lastPollParticipantsCount: number
+  lastPollParticipantsCount?: number
   administratorName?: string | null
   optedInForCommunications?: boolean
   type?: OrganisationType
-  pollsCreatedCount: number
-  organisationSimulationsCompletedCount: number
+  pollsCreatedCount?: number
+  organisationSimulationsCompletedCount?: number
   organisationLastSimulationDate?: Date
 }) => {
   const attributes = {
@@ -683,7 +683,11 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
     [Attributes.IS_ORGANISATION_ADMIN]: true,
     [Attributes.ORGANISATION_NAME]: organisationName,
     [Attributes.ORGANISATION_SLUG]: slug,
-    [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
+    ...(lastPollParticipantsCount
+      ? {
+          [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
+        }
+      : {}),
     [Attributes.OPT_IN]: !!optedInForCommunications,
     ...(administratorName
       ? {
@@ -691,13 +695,24 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
         }
       : {}),
     [Attributes.ORGANISATION_TYPE]: type,
-    [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
-    [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
-      organisationSimulationsCompletedCount,
-    [Attributes.LAST_ORGANISATION_SIMULATION_DATE]:
-      organisationLastSimulationDate
-        ? dayjs(organisationLastSimulationDate).format('YYYY-MM-DD')
-        : undefined,
+    ...(pollsCreatedCount
+      ? {
+          [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
+        }
+      : {}),
+    ...(organisationSimulationsCompletedCount
+      ? {
+          [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
+            organisationSimulationsCompletedCount,
+        }
+      : {}),
+    ...(organisationLastSimulationDate
+      ? {
+          [Attributes.LAST_ORGANISATION_SIMULATION_DATE]: dayjs(
+            organisationLastSimulationDate
+          ).format('YYYY-MM-DD'),
+        }
+      : {}),
   }
 
   await addOrUpdateContact({
