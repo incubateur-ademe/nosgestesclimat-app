@@ -1,5 +1,6 @@
 'use client'
 
+import { useEndTest } from '@/app/[locale]/(simulation)/simulateur/[root]/_hooks/useEndPage'
 import Trans from '@/components/translation/trans/TransClient'
 import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
 import { questionClickPass } from '@/constants/tracking/question'
@@ -29,8 +30,8 @@ export default function DontKnowButton({ question }: Props) {
   const { gotoNextQuestion } = useFormState()
 
   const { t } = useClientTranslation()
-
-  const { updateCurrentSimulation } = useCurrentSimulation()
+  const { endTest } = useEndTest()
+  const { updateCurrentSimulation, progression } = useCurrentSimulation()
 
   const { questionsOfMosaicFromParent, isMissing } = useRule(question)
 
@@ -62,6 +63,10 @@ export default function DontKnowButton({ question }: Props) {
   }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
+    if (progression === 1) {
+      void endTest()
+      return
+    }
     trackMatomoEvent__deprecated(
       // Dummy time for AB test
       questionClickPass({ question, timeSpentOnQuestion: 0 })
