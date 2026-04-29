@@ -8,6 +8,7 @@ interface Props {
 export function useMagicKey({ gotToNextQuestion, isLastQuestion }: Props) {
   useEffect(() => {
     const handleMagicKey = (e: KeyboardEvent) => {
+      // Avoid calling multiple time onComplete on the last question
       if (isLastQuestion && e.repeat) return
       if (e.altKey && (e.key === 'Escape' || e.key === 'Enter')) {
         gotToNextQuestion(e)
