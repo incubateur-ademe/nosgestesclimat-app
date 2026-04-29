@@ -128,7 +128,8 @@ export default function Navigation({
     }
   }, [hasActiveNotifications, setNotificationValue])
 
-  const { updateCurrentSimulation } = useCurrentSimulation()
+  const { updateCurrentSimulation, progression: simulationProgression } =
+    useCurrentSimulation()
 
   // Check if the numeric value is out of bounds (floor/ceiling)
   const isNextDisabled =
