@@ -52,7 +52,13 @@ export class NGCTest {
       }
     }
     if (isAnswered) {
-      await this.page.getByTestId('next-question-button').click()
+      const nextButton = this.page.getByTestId('next-question-button')
+      // On non-last questions, click "Suivant" to navigate
+      if (await nextButton.isVisible()) {
+        await nextButton.click()
+      }
+      // On the last question, the button shows "Terminer" (end-test-button)
+      // The caller handles navigation in that case
     } else {
       await this.clickOnSkip()
     }
@@ -96,6 +102,14 @@ export class NGCTest {
     while (!(await this.isLastQuestion())) {
       await this.clickOnSkip()
     }
+    // The last question must be folded before clicking "Terminer"
+    // Click the DontKnowButton to fold the last question with a default value
+    const skipButton = this.page.getByTestId('skip-question-button')
+    if (await skipButton.isVisible()) {
+      await skipButton.click()
+      // Wait for React to process the fold state update
+      await this.page.waitForTimeout(1000)
+    }
     await this.page.getByTestId('end-test-button').click()
   }
 
@@ -110,6 +124,10 @@ export class NGCTest {
         }
       )
     }
+    // The last question must be folded before clicking "Terminer"
+    await this.answerQuestion(situation)
+    // Wait for React to process the state update
+    await this.page.waitForTimeout(1000)
     await this.page.getByTestId('end-test-button').click()
   }
 }

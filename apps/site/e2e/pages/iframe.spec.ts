@@ -40,10 +40,15 @@ test.describe('/demo-iframe-datashare.html', () => {
       }
     }
 
-    const endTestButton = iframe.getByTestId('end-test-button')
-    if (await endTestButton.isVisible()) {
-      await endTestButton.click()
+    // Fold the last question before clicking "Terminer"
+    const skipButton = iframe.getByTestId('skip-question-button')
+    if (await skipButton.isVisible()) {
+      await skipButton.click()
     }
+
+    const endTestButton = iframe.getByTestId('end-test-button')
+    await expect(endTestButton).toBeEnabled({ timeout: 10000 })
+    await endTestButton.click()
 
     await expect(
       iframe.locator('[data-testid="iframe-datashare-modal"]')
