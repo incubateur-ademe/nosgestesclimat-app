@@ -222,13 +222,14 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
         {
           email,
         }
-      ) : t(
-          'header.monEspace.openMenuButton.open.title',
-          'Mon espace ({{email}}), ouvrir le menu',
-          {
-            email,
-          }
-        )
+      )
+    : t(
+        'header.monEspace.openMenuButton.open.title',
+        'Mon espace ({{email}}), ouvrir le menu',
+        {
+          email,
+        }
+      )
 
   return (
     <div className="relative inline-block">
