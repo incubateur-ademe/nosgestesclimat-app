@@ -85,7 +85,7 @@ export default function DontKnowButton({ question }: Props) {
   if (question === HIDE_DONT_KNOW_BUTTON_QUESTION) return null
 
   return (
-    <div className="mt-4 mb-2 flex flex-col items-start gap-4 md:flex-row">
+    <div className="mt-4 mb-4 flex flex-col items-start gap-4 md:flex-row">
       <Button
         onClick={handleClick}
         className="text-sm!"

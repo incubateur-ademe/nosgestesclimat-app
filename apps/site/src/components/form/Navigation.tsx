@@ -169,20 +169,17 @@ export default function Navigation({
         })()
       : false
 
-  // For embedded mode: determine if current question is the last one in the persisted list
-  const isLastEmbeddedQuestion =
-    isEmbedded &&
-    persistedRemainingQuestions.length > 0 &&
-    persistedRemainingQuestions.indexOf(question) ===
-      persistedRemainingQuestions.length - 1
-
   // Determines if the current question is the last one of the test
-  const isLastQuestion = isLastEmbeddedQuestion || noNextQuestion
+  const isLastQuestion = isEmbedded
+    ? persistedRemainingQuestions.length > 0 &&
+      persistedRemainingQuestions.indexOf(question) ===
+        persistedRemainingQuestions.length - 1
+    : noNextQuestion
 
   // Disable "Précédent" only when there's truly no previous question
-  const hasNoPreviousQuestion =
-    noPrevQuestion ||
-    (isEmbedded && persistedRemainingQuestions.indexOf(question) === 0)
+  const hasNoPreviousQuestion = isEmbedded
+    ? persistedRemainingQuestions.indexOf(question) === 0
+    : noPrevQuestion
 
   const [startTime, setStartTime] = useState(() => Date.now())
 
@@ -299,8 +296,9 @@ export default function Navigation({
 
       trackNextNavigation(timeSpentOnQuestion)
 
-      // Always fold the current question before navigating
-      handleAnswerQuestion()
+      if (isMissing) {
+        handleAnswerQuestion()
+      }
 
       handleMoveFocus()
 
@@ -319,6 +317,7 @@ export default function Navigation({
     [
       startTime,
       trackNextNavigation,
+      isMissing,
       handleAnswerQuestion,
       resetNotification,
       isEmbedded,
