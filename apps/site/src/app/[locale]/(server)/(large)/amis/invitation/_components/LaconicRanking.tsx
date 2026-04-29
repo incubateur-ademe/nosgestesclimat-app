@@ -6,7 +6,6 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
 import type { ReactNode } from 'react'
-import { getParticipantName } from '../../_helpers/getParticipantName'
 
 interface Props {
   group: Group
@@ -85,7 +84,7 @@ export default function LaconicRanking({ group }: Props) {
                 {rank}
                 {!isFirstThree && '. '}
               </span>{' '}
-              {getParticipantName({ t, participant })}
+              {participant.name}
             </li>
           )
         })}

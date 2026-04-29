@@ -181,7 +181,7 @@ describe('Given a NGC user', () => {
         expect(simulation.userId).toBeNull()
       })
 
-      test('Then the group participants are soft-deleted (userId is null)', async () => {
+      test('Then the group participants are deleted', async () => {
         const group = await createGroup({
           agent,
           group: {
@@ -221,12 +221,11 @@ describe('Given a NGC user', () => {
         const groupParticipants = await prisma.groupParticipant.findMany({
           where: {
             groupId: group.id,
-            simulationId,
+            userId,
           },
         })
 
-        expect(groupParticipants.length).toBe(1)
-        expect(groupParticipants[0].userId).toBeNull()
+        expect(groupParticipants.length).toBe(0)
       })
     })
 
