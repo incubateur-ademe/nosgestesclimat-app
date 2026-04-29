@@ -1,6 +1,9 @@
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
+import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getSimulations } from '@/helpers/server/model/simulations'
+import type { Locale } from '@/i18nConfig'
+import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
 
 export default async function ResultatsActionsPage({
@@ -8,6 +11,22 @@ export default async function ResultatsActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUser()
+  const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+
+  if (!flag) {
+    return <LegacyResultatsActionsPage user={user} locale={locale} />
+  }
+
+  return <div>Page en construction</div>
+}
+
+async function LegacyResultatsActionsPage({
+  user,
+  locale,
+}: {
+  user: AppUser
+  locale: Locale
+}) {
   const simulations = await getSimulations(
     { user },
     { completedOnly: true, pageSize: 1 }
