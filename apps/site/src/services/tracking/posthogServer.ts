@@ -20,7 +20,7 @@ class PosthogServer implements PosthogServerInterface {
   ) {
     this.client = new PostHog(posthogKey, {
       host: posthogHost,
-      featureFlagsPollingInterval: 5_000, // 1h
+      featureFlagsPollingInterval: 3_600_000, // 1h
       personalApiKey: posthogPersonalApiKey,
     })
   }
