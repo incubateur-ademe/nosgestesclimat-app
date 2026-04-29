@@ -68,7 +68,7 @@ const participantToDto = (
     createdAt,
     updatedAt,
   }: Partial<PopulatedParticipant> & {
-    user: PopulatedParticipant['user'] | null
+    user: PopulatedParticipant['user']
   },
   connectedUser: string
 ) => ({
@@ -217,7 +217,7 @@ export const createParticipant = async ({
       simulation,
       origin,
       group,
-      user: user,
+      user,
     })
 
     EventBus.emit(groupUpdatedEvent).emit(simulationUpsertedEvent)
