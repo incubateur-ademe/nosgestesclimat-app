@@ -171,9 +171,8 @@ export default function Navigation({
 
   // Determines if the current question is the last one of the test
   const isLastQuestion = isEmbedded
-    ? persistedRemainingQuestions.length > 0 &&
-      persistedRemainingQuestions.indexOf(question) ===
-        persistedRemainingQuestions.length - 1
+    ? (remainingQuestions.length === 1 && remainingQuestions[0] === question) ||
+      remainingQuestions.length === 0
     : noNextQuestion
 
   // Disable "Précédent" only when there's truly no previous question
@@ -437,7 +436,7 @@ export default function Navigation({
             'p-3 text-sm',
             submitButtonKind === 'finish' &&
               !submitButtonIsDisabled &&
-              'animate-bg-pulse hover:bg-primary-900!'
+              'animate-bg-pulse hover:bg-primary-900! motion-reduce:animate-none'
           )}>
           <span
             className={twMerge(
