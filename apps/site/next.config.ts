@@ -46,6 +46,17 @@ const nextConfig = withMDX({
   turbopack: {
     root: new URL('../../', import.meta.url).pathname,
     rules: {
+      // Allow esm `imports something from './something.js'` imports in core
+      '*.ts': [
+        {
+          loaders: ['./scripts/import-rewrite-loader.js'],
+        },
+      ],
+      '*.tsx': [
+        {
+          loaders: ['./scripts/import-rewrite-loader.js'],
+        },
+      ],
       '*.yaml': {
         loaders: ['yaml-loader'],
         as: '*.js',
