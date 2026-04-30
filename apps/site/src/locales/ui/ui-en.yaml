@@ -1838,10 +1838,10 @@ entries:
   error.contactSupport.lock: Si le problème persiste, merci de <2>contacter le support.</2>
   results.groups.createFirstGroup: <0>Create your first group</0> and invite your friends and family to compare your results. It only takes <4>1 minute</4>!
   results.groups.createFirstGroup.lock: <0>Créez votre premier groupe</0> et invitez vos proches pour comparer vos résultats. Cela prend <4>1 minute</4> !
-  results.groups.ranking.laconic: Which of you and <2>{group.participants[0].name}</2> will have the smallest footprint?
-  results.groups.ranking.laconic.lock: Qui de <2>{group.participants[0].name}</2> et vous aura la plus faible empreinte ?
-  results.groups.invite.first: You're first <1>🥳</1> but you're alone. <4>.. 🥲</4>
-  results.groups.invite.first.lock: Vous êtes le premier <1>🥳</1> mais vous êtes seul·e… <4>🥲</4>
+  results.groups.ranking.laconic: Which of you <2>{{name}}</2> and you have the smallest footprint?
+  results.groups.ranking.laconic.lock: Qui de <2>{{name}}</2> et vous aura la plus faible empreinte ?
+  results.groups.invite.first: You're first <1>🥳</1> but you're alone. <3>.. 🥲</3>
+  results.groups.invite.first.lock: Vous êtes le premier <1>🥳</1> mais vous êtes seul·e… <3>🥲</3>
   faq.doTheTest.notStarted: You haven't started your test yet, <2><0>get started!</0></2>
   faq.doTheTest.notStarted.lock: Vous n'avez pas encore débuté votre test, <2><0>lancez-vous !</0></2>
   faq.doTheTest.started: You've started your test, <2><0>click here to start again!</0></2>

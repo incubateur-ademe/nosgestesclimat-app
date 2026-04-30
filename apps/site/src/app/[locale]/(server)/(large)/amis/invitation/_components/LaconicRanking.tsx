@@ -3,26 +3,24 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { carboneMetric } from '@/constants/model/metric'
 import Emoji from '@/design-system/utils/Emoji'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
-import { getParticipantName } from '../../_helpers/getParticipantName'
+import type { ReactNode } from 'react'
 
 interface Props {
   group: Group
 }
 
 export default function LaconicRanking({ group }: Props) {
-  const { t } = useClientTranslation()
-
   // If only one participant
   if (group.participants.length === 1) {
+    const name = group.participants[0].name
     return (
       <section className="bg-primary-50 mt-6 rounded-xl p-4">
         <p className="mb-0">
-          <Trans i18nKey="results.groups.ranking.laconic">
+          <Trans i18nKey="results.groups.ranking.laconic" values={{ name }}>
             Qui de{' '}
             <strong className="text-primary-700">
-              {group.participants[0].name}
+              {{ name } as unknown as ReactNode}
             </strong>{' '}
             et vous aura la plus faible empreinte ?
           </Trans>{' '}
@@ -83,7 +81,7 @@ export default function LaconicRanking({ group }: Props) {
                 {rank}
                 {!isFirstThree && '. '}
               </span>{' '}
-              {getParticipantName({ t, participant })}
+              {participant.name}
             </li>
           )
         })}

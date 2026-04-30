@@ -4,15 +4,15 @@ import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMess
 import Trans from '@/components/translation/trans/TransClient'
 import { GROUP_EMOJIS } from '@/constants/group'
 import { amisCreationEtapeVotreGroupeSuivant } from '@/constants/tracking/pages/amisCreation'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import GridRadioInputs from '@/design-system/inputs/GridRadioInputs'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import type { AuthUser } from '@/helpers/server/model/user'
 import { useCreateGroup } from '@/hooks/groups/useCreateGroup'
-import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useCurrentSimulation } from '@/publicodes-state'
+import { useCurrentSimulation, useUser } from '@/publicodes-state'
 import type { Simulation } from '@/publicodes-state/types'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
@@ -52,7 +52,7 @@ export default function NameForm({
 
   const currentSimulation = useCurrentSimulation()
 
-  const { getLinkToSimulateurPage } = useSimulateurPage()
+  const { updateName } = useUser()
 
   async function onSubmit({ name, emoji, administratorName }: Inputs) {
     try {
@@ -81,7 +81,9 @@ export default function NameForm({
       if (lastSimulation) {
         router.push(`/amis/resultats?groupId=${group.id}`)
       } else {
-        router.push(getLinkToSimulateurPage())
+        updateName(administratorName)
+
+        router.push(SIMULATOR_PATH)
       }
     } catch (e) {
       captureException(e)

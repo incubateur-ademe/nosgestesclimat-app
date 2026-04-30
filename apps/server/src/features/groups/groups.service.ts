@@ -67,7 +67,9 @@ const participantToDto = (
     user: { id: userId, ...rest },
     createdAt,
     updatedAt,
-  }: Partial<PopulatedParticipant> & { user: PopulatedParticipant['user'] },
+  }: Partial<PopulatedParticipant> & {
+    user: PopulatedParticipant['user']
+  },
   connectedUser: string
 ) => ({
   ...(userId === connectedUser
