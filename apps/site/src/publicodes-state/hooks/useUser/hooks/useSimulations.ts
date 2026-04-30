@@ -268,8 +268,7 @@ export default function useSimulations({
   return {
     initSimulation,
     deleteSimulation,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    currentSimulation: currentSimulation ?? generateSimulation(),
+    currentSimulation,
     updateCurrentSimulation,
     updateSimulations,
   }
