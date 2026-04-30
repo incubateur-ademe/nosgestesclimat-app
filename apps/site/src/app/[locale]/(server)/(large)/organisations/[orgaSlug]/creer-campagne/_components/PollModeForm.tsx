@@ -4,7 +4,9 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
+import posthog from 'posthog-js'
 import { twMerge } from 'tailwind-merge'
+import { APP_ENV } from '../../../../../../../../../config/app-env'
 import { useCreatePollStep2 } from '../_hooks/useCreatePollStep2'
 import { revalidationOrganisationPath } from './actions/revalidationOrganisationPath'
 
@@ -17,6 +19,9 @@ export default function PollModeForm({ organisation }: Props) {
     organisationSlug: organisation.slug,
     revalidatePath: revalidationOrganisationPath,
   })
+
+  const modeScolaireEnabled =
+    APP_ENV !== 'production' || posthog.isFeatureEnabled('mode-scolaire')
 
   return (
     <form
@@ -33,7 +38,10 @@ export default function PollModeForm({ organisation }: Props) {
               key={mode.value}
               className={twMerge(
                 'group relative flex w-60 cursor-pointer flex-col items-center rounded-xl border-2 p-6 transition-all',
-                'has-checked:border-primary-700 has-checked:hover:border-primary-700 border-transparent hover:border-gray-200 has-[:checked]:shadow-lg',
+                'has-checked:border-primary-700 has-checked:hover:border-primary-700 border-transparent has-[:checked]:shadow-lg',
+                mode.value !== 'scolaire' || modeScolaireEnabled
+                  ? 'hover:border-gray-200'
+                  : 'grayscale',
                 index === 0 ? 'bg-primary-50' : 'bg-slate-50'
               )}
               data-testid={`poll-mode-${mode.value}`}>
@@ -41,6 +49,7 @@ export default function PollModeForm({ organisation }: Props) {
                 type="radio"
                 value={mode.value}
                 className="sr-only"
+                disabled={mode.value === 'scolaire' && !modeScolaireEnabled}
                 defaultChecked={mode.value === 'standard'}
                 {...register('mode')}
               />
@@ -59,12 +68,20 @@ export default function PollModeForm({ organisation }: Props) {
                 height={150}
                 className="my-auto mb-6"
               />
-              <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
-                <Trans>Sélectionner</Trans>
-                <span className="group-has-checked:border-primary-700 flex h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300">
-                  <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
+              {mode.value === 'scolaire' && !modeScolaireEnabled ? (
+                <p
+                  id={`${mode.value}-soon-available`}
+                  className="border-secondary-200 bg-secondary-50 text-secondary-800 flex items-center justify-center rounded-xl border-2 px-4 py-1.5 text-sm font-medium">
+                  <Trans>Bientôt disponible</Trans>
+                </p>
+              ) : (
+                <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
+                  <Trans>Sélectionner</Trans>
+                  <span className="group-has-checked:border-primary-700 flex h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300">
+                    <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
+                  </span>
                 </span>
-              </span>
+              )}
             </label>
           ))}
         </div>
