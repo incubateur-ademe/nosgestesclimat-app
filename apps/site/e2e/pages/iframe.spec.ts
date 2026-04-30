@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+import { NGCTest } from '../fixtures/ngc-test'
 import { skipOnSafari } from '../helpers/skip-on-safari'
 
 test.describe('/demo-iframe-datashare.html', () => {
@@ -12,43 +13,13 @@ test.describe('/demo-iframe-datashare.html', () => {
   }) => {
     skipOnSafari(browser)
     const iframe = page.frameLocator('iframe').first()
-
-    // await expect(iframe.getByTestId('do-the-test-link')).toBeVisible({
-    //   timeout: 5000,
-    // })
     await iframe.getByTestId('do-the-test-link').first().click({
       timeout: 3000,
     })
 
-    await expect(iframe.getByTestId('skip-tutorial-button')).toBeVisible()
     await iframe.getByTestId('skip-tutorial-button').click()
-
-    const ngcTest = iframe.locator('body')
-
-    await expect(ngcTest.getByTestId('skip-question-button')).toBeVisible()
-
-    while (
-      !(await ngcTest
-        .getByTestId('divers . tabac . consommation par semaine')
-        .isVisible())
-    ) {
-      const skipButton = iframe.getByTestId('skip-question-button')
-      if (await skipButton.isVisible()) {
-        await skipButton.click()
-      } else {
-        break
-      }
-    }
-
-    // Fold the last question before clicking "Terminer"
-    const skipButton = iframe.getByTestId('skip-question-button')
-    if (await skipButton.isVisible()) {
-      await skipButton.click()
-    }
-
-    const endTestButton = iframe.getByTestId('end-test-button')
-    await expect(endTestButton).toBeEnabled({ timeout: 10000 })
-    await endTestButton.click()
+    const ngcTest = new NGCTest(iframe.locator('body') as unknown as Page)
+    await ngcTest.skipAllQuestions()
 
     await expect(
       iframe.locator('[data-testid="iframe-datashare-modal"]')

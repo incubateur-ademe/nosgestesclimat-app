@@ -51,27 +51,22 @@ export class NGCTest {
         continue
       }
     }
-    if (isAnswered) {
-      const nextButton = this.page.getByTestId('next-question-button')
-      // On non-last questions, click "Suivant" to navigate
-      if (await nextButton.isVisible()) {
-        await nextButton.click()
-      }
-      // On the last question, the button shows "Terminer" (end-test-button)
-      // The caller handles navigation in that case
-    } else {
-      await this.clickOnSkip()
-    }
+    return isAnswered
   }
 
   async clickOnSkip() {
     await this.page.getByTestId('skip-question-button').click()
   }
 
-  async isLastQuestion() {
-    return this.page
-      .getByTestId('divers . tabac . consommation par semaine')
-      .isVisible()
+  endButton() {
+    return this.page.getByTestId('end-test-button')
+  }
+
+  async canEndTest() {
+    return (
+      (await this.endButton().isVisible()) &&
+      (await this.endButton().isEnabled())
+    )
   }
 
   async isBooleanQuestion() {
@@ -99,36 +94,28 @@ export class NGCTest {
   }
 
   async skipAllQuestions() {
-    while (!(await this.isLastQuestion())) {
+    while (!(await this.canEndTest())) {
       await this.clickOnSkip()
     }
-    // The last question must be folded before clicking "Terminer"
-    // Click the DontKnowButton to fold the last question with a default value
-    const skipButton = this.page.getByTestId('skip-question-button')
-    if (await skipButton.isVisible()) {
-      await skipButton.click()
-      // Wait for React to process the fold state update
-      await this.page.waitForTimeout(1000)
-    }
-    await this.page.getByTestId('end-test-button').click()
+    await this.endButton().click()
   }
 
   async answerTest(situation: Situation) {
-    // @TODO : test that there are no unit warning in publicodes
-    while (!(await this.isLastQuestion())) {
-      await this.answerQuestion(
-        // @TODO when Je ne sais pas  AB test is over, fix this
-        {
-          'logement . chauffage . saisie précision consommation': "'aide'",
-          ...situation,
-        }
-      )
+    while (!(await this.canEndTest())) {
+      const isAnswered = await this.answerQuestion(situation)
+      if (!isAnswered) {
+        await this.clickOnSkip()
+        continue
+      }
+      try {
+        await this.page
+          .getByTestId('next-question-button')
+          .click({ timeout: 2000 })
+      } catch {
+        continue
+      }
     }
-    // The last question must be folded before clicking "Terminer"
-    await this.answerQuestion(situation)
-    // Wait for React to process the state update
-    await this.page.waitForTimeout(1000)
-    await this.page.getByTestId('end-test-button').click()
+    await this.endButton().click()
   }
 }
 
