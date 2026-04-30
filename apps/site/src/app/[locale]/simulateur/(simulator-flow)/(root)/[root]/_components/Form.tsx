@@ -12,8 +12,17 @@ import { useQuestionInQueryParams } from '@/hooks/useQuestionInQueryParams'
 import { useFormState } from '@/publicodes-state'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
+<<<<<<<< HEAD:apps/site/src/app/[locale]/simulateur/(simulator-flow)/[root]/_components/Form.tsx
 import CategoryIllustration from '../../../_components/summary/CategoryIllustration'
 import { useEndTest } from '../_hooks/useEndPage'
+========
+<<<<<<<< HEAD:apps/site/src/app/[locale]/(simulation)/simulateur/[root]/_components/simulateur/Form.tsx
+========
+
+import CategoryIllustration from '@/app/[locale]/simulateur/_components/summary/CategoryIllustration'
+import { useEndTest } from '../_hooks/useEndPage'
+>>>>>>>> d8ee034cf (wip):apps/site/src/app/[locale]/simulateur/(simulator-flow)/(root)/[root]/_components/Form.tsx
+>>>>>>>> f7e83b55c (wip):apps/site/src/app/[locale]/simulateur/(simulator-flow)/(root)/[root]/_components/Form.tsx
 import FunFact from './form/FunFact'
 import ResultsBlocksDesktop from './form/ResultsBlockDesktop'
 import ResultsBlockMobile from './form/ResultsBlockMobile'

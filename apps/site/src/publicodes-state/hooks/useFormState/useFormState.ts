@@ -26,6 +26,7 @@ export default function useFormState() {
     gotoNextQuestion,
     noPrevQuestion,
     noNextQuestion,
+    nextQuestion,
     isFirstQuestionOfCategory,
     isLastQuestionOfCategory,
     testAdvancement,
@@ -104,5 +105,9 @@ export default function useFormState() {
      * Missing variables and score with the current situation
      */
     missingVariables,
+    /**
+     * Is true if the next question has already been seen in the current session
+     */
+    nextQuestionAlreadySeen: relevantAnsweredQuestions.includes(nextQuestion),
   }
 }

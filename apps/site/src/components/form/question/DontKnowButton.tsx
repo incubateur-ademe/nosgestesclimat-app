@@ -5,12 +5,8 @@ import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
 import { questionClickPass } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import {
-  useCurrentSimulation,
-  useEngine,
-  useFormState,
-  useRule,
-} from '@/publicodes-state'
+import { useCurrentSimulation, useEngine, useRule } from '@/publicodes-state'
+import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -23,10 +19,8 @@ interface Props {
 }
 
 export default function DontKnowButton({ question }: Props) {
-  const { gotoNextQuestion } = useFormState()
-
   const { t } = useClientTranslation()
-
+  const gotoNextQuestion = useGotoNextQuestion()
   const { updateCurrentSimulation } = useCurrentSimulation()
 
   const { questionsOfMosaicFromParent, isMissing } = useRule(question)
