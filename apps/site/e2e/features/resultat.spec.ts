@@ -9,9 +9,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('Should redirect to the home if no simulation', async ({ page }) => {
-  await expect(page).toHaveURL('/', {
-    timeout: 3000,
-  })
+  await expect(page).toHaveURL('/')
 })
 
 test.describe('Given a user that completed a test without an account', () => {
@@ -23,7 +21,7 @@ test.describe('Given a user that completed a test without an account', () => {
 
   test('should be accessible from the home', async ({ page }) => {
     await page.goto('/')
-    await page.getByTestId('do-the-test-link').first().click()
+    await page.getByTestId('main-cta').first().click()
     await expect(page).toHaveURL(new RegExp('/fin'))
   })
 

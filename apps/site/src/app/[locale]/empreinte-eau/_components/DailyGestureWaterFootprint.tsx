@@ -1,12 +1,6 @@
 import DailyGestures from '@/components/landing-pages/DailyGestures'
 import Trans from '@/components/translation/trans/TransServer'
-import { trackingActionClickPageBottom } from '@/constants/tracking/actions'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import {
-  getLandingClickCTAResults,
-  getLandingClickCTAResume,
-  getLandingClickCTAStart,
-} from '@/helpers/tracking/landings'
 
 export default async function DailyGestureWaterFootprint({
   locale,
@@ -53,20 +47,7 @@ export default async function DailyGestureWaterFootprint({
           </p>
         </>
       }
-      trackingEvents={{
-        start: getLandingClickCTAStart(
-          '/empreinte-eau',
-          trackingActionClickPageBottom
-        ),
-        resume: getLandingClickCTAResume(
-          '/empreinte-eau',
-          trackingActionClickPageBottom
-        ),
-        results: getLandingClickCTAResults(
-          '/empreinte-eau',
-          trackingActionClickPageBottom
-        ),
-      }}
+      locale={locale}
       gestures={{
         [gesturesKeysForTranslation.alimentation]: {
           imageSrc:

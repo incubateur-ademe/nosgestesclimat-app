@@ -1,8 +1,8 @@
 export const SIMULATOR_PATH = '/simulateur/bilan'
-export const TUTORIAL_PATH = '/tutoriel'
-export const MON_ESPACE_PATH = '/mon-espace'
+export const START_SIMULATION_PATH = '/simulateur/commencer'
+export const TUTORIAL_PATH = '/simulateur/tutoriel'
 
-export const POLL_START_PATH = '/simulateur/commencer'
+export const MON_ESPACE_PATH = '/mon-espace'
 
 export const END_PAGE_PATH = '/fin'
 export const END_PAGE_ACTIONS_PATH = '/fin/actions'
@@ -18,3 +18,7 @@ export const MON_ESPACE_GROUPS_PATH = '/mon-espace/groupes'
 export const MON_ESPACE_SETTINGS_PATH = '/mon-espace/parametres'
 export const MON_ESPACE_RESULTS_DETAIL_PATH =
   '/mon-espace/resultats/:simulationId'
+
+export const ORGANISATION_CREATE_PATH = '/organisations/creer'
+export const ORGANISATION_SIGN_IN_PATH = '/organisations/connexion'
+export const ORGANISATION_SIGN_UP_PATH = '/organisations/inscription'

@@ -3,33 +3,26 @@
 import Button from '@/design-system/buttons/Button'
 import ColorLine from '@/design-system/layout/ColorLine'
 import Separator from '@/design-system/layout/Separator'
-import {
-  getLandingDidYouKnowSlider,
-  getLandingDidYouKnowSliderPosthog,
-  getLandingDidYouKnowSliderValue,
-} from '@/helpers/tracking/landings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 // @ts-expect-error package types are wrongly exported
 import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import ClientCTAButtons from '../cta/ClientCTAButtons'
 import PlaySignIcon from '../icons/PlaySignIcon'
 import Trans from '../translation/trans/TransClient'
 
 export default function DidYouKnowSlider({
   slides,
-  isAuthenticated,
+  ctaButtons,
   className,
   titleTag = 'h2',
 }: {
   slides: { illustration: string; content: ReactNode; highlight?: ReactNode }[]
   className?: string
-  isAuthenticated: boolean
+  ctaButtons: ReactNode
   titleTag?: 'h2' | 'h3'
 }) {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -37,8 +30,6 @@ export default function DidYouKnowSlider({
   const splideRef = useRef<{ splide: { root: Element } } | null>(null)
 
   const { t } = useClientTranslation()
-
-  const pathname = usePathname()
 
   const Title = titleTag === 'h2' ? 'h2' : 'h3'
 
@@ -244,38 +235,7 @@ export default function DidYouKnowSlider({
             <div className="splide__progress__bar" />
           </div>
         </Splide>
-        <div>
-          <ClientCTAButtons
-            isAuthenticated={isAuthenticated}
-            trackingEvents={{
-              start: getLandingDidYouKnowSlider(
-                pathname,
-                getLandingDidYouKnowSliderValue(currentSlide + 1)
-              ),
-              resume: getLandingDidYouKnowSlider(
-                pathname,
-                getLandingDidYouKnowSliderValue(currentSlide + 1)
-              ),
-              results: getLandingDidYouKnowSlider(
-                pathname,
-                getLandingDidYouKnowSliderValue(currentSlide + 1)
-              ),
-              startPosthog: getLandingDidYouKnowSliderPosthog(
-                pathname,
-                getLandingDidYouKnowSliderValue(currentSlide + 1)
-              ),
-              resumePosthog: getLandingDidYouKnowSliderPosthog(
-                pathname,
-                getLandingDidYouKnowSliderValue(currentSlide + 1)
-              ),
-              resultsPosthog: getLandingDidYouKnowSliderPosthog(
-                pathname,
-                getLandingDidYouKnowSliderValue(currentSlide + 1)
-              ),
-            }}
-            withRestart={false}
-          />
-        </div>
+        <div>{ctaButtons}</div>
       </div>
 
       <ColorLine className="bg-rainbow animate-rainbow-slow absolute bottom-0 left-0 h-[4px] w-[100%] transition-all motion-reduce:animate-none" />

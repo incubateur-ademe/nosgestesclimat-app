@@ -39,7 +39,7 @@ const nextConfig = withMDX({
   async redirects() {
     return redirects
   },
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true,
   outputFileTracingExcludes: {
     '*': ['.next/cache/webpack', '.git/**/*', 'cypress/**/*'],
   },

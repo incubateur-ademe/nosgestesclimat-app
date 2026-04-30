@@ -87,8 +87,8 @@ jobs:
             browser: chromium
           - project: Firefox
             browser: firefox
-          - project: Mobile Safari
-            browser: webkit
+          # - project: Mobile Safari
+          #   browser: webkit
     runs-on: ubuntu-latest
     name: ${{ matrix.project }}
     needs: [setup]

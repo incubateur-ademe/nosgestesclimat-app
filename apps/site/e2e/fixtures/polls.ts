@@ -38,21 +38,35 @@ export class Poll {
   }
 
   get createUrl() {
-    return `${this.organisation.url}/creer-campagne`
+    return `${this.organisation.url}/creer-campagne/informations`
   }
 
   async goto() {
     await this.page.goto(this.url)
   }
 
-  async create() {
+  async create(mode: 'standard' | 'scolaire' = 'standard') {
+    // Step 1: Fill poll name and go to step 2
     await expect(this.page).toHaveURL(this.createUrl)
     await this.page.getByTestId('poll-name-input').fill(this.name)
-    await this.page.getByTestId('poll-create-button').click()
+    await this.page.getByTestId('poll-form-name-button').click()
 
-    // Retrieve the poll slug
+    // Step 2: Select mode and create the poll
+    await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
+    const modeLabel = this.page.getByTestId(`poll-mode-${mode}`)
+    await modeLabel.click()
+    // Wait for the radio input inside the label to be checked
+    await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
+
+    const submitButton = this.page.getByTestId('poll-form-type-button')
+    await submitButton.click()
+
+    // Wait for the button to be disabled (form is submitting)
+    await expect(submitButton).toBeDisabled()
+
+    // Retrieve the poll slug (allow more time for the API call)
     const pollUrl = /\/campagnes\/([a-z0-9-]*)/
-    await expect(this.page).toHaveURL(pollUrl)
+    await expect(this.page).toHaveURL(pollUrl, { timeout: 30000 })
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 
@@ -73,12 +87,16 @@ export class Poll {
     expect(confirmationEmail).toBeDefined()
   }
 
-  async saveInContext() {
-    await savePlaywrightState(this.page, 'poll', this.data)
+  async saveInContext(key = 'poll') {
+    await savePlaywrightState(this.page, key, this.data)
   }
 
-  static async fromContext(page: Page, organisation: Organisation) {
-    const data = await getPlaywrightState<Data>(page, 'poll')
+  static async fromContext(
+    page: Page,
+    organisation: Organisation,
+    key = 'poll'
+  ) {
+    const data = await getPlaywrightState<Data>(page, key)
     return new Poll(page, organisation, data)
   }
 }

@@ -1,64 +1,82 @@
-'use client'
-
+import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/AuthenticateUserForm'
-import Trans from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransServer'
 import { END_PAGE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useCurrentSimulation } from '@/publicodes-state'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getUser } from '@/helpers/server/dal/user'
+import { getSimulations } from '@/helpers/server/model/simulations'
+import { UserProvider } from '@/publicodes-state'
+import { notFound } from 'next/navigation'
 
-export default function Email() {
-  const { t } = useClientTranslation()
-  const { polls } = useCurrentSimulation()
-  const pollSlug = polls?.[0]?.slug
+export default async function Email({
+  params,
+}: PageProps<'/[locale]/simulateur/email'>) {
+  const { locale } = await params
+  const { t } = await getServerTranslation({ locale })
+  const user = await getUser()
+  const currentSimulation = (
+    await getSimulations({ user }, { pageSize: 1 })
+  ).at(0)
+  if (!currentSimulation) {
+    notFound()
+  }
+  const pollSlug = currentSimulation.polls?.[0]?.slug
   const hasContest =
     pollSlug &&
     (process.env.NEXT_PUBLIC_POLL_CONTEST_SLUGS ?? '')
       .split(',')
       .includes(pollSlug)
+
   return (
     <>
       <Title
         data-testid="tutoriel-title"
         className="mt-10 text-lg md:text-2xl"
-        title={<Trans>Votre adresse electronique</Trans>}
+        title={<Trans locale={locale}>Votre adresse electronique</Trans>}
         subtitle={
           <>
-            <Trans>
+            <Trans locale={locale}>
               Pour conserver vos résultats et les retrouver à l’avenir dans{' '}
               <strong>votre espace personnel</strong>
             </Trans>
             {hasContest ? (
               <span>
-                <Trans>Votre e-mail sera utilisé pour le tirage au sort.</Trans>{' '}
+                <Trans locale={locale}>
+                  Votre e-mail sera utilisé pour le tirage au sort.
+                </Trans>{' '}
                 <InlineLink
                   target="_blank"
                   href="/politique-de-confidentialite">
-                  <Trans>En savoir plus</Trans>
+                  <Trans locale={locale}>En savoir plus</Trans>
                 </InlineLink>
               </span>
             ) : null}
 
             <span className="text-secondary-700 ml-2 inline-block font-bold italic">
-              <Trans>facultatif</Trans>
+              <Trans locale={locale}>facultatif</Trans>
             </span>
           </>
         }
       />
-      <AuthenticateUserForm
-        buttonLabel={t('Vérifier mon adresse email')}
-        additionnalButton={
-          <ButtonLink
-            color="secondary"
-            href={END_PAGE_PATH}
-            data-testid="skip-email-button">
-            <Trans>Passer</Trans>
-          </ButtonLink>
-        }
-        redirectPathname={END_PAGE_PATH}
-      />
+      <UserProvider serverUserId={user.id}>
+        <QueryClientProviderWrapper>
+          <AuthenticateUserForm
+            buttonLabel={t('Vérifier mon adresse email')}
+            additionnalButton={
+              <ButtonLink
+                color="secondary"
+                href={END_PAGE_PATH}
+                data-testid="skip-email-button">
+                <Trans locale={locale}>Passer</Trans>
+              </ButtonLink>
+            }
+            redirectPathname={END_PAGE_PATH}
+          />
+        </QueryClientProviderWrapper>
+      </UserProvider>
     </>
   )
 }

@@ -35,7 +35,6 @@ export default function Link({
       onClick={onClick}
       title={title}
       target={target}
-      prefetch={true}
       {...props}>
       {children}
     </NextLink>

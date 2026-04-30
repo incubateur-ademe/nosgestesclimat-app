@@ -4,7 +4,7 @@ import HeaderServer from '@/components/layout/HeaderServer'
 export default async function Layout({
   children,
   params,
-}: LayoutProps<'/[locale]/personas' | '/[locale]/tutoriel'>) {
+}: LayoutProps<'/[locale]/personas'>) {
   const { locale } = await params
 
   return (

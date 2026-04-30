@@ -1,4 +1,5 @@
-import DidYouKnowSliderServer from '@/components/landing-pages/DidYouKnowSliderServer'
+import CTAButtons from '@/components/cta/CTAButtons'
+import DidYouKnowSlider from '@/components/landing-pages/DidYouKnowSlider'
 import Trans from '@/components/translation/trans/TransServer'
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
 import { Suspense } from 'react'
@@ -15,7 +16,8 @@ export default function DidYouKnowMainLanding({
   return (
     <Suspense
       fallback={<BlockSkeleton className="my-0 h-[583px] md:h-[384px]" />}>
-      <DidYouKnowSliderServer
+      <DidYouKnowSlider
+        ctaButtons={<CTAButtons locale={locale} />}
         className={className}
         titleTag={titleTag}
         slides={[

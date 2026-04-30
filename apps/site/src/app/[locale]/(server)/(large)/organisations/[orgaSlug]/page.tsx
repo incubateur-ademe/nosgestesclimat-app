@@ -10,7 +10,7 @@ import { capitalizeString } from '@/utils/capitalizeString'
 import MyPolls from './_components/MyPolls'
 import NousContacter from './_components/NousContacter'
 import OurTools from './_components/OurTools'
-import { organisationAdminGuard } from './organisation-guard'
+import { organisationAdminGuard } from './guard'
 
 /* global PageProps */
 
@@ -46,7 +46,9 @@ export default async function OrganisationPage({
             <Trans>Sur l'espace organisation de </Trans>{' '}
             <strong className="text-secondary-700">{organisation?.name}</strong>
             .{' '}
-            <Trans>Retrouvez vos campagnes et suivez leurs statistiques.</Trans>
+            <Trans>
+              Retrouvez vos tests collectifs et suivez leurs statistiques.
+            </Trans>
           </p>
         </div>
         <ButtonLink

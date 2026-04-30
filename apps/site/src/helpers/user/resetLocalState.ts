@@ -1,4 +1,5 @@
-import type { Simulation, User } from '@/publicodes-state/types'
+import type { Simulation } from '@/helpers/server/model/simulations'
+import type { User } from '@/publicodes-state/types'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { getGeolocation } from '../api/getGeolocation'
 import { generateSimulation } from '../simulation/generateSimulation'

@@ -6,8 +6,8 @@ import ErrorBoundary from '@/components/error/ErrorBoundary'
 import EngineProviders from '@/components/providers/EngineProviders'
 import PRNumberHook from '@/components/providers/simulationProviders/PRNumberHook'
 import { PartnerProvider } from '@/contexts/partner/PartnerContext'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import UserProvider from '@/publicodes-state/providers/userProvider/provider'
-import type { Simulation } from '@/publicodes-state/types'
 import { faker } from '@faker-js/faker'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr-opti.json'
@@ -18,6 +18,7 @@ import { randomUUID } from 'crypto'
 import type { ReactElement } from 'react'
 import { vi } from 'vitest'
 import { getInitialExtendedSituation } from '../modelFetching/getInitialExtendedSituation'
+import { getModelVersion } from '../modelFetching/getModelVersion'
 
 // Mock useRules
 vi.mock('@/hooks/useRules', () => ({
@@ -41,6 +42,8 @@ const defaultSimulation: Simulation = {
   extendedSituation: getInitialExtendedSituation(),
   foldedSteps: [],
   actionChoices: {},
+  model: getModelVersion(),
+  updated_at: new Date().toISOString(),
   computedResults: {
     carbone: {
       bilan: 0,
@@ -74,7 +77,6 @@ const defaultUser = {
 
 const defaultState = {
   user: defaultUser,
-  tutorials: {},
   simulations: [defaultSimulation],
   currentSimulationId: defaultSimulation.id,
   updateCurrentSimulation: vi.fn(),
@@ -190,7 +192,6 @@ export const renderWithWrapper = (
       user: userMerged,
       simulations,
       currentSimulationId: currentSimulation?.id ?? defaultSimulation?.id,
-      tutorials: {},
     })
   )
 
