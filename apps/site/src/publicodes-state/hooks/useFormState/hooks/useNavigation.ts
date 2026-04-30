@@ -13,79 +13,63 @@ export default function useNavigation({
   currentQuestion,
   setCurrentQuestion,
 }: Props) {
-  const currentQuestionNamespace = useMemo(
-    () => getNamespace(currentQuestion),
-    [currentQuestion]
-  )
+  return useMemo(() => {
+    const currentQuestionNamespace = getNamespace(currentQuestion)
 
-  const currentQuestionIndex = useMemo<number>(
-    () => (currentQuestion ? relevantQuestions?.indexOf(currentQuestion) : 0),
-    [relevantQuestions, currentQuestion]
-  )
+    const currentQuestionIndex: number = currentQuestion
+      ? relevantQuestions.indexOf(currentQuestion)
+      : 0
 
-  const noPrevQuestion = useMemo<boolean>(
-    () => currentQuestionIndex === 0,
-    [currentQuestionIndex]
-  )
+    const noPrevQuestion = currentQuestionIndex === 0
 
-  const noNextQuestion = useMemo<boolean>(
-    () => currentQuestionIndex >= relevantQuestions.length - 1,
-    [currentQuestionIndex, relevantQuestions.length]
-  )
+    const noNextQuestion = currentQuestionIndex >= relevantQuestions.length - 1
 
-  const isLastQuestionOfCategory = useMemo<boolean>(
-    () =>
-      getNamespace(relevantQuestions[currentQuestionIndex + 1]) !==
-      currentQuestionNamespace,
-    [currentQuestionNamespace, currentQuestionIndex, relevantQuestions]
-  )
+    const nextQuestion: DottedName | null =
+      relevantQuestions[currentQuestionIndex + 1]
+    const previousQuestion: DottedName | null =
+      relevantQuestions[currentQuestionIndex - 1]
 
-  const isFirstQuestionOfCategory = useMemo<boolean>(
-    () =>
-      getNamespace(relevantQuestions[currentQuestionIndex - 1]) !==
-      currentQuestionNamespace,
-    [currentQuestionNamespace, currentQuestionIndex, relevantQuestions]
-  )
+    const isLastQuestionOfCategory =
+      getNamespace(nextQuestion) !== currentQuestionNamespace
 
-  const testAdvancement = useMemo(() => {
+    const isFirstQuestionOfCategory =
+      getNamespace(previousQuestion) !== currentQuestionNamespace
+
     const index = relevantQuestions.findIndex(
       (question) => question === currentQuestion
     )
 
-    return index === -1 ? 0 : index / relevantQuestions.length
-  }, [currentQuestion, relevantQuestions])
+    const testAdvancement = index === -1 ? 0 : index / relevantQuestions.length
 
-  const gotoPrevQuestion = () => {
-    if (noPrevQuestion) {
-      return undefined
+    function gotoPrevQuestion() {
+      if (noPrevQuestion) {
+        return undefined
+      }
+      setCurrentQuestion(previousQuestion)
+      return previousQuestion
     }
 
-    const newCurrentQuestion = relevantQuestions[currentQuestionIndex - 1]
+    function gotoNextQuestion() {
+      if (noNextQuestion) {
+        return undefined
+      }
 
-    setCurrentQuestion(newCurrentQuestion)
-
-    return newCurrentQuestion
-  }
-
-  const gotoNextQuestion = () => {
-    if (noNextQuestion) {
-      return undefined
+      setCurrentQuestion(nextQuestion)
+      return nextQuestion
     }
 
-    const newCurrentQuestion = relevantQuestions[currentQuestionIndex + 1]
-
-    setCurrentQuestion(newCurrentQuestion)
-
-    return newCurrentQuestion
-  }
-
-  return {
-    gotoPrevQuestion,
-    gotoNextQuestion,
-    noPrevQuestion,
-    noNextQuestion,
-    isFirstQuestionOfCategory,
-    isLastQuestionOfCategory,
-    testAdvancement,
-  }
+    return {
+      currentQuestionNamespace,
+      currentQuestionIndex,
+      noPrevQuestion,
+      noNextQuestion,
+      isLastQuestionOfCategory,
+      isFirstQuestionOfCategory,
+      testAdvancement,
+      nextQuestion,
+      previousQuestion,
+      gotoPrevQuestion,
+      gotoNextQuestion,
+    }
+  }, [currentQuestion, relevantQuestions, setCurrentQuestion])
 }
