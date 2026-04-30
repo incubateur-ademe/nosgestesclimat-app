@@ -131,7 +131,7 @@ export default defineConfig([
   // Extra rules from the previous Site eslint config
   // TODO: merge those rules with the root ts rules progressively
   {
-    files: ['apps/site/**/*.{js,jsx,ts,tsx}'],
+    files: ['apps/site/**/*.{ts,tsx}'],
     extends: [
       typescriptEslint.configs.recommendedTypeChecked,
       typescriptEslint.configs.stylisticTypeChecked,
