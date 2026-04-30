@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 
-export function useMagicKey({
-  gotToNextQuestion,
-}: {
+interface Props {
   gotToNextQuestion: (e: KeyboardEvent) => void
-}) {
+  isLastQuestion: boolean
+}
+
+export function useMagicKey({ gotToNextQuestion, isLastQuestion }: Props) {
   useEffect(() => {
     const handleMagicKey = (e: KeyboardEvent) => {
+      // Avoid calling multiple time onComplete on the last question
+      if (isLastQuestion && e.repeat) return
       if (e.altKey && (e.key === 'Escape' || e.key === 'Enter')) {
         gotToNextQuestion(e)
       }
@@ -16,5 +19,5 @@ export function useMagicKey({
     return () => {
       document.removeEventListener('keydown', handleMagicKey)
     }
-  }, [gotToNextQuestion])
+  }, [gotToNextQuestion, isLastQuestion])
 }

@@ -3,14 +3,12 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useMemo } from 'react'
 
 interface Props {
-  remainingQuestions: DottedName[]
   relevantQuestions: DottedName[]
   currentQuestion: DottedName | null
   setCurrentQuestion: (question: DottedName | null) => void
 }
 
 export default function useNavigation({
-  remainingQuestions,
   relevantQuestions,
   currentQuestion,
   setCurrentQuestion,
@@ -31,11 +29,8 @@ export default function useNavigation({
   )
 
   const noNextQuestion = useMemo<boolean>(
-    () =>
-      remainingQuestions.length === 0 ||
-      (remainingQuestions.length === 1 &&
-        remainingQuestions[0] === currentQuestion),
-    [currentQuestion, remainingQuestions]
+    () => currentQuestionIndex >= relevantQuestions.length - 1,
+    [currentQuestionIndex, relevantQuestions.length]
   )
 
   const isLastQuestionOfCategory = useMemo<boolean>(
@@ -77,8 +72,7 @@ export default function useNavigation({
       return undefined
     }
 
-    const newCurrentQuestion =
-      relevantQuestions[currentQuestionIndex + 1] || remainingQuestions[0]
+    const newCurrentQuestion = relevantQuestions[currentQuestionIndex + 1]
 
     setCurrentQuestion(newCurrentQuestion)
 

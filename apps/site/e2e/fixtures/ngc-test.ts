@@ -51,21 +51,22 @@ export class NGCTest {
         continue
       }
     }
-    if (isAnswered) {
-      await this.page.getByTestId('next-question-button').click()
-    } else {
-      await this.clickOnSkip()
-    }
+    return isAnswered
   }
 
   async clickOnSkip() {
     await this.page.getByTestId('skip-question-button').click()
   }
 
-  async isLastQuestion() {
-    return this.page
-      .getByTestId('divers . tabac . consommation par semaine')
-      .isVisible()
+  endButton() {
+    return this.page.getByTestId('end-test-button')
+  }
+
+  async canEndTest() {
+    return (
+      (await this.endButton().isVisible()) &&
+      (await this.endButton().isEnabled())
+    )
   }
 
   async isBooleanQuestion() {
@@ -93,24 +94,28 @@ export class NGCTest {
   }
 
   async skipAllQuestions() {
-    while (!(await this.isLastQuestion())) {
+    while (!(await this.canEndTest())) {
       await this.clickOnSkip()
     }
-    await this.page.getByTestId('end-test-button').click()
+    await this.endButton().click()
   }
 
   async answerTest(situation: Situation) {
-    // @TODO : test that there are no unit warning in publicodes
-    while (!(await this.isLastQuestion())) {
-      await this.answerQuestion(
-        // @TODO when Je ne sais pas  AB test is over, fix this
-        {
-          'logement . chauffage . saisie précision consommation': "'aide'",
-          ...situation,
-        }
-      )
+    while (!(await this.canEndTest())) {
+      const isAnswered = await this.answerQuestion(situation)
+      if (!isAnswered) {
+        await this.clickOnSkip()
+        continue
+      }
+      try {
+        await this.page
+          .getByTestId('next-question-button')
+          .click({ timeout: 2000 })
+      } catch {
+        continue
+      }
     }
-    await this.page.getByTestId('end-test-button').click()
+    await this.endButton().click()
   }
 }
 
