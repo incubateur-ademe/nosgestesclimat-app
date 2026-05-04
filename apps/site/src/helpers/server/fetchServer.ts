@@ -34,6 +34,7 @@ export async function fetchServer<T = unknown>(
   ])
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    // Some server route need IP of the client (for instance geolocation)
     'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
   }
 

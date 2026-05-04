@@ -42,7 +42,7 @@ interface SimulationFilter {
   pageSize?: number
 }
 
-async function fetchSimulations(
+async function getSimulations(
   {
     user,
   }: {
@@ -76,7 +76,7 @@ export async function getCurrentSimulation({
 }: {
   user: AppUser
 }): Promise<Simulation | undefined> {
-  const simulations = await fetchSimulations({ user }, { pageSize: 1 })
+  const simulations = await getSimulations({ user }, { pageSize: 1 })
   return simulations.at(0)
 }
 
@@ -88,7 +88,7 @@ export async function getCompletedSimulations(
   },
   { pageSize }: SimulationFilter = {}
 ): Promise<Simulation[]> {
-  return fetchSimulations({ user }, { completedOnly: true, pageSize })
+  return getSimulations({ user }, { completedOnly: true, pageSize })
 }
 
 export async function getSimulation({
