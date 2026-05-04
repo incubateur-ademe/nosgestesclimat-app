@@ -10,6 +10,7 @@
 import { useState, type PropsWithChildren } from 'react'
 
 import useCurrentSimulation from '@/publicodes-state/hooks/useCurrentSimulation/useCurrentSimulation'
+import type { Situation } from '@/publicodes-state/types'
 import { isServerSide } from '@/utils/nextjs/isServerSide'
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import { EngineContext } from './context'
@@ -22,20 +23,23 @@ interface Props {
   rules: Partial<NGCRules>
   root?: DottedName
   shouldAlwaysDisplayChildren?: boolean
+  initialSituation?: Situation
 }
 export default function EngineProvider({
   rules,
   root = 'bilan',
   children,
+  initialSituation,
 }: PropsWithChildren<Props>) {
   if (isServerSide()) {
     return children
   }
-  const { situation } = useCurrentSimulation()
-  const [initialSituation] = useState(situation)
+  const { situation: initialSituationFromUser } = useCurrentSimulation()
+  const [situation] = useState(initialSituation ?? initialSituationFromUser)
+
   const { engine, pristineEngine, safeEvaluate, safeGetRule } = useEngine(
     rules,
-    initialSituation
+    situation
   )
 
   const {

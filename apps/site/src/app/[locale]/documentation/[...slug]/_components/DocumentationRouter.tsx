@@ -35,11 +35,10 @@ export default function DocumentationRouter({
     (currentSimulation && currentSimulation.progression > 0)
   )
     return (
-      <EngineProvider rules={rules}>
-        <DocumentationClient
-          slugs={slug}
-          currentSimulation={currentSimulation}
-        />
+      <EngineProvider
+        rules={rules}
+        initialSituation={currentSimulation?.situation}>
+        <DocumentationClient slugs={slug} />
       </EngineProvider>
     )
 
