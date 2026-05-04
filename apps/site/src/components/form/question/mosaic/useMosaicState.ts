@@ -1,3 +1,4 @@
+import { useClearFromSituation } from '@/components/form/hooks/useClearFromSituation'
 import { useCurrentSimulation, useRule } from '@/publicodes-state'
 import type { Situation } from '@/publicodes-state/types'
 import { useDebounce } from '@/utils/debounce'
@@ -36,6 +37,8 @@ export function useMosaicState({
   const aucunOption = rule.aucunOption
 
   const { situation } = useCurrentSimulation()
+
+  const { clearFromSituation } = useClearFromSituation()
 
   const setValuesLater = useDebounce(rule.setValue, 800)
   const setValuesNow = useDebounce(rule.setValue, 0)
@@ -77,33 +80,27 @@ export function useMosaicState({
 
   const handleSetAucunOption = (selected: boolean) => {
     setAucunOptionSelected(selected)
-    let newState = { ...state }
-    if (
-      // If aucun is set
-      selected === true
-    ) {
-      // Then we initialize all values to null
-      newState = Object.fromEntries(
+
+    if (selected === true) {
+      // If aucun is set, initialize all values to null
+      const newState = Object.fromEntries(
         questionsOfMosaic.map((question) => [question, null])
       )
+      setState(newState)
+
+      setValuesNow(newState as Record<string, NodeValue>, {
+        questionDottedName: question,
+      })
+      return
     }
 
-    if (
-      // If aucun is unset
-      selected === false
-    ) {
-      // Then we reinitialize all values to undefined (default state)
-      newState = Object.fromEntries(
+    // If aucun is unset, remove children from the situation (back to model defaults)
+    clearFromSituation(questionsOfMosaic)
+    setState(
+      Object.fromEntries(
         questionsOfMosaic.map((question) => [question, undefined])
       )
-    }
-
-    setState(newState)
-
-    // Propagate to the actual situation
-    setValuesNow(newState as Record<string, NodeValue>, {
-      questionDottedName: question,
-    })
+    )
   }
 
   const handleSetValue = (
@@ -122,10 +119,15 @@ export function useMosaicState({
 
     // If value is false and all other values are false, then we unset all values (default state)
     if (value === false && Object.values(newState).every((v) => v === false)) {
+      // Remove children from the situation (back to model defaults)
+      clearFromSituation(questionsOfMosaic)
       // Then we reinitialize all values to undefined (default state)
       newState = Object.fromEntries(
         questionsOfMosaic.map((question) => [question, undefined])
       )
+      setState(newState)
+      // Situation already cleaned, nothing more to propagate
+      return
     }
 
     // If some value is not (null, 0, false or undefined) then aucun is set to false and we propagate null to other values
