@@ -11,12 +11,14 @@ import {
   useFormState,
   useRule,
 } from '@/publicodes-state'
+import type { Situation } from '@/publicodes-state/types'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
+import { useQuestionDuration } from '../hooks/useQuestionDuration'
 
 interface Props {
   question: DottedName
@@ -27,11 +29,13 @@ export default function DontKnowButton({ question }: Props) {
 
   const { t } = useClientTranslation()
 
-  const { updateCurrentSimulation } = useCurrentSimulation()
+  const { updateCurrentSimulation, situation } = useCurrentSimulation()
 
   const { questionsOfMosaicFromParent, isMissing } = useRule(question)
 
-  const { getValue } = useEngine()
+  const { getValue, engine } = useEngine()
+
+  const { getQuestionDuration } = useQuestionDuration(question)
 
   // @TODO: refacto this with the logic from https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/ddf31819dfb0628c0e883cec90113cb2f823afe0/apps/site/src/components/form/Navigation.tsx#L240-L311
   const handleFoldWithDefaultValue = useCallback(() => {
@@ -59,22 +63,78 @@ export default function DontKnowButton({ question }: Props) {
   }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
+    const timeSpent = getQuestionDuration()
     trackMatomoEvent__deprecated(
-      // Dummy time for AB test
-      questionClickPass({ question, timeSpentOnQuestion: 0 })
+      questionClickPass({
+        question,
+        timeSpentOnQuestion: timeSpent,
+      })
     )
     trackPosthogEvent(
       captureClickFormNav({
         actionType: 'passer',
         question,
         answer: getValue(question),
-        // Dummy time for AB test
-        timeSpentOnQuestion: 0,
+        timeSpentOnQuestion: timeSpent,
       })
     )
 
-    // Fold the step with the default value (skip behavior)
-    handleFoldWithDefaultValue()
+    if (!isMissing) {
+      // User has already provided an answer: reset to the model's default value
+      const cleanedSituation = { ...situation }
+      const dottedNamesToRemove: DottedName[] = [
+        question,
+        ...questionsOfMosaicFromParent,
+      ]
+      dottedNamesToRemove.forEach((name) => {
+        delete cleanedSituation[name]
+      })
+
+      // Create a temporary engine with the cleaned situation to compute defaults
+      const tempEngine = engine?.shallowCopy()
+      if (tempEngine) {
+        tempEngine.setSituation(cleanedSituation, {
+          keepPreviousSituation: false,
+        })
+      }
+
+      // Fold mosaic children with their computed default values
+      if (questionsOfMosaicFromParent.length > 0) {
+        questionsOfMosaicFromParent.forEach((mosaicChild) => {
+          const defaultValue: NodeValue | undefined =
+            tempEngine!.evaluate(mosaicChild).nodeValue
+
+          updateCurrentSimulation({
+            foldedStepToAdd: {
+              foldedStep: mosaicChild,
+              value: defaultValue,
+              isMosaicChild: true,
+            },
+          })
+        })
+      }
+
+      // Compute the default value for the main question
+      const defaultValue: NodeValue | undefined =
+        tempEngine!.evaluate(question).nodeValue
+
+      // Sync the main engine with the cleaned situation so that
+      // computedResults are recalculated with the correct default values
+      engine?.setSituation(cleanedSituation as Situation)
+
+      // Clean the situation and fold the main question with its default value
+      updateCurrentSimulation({
+        situation: cleanedSituation as Situation,
+        foldedStepToAdd: {
+          foldedStep: question,
+          value: defaultValue,
+          isMosaicParent: questionsOfMosaicFromParent.length > 0,
+        },
+      })
+    } else {
+      // No answer provided: fold with current engine value (the model default)
+      handleFoldWithDefaultValue()
+    }
 
     gotoNextQuestion()
   }
@@ -85,7 +145,6 @@ export default function DontKnowButton({ question }: Props) {
         onClick={handleClick}
         className="text-sm!"
         color="borderless"
-        disabled={!isMissing}
         data-testid="skip-question-button"
         aria-label={t(
           'common.navigation.nextQuestion.dontKnow.title',
