@@ -59,6 +59,8 @@ describe('getOrganisationsBatchBrevoStats', () => {
       expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
         organisationId: organisation.id,
+        organisationType: 'company',
+        administratorEmail: email,
         pollsCreatedCount: 0,
         organisationSimulationsCompletedCount: 0,
         organisationLastSimulationDate: null,
@@ -119,6 +121,8 @@ describe('getOrganisationsBatchBrevoStats', () => {
       expect(result).toHaveLength(1)
       expect(result[0]).toEqual({
         organisationId: organisation.id,
+        organisationType: 'association',
+        administratorEmail: email,
         pollsCreatedCount: 2,
         organisationSimulationsCompletedCount: 0,
         organisationLastSimulationDate: null,
@@ -210,6 +214,8 @@ describe('getOrganisationsBatchBrevoStats', () => {
       expect(result).toHaveLength(1)
       expect(result[0]).toMatchObject({
         organisationId: organisation.id,
+        organisationType: 'company',
+        administratorEmail: email,
         pollsCreatedCount: 1,
         organisationSimulationsCompletedCount: 1,
         organisationLastSimulationDate: expect.any(Date),
@@ -329,6 +335,8 @@ describe('getOrganisationsBatchBrevoStats', () => {
       expect(result).toHaveLength(1)
       expect(result[0]).toMatchObject({
         organisationId: organisation.id,
+        organisationType: 'company',
+        administratorEmail: email,
         pollsCreatedCount: 2,
         organisationSimulationsCompletedCount: 3,
         organisationLastSimulationDate: expect.any(Date),
@@ -429,6 +437,8 @@ describe('getOrganisationsBatchBrevoStats', () => {
       expect(org1Stats).toBeDefined()
       expect(org1Stats).toMatchObject({
         organisationId: org1.id,
+        organisationType: 'company',
+        administratorEmail: email1,
         pollsCreatedCount: 1,
         organisationSimulationsCompletedCount: 1,
         organisationLastSimulationDate: expect.any(Date),
@@ -439,6 +449,8 @@ describe('getOrganisationsBatchBrevoStats', () => {
       expect(org2Stats).toBeDefined()
       expect(org2Stats).toEqual({
         organisationId: org2.id,
+        organisationType: 'association',
+        administratorEmail: email2,
         pollsCreatedCount: 0,
         organisationSimulationsCompletedCount: 0,
         organisationLastSimulationDate: null,

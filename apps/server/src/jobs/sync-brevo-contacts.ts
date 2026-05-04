@@ -1,9 +1,16 @@
-import { addOrUpdateContactAfterOrganisationChange } from '../adapters/brevo/client.js'
+import dayjs from 'dayjs'
+import { addOrUpdateContact } from '../adapters/brevo/client.js'
+import { Attributes } from '../adapters/brevo/constant.js'
 import { prisma } from '../adapters/prisma/client.js'
 import type { Session } from '../adapters/prisma/transaction.js'
-import { batchFindMany } from '../core/batch-find-many.js'
-import { getOrganisationsBatchBrevoStats } from '../features/organisations/organisations.repository.js'
+import {
+  getOrganisationsBatchBrevoStats,
+  type OrganisationsBatchBrevoStats,
+} from '../features/organisations/organisations.repository.js'
 import logger from '../logger.js'
+
+const MAX_RETRIES = 2
+const RETRY_DELAY_MS = 300
 
 interface SyncResult {
   processedCount: number
@@ -11,68 +18,56 @@ interface SyncResult {
 }
 
 export const syncOrganisationToBrevo = async (
-  organisation: {
-    id: string
-    name: string
-    slug: string
-    type?: string
-    administrators: Array<{
-      user: {
-        id: string
-        name: string | null
-        email: string
-        optedInForCommunications: boolean
-      }
-    }>
-  },
-  stats:
-    | {
-        lastPollParticipantsCount: number
-        pollsCreatedCount: number
-        organisationSimulationsCompletedCount: number
-        organisationLastSimulationDate: Date | null
-      }
-    | undefined
+  stats: OrganisationsBatchBrevoStats
 ): Promise<void> => {
-  const administrator = organisation.administrators[0]?.user
-  if (!administrator) {
-    logger.warn(`No administrator found for organisation ${organisation.id}`)
+  const {
+    organisationId,
+    organisationType,
+    administratorEmail,
+    lastPollParticipantsCount,
+    pollsCreatedCount,
+    organisationSimulationsCompletedCount,
+    organisationLastSimulationDate,
+  } = stats
+
+  if (!administratorEmail) {
+    logger.warn(`No administrator found for organisation ${organisationId}`)
     return
   }
 
-  const {
-    id: organisationId,
-    name: organisationName,
-    slug,
-    type,
-  } = organisation
+  const attributes = {
+    [Attributes.ORGANISATION_TYPE]: organisationType,
+    ...(lastPollParticipantsCount != null
+      ? {
+          [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
+        }
+      : {}),
+    ...(pollsCreatedCount != null
+      ? {
+          [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
+        }
+      : {}),
+    ...(organisationSimulationsCompletedCount != null
+      ? {
+          [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
+            organisationSimulationsCompletedCount,
+        }
+      : {}),
+    ...(organisationLastSimulationDate != null
+      ? {
+          [Attributes.LAST_ORGANISATION_SIMULATION_DATE]: dayjs(
+            organisationLastSimulationDate
+          ).format('YYYY-MM-DD'),
+        }
+      : {}),
+  }
 
-  const {
-    email,
-    id: userId,
-    name: administratorName,
-    optedInForCommunications,
-  } = administrator
-
-  await addOrUpdateContactAfterOrganisationChange({
-    slug,
-    email,
-    userId,
-    organisationName,
-    administratorName,
-    optedInForCommunications,
-    type,
-    lastPollParticipantsCount: stats?.lastPollParticipantsCount,
-    pollsCreatedCount: stats?.pollsCreatedCount,
-    organisationSimulationsCompletedCount:
-      stats?.organisationSimulationsCompletedCount,
-    organisationLastSimulationDate:
-      stats?.organisationLastSimulationDate ?? undefined,
+  await addOrUpdateContact({
+    email: administratorEmail,
+    attributes,
   })
 
-  logger.info(
-    `Synced Brevo contact for organisation ${organisationId} (${organisationName})`
-  )
+  logger.info(`Synced Brevo contact for organisation ${organisationId}`)
 }
 
 export const runSync = async ({
@@ -83,52 +78,25 @@ export const runSync = async ({
   let processedCount = 0
   let errorCount = 0
 
-  // Batch-load all organisation stats in a single query
   const allStats = await getOrganisationsBatchBrevoStats({ session })
-  const statsByOrganisationId = new Map(
-    allStats.map((stats) => [stats.organisationId, stats])
-  )
 
-  const batchOrganisations = batchFindMany((params) =>
-    session.organisation.findMany({
-      ...params,
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        type: true,
-        administrators: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                optedInForCommunications: true,
-              },
-            },
-          },
-          take: 1,
-          orderBy: {
-            createdAt: 'asc',
-          },
-        },
-      },
-    })
-  )
-
-  for await (const organisation of batchOrganisations) {
-    const stats = statsByOrganisationId.get(organisation.id)
-
-    try {
-      await syncOrganisationToBrevo(organisation, stats)
-      processedCount++
-    } catch (error) {
-      errorCount++
-      logger.error(
-        `Failed to sync Brevo contact for organisation ${organisation.id}`,
-        { error }
-      )
+  for (const stats of allStats) {
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        await syncOrganisationToBrevo(stats)
+        processedCount++
+        break
+      } catch (error) {
+        if (attempt === MAX_RETRIES) {
+          errorCount++
+          logger.error(
+            `Failed to sync Brevo contact for organisation ${stats.organisationId}`,
+            { error }
+          )
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
+        }
+      }
     }
   }
 
