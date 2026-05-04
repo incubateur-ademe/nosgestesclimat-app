@@ -187,6 +187,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationSlug: string
         let organisationName: string
+        let organisationType: string
         let administratorEmail: string
         let administratorId: string
         let userId: string
@@ -200,13 +201,12 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
-          } = await createOrganisation({
-            agent,
-            cookie,
-          }))
+          } = await createOrganisation({ agent, cookie }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -396,6 +396,12 @@ describe('Given a NGC user', () => {
                   ORGANISATION_SLUG: organisationSlug,
                   LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: false,
+                  ORGANISATION_TYPE: organisationType,
+                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
+                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
+                  LAST_ORGANISATION_SIMULATION_DATE: new Date()
+                    .toISOString()
+                    .split('T')[0],
                 },
                 updateEnabled: true,
               },
@@ -623,6 +629,12 @@ describe('Given a NGC user', () => {
                     IS_ORGANISATION_ADMIN: true,
                     LAST_POLL_PARTICIPANTS_NUMBER: 1,
                     OPT_IN: false,
+                    ORGANISATION_TYPE: organisationType,
+                    NUMBER_ORGANISATION_CREATED_POLLS: 1,
+                    NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
+                    LAST_ORGANISATION_SIMULATION_DATE: new Date()
+                      .toISOString()
+                      .split('T')[0],
                     ORGANISATION_NAME: organisationName,
                     ORGANISATION_SLUG: organisationSlug,
                     USER_ID: administratorId,
@@ -904,6 +916,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationSlug: string
         let organisationName: string
+        let organisationType: string
         let administratorEmail: string
         let administratorId: string
         let pollId: string
@@ -916,6 +929,7 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
@@ -930,6 +944,7 @@ describe('Given a NGC user', () => {
               ],
             },
           }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -960,6 +975,12 @@ describe('Given a NGC user', () => {
                   ORGANISATION_SLUG: organisationSlug,
                   LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: true,
+                  ORGANISATION_TYPE: organisationType,
+                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
+                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
+                  LAST_ORGANISATION_SIMULATION_DATE: new Date()
+                    .toISOString()
+                    .split('T')[0],
                 },
                 updateEnabled: true,
               },
@@ -1065,6 +1086,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationName: string
         let organisationSlug: string
+        let organisationType: string
         let administratorId: string
         let administratorEmail: string
         let pollId: string
@@ -1077,13 +1099,12 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
-          } = await createOrganisation({
-            agent,
-            cookie,
-          }))
+          } = await createOrganisation({ agent, cookie }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -1355,6 +1376,12 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: false,
+                  ORGANISATION_TYPE: organisationType,
+                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
+                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
+                  LAST_ORGANISATION_SIMULATION_DATE: new Date()
+                    .toISOString()
+                    .split('T')[0],
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
                   USER_ID: administratorId,

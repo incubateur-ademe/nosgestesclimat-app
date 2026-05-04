@@ -803,3 +803,72 @@ export const setPollStats = (
     },
   })
 }
+
+export const getPollsCreatedCount = async (
+  organisationId: string,
+  { session }: { session: Session }
+) =>
+  await session.poll.count({
+    where: {
+      organisationId,
+    },
+  })
+
+export const getOrganisationSimulationInfo = async (
+  organisationId: string,
+  { session }: { session: Session }
+) => {
+  const pollIds = await session.poll.findMany({
+    where: {
+      organisationId,
+    },
+    select: {
+      id: true,
+    },
+  })
+
+  const organisationPollIds = pollIds.map(({ id }) => id)
+
+  if (organisationPollIds.length === 0) {
+    return {
+      organisationSimulationsCompletedCount: 0,
+      organisationLastSimulationDate: undefined,
+    }
+  }
+
+  const [simulationCount, simulationPoll] = await Promise.all([
+    session.simulationPoll.count({
+      where: {
+        simulation: {
+          progression: 1,
+        },
+        pollId: {
+          in: organisationPollIds,
+        },
+      },
+    }),
+    session.simulationPoll.findFirst({
+      where: {
+        simulation: {
+          progression: 1,
+        },
+        pollId: {
+          in: organisationPollIds,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        createdAt: true,
+      },
+    }),
+  ])
+
+  const { createdAt } = simulationPoll ?? {}
+
+  return {
+    organisationSimulationsCompletedCount: simulationCount,
+    organisationLastSimulationDate: createdAt,
+  }
+}

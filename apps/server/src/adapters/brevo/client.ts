@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
+import dayjs from 'dayjs'
 import { z } from 'zod'
 import { config } from '../../config.js'
 import { Locales } from '../../core/i18n/constant.js'
@@ -12,6 +13,7 @@ import type {
 import type {
   Group,
   Organisation,
+  OrganisationType,
   Poll,
   Simulation,
   User,
@@ -659,25 +661,56 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   administratorName,
   optedInForCommunications,
   lastPollParticipantsCount,
+  type,
+  pollsCreatedCount,
+  organisationSimulationsCompletedCount,
+  organisationLastSimulationDate,
 }: {
   slug: string
   email: string
   userId: string
   organisationName: string
-  lastPollParticipantsCount: number
+  lastPollParticipantsCount?: number
   administratorName?: string | null
   optedInForCommunications?: boolean
+  type?: OrganisationType
+  pollsCreatedCount?: number
+  organisationSimulationsCompletedCount?: number
+  organisationLastSimulationDate?: Date
 }) => {
   const attributes = {
     [Attributes.USER_ID]: userId,
     [Attributes.IS_ORGANISATION_ADMIN]: true,
     [Attributes.ORGANISATION_NAME]: organisationName,
     [Attributes.ORGANISATION_SLUG]: slug,
-    [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
+    ...(lastPollParticipantsCount
+      ? {
+          [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
+        }
+      : {}),
     [Attributes.OPT_IN]: !!optedInForCommunications,
     ...(administratorName
       ? {
           [Attributes.PRENOM]: administratorName,
+        }
+      : {}),
+    [Attributes.ORGANISATION_TYPE]: type,
+    ...(pollsCreatedCount
+      ? {
+          [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
+        }
+      : {}),
+    ...(organisationSimulationsCompletedCount
+      ? {
+          [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
+            organisationSimulationsCompletedCount,
+        }
+      : {}),
+    ...(organisationLastSimulationDate
+      ? {
+          [Attributes.LAST_ORGANISATION_SIMULATION_DATE]: dayjs(
+            organisationLastSimulationDate
+          ).format('YYYY-MM-DD'),
         }
       : {}),
   }

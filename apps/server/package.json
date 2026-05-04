@@ -21,6 +21,7 @@
     "jobs:computePollStats": "node dist/src/jobs/compute-poll-stats.js",
     "jobs:recoverMatomoStats": "node dist/src/jobs/recover-matomo-stats.js",
     "jobs:recoverNewsletterStats": "node dist/src/jobs/recover-newsletter-stats.js",
+    "jobs:syncBrevoContacts": "node dist/src/jobs/sync-brevo-contacts.js",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "generate": "pnpm db:generate-client",
     "typecheck": "tsc --noEmit",
