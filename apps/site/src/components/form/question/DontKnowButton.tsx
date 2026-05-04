@@ -18,6 +18,7 @@ import {
 } from '@/utils/analytics/trackEvent'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
+import { useQuestionDuration } from '../hooks/useQuestionDuration'
 
 interface Props {
   question: DottedName
@@ -34,6 +35,7 @@ export default function DontKnowButton({ question }: Props) {
 
   const { getValue, engine } = useEngine()
 
+  const { getQuestionDuration } = useQuestionDuration(question)
 
   // @TODO: refacto this with the logic from https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/ddf31819dfb0628c0e883cec90113cb2f823afe0/apps/site/src/components/form/Navigation.tsx#L240-L311
   const handleFoldWithDefaultValue = useCallback(() => {
@@ -62,16 +64,17 @@ export default function DontKnowButton({ question }: Props) {
 
   const handleClick = () => {
     trackMatomoEvent__deprecated(
-      // Dummy time for AB test
-      questionClickPass({ question, timeSpentOnQuestion: 0 })
+      questionClickPass({
+        question,
+        timeSpentOnQuestion: getQuestionDuration(),
+      })
     )
     trackPosthogEvent(
       captureClickFormNav({
         actionType: 'passer',
         question,
         answer: getValue(question),
-        // Dummy time for AB test
-        timeSpentOnQuestion: 0,
+        timeSpentOnQuestion: getQuestionDuration(),
       })
     )
 
