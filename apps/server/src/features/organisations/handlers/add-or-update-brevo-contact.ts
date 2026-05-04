@@ -16,7 +16,6 @@ export const addOrUpdateBrevoContact: Handler<
   const {
     attributes: {
       organisation: {
-        id: organisationId,
         name: organisationName,
         slug,
         type,
