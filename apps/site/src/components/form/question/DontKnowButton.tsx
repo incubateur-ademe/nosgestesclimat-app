@@ -58,10 +58,11 @@ export default function DontKnowButton({ question }: Props) {
   }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
+    const timeSpent = getQuestionDuration()
     trackMatomoEvent__deprecated(
       questionClickPass({
         question,
-        timeSpentOnQuestion: getQuestionDuration(),
+        timeSpentOnQuestion: timeSpent,
       })
     )
     trackPosthogEvent(
@@ -69,7 +70,7 @@ export default function DontKnowButton({ question }: Props) {
         actionType: 'passer',
         question,
         answer: getValue(question),
-        timeSpentOnQuestion: getQuestionDuration(),
+        timeSpentOnQuestion: timeSpent,
       })
     )
 
