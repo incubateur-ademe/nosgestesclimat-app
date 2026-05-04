@@ -1,21 +1,25 @@
+import { metrics } from '@/constants/model/metric'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type {
   ComputedResults,
   ComputedResultsFootprint,
   Metric,
+  SafeEvaluate,
 } from '../types'
 
 export function getComputedResults({
-  metrics,
   categories,
   subcategories,
-  getNumericValue,
+  safeEvaluate,
 }: {
-  metrics: Metric[]
   categories: DottedName[]
   subcategories: DottedName[]
-  getNumericValue: (dottedName: DottedName, metric: Metric) => number
+  safeEvaluate: SafeEvaluate
 }): ComputedResults {
+  function getNumericValue(dottedName: DottedName, metric?: Metric): number {
+    const nodeValue = safeEvaluate(dottedName, metric)?.nodeValue
+    return Number(nodeValue) === nodeValue ? nodeValue : 0
+  }
   return metrics.reduce((metricsAcc: ComputedResults, metric: Metric) => {
     // Get the footprint of the categories
     metricsAcc[metric] = categories.reduce(

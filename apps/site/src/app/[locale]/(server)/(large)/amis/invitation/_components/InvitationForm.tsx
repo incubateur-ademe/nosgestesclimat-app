@@ -5,8 +5,9 @@ import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useCurrentSimulation, useUser } from '@/publicodes-state'
+import { useUser } from '@/publicodes-state'
 import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
 import type { Group } from '@/types/groups'
 import { useRouter } from 'next/navigation'
@@ -17,7 +18,13 @@ interface Inputs {
   guestName: string
 }
 
-export default function InvitationForm({ group }: { group: Group }) {
+export default function InvitationForm({
+  group,
+  currentSimulation,
+}: {
+  group: Group
+  currentSimulation: Simulation
+}) {
   const { t } = useClientTranslation()
 
   const { user, updateName } = useUser()
@@ -28,22 +35,12 @@ export default function InvitationForm({ group }: { group: Group }) {
     formState: { errors },
   } = useReactHookForm<Inputs>()
 
-  const currentSimulation = useCurrentSimulation()
   const hasCompletedTest = currentSimulation.progression === 1
 
   const router = useRouter()
 
   async function onSubmit({ guestName }: Inputs) {
-    // Shouldn't happen but in any case, avoid group joining
-    if (!group) {
-      return
-    } // Update user info
     updateName(guestName)
-    // Update current simulation with group id (to redirect after test completion)
-
-    currentSimulation.update({
-      groupToAdd: group.id,
-    })
 
     await updateGroupParticipant({
       groupId: group.id,
@@ -60,7 +57,7 @@ export default function InvitationForm({ group }: { group: Group }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+    <form onSubmit={handleSubmit(onSubmit) as () => void} autoComplete="off">
       <PrenomInput
         data-testid="member-name"
         value={user.name ?? ''}

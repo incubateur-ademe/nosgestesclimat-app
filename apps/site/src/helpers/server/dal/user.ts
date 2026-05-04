@@ -60,6 +60,9 @@ export const logout = async () => {
     ...DEFAULT_COOKIE_OPTION,
   })
 
+  const session = await getAnonSession()
+  session.destroy()
+
   // The anonymous user ID cookie (ngc_anon_user) is NOT regenerated here.
   // The client-side resetLocalState() generates a new UUID in localStorage,
   // which is synced to the cookie automatically via migrateAnonSession.

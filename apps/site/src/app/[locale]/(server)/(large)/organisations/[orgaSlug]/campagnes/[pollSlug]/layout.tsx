@@ -1,7 +1,9 @@
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
+import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
+import type { Locale } from '@/i18nConfig'
+import { EngineProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
-import type { PropsWithChildren } from 'react'
 export async function generateMetadata({
   params,
 }: DefaultPageProps<{ params: { orgaSlug: string; pollSlug: string } }>) {
@@ -20,6 +22,11 @@ export async function generateMetadata({
   })
 }
 
-export default function Layout({ children }: PropsWithChildren) {
-  return children
+export default async function Layout({
+  children,
+  params,
+}: LayoutProps<'/[locale]/organisations/[orgaSlug]/campagnes/[pollSlug]'>) {
+  const locale = (await params).locale as Locale
+  const rules = await getCachedRules({ locale })
+  return <EngineProvider rules={rules}>{children}</EngineProvider>
 }

@@ -30,7 +30,6 @@ interface EngineContextType {
   categories: DottedName[]
   subcategories: DottedName[]
   addToEngineSituation: (situationToAdd: Situation) => Situation
-  isInitialized: boolean
 }
 export const EngineContext = createContext<EngineContextType>({
   rules: undefined,
@@ -49,5 +48,4 @@ export const EngineContext = createContext<EngineContextType>({
   categories: [],
   subcategories: [],
   addToEngineSituation: () => ({}) as Situation,
-  isInitialized: false,
 })

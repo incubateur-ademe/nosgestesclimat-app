@@ -5,7 +5,6 @@ import { Organisation } from '../fixtures/organisations'
 import { Poll } from '../fixtures/polls'
 import { TutorialPage } from '../fixtures/tutorial'
 import { User } from '../fixtures/user'
-import { skipOnSafari } from '../helpers/skip-on-safari'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
 
 test.use({ storageState: ORGANISATION_ADMIN_STATE })
@@ -150,18 +149,11 @@ test.describe('A user with a completed test that joined a poll', () => {
     await expect(page).toHaveURL(/\/fin/)
   })
 
-  test('sees the poll confirmation block on the end page', async ({
-    browser,
-  }) => {
-    skipOnSafari(browser)
+  test('sees the poll confirmation block on the end page', async () => {
     await expect(page.getByTestId('poll-confirmation-block')).toBeVisible()
   })
 
-  test('can access the poll dashboard from the end page', async ({
-    poll,
-    browser,
-  }) => {
-    skipOnSafari(browser)
+  test('can access the poll dashboard from the end page', async ({ poll }) => {
     await page.goto('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(poll.url)

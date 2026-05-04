@@ -28,14 +28,14 @@ export default function Actions({
     useState(false)
 
   const { t } = useClientTranslation()
-  const { getValue, isInitialized } = useEngine()
+  const { getValue } = useEngine()
 
   const bilan = { nodeValue: getValue('bilan'), dottedName: 'bilan' }
 
   const { actionChoices } = useCurrentSimulation()
 
   // Don't render if engine is not initialized or if bilan is not available
-  if (!isInitialized || bilan.nodeValue == null) {
+  if (bilan.nodeValue == null) {
     return null
   }
 

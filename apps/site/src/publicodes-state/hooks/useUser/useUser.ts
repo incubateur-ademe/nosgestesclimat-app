@@ -22,7 +22,6 @@ export default function useUser() {
     currentSimulationId,
     setCurrentSimulationId,
     migrationInstructions,
-    isInitialized,
   } = useContext(userContext)
 
   const {
@@ -57,10 +56,6 @@ export default function useUser() {
   const { hideTutorial, showTutorial } = useTutorials({ setTutorials })
 
   return {
-    /**
-     * A boolean indicating if the user and their simulations have been initialized
-     */
-    isInitialized,
     /**
      * All the information about the user (for now: name, email, region and north star rating)
      */

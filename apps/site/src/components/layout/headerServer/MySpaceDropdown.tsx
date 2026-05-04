@@ -203,12 +203,12 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
     }
   }
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     trackMatomoEvent__deprecated(headerClickLogoutAuthenticatedServer)
     trackPosthogEvent(captureClickHeaderLogoutAuthenticatedServer)
     setIsOpen(false)
 
-    await resetLocalState({ setUser, updateSimulations })
+    resetLocalState({ setUser, updateSimulations })
 
     posthog.reset()
 

@@ -3,7 +3,7 @@ import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import { throwNextError } from '@/helpers/server/error'
 import {
   deleteSimulation,
-  getSimulations,
+  getCompletedSimulations,
 } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { DefaultPageProps } from '@/types'
@@ -18,7 +18,7 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
 
   const [simulations, user] = await throwNextError(async () => {
     const user = await getAuthUser()
-    return [await getSimulations({ user }, { completedOnly: true }), user]
+    return [await getCompletedSimulations({ user }), user]
   })
 
   return (

@@ -1,7 +1,7 @@
+import { STORAGE_KEY } from '@/constants/storage'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { User } from '@/publicodes-state/types'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
-import { getGeolocation } from '../api/getGeolocation'
 import { generateSimulation } from '../simulation/generateSimulation'
 
 interface Props {
@@ -9,23 +9,17 @@ interface Props {
   updateSimulations: (simulations: Simulation[]) => void
 }
 
-export async function resetLocalState({ setUser, updateSimulations }: Props) {
-  const initialRegion = await getGeolocation()
-
+export function resetLocalState({ setUser, updateSimulations }: Props) {
   const defaultSimulation = generateSimulation()
 
   const resettedUser = {
-    region: initialRegion,
-    initialRegion: initialRegion,
     userId: '',
   }
 
   safeLocalStorage.setItem(
-    'nosgestesclimat::v3',
+    STORAGE_KEY,
     JSON.stringify({
       user: resettedUser,
-      simulations: [defaultSimulation],
-      currentSimulationId: defaultSimulation.id,
     })
   )
 

@@ -13,6 +13,6 @@ export const generateMetadata = getCommonMetadata({
   },
 })
 
-export default function SimulateurLayout({ children }: PropsWithChildren) {
+export default function Layout({ children }: PropsWithChildren) {
   return <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
 }

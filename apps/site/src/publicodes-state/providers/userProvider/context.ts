@@ -16,23 +16,13 @@ interface UserContextType {
   currentSimulationId: string
   setCurrentSimulationId: Dispatch<SetStateAction<string>>
   migrationInstructions: Migration
-  isInitialized: boolean
 }
 
 export default createContext<UserContextType>({
   user: {
-    region: {
-      code: '',
-      name: '',
-    },
-    initialRegion: {
-      code: '',
-      name: '',
-    },
     name: '',
     email: '',
     userId: '',
-    administratorEmail: '',
   },
   setUser: () => {},
   tutorials: {},
@@ -45,5 +35,4 @@ export default createContext<UserContextType>({
     keysToMigrate: {},
     valuesToMigrate: {},
   },
-  isInitialized: false,
 })

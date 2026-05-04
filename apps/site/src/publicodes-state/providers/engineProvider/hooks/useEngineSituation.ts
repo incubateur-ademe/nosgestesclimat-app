@@ -7,29 +7,24 @@ import type {
   Situation,
 } from '@/publicodes-state/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 
 interface Props {
-  engine: Engine | undefined
+  engine: Engine
   safeEvaluate: SafeEvaluate
   rawMissingVariables: MissingVariables
 }
 /**
  * Update the engine situation and the simulation situation
  */
-export function useEngineSituation({
+export function useAddToEngineSituation({
   engine,
   safeEvaluate,
   rawMissingVariables,
 }: Props) {
   const { situation } = useCurrentSimulation()
-
-  const [isEngineInitialized, setIsEngineInitialized] = useState(false)
-
   const addToEngineSituation = useCallback(
     (situationToAdd: Situation): Situation => {
-      if (!engine) return situation
-
       engine.setSituation({ ...situation, ...situationToAdd })
 
       // The current engine situation might have been filtered with Publicodes filtering logic.
@@ -52,12 +47,5 @@ export function useEngineSituation({
     [engine, rawMissingVariables, safeEvaluate, situation]
   )
 
-  useEffect(() => {
-    if (isEngineInitialized || !engine) return
-
-    engine.setSituation(situation)
-    setIsEngineInitialized(true)
-  }, [engine, situation, isEngineInitialized])
-
-  return { isEngineInitialized, addToEngineSituation }
+  return { addToEngineSituation }
 }
