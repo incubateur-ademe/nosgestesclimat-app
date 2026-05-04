@@ -5,13 +5,6 @@ import type { Situation } from '@/publicodes-state/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
 
-/**
- * A hook that provides a function to remove a list of dotted names from the
- * current simulation's situation and sync the engine accordingly.
- *
- * This is used when the user wants to "reset" a question to its model default
- * (e.g. clicking "I don't know" or unchecking the "aucun" option in a mosaic).
- */
 export function useClearFromSituation() {
   const { situation, updateCurrentSimulation } = useCurrentSimulation()
   const { engine } = useEngine()
