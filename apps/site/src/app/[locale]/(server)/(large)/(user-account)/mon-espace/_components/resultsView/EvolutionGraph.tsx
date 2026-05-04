@@ -93,7 +93,7 @@ export default function EvolutionGraph({
               value,
             }
           })
-          .sort((a, b) => a.date.getTime() - b.date.getTime())
+          .reverse()
       })()
 
   // Get line color based on active tab
