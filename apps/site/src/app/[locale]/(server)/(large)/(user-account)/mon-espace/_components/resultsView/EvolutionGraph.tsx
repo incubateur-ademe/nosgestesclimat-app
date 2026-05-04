@@ -6,7 +6,7 @@ import type { Locale } from '@/i18nConfig'
 import type { Simulation } from '@/publicodes-state/types'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useState } from 'react'
-import CategorySelector from './CategorySelector'
+import CategorySelectorDesktop from './CategorySelectorDesktop'
 import CategorySelectorMobile from './CategorySelectorMobile'
 import EvolutionChart from './EvolutionChart'
 
@@ -72,26 +72,28 @@ export default function EvolutionGraph({
       ]
     : (() => {
         // Transform data for the chart
-        return simulations.map((simulation) => {
-          const date = new Date(simulation.date)
-          const value =
-            activeTab === 'global'
-              ? simulation.computedResults.carbone.bilan
-              : simulation.computedResults.carbone.categories[activeTab] || 0
+        return simulations
+          .map((simulation) => {
+            const date = new Date(simulation.date)
+            const value =
+              activeTab === 'global'
+                ? simulation.computedResults.carbone.bilan
+                : simulation.computedResults.carbone.categories[activeTab] || 0
 
-          return {
-            date,
-            dateStr: date.toLocaleDateString(
-              locale === 'fr' ? 'fr-FR' : 'en-US',
-              {
-                day: '2-digit',
-                month: '2-digit',
-                year: '2-digit',
-              }
-            ),
-            value,
-          }
-        })
+            return {
+              date,
+              dateStr: date.toLocaleDateString(
+                locale === 'fr' ? 'fr-FR' : 'en-US',
+                {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: '2-digit',
+                }
+              ),
+              value,
+            }
+          })
+          .sort((a, b) => a.date.getTime() - b.date.getTime())
       })()
 
   // Get line color based on active tab
@@ -114,7 +116,6 @@ export default function EvolutionGraph({
         </Trans>
       </h2>
 
-      {/* Mobile selector */}
       <CategorySelectorMobile
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -122,15 +123,13 @@ export default function EvolutionGraph({
         disabled={hasSingleSimulation}
       />
 
-      {/* Desktop tabs */}
-      <CategorySelector
+      <CategorySelectorDesktop
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         categoryLabels={categoryLabels}
         disabled={hasSingleSimulation}
       />
 
-      {/* Chart */}
       <EvolutionChart
         locale={locale}
         chartData={chartData}
