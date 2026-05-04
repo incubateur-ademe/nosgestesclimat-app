@@ -1,13 +1,21 @@
 import posthog, { type PostHogConfig } from 'posthog-js'
 import { APP_ENV } from '../../../config/app-env'
 import { savedCookieState } from './cookieStateStore'
-import { getIframeInformation } from './iframeInformation'
+import {
+  getIframeInformation,
+  type IframeInformation,
+} from './iframeInformation'
 
 export type PostHogCookieState = 'accepted' | 'refused' | 'do_not_track'
 
 export class PostHog {
   private INTERSECTION_OBSERVER_THRESHOLD = 0.1
+  private _iframeInformation: IframeInformation | null = null
 
+  private get iframeInformation(): IframeInformation {
+    this._iframeInformation ??= getIframeInformation()
+    return this._iframeInformation
+  }
   update(cookieState: PostHogCookieState) {
     // Set config to cookieless mode, in case we come from DNT mode on
     posthog.set_config({
@@ -42,6 +50,10 @@ export class PostHog {
   }
 
   init() {
+    if (!this.iframeInformation.iframe) {
+      this.initPosthog()
+      return
+    }
     // Only initialized posthog if the document is in the viewport
     // (in case the app is in a iframe)
     const observer = new IntersectionObserver(
@@ -95,6 +107,6 @@ export class PostHog {
   }
 
   private registerProperties() {
-    posthog.register(getIframeInformation())
+    posthog.register(this.iframeInformation)
   }
 }
