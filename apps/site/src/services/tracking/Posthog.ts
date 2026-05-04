@@ -30,6 +30,7 @@ export class PostHog {
       default:
         cookieState satisfies never
     }
+    this.registerProperties()
   }
 
   private switchDNTOn() {
@@ -90,6 +91,10 @@ export class PostHog {
     if (savedCookieState.posthog === 'do_not_track') {
       this.switchDNTOn()
     }
-    posthog.register_for_session(getIframeInformation())
+    this.registerProperties()
+  }
+
+  private registerProperties() {
+    posthog.register(getIframeInformation())
   }
 }
