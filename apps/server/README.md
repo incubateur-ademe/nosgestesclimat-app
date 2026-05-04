@@ -48,7 +48,7 @@ pnpm -F server build
 Migre la base de donnée (requiert les dépendances, l'env et les services)
 
 ```bash
-pnpm -F server db:migrate
+pnpm -F core db:migrate
 ```
 
 Lance le service en mode développement (requiert les services, l'env et la migration)
@@ -125,7 +125,7 @@ L'intégration `scalingo` déploient en préprod au merge dans `preprod` et en p
 
 l'orm utilisé est `prisma`. Merci de vous référer à [la documentation existante](https://www.prisma.io/docs).
 
-Tout le code relatif à la base de données se trouve dans le répertoire [`prisma`](./prisma) du projet. Vous y trouverez
+Tout le code relatif à la base de données se trouve dans le répertoire [`prisma`](../../packages/core/prisma) du package `@nosgestesclimat/core`. Vous y trouverez
 
 - Le schéma BDD
 - Les migrations

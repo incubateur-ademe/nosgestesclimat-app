@@ -1,4 +1,4 @@
-import type { PrismaClient } from '../generated/prisma/client.js'
+import type { PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
 
 const VALID_ROLE = /^[a-zA-Z_][a-zA-Z0-9_-]*$/
 

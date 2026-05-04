@@ -17,6 +17,7 @@ export default defineConfig([
     'eslint.config.js',
     '**/coverage/**',
     '**/dist/**',
+    'packages/core/src/prisma/generated/**',
     'apps/site/.next/**',
     'apps/site/build/**',
     'apps/site/next-env.d.ts',
