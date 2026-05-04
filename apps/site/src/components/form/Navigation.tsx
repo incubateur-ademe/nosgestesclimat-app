@@ -2,7 +2,7 @@
 
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { MouseEvent } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import Trans from '@/components/translation/trans/TransClient'
@@ -31,6 +31,7 @@ import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
+import { useQuestionDuration } from './hooks/useQuestionDuration'
 
 type SubmitButtonKind = 'loading' | 'finish' | 'next'
 
@@ -154,11 +155,7 @@ export default function Navigation({
     ? persistedRemainingQuestions.indexOf(question) === 0
     : noPrevQuestion
 
-  const [startTime, setStartTime] = useState(() => Date.now())
-
-  useEffect(() => {
-    setStartTime(Date.now())
-  }, [question])
+  const { getQuestionDuration } = useQuestionDuration(question)
 
   const handleMoveFocus = () => {
     setTimeout(() => {
@@ -251,7 +248,7 @@ export default function Navigation({
     (e: KeyboardEvent | MouseEvent) => {
       e.preventDefault()
 
-      const timeSpentOnQuestion = Date.now() - startTime
+      const timeSpentOnQuestion = getQuestionDuration()
 
       trackNextNavigation(timeSpentOnQuestion)
 
@@ -274,7 +271,7 @@ export default function Navigation({
       }
     },
     [
-      startTime,
+      getQuestionDuration,
       trackNextNavigation,
       isMissing,
       handleAnswerQuestion,
@@ -294,7 +291,7 @@ export default function Navigation({
 
       if (hasNoPreviousQuestion) return
 
-      trackPrevNavigation(Date.now() - startTime)
+      trackPrevNavigation(getQuestionDuration())
 
       if (isEmbedded) {
         navigateToPrevEmbeddedQuestion()
@@ -308,7 +305,7 @@ export default function Navigation({
     },
     [
       hasNoPreviousQuestion,
-      startTime,
+      getQuestionDuration,
       trackPrevNavigation,
       isEmbedded,
       gotoPrevQuestion,
