@@ -394,14 +394,8 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: false,
                   ORGANISATION_TYPE: organisationType,
-                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
-                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
-                  LAST_ORGANISATION_SIMULATION_DATE: new Date()
-                    .toISOString()
-                    .split('T')[0],
                 },
                 updateEnabled: true,
               },
@@ -627,14 +621,8 @@ describe('Given a NGC user', () => {
                 {
                   attributes: {
                     IS_ORGANISATION_ADMIN: true,
-                    LAST_POLL_PARTICIPANTS_NUMBER: 1,
                     OPT_IN: false,
                     ORGANISATION_TYPE: organisationType,
-                    NUMBER_ORGANISATION_CREATED_POLLS: 1,
-                    NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
-                    LAST_ORGANISATION_SIMULATION_DATE: new Date()
-                      .toISOString()
-                      .split('T')[0],
                     ORGANISATION_NAME: organisationName,
                     ORGANISATION_SLUG: organisationSlug,
                     USER_ID: administratorId,
@@ -973,14 +961,8 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: true,
                   ORGANISATION_TYPE: organisationType,
-                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
-                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
-                  LAST_ORGANISATION_SIMULATION_DATE: new Date()
-                    .toISOString()
-                    .split('T')[0],
                 },
                 updateEnabled: true,
               },
@@ -1374,14 +1356,8 @@ describe('Given a NGC user', () => {
               {
                 attributes: {
                   IS_ORGANISATION_ADMIN: true,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: false,
                   ORGANISATION_TYPE: organisationType,
-                  NUMBER_ORGANISATION_CREATED_POLLS: 1,
-                  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS: 1,
-                  LAST_ORGANISATION_SIMULATION_DATE: new Date()
-                    .toISOString()
-                    .split('T')[0],
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
                   USER_ID: administratorId,

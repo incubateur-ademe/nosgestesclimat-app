@@ -1,7 +1,8 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { Request } from 'express'
 import slugify from 'slugify'
-import type { JsonValue, Prisma } from '../../adapters/prisma/generated.js'
+import type { JsonValue } from '../../adapters/prisma/generated.js'
+import { Prisma } from '../../adapters/prisma/generated.js'
 import {
   defaultOrganisationSelection,
   defaultOrganisationSelectionWithoutPolls,
@@ -836,26 +837,21 @@ export const getOrganisationSimulationInfo = async (
     }
   }
 
+  const completedSimFilter = {
+    simulation: {
+      progression: 1,
+    },
+    pollId: {
+      in: organisationPollIds,
+    },
+  }
+
   const [simulationCount, simulationPoll] = await Promise.all([
     session.simulationPoll.count({
-      where: {
-        simulation: {
-          progression: 1,
-        },
-        pollId: {
-          in: organisationPollIds,
-        },
-      },
+      where: completedSimFilter,
     }),
     session.simulationPoll.findFirst({
-      where: {
-        simulation: {
-          progression: 1,
-        },
-        pollId: {
-          in: organisationPollIds,
-        },
-      },
+      where: completedSimFilter,
       orderBy: {
         createdAt: 'desc',
       },
@@ -871,4 +867,58 @@ export const getOrganisationSimulationInfo = async (
     organisationSimulationsCompletedCount: simulationCount,
     organisationLastSimulationDate: createdAt,
   }
+}
+
+export const getOrganisationsBatchBrevoStats = async ({
+  session,
+}: {
+  session: Session
+}): Promise<
+  Array<{
+    organisationId: string
+    lastPollParticipantsCount: number
+    pollsCreatedCount: number
+    organisationSimulationsCompletedCount: number
+    organisationLastSimulationDate: Date | null
+  }>
+> => {
+  return session
+    .$queryRaw<
+      Array<{
+        organisationId: string
+        lastPollParticipantsCount: bigint
+        pollsCreatedCount: bigint
+        organisationSimulationsCompletedCount: bigint
+        organisationLastSimulationDate: Date | null
+      }>
+    >(
+      Prisma.sql`
+      SELECT
+        o.id as "organisationId",
+        COUNT(DISTINCT p.id) as "pollsCreatedCount",
+        COUNT(DISTINCT sp."simulationId") FILTER (WHERE s.progression = 1) as "simulationsCompletedCount",
+        MAX(s.date) FILTER (WHERE s.progression = 1) as "lastSimulationDate",
+        COALESCE((
+          SELECT COUNT(*) FROM "ngc"."SimulationPoll" WHERE "pollId" = (
+            SELECT p2.id FROM "ngc"."Poll" p2 WHERE p2."organisationId" = o.id ORDER BY p2."createdAt" DESC LIMIT 1
+          )
+        ), 0) as "lastPollParticipantsCount"
+      FROM "ngc"."Organisation" o
+      LEFT JOIN "ngc"."Poll" p ON p."organisationId" = o.id
+      LEFT JOIN "ngc"."SimulationPoll" sp ON sp."pollId" = p.id
+      LEFT JOIN "ngc"."Simulation" s ON s.id = sp."simulationId"
+      GROUP BY o.id
+    `
+    )
+    .then((rows) =>
+      rows.map((row) => ({
+        organisationId: row.organisationId,
+        lastPollParticipantsCount: Number(row.lastPollParticipantsCount),
+        pollsCreatedCount: Number(row.pollsCreatedCount),
+        organisationSimulationsCompletedCount: Number(
+          row.organisationSimulationsCompletedCount
+        ),
+        organisationLastSimulationDate: row.organisationLastSimulationDate,
+      }))
+    )
 }

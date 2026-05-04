@@ -683,7 +683,7 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
     [Attributes.IS_ORGANISATION_ADMIN]: true,
     [Attributes.ORGANISATION_NAME]: organisationName,
     [Attributes.ORGANISATION_SLUG]: slug,
-    ...(lastPollParticipantsCount
+    ...(lastPollParticipantsCount != null
       ? {
           [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
         }
@@ -695,18 +695,18 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
         }
       : {}),
     [Attributes.ORGANISATION_TYPE]: type,
-    ...(pollsCreatedCount
+    ...(pollsCreatedCount != null
       ? {
           [Attributes.NUMBER_ORGANISATION_CREATED_POLLS]: pollsCreatedCount,
         }
       : {}),
-    ...(organisationSimulationsCompletedCount
+    ...(organisationSimulationsCompletedCount != null
       ? {
           [Attributes.NUMBER_ORGANISATION_COMPLETED_SIMULATIONS]:
             organisationSimulationsCompletedCount,
         }
       : {}),
-    ...(organisationLastSimulationDate
+    ...(organisationLastSimulationDate != null
       ? {
           [Attributes.LAST_ORGANISATION_SIMULATION_DATE]: dayjs(
             organisationLastSimulationDate
