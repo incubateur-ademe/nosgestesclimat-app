@@ -2,6 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import ActionCard from './ActionCard'
+import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 const classesByTheme: Record<
   Theme['key'],
@@ -56,15 +57,11 @@ export default function ThemeSection({
           </div>
         </div>
       </div>
-      <div className="-mr-2.5 flex gap-2.5 overflow-x-auto pr-5 pb-1 md:mr-0">
+      <ActionsCarousel className="-mx-2.5 md:mx-0">
         {actions.map((action) => (
-          <ActionCard
-            key={action.id}
-            action={action}
-            className="w-55 shrink-0 md:w-62"
-          />
+          <ActionCard key={action.id} action={action} />
         ))}
-      </div>
+      </ActionsCarousel>
     </section>
   )
 }
