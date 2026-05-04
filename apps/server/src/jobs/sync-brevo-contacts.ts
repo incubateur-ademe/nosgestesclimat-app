@@ -1,6 +1,5 @@
 import { addOrUpdateContactAfterOrganisationChange } from '../adapters/brevo/client.js'
 import { prisma } from '../adapters/prisma/client.js'
-import type { OrganisationType } from '../adapters/prisma/generated.js'
 import type { Session } from '../adapters/prisma/transaction.js'
 import { batchFindMany } from '../core/batch-find-many.js'
 import { getOrganisationsBatchBrevoStats } from '../features/organisations/organisations.repository.js'
@@ -62,7 +61,7 @@ export const syncOrganisationToBrevo = async (
     organisationName,
     administratorName,
     optedInForCommunications,
-    type: type as OrganisationType,
+    type,
     lastPollParticipantsCount: stats?.lastPollParticipantsCount,
     pollsCreatedCount: stats?.pollsCreatedCount,
     organisationSimulationsCompletedCount:

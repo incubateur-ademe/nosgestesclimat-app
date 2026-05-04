@@ -815,60 +815,6 @@ export const getPollsCreatedCount = async (
     },
   })
 
-export const getOrganisationSimulationInfo = async (
-  organisationId: string,
-  { session }: { session: Session }
-) => {
-  const pollIds = await session.poll.findMany({
-    where: {
-      organisationId,
-    },
-    select: {
-      id: true,
-    },
-  })
-
-  const organisationPollIds = pollIds.map(({ id }) => id)
-
-  if (organisationPollIds.length === 0) {
-    return {
-      organisationSimulationsCompletedCount: 0,
-      organisationLastSimulationDate: undefined,
-    }
-  }
-
-  const completedSimFilter = {
-    simulation: {
-      progression: 1,
-    },
-    pollId: {
-      in: organisationPollIds,
-    },
-  }
-
-  const [simulationCount, simulationPoll] = await Promise.all([
-    session.simulationPoll.count({
-      where: completedSimFilter,
-    }),
-    session.simulationPoll.findFirst({
-      where: completedSimFilter,
-      orderBy: {
-        createdAt: 'desc',
-      },
-      select: {
-        createdAt: true,
-      },
-    }),
-  ])
-
-  const { createdAt } = simulationPoll ?? {}
-
-  return {
-    organisationSimulationsCompletedCount: simulationCount,
-    organisationLastSimulationDate: createdAt,
-  }
-}
-
 export const getOrganisationsBatchBrevoStats = async ({
   session,
 }: {
@@ -896,8 +842,8 @@ export const getOrganisationsBatchBrevoStats = async ({
       SELECT
         o.id as "organisationId",
         COUNT(DISTINCT p.id) as "pollsCreatedCount",
-        COUNT(DISTINCT sp."simulationId") FILTER (WHERE s.progression = 1) as "simulationsCompletedCount",
-        MAX(s.date) FILTER (WHERE s.progression = 1) as "lastSimulationDate",
+        COUNT(DISTINCT sp."simulationId") FILTER (WHERE s.progression = 1) as "organisationSimulationsCompletedCount",
+        MAX(s.date) FILTER (WHERE s.progression = 1) as "organisationLastSimulationDate",
         COALESCE((
           SELECT COUNT(*) FROM "ngc"."SimulationPoll" WHERE "pollId" = (
             SELECT p2.id FROM "ngc"."Poll" p2 WHERE p2."organisationId" = o.id ORDER BY p2."createdAt" DESC LIMIT 1

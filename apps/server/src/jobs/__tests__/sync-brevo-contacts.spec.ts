@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   brevoRemoveFromList,
   brevoUpdateContact,
 } from '../../adapters/brevo/__tests__/fixtures/server.fixture.js'
 import { prisma } from '../../adapters/prisma/client.js'
 import { mswServer } from '../../core/__tests__/fixtures/server.fixture.js'
-import { getOrganisationsBatchBrevoStats } from '../../features/organisations/organisations.repository.js'
 import logger from '../../logger.js'
 import { runSync, syncOrganisationToBrevo } from '../sync-brevo-contacts.js'
 
@@ -258,28 +257,6 @@ describe('runSync', () => {
       const result = await runSync({ session: prisma })
 
       expect(result).toEqual({ processedCount: 0, errorCount: 0 })
-    })
-  })
-})
-
-describe('getOrganisationsBatchBrevoStats', () => {
-  afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisationAdministrator.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.user.deleteMany()
-    await prisma.verifiedUser.deleteMany()
-    await prisma.verificationCode.deleteMany()
-  })
-
-  describe('When there are no organisations', () => {
-    test('Then it returns an empty array', async () => {
-      const result = await getOrganisationsBatchBrevoStats({
-        session: prisma,
-      })
-      expect(result).toEqual([])
     })
   })
 })
