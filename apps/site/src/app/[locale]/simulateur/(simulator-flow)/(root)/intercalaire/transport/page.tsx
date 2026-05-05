@@ -32,7 +32,9 @@ export default async function Page({
         }
         locale={locale}
         arrowText={
-          <Trans locale={locale}>
+          <Trans
+            locale={locale}
+            i18nKey="simulator.transition.transport.funFact.graphDescription">
             Ce graphique te permet de comparer l'impact de différents moyens de
             transport
           </Trans>
@@ -40,10 +42,18 @@ export default async function Page({
         funFactContent={
           <>
             <p className="mb-0 text-center">
-              <Trans locale={locale}>Chaque trajet compte :</Trans>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.transport.funFact.line1">
+                Chaque trajet compte :
+              </Trans>
             </p>
             <p className="text-primary-600 mb-0 text-2xl font-bold">
-              <Trans locale={locale}>fais le bon choix !</Trans>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.transport.funFact.line2">
+                fais le bon choix !
+              </Trans>
             </p>
             <Emoji className="text-3xl">🚲 🛴🚶</Emoji>
           </>

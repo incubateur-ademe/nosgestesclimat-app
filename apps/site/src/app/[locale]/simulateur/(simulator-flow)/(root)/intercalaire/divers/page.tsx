@@ -34,17 +34,33 @@ export default async function Page({
         funFactContent={
           <>
             <p className="text-primary-600 mb-0 text-center text-2xl font-bold">
-              <Trans locale={locale}>85% de l'impact</Trans>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.divers.funFact.line1">
+                85% de l'impact
+              </Trans>
             </p>
             <p className="mb-0 text-center">
-              <Trans locale={locale}>d'un appareil numérique</Trans>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.divers.funFact.line2">
+                d'un appareil numérique
+              </Trans>
             </p>
             <p className="mb-0 text-center">
               <strong className="text-yellow-700">
-                <Trans locale={locale}>provient de sa</Trans>
+                <Trans
+                  locale={locale}
+                  i18nKey="simulator.transition.divers.funFact.line3">
+                  provient de sa
+                </Trans>
               </strong>{' '}
               <TiltedBadge color="yellow">
-                <Trans locale={locale}>fabrication</Trans>
+                <Trans
+                  locale={locale}
+                  i18nKey="simulator.transition.divers.funFact.line4">
+                  fabrication
+                </Trans>
               </TiltedBadge>
             </p>
           </>

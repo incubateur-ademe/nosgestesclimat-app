@@ -48,7 +48,7 @@ export default function TransitionButtons({
     <div className="my-8 flex gap-4 md:flex-row">
       <Button
         title={t(
-          'common.previousDevelopped',
+          'common.previousExtended',
           'Précédent, revenir à la page précédente'
         )}
         className="h-full w-14 md:w-auto"
@@ -71,7 +71,7 @@ export default function TransitionButtons({
           <>
             <Trans
               values={{ nextCategory: getCategoryString(nextCategory) }}
-              i18nKey="simulator.intercalaire.nextButton.">
+              i18nKey="simulator.intercalaire.nextButton">
               Passer {{ nextCategory } as unknown as string}
             </Trans>{' '}
           </>

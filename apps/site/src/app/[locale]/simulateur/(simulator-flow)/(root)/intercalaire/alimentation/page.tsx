@@ -34,19 +34,35 @@ export default async function Page({
         funFactContent={
           <>
             <p className="mb-0 w-40 max-w-full text-center">
-              <Trans locale={locale}>Certains repas</Trans>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.alimentation.funFact.line1">
+                Certains repas
+              </Trans>
             </p>
 
             <div>
               <TiltedBadge color="red">
-                <Trans locale={locale}>pèsent plus</Trans>
+                <Trans
+                  locale={locale}
+                  i18nKey="simulator.transition.alimentation.funFact.line2">
+                  pèsent plus
+                </Trans>
               </TiltedBadge>
-              <span className="ml-2">que d'autres :</span>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.alimentation.funFact.line2Suffix">
+                <span className="ml-2">que d'autres :</span>
+              </Trans>
             </div>
 
             <p className="text-primary-600">
               <strong>
-                <Trans locale={locale}>attention à ton assiette !</Trans>
+                <Trans
+                  locale={locale}
+                  i18nKey="simulator.transition.alimentation.funFact.line3">
+                  attention à ton assiette !
+                </Trans>
               </strong>
             </p>
           </>

@@ -36,7 +36,9 @@ export default async function Page({
           <>
             <p className="mb-0 w-40 max-w-full">
               <span>
-                <Trans locale={locale}>
+                <Trans
+                  locale={locale}
+                  i18nKey="simulator.transition.logement.funFact.line1">
                   Tous les modes de <strong>chauffage</strong>
                 </Trans>
               </span>
@@ -44,11 +46,17 @@ export default async function Page({
             </p>
 
             <TiltedBadge color="green">
-              <Trans locale={locale}>n'ont pas</Trans>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.logement.funFact.line2">
+                n'ont pas
+              </Trans>
             </TiltedBadge>
 
             <p className="text-primary-600">
-              <Trans locale={locale}>
+              <Trans
+                locale={locale}
+                i18nKey="simulator.transition.logement.funFact.line3">
                 <strong>le même impact</strong> sur le climat
               </Trans>
             </p>

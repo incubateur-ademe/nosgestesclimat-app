@@ -35,7 +35,9 @@ export default function TransitionInfoCard({
           <div className="relative w-80 max-w-full md:ml-16">
             <p className="text-primary-600 mt-10 mb-8 text-center md:mt-16 md:text-left">
               {arrowText ?? (
-                <Trans locale={locale}>
+                <Trans
+                  locale={locale}
+                  i18nKey="simulator.intercalaire.graphDefault">
                   Ce graphique te permet de mieux comprendre les différents
                   impacts
                 </Trans>
