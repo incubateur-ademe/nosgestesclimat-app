@@ -38,8 +38,6 @@ export default async function ActionsCarousel({
     ),
   }
 
-  console.log(translations)
-
   return (
     <div {...rest} className={twMerge('relative', className)}>
       <ActionsCarouselClient translations={translations}>
