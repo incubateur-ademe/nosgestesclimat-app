@@ -1,6 +1,6 @@
 'use client'
 
-import { Children, forwardRef, useRef } from 'react'
+import { Children, forwardRef, useRef, useState } from 'react'
 import { A11y, Keyboard, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -26,6 +26,7 @@ export default function ActionsCarouselClient({
   children,
   translations,
 }: ActionsCarouselClientProps) {
+  const [isInitialized, setIsInitialized] = useState(false)
   const prevButton = useRef(null)
   const nextButton = useRef(null)
 
@@ -33,12 +34,18 @@ export default function ActionsCarouselClient({
     <>
       <NavigationButton
         ref={prevButton}
-        className="left-2.5 md:-left-2.5 md:-translate-x-1/2 xl:-left-5">
+        className={twMerge(
+          !isInitialized && 'pointer-events-none opacity-0',
+          'left-2.5 md:-left-2.5 md:-translate-x-1/2 xl:-left-5'
+        )}>
         <ChevronLeft />
       </NavigationButton>
       <NavigationButton
         ref={nextButton}
-        className="right-2.5 md:-right-2.5 md:translate-x-1/2 xl:-right-5">
+        className={twMerge(
+          !isInitialized && 'pointer-events-none opacity-0',
+          'right-2.5 md:-right-2.5 md:translate-x-1/2 xl:-right-5'
+        )}>
         <ChevronRight />
       </NavigationButton>
       <Swiper
@@ -56,6 +63,9 @@ export default function ActionsCarouselClient({
         slidesPerView="auto"
         // Skip all fully visible slides when navigating
         slidesPerGroupAuto
+        onInit={() => {
+          setIsInitialized(true)
+        }}
         onBeforeInit={(swiper) => {
           // Assign refs before Swiper initializes
           const navigation =
@@ -68,7 +78,11 @@ export default function ActionsCarouselClient({
         }}>
         {Children.map(children, (child) => {
           return (
-            <SwiperSlide className="w-3/4 max-w-55 sm:w-62 sm:max-w-none">
+            <SwiperSlide
+              className={twMerge(
+                !isInitialized && 'mr-2.5', // Same value as `spaceBetween` to prevent layout shift before initialization
+                'w-3/4 max-w-55 sm:w-62 sm:max-w-none'
+              )}>
               {child}
             </SwiperSlide>
           )
