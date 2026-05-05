@@ -37,16 +37,16 @@ export default function ActionsPage({
       <div className="mb-10">
         <h1 className="mb-2.5 text-2xl leading-normal md:text-4xl md:leading-13.5">
           <Trans locale={locale} i18nKey="actions.listPage.title">
-          Construire mon plan d’action
+            Construire mon plan d’action
           </Trans>
         </h1>
         <p className="text-base text-slate-500 md:text-lg md:leading-6.75">
           <Trans locale={locale} i18nKey="actions.listPage.description">
-          Les actions suivantes vous sont recommandées d’après vos réponses au
-          test.
-          <br />
-          Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est
-          de se mettre en mouvement !
+            Les actions suivantes vous sont recommandées d’après vos réponses au
+            test.
+            <br />
+            Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est
+            de se mettre en mouvement !
           </Trans>
         </p>
       </div>
@@ -74,6 +74,7 @@ export default function ActionsPage({
                 key={theme.id}
                 theme={theme}
                 locale={locale}
+                actions={actionsByTheme[theme.key] ?? []}
               />
             )
           })}
