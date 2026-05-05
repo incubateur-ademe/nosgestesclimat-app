@@ -1,0 +1,4 @@
+# This is different than the .gitignore because we need to include
+# prisma generated files
+node_modules
+tsconfig.tsbuildinfo
