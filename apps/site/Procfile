@@ -1,0 +1,1 @@
+web: node .next/standalone/apps/site/server.js
