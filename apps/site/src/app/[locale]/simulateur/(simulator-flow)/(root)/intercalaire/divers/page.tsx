@@ -1,4 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
+import { noIndexObject } from '@/constants/metadata'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
@@ -6,10 +9,31 @@ import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
 import ImpactCO2Script from '../_components/transitionInfoCard/ImpactCO2Script'
 
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/simulateur/intercalaire/divers'>) {
+  const { locale } = await params
+  const { t } = await getServerTranslation({ locale })
+
+  return getMetadataObject({
+    locale,
+    title: t(
+      'simulator.intercalaire.divers.meta.title',
+      'Section divers terminée - Nos Gestes Climat'
+    ),
+    description: t(
+      'simulator.intercalaire.divers.meta.description',
+      'Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.'
+    ),
+    robots: noIndexObject,
+  })
+}
+
 export default async function Page({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/divers'>) {
   const { locale } = await params
+  const { t } = await getServerTranslation({ locale })
 
   return (
     <>
@@ -66,7 +90,14 @@ export default async function Page({
           </>
         }
         rightContent={
-          <ImpactCO2Script key="divers" locale={locale} type="numerique" />
+          <ImpactCO2Script
+            title={t(
+              'simulator.intercalaire.divers.iframe.title',
+              "Comparateur d'impact CO₂ du numérique"
+            )}
+            locale={locale}
+            type="numerique"
+          />
         }
       />
     </>

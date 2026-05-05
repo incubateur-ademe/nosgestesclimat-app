@@ -2155,6 +2155,30 @@ entries:
   simulator.transition.divers.funFact.line1.lock: 85% de l'impact
   simulator.intercalaire.title.last: Well done, you've completed all the sections
   simulator.intercalaire.title.last.lock: Bravo, tu as terminé toutes les sections
+  simulator.intercalaire.logement.meta.title: Housing section completed - Nos Gestes Climat
+  simulator.intercalaire.logement.meta.title.lock: Section logement terminée - Nos Gestes Climat
+  simulator.intercalaire.logement.meta.description: Well done, you've completed the housing section. Discover the impact of different heating methods on the climate.
+  simulator.intercalaire.logement.meta.description.lock: Bravo, tu as terminé la section logement. Découvre l’impact des différents modes de chauffage sur le climat.
+  simulator.intercalaire.logement.iframe.title: Heating CO₂ impact comparator
+  simulator.intercalaire.logement.iframe.title.lock: Comparateur d'impact CO₂ du chauffage
+  simulator.intercalaire.alimentation.meta.title: Food section completed - Nos Gestes Climat
+  simulator.intercalaire.alimentation.meta.title.lock: Section alimentation terminée - Nos Gestes Climat
+  simulator.intercalaire.alimentation.meta.description: Well done, you've completed the food section. Discover the carbon impact of different meals.
+  simulator.intercalaire.alimentation.meta.description.lock: Bravo, tu as terminé la section alimentation. Découvre l’impact carbone de différents repas.
+  simulator.intercalaire.alimentation.iframe.title: Food CO₂ impact comparator
+  simulator.intercalaire.alimentation.iframe.title.lock: Comparateur d'impact CO₂ de l'alimentation
+  simulator.intercalaire.transport.meta.title: Transport section completed - Nos Gestes Climat
+  simulator.intercalaire.transport.meta.title.lock: Section transport terminée - Nos Gestes Climat
+  simulator.intercalaire.transport.meta.description: Well done, you've completed the transport section. Discover the carbon impact of different means of transport.
+  simulator.intercalaire.transport.meta.description.lock: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
+  simulator.intercalaire.transport.iframe.title: Transport CO₂ impact comparator
+  simulator.intercalaire.transport.iframe.title.lock: Comparateur d'impact CO₂ des transports
+  simulator.intercalaire.divers.meta.title: Miscellaneous section completed - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.title.lock: Section divers terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Well done, you've completed the miscellaneous section. Discover the impact of digital technology and consumption.
+  simulator.intercalaire.divers.meta.description.lock: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.iframe.title: Digital CO₂ impact comparator
+  simulator.intercalaire.divers.iframe.title.lock: Comparateur d'impact CO₂ du numérique
   simulator.funFact.clothing.text2: 9.5 kg of clothes... but only sort 3.4 kg!
   simulator.funFact.clothing.text2.lock: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
   common.previousExtended: Back, return to the previous page

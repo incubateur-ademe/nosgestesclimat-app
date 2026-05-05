@@ -1536,6 +1536,18 @@ entries:
   simulator.intercalaire.subtitle.remaining.one: Plus qu'une!
   simulator.intercalaire.title.default: Section {{category}} terminée
   simulator.intercalaire.title.last: Bravo, tu as terminé toutes les sections
+  simulator.intercalaire.logement.meta.title: Section logement terminée - Nos Gestes Climat
+  simulator.intercalaire.logement.meta.description: Bravo, tu as terminé la section logement. Découvre l’impact des différents modes de chauffage sur le climat.
+  simulator.intercalaire.logement.iframe.title: Comparateur d'impact CO₂ du chauffage
+  simulator.intercalaire.alimentation.meta.title: Section alimentation terminée - Nos Gestes Climat
+  simulator.intercalaire.alimentation.meta.description: Bravo, tu as terminé la section alimentation. Découvre l’impact carbone de différents repas.
+  simulator.intercalaire.alimentation.iframe.title: Comparateur d'impact CO₂ de l'alimentation
+  simulator.intercalaire.transport.meta.title: Section transport terminée - Nos Gestes Climat
+  simulator.intercalaire.transport.meta.description: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
+  simulator.intercalaire.transport.iframe.title: Comparateur d'impact CO₂ des transports
+  simulator.intercalaire.divers.meta.title: Section divers terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.iframe.title: Comparateur d'impact CO₂ du numérique
   simulator.transition.alimentation.funFact.line1: Certains repas
   simulator.transition.alimentation.funFact.line2: pèsent plus
   simulator.transition.alimentation.funFact.line2Suffix: <0>que d'autres :</0>

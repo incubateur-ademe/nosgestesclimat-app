@@ -1,15 +1,39 @@
 import Trans from '@/components/translation/trans/TransServer'
+import { noIndexObject } from '@/constants/metadata'
 import Emoji from '@/design-system/utils/Emoji'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import ImpactCO2Script from '../_components/transitionInfoCard/ImpactCO2Script'
 
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/simulateur/intercalaire/transport'>) {
+  const { locale } = await params
+  const { t } = await getServerTranslation({ locale })
+
+  return getMetadataObject({
+    locale,
+    title: t(
+      'simulator.intercalaire.transport.meta.title',
+      'Section transport terminée - Nos Gestes Climat'
+    ),
+    description: t(
+      'simulator.intercalaire.transport.meta.description',
+      'Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.'
+    ),
+    robots: noIndexObject,
+  })
+}
+
 export default async function Page({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/transport'>) {
   const { locale } = await params
+  const { t } = await getServerTranslation({ locale })
 
   return (
     <>
@@ -58,7 +82,16 @@ export default async function Page({
             <Emoji className="text-3xl">🚲 🛴🚶</Emoji>
           </>
         }
-        rightContent={<ImpactCO2Script locale={locale} type="transport" />}
+        rightContent={
+          <ImpactCO2Script
+            title={t(
+              'simulator.intercalaire.transport.iframe.title',
+              "Comparateur d'impact CO₂ des transports"
+            )}
+            locale={locale}
+            type="transport"
+          />
+        }
       />
     </>
   )

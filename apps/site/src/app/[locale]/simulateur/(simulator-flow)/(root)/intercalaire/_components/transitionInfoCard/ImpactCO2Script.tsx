@@ -3,12 +3,14 @@
 import { useEffect } from 'react'
 
 interface Props {
+  title: string
   locale: string
   type?: string
   additionalSearchParams?: string
 }
 
 export default function ImpactCO2Script({
+  title,
   locale,
   type = 'chauffage',
   additionalSearchParams,
@@ -29,6 +31,7 @@ export default function ImpactCO2Script({
   return (
     <div
       id="impact-co2"
+      title={title}
       data-type={type}
       data-search={`?m2=63&language=${locale}&theme=default${additionalSearchParams ? `&${additionalSearchParams}` : ''}`}
     />
