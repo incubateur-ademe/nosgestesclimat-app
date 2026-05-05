@@ -6,9 +6,6 @@ import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
 import ImpactCO2Script from '../_components/transitionInfoCard/ImpactCO2Script'
 
-const ALIMENTATION_IMAGE_URL =
-  'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/alimentation_graphique_f4391342ee.png'
-
 export default async function Page({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/alimentation'>) {
