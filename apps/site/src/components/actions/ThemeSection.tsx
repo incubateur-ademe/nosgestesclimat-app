@@ -1,6 +1,8 @@
 import Emoji from '@/design-system/utils/Emoji'
+import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
@@ -33,9 +35,11 @@ const classesByTheme: Record<
 export default function ThemeSection({
   theme,
   actions,
+  locale,
 }: {
   theme: Theme
   actions: Action[]
+  locale: Locale
 }) {
   const classes = classesByTheme[theme.key]
   return (
@@ -52,12 +56,17 @@ export default function ThemeSection({
               {theme.title}
             </h2>
             <p className="text-sm leading-5.25 font-normal">
-              {actions.length} actions recommandées
+              <Trans
+                locale={locale}
+                i18nKey="actions.components.themeSection.description"
+                values={{ count: actions.length }}>
+                {actions.length} actions recommandées
+              </Trans>
             </p>
           </div>
         </div>
       </div>
-      <ActionsCarousel className="-mx-2.5 md:mx-0">
+      <ActionsCarousel locale={locale} className="-mx-2.5 md:mx-0">
         {actions.map((action) => (
           <ActionCard key={action.id} action={action} />
         ))}

@@ -1,14 +1,18 @@
+import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'tailwind-merge'
+import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
   actions: Action[]
+  locale: Locale
 }
 
 export default function HighestImpactActionsSection({
   actions,
+  locale,
   className,
   ...props
 }: HighestImpactActionsSectionProps) {
@@ -31,14 +35,22 @@ export default function HighestImpactActionsSection({
         </span>
         <div className="text-white">
           <h2 className="mb-0 text-lg leading-6.75 font-bold">
-            Le trio gagnant
+            <Trans
+              locale={locale}
+              i18nKey="actions.components.highestImpactActionsSection.title">
+              Le trio gagnant
+            </Trans>
           </h2>
           <p className="text-sm leading-normal font-normal md:text-base">
-            Les actions qui auraient le plus d'impact sur votre empreinte
+            <Trans
+              locale={locale}
+              i18nKey="actions.components.highestImpactActionsSection.description">
+              Les actions qui auraient le plus d'impact sur votre empreinte
+            </Trans>
           </p>
         </div>
       </div>
-      <ActionsCarousel className="-mx-2.5 md:mx-0">
+      <ActionsCarousel locale={locale} className="-mx-2.5 md:mx-0">
         {actions.map((action) => (
           <ActionCard key={action.id} action={action} />
         ))}

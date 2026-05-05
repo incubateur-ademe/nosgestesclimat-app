@@ -1,4 +1,6 @@
+import Trans from '@/components/translation/trans/TransServer'
 import Separator from '@/design-system/layout/Separator'
+import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { twMerge } from 'tailwind-merge'
@@ -9,12 +11,14 @@ interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
   topActions?: Action[]
   themes: Theme[]
   actions: Action[]
+  locale: Locale
 }
 
 export default function ActionsPage({
   topActions,
   actions,
   themes,
+  locale,
   className,
   ...props
 }: ActionsPageProps) {
@@ -32,20 +36,28 @@ export default function ActionsPage({
     <div {...props} className={twMerge('pb-24', className)}>
       <div className="mb-10">
         <h1 className="mb-2.5 text-2xl leading-normal md:text-4xl md:leading-13.5">
+          <Trans locale={locale} i18nKey="actions.listPage.title">
           Construire mon plan d’action
+          </Trans>
         </h1>
         <p className="text-base text-slate-500 md:text-lg md:leading-6.75">
+          <Trans locale={locale} i18nKey="actions.listPage.description">
           Les actions suivantes vous sont recommandées d’après vos réponses au
           test.
           <br />
           Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est
           de se mettre en mouvement !
+          </Trans>
         </p>
       </div>
 
       {topActions && topActions.length > 0 && (
         <>
-          <HighestImpactActionsSection actions={topActions} className="mb-10" />
+          <HighestImpactActionsSection
+            actions={topActions}
+            className="mb-10"
+            locale={locale}
+          />
           <Separator variant="full" className="my-10 hidden md:block" />
         </>
       )}
@@ -61,7 +73,7 @@ export default function ActionsPage({
               <ThemeSection
                 key={theme.id}
                 theme={theme}
-                actions={actionsByTheme[theme.key] ?? []}
+                locale={locale}
               />
             )
           })}

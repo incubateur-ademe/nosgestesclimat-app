@@ -35,6 +35,7 @@ export default async function MonEspaceActionsPage({
           topActions={actions.slice(0, 3)}
           actions={actions}
           themes={themes}
+          locale={locale}
         />
       ) : (
         <LegacyMonEspaceActionsPage user={user} locale={locale} />

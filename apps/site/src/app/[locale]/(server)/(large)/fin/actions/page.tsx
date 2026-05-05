@@ -25,6 +25,7 @@ export default async function ResultatsActionsPage({
       topActions={actions.slice(0, 3)}
       actions={actions}
       themes={themes}
+      locale={locale}
     />
   )
 }
