@@ -36,7 +36,12 @@ export default async function CreationPage({
         <div className="mx-auto flex max-w-5xl flex-col gap-6 px-0">
           <Title
             size="lg"
-            title={<Trans locale={locale}>Bienvenue sur votre espace !</Trans>}
+            title={
+              <Trans locale={locale}>
+                Créez une organisation afin de diffuser un ou plusieurs liens de
+                test collectif
+              </Trans>
+            }
             subtitle={
               <Trans locale={locale}>Plus que quelques petites questions</Trans>
             }
