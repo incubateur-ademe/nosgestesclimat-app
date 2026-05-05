@@ -49,7 +49,7 @@ export default async function Email({
           <>
             {isSchoolMode ? (
               <Trans locale={locale}>
-                Pour conserver tes résultats et les retrouver à l\'avenir dans{' '}
+                Pour conserver tes résultats et les retrouver à l'avenir dans{' '}
                 <strong>ton espace personnel</strong>
               </Trans>
             ) : (

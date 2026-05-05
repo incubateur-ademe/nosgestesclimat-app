@@ -1,11 +1,12 @@
 'use client'
 import Trans from '@/components/translation/trans/TransClient'
-import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
+import { useEndTest } from '../../[root]/_hooks/useEndPage'
 
 interface Props {
   nextCategory: Categories
@@ -19,6 +20,7 @@ export default function TransitionButtons({
   const router = useRouter()
 
   const { gotoNextQuestion } = useFormState()
+  const { endTest, isPending } = useEndTest()
 
   const { t } = useClientTranslation()
 
@@ -37,7 +39,7 @@ export default function TransitionButtons({
 
   const handleGoToNextQuestion = () => {
     if (showResults) {
-      router.push(END_PAGE_PATH)
+      endTest()
       return
     }
     gotoNextQuestion()
@@ -53,7 +55,8 @@ export default function TransitionButtons({
         )}
         className="h-full w-14 md:w-auto"
         color="secondary"
-        onClick={() => router.back()}>
+        onClick={() => router.back()}
+        disabled={isPending}>
         <span aria-hidden className="text-xl md:mr-1.5">
           ←
         </span>
@@ -62,7 +65,7 @@ export default function TransitionButtons({
         </span>
       </Button>
 
-      <Button onClick={handleGoToNextQuestion}>
+      <Button onClick={handleGoToNextQuestion} disabled={isPending}>
         {showResults ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
