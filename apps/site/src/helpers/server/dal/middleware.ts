@@ -1,7 +1,11 @@
 import { getIronSession } from 'iron-session'
 import type { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
-import { getGeolocation, supportedRegions } from '../model/models'
+import {
+  getGeolocation,
+  supportedRegions,
+  type UserRegion,
+} from '../model/models'
 import {
   type AnonSessionData,
   anonSessionOptions,
@@ -20,6 +24,7 @@ export async function userMiddleware(
   next: (req: NextRequest) => NextResponse
 ) {
   const session = await getAnonSession()
+  const searchParams = request.nextUrl.searchParams
 
   if (session.userId) {
     if (!session.region || !(session.region in supportedRegions)) {
@@ -27,6 +32,13 @@ export async function userMiddleware(
       session.region = region
       session.initialRegion = region
       await session.save()
+    }
+    if (searchParams.has('region')) {
+      const region = searchParams.get('region')
+      if (region && region in supportedRegions) {
+        session.region = region as UserRegion
+        await session.save()
+      }
     }
     return next(request)
   }
