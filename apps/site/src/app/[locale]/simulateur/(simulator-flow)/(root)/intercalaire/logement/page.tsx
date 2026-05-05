@@ -1,8 +1,12 @@
 import Trans from '@/components/translation/trans/TransServer'
+import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
+import Script from 'next/script'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
+import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
+import ImpactCO2Script from '../_components/transitionInfoCard/ImpactCO2Script'
 
 export default async function Page({
   params,
@@ -28,8 +32,33 @@ export default async function Page({
             <strong>À retenir</strong> sur le chauffage
           </Trans>
         }
-        locale={locale as Locale}
+        locale={locale}
+        funFactContent={
+          <>
+            <p className="mb-0 w-40 max-w-full">
+              <span>
+                <Trans locale={locale}>
+                  Tous les modes de <strong>chauffage</strong>
+                </Trans>
+              </span>
+              <Emoji className="ml-1.5">🔥⚡️</Emoji>
+            </p>
+
+            <TiltedBadge color="green">
+              <Trans locale={locale}>n'ont pas</Trans>
+            </TiltedBadge>
+
+            <p className="text-primary-600">
+              <Trans locale={locale}>
+                <strong>le même impact</strong> sur le climat
+              </Trans>
+            </p>
+          </>
+        }
+        rightContent={<ImpactCO2Script locale={locale} />}
       />
+
+      <Script src="https://impactco2.fr/iframe.js" strategy="lazyOnload" />
     </>
   )
 }

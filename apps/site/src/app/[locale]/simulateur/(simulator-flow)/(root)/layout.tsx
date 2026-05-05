@@ -16,7 +16,6 @@ import { EngineProvider, FormProvider } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
-import SimulateurLayout from '../../_components/SimulateurLayout'
 
 export async function generateMetadata({
   params,
@@ -30,9 +29,7 @@ export async function generateMetadata({
     description: t(
       'Calculez votre empreinte sur le climat en 10 minutes chrono. Découvrez les gestes qui comptent vraiment pour le climat.'
     ),
-    alternates: {
-      canonical: `/simulateur/${root}`,
-    },
+    ...(root ? { alternates: { canonical: `/simulateur/${root}` } } : {}),
     robots: noIndexObject,
   })
 }
@@ -65,9 +62,7 @@ export default async function Layout({
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
       <EngineProvider rules={rules}>
         <LocalisationBanner model={parseModelString(currentSimulation.model)} />
-        <FormProvider root={root as DottedName}>
-          <SimulateurLayout>{children}</SimulateurLayout>
-        </FormProvider>
+        <FormProvider root={root as DottedName}>{children}</FormProvider>
       </EngineProvider>
     </ClientLayout>
   )

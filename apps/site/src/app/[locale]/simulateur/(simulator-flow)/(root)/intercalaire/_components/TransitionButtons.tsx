@@ -3,7 +3,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
+import { useFormState } from '@/publicodes-state'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
 
@@ -14,7 +14,7 @@ interface Props {
 export default function TransitionButtons({ nextCategory }: Props) {
   const router = useRouter()
 
-  const gotoNextQuestion = useGotoNextQuestion()
+  const { gotoNextQuestion } = useFormState()
 
   const { t } = useClientTranslation()
 
