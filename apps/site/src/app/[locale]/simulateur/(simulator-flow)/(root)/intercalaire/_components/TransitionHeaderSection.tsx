@@ -54,13 +54,21 @@ export default function TransitionHeaderSection({
         </Trans>{' '}
         <Emoji>✅</Emoji>
       </Title>
-      <p>
-        <Trans
-          locale={locale}
-          values={{ remainingSteps: String(remainingSteps) }}
-          i18nKey="simulator.intercalaire.subtitle.remaining">
-          Plus que {{ remainingSteps } as unknown as string}!
-        </Trans>
+      <p className="mb-0">
+        {remainingSteps === 1 ? (
+          <Trans
+            locale={locale}
+            i18nKey="simulator.intercalaire.subtitle.remaining.one">
+            Plus qu'une!
+          </Trans>
+        ) : (
+          <Trans
+            locale={locale}
+            values={{ remainingSteps: String(remainingSteps) }}
+            i18nKey="simulator.intercalaire.subtitle.remaining.all">
+            Plus que {{ remainingSteps } as unknown as string}!
+          </Trans>
+        )}
       </p>
     </>
   )

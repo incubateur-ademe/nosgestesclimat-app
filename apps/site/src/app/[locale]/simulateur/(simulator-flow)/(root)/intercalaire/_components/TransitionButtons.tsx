@@ -27,7 +27,7 @@ export default function TransitionButtons({ nextCategory }: Props) {
       case 'transport':
         return t('au transport')
       default:
-        return t('à la consommation diverse')
+        return t('à la consommation')
     }
   }
 
@@ -37,7 +37,7 @@ export default function TransitionButtons({ nextCategory }: Props) {
   }
 
   return (
-    <div className="flex gap-4 md:flex-row">
+    <div className="my-8 flex gap-4 md:flex-row">
       <Button
         title={t(
           'common.previousDevelopped',
