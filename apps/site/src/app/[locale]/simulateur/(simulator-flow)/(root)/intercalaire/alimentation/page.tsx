@@ -55,14 +55,16 @@ export default async function Page({
           </>
         }
         rightContent={
-          <Image
-            src={ALIMENTATION_IMAGE_URL}
-            width={600}
-            height={400}
-            alt="Graphique sur l'impact climatique de l'alimentation"
-            className="mt-10 h-auto w-full rounded-2xl"
-            style={{ clipPath: 'inset(3px)' }}
-          />
+          <div className="mt-10 h-auto w-full overflow-hidden rounded-2xl border-2 border-[#257674] bg-white">
+            <Image
+              src={ALIMENTATION_IMAGE_URL}
+              width={600}
+              height={400}
+              alt="Graphique sur l'impact climatique de l'alimentation"
+              className="h-auto w-full"
+              style={{ clipPath: 'inset(3px)' }}
+            />
+          </div>
         }
       />
     </>
