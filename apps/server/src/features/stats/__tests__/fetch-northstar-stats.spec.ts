@@ -5,16 +5,16 @@ import utc from 'dayjs/plugin/utc.js'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { prisma } from '../../../adapters/prisma/client.js'
+import { prisma } from '../../../adapters/prisma/client.ts'
 import {
   MatomoStatsDevice,
   MatomoStatsSource,
   StatsKind,
-} from '../../../adapters/prisma/generated.js'
-import app from '../../../app.js'
-import logger from '../../../logger.js'
-import { PERIODS } from '../stats.constant.js'
-import { upsertStat } from '../stats.repository.js'
+} from '../../../adapters/prisma/generated.ts'
+import app from '../../../app.ts'
+import logger from '../../../logger.ts'
+import { PERIODS } from '../stats.constant.ts'
+import { upsertStat } from '../stats.repository.ts'
 
 dayjs.extend(isoWeek)
 dayjs.extend(utc)

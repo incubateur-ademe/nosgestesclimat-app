@@ -2,21 +2,21 @@ import type { Request, RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../../../../adapters/prisma/client.js'
-import { ApiScopeName } from '../../../../adapters/prisma/generated.js'
-import { transaction } from '../../../../adapters/prisma/transaction.js'
-import { config } from '../../../../config.js'
-import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.js'
-import { UnauthorizedException } from '../../../../core/errors/UnauthorizedException.js'
-import { Locales } from '../../../../core/i18n/constant.js'
-import { isPrismaErrorNotFound } from '../../../../core/typeguards/isPrismaError.js'
-import { findVerificationCode } from '../../../authentication/verification-codes.repository.js'
-import { createVerificationCode } from '../../../authentication/verification-codes.service.js'
-import { fetchWhitelists } from '../email-whitelist/email-whitelist.repository.js'
+import { prisma } from '../../../../adapters/prisma/client.ts'
+import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
+import { transaction } from '../../../../adapters/prisma/transaction.ts'
+import { config } from '../../../../config.ts'
+import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
+import { UnauthorizedException } from '../../../../core/errors/UnauthorizedException.ts'
+import { Locales } from '../../../../core/i18n/constant.ts'
+import { isPrismaErrorNotFound } from '../../../../core/typeguards/isPrismaError.ts'
+import { findVerificationCode } from '../../../authentication/verification-codes.repository.ts'
+import { createVerificationCode } from '../../../authentication/verification-codes.service.ts'
+import { fetchWhitelists } from '../email-whitelist/email-whitelist.repository.ts'
 import type {
   GenerateAPITokenRequestDto,
   RecoverApiTokenQuery,
-} from './authentication.contract.js'
+} from './authentication.contract.ts'
 
 const { TokenExpiredError } = jwt
 

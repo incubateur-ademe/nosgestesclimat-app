@@ -7,6 +7,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
+    "allowImportingTsExtensions": true, // @nosgestesclimat/core compatibility
     "incremental": true,
     "plugins": [
       {

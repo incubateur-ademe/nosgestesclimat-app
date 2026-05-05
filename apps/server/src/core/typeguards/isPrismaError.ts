@@ -1,5 +1,5 @@
-import { Prisma } from '@nosgestesclimat/core/prisma/generated/client.js'
-import { PrismaErrorCodes } from '../../adapters/prisma/constant.js'
+import { Prisma } from '@nosgestesclimat/core/prisma/generated/client'
+import { PrismaErrorCodes } from '../../adapters/prisma/constant.ts'
 
 const isPrismaError = (
   err: unknown
@@ -9,24 +9,24 @@ const isPrismaError = (
 export const isPrismaErrorNotFound = (
   err: unknown
 ): err is Prisma.PrismaClientKnownRequestError & {
-  code: PrismaErrorCodes.NotFound
+  code: typeof PrismaErrorCodes.NotFound
 } => isPrismaError(err) && err.code === PrismaErrorCodes.NotFound
 
 export const isPrismaErrorForeignKeyConstraintFailed = (
   err: unknown
 ): err is Prisma.PrismaClientKnownRequestError & {
-  code: PrismaErrorCodes.ForeignKeyConstraintFailed
+  code: typeof PrismaErrorCodes.ForeignKeyConstraintFailed
 } =>
   isPrismaError(err) && err.code === PrismaErrorCodes.ForeignKeyConstraintFailed
 
 export const isPrismaErrorUniqueConstraintFailed = (
   err: unknown
 ): err is Prisma.PrismaClientKnownRequestError & {
-  code: PrismaErrorCodes.UniqueConstraintFailed
+  code: typeof PrismaErrorCodes.UniqueConstraintFailed
 } => isPrismaError(err) && err.code === PrismaErrorCodes.UniqueConstraintFailed
 
 export const isPrismaErrorInconsistentColumnData = (
   err: unknown
 ): err is Prisma.PrismaClientKnownRequestError & {
-  code: PrismaErrorCodes.InconsistentColumnData
+  code: typeof PrismaErrorCodes.InconsistentColumnData
 } => isPrismaError(err) && err.code === PrismaErrorCodes.InconsistentColumnData

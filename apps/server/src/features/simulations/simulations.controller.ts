@@ -1,38 +1,38 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import { withPaginationHeaders } from '../../core/pagination.js'
-import logger from '../../logger.js'
-import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.js'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import { withPaginationHeaders } from '../../core/pagination.ts'
+import logger from '../../logger.ts'
+import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
+import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
   COOKIE_NAME,
   getCookieOptions,
-} from '../authentication/authentication.service.js'
-import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.js'
-import { publishRedisEvent } from './handlers/publish-redis-event.js'
-import { sendSimulationUpserted } from './handlers/send-simulation-upserted.js'
-import { updateBrevoContact } from './handlers/update-brevo-contact.js'
+} from '../authentication/authentication.service.ts'
+import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
+import { publishRedisEvent } from './handlers/publish-redis-event.ts'
+import { sendSimulationUpserted } from './handlers/send-simulation-upserted.ts'
+import { updateBrevoContact } from './handlers/update-brevo-contact.ts'
 import {
   createSimulation,
   fetchSimulation,
   fetchSimulations,
   softDeleteSimulation,
-} from './simulations.service.js'
+} from './simulations.service.ts'
 import type {
   SimulationCreateQuery,
   SimulationsFetchQuery,
-} from './simulations.validator.js'
+} from './simulations.validator.ts'
 import {
   SimulationCreateValidator,
   SimulationFetchValidator,
   SimulationsFetchValidator,
-} from './simulations.validator.js'
+} from './simulations.validator.ts'
 
 const router = express.Router()
 

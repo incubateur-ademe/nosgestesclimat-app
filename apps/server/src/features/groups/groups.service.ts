@@ -1,19 +1,19 @@
-import { prisma } from '../../adapters/prisma/client.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import { transaction } from '../../adapters/prisma/transaction.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import { Locales } from '../../core/i18n/constant.js'
+import { prisma } from '../../adapters/prisma/client.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import { transaction } from '../../adapters/prisma/transaction.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import { Locales } from '../../core/i18n/constant.ts'
 import {
   isPrismaErrorForeignKeyConstraintFailed,
   isPrismaErrorNotFound,
-} from '../../core/typeguards/isPrismaError.js'
-import { SimulationUpsertedEvent } from '../simulations/events/SimulationUpserted.event.js'
-import type { UserParams } from '../users/users.validator.js'
-import { GroupCreatedEvent } from './events/GroupCreated.event.js'
-import { GroupDeletedEvent } from './events/GroupDeleted.event.js'
-import { GroupUpdatedEvent } from './events/GroupUpdated.event.js'
+} from '../../core/typeguards/isPrismaError.ts'
+import { SimulationUpsertedEvent } from '../simulations/events/SimulationUpserted.event.ts'
+import type { UserParams } from '../users/users.validator.ts'
+import { GroupCreatedEvent } from './events/GroupCreated.event.ts'
+import { GroupDeletedEvent } from './events/GroupDeleted.event.ts'
+import { GroupUpdatedEvent } from './events/GroupUpdated.event.ts'
 import {
   createGroupAndUser,
   createParticipantAndUser,
@@ -23,7 +23,7 @@ import {
   fetchUserGroups,
   findGroupAndParticipantById,
   updateUserGroup,
-} from './groups.repository.js'
+} from './groups.repository.ts'
 import type {
   GroupCreateDto,
   GroupParams,
@@ -32,7 +32,7 @@ import type {
   ParticipantCreateDto,
   UserGroupParams,
   UserGroupParticipantParams,
-} from './groups.validator.js'
+} from './groups.validator.ts'
 
 /**
  * Maps a database group to a dto for the UI

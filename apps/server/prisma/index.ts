@@ -1,20 +1,27 @@
-import { PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
+import { PrismaClient } from '@nosgestesclimat/core/prisma/generated/client'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { redis } from '../src/adapters/redis/client.js'
+import { redis } from '../src/adapters/redis/client.ts'
+
+// Scalingo PostgreSQL uses self-signed certificates.
+// Replace sslmode in the connection string with no-verify to accept them.
+const connectionString = (process.env.DATABASE_URL || '').replace(
+  /sslmode=[^&]*/g,
+  'sslmode=no-verify'
+)
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
 })
 const prisma = new PrismaClient({ adapter })
 
 const main = async () => {
   // Order matters here
   const scripts = [
-    await import('./scripts/grant-roles.js'),
-    await import('./scripts/add-integrations-api-scopes.js'),
-    await import('./scripts/add-integrations-email-whitelist.js'),
-    await import('./scripts/geolocation-sorted-ips.js'),
-    await import('./scripts/geolocation-countries.js'),
+    await import('./scripts/grant-roles.ts'),
+    await import('./scripts/add-integrations-api-scopes.ts'),
+    await import('./scripts/add-integrations-email-whitelist.ts'),
+    await import('./scripts/geolocation-sorted-ips.ts'),
+    await import('./scripts/geolocation-countries.ts'),
   ]
 
   try {

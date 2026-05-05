@@ -2,20 +2,20 @@ import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import type supertest from 'supertest'
 import { vi } from 'vitest'
-import { brevoSendEmail } from '../../../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../../../../adapters/prisma/client.js'
+import { brevoSendEmail } from '../../../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../../../../adapters/prisma/client.ts'
 import {
   ApiScopeName,
   type IntegrationApiScope,
   type IntegrationWhitelist,
   type PrismaClient,
-} from '../../../../../../adapters/prisma/generated.js'
+} from '../../../../../../adapters/prisma/generated.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../../../../core/event-bus/event-bus.js'
-import * as authenticationService from '../../../../../authentication/authentication.service.js'
+} from '../../../../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../../../../core/event-bus/event-bus.ts'
+import * as authenticationService from '../../../../../authentication/authentication.service.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 

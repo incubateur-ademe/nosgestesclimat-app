@@ -2,8 +2,8 @@ import { initContract, ZodErrorSchema } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import { Stream } from 'stream'
 import { z } from 'zod'
-import type { ValueOf } from '../../../../types/types.js'
-import { ExternalServiceTypeEnum } from '../../integrations.validator.js'
+import type { ValueOf } from '../../../../types/types.ts'
+import { ExternalServiceTypeEnum } from '../../integrations.validator.ts'
 
 export const MappingFileKind = {
   conversion: 'conversion',

@@ -39,12 +39,6 @@ Lance les tests (requiert les dépendances)
 pnpm -F server test
 ```
 
-Builde le projet (requiert les dépendances)
-
-```bash
-pnpm -F server build
-```
-
 Migre la base de donnée (requiert les dépendances, l'env et les services)
 
 ```bash

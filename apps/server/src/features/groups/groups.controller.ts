@@ -1,16 +1,16 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import logger from '../../logger.js'
-import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
-import { GroupCreatedEvent } from './events/GroupCreated.event.js'
-import { GroupDeletedEvent } from './events/GroupDeleted.event.js'
-import { GroupUpdatedEvent } from './events/GroupUpdated.event.js'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import logger from '../../logger.ts'
+import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
+import { GroupCreatedEvent } from './events/GroupCreated.event.ts'
+import { GroupDeletedEvent } from './events/GroupDeleted.event.ts'
+import { GroupUpdatedEvent } from './events/GroupUpdated.event.ts'
 import {
   createGroup,
   createParticipant,
@@ -19,7 +19,7 @@ import {
   fetchGroups,
   removeParticipant,
   updateGroup,
-} from './groups.service.js'
+} from './groups.service.ts'
 import {
   GroupCreateValidator,
   GroupDeleteValidator,
@@ -28,11 +28,11 @@ import {
   GroupUpdateValidator,
   ParticipantCreateValidator,
   ParticipantDeleteValidator,
-} from './groups.validator.js'
+} from './groups.validator.ts'
 import {
   addOrUpdateBrevoAdministratorContact,
   addOrUpdateBrevoParticipantContact,
-} from './handlers/add-or-update-brevo-contact.js'
+} from './handlers/add-or-update-brevo-contact.ts'
 
 const router = express.Router()
 

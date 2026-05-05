@@ -1,5 +1,8 @@
 import { PGlite } from '@electric-sql/pglite'
-import { Prisma, PrismaClient } from '@nosgestesclimat/core/prisma/generated/client.js'
+import {
+  Prisma,
+  PrismaClient,
+} from '@nosgestesclimat/core/prisma/generated/client'
 import { readFile, readdir } from 'fs/promises'
 import { createRequire } from 'module'
 import path from 'path'
@@ -10,7 +13,7 @@ import { afterAll, afterEach, beforeAll, expect, vi } from 'vitest'
 import {
   mswServer,
   resetMswServer,
-} from './src/core/__tests__/fixtures/server.fixture.js'
+} from './src/core/__tests__/fixtures/server.fixture.ts'
 
 const pgClient = new PGlite()
 const adapter = new PrismaPGlite(pgClient)

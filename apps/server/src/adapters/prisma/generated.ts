@@ -1,4 +1,4 @@
-export * from '@nosgestesclimat/core/prisma/generated/client.js'
+export * from '@nosgestesclimat/core/prisma/generated/client'
 export type {
   InputJsonValue,
   JsonObject,

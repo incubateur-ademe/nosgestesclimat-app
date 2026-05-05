@@ -1,6 +1,6 @@
-import { sendPollCreatedEmail } from '../../../adapters/brevo/client.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { PollCreatedEvent } from '../events/PollCreated.event.js'
+import { sendPollCreatedEmail } from '../../../adapters/brevo/client.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { PollCreatedEvent } from '../events/PollCreated.event.ts'
 
 export const sendPollCreated: Handler<PollCreatedEvent> = (event) => {
   const {

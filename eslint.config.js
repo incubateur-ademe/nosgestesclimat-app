@@ -15,9 +15,11 @@ const { import: _import, ...nextPlugins } = nextVanilla[0].plugins
 export default defineConfig([
   globalIgnores([
     'eslint.config.js',
+    '**/prisma.config.js',
     '**/coverage/**',
     '**/dist/**',
     'packages/core/src/prisma/generated/**',
+    'packages/core/bin/**',
     'apps/site/.next/**',
     'apps/site/build/**',
     'apps/site/next-env.d.ts',

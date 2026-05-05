@@ -1,7 +1,7 @@
-import { VerificationCodeMode } from '../../../adapters/prisma/generated.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import { reconcileSimulationsAfterLogin as reconcileSimulations } from '../../users/users.service.js'
-import type { LoginEvent } from '../events/Login.event.js'
+import { VerificationCodeMode } from '../../../adapters/prisma/generated.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import { reconcileSimulationsAfterLogin as reconcileSimulations } from '../../users/users.service.ts'
+import type { LoginEvent } from '../events/Login.event.ts'
 
 export const reconcileSimulationsAfterLogin: Handler<LoginEvent> = ({
   attributes: { user, previousUserId, mode },

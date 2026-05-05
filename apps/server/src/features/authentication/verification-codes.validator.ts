@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { VerificationCodeMode } from '../../adapters/prisma/generated.js'
-import { LocaleQuery } from '../../core/i18n/lang.validator.js'
+import { VerificationCodeMode } from '../../adapters/prisma/generated.ts'
+import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
 export const VerificationCodeCreateDto = z
   .object({

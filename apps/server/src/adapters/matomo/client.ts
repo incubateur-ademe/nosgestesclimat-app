@@ -1,9 +1,9 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
 import { z } from 'zod'
-import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.js'
-import logger from '../../logger.js'
-import { MatomoStatsDevice, StatsKind } from '../prisma/generated.js'
+import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
+import logger from '../../logger.ts'
+import { MatomoStatsDevice, StatsKind } from '../prisma/generated.ts'
 
 export const ReferrerType = {
   [StatsKind.direct]: 1,

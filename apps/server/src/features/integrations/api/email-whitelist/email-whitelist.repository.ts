@@ -1,12 +1,12 @@
-import type { ApiScopeName } from '../../../../adapters/prisma/generated.js'
-import { defaultEmailWhitelistSelection } from '../../../../adapters/prisma/selection.js'
-import type { Session } from '../../../../adapters/prisma/transaction.js'
+import type { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
+import { defaultEmailWhitelistSelection } from '../../../../adapters/prisma/selection.ts'
+import type { Session } from '../../../../adapters/prisma/transaction.ts'
 import type {
   EmailWhitelistCreateDto,
   EmailWhitelistParams,
   EmailWhitelistsFetchQuery,
   EmailWhitelistUpdateDto,
-} from './email-whitelist.contract.js'
+} from './email-whitelist.contract.ts'
 
 const getEmailDomainName = (email: string) => {
   const [, domain] = email.split('@')

@@ -5,23 +5,23 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import {
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import { VerificationCodeMode } from '../../../adapters/prisma/generated.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import { VerificationCodeMode } from '../../../adapters/prisma/generated.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import {
   createGroup,
   FETCH_USER_GROUP_ROUTE,
   joinGroup,
-} from '../../groups/__tests__/fixtures/groups.fixture.js'
+} from '../../groups/__tests__/fixtures/groups.fixture.ts'
 import {
   createSimulation,
   FETCH_USER_SIMULATIONS_ROUTE,
-} from '../../simulations/__tests__/fixtures/simulations.fixtures.js'
-import { LOGIN_ROUTE } from './fixtures/login.fixture.js'
-import { createVerificationCode } from './fixtures/verification-codes.fixture.js'
+} from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
+import { LOGIN_ROUTE } from './fixtures/login.fixture.ts'
+import { createVerificationCode } from './fixtures/verification-codes.fixture.ts'
 
 describe('Given a NGC user with a previous anonymous session', () => {
   const agent = supertest(app)

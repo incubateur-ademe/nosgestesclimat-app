@@ -2,9 +2,9 @@ import crypto from 'crypto'
 import type { Request, RequestHandler } from 'express'
 import type { ParamsDictionary, Query } from 'express-serve-static-core'
 import { StatusCodes } from 'http-status-codes'
-import { redis } from '../adapters/redis/client.js'
-import { KEYS } from '../adapters/redis/constant.js'
-import logger from '../logger.js'
+import { redis } from '../adapters/redis/client.ts'
+import { KEYS } from '../adapters/redis/constant.ts'
+import logger from '../logger.ts'
 
 export const rateLimitSameRequestMiddleware =
   <

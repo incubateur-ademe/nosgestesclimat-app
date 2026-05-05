@@ -1,1 +1,1 @@
-export * from './meat-reduction-fr.js'
+export * from './meat-reduction-fr.ts'

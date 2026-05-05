@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { LocaleQuery } from '../../core/i18n/lang.validator.js'
-import { SimulationParticipantCreateDto } from '../simulations/simulations.validator.js'
-import { UserParams } from '../users/users.validator.js'
+import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
+import { SimulationParticipantCreateDto } from '../simulations/simulations.validator.ts'
+import { UserParams } from '../users/users.validator.ts'
 
 const GroupParams = z
   .object({

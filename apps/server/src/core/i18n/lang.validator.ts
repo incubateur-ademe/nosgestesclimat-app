@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Locales } from './constant.js'
+import { Locales } from './constant.ts'
 
 export const LocaleQuery = z
   .object({

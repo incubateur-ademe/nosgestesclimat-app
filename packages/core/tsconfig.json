@@ -1,14 +1,15 @@
 {
   "extends": ["../../tsconfig.json"],
   "compilerOptions": {
-    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
-    "target": "es2022",
+    "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"],
-    "incremental": true,
-    "allowJs": true // ./bin files
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "incremental": true
   },
-  "include": ["./**/*"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

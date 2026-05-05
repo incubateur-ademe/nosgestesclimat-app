@@ -1,1 +1,3 @@
-web: node .next/standalone/apps/site/server.js
+# NextJS is bundled in standalone mode
+# https://nextjs.org/docs/app/api-reference/config/next-config-js/output
+web: node apps/site/server.js
