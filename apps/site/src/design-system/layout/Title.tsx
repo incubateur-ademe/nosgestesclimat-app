@@ -35,6 +35,7 @@ export default function Title({
   ...props
 }: PropsWithChildren<TitleProps>) {
   const Tag = tag
+  console.log(className)
   return (
     <div className={twMerge('relative', containerClassName)}>
       <div className={hasSeparator ? 'mb-6' : ''}>

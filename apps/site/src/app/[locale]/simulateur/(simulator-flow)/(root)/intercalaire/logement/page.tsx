@@ -1,3 +1,4 @@
+import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
@@ -18,7 +19,17 @@ export default async function Page({
 
       <TransitionButtons nextCategory="alimentation" />
 
-      <TransitionInfoCard className="bg-logement-100" />
+      <TransitionInfoCard
+        className="bg-logement-100"
+        title={
+          <Trans
+            locale={locale}
+            i18nKey="simulator.transition.logement.info.title">
+            <strong>À retenir</strong> sur le chauffage
+          </Trans>
+        }
+        locale={locale as Locale}
+      />
     </>
   )
 }

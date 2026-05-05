@@ -37,12 +37,21 @@ export default function TransitionButtons({ nextCategory }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row">
-      <Button color="secondary" onClick={() => router.back()}>
-        <span aria-hidden className="mr-1 hidden md:inline-block">
+    <div className="flex gap-4 md:flex-row">
+      <Button
+        title={t(
+          'common.previousDevelopped',
+          'Précédent, revenir à la page précédente'
+        )}
+        className="h-full w-14 md:w-auto"
+        color="secondary"
+        onClick={() => router.back()}>
+        <span aria-hidden className="text-xl md:mr-1.5">
           ←
         </span>
-        <Trans i18nKey="common.previous">Précédent</Trans>
+        <span className="sr-only md:not-sr-only">
+          <Trans i18nKey="common.previous">Précédent</Trans>
+        </span>
       </Button>
 
       <Button onClick={handleGoToNextQuestion}>
@@ -51,7 +60,7 @@ export default function TransitionButtons({ nextCategory }: Props) {
           i18nKey="simulator.intercalaire.nextButton.">
           Passer {{ nextCategory } as unknown as string}
         </Trans>{' '}
-        <span aria-hidden className="ml-1 inline-block">
+        <span aria-hidden className="ml-1.5 inline-block text-xl">
           →
         </span>
       </Button>

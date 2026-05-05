@@ -31,7 +31,7 @@ export default function TransitionHeaderSection({
 }: Props) {
   if (remainingSteps === 0) {
     return (
-      <Title tag="h1" hasSeparator={false} className="text-primary-600!">
+      <Title tag="h1" hasSeparator={false} className="text-primary-600">
         <Trans
           locale={locale}
           values={{ category: getCategoryString(category) }}
@@ -45,7 +45,7 @@ export default function TransitionHeaderSection({
 
   return (
     <>
-      <Title tag="h1" hasSeparator={false}>
+      <Title tag="h1" hasSeparator={false} className="text-primary-600">
         <Trans
           locale={locale}
           values={{ category: getCategoryString(category) }}
