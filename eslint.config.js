@@ -34,6 +34,7 @@ export default defineConfig([
     'apps/site/storybook-static/**',
   ]),
   {
+    name: 'ngc/TypeScript configuration',
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -55,18 +56,8 @@ export default defineConfig([
   ...typescriptEslint.configs.recommended,
   eslintPluginImport.flatConfigs.recommended,
   {
+    name: 'ngc/All',
     rules: {
-      '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-unnecessary-template-expression': 'error',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_.*$',
-          varsIgnorePattern: '^_.*$',
-        },
-      ],
-      '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/restrict-template-expressions': 'error',
       'import/order': [
         'error',
         {
@@ -79,6 +70,23 @@ export default defineConfig([
         },
       ],
       'prefer-template': 'error',
+    },
+  },
+  {
+    name: 'ngc/TypeScript',
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-unnecessary-template-expression': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_.*$',
+          varsIgnorePattern: '^_.*$',
+        },
+      ],
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/restrict-template-expressions': 'error',
     },
   },
   // Next.js and React related
@@ -122,6 +130,7 @@ export default defineConfig([
     },
   },
   {
+    name: 'ngc/jsx',
     files: ['**/*.{jsx,tsx}'],
     rules: {
       // TODO: Decide whether we prefer to allow convenient whitespace in JSX or enforce `&nbsp;` and such.
@@ -131,6 +140,7 @@ export default defineConfig([
   // Extra rules from the previous Site eslint config
   // TODO: merge those rules with the root ts rules progressively
   {
+    name: 'ngc/TypeScript site rules pending merge',
     files: ['apps/site/**/*.{ts,tsx}'],
     extends: [
       typescriptEslint.configs.recommendedTypeChecked,

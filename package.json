@@ -20,6 +20,7 @@
     "test:coverage": "pnpm -r run test -- --coverage",
     "format": "pnpm -r run format",
     "lint": "pnpm -r run lint",
+    "lint:inspect": "pnpm dlx @eslint/config-inspector",
     "typecheck": "pnpm -r run typecheck",
     "knip": "knip"
   },
