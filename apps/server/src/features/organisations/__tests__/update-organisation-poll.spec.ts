@@ -5,22 +5,22 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   brevoRemoveFromList,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import { PollDefaultAdditionalQuestionType } from '../../../adapters/prisma/generated.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import logger from '../../../logger.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
-import { COOKIE_NAME } from '../../authentication/authentication.service.js'
-import type { OrganisationPollUpdateDto } from '../organisations.validator.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import { PollDefaultAdditionalQuestionType } from '../../../adapters/prisma/generated.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import logger from '../../../logger.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
+import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
+import type { OrganisationPollUpdateDto } from '../organisations.validator.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
   UPDATE_ORGANISATION_POLL_ROUTE,
-} from './fixtures/organisations.fixture.js'
+} from './fixtures/organisations.fixture.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)

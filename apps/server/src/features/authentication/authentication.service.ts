@@ -1,31 +1,31 @@
 import type { CookieOptions } from 'express'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../../adapters/prisma/client.js'
+import { prisma } from '../../adapters/prisma/client.ts'
 import {
   type VerificationCode,
   VerificationCodeMode,
   type VerifiedUser,
-} from '../../adapters/prisma/generated.js'
-import { defaultVerifiedUserSelection } from '../../adapters/prisma/selection.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import { transaction } from '../../adapters/prisma/transaction.js'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import type { Locales } from '../../core/i18n/constant.js'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.js'
+} from '../../adapters/prisma/generated.ts'
+import { defaultVerifiedUserSelection } from '../../adapters/prisma/selection.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import { transaction } from '../../adapters/prisma/transaction.ts'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import type { Locales } from '../../core/i18n/constant.ts'
+import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import {
   createOrUpdateVerifiedUser,
   fetchVerifiedUser,
-} from '../users/users.repository.js'
-import type { LoginDto } from './authentication.validator.js'
-import { AccountCreatedEvent } from './events/AccountCreated.event.js'
-import { LoginEvent } from './events/Login.event.js'
+} from '../users/users.repository.ts'
+import type { LoginDto } from './authentication.validator.ts'
+import { AccountCreatedEvent } from './events/AccountCreated.event.ts'
+import { LoginEvent } from './events/Login.event.ts'
 import {
   findVerificationCode,
   invalidateVerificationCode,
-} from './verification-codes.repository.js'
+} from './verification-codes.repository.ts'
 
 export const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 61 // 2 months
 

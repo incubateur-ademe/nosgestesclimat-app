@@ -1,6 +1,6 @@
 import { isIPv4 } from 'node:net'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { findCountry } from './geolocation.repository.js'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { findCountry } from './geolocation.repository.ts'
 
 export const getModeleCountry = (ip?: string) => {
   if (!ip || !isIPv4(ip)) {

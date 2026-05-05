@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { PERIODS } from './stats.constant.js'
+import { PERIODS } from './stats.constant.ts'
 
 export const NorthstarStatsFetchQuery = z
   .object({

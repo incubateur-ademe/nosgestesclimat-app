@@ -5,16 +5,16 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import logger from '../../../logger.js'
-import { getSimulationPayload } from '../../simulations/__tests__/fixtures/simulations.fixtures.js'
-import type { GroupCreateInputDto } from '../groups.validator.js'
-import { CREATE_GROUP_ROUTE } from './fixtures/groups.fixture.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import logger from '../../../logger.ts'
+import { getSimulationPayload } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
+import type { GroupCreateInputDto } from '../groups.validator.ts'
+import { CREATE_GROUP_ROUTE } from './fixtures/groups.fixture.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)

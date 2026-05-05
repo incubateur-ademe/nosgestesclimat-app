@@ -2,11 +2,11 @@ import dayjs from 'dayjs'
 import type {
   InputJsonValue,
   Job as PrismaJob,
-} from '../../adapters/prisma/generated.js'
-import { JobStatus } from '../../adapters/prisma/generated.js'
-import { defaultJobSelection } from '../../adapters/prisma/selection.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import type { ValueOf } from '../../types/types.js'
+} from '../../adapters/prisma/generated.ts'
+import { JobStatus } from '../../adapters/prisma/generated.ts'
+import { defaultJobSelection } from '../../adapters/prisma/selection.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import type { ValueOf } from '../../types/types.ts'
 
 export const JobKind = {
   DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT:

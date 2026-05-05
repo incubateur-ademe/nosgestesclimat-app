@@ -1,20 +1,20 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import logger from '../../logger.js'
-import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.js'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import logger from '../../logger.ts'
+import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
+import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
   confirmNewsletterSubscriptions,
   sendNewsletterConfirmationEmail,
   updateNewslettersInscription,
-} from './newsletter.service.js'
+} from './newsletter.service.ts'
 import {
   NewsletterConfirmationValidator,
   NewsletterInscriptionValidator,
-} from './newsletter.validator.js'
+} from './newsletter.validator.ts'
 
 const router = express.Router()
 

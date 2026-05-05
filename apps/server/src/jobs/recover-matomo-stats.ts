@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { recoverDayStats } from '../features/stats/stats.service.js'
-import logger from '../logger.js'
+import { recoverDayStats } from '../features/stats/stats.service.ts'
+import logger from '../logger.ts'
 
 const YYYY_MM_DD_REGEX = /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 

@@ -1,9 +1,9 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import logger from '../../logger.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
-import { fetchNorthstarStats } from './stats.service.js'
-import { NorthstarStatsFetchValidator } from './stats.validator.js'
+import logger from '../../logger.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
+import { fetchNorthstarStats } from './stats.service.ts'
+import { NorthstarStatsFetchValidator } from './stats.validator.ts'
 
 const router = express.Router()
 

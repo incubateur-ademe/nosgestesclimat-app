@@ -1,18 +1,18 @@
 import crypto from 'crypto'
 import type { Request } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import type { InputJsonValue } from '../../adapters/prisma/generated.js'
-import { JobStatus } from '../../adapters/prisma/generated.js'
-import { transaction, type Session } from '../../adapters/prisma/transaction.js'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.js'
-import logger from '../../logger.js'
-import { JobCreatedEvent } from './events/JobCreated.event.js'
-import { publishRedisEvent } from './handlers/publish-redis-event.js'
-import type { Job, JobParams } from './jobs.repository.js'
+import type { InputJsonValue } from '../../adapters/prisma/generated.ts'
+import { JobStatus } from '../../adapters/prisma/generated.ts'
+import { transaction, type Session } from '../../adapters/prisma/transaction.ts'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
+import logger from '../../logger.ts'
+import { JobCreatedEvent } from './events/JobCreated.event.ts'
+import { publishRedisEvent } from './handlers/publish-redis-event.ts'
+import type { Job, JobParams } from './jobs.repository.ts'
 import {
   createJob,
   getExistingJob,
@@ -20,7 +20,7 @@ import {
   JobKind,
   startJob,
   stopJob,
-} from './jobs.repository.js'
+} from './jobs.repository.ts'
 
 export const JobFilesRootPath: Record<JobKind, string> = {
   [JobKind.DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT]: 'jobs/polls',

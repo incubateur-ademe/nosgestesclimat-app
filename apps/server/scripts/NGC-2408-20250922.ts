@@ -1,28 +1,28 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { z } from 'zod'
-import { deleteContact, fetchContact } from '../src/adapters/brevo/client.js'
-import { prisma } from '../src/adapters/prisma/client.js'
-import { defaultVerifiedUserSelection } from '../src/adapters/prisma/selection.js'
-import { Locales } from '../src/core/i18n/constant.js'
-import { PaginationQuery } from '../src/core/pagination.js'
-import { isPrismaErrorNotFound } from '../src/core/typeguards/isPrismaError.js'
+import { deleteContact, fetchContact } from '../src/adapters/brevo/client.ts'
+import { prisma } from '../src/adapters/prisma/client.ts'
+import { defaultVerifiedUserSelection } from '../src/adapters/prisma/selection.ts'
+import { Locales } from '../src/core/i18n/constant.ts'
+import { PaginationQuery } from '../src/core/pagination.ts'
+import { isPrismaErrorNotFound } from '../src/core/typeguards/isPrismaError.ts'
 import {
   deleteGroup,
   fetchGroups,
   removeParticipant,
-} from '../src/features/groups/groups.service.js'
+} from '../src/features/groups/groups.service.ts'
 import {
   deletePoll,
   fetchOrganisations,
   fetchPolls,
-} from '../src/features/organisations/organisations.service.js'
-import { fetchSimulations } from '../src/features/simulations/simulations.service.js'
+} from '../src/features/organisations/organisations.service.ts'
+import { fetchSimulations } from '../src/features/simulations/simulations.service.ts'
 import {
   fetchUsersForEmail,
   fetchVerifiedUser,
-} from '../src/features/users/users.repository.js'
-import logger from '../src/logger.js'
+} from '../src/features/users/users.repository.ts'
+import logger from '../src/logger.ts'
 
 const args = yargs(hideBin(process.argv))
   .option('email', {

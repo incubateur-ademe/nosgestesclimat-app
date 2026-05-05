@@ -5,23 +5,23 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import {
   brevoRemoveFromList,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import app from '../../../app.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import app from '../../../app.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
+} from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import {
   CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE,
   createOrganisation,
   createOrganisationPoll,
   createOrganisationPollSimulation,
-} from '../../organisations/__tests__/fixtures/organisations.fixture.js'
-import type { SimulationCreateInputDto } from '../simulations.validator.js'
-import { getRandomTestCase } from './fixtures/simulations.fixtures.js'
+} from '../../organisations/__tests__/fixtures/organisations.fixture.ts'
+import type { SimulationCreateInputDto } from '../simulations.validator.ts'
+import { getRandomTestCase } from './fixtures/simulations.fixtures.ts'
 
 describe('Given a completed poll simulation (progression = 1)', () => {
   const agent = supertest(app)

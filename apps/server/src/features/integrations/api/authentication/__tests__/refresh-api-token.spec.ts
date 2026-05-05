@@ -2,20 +2,20 @@ import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
-import { prisma } from '../../../../../adapters/prisma/client.js'
-import { ApiScopeName } from '../../../../../adapters/prisma/generated.js'
-import app from '../../../../../app.js'
-import { config } from '../../../../../config.js'
-import { ExternalServiceTypeEnum } from '../../../integrations.validator.js'
+import { prisma } from '../../../../../adapters/prisma/client.ts'
+import { ApiScopeName } from '../../../../../adapters/prisma/generated.ts'
+import app from '../../../../../app.ts'
+import { config } from '../../../../../config.ts'
+import { ExternalServiceTypeEnum } from '../../../integrations.validator.ts'
 import {
   REFRESH_TOKEN_MAX_AGE,
   REFRESH_TOKEN_SCOPE,
-} from '../authentication.service.js'
+} from '../authentication.service.ts'
 import {
   generateApiToken,
   recoverApiToken,
   REFRESH_API_TOKEN_ROUTE,
-} from './fixtures/authentication.fixtures.js'
+} from './fixtures/authentication.fixtures.ts'
 
 describe('Given a NGC integrations API user', () => {
   const agent = supertest(app)

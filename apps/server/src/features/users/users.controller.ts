@@ -1,25 +1,25 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import logger from '../../logger.js'
-import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import logger from '../../logger.ts'
+import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
   COOKIE_NAME,
   getCookieOptions,
-} from '../authentication/authentication.service.js'
-import { UserUpdatedEvent } from './events/UserUpdated.event.js'
-import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.js'
-import { removePreviousBrevoContact } from './handlers/remove-previous-brevo-contact.js'
-import { fetchUserContact, updateUserAndContact } from './users.service.js'
+} from '../authentication/authentication.service.ts'
+import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
+import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.ts'
+import { removePreviousBrevoContact } from './handlers/remove-previous-brevo-contact.ts'
+import { fetchUserContact, updateUserAndContact } from './users.service.ts'
 import {
   FetchMeValidator,
   FetchUserContactValidator,
   UpdateUserValidator,
-} from './users.validator.js'
+} from './users.validator.ts'
 
 const router = express.Router()
 

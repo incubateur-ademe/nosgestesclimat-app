@@ -1,5 +1,5 @@
-import type { EventBusEvent } from './event.js'
-import type { Handler } from './handler.js'
+import type { EventBusEvent } from './event.ts'
+import type { Handler } from './handler.ts'
 
 export type EventBusErrorReason<FinishedEvent extends EventBusEvent> = {
   event: FinishedEvent
@@ -10,7 +10,10 @@ export type EventBusErrorReason<FinishedEvent extends EventBusEvent> = {
 }
 
 export class EventBusError<FinishedEvent extends EventBusEvent> extends Error {
-  constructor(public reasons: EventBusErrorReason<FinishedEvent>[]) {
+  public reasons: EventBusErrorReason<FinishedEvent>[]
+
+  constructor(reasons: EventBusErrorReason<FinishedEvent>[]) {
     super()
+    this.reasons = reasons
   }
 }

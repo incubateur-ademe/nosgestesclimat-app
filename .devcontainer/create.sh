@@ -3,5 +3,5 @@
 corepack enable
 corepack install
 pnpm install
-pnpm -F server prebuild
+pnpm -F server generate
 pnpm -F server db:migrate

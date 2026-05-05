@@ -8,28 +8,28 @@ import {
   brevoRemoveFromList,
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
 import {
   PollDefaultAdditionalQuestionType,
   SimulationAdditionalQuestionAnswerType,
   VerificationCodeMode,
-} from '../../../adapters/prisma/generated.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import { Locales } from '../../../core/i18n/constant.js'
-import logger from '../../../logger.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
-import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.js'
-import type { SimulationCreateInputDto } from '../simulations.validator.js'
+} from '../../../adapters/prisma/generated.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import { Locales } from '../../../core/i18n/constant.ts'
+import logger from '../../../logger.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
+import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.ts'
+import type { SimulationCreateInputDto } from '../simulations.validator.ts'
 import {
   CREATE_SIMULATION_ROUTE,
   createSimulation,
   FETCH_USER_SIMULATIONS_ROUTE,
   getRandomTestCase,
-} from './fixtures/simulations.fixtures.js'
+} from './fixtures/simulations.fixtures.ts'
 
 const defaultModelVersion = modelPackage.version
   .match(/^(\d+\.\d+\.\d+)/)!

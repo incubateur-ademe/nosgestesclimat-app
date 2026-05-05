@@ -4,18 +4,18 @@ import {
   fetchContact,
   removeFromNewsletters,
   sendNewsLetterConfirmationEmail,
-} from '../../adapters/brevo/client.js'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.js'
-import { verifyCode } from '../authentication/authentication.service.js'
-import { generateVerificationCode } from '../authentication/verification-codes.service.js'
+} from '../../adapters/brevo/client.ts'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
+import { verifyCode } from '../authentication/authentication.service.ts'
+import { generateVerificationCode } from '../authentication/verification-codes.service.ts'
 import {
   REACHABLE_NEWSLETTER_LIST_IDS,
   type NewsletterConfirmationQuery,
   type NewsletterInscriptionDto,
   type ReachableNewsletterListId,
-} from './newsletter.validator.js'
+} from './newsletter.validator.ts'
 
 export const updateNewslettersInscription = async ({
   email,

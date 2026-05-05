@@ -3,4 +3,4 @@ export type {
   JsonObject,
   JsonValue,
 } from '@prisma/client/runtime/client'
-export * from '../../../prisma/generated/prisma/client.js'
+export * from '../../../prisma/generated/prisma/client.ts'

@@ -5,11 +5,11 @@ import { PrismaPGlite } from 'pglite-prisma-adapter'
 import redisMock from 'redis-mock'
 import { promisify } from 'util'
 import { afterAll, afterEach, beforeAll, expect, vi } from 'vitest'
-import { Prisma, PrismaClient } from './prisma/generated/prisma/client.js'
+import { Prisma, PrismaClient } from './prisma/generated/prisma/client.ts'
 import {
-  mswServer,
-  resetMswServer,
-} from './src/core/__tests__/fixtures/server.fixture.js'
+    mswServer,
+    resetMswServer,
+} from './src/core/__tests__/fixtures/server.fixture.ts'
 
 const pgClient = new PGlite()
 const adapter = new PrismaPGlite(pgClient)

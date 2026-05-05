@@ -2,18 +2,18 @@ import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import Engine from 'publicodes'
 import yaml from 'yaml'
-import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.js'
-import type { ExternalServiceTypeEnum } from '../../integrations.validator.js'
+import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
+import type { ExternalServiceTypeEnum } from '../../integrations.validator.ts'
 import {
   MappingFileKind,
   type MappingFileParams,
-} from '../mapping-file/mapping-file.contract.js'
-import { getMappingFile } from '../mapping-file/mapping-file.service.js'
-import { MAPPING_CASES_FUNC } from './mapping-situation.constant.js'
+} from '../mapping-file/mapping-file.contract.ts'
+import { getMappingFile } from '../mapping-file/mapping-file.service.ts'
+import { MAPPING_CASES_FUNC } from './mapping-situation.constant.ts'
 import type {
   MappingSituationDto,
   MappingSituationQuery,
-} from './mapping-situation.contract.js'
+} from './mapping-situation.contract.ts'
 
 const fetchPartnerMappingFile = async (params: MappingFileParams) => {
   try {

@@ -1,23 +1,23 @@
 import { isAxiosError } from 'axios'
 import dayjs from 'dayjs'
-import { fetchNewsletter } from '../../adapters/brevo/client.js'
-import { ListIds } from '../../adapters/brevo/constant.js'
-import { ReferrerKind } from '../../adapters/matomo/client.js'
-import { clients } from '../../adapters/matomo/index.js'
-import { prisma } from '../../adapters/prisma/client.js'
+import { fetchNewsletter } from '../../adapters/brevo/client.ts'
+import { ListIds } from '../../adapters/brevo/constant.ts'
+import { ReferrerKind } from '../../adapters/matomo/client.ts'
+import { clients } from '../../adapters/matomo/index.ts'
+import { prisma } from '../../adapters/prisma/client.ts'
 import {
   MatomoStatsDevice,
   MatomoStatsSource,
   StatsKind,
-} from '../../adapters/prisma/generated.js'
-import { isPrismaErrorUniqueConstraintFailed } from '../../core/typeguards/isPrismaError.js'
-import logger from '../../logger.js'
+} from '../../adapters/prisma/generated.ts'
+import { isPrismaErrorUniqueConstraintFailed } from '../../core/typeguards/isPrismaError.ts'
+import logger from '../../logger.ts'
 import {
   createNewsLetterStats,
   getNorthstarStats,
   upsertStat,
-} from './stats.repository.js'
-import type { NorthstarStatsFetchQuery } from './stats.validator.js'
+} from './stats.repository.ts'
+import type { NorthstarStatsFetchQuery } from './stats.validator.ts'
 
 const NB_VISITS_MIN = 10
 

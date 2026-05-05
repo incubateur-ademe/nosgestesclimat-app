@@ -1,12 +1,12 @@
-import type { ListIds } from '../../adapters/brevo/constant.js'
+import type { ListIds } from '../../adapters/brevo/constant.ts'
 import {
   MatomoStatsDevice,
   MatomoStatsSource,
   Prisma,
   StatsKind,
-} from '../../adapters/prisma/generated.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import type { PERIODS } from './stats.constant.js'
+} from '../../adapters/prisma/generated.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import type { PERIODS } from './stats.constant.ts'
 
 export const upsertStat = (
   {
