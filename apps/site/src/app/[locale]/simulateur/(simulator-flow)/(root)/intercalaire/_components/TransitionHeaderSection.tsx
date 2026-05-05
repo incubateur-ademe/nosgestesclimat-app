@@ -35,7 +35,7 @@ export default function TransitionHeaderSection({
         <Trans
           locale={locale}
           values={{ category: getCategoryString(category) }}
-          i18nKey="simulator.intercalaire.title">
+          i18nKey="simulator.intercalaire.title.last">
           Bravo, tu as terminé toutes les sections
         </Trans>{' '}
         <Emoji>🥳</Emoji>
@@ -49,11 +49,12 @@ export default function TransitionHeaderSection({
         <Trans
           locale={locale}
           values={{ category: getCategoryString(category) }}
-          i18nKey="simulator.intercalaire.title">
+          i18nKey="simulator.intercalaire.title.default">
           Section {{ category } as unknown as React.ReactNode} terminée
         </Trans>{' '}
         <Emoji>✅</Emoji>
       </Title>
+
       <p className="mb-0">
         {remainingSteps === 1 ? (
           <Trans

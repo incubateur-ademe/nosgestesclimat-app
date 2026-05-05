@@ -1,7 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
-import Script from 'next/script'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
@@ -51,8 +50,6 @@ export default async function Page({
         }
         rightContent={<ImpactCO2Script locale={locale} type="transport" />}
       />
-
-      <Script src="https://impactco2.fr/iframe.js" strategy="lazyOnload" />
     </>
   )
 }

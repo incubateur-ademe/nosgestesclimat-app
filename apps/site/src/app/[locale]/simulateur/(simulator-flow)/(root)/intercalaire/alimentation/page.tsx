@@ -1,10 +1,10 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import Image from 'next/image'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
+import ImpactCO2Script from '../_components/transitionInfoCard/ImpactCO2Script'
 
 const ALIMENTATION_IMAGE_URL =
   'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/alimentation_graphique_f4391342ee.png'
@@ -55,16 +55,11 @@ export default async function Page({
           </>
         }
         rightContent={
-          <div className="mt-10 h-auto w-full overflow-hidden rounded-2xl border-2 border-[#257674] bg-white">
-            <Image
-              src={ALIMENTATION_IMAGE_URL}
-              width={600}
-              height={400}
-              alt="Graphique sur l'impact climatique de l'alimentation"
-              className="h-auto w-full"
-              style={{ clipPath: 'inset(3px)' }}
-            />
-          </div>
+          <ImpactCO2Script
+            additionalSearchParams="alimentationEquivalents=cheeseburger,kebab,burgerpoulet,pizza,sushis,burgervegetarien,frites,tofu"
+            locale={locale}
+            type="alimentation"
+          />
         }
       />
     </>

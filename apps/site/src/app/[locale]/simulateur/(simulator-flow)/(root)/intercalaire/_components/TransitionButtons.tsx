@@ -1,6 +1,6 @@
 'use client'
 import Trans from '@/components/translation/trans/TransClient'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
@@ -9,9 +9,13 @@ import { useRouter } from 'next/navigation'
 
 interface Props {
   nextCategory: Categories
+  showResults?: boolean
 }
 
-export default function TransitionButtons({ nextCategory }: Props) {
+export default function TransitionButtons({
+  nextCategory,
+  showResults,
+}: Props) {
   const router = useRouter()
 
   const { gotoNextQuestion } = useFormState()
@@ -32,6 +36,10 @@ export default function TransitionButtons({ nextCategory }: Props) {
   }
 
   const handleGoToNextQuestion = () => {
+    if (showResults) {
+      router.push(END_PAGE_PATH)
+      return
+    }
     gotoNextQuestion()
     router.push(SIMULATOR_PATH)
   }
@@ -55,11 +63,19 @@ export default function TransitionButtons({ nextCategory }: Props) {
       </Button>
 
       <Button onClick={handleGoToNextQuestion}>
-        <Trans
-          values={{ nextCategory: getCategoryString(nextCategory) }}
-          i18nKey="simulator.intercalaire.nextButton.">
-          Passer {{ nextCategory } as unknown as string}
-        </Trans>{' '}
+        {showResults ? (
+          <Trans i18nKey="simulator.intercalaire.seeResults">
+            Voir mes résultats
+          </Trans>
+        ) : (
+          <>
+            <Trans
+              values={{ nextCategory: getCategoryString(nextCategory) }}
+              i18nKey="simulator.intercalaire.nextButton.">
+              Passer {{ nextCategory } as unknown as string}
+            </Trans>{' '}
+          </>
+        )}
         <span aria-hidden className="ml-1.5 inline-block text-xl">
           →
         </span>
