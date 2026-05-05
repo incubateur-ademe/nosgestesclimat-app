@@ -22,9 +22,6 @@
       "default": "./src/*.ts"
     }
   },
-  "bin": {
-    "ngc": "./bin/ngc.js"
-  },
   "scripts": {
     "prepare": "pnpm generate",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
