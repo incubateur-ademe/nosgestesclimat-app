@@ -68,8 +68,8 @@ export default function JVABanner() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t(
-            "J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre",
-            'actions.jva.banner.cta.label'
+            'actions.jva.banner.cta.label',
+            "J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre"
           )}
           className="w-full md:w-auto md:self-start"
           href="https://www.jeveuxaider.gouv.fr/missions-benevolat?domaines=Protection+de+la+nature">

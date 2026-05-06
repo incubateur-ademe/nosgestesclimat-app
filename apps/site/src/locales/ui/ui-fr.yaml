@@ -907,7 +907,7 @@ entries:
   group.results.rankingMember.delete.modal.ariaLabel: Fenêtre modale de confirmation de suppression du membre du groupe
   organisations.additionalQuestions.deletion.modal.ariaLabel: Fenêtre de confirmation de suppression de la question personnalisée
   organisations.emailVerificationModal.title: Fenêtre modale de confirmation d'e-mail
-  organisations.polls.settings.confirmDeletion: Fenêtre modale de confirmation de suppression de la campagne
+  organisations.polls.settings.confirmDeletion: Fenêtre modale de confirmation de suppression du test collectif
   Ouvrir le menu: Ouvrir le menu
   results.informationBlock.carbon.closeButton: Fermer l'explication sur l'empreinte eau
   results.informationBlock.carbon.openButton: Voir le détail de l'objectif 2 tonnes en 2050
@@ -1511,7 +1511,6 @@ entries:
   youthTutorial.secondlist.result.title: Résultat + actions
   youthTutorial.subtitle: Un test rapide pour comprendre ton empreinte carbone et agir !
   youthTutorial.title: Découvre ton impact <2>sur la planète</2>
-  J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
   '{group.administrator.name} vous a invité à rejoindre le groupe <3>{group.name}</3>': '{group.administrator.name} vous a invité à rejoindre le groupe <3>{group.name}</3>'
   à l'alimentation: à l'alimentation
   au logement: au logement
@@ -1520,7 +1519,7 @@ entries:
   Divers: Divers
   à la consommation: à la consommation
   Créez une organisation afin de diffuser un ou plusieurs liens de test collectif: Créez une organisation afin de diffuser un ou plusieurs liens de test collectif
-  Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>: Pour conserver tes résultats et les retrouver à l\'avenir dans <2>ton espace personnel</2>
+  Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>: Pour conserver vos résultats et les retrouver à l\'avenir dans <2>votre espace personnel</2>
   simulator.funFact.clothing.text1: En moyenne, les Français achètent chaque année,
   simulator.funFact.clothing.text2: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
@@ -1570,3 +1569,6 @@ entries:
   Ton e-mail sera utilisé pour le tirage au sort.: Ton e-mail sera utilisé pour le tirage au sort.
   Votre adresse électronique: Votre adresse électronique
   common.previousExtended: Précédent, revenir à la page précédente
+  actions.jva.banner.cta.label: J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre
+  Tu as déja participé à ce test.: Tu as déja participé à ce test.
+  Vous avez déjà participé à ce sondage.: Vous avez déjà participé à ce sondage.
