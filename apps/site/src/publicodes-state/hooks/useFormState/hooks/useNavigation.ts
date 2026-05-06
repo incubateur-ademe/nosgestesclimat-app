@@ -3,14 +3,12 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useMemo } from 'react'
 
 interface Props {
-  remainingQuestions: DottedName[]
   relevantQuestions: DottedName[]
   currentQuestion: DottedName | null
   setCurrentQuestion: (question: DottedName | null) => void
 }
 
 export default function useNavigation({
-  remainingQuestions,
   relevantQuestions,
   currentQuestion,
   setCurrentQuestion,
