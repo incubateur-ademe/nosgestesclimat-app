@@ -8,7 +8,7 @@ import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
-import ImpactCO2Script from '../_components/transitionInfoCard/ImpactCO2Script'
+import ImpactCO2Iframe from '../_components/transitionInfoCard/ImpactCO2Iframe'
 
 export async function generateMetadata({
   params,
@@ -87,7 +87,7 @@ export default async function Page({
           </>
         }
         rightContent={
-          <ImpactCO2Script
+          <ImpactCO2Iframe
             title={t(
               'simulator.intercalaire.logement.iframe.title',
               "Comparateur d'impact CO₂ du chauffage"
