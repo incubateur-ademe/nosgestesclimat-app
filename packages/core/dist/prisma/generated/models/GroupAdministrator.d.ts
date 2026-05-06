@@ -1,0 +1,1254 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as Prisma from "../internal/prismaNamespace.ts";
+/**
+ * Model GroupAdministrator
+ *
+ */
+export type GroupAdministratorModel = runtime.Types.Result.DefaultSelection<Prisma.$GroupAdministratorPayload>;
+export type AggregateGroupAdministrator = {
+    _count: GroupAdministratorCountAggregateOutputType | null;
+    _min: GroupAdministratorMinAggregateOutputType | null;
+    _max: GroupAdministratorMaxAggregateOutputType | null;
+};
+export type GroupAdministratorMinAggregateOutputType = {
+    id: string | null;
+    userId: string | null;
+    groupId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type GroupAdministratorMaxAggregateOutputType = {
+    id: string | null;
+    userId: string | null;
+    groupId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+};
+export type GroupAdministratorCountAggregateOutputType = {
+    id: number;
+    userId: number;
+    groupId: number;
+    createdAt: number;
+    updatedAt: number;
+    _all: number;
+};
+export type GroupAdministratorMinAggregateInputType = {
+    id?: true;
+    userId?: true;
+    groupId?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type GroupAdministratorMaxAggregateInputType = {
+    id?: true;
+    userId?: true;
+    groupId?: true;
+    createdAt?: true;
+    updatedAt?: true;
+};
+export type GroupAdministratorCountAggregateInputType = {
+    id?: true;
+    userId?: true;
+    groupId?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    _all?: true;
+};
+export type GroupAdministratorAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which GroupAdministrator to aggregate.
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of GroupAdministrators to fetch.
+     */
+    orderBy?: Prisma.GroupAdministratorOrderByWithRelationInput | Prisma.GroupAdministratorOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.GroupAdministratorWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` GroupAdministrators from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` GroupAdministrators.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned GroupAdministrators
+    **/
+    _count?: true | GroupAdministratorCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: GroupAdministratorMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: GroupAdministratorMaxAggregateInputType;
+};
+export type GetGroupAdministratorAggregateType<T extends GroupAdministratorAggregateArgs> = {
+    [P in keyof T & keyof AggregateGroupAdministrator]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateGroupAdministrator[P]> : Prisma.GetScalarType<T[P], AggregateGroupAdministrator[P]>;
+};
+export type GroupAdministratorGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.GroupAdministratorWhereInput;
+    orderBy?: Prisma.GroupAdministratorOrderByWithAggregationInput | Prisma.GroupAdministratorOrderByWithAggregationInput[];
+    by: Prisma.GroupAdministratorScalarFieldEnum[] | Prisma.GroupAdministratorScalarFieldEnum;
+    having?: Prisma.GroupAdministratorScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: GroupAdministratorCountAggregateInputType | true;
+    _min?: GroupAdministratorMinAggregateInputType;
+    _max?: GroupAdministratorMaxAggregateInputType;
+};
+export type GroupAdministratorGroupByOutputType = {
+    id: string;
+    userId: string;
+    groupId: string;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: GroupAdministratorCountAggregateOutputType | null;
+    _min: GroupAdministratorMinAggregateOutputType | null;
+    _max: GroupAdministratorMaxAggregateOutputType | null;
+};
+export type GetGroupAdministratorGroupByPayload<T extends GroupAdministratorGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<GroupAdministratorGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof GroupAdministratorGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], GroupAdministratorGroupByOutputType[P]> : Prisma.GetScalarType<T[P], GroupAdministratorGroupByOutputType[P]>;
+}>>;
+export type GroupAdministratorWhereInput = {
+    AND?: Prisma.GroupAdministratorWhereInput | Prisma.GroupAdministratorWhereInput[];
+    OR?: Prisma.GroupAdministratorWhereInput[];
+    NOT?: Prisma.GroupAdministratorWhereInput | Prisma.GroupAdministratorWhereInput[];
+    id?: Prisma.UuidFilter<"GroupAdministrator"> | string;
+    userId?: Prisma.UuidFilter<"GroupAdministrator"> | string;
+    groupId?: Prisma.StringFilter<"GroupAdministrator"> | string;
+    createdAt?: Prisma.DateTimeFilter<"GroupAdministrator"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"GroupAdministrator"> | Date | string;
+    user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>;
+};
+export type GroupAdministratorOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
+    groupId?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    user?: Prisma.UserOrderByWithRelationInput;
+    group?: Prisma.GroupOrderByWithRelationInput;
+};
+export type GroupAdministratorWhereUniqueInput = Prisma.AtLeast<{
+    id?: string;
+    groupId?: string;
+    AND?: Prisma.GroupAdministratorWhereInput | Prisma.GroupAdministratorWhereInput[];
+    OR?: Prisma.GroupAdministratorWhereInput[];
+    NOT?: Prisma.GroupAdministratorWhereInput | Prisma.GroupAdministratorWhereInput[];
+    userId?: Prisma.UuidFilter<"GroupAdministrator"> | string;
+    createdAt?: Prisma.DateTimeFilter<"GroupAdministrator"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"GroupAdministrator"> | Date | string;
+    user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
+    group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>;
+}, "id" | "groupId">;
+export type GroupAdministratorOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
+    groupId?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    _count?: Prisma.GroupAdministratorCountOrderByAggregateInput;
+    _max?: Prisma.GroupAdministratorMaxOrderByAggregateInput;
+    _min?: Prisma.GroupAdministratorMinOrderByAggregateInput;
+};
+export type GroupAdministratorScalarWhereWithAggregatesInput = {
+    AND?: Prisma.GroupAdministratorScalarWhereWithAggregatesInput | Prisma.GroupAdministratorScalarWhereWithAggregatesInput[];
+    OR?: Prisma.GroupAdministratorScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.GroupAdministratorScalarWhereWithAggregatesInput | Prisma.GroupAdministratorScalarWhereWithAggregatesInput[];
+    id?: Prisma.UuidWithAggregatesFilter<"GroupAdministrator"> | string;
+    userId?: Prisma.UuidWithAggregatesFilter<"GroupAdministrator"> | string;
+    groupId?: Prisma.StringWithAggregatesFilter<"GroupAdministrator"> | string;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"GroupAdministrator"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"GroupAdministrator"> | Date | string;
+};
+export type GroupAdministratorCreateInput = {
+    id?: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    user: Prisma.UserCreateNestedOneWithoutAdministratorInput;
+    group: Prisma.GroupCreateNestedOneWithoutAdministratorInput;
+};
+export type GroupAdministratorUncheckedCreateInput = {
+    id?: string;
+    userId: string;
+    groupId: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type GroupAdministratorUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    user?: Prisma.UserUpdateOneRequiredWithoutAdministratorNestedInput;
+    group?: Prisma.GroupUpdateOneRequiredWithoutAdministratorNestedInput;
+};
+export type GroupAdministratorUncheckedUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    userId?: Prisma.StringFieldUpdateOperationsInput | string;
+    groupId?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type GroupAdministratorCreateManyInput = {
+    id?: string;
+    userId: string;
+    groupId: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type GroupAdministratorUpdateManyMutationInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type GroupAdministratorUncheckedUpdateManyInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    userId?: Prisma.StringFieldUpdateOperationsInput | string;
+    groupId?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type GroupAdministratorNullableScalarRelationFilter = {
+    is?: Prisma.GroupAdministratorWhereInput | null;
+    isNot?: Prisma.GroupAdministratorWhereInput | null;
+};
+export type GroupAdministratorCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
+    groupId?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type GroupAdministratorMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
+    groupId?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type GroupAdministratorMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    userId?: Prisma.SortOrder;
+    groupId?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+};
+export type GroupAdministratorListRelationFilter = {
+    every?: Prisma.GroupAdministratorWhereInput;
+    some?: Prisma.GroupAdministratorWhereInput;
+    none?: Prisma.GroupAdministratorWhereInput;
+};
+export type GroupAdministratorOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type GroupAdministratorCreateNestedOneWithoutGroupInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutGroupInput, Prisma.GroupAdministratorUncheckedCreateWithoutGroupInput>;
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutGroupInput;
+    connect?: Prisma.GroupAdministratorWhereUniqueInput;
+};
+export type GroupAdministratorUncheckedCreateNestedOneWithoutGroupInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutGroupInput, Prisma.GroupAdministratorUncheckedCreateWithoutGroupInput>;
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutGroupInput;
+    connect?: Prisma.GroupAdministratorWhereUniqueInput;
+};
+export type GroupAdministratorUpdateOneWithoutGroupNestedInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutGroupInput, Prisma.GroupAdministratorUncheckedCreateWithoutGroupInput>;
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutGroupInput;
+    upsert?: Prisma.GroupAdministratorUpsertWithoutGroupInput;
+    disconnect?: Prisma.GroupAdministratorWhereInput | boolean;
+    delete?: Prisma.GroupAdministratorWhereInput | boolean;
+    connect?: Prisma.GroupAdministratorWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.GroupAdministratorUpdateToOneWithWhereWithoutGroupInput, Prisma.GroupAdministratorUpdateWithoutGroupInput>, Prisma.GroupAdministratorUncheckedUpdateWithoutGroupInput>;
+};
+export type GroupAdministratorUncheckedUpdateOneWithoutGroupNestedInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutGroupInput, Prisma.GroupAdministratorUncheckedCreateWithoutGroupInput>;
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutGroupInput;
+    upsert?: Prisma.GroupAdministratorUpsertWithoutGroupInput;
+    disconnect?: Prisma.GroupAdministratorWhereInput | boolean;
+    delete?: Prisma.GroupAdministratorWhereInput | boolean;
+    connect?: Prisma.GroupAdministratorWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.GroupAdministratorUpdateToOneWithWhereWithoutGroupInput, Prisma.GroupAdministratorUpdateWithoutGroupInput>, Prisma.GroupAdministratorUncheckedUpdateWithoutGroupInput>;
+};
+export type GroupAdministratorCreateNestedManyWithoutUserInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutUserInput, Prisma.GroupAdministratorUncheckedCreateWithoutUserInput> | Prisma.GroupAdministratorCreateWithoutUserInput[] | Prisma.GroupAdministratorUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutUserInput | Prisma.GroupAdministratorCreateOrConnectWithoutUserInput[];
+    createMany?: Prisma.GroupAdministratorCreateManyUserInputEnvelope;
+    connect?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+};
+export type GroupAdministratorUncheckedCreateNestedManyWithoutUserInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutUserInput, Prisma.GroupAdministratorUncheckedCreateWithoutUserInput> | Prisma.GroupAdministratorCreateWithoutUserInput[] | Prisma.GroupAdministratorUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutUserInput | Prisma.GroupAdministratorCreateOrConnectWithoutUserInput[];
+    createMany?: Prisma.GroupAdministratorCreateManyUserInputEnvelope;
+    connect?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+};
+export type GroupAdministratorUpdateManyWithoutUserNestedInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutUserInput, Prisma.GroupAdministratorUncheckedCreateWithoutUserInput> | Prisma.GroupAdministratorCreateWithoutUserInput[] | Prisma.GroupAdministratorUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutUserInput | Prisma.GroupAdministratorCreateOrConnectWithoutUserInput[];
+    upsert?: Prisma.GroupAdministratorUpsertWithWhereUniqueWithoutUserInput | Prisma.GroupAdministratorUpsertWithWhereUniqueWithoutUserInput[];
+    createMany?: Prisma.GroupAdministratorCreateManyUserInputEnvelope;
+    set?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    disconnect?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    delete?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    connect?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    update?: Prisma.GroupAdministratorUpdateWithWhereUniqueWithoutUserInput | Prisma.GroupAdministratorUpdateWithWhereUniqueWithoutUserInput[];
+    updateMany?: Prisma.GroupAdministratorUpdateManyWithWhereWithoutUserInput | Prisma.GroupAdministratorUpdateManyWithWhereWithoutUserInput[];
+    deleteMany?: Prisma.GroupAdministratorScalarWhereInput | Prisma.GroupAdministratorScalarWhereInput[];
+};
+export type GroupAdministratorUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutUserInput, Prisma.GroupAdministratorUncheckedCreateWithoutUserInput> | Prisma.GroupAdministratorCreateWithoutUserInput[] | Prisma.GroupAdministratorUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.GroupAdministratorCreateOrConnectWithoutUserInput | Prisma.GroupAdministratorCreateOrConnectWithoutUserInput[];
+    upsert?: Prisma.GroupAdministratorUpsertWithWhereUniqueWithoutUserInput | Prisma.GroupAdministratorUpsertWithWhereUniqueWithoutUserInput[];
+    createMany?: Prisma.GroupAdministratorCreateManyUserInputEnvelope;
+    set?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    disconnect?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    delete?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    connect?: Prisma.GroupAdministratorWhereUniqueInput | Prisma.GroupAdministratorWhereUniqueInput[];
+    update?: Prisma.GroupAdministratorUpdateWithWhereUniqueWithoutUserInput | Prisma.GroupAdministratorUpdateWithWhereUniqueWithoutUserInput[];
+    updateMany?: Prisma.GroupAdministratorUpdateManyWithWhereWithoutUserInput | Prisma.GroupAdministratorUpdateManyWithWhereWithoutUserInput[];
+    deleteMany?: Prisma.GroupAdministratorScalarWhereInput | Prisma.GroupAdministratorScalarWhereInput[];
+};
+export type GroupAdministratorCreateWithoutGroupInput = {
+    id?: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    user: Prisma.UserCreateNestedOneWithoutAdministratorInput;
+};
+export type GroupAdministratorUncheckedCreateWithoutGroupInput = {
+    id?: string;
+    userId: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type GroupAdministratorCreateOrConnectWithoutGroupInput = {
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+    create: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutGroupInput, Prisma.GroupAdministratorUncheckedCreateWithoutGroupInput>;
+};
+export type GroupAdministratorUpsertWithoutGroupInput = {
+    update: Prisma.XOR<Prisma.GroupAdministratorUpdateWithoutGroupInput, Prisma.GroupAdministratorUncheckedUpdateWithoutGroupInput>;
+    create: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutGroupInput, Prisma.GroupAdministratorUncheckedCreateWithoutGroupInput>;
+    where?: Prisma.GroupAdministratorWhereInput;
+};
+export type GroupAdministratorUpdateToOneWithWhereWithoutGroupInput = {
+    where?: Prisma.GroupAdministratorWhereInput;
+    data: Prisma.XOR<Prisma.GroupAdministratorUpdateWithoutGroupInput, Prisma.GroupAdministratorUncheckedUpdateWithoutGroupInput>;
+};
+export type GroupAdministratorUpdateWithoutGroupInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    user?: Prisma.UserUpdateOneRequiredWithoutAdministratorNestedInput;
+};
+export type GroupAdministratorUncheckedUpdateWithoutGroupInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    userId?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type GroupAdministratorCreateWithoutUserInput = {
+    id?: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    group: Prisma.GroupCreateNestedOneWithoutAdministratorInput;
+};
+export type GroupAdministratorUncheckedCreateWithoutUserInput = {
+    id?: string;
+    groupId: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type GroupAdministratorCreateOrConnectWithoutUserInput = {
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+    create: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutUserInput, Prisma.GroupAdministratorUncheckedCreateWithoutUserInput>;
+};
+export type GroupAdministratorCreateManyUserInputEnvelope = {
+    data: Prisma.GroupAdministratorCreateManyUserInput | Prisma.GroupAdministratorCreateManyUserInput[];
+    skipDuplicates?: boolean;
+};
+export type GroupAdministratorUpsertWithWhereUniqueWithoutUserInput = {
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+    update: Prisma.XOR<Prisma.GroupAdministratorUpdateWithoutUserInput, Prisma.GroupAdministratorUncheckedUpdateWithoutUserInput>;
+    create: Prisma.XOR<Prisma.GroupAdministratorCreateWithoutUserInput, Prisma.GroupAdministratorUncheckedCreateWithoutUserInput>;
+};
+export type GroupAdministratorUpdateWithWhereUniqueWithoutUserInput = {
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+    data: Prisma.XOR<Prisma.GroupAdministratorUpdateWithoutUserInput, Prisma.GroupAdministratorUncheckedUpdateWithoutUserInput>;
+};
+export type GroupAdministratorUpdateManyWithWhereWithoutUserInput = {
+    where: Prisma.GroupAdministratorScalarWhereInput;
+    data: Prisma.XOR<Prisma.GroupAdministratorUpdateManyMutationInput, Prisma.GroupAdministratorUncheckedUpdateManyWithoutUserInput>;
+};
+export type GroupAdministratorScalarWhereInput = {
+    AND?: Prisma.GroupAdministratorScalarWhereInput | Prisma.GroupAdministratorScalarWhereInput[];
+    OR?: Prisma.GroupAdministratorScalarWhereInput[];
+    NOT?: Prisma.GroupAdministratorScalarWhereInput | Prisma.GroupAdministratorScalarWhereInput[];
+    id?: Prisma.UuidFilter<"GroupAdministrator"> | string;
+    userId?: Prisma.UuidFilter<"GroupAdministrator"> | string;
+    groupId?: Prisma.StringFilter<"GroupAdministrator"> | string;
+    createdAt?: Prisma.DateTimeFilter<"GroupAdministrator"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"GroupAdministrator"> | Date | string;
+};
+export type GroupAdministratorCreateManyUserInput = {
+    id?: string;
+    groupId: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type GroupAdministratorUpdateWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    group?: Prisma.GroupUpdateOneRequiredWithoutAdministratorNestedInput;
+};
+export type GroupAdministratorUncheckedUpdateWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    groupId?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type GroupAdministratorUncheckedUpdateManyWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    groupId?: Prisma.StringFieldUpdateOperationsInput | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type GroupAdministratorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    userId?: boolean;
+    groupId?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["groupAdministrator"]>;
+export type GroupAdministratorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    userId?: boolean;
+    groupId?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["groupAdministrator"]>;
+export type GroupAdministratorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    userId?: boolean;
+    groupId?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["groupAdministrator"]>;
+export type GroupAdministratorSelectScalar = {
+    id?: boolean;
+    userId?: boolean;
+    groupId?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+};
+export type GroupAdministratorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "groupId" | "createdAt" | "updatedAt", ExtArgs["result"]["groupAdministrator"]>;
+export type GroupAdministratorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
+};
+export type GroupAdministratorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
+};
+export type GroupAdministratorIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    user?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>;
+};
+export type $GroupAdministratorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "GroupAdministrator";
+    objects: {
+        user: Prisma.$UserPayload<ExtArgs>;
+        group: Prisma.$GroupPayload<ExtArgs>;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: string;
+        userId: string;
+        groupId: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }, ExtArgs["result"]["groupAdministrator"]>;
+    composites: {};
+};
+export type GroupAdministratorGetPayload<S extends boolean | null | undefined | GroupAdministratorDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload, S>;
+export type GroupAdministratorCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<GroupAdministratorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: GroupAdministratorCountAggregateInputType | true;
+};
+export interface GroupAdministratorDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['GroupAdministrator'];
+        meta: {
+            name: 'GroupAdministrator';
+        };
+    };
+    /**
+     * Find zero or one GroupAdministrator that matches the filter.
+     * @param {GroupAdministratorFindUniqueArgs} args - Arguments to find a GroupAdministrator
+     * @example
+     * // Get one GroupAdministrator
+     * const groupAdministrator = await prisma.groupAdministrator.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GroupAdministratorFindUniqueArgs>(args: Prisma.SelectSubset<T, GroupAdministratorFindUniqueArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one GroupAdministrator that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GroupAdministratorFindUniqueOrThrowArgs} args - Arguments to find a GroupAdministrator
+     * @example
+     * // Get one GroupAdministrator
+     * const groupAdministrator = await prisma.groupAdministrator.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GroupAdministratorFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, GroupAdministratorFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first GroupAdministrator that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorFindFirstArgs} args - Arguments to find a GroupAdministrator
+     * @example
+     * // Get one GroupAdministrator
+     * const groupAdministrator = await prisma.groupAdministrator.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GroupAdministratorFindFirstArgs>(args?: Prisma.SelectSubset<T, GroupAdministratorFindFirstArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first GroupAdministrator that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorFindFirstOrThrowArgs} args - Arguments to find a GroupAdministrator
+     * @example
+     * // Get one GroupAdministrator
+     * const groupAdministrator = await prisma.groupAdministrator.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GroupAdministratorFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, GroupAdministratorFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more GroupAdministrators that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GroupAdministrators
+     * const groupAdministrators = await prisma.groupAdministrator.findMany()
+     *
+     * // Get first 10 GroupAdministrators
+     * const groupAdministrators = await prisma.groupAdministrator.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const groupAdministratorWithIdOnly = await prisma.groupAdministrator.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends GroupAdministratorFindManyArgs>(args?: Prisma.SelectSubset<T, GroupAdministratorFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Create a GroupAdministrator.
+     * @param {GroupAdministratorCreateArgs} args - Arguments to create a GroupAdministrator.
+     * @example
+     * // Create one GroupAdministrator
+     * const GroupAdministrator = await prisma.groupAdministrator.create({
+     *   data: {
+     *     // ... data to create a GroupAdministrator
+     *   }
+     * })
+     *
+     */
+    create<T extends GroupAdministratorCreateArgs>(args: Prisma.SelectSubset<T, GroupAdministratorCreateArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Create many GroupAdministrators.
+     * @param {GroupAdministratorCreateManyArgs} args - Arguments to create many GroupAdministrators.
+     * @example
+     * // Create many GroupAdministrators
+     * const groupAdministrator = await prisma.groupAdministrator.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     */
+    createMany<T extends GroupAdministratorCreateManyArgs>(args?: Prisma.SelectSubset<T, GroupAdministratorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Create many GroupAdministrators and returns the data saved in the database.
+     * @param {GroupAdministratorCreateManyAndReturnArgs} args - Arguments to create many GroupAdministrators.
+     * @example
+     * // Create many GroupAdministrators
+     * const groupAdministrator = await prisma.groupAdministrator.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Create many GroupAdministrators and only return the `id`
+     * const groupAdministratorWithIdOnly = await prisma.groupAdministrator.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    createManyAndReturn<T extends GroupAdministratorCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, GroupAdministratorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Delete a GroupAdministrator.
+     * @param {GroupAdministratorDeleteArgs} args - Arguments to delete one GroupAdministrator.
+     * @example
+     * // Delete one GroupAdministrator
+     * const GroupAdministrator = await prisma.groupAdministrator.delete({
+     *   where: {
+     *     // ... filter to delete one GroupAdministrator
+     *   }
+     * })
+     *
+     */
+    delete<T extends GroupAdministratorDeleteArgs>(args: Prisma.SelectSubset<T, GroupAdministratorDeleteArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Update one GroupAdministrator.
+     * @param {GroupAdministratorUpdateArgs} args - Arguments to update one GroupAdministrator.
+     * @example
+     * // Update one GroupAdministrator
+     * const groupAdministrator = await prisma.groupAdministrator.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    update<T extends GroupAdministratorUpdateArgs>(args: Prisma.SelectSubset<T, GroupAdministratorUpdateArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Delete zero or more GroupAdministrators.
+     * @param {GroupAdministratorDeleteManyArgs} args - Arguments to filter GroupAdministrators to delete.
+     * @example
+     * // Delete a few GroupAdministrators
+     * const { count } = await prisma.groupAdministrator.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     *
+     */
+    deleteMany<T extends GroupAdministratorDeleteManyArgs>(args?: Prisma.SelectSubset<T, GroupAdministratorDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more GroupAdministrators.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GroupAdministrators
+     * const groupAdministrator = await prisma.groupAdministrator.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     *
+     */
+    updateMany<T extends GroupAdministratorUpdateManyArgs>(args: Prisma.SelectSubset<T, GroupAdministratorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    /**
+     * Update zero or more GroupAdministrators and returns the data updated in the database.
+     * @param {GroupAdministratorUpdateManyAndReturnArgs} args - Arguments to update many GroupAdministrators.
+     * @example
+     * // Update many GroupAdministrators
+     * const groupAdministrator = await prisma.groupAdministrator.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more GroupAdministrators and only return the `id`
+     * const groupAdministratorWithIdOnly = await prisma.groupAdministrator.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends GroupAdministratorUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, GroupAdministratorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    /**
+     * Create or update one GroupAdministrator.
+     * @param {GroupAdministratorUpsertArgs} args - Arguments to update or create a GroupAdministrator.
+     * @example
+     * // Update or create a GroupAdministrator
+     * const groupAdministrator = await prisma.groupAdministrator.upsert({
+     *   create: {
+     *     // ... data to create a GroupAdministrator
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GroupAdministrator we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GroupAdministratorUpsertArgs>(args: Prisma.SelectSubset<T, GroupAdministratorUpsertArgs<ExtArgs>>): Prisma.Prisma__GroupAdministratorClient<runtime.Types.Result.GetResult<Prisma.$GroupAdministratorPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Count the number of GroupAdministrators.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorCountArgs} args - Arguments to filter GroupAdministrators to count.
+     * @example
+     * // Count the number of GroupAdministrators
+     * const count = await prisma.groupAdministrator.count({
+     *   where: {
+     *     // ... the filter for the GroupAdministrators we want to count
+     *   }
+     * })
+    **/
+    count<T extends GroupAdministratorCountArgs>(args?: Prisma.Subset<T, GroupAdministratorCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], GroupAdministratorCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a GroupAdministrator.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GroupAdministratorAggregateArgs>(args: Prisma.Subset<T, GroupAdministratorAggregateArgs>): Prisma.PrismaPromise<GetGroupAdministratorAggregateType<T>>;
+    /**
+     * Group by GroupAdministrator.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GroupAdministratorGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends GroupAdministratorGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: GroupAdministratorGroupByArgs['orderBy'];
+    } : {
+        orderBy?: GroupAdministratorGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, GroupAdministratorGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGroupAdministratorGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the GroupAdministrator model
+     */
+    readonly fields: GroupAdministratorFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for GroupAdministrator.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__GroupAdministratorClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the GroupAdministrator model
+ */
+export interface GroupAdministratorFieldRefs {
+    readonly id: Prisma.FieldRef<"GroupAdministrator", 'String'>;
+    readonly userId: Prisma.FieldRef<"GroupAdministrator", 'String'>;
+    readonly groupId: Prisma.FieldRef<"GroupAdministrator", 'String'>;
+    readonly createdAt: Prisma.FieldRef<"GroupAdministrator", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"GroupAdministrator", 'DateTime'>;
+}
+/**
+ * GroupAdministrator findUnique
+ */
+export type GroupAdministratorFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * Filter, which GroupAdministrator to fetch.
+     */
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+};
+/**
+ * GroupAdministrator findUniqueOrThrow
+ */
+export type GroupAdministratorFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * Filter, which GroupAdministrator to fetch.
+     */
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+};
+/**
+ * GroupAdministrator findFirst
+ */
+export type GroupAdministratorFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * Filter, which GroupAdministrator to fetch.
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of GroupAdministrators to fetch.
+     */
+    orderBy?: Prisma.GroupAdministratorOrderByWithRelationInput | Prisma.GroupAdministratorOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for GroupAdministrators.
+     */
+    cursor?: Prisma.GroupAdministratorWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` GroupAdministrators from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` GroupAdministrators.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of GroupAdministrators.
+     */
+    distinct?: Prisma.GroupAdministratorScalarFieldEnum | Prisma.GroupAdministratorScalarFieldEnum[];
+};
+/**
+ * GroupAdministrator findFirstOrThrow
+ */
+export type GroupAdministratorFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * Filter, which GroupAdministrator to fetch.
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of GroupAdministrators to fetch.
+     */
+    orderBy?: Prisma.GroupAdministratorOrderByWithRelationInput | Prisma.GroupAdministratorOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for GroupAdministrators.
+     */
+    cursor?: Prisma.GroupAdministratorWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` GroupAdministrators from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` GroupAdministrators.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of GroupAdministrators.
+     */
+    distinct?: Prisma.GroupAdministratorScalarFieldEnum | Prisma.GroupAdministratorScalarFieldEnum[];
+};
+/**
+ * GroupAdministrator findMany
+ */
+export type GroupAdministratorFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * Filter, which GroupAdministrators to fetch.
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of GroupAdministrators to fetch.
+     */
+    orderBy?: Prisma.GroupAdministratorOrderByWithRelationInput | Prisma.GroupAdministratorOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing GroupAdministrators.
+     */
+    cursor?: Prisma.GroupAdministratorWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` GroupAdministrators from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` GroupAdministrators.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of GroupAdministrators.
+     */
+    distinct?: Prisma.GroupAdministratorScalarFieldEnum | Prisma.GroupAdministratorScalarFieldEnum[];
+};
+/**
+ * GroupAdministrator create
+ */
+export type GroupAdministratorCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * The data needed to create a GroupAdministrator.
+     */
+    data: Prisma.XOR<Prisma.GroupAdministratorCreateInput, Prisma.GroupAdministratorUncheckedCreateInput>;
+};
+/**
+ * GroupAdministrator createMany
+ */
+export type GroupAdministratorCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GroupAdministrators.
+     */
+    data: Prisma.GroupAdministratorCreateManyInput | Prisma.GroupAdministratorCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+/**
+ * GroupAdministrator createManyAndReturn
+ */
+export type GroupAdministratorCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * The data used to create many GroupAdministrators.
+     */
+    data: Prisma.GroupAdministratorCreateManyInput | Prisma.GroupAdministratorCreateManyInput[];
+    skipDuplicates?: boolean;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * GroupAdministrator update
+ */
+export type GroupAdministratorUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * The data needed to update a GroupAdministrator.
+     */
+    data: Prisma.XOR<Prisma.GroupAdministratorUpdateInput, Prisma.GroupAdministratorUncheckedUpdateInput>;
+    /**
+     * Choose, which GroupAdministrator to update.
+     */
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+};
+/**
+ * GroupAdministrator updateMany
+ */
+export type GroupAdministratorUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GroupAdministrators.
+     */
+    data: Prisma.XOR<Prisma.GroupAdministratorUpdateManyMutationInput, Prisma.GroupAdministratorUncheckedUpdateManyInput>;
+    /**
+     * Filter which GroupAdministrators to update
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * Limit how many GroupAdministrators to update.
+     */
+    limit?: number;
+};
+/**
+ * GroupAdministrator updateManyAndReturn
+ */
+export type GroupAdministratorUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * The data used to update GroupAdministrators.
+     */
+    data: Prisma.XOR<Prisma.GroupAdministratorUpdateManyMutationInput, Prisma.GroupAdministratorUncheckedUpdateManyInput>;
+    /**
+     * Filter which GroupAdministrators to update
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * Limit how many GroupAdministrators to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+/**
+ * GroupAdministrator upsert
+ */
+export type GroupAdministratorUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * The filter to search for the GroupAdministrator to update in case it exists.
+     */
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+    /**
+     * In case the GroupAdministrator found by the `where` argument doesn't exist, create a new GroupAdministrator with this data.
+     */
+    create: Prisma.XOR<Prisma.GroupAdministratorCreateInput, Prisma.GroupAdministratorUncheckedCreateInput>;
+    /**
+     * In case the GroupAdministrator was found with the provided `where` argument, update it with this data.
+     */
+    update: Prisma.XOR<Prisma.GroupAdministratorUpdateInput, Prisma.GroupAdministratorUncheckedUpdateInput>;
+};
+/**
+ * GroupAdministrator delete
+ */
+export type GroupAdministratorDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+    /**
+     * Filter which GroupAdministrator to delete.
+     */
+    where: Prisma.GroupAdministratorWhereUniqueInput;
+};
+/**
+ * GroupAdministrator deleteMany
+ */
+export type GroupAdministratorDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which GroupAdministrators to delete
+     */
+    where?: Prisma.GroupAdministratorWhereInput;
+    /**
+     * Limit how many GroupAdministrators to delete.
+     */
+    limit?: number;
+};
+/**
+ * GroupAdministrator without action
+ */
+export type GroupAdministratorDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GroupAdministrator
+     */
+    select?: Prisma.GroupAdministratorSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the GroupAdministrator
+     */
+    omit?: Prisma.GroupAdministratorOmit<ExtArgs> | null;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: Prisma.GroupAdministratorInclude<ExtArgs> | null;
+};

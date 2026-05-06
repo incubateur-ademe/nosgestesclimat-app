@@ -1,0 +1,903 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as Prisma from "../internal/prismaNamespace.ts";
+/**
+ * Model ComputedResultsView
+ *
+ */
+export type ComputedResultsViewModel = runtime.Types.Result.DefaultSelection<Prisma.$ComputedResultsViewPayload>;
+export type AggregateComputedResultsView = {
+    _count: ComputedResultsViewCountAggregateOutputType | null;
+    _avg: ComputedResultsViewAvgAggregateOutputType | null;
+    _sum: ComputedResultsViewSumAggregateOutputType | null;
+    _min: ComputedResultsViewMinAggregateOutputType | null;
+    _max: ComputedResultsViewMaxAggregateOutputType | null;
+};
+export type ComputedResultsViewAvgAggregateOutputType = {
+    progression: number | null;
+    bilanCarbone: number | null;
+    transportCarbone: number | null;
+    alimentationCarbone: number | null;
+    logementCarbone: number | null;
+    diversCarbone: number | null;
+    bilanEauJour: number | null;
+    transportEauJour: number | null;
+    alimentationEauJour: number | null;
+    logementEauJour: number | null;
+    diversEauJour: number | null;
+};
+export type ComputedResultsViewSumAggregateOutputType = {
+    progression: number | null;
+    bilanCarbone: number | null;
+    transportCarbone: number | null;
+    alimentationCarbone: number | null;
+    logementCarbone: number | null;
+    diversCarbone: number | null;
+    bilanEauJour: number | null;
+    transportEauJour: number | null;
+    alimentationEauJour: number | null;
+    logementEauJour: number | null;
+    diversEauJour: number | null;
+};
+export type ComputedResultsViewMinAggregateOutputType = {
+    id: string | null;
+    date: Date | null;
+    progression: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    bilanCarbone: number | null;
+    transportCarbone: number | null;
+    alimentationCarbone: number | null;
+    logementCarbone: number | null;
+    diversCarbone: number | null;
+    bilanEauJour: number | null;
+    transportEauJour: number | null;
+    alimentationEauJour: number | null;
+    logementEauJour: number | null;
+    diversEauJour: number | null;
+};
+export type ComputedResultsViewMaxAggregateOutputType = {
+    id: string | null;
+    date: Date | null;
+    progression: number | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    bilanCarbone: number | null;
+    transportCarbone: number | null;
+    alimentationCarbone: number | null;
+    logementCarbone: number | null;
+    diversCarbone: number | null;
+    bilanEauJour: number | null;
+    transportEauJour: number | null;
+    alimentationEauJour: number | null;
+    logementEauJour: number | null;
+    diversEauJour: number | null;
+};
+export type ComputedResultsViewCountAggregateOutputType = {
+    id: number;
+    date: number;
+    progression: number;
+    createdAt: number;
+    updatedAt: number;
+    bilanCarbone: number;
+    transportCarbone: number;
+    alimentationCarbone: number;
+    logementCarbone: number;
+    diversCarbone: number;
+    bilanEauJour: number;
+    transportEauJour: number;
+    alimentationEauJour: number;
+    logementEauJour: number;
+    diversEauJour: number;
+    _all: number;
+};
+export type ComputedResultsViewAvgAggregateInputType = {
+    progression?: true;
+    bilanCarbone?: true;
+    transportCarbone?: true;
+    alimentationCarbone?: true;
+    logementCarbone?: true;
+    diversCarbone?: true;
+    bilanEauJour?: true;
+    transportEauJour?: true;
+    alimentationEauJour?: true;
+    logementEauJour?: true;
+    diversEauJour?: true;
+};
+export type ComputedResultsViewSumAggregateInputType = {
+    progression?: true;
+    bilanCarbone?: true;
+    transportCarbone?: true;
+    alimentationCarbone?: true;
+    logementCarbone?: true;
+    diversCarbone?: true;
+    bilanEauJour?: true;
+    transportEauJour?: true;
+    alimentationEauJour?: true;
+    logementEauJour?: true;
+    diversEauJour?: true;
+};
+export type ComputedResultsViewMinAggregateInputType = {
+    id?: true;
+    date?: true;
+    progression?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    bilanCarbone?: true;
+    transportCarbone?: true;
+    alimentationCarbone?: true;
+    logementCarbone?: true;
+    diversCarbone?: true;
+    bilanEauJour?: true;
+    transportEauJour?: true;
+    alimentationEauJour?: true;
+    logementEauJour?: true;
+    diversEauJour?: true;
+};
+export type ComputedResultsViewMaxAggregateInputType = {
+    id?: true;
+    date?: true;
+    progression?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    bilanCarbone?: true;
+    transportCarbone?: true;
+    alimentationCarbone?: true;
+    logementCarbone?: true;
+    diversCarbone?: true;
+    bilanEauJour?: true;
+    transportEauJour?: true;
+    alimentationEauJour?: true;
+    logementEauJour?: true;
+    diversEauJour?: true;
+};
+export type ComputedResultsViewCountAggregateInputType = {
+    id?: true;
+    date?: true;
+    progression?: true;
+    createdAt?: true;
+    updatedAt?: true;
+    bilanCarbone?: true;
+    transportCarbone?: true;
+    alimentationCarbone?: true;
+    logementCarbone?: true;
+    diversCarbone?: true;
+    bilanEauJour?: true;
+    transportEauJour?: true;
+    alimentationEauJour?: true;
+    logementEauJour?: true;
+    diversEauJour?: true;
+    _all?: true;
+};
+export type ComputedResultsViewAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Filter which ComputedResultsView to aggregate.
+     */
+    where?: Prisma.ComputedResultsViewWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ComputedResultsViews to fetch.
+     */
+    orderBy?: Prisma.ComputedResultsViewOrderByWithRelationInput | Prisma.ComputedResultsViewOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the start position
+     */
+    cursor?: Prisma.ComputedResultsViewWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ComputedResultsViews from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ComputedResultsViews.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Count returned ComputedResultsViews
+    **/
+    _count?: true | ComputedResultsViewCountAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to average
+    **/
+    _avg?: ComputedResultsViewAvgAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to sum
+    **/
+    _sum?: ComputedResultsViewSumAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the minimum value
+    **/
+    _min?: ComputedResultsViewMinAggregateInputType;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     *
+     * Select which fields to find the maximum value
+    **/
+    _max?: ComputedResultsViewMaxAggregateInputType;
+};
+export type GetComputedResultsViewAggregateType<T extends ComputedResultsViewAggregateArgs> = {
+    [P in keyof T & keyof AggregateComputedResultsView]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregateComputedResultsView[P]> : Prisma.GetScalarType<T[P], AggregateComputedResultsView[P]>;
+};
+export type ComputedResultsViewGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.ComputedResultsViewWhereInput;
+    orderBy?: Prisma.ComputedResultsViewOrderByWithAggregationInput | Prisma.ComputedResultsViewOrderByWithAggregationInput[];
+    by: Prisma.ComputedResultsViewScalarFieldEnum[] | Prisma.ComputedResultsViewScalarFieldEnum;
+    having?: Prisma.ComputedResultsViewScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: ComputedResultsViewCountAggregateInputType | true;
+    _avg?: ComputedResultsViewAvgAggregateInputType;
+    _sum?: ComputedResultsViewSumAggregateInputType;
+    _min?: ComputedResultsViewMinAggregateInputType;
+    _max?: ComputedResultsViewMaxAggregateInputType;
+};
+export type ComputedResultsViewGroupByOutputType = {
+    id: string;
+    date: Date;
+    progression: number;
+    createdAt: Date;
+    updatedAt: Date;
+    bilanCarbone: number;
+    transportCarbone: number;
+    alimentationCarbone: number;
+    logementCarbone: number;
+    diversCarbone: number;
+    bilanEauJour: number;
+    transportEauJour: number;
+    alimentationEauJour: number;
+    logementEauJour: number;
+    diversEauJour: number;
+    _count: ComputedResultsViewCountAggregateOutputType | null;
+    _avg: ComputedResultsViewAvgAggregateOutputType | null;
+    _sum: ComputedResultsViewSumAggregateOutputType | null;
+    _min: ComputedResultsViewMinAggregateOutputType | null;
+    _max: ComputedResultsViewMaxAggregateOutputType | null;
+};
+export type GetComputedResultsViewGroupByPayload<T extends ComputedResultsViewGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<ComputedResultsViewGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof ComputedResultsViewGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], ComputedResultsViewGroupByOutputType[P]> : Prisma.GetScalarType<T[P], ComputedResultsViewGroupByOutputType[P]>;
+}>>;
+export type ComputedResultsViewWhereInput = {
+    AND?: Prisma.ComputedResultsViewWhereInput | Prisma.ComputedResultsViewWhereInput[];
+    OR?: Prisma.ComputedResultsViewWhereInput[];
+    NOT?: Prisma.ComputedResultsViewWhereInput | Prisma.ComputedResultsViewWhereInput[];
+    id?: Prisma.UuidFilter<"ComputedResultsView"> | string;
+    date?: Prisma.DateTimeFilter<"ComputedResultsView"> | Date | string;
+    progression?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    createdAt?: Prisma.DateTimeFilter<"ComputedResultsView"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"ComputedResultsView"> | Date | string;
+    bilanCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    transportCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    alimentationCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    logementCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    diversCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    bilanEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    transportEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    alimentationEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    logementEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    diversEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+};
+export type ComputedResultsViewOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    date?: Prisma.SortOrder;
+    progression?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+};
+export type ComputedResultsViewWhereUniqueInput = Prisma.AtLeast<{
+    id?: string;
+    AND?: Prisma.ComputedResultsViewWhereInput | Prisma.ComputedResultsViewWhereInput[];
+    OR?: Prisma.ComputedResultsViewWhereInput[];
+    NOT?: Prisma.ComputedResultsViewWhereInput | Prisma.ComputedResultsViewWhereInput[];
+    date?: Prisma.DateTimeFilter<"ComputedResultsView"> | Date | string;
+    progression?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    createdAt?: Prisma.DateTimeFilter<"ComputedResultsView"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"ComputedResultsView"> | Date | string;
+    bilanCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    transportCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    alimentationCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    logementCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    diversCarbone?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    bilanEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    transportEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    alimentationEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    logementEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+    diversEauJour?: Prisma.FloatFilter<"ComputedResultsView"> | number;
+}, "id">;
+export type ComputedResultsViewOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    date?: Prisma.SortOrder;
+    progression?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+    _count?: Prisma.ComputedResultsViewCountOrderByAggregateInput;
+    _avg?: Prisma.ComputedResultsViewAvgOrderByAggregateInput;
+    _max?: Prisma.ComputedResultsViewMaxOrderByAggregateInput;
+    _min?: Prisma.ComputedResultsViewMinOrderByAggregateInput;
+    _sum?: Prisma.ComputedResultsViewSumOrderByAggregateInput;
+};
+export type ComputedResultsViewScalarWhereWithAggregatesInput = {
+    AND?: Prisma.ComputedResultsViewScalarWhereWithAggregatesInput | Prisma.ComputedResultsViewScalarWhereWithAggregatesInput[];
+    OR?: Prisma.ComputedResultsViewScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.ComputedResultsViewScalarWhereWithAggregatesInput | Prisma.ComputedResultsViewScalarWhereWithAggregatesInput[];
+    id?: Prisma.UuidWithAggregatesFilter<"ComputedResultsView"> | string;
+    date?: Prisma.DateTimeWithAggregatesFilter<"ComputedResultsView"> | Date | string;
+    progression?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"ComputedResultsView"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ComputedResultsView"> | Date | string;
+    bilanCarbone?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    transportCarbone?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    alimentationCarbone?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    logementCarbone?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    diversCarbone?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    bilanEauJour?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    transportEauJour?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    alimentationEauJour?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    logementEauJour?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+    diversEauJour?: Prisma.FloatWithAggregatesFilter<"ComputedResultsView"> | number;
+};
+export type ComputedResultsViewCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    date?: Prisma.SortOrder;
+    progression?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+};
+export type ComputedResultsViewAvgOrderByAggregateInput = {
+    progression?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+};
+export type ComputedResultsViewMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    date?: Prisma.SortOrder;
+    progression?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+};
+export type ComputedResultsViewMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    date?: Prisma.SortOrder;
+    progression?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+};
+export type ComputedResultsViewSumOrderByAggregateInput = {
+    progression?: Prisma.SortOrder;
+    bilanCarbone?: Prisma.SortOrder;
+    transportCarbone?: Prisma.SortOrder;
+    alimentationCarbone?: Prisma.SortOrder;
+    logementCarbone?: Prisma.SortOrder;
+    diversCarbone?: Prisma.SortOrder;
+    bilanEauJour?: Prisma.SortOrder;
+    transportEauJour?: Prisma.SortOrder;
+    alimentationEauJour?: Prisma.SortOrder;
+    logementEauJour?: Prisma.SortOrder;
+    diversEauJour?: Prisma.SortOrder;
+};
+export type ComputedResultsViewSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    date?: boolean;
+    progression?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    bilanCarbone?: boolean;
+    transportCarbone?: boolean;
+    alimentationCarbone?: boolean;
+    logementCarbone?: boolean;
+    diversCarbone?: boolean;
+    bilanEauJour?: boolean;
+    transportEauJour?: boolean;
+    alimentationEauJour?: boolean;
+    logementEauJour?: boolean;
+    diversEauJour?: boolean;
+}, ExtArgs["result"]["computedResultsView"]>;
+export type ComputedResultsViewSelectScalar = {
+    id?: boolean;
+    date?: boolean;
+    progression?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
+    bilanCarbone?: boolean;
+    transportCarbone?: boolean;
+    alimentationCarbone?: boolean;
+    logementCarbone?: boolean;
+    diversCarbone?: boolean;
+    bilanEauJour?: boolean;
+    transportEauJour?: boolean;
+    alimentationEauJour?: boolean;
+    logementEauJour?: boolean;
+    diversEauJour?: boolean;
+};
+export type ComputedResultsViewOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "progression" | "createdAt" | "updatedAt" | "bilanCarbone" | "transportCarbone" | "alimentationCarbone" | "logementCarbone" | "diversCarbone" | "bilanEauJour" | "transportEauJour" | "alimentationEauJour" | "logementEauJour" | "diversEauJour", ExtArgs["result"]["computedResultsView"]>;
+export type $ComputedResultsViewPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "ComputedResultsView";
+    objects: {};
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: string;
+        date: Date;
+        progression: number;
+        createdAt: Date;
+        updatedAt: Date;
+        bilanCarbone: number;
+        transportCarbone: number;
+        alimentationCarbone: number;
+        logementCarbone: number;
+        diversCarbone: number;
+        bilanEauJour: number;
+        transportEauJour: number;
+        alimentationEauJour: number;
+        logementEauJour: number;
+        diversEauJour: number;
+    }, ExtArgs["result"]["computedResultsView"]>;
+    composites: {};
+};
+export type ComputedResultsViewGetPayload<S extends boolean | null | undefined | ComputedResultsViewDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ComputedResultsViewPayload, S>;
+export type ComputedResultsViewCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<ComputedResultsViewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: ComputedResultsViewCountAggregateInputType | true;
+};
+export interface ComputedResultsViewDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['ComputedResultsView'];
+        meta: {
+            name: 'ComputedResultsView';
+        };
+    };
+    /**
+     * Find zero or one ComputedResultsView that matches the filter.
+     * @param {ComputedResultsViewFindUniqueArgs} args - Arguments to find a ComputedResultsView
+     * @example
+     * // Get one ComputedResultsView
+     * const computedResultsView = await prisma.computedResultsView.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ComputedResultsViewFindUniqueArgs>(args: Prisma.SelectSubset<T, ComputedResultsViewFindUniqueArgs<ExtArgs>>): Prisma.Prisma__ComputedResultsViewClient<runtime.Types.Result.GetResult<Prisma.$ComputedResultsViewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find one ComputedResultsView that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ComputedResultsViewFindUniqueOrThrowArgs} args - Arguments to find a ComputedResultsView
+     * @example
+     * // Get one ComputedResultsView
+     * const computedResultsView = await prisma.computedResultsView.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ComputedResultsViewFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, ComputedResultsViewFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__ComputedResultsViewClient<runtime.Types.Result.GetResult<Prisma.$ComputedResultsViewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first ComputedResultsView that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComputedResultsViewFindFirstArgs} args - Arguments to find a ComputedResultsView
+     * @example
+     * // Get one ComputedResultsView
+     * const computedResultsView = await prisma.computedResultsView.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ComputedResultsViewFindFirstArgs>(args?: Prisma.SelectSubset<T, ComputedResultsViewFindFirstArgs<ExtArgs>>): Prisma.Prisma__ComputedResultsViewClient<runtime.Types.Result.GetResult<Prisma.$ComputedResultsViewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find the first ComputedResultsView that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComputedResultsViewFindFirstOrThrowArgs} args - Arguments to find a ComputedResultsView
+     * @example
+     * // Get one ComputedResultsView
+     * const computedResultsView = await prisma.computedResultsView.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ComputedResultsViewFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, ComputedResultsViewFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__ComputedResultsViewClient<runtime.Types.Result.GetResult<Prisma.$ComputedResultsViewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    /**
+     * Find zero or more ComputedResultsViews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComputedResultsViewFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ComputedResultsViews
+     * const computedResultsViews = await prisma.computedResultsView.findMany()
+     *
+     * // Get first 10 ComputedResultsViews
+     * const computedResultsViews = await prisma.computedResultsView.findMany({ take: 10 })
+     *
+     * // Only select the `id`
+     * const computedResultsViewWithIdOnly = await prisma.computedResultsView.findMany({ select: { id: true } })
+     *
+     */
+    findMany<T extends ComputedResultsViewFindManyArgs>(args?: Prisma.SelectSubset<T, ComputedResultsViewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComputedResultsViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    /**
+     * Count the number of ComputedResultsViews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComputedResultsViewCountArgs} args - Arguments to filter ComputedResultsViews to count.
+     * @example
+     * // Count the number of ComputedResultsViews
+     * const count = await prisma.computedResultsView.count({
+     *   where: {
+     *     // ... the filter for the ComputedResultsViews we want to count
+     *   }
+     * })
+    **/
+    count<T extends ComputedResultsViewCountArgs>(args?: Prisma.Subset<T, ComputedResultsViewCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], ComputedResultsViewCountAggregateOutputType> : number>;
+    /**
+     * Allows you to perform aggregations operations on a ComputedResultsView.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComputedResultsViewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ComputedResultsViewAggregateArgs>(args: Prisma.Subset<T, ComputedResultsViewAggregateArgs>): Prisma.PrismaPromise<GetComputedResultsViewAggregateType<T>>;
+    /**
+     * Group by ComputedResultsView.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ComputedResultsViewGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     *
+    **/
+    groupBy<T extends ComputedResultsViewGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: ComputedResultsViewGroupByArgs['orderBy'];
+    } : {
+        orderBy?: ComputedResultsViewGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, ComputedResultsViewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetComputedResultsViewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    /**
+     * Fields of the ComputedResultsView model
+     */
+    readonly fields: ComputedResultsViewFieldRefs;
+}
+/**
+ * The delegate class that acts as a "Promise-like" for ComputedResultsView.
+ * Why is this prefixed with `Prisma__`?
+ * Because we want to prevent naming conflicts as mentioned in
+ * https://github.com/prisma/prisma-client-js/issues/707
+ */
+export interface Prisma__ComputedResultsViewClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+/**
+ * Fields of the ComputedResultsView model
+ */
+export interface ComputedResultsViewFieldRefs {
+    readonly id: Prisma.FieldRef<"ComputedResultsView", 'String'>;
+    readonly date: Prisma.FieldRef<"ComputedResultsView", 'DateTime'>;
+    readonly progression: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly createdAt: Prisma.FieldRef<"ComputedResultsView", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"ComputedResultsView", 'DateTime'>;
+    readonly bilanCarbone: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly transportCarbone: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly alimentationCarbone: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly logementCarbone: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly diversCarbone: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly bilanEauJour: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly transportEauJour: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly alimentationEauJour: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly logementEauJour: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+    readonly diversEauJour: Prisma.FieldRef<"ComputedResultsView", 'Float'>;
+}
+/**
+ * ComputedResultsView findUnique
+ */
+export type ComputedResultsViewFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComputedResultsView
+     */
+    select?: Prisma.ComputedResultsViewSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ComputedResultsView
+     */
+    omit?: Prisma.ComputedResultsViewOmit<ExtArgs> | null;
+    /**
+     * Filter, which ComputedResultsView to fetch.
+     */
+    where: Prisma.ComputedResultsViewWhereUniqueInput;
+};
+/**
+ * ComputedResultsView findUniqueOrThrow
+ */
+export type ComputedResultsViewFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComputedResultsView
+     */
+    select?: Prisma.ComputedResultsViewSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ComputedResultsView
+     */
+    omit?: Prisma.ComputedResultsViewOmit<ExtArgs> | null;
+    /**
+     * Filter, which ComputedResultsView to fetch.
+     */
+    where: Prisma.ComputedResultsViewWhereUniqueInput;
+};
+/**
+ * ComputedResultsView findFirst
+ */
+export type ComputedResultsViewFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComputedResultsView
+     */
+    select?: Prisma.ComputedResultsViewSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ComputedResultsView
+     */
+    omit?: Prisma.ComputedResultsViewOmit<ExtArgs> | null;
+    /**
+     * Filter, which ComputedResultsView to fetch.
+     */
+    where?: Prisma.ComputedResultsViewWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ComputedResultsViews to fetch.
+     */
+    orderBy?: Prisma.ComputedResultsViewOrderByWithRelationInput | Prisma.ComputedResultsViewOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ComputedResultsViews.
+     */
+    cursor?: Prisma.ComputedResultsViewWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ComputedResultsViews from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ComputedResultsViews.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ComputedResultsViews.
+     */
+    distinct?: Prisma.ComputedResultsViewScalarFieldEnum | Prisma.ComputedResultsViewScalarFieldEnum[];
+};
+/**
+ * ComputedResultsView findFirstOrThrow
+ */
+export type ComputedResultsViewFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComputedResultsView
+     */
+    select?: Prisma.ComputedResultsViewSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ComputedResultsView
+     */
+    omit?: Prisma.ComputedResultsViewOmit<ExtArgs> | null;
+    /**
+     * Filter, which ComputedResultsView to fetch.
+     */
+    where?: Prisma.ComputedResultsViewWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ComputedResultsViews to fetch.
+     */
+    orderBy?: Prisma.ComputedResultsViewOrderByWithRelationInput | Prisma.ComputedResultsViewOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for searching for ComputedResultsViews.
+     */
+    cursor?: Prisma.ComputedResultsViewWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ComputedResultsViews from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ComputedResultsViews.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ComputedResultsViews.
+     */
+    distinct?: Prisma.ComputedResultsViewScalarFieldEnum | Prisma.ComputedResultsViewScalarFieldEnum[];
+};
+/**
+ * ComputedResultsView findMany
+ */
+export type ComputedResultsViewFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComputedResultsView
+     */
+    select?: Prisma.ComputedResultsViewSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ComputedResultsView
+     */
+    omit?: Prisma.ComputedResultsViewOmit<ExtArgs> | null;
+    /**
+     * Filter, which ComputedResultsViews to fetch.
+     */
+    where?: Prisma.ComputedResultsViewWhereInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     *
+     * Determine the order of ComputedResultsViews to fetch.
+     */
+    orderBy?: Prisma.ComputedResultsViewOrderByWithRelationInput | Prisma.ComputedResultsViewOrderByWithRelationInput[];
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     *
+     * Sets the position for listing ComputedResultsViews.
+     */
+    cursor?: Prisma.ComputedResultsViewWhereUniqueInput;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Take `±n` ComputedResultsViews from the position of the cursor.
+     */
+    take?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     *
+     * Skip the first `n` ComputedResultsViews.
+     */
+    skip?: number;
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     *
+     * Filter by unique combinations of ComputedResultsViews.
+     */
+    distinct?: Prisma.ComputedResultsViewScalarFieldEnum | Prisma.ComputedResultsViewScalarFieldEnum[];
+};
+/**
+ * ComputedResultsView without action
+ */
+export type ComputedResultsViewDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ComputedResultsView
+     */
+    select?: Prisma.ComputedResultsViewSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the ComputedResultsView
+     */
+    omit?: Prisma.ComputedResultsViewOmit<ExtArgs> | null;
+};
