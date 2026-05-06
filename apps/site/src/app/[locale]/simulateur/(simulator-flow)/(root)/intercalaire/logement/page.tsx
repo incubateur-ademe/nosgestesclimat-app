@@ -3,8 +3,6 @@ import { noIndexObject } from '@/constants/metadata'
 import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getUser } from '@/helpers/server/dal/user'
-import { getCurrentSimulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
@@ -36,9 +34,6 @@ export default async function Page({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/logement'>) {
   const { locale } = await params
-  const { t } = await getServerTranslation({ locale })
-  const user = await getUser()
-  const simulation = await getCurrentSimulation({ user })
 
   return (
     <>

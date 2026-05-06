@@ -54,7 +54,7 @@ export default async function Email({
               </Trans>
             ) : (
               <Trans locale={locale}>
-                Pour conserver vos résultats et les retrouver à l\'avenir dans{' '}
+                Pour conserver vos résultats et les retrouver à l'avenir dans{' '}
                 <strong>votre espace personnel</strong>
               </Trans>
             )}
