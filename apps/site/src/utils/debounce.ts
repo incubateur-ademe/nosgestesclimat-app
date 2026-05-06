@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 interface DebouncedFunction<T extends unknown[]> {
   (...args: T): void
   cancel: () => void
+  flush: () => void
 }
 
 function debounce<T extends unknown[]>(
@@ -10,8 +11,10 @@ function debounce<T extends unknown[]>(
   wait: number
 ): DebouncedFunction<T> {
   let timeout: ReturnType<typeof setTimeout> | null = null
+  let lastArgs: T | null = null
 
   const debounced = function (...args: T): void {
+    lastArgs = args
     if (timeout !== null) {
       clearTimeout(timeout)
     }
@@ -24,6 +27,18 @@ function debounce<T extends unknown[]>(
     if (timeout !== null) {
       clearTimeout(timeout)
       timeout = null
+    }
+    lastArgs = null
+  }
+
+  debounced.flush = function (): void {
+    if (timeout !== null) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+    if (lastArgs !== null) {
+      func(...lastArgs)
+      lastArgs = null
     }
   }
 

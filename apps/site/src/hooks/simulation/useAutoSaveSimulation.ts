@@ -10,13 +10,22 @@ export function useAutoSaveSimulation() {
     async (props: Parameters<typeof saveSimulation>[0]) => {
       await saveSimulation(props)
     },
-    2000
+    5000
   )
+  // Debounced save on every situation/foldedSteps change.
+  // No cleanup needed: the debounce function internally clears stale
+  // timeouts when a new call is made.
   useEffect(() => {
     debouncedSaveSimulation({ simulation: currentSimulation })
-
-    return () => {
-      debouncedSaveSimulation.cancel()
-    }
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
+
+  // Flush the pending save ONLY on unmount (empty deps = cleanup runs
+  // exclusively when the component is removed from the tree).
+  // This ensures the latest simulation state is persisted even when
+  // navigating to an intercalaire page in scolaire mode.
+  useEffect(() => {
+    return () => {
+      debouncedSaveSimulation.flush()
+    }
+  }, [])
 }

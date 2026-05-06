@@ -19,7 +19,7 @@ export default function TransitionButtons({
 }: Props) {
   const router = useRouter()
 
-  const { gotoNextQuestion } = useFormState()
+  const { remainingQuestionsByCategories, setCurrentQuestion } = useFormState()
   const { endTest, isPending } = useEndTest()
 
   const { t } = useClientTranslation()
@@ -42,7 +42,14 @@ export default function TransitionButtons({
       endTest()
       return
     }
-    gotoNextQuestion()
+
+    // Use the deterministic nextCategory prop to find the first remaining
+    // question of the next category. This avoids relying on mutable
+    // currentQuestion state which is lost on page reload.
+    const questionsOfNextCategory = remainingQuestionsByCategories[nextCategory]
+    const firstQuestionOfNextCategory = questionsOfNextCategory[0]
+
+    setCurrentQuestion(firstQuestionOfNextCategory)
     router.push(SIMULATOR_PATH)
   }
 
