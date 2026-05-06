@@ -10,7 +10,7 @@ export function useAutoSaveSimulation() {
     async (props: Parameters<typeof saveSimulation>[0]) => {
       await saveSimulation(props)
     },
-    5000
+    2000
   )
   // Debounced save on every situation/foldedSteps change.
   // No cleanup needed: the debounce function internally clears stale
