@@ -1,26 +1,27 @@
-'use client'
-
 import Title from '@/design-system/layout/Title'
-import { useRules } from '@/hooks/useRules'
 
 import Link from '@/components/Link'
 import LightBulbIcon from '@/components/icons/LightBulbIcon'
 import SquareImageContainer from '@/components/images/SquareImageContainer'
 import Trans from '@/components/translation/trans/TransClient'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import type { Locale } from '@/i18nConfig'
+import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import Image from 'next/image'
-import { useRef } from 'react'
 import SearchBar from './SearchBar'
 import DocumentationLandingCard from './documentationLanding/DocumentationLandingCard'
 
-export default function DocumentationLanding() {
-  const { data: rules } = useRules({ isOptim: false })
-
-  const { t } = useClientTranslation()
+export default async function DocumentationLanding({
+  rules,
+  locale,
+}: {
+  rules: NGCRules
+  locale: Locale
+}) {
+  const { t } = await getServerTranslation({ locale })
 
   // We want to be able to define an order for the cards and their summary here
-  const fixedCardSummaries = useRef({
+  const fixedCardSummaries = {
     bilan: t(
       `Le coeur de Nos Gestes Climat, c'est **le bilan** d'empreinte climat personnelle`
     ),
@@ -37,9 +38,7 @@ export default function DocumentationLanding() {
     'transport . voiture': t(
       `Le premier poste moyen d'empreinte, l'incontournable **voiture individuelle**`
     ),
-  } as Record<DottedName, string>)
-
-  if (!rules) return null
+  } as Record<DottedName, string>
 
   return (
     <div className="mt-4">
@@ -100,19 +99,17 @@ export default function DocumentationLanding() {
       <ul
         className="grid max-w-[60rem] grid-cols-1 flex-wrap gap-2 p-0 sm:grid-cols-2 md:grid-cols-3"
         role="list">
-        {(Object.keys(fixedCardSummaries.current) as DottedName[]).map(
-          (dottedName) => {
-            return (
-              <li key={dottedName}>
-                <DocumentationLandingCard
-                  dottedName={dottedName}
-                  summary={fixedCardSummaries.current[dottedName]}
-                  rule={rules[dottedName]}
-                />
-              </li>
-            )
-          }
-        )}
+        {(Object.keys(fixedCardSummaries) as DottedName[]).map((dottedName) => {
+          return (
+            <li key={dottedName}>
+              <DocumentationLandingCard
+                dottedName={dottedName}
+                summary={fixedCardSummaries[dottedName]}
+                rule={rules[dottedName]}
+              />
+            </li>
+          )
+        })}
       </ul>
     </div>
   )

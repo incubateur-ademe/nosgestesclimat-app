@@ -1,24 +1,19 @@
+import { STORAGE_KEY } from '@/constants/storage'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { useUser } from '@/publicodes-state'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
+import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import posthog from 'posthog-js'
-import { getUserSimulations } from '../server/model/simulations'
-import { generateSimulation } from '../simulation/generateSimulation'
 import { postSimulation } from '../simulation/postSimulation'
 import { sanitizeSimulation } from '../simulation/sanitizeSimulation'
 
 // This is the date when we started to save all simulations started on the server
 const LIMIT_DATE = new Date('2025-11-27')
 
-async function uploadLocalSimulations({
-  simulations,
-  userId,
-}: {
-  simulations: Simulation[]
-  userId: string
-}) {
+async function uploadLocalSimulations({ userId }: { userId: string }) {
+  const storage = JSON.parse(safeLocalStorage.getItem(STORAGE_KEY) || '{}')
   return Promise.allSettled(
-    simulations
+    ((storage?.simulations ?? []) as Simulation[])
       .filter((simulation) => new Date(simulation.date) < LIMIT_DATE)
       .map((simulation) =>
         postSimulation({
@@ -27,23 +22,6 @@ async function uploadLocalSimulations({
         })
       )
   )
-}
-
-async function loadServerSimulation({
-  updateSimulations,
-  setCurrentSimulationId,
-}: {
-  updateSimulations: (simulations: Simulation[]) => void
-  setCurrentSimulationId: (simulationId: string) => void
-}) {
-  // Fetch simulations from server
-  let simulations: Simulation[] = await getUserSimulations()
-
-  if (simulations.length === 0) {
-    simulations = [generateSimulation()]
-  }
-  setCurrentSimulationId(simulations[0].id)
-  updateSimulations(simulations)
 }
 
 export async function reconcileUserOnAuth({
@@ -57,27 +35,14 @@ export async function reconcileUserOnAuth({
   user: ReturnType<typeof useUser>
   cookieState: CookieState
 }) {
-  const {
-    user: localUser,
-    updateSimulations,
-    simulations,
-    updateEmail,
-    updateUserId,
-    setCurrentSimulationId,
-  } = user
+  const { user: localUser, updateEmail, updateUserId } = user
 
   if (userId === localUser.userId) {
     // We only sync if localuserId is the same as distant userId
     await uploadLocalSimulations({
-      simulations,
       userId,
     })
   }
-
-  await loadServerSimulation({
-    updateSimulations,
-    setCurrentSimulationId,
-  })
 
   updateEmail(email)
   updateUserId(userId)

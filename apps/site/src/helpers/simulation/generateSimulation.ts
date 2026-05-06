@@ -36,6 +36,7 @@ export function generateSimulation({
   polls,
   groups,
   migrationInstructions,
+  model,
 }: Partial<Simulation> & {
   migrationInstructions?: Migration
 } = {}): Simulation {
@@ -51,6 +52,7 @@ export function generateSimulation({
     progression,
     polls,
     groups,
+    model,
   } as Simulation
 
   try {

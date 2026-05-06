@@ -37,8 +37,6 @@ export interface User {
   userId: string
   name?: string
   email?: string
-  region?: RegionFromGeolocation
-  initialRegion?: RegionFromGeolocation
   northStarRatings?: Record<string, unknown> // TODO: should be NorthStartType or something
   loginExpirationDate?: Date
   pendingVerification?: { expirationDate: Date; email: string }

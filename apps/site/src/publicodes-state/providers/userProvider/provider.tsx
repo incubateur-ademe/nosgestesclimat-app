@@ -1,17 +1,12 @@
 'use client'
 
-import type { PropsWithChildren } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useState, type PropsWithChildren } from 'react'
 
-import { STORAGE_KEY } from '@/constants/storage'
-import { getGeolocation } from '@/helpers/api/getGeolocation'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import type { RegionFromGeolocation } from '@/publicodes-state/types'
+import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import UserContext from './context'
 import { useMigrateAnonSession } from './hooks/useMigrateAnonSession'
-import useUpdateOldLocalStorage from './hooks/useOldLocalStorage'
-import usePersistentSimulations from './hooks/usePersistentSimulations'
 import usePersistentTutorials from './hooks/usePersistentTutorials'
 import usePersistentUser from './hooks/usePersistentUser'
 
@@ -28,20 +23,7 @@ export default function UserProvider({
   serverSimulations,
   serverUserId,
 }: PropsWithChildren<Props>) {
-  const [initialRegion, setInitialRegion] = useState<
-    RegionFromGeolocation | undefined
-  >(undefined)
-
-  useEffect(() => {
-    getGeolocation().then((region) => {
-      setInitialRegion(region)
-    })
-  }, [])
-
-  useUpdateOldLocalStorage({ storageKey: STORAGE_KEY })
-
   const { user, setUser } = usePersistentUser({
-    initialRegion,
     serverUserId,
   })
 
@@ -55,19 +37,12 @@ export default function UserProvider({
     currentUserId: user.userId,
   })
 
-  const {
-    simulations,
-    setSimulations,
-    currentSimulationId,
-    setCurrentSimulationId,
-  } = usePersistentSimulations({
-    migrationInstructions,
-    serverSimulations,
-  })
-
-  const isInitialized = useMemo(
-    () => user && !!simulations.length,
-    [user, simulations]
+  const initSimulation = serverSimulations?.at(0)
+    ? serverSimulations
+    : [generateSimulation()]
+  const [simulations, setSimulations] = useState(initSimulation)
+  const [currentSimulationId, setCurrentSimulationId] = useState(
+    initSimulation.at(0)!.id
   )
 
   return (
@@ -82,7 +57,6 @@ export default function UserProvider({
         currentSimulationId,
         setCurrentSimulationId,
         migrationInstructions,
-        isInitialized,
       }}>
       {children}
     </UserContext.Provider>

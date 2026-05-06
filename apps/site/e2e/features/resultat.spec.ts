@@ -1,7 +1,6 @@
 import type { Situation } from '@/publicodes-state/types'
 import { expect, test } from '../fixtures'
 import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
-import { skipOnSafari } from '../helpers/skip-on-safari'
 import { COMPLETED_TEST_STATE, USER_ACCOUNT_STATE } from '../state'
 
 test.beforeEach(async ({ page }) => {
@@ -65,9 +64,7 @@ test.describe('Given an authenticated user that completed the test twice with di
   test('should display a tendency indicator on the result page', async ({
     page,
     ngcTest,
-    browser,
   }) => {
-    skipOnSafari(browser)
     // The authenticated user already has a completed simulation saved in their account
     await expect(page).toHaveURL(/\/fin/)
 

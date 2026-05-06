@@ -16,7 +16,7 @@ import {
   throwNextError,
 } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getSimulations } from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import {
   getTendency,
   type Tendency,
@@ -60,9 +60,9 @@ export default async function FinPage({
   const user = await getUser()
   let simulations
   try {
-    simulations = await getSimulations(
+    simulations = await getCompletedSimulations(
       { user },
-      { completedOnly: true, pageSize: user.isAuth ? 2 : 1 }
+      { pageSize: user.isAuth ? 2 : 1 }
     )
   } catch (e) {
     captureException(e)

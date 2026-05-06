@@ -1,12 +1,12 @@
 'use server'
 import { ORGANISATION_URL } from '@/constants/urls/main'
-import { getModelVersion } from '@/helpers/modelFetching/getModelVersion'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import type { Locale } from '@/i18nConfig'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 import type { AppUser } from '../dal/user'
-import { InternalServerError } from '../error'
 import { fetchServer } from '../fetchServer'
+import type { Model } from './models'
+import { stringifyModel } from './models'
 import type { Simulation } from './simulations'
 
 export async function getUserPoll({
@@ -21,25 +21,21 @@ export async function getUserPoll({
   )
 }
 
-export async function createPollSimulation({
-  user,
-  poll,
-  simulation,
-  locale,
-}: {
-  user: AppUser
-  poll: PublicOrganisationPoll
-  simulation?: Simulation
-  locale: Locale
-}) {
-  if (poll.mode === 'scolaire' && simulation) {
-    throw new InternalServerError()
-  }
+export async function createPollSimulation(
+  props: {
+    user: AppUser
+    poll: PublicOrganisationPoll
+    locale: Locale
+  } & (
+    | { simulation: Simulation; model?: undefined }
+    | { model: Model; simulation?: undefined }
+  )
+) {
+  const { user, poll, locale } = props
 
-  simulation ??= {
-    ...generateSimulation(),
-    model: getModelVersion({ mode: poll.mode, locale }),
-  }
+  const simulation =
+    props.simulation ??
+    generateSimulation({ model: stringifyModel(props.model) })
 
   return fetchServer(
     `${ORGANISATION_URL}/${user.id}/public-polls/${poll.id}/simulations?locale=${locale}`,

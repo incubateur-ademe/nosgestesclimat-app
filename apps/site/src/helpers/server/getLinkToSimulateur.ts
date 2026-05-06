@@ -10,11 +10,13 @@ import type { TFunction } from 'i18next'
 import type { AppUser } from './dal/user'
 export function getMainCTA({
   currentSimulation,
+  completedSimulations,
   user,
   t,
 }: {
   currentSimulation?: Simulation
   user: AppUser
+  completedSimulations: Simulation[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: TFunction<any, string>
 }) {
@@ -25,10 +27,11 @@ export function getMainCTA({
       prefetch: false,
     }
   }
+
   if (currentSimulation.progression === 0) {
     return {
       children: t('Commencer le test'),
-      href: TUTORIAL_PATH,
+      href: completedSimulations.length ? SIMULATOR_PATH : TUTORIAL_PATH,
     }
   }
   if (currentSimulation.progression === 1) {

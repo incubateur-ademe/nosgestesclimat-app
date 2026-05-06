@@ -3,14 +3,14 @@ import MainHooks from '@/app/[locale]/_components/mainLayoutProviders/MainHooks'
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import { CookieConsentProvider } from '@/components/cookies/useCookieManagement'
 import ErrorBoundary from '@/components/error/ErrorBoundary'
-import EngineProviders from '@/components/providers/EngineProviders'
 import PRNumberHook from '@/components/providers/simulationProviders/PRNumberHook'
 import { PartnerProvider } from '@/contexts/partner/PartnerContext'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import { EngineProvider } from '@/publicodes-state'
 import UserProvider from '@/publicodes-state/providers/userProvider/provider'
 import { faker } from '@faker-js/faker'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr-opti.json'
+import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
+import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json'
 import '@testing-library/jest-dom'
 import type { RenderOptions } from '@testing-library/react'
 import { render } from '@testing-library/react'
@@ -18,7 +18,7 @@ import { randomUUID } from 'crypto'
 import type { ReactElement } from 'react'
 import { vi } from 'vitest'
 import { getInitialExtendedSituation } from '../modelFetching/getInitialExtendedSituation'
-import { getModelVersion } from '../modelFetching/getModelVersion'
+import { stringifyModel } from '../server/model/models'
 
 // Mock useRules
 vi.mock('@/hooks/useRules', () => ({
@@ -42,7 +42,11 @@ const defaultSimulation: Simulation = {
   extendedSituation: getInitialExtendedSituation(),
   foldedSteps: [],
   actionChoices: {},
-  model: getModelVersion(),
+  model: stringifyModel({
+    region: 'FR',
+    locale: 'fr',
+    version: { publishedTag: 'v12.10.1' },
+  }),
   updated_at: new Date().toISOString(),
   computedResults: {
     carbone: {
@@ -90,7 +94,7 @@ interface ProviderConfig {
   iframeOptions?: boolean
   mainHooks?: boolean
   engine?: boolean
-  prNumber?: boolean
+  PRNumber?: boolean
   cookieConsent?: boolean
 }
 
@@ -111,7 +115,11 @@ const TestWrapper = ({
   let wrapped = children
 
   if (providers.engine) {
-    wrapped = <EngineProviders isOptim={false}>{wrapped}</EngineProviders>
+    wrapped = (
+      <EngineProvider rules={rules as unknown as NGCRules}>
+        {wrapped}
+      </EngineProvider>
+    )
   }
 
   if (providers.mainHooks) {
@@ -155,7 +163,7 @@ const TestWrapper = ({
 
   return (
     <>
-      {providers.prNumber && <PRNumberHook setPRNumber={() => {}} />}
+      {providers.PRNumber && <PRNumberHook setPRNumber={() => {}} />}
       {wrapped}
     </>
   )

@@ -4,7 +4,6 @@ import SettingsIcon from '@/components/icons/SettingsIcon'
 import OrganisationFilAriane from '@/components/layout/FilAriane'
 import PollLoader from '@/components/organisations/PollLoader'
 import PollStatistics from '@/components/organisations/PollStatistics'
-import EngineProviders from '@/components/providers/EngineProviders'
 import Trans from '@/components/translation/trans/TransClient'
 import { pollDashboardClickParameters } from '@/constants/tracking/pages/pollDashboard'
 import { captureClickPollSettings } from '@/constants/tracking/posthogTrackers'
@@ -132,16 +131,14 @@ export default function CampagnePage() {
               }
             />
           )}
-          <EngineProviders>
-            <PollStatistics
-              simulationsCount={simulations?.finished ?? 0}
-              computedResults={computedResults}
-              funFacts={funFacts}
-              title={<Trans>Résultats de votre test collectif</Trans>}
-              poll={poll}
-              isAdmin={isAdmin}
-            />
-          </EngineProviders>
+          <PollStatistics
+            simulationsCount={simulations?.finished ?? 0}
+            computedResults={computedResults}
+            funFacts={funFacts}
+            title={<Trans>Résultats de votre test collectif</Trans>}
+            poll={poll}
+            isAdmin={isAdmin}
+          />
 
           <FootprintDistribution
             computedResults={computedResults}

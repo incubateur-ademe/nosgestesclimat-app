@@ -4,30 +4,39 @@ import FlagIcon from '@/components/icons/FlagIcon'
 import CountryFlag from '@/components/misc/CountryFlag'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
+import {
+  supportedRegions,
+  type UserRegion,
+} from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'
-import type { SupportedRegions } from '@incubateur-ademe/nosgestesclimat'
-import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
 import RegionModelAuthors from './localisation/RegionModelAuthors'
 import RegionSelector from './localisation/RegionSelector'
 
-export default function Localisation() {
-  const { t } = useClientTranslation()
+export default function Localisation({
+  updateRegionAction: updateRegion,
+  initialRegion,
+  region,
+}: {
+  updateRegionAction: (code: UserRegion) => Promise<void>
+  initialRegion: UserRegion
+  region: UserRegion
+}) {
   const locale = useLocale()
 
-  const { user, updateRegion, tutorials, showTutorial } = useUser()
-  const { region, initialRegion } = user
-
-  const isRegionSupported = Object.keys(supportedRegions).some(
-    (supportedRegion: string) => supportedRegion === region?.code
-  )
+  const { tutorials, showTutorial } = useUser()
 
   const { isIframe } = useIframe()
-
   if (isIframe) return null
 
+  async function resetRegion() {
+    await updateRegion(initialRegion)
+    if (tutorials.localisationBanner) {
+      showTutorial('localisationBanner')
+    }
+  }
+  const regionObj = supportedRegions[region][locale]
   return (
     <div className="mt-4 mb-8 sm:mt-8">
       <h2 id="answers" className="flex items-center">
@@ -37,64 +46,37 @@ export default function Localisation() {
           <Trans>Ma région de simulation</Trans>
         </span>
       </h2>
-      {region?.code && (
-        <div className="my-4">
-          <p className="mb-0">
-            <Trans>Vous faites cette simulation depuis :</Trans>{' '}
-            <strong>{region.name}</strong>
-            <CountryFlag code={region.code} className="ml-2 inline-block" />.
-          </p>
-          {!isRegionSupported && (
-            <>
-              {t('components.localisation.Localisation.warnMessage', {
-                countryName: region.name,
-              })}
-            </>
-          )}
-
-          <div className="flex flex-wrap items-baseline gap-2 sm:flex-nowrap">
-            {initialRegion && region.code !== initialRegion.code && (
-              <div className="mt-2">
-                <Button
-                  color="text"
-                  size="sm"
-                  onClick={() => {
-                    updateRegion(initialRegion)
-                    if (tutorials.localisationBanner) {
-                      showTutorial('localisationBanner')
-                    }
-                  }}>
-                  <Trans>Revenir à ma région par défaut </Trans>{' '}
-                  <span aria-label={initialRegion.name}>
-                    <CountryFlag
-                      code={initialRegion.code}
-                      className="ml-2 inline-block"
-                    />
-                  </span>
-                </Button>
-              </div>
-            )}
-            {isRegionSupported && (
-              <RegionModelAuthors
-                authors={
-                  (supportedRegions as SupportedRegions)[region.code][locale]
-                    .authors
-                }
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      {!region && (
-        <p>
-          <Trans i18nKey="components.localisation.Localisation.warnMessage2">
-            Nous n'avons pas pu détecter votre pays de simulation, le modèle
-            Français vous est proposé par défaut.
-          </Trans>
+      <div className="my-4">
+        <p className="mb-0">
+          <Trans>Vous faites cette simulation depuis :</Trans>{' '}
+          <strong>{regionObj.nom}</strong>
+          <CountryFlag code={region} className="ml-2 inline-block" />.
         </p>
-      )}
-      <RegionSelector supportedRegions={supportedRegions} />
+
+        <div className="flex flex-wrap items-baseline gap-2 sm:flex-nowrap">
+          {region !== initialRegion && (
+            <div className="mt-2">
+              <Button
+                color="text"
+                size="sm"
+                onClick={resetRegion as () => void}>
+                <Trans>Revenir à ma région par défaut </Trans>{' '}
+                <span aria-label={supportedRegions[initialRegion][locale].nom}>
+                  <CountryFlag
+                    code={initialRegion}
+                    className="ml-2 inline-block"
+                  />
+                </span>
+              </Button>
+            </div>
+          )}
+          {'authors' in regionObj && (
+            <RegionModelAuthors authors={regionObj.authors} />
+          )}
+        </div>
+      </div>
+
+      <RegionSelector updateRegion={updateRegion} region={region} />
     </div>
   )
 }
