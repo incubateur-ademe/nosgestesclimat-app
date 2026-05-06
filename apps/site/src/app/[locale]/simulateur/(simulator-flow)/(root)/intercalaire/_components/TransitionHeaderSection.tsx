@@ -14,13 +14,13 @@ interface Props {
 const getCategoryString = (category: Categories) => {
   switch (category) {
     case 'logement':
-      return t('Logement')
+      return t('logement')
     case 'alimentation':
-      return t('Alimentation')
+      return t('alimentation')
     case 'transport':
-      return t('Transport')
+      return t('transport')
     default:
-      return t('Divers')
+      return t('consommation')
   }
 }
 

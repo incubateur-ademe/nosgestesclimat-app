@@ -2185,3 +2185,8 @@ entries:
   Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.: Calculate your climate footprint in just<1> 10 minutes </1>.
   actions.jva.banner.cta.label: I'm going, access the I want to help.gouv website, new window
   actions.jva.banner.cta.label.lock: J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre
+  alimentation: power supply
+  transport: transport
+  consommation: consumption
+  aransport: aransport
+  logement: accommodation
