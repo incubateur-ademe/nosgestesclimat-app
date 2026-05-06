@@ -27,6 +27,7 @@ import {
   useRule,
 } from '@/publicodes-state'
 import getValueIsOverFloorOrCeiling from '@/publicodes-state/helpers/getValueIsOverFloorOrCeiling'
+import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -96,11 +97,11 @@ export default function Navigation({
 
   const {
     gotoPrevQuestion,
-    gotoNextQuestion,
     noPrevQuestion,
     noNextQuestion,
     setCurrentQuestion,
   } = useFormState()
+  const gotoNextQuestion = useGotoNextQuestion()
 
   const {
     isMissing,
