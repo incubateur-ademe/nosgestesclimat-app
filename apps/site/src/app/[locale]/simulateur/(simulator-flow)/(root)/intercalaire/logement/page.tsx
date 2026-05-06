@@ -3,12 +3,14 @@ import { noIndexObject } from '@/constants/metadata'
 import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
+import { getUser } from '@/helpers/server/dal/user'
+import { getCurrentSimulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
 import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
-import ImpactCO2Iframe from '../_components/transitionInfoCard/ImpactCO2Iframe'
+import ClientLogementImpactCO2Iframe from './_components/ClientLogementImpactCO2Iframe'
 
 export async function generateMetadata({
   params,
@@ -35,6 +37,8 @@ export default async function Page({
 }: PageProps<'/[locale]/simulateur/intercalaire/logement'>) {
   const { locale } = await params
   const { t } = await getServerTranslation({ locale })
+  const user = await getUser()
+  const simulation = await getCurrentSimulation({ user })
 
   return (
     <>
@@ -87,13 +91,7 @@ export default async function Page({
           </>
         }
         rightContent={
-          <ImpactCO2Iframe
-            title={t(
-              'simulator.intercalaire.logement.iframe.title',
-              "Comparateur d'impact CO₂ du chauffage"
-            )}
-            locale={locale}
-          />
+          <ClientLogementImpactCO2Iframe locale={locale as Locale} />
         }
       />
     </>

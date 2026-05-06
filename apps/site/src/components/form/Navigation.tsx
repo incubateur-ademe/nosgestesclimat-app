@@ -17,6 +17,7 @@ import {
 } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
 import { useMagicKey } from '@/hooks/useMagicKey'
@@ -100,8 +101,11 @@ export default function Navigation({
     noPrevQuestion,
     noNextQuestion,
     setCurrentQuestion,
+    isLastQuestionOfCategory,
+    nextQuestionAlreadySeen,
   } = useFormState()
   const gotoNextQuestion = useGotoNextQuestion()
+  const currentSimulation = useCurrentSimulation()
 
   const {
     isMissing,
@@ -248,6 +252,11 @@ export default function Navigation({
     setCurrentQuestion(persistedRemainingQuestions[prevIndex] ?? null)
   }, [question, setCurrentQuestion, persistedRemainingQuestions])
 
+  const isSchoolMode = getSimulationMode(currentSimulation) === 'scolaire'
+
+  const isIntercalaireNext =
+    isSchoolMode && isLastQuestionOfCategory && !nextQuestionAlreadySeen
+
   const handleGoToNextQuestion = useCallback(
     (e: KeyboardEvent | MouseEvent) => {
       e.preventDefault()
@@ -270,7 +279,7 @@ export default function Navigation({
         gotoNextQuestion()
       }
 
-      if (isLastQuestion) {
+      if (isLastQuestion && !isIntercalaireNext) {
         onComplete()
       }
     },
@@ -284,6 +293,7 @@ export default function Navigation({
       gotoNextQuestion,
       navigateToNextEmbeddedQuestion,
       isLastQuestion,
+      isIntercalaireNext,
       onComplete,
       persistedRemainingQuestions.length,
     ]
@@ -325,7 +335,7 @@ export default function Navigation({
 
   const submitButtonKind = getSubmitButtonKind({
     isPending,
-    isLastQuestion,
+    isLastQuestion: isLastQuestion && !isIntercalaireNext,
   })
 
   const submitButtonTitle = {
