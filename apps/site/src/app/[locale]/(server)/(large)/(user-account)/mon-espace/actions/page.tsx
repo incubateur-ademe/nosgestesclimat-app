@@ -6,7 +6,6 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
-import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
 
@@ -15,8 +14,8 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
-  const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
-
+  // const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+  const flag = true
   if (!flag) {
     return <LegacyMonEspaceActionsPage user={user} locale={locale} />
   }
