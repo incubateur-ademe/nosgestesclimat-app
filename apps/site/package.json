@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@nosgestesclimat/core": "workspace:*",
-    "@incubateur-ademe/nosgestesclimat": "https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840",
+    "@incubateur-ademe/nosgestesclimat": "https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49",
     "@next/mdx": "^16.2.2",
     "@publicodes/react-ui": "^1.10.0",
     "@publicodes/tools": "^1.8.0",

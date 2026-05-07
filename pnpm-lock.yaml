@@ -82,8 +82,8 @@ importers:
         specifier: ^3.1023.0
         version: 3.1028.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840(publicodes@1.10.1)
+        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49
+        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49(publicodes@1.10.1)
       '@prisma/adapter-pg':
         specifier: ^7.6.0
         version: 7.7.0
@@ -254,8 +254,8 @@ importers:
   apps/site:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840(publicodes@1.10.1)
+        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49
+        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49(publicodes@1.10.1)
       '@next/mdx':
         specifier: ^16.2.2
         version: 16.2.2(@mdx-js/loader@3.1.1(webpack@5.105.4(esbuild@0.27.7)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.4))
@@ -1992,8 +1992,8 @@ packages:
   '@incubateur-ademe/nosgestesclimat-scripts@0.8.0':
     resolution: {integrity: sha512-Jc3d3SAWDDBQNLG1d7+ao+5QPMpiEZg2tfY0EDmray0UBpP9lj0LvWG0uwWoA0waeYFroYNuK58yBrbqGRQMLg==}
 
-  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840':
-    resolution: {tarball: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840}
+  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49':
+    resolution: {integrity: sha512-RXDYGmoSqCw3tbV8hWK6MZba98zeK/eL0Qoi7Dr/R98V7sDx4pXRaKzCQE5MPqIQ6th2NEWdEuk8KxsRdvypWA==, tarball: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49}
     version: 4.10.5
     engines: {node: '>=24'}
     peerDependencies:
@@ -11665,7 +11665,7 @@ snapshots:
       - debug
       - encoding
 
-  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6c1b840(publicodes@1.10.1)':
+  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@5103c49(publicodes@1.10.1)':
     dependencies:
       publicodes: 1.10.1
 
