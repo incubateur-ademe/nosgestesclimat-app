@@ -1,17 +1,11 @@
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
-import type { Locale } from '@/i18nConfig'
 import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
-import {
-  ImpactCO2LanguageSchema,
-  type ActionMedia as ActionMediaType,
-  type ImpactCO2Language,
-} from '@nosgestesclimat/core/features/actions/types/action-media'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
+import { ActionMedia } from './_components/ActionMedia'
+import { Section, SectionTitle } from './_components/Section'
 
 export default async function ActionPage({
   params,
@@ -48,9 +42,11 @@ export default async function ActionPage({
         </h1>
       </header>
       <div className="mb-10 grid gap-10">
-        <Section variant="highlighted">
-          <SectionTitle>Je comprends l'enjeu</SectionTitle>
-          <Markdown>{action.longDescription}</Markdown>
+        <Section variant="highlighted" className="flex flex-col gap-5">
+          <div>
+            <SectionTitle>Je comprends l'enjeu</SectionTitle>
+            <Markdown>{action.longDescription}</Markdown>
+          </div>
           {action.media ? (
             <ActionMedia media={action.media} locale={locale} />
           ) : null}
@@ -76,84 +72,6 @@ export default async function ActionPage({
       </div>
     </div>
   )
-}
-
-type SectionVariant = 'default' | 'highlighted'
-
-interface SectionProps extends React.ComponentPropsWithoutRef<'section'> {
-  variant?: SectionVariant
-}
-
-function Section({
-  variant = 'default',
-  className,
-  children,
-  ...props
-}: SectionProps) {
-  return (
-    <section
-      className={twMerge(
-        'rounded-[20px] border border-slate-200 p-10',
-        sectionClassNamesByVariant[variant],
-        className
-      )}
-      {...props}>
-      {children}
-    </section>
-  )
-}
-
-const sectionClassNamesByVariant: Record<SectionVariant, string> = {
-  default: 'bg-white',
-  highlighted: 'bg-slate-50',
-}
-
-type SectionTitleProps = React.ComponentPropsWithoutRef<'h2'>
-
-function SectionTitle({ className, children, ...props }: SectionTitleProps) {
-  return (
-    <h2
-      className={twMerge('mb-5 text-lg leading-6.75 font-bold', className)}
-      {...props}>
-      {/* TODO: emoji */}
-      {children}
-    </h2>
-  )
-}
-
-interface MediaProps {
-  media: ActionMediaType
-  locale: Locale
-}
-
-function ActionMedia({ media, locale }: MediaProps) {
-  const impactCO2Language = getImpactCO2Language(locale)
-
-  // TODO: media title
-  switch (media.type) {
-    case 'impact_co2':
-      return (
-        <div>TODO: {impactCO2Language}</div>
-      )
-    case 'image':
-      return (
-        <Image
-          src={media.src}
-          alt={media.alt}
-          width={100}
-          height={100}
-          className="w-full rounded-lg"
-        />
-      )
-    default:
-      media satisfies never
-      return null
-  }
-}
-
-function getImpactCO2Language(locale: Locale): ImpactCO2Language {
-  const result = ImpactCO2LanguageSchema.safeParse(locale)
-  return result.success ? result.data : 'en'
 }
 
 const classNames: Record<

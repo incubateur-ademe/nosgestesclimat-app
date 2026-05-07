@@ -15,6 +15,7 @@ interface MediaImpactCO2 extends MediaBase {
     type: string
     /** Inherits the language if not specified */
     language?: ImpactCO2Language
+    options?: Record<string, string>
   }
 }
 
