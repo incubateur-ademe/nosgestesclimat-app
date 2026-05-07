@@ -9,24 +9,35 @@ import {
 } from '@nosgestesclimat/core/features/actions/types/action-media'
 import Image from 'next/image'
 
-interface MediaProps {
+interface MediaProps extends React.ComponentPropsWithoutRef<'figure'> {
   media: ActionMediaType
   locale: Locale
 }
 
-export function ActionMedia({ media, locale }: MediaProps) {
+export function ActionMedia({
+  media,
+  locale,
+  className,
+  ...props
+}: MediaProps) {
   const impactCO2Language = getImpactCO2Language(locale)
 
   return (
-    <figure>
+    <figure
+      className={className}
+      {...props}>
       {(() => {
         switch (media.type) {
           case 'impact_co2':
             return (
-              <ImpactCO2Widget
-                type={media.data.type}
-                language={impactCO2Language}
-              />
+              // Compensate widget's inner iframe margins
+              <div className="[&_iframe]:-my-4! md:[&_iframe]:-my-8!">
+                <ImpactCO2Widget
+                  type={media.data.type}
+                  language={impactCO2Language}
+                  options={media.data.options}
+                />
+              </div>
             )
           case 'image':
             return (
@@ -43,7 +54,7 @@ export function ActionMedia({ media, locale }: MediaProps) {
             return null
         }
       })()}
-      <figcaption className="text-sm/normal text-slate-600">
+      <figcaption className="text-right text-sm/normal text-slate-600">
         {media.title}
       </figcaption>
     </figure>

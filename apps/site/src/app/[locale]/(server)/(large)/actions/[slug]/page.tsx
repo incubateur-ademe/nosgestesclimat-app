@@ -41,14 +41,20 @@ export default async function ActionPage({
           {action.title}
         </h1>
       </header>
-      <div className="mb-10 grid gap-10">
-        <Section variant="highlighted" className="flex flex-col gap-5">
-          <div>
+      <div className="mb-10 grid gap-10 md:grid-cols-2 [&>*:last-child:nth-child(even)]:col-span-full">
+        <Section
+          variant="highlighted"
+          className="flex flex-col gap-5 md:col-span-full md:flex-row">
+          <div className={action.media ? 'flex-1/2' : ''}>
             <SectionTitle>Je comprends l'enjeu</SectionTitle>
             <Markdown>{action.longDescription}</Markdown>
           </div>
           {action.media ? (
-            <ActionMedia media={action.media} locale={locale} />
+            <ActionMedia
+              media={action.media}
+              locale={locale}
+              className="flex-1/2"
+            />
           ) : null}
         </Section>
         {action.means ? (
