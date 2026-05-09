@@ -1,3 +1,5 @@
+import type { TabItem } from '@/design-system/layout/Tabs'
+import Tabs from '@/design-system/layout/Tabs'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
 import type { DefaultPageProps } from '@/types'
@@ -6,6 +8,11 @@ import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { notFound } from 'next/navigation'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
+
+const SECTION_ID_I_UNDERSTAND = 'je-comprends'
+const SECTION_ID_I_ACT = 'j-agis'
+const SECTION_ID_I_BENEFIT = 'j-y-gagne'
+const SECTION_ID_FURTHER_READING = 'a-decouvrir-aussi'
 
 export default async function ActionPage({
   params,
@@ -19,6 +26,7 @@ export default async function ActionPage({
   // if (!flag) notFound()
   // console.log(user)
   // console.log(flag)
+  // TODO: use MON_ESPACE_ACTIONS_PATH if user is not anon
 
   // TODO: use slug instead of id
   const action = actions.find((a) => a.id === slug)
@@ -26,6 +34,54 @@ export default async function ActionPage({
   if (!action) notFound()
 
   const themeClasses = classNames[action.theme.key]
+
+  const tabsItems: TabItem[] = [
+    {
+      id: 'understand',
+      label: (
+        <span>
+          <Emoji className="mr-1 hidden md:inline">💡</Emoji> Je comprends
+        </span>
+      ),
+      href: `#${SECTION_ID_I_UNDERSTAND}`,
+    },
+  ]
+
+  if (action.means) {
+    tabsItems.push({
+      id: 'act',
+      label: (
+        <span>
+          <Emoji className="mr-1 hidden md:inline">▶️</Emoji> J'agis
+        </span>
+      ),
+      href: `#${SECTION_ID_I_ACT}`,
+    })
+  }
+
+  if (action.incentives) {
+    tabsItems.push({
+      id: 'incentives',
+      label: (
+        <span>
+          <Emoji className="mr-1 hidden md:inline">💰</Emoji> J'y gagne
+        </span>
+      ),
+      href: `#${SECTION_ID_I_BENEFIT}`,
+    })
+  }
+
+  if (action.furtherReading) {
+    tabsItems.push({
+      id: 'further-reading',
+      label: (
+        <span>
+          <Emoji className="mr-1 hidden md:inline">📖</Emoji> À découvrir aussi
+        </span>
+      ),
+      href: `#${SECTION_ID_FURTHER_READING}`,
+    })
+  }
 
   return (
     <div>
@@ -41,10 +97,20 @@ export default async function ActionPage({
           {action.title}
         </h1>
       </header>
+
+      <div className="flex items-start overflow-scroll md:overflow-auto">
+        <Tabs
+          items={tabsItems}
+          className="mb-10 whitespace-nowrap"
+          ariaLabel={'Navigation de la page'}
+        />
+      </div>
+
       <div className="mb-10 grid gap-10 md:grid-cols-2 [&>*:last-child:nth-child(even)]:col-span-full">
         <Section
+          id={SECTION_ID_I_UNDERSTAND}
           variant="highlighted"
-          className="flex flex-col gap-5 md:col-span-full md:flex-row">
+          className="wscroll-mt-24 flex flex-col gap-5 md:col-span-full md:flex-row">
           <div className={action.media ? 'flex-1/2' : ''}>
             <SectionTitle>Je comprends l'enjeu</SectionTitle>
             <Markdown>{action.longDescription}</Markdown>
@@ -58,19 +124,19 @@ export default async function ActionPage({
           ) : null}
         </Section>
         {action.means ? (
-          <Section>
+          <Section id={SECTION_ID_I_ACT} className="wscroll-mt-24">
             <SectionTitle>J’agis</SectionTitle>
             <Markdown>{action.means}</Markdown>
           </Section>
         ) : null}
         {action.incentives ? (
-          <Section>
+          <Section id={SECTION_ID_I_BENEFIT} className="wscroll-mt-24">
             <SectionTitle>J’y gagne</SectionTitle>
             <Markdown>{action.incentives}</Markdown>
           </Section>
         ) : null}
         {action.furtherReading ? (
-          <Section>
+          <Section id={SECTION_ID_FURTHER_READING} className="wscroll-mt-24">
             <SectionTitle>À découvrir aussi</SectionTitle>
             <Markdown>{action.furtherReading}</Markdown>
           </Section>
