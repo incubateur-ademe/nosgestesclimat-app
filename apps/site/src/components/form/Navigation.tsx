@@ -17,7 +17,6 @@ import {
 } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
-import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
 import { useMagicKey } from '@/hooks/useMagicKey'
@@ -96,16 +95,14 @@ export default function Navigation({
 
   const [persistedRemainingQuestions] = useState(remainingQuestions)
 
-  const {
-    gotoPrevQuestion,
-    noPrevQuestion,
-    noNextQuestion,
-    setCurrentQuestion,
-    isLastQuestionOfCategory,
-    nextQuestionAlreadySeen,
-  } = useFormState()
-  const gotoNextQuestion = useGotoNextQuestion()
-  const currentSimulation = useCurrentSimulation()
+  const { gotoPrevQuestion, noPrevQuestion, setCurrentQuestion } =
+    useFormState()
+
+  const { goToNextQuestion, isLastQuestion, isIntercalaireNext } =
+    useGotoNextQuestion({
+      question,
+      isEmbedded,
+    })
 
   const {
     isMissing,
@@ -147,12 +144,6 @@ export default function Navigation({
           return isBelowFloor || isOverCeiling
         })()
       : false
-
-  // Determines if the current question is the last one of the test
-  const isLastQuestion = isEmbedded
-    ? (remainingQuestions.length === 1 && remainingQuestions[0] === question) ||
-      remainingQuestions.length === 0
-    : noNextQuestion
 
   // Disable "Précédent" only when there's truly no previous question
   const hasNoPreviousQuestion = isEmbedded
@@ -252,11 +243,6 @@ export default function Navigation({
     setCurrentQuestion(persistedRemainingQuestions[prevIndex] ?? null)
   }, [question, setCurrentQuestion, persistedRemainingQuestions])
 
-  const isSchoolMode = getSimulationMode(currentSimulation) === 'scolaire'
-
-  const isIntercalaireNext =
-    isSchoolMode && isLastQuestionOfCategory && !nextQuestionAlreadySeen
-
   const handleGoToNextQuestion = useCallback(
     (e: KeyboardEvent | MouseEvent) => {
       e.preventDefault()
@@ -276,7 +262,7 @@ export default function Navigation({
       if (isEmbedded && persistedRemainingQuestions.length > 0) {
         navigateToNextEmbeddedQuestion()
       } else {
-        gotoNextQuestion()
+        goToNextQuestion()
       }
 
       if (isLastQuestion && !isIntercalaireNext) {
@@ -290,7 +276,7 @@ export default function Navigation({
       handleAnswerQuestion,
       resetNotification,
       isEmbedded,
-      gotoNextQuestion,
+      goToNextQuestion,
       navigateToNextEmbeddedQuestion,
       isLastQuestion,
       isIntercalaireNext,
