@@ -4,7 +4,6 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
-import TransitionButtons from '../_components/TransitionButtons'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
 import ClientLogementImpactCO2Iframe from './_components/ClientLogementImpactCO2Iframe'
@@ -36,8 +35,6 @@ export default async function Page({
 
   return (
     <>
-      <TransitionButtons category="logement" />
-
       <TransitionInfoCard
         className="bg-logement-100"
         title={

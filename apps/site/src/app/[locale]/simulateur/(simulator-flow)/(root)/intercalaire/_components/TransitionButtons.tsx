@@ -7,17 +7,17 @@ import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
 import type { Categories, DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEndTest } from '../../[root]/_hooks/useEndPage'
 
-interface Props {
-  category: Categories
-}
-
-export default function TransitionButtons({ category }: Props) {
+export default function TransitionButtons() {
   const router = useRouter()
 
-  const { remainingQuestionsByCategories, setCurrentQuestion } = useFormState()
+  const pathname = usePathname()
+  const category = pathname.split('/').at(-1)
+
+  const { gotoNextQuestion } = useFormState()
+
   const { endTest, isPending } = useEndTest()
 
   const { t } = useClientTranslation()
@@ -61,14 +61,7 @@ export default function TransitionButtons({ category }: Props) {
       return
     }
 
-    // Use the deterministic nextCategory (derived from orderedCategories)
-    // to find the first remaining question of the next category.
-    // This avoids relying on mutable currentQuestion state which is lost on
-    // page reload.
-    const questionsOfNextCategory = remainingQuestionsByCategories[nextCategory]
-    const firstQuestionOfNextCategory = questionsOfNextCategory[0]
-
-    setCurrentQuestion(firstQuestionOfNextCategory)
+    gotoNextQuestion()
     router.push(SIMULATOR_PATH)
   }
 

@@ -2,7 +2,6 @@ import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import TransitionButtons from '../_components/TransitionButtons'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
 import ImpactCO2Iframe from '../_components/transitionInfoCard/ImpactCO2Iframe'
@@ -35,8 +34,6 @@ export default async function Page({
 
   return (
     <>
-      <TransitionButtons category="alimentation" />
-
       <TransitionInfoCard
         className="bg-alimentation-100"
         title={

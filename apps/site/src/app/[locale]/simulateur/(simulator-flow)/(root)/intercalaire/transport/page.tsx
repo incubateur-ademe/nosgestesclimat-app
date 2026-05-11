@@ -3,7 +3,6 @@ import { noIndexObject } from '@/constants/metadata'
 import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import TransitionButtons from '../_components/TransitionButtons'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import ImpactCO2Iframe from '../_components/transitionInfoCard/ImpactCO2Iframe'
 
@@ -35,8 +34,6 @@ export default async function Page({
 
   return (
     <>
-      <TransitionButtons category="transport" />
-
       <TransitionInfoCard
         className="bg-transport-100"
         title={

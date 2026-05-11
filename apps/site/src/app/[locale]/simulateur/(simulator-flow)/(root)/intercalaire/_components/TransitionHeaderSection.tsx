@@ -5,7 +5,8 @@ import { orderedCategories } from '@/constants/model/orderedCategories'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useFormState } from '@/publicodes-state'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { usePathname } from 'next/navigation'
 
 const getCategoryString = (
   category: string,
@@ -24,14 +25,16 @@ const getCategoryString = (
 }
 
 export default function TransitionHeaderSection() {
-  const { currentCategory } = useFormState()
+  const pathname = usePathname()
+  const currentCategory = pathname.split('/').at(-1)
+
   const { t } = useClientTranslation()
 
   if (!currentCategory) {
     return null
   }
 
-  const currentIndex = orderedCategories.indexOf(currentCategory)
+  const currentIndex = orderedCategories.indexOf(currentCategory as DottedName)
   const remainingSteps =
     currentIndex >= 0
       ? orderedCategories
