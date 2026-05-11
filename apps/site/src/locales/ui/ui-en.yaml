@@ -2188,5 +2188,16 @@ entries:
   alimentation: power supply
   transport: transport
   consommation: consumption
-  aransport: aransport
-  logement: accommodation
+  logement: housing
+  common.logement: housing
+  common.logement.lock: logement
+  common.consommation: consumption
+  common.consommation.lock: consommation
+  simulator.intercalaire.goToConsommation: Switching to consumption
+  simulator.intercalaire.goToConsommation.lock: Passer à la consommation
+  simulator.intercalaire.goToLogement: Moving on to housing
+  simulator.intercalaire.goToLogement.lock: Passer au logement
+  simulator.intercalaire.goToAlimentation: Switch to food
+  simulator.intercalaire.goToAlimentation.lock: Passer à l'alimentation
+  simulator.intercalaire.goToTransport: Switching to transport
+  simulator.intercalaire.goToTransport.lock: Passer au transport

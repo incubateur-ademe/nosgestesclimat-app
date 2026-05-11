@@ -1573,7 +1573,12 @@ entries:
   Tu as déja participé à ce test.: Tu as déja participé à ce test.
   Vous avez déjà participé à ce sondage.: Vous avez déjà participé à ce sondage.
   alimentation: alimentation
-  aransport: aransport
   consommation: consommation
   logement: logement
   transport: transport
+  common.consommation: consommation
+  common.logement: logement
+  simulator.intercalaire.goToAlimentation: Passer à l'alimentation
+  simulator.intercalaire.goToConsommation: Passer à la consommation
+  simulator.intercalaire.goToLogement: Passer au logement
+  simulator.intercalaire.goToTransport: Passer au transport
