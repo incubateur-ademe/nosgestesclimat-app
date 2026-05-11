@@ -3,9 +3,7 @@ import { noIndexObject } from '@/constants/metadata'
 import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
-import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import ImpactCO2Iframe from '../_components/transitionInfoCard/ImpactCO2Iframe'
 
@@ -37,12 +35,6 @@ export default async function Page({
 
   return (
     <>
-      <TransitionHeaderSection
-        locale={locale as Locale}
-        category="transport"
-        remainingSteps={1}
-      />
-
       <TransitionButtons category="transport" />
 
       <TransitionInfoCard
@@ -65,20 +57,20 @@ export default async function Page({
         }
         funFactContent={
           <>
-            <p className="mb-0 text-center font-medium">
+            <span className="mb-0 block text-center font-medium">
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.transport.funFact.line1">
                 Chaque trajet compte :
               </Trans>
-            </p>
-            <p className="text-primary-600 mb-0 text-2xl font-bold">
+            </span>
+            <span className="text-primary-600 mb-0 block text-2xl font-bold">
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.transport.funFact.line2">
                 fais le bon choix !
               </Trans>
-            </p>
+            </span>
             <Emoji className="text-3xl">🚲 🛴🚶</Emoji>
           </>
         }

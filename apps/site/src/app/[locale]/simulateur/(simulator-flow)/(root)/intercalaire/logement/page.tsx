@@ -5,7 +5,6 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import TransitionButtons from '../_components/TransitionButtons'
-import TransitionHeaderSection from '../_components/TransitionHeaderSection'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
 import ClientLogementImpactCO2Iframe from './_components/ClientLogementImpactCO2Iframe'
@@ -37,12 +36,6 @@ export default async function Page({
 
   return (
     <>
-      <TransitionHeaderSection
-        locale={locale as Locale}
-        category="logement"
-        remainingSteps={3}
-      />
-
       <TransitionButtons category="logement" />
 
       <TransitionInfoCard
