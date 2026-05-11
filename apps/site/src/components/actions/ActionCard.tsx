@@ -25,7 +25,8 @@ export default function ActionCard({
     <article
       {...props}
       className={twMerge(
-        `relative flex min-h-56 flex-col gap-2.5 rounded-[10px] border border-t-8 ${classesByTheme[action.theme.key]} bg-white p-2.5`,
+        `relative flex min-h-56 flex-col gap-2.5 rounded-[10px] border border-t-8 bg-white p-2.5`,
+        classesByTheme[action.theme.key],
         className
       )}>
       <ThemeBadge theme={action.theme} className="self-start" />
