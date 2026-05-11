@@ -27,8 +27,8 @@ const classesByTheme: Record<
     emoji: 'border-divers-200',
   },
   societal_services: {
-    section: 'bg-services-societaux-50 border-services-societaux-200',
-    emoji: 'border-services-societaux-200',
+    section: 'bg-servicessocietaux-50 border-servicessocietaux-200',
+    emoji: 'border-servicessocietaux-200',
   },
 }
 

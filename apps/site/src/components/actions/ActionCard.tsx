@@ -9,7 +9,7 @@ const classesByTheme: Record<Theme['key'], string> = {
   housing: 'border-logement-200 border-t-logement-400',
   misc: 'border-divers-200 border-t-divers-400',
   societal_services:
-    'border-services-societaux-200 border-t-services-societaux-400',
+    'border-servicessocietaux-200 border-t-servicessocietaux-400',
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {

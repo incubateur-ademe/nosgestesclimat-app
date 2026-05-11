@@ -7,7 +7,7 @@ const classesByTheme: Record<Theme['key'], string> = {
   food: 'bg-alimentation-50 text-alimentation-800',
   housing: 'bg-logement-50 text-logement-800',
   misc: 'bg-divers-50 text-divers-800',
-  societal_services: 'bg-services-societaux-50 text-services-societaux-800',
+  societal_services: 'bg-servicessocietaux-50 text-servicessocietaux-800',
 }
 
 interface ThemeBadgeProps extends React.ComponentPropsWithoutRef<'span'> {
