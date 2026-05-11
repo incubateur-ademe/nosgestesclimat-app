@@ -19,13 +19,9 @@ export function useAutoSaveSimulation() {
     debouncedSaveSimulation({ simulation: currentSimulation })
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
 
-  // Flush the pending save ONLY on unmount (empty deps = cleanup runs
-  // exclusively when the component is removed from the tree).
-  // This ensures the latest simulation state is persisted even when
-  // navigating to an intercalaire page in scolaire mode.
   useEffect(() => {
     return () => {
-      debouncedSaveSimulation.flush()
+      debouncedSaveSimulation.cancel()
     }
-  }, [])
+  }, [currentSimulation.situation, currentSimulation.foldedSteps])
 }

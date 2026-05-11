@@ -1,20 +1,21 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { orderedCategories } from '@/constants/model/orderedCategories'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
 import type { Categories, DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEndTest } from '../../[root]/_hooks/useEndPage'
+import { orderedCategoriesWithoutServices } from '../_constants/getOrderedCategoriesWithoutServices'
 
-export default function TransitionButtons() {
+interface Props {
+  category: DottedName
+}
+
+export default function TransitionButtons({ category }: Props) {
   const router = useRouter()
-
-  const pathname = usePathname()
-  const category = pathname.split('/').at(-1)
 
   const { gotoNextQuestion } = useFormState()
 
@@ -23,13 +24,17 @@ export default function TransitionButtons() {
   const { t } = useClientTranslation()
 
   const nextCategory: Categories | undefined = (() => {
-    const currentIndex = orderedCategories.indexOf(category as DottedName)
+    const currentIndex = orderedCategoriesWithoutServices.indexOf(category)
     if (currentIndex === -1) return undefined
-    return orderedCategories[currentIndex + 1] as Categories | undefined
+    return orderedCategoriesWithoutServices[currentIndex + 1] as
+      | Categories
+      | undefined
   })()
 
   const isLastCategory =
-    orderedCategories[orderedCategories.length - 1] === category
+    orderedCategoriesWithoutServices[
+      orderedCategoriesWithoutServices.length - 1
+    ] === category
 
   const getCategoryString = (category: Categories) => {
     switch (category) {
@@ -51,12 +56,7 @@ export default function TransitionButtons() {
   }
 
   const handleGoToNextQuestion = () => {
-    if (isLastCategory) {
-      endTest()
-      return
-    }
-
-    if (!nextCategory) {
+    if (isLastCategory || !nextCategory) {
       endTest()
       return
     }

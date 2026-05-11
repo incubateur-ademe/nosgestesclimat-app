@@ -1,12 +1,15 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { orderedCategories } from '@/constants/model/orderedCategories'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { usePathname } from 'next/navigation'
+import { orderedCategoriesWithoutServices } from '../_constants/getOrderedCategoriesWithoutServices'
+
+interface Props {
+  category: DottedName
+}
 
 const getCategoryString = (
   category: string,
@@ -14,39 +17,30 @@ const getCategoryString = (
 ) => {
   switch (category) {
     case 'logement':
-      return t('logement', 'logement')
+      return t('common.logement', 'logement')
     case 'alimentation':
-      return t('alimentation', 'alimentation')
+      return t('common.alimentation', 'alimentation')
     case 'transport':
-      return t('transport', 'transport')
+      return t('common.transport', 'transport')
     default:
-      return t('consommation', 'consommation')
+      return t('common.consommation', 'consommation')
   }
 }
 
-export default function TransitionHeaderSection() {
-  const pathname = usePathname()
-  const currentCategory = pathname.split('/').at(-1)
-
+export default function TransitionHeaderSection({ category }: Props) {
   const { t } = useClientTranslation()
 
-  if (!currentCategory) {
-    return null
-  }
+  const currentIndex = orderedCategoriesWithoutServices.indexOf(category)
 
-  const currentIndex = orderedCategories.indexOf(currentCategory as DottedName)
-  const remainingSteps =
-    currentIndex >= 0
-      ? orderedCategories
-          .slice(currentIndex + 1)
-          .filter((cat) => cat !== 'services sociétaux').length
-      : 0
+  const remainingSteps = orderedCategoriesWithoutServices
+    .slice(currentIndex + 1)
+    .filter((cat) => cat !== 'services sociétaux').length
 
   if (remainingSteps === 0) {
     return (
       <Title tag="h1" hasSeparator={false} className="text-primary-600">
         <Trans
-          values={{ category: getCategoryString(currentCategory, t) }}
+          values={{ category: getCategoryString(category, t) }}
           i18nKey="simulator.intercalaire.title.last">
           Bravo, tu as terminé toutes les sections
         </Trans>{' '}
@@ -62,9 +56,9 @@ export default function TransitionHeaderSection() {
         hasSeparator={false}
         className="text-primary-600 font-medium">
         <Trans
-          values={{ category: getCategoryString(currentCategory, t) }}
+          values={{ category: getCategoryString(category, t) }}
           i18nKey="simulator.intercalaire.title.default">
-          Section {{ currentCategory } as unknown as React.ReactNode} terminée
+          Section {{ category } as unknown as React.ReactNode} terminée
         </Trans>{' '}
         <Emoji>✅</Emoji>
       </Title>
