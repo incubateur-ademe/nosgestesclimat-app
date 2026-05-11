@@ -1,6 +1,6 @@
-import type { Handler } from '../../../core/event-bus/handler.js'
-import { syncUserData } from '../../users/users.service.js'
-import type { AccountCreatedEvent } from '../events/AccountCreated.event.js'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import { syncUserData } from '../../users/users.service.ts'
+import type { AccountCreatedEvent } from '../events/AccountCreated.event.ts'
 
 export const syncUserDataAfterAccountCreated: Handler<AccountCreatedEvent> = ({
   attributes: { user },

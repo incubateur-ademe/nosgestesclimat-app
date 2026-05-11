@@ -1,18 +1,18 @@
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../../../config.js'
-import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.js'
-import { asyncValidateRequestBody } from '../../../../core/middlewares/asyncValidateRequestBody.js'
-import { tsRestServer } from '../../../../core/ts-rest.js'
-import logger from '../../../../logger.js'
+import { config } from '../../../../config.ts'
+import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
+import { asyncValidateRequestBody } from '../../../../core/middlewares/asyncValidateRequestBody.ts'
+import { tsRestServer } from '../../../../core/ts-rest.ts'
+import logger from '../../../../logger.ts'
 import authenticationContract, {
   AsyncRefreshApiTokenRequestDto,
-} from './authentication.contract.js'
+} from './authentication.contract.ts'
 import {
   exchangeCredentialsForToken,
   generateApiToken,
   generateAuthenticationMiddleware,
   refreshApiToken,
-} from './authentication.service.js'
+} from './authentication.service.ts'
 
 const router = tsRestServer.router(authenticationContract, {
   generateApiToken: async ({ body, req }) => {

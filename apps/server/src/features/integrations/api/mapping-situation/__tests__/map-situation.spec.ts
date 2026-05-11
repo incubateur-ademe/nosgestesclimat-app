@@ -5,18 +5,18 @@ import { StatusCodes } from 'http-status-codes'
 import path from 'path'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { client } from '../../../../../adapters/scaleway/client.js'
-import app from '../../../../../app.js'
-import logger from '../../../../../logger.js'
-import { getRandomPersonaSituation } from '../../../../simulations/__tests__/fixtures/simulations.fixtures.js'
-import type { SituationSchema } from '../../../../simulations/simulations.validator.js'
-import { ExternalServiceTypeEnum } from '../../../integrations.validator.js'
-import { randomPartner } from '../../mapping-file/__tests__/fixtures/index.js'
-import type { MappingFileKind } from '../../mapping-file/mapping-file.contract.js'
+import { client } from '../../../../../adapters/scaleway/client.ts'
+import app from '../../../../../app.ts'
+import logger from '../../../../../logger.ts'
+import { getRandomPersonaSituation } from '../../../../simulations/__tests__/fixtures/simulations.fixtures.ts'
+import type { SituationSchema } from '../../../../simulations/simulations.validator.ts'
+import { ExternalServiceTypeEnum } from '../../../integrations.validator.ts'
+import { randomPartner } from '../../mapping-file/__tests__/fixtures/index.ts'
+import type { MappingFileKind } from '../../mapping-file/mapping-file.contract.ts'
 import {
   MAPPING_CASES,
   MAPPING_CASES_FUNC,
-} from '../mapping-situation.constant.js'
+} from '../mapping-situation.constant.ts'
 
 const mockS3Files = (
   filesContent: Partial<

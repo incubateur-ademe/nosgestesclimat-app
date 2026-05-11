@@ -2,13 +2,13 @@ import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
 import { z } from 'zod'
-import { config } from '../../config.js'
-import { Locales } from '../../core/i18n/constant.js'
-import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.js'
+import { config } from '../../config.ts'
+import { Locales } from '../../core/i18n/constant.ts'
+import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type {
   ActionChoicesSchema,
   ComputedResultSchema,
-} from '../../features/simulations/simulations.validator.js'
+} from '../../features/simulations/simulations.validator.ts'
 import type {
   Group,
   Organisation,
@@ -16,8 +16,8 @@ import type {
   Simulation,
   User,
   VerifiedUser,
-} from '../prisma/generated.js'
-import type { GroupTemplateId, TemplateId } from './constant.js'
+} from '../prisma/generated.ts'
+import type { GroupTemplateId, TemplateId } from './constant.ts'
 import {
   AllNewsletters,
   Attributes,
@@ -28,7 +28,7 @@ import {
   MATOMO_KEYWORD_KEY,
   MATOMO_KEYWORDS,
   TemplateIds,
-} from './constant.js'
+} from './constant.ts'
 
 const brevo = axios.create({
   baseURL: config.thirdParty.brevo.url,

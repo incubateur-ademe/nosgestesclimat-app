@@ -11,7 +11,6 @@ ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
 
-injectWorkspacePackages: true
 #minimumReleaseAge: 10080 # 7 days
 
 minimumReleaseAgeExclude:
@@ -19,9 +18,10 @@ minimumReleaseAgeExclude:
 
 onlyBuiltDependencies:
   - '@incubateur-ademe/nosgestesclimat'
+  - '@nosgestesclimat/core'
   - '@prisma/engines'
   - '@sentry/cli'
   - msw
   - prisma
 
-nodeLinker: hoisted
+injectWorkspacePackages: true

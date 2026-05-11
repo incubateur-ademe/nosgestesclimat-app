@@ -1,8 +1,8 @@
-import { redis } from '../../../adapters/redis/client.js'
-import { CHANNELS } from '../../../adapters/redis/constant.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event.js'
-import { SimulationUpsertedAsyncEvent } from '../events/SimulationUpserted.event.js'
+import { redis } from '../../../adapters/redis/client.ts'
+import { CHANNELS } from '../../../adapters/redis/constant.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event.ts'
+import { SimulationUpsertedAsyncEvent } from '../events/SimulationUpserted.event.ts'
 
 export const publishRedisEvent: Handler<SimulationUpsertedEvent> = ({
   attributes,

@@ -1,6 +1,6 @@
-import { EventBusEvent } from '../../../core/event-bus/event.js'
-import type { Locales } from '../../../core/i18n/constant.js'
-import type { VerificationCodeCreateDto } from '../verification-codes.validator.js'
+import { EventBusEvent } from '../../../core/event-bus/event.ts'
+import type { Locales } from '../../../core/i18n/constant.ts'
+import type { VerificationCodeCreateDto } from '../verification-codes.validator.ts'
 
 export class VerificationCodeCreatedEvent extends EventBusEvent<{
   verificationCode: VerificationCodeCreateDto & { code: string }

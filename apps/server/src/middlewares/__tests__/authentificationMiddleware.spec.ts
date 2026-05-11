@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken'
 import { faker } from '@faker-js/faker'
 import supertest from 'supertest'
 import { describe, expect, test } from 'vitest'
-import { config } from '../../config.js'
-import { COOKIE_MAX_AGE } from '../../features/authentication/authentication.service.js'
-import { authentificationMiddleware } from '../authentificationMiddleware.js'
+import { config } from '../../config.ts'
+import { COOKIE_MAX_AGE } from '../../features/authentication/authentication.service.ts'
+import { authentificationMiddleware } from '../authentificationMiddleware.ts'
 
 describe('authentication middleware', () => {
   const app = express()

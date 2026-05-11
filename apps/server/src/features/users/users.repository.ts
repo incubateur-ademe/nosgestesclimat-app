@@ -1,13 +1,13 @@
 import type { Request } from 'express'
-import type { Prisma, User } from '../../adapters/prisma/generated.js'
-import { defaultUserSelection } from '../../adapters/prisma/selection.js'
+import type { Prisma, User } from '../../adapters/prisma/generated.ts'
+import { defaultUserSelection } from '../../adapters/prisma/selection.ts'
 import type {
   FetchEntityResponse,
   RequestOptions,
   RequestOptionsOrNull,
   Session,
-} from '../../adapters/prisma/transaction.js'
-import type { UserUpdateDto } from './users.validator.js'
+} from '../../adapters/prisma/transaction.ts'
+import type { UserUpdateDto } from './users.validator.ts'
 
 /**
  * Legacy migration function. Finds all anonymous users sharing the same

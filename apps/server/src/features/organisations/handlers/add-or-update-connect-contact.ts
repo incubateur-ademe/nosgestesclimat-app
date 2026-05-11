@@ -1,7 +1,7 @@
-import { addOrUpdateContact } from '../../../adapters/connect/client.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.event.js'
-import type { OrganisationUpdatedEvent } from '../events/OrganisationUpdated.event.js'
+import { addOrUpdateContact } from '../../../adapters/connect/client.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.event.ts'
+import type { OrganisationUpdatedEvent } from '../events/OrganisationUpdated.event.ts'
 
 export const addOrUpdateConnectContact: Handler<
   OrganisationCreatedEvent | OrganisationUpdatedEvent

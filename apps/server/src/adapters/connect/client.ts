@@ -1,9 +1,9 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
-import { config } from '../../config.js'
-import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.js'
-import logger from '../../logger.js'
-import type { VerifiedUser } from '../prisma/generated.js'
+import { config } from '../../config.ts'
+import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
+import logger from '../../logger.ts'
+import type { VerifiedUser } from '../prisma/generated.ts'
 
 const { clientId, clientSecret, url } = config.thirdParty.connect
 /**

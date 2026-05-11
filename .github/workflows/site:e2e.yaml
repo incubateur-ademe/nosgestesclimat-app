@@ -6,30 +6,18 @@ on:
       site_url:
         type: string
         description: 'URL of the site to test'
-        required: false
-        default: 'http://localhost:3000'
-      server_url:
-        type: string
-        description: 'URL of the server to test'
-        required: false
-        default: 'https://server.preprod.nosgestesclimat.fr'
+        required: true
+
     secrets:
-      CMS_TOKEN:
-        required: false
-        description: 'Token for the CMS API'
       MAILISK_API_KEY:
         required: true
         description: 'API key for Mailisk'
 
 env:
-  LOCAL_TEST: ${{ inputs.site_url == 'http://localhost:3000' }}
   NEXT_PUBLIC_SITE_URL: ${{ inputs.site_url }}
-  NEXT_PUBLIC_SERVER_URL: ${{ inputs.server_url }}
 
 jobs:
-  # Build and setup job - runs on a single machine
   setup:
-    # Skip entire workflow if PR is a draft (all other jobs depend on this one)
     runs-on: ubuntu-latest
     environment:
       name: Test E2E
@@ -49,14 +37,7 @@ jobs:
         env:
           MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
           MAILISK_NAMESPACE: ${{ vars.MAILISK_NAMESPACE }}
-          CMS_URL: ${{ vars.CMS_URL }}
-          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
-          IRON_SESSION_PASSWORD: ${{ vars.IRON_SESSION_PASSWORD }}
-          SERVER_AUTH_COOKIE_NAME: ${{ vars.SERVER_AUTH_COOKIE_NAME }}
-
-        run: |
-          ${{ env.LOCAL_TEST == 'true' && 'pnpm start &' || '' }}
-          pnpm playwright test --project="global setup"
+        run: pnpm playwright test --project="global setup"
 
       - name: Upload state artifacts
         uses: actions/upload-artifact@v6
@@ -73,7 +54,6 @@ jobs:
           path: apps/site/blob-report
           retention-days: 1
 
-  # Project-based test jobs - runs on 3 machines in parallel
   e2e-tests:
     environment:
       name: Test E2E
@@ -114,13 +94,7 @@ jobs:
         env:
           MAILISK_API_KEY: ${{ secrets.MAILISK_API_KEY }}
           MAILISK_NAMESPACE: ${{ vars.MAILISK_NAMESPACE }}
-          CMS_URL: ${{ vars.CMS_URL }}
-          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
-          IRON_SESSION_PASSWORD: ${{ vars.IRON_SESSION_PASSWORD }}
-          SERVER_AUTH_COOKIE_NAME: ${{ vars.SERVER_AUTH_COOKIE_NAME }}
-        run: |
-          ${{ env.LOCAL_TEST && 'pnpm start &' || ''}}
-          pnpm playwright test --no-deps --project="${{ matrix.project }}"
+        run: pnpm playwright test --no-deps --project="${{ matrix.project }}"
 
       - name: Upload blob report
         if: ${{ !cancelled() }}
@@ -130,7 +104,6 @@ jobs:
           path: apps/site/blob-report
           retention-days: 1
 
-  # Merge reports from all shards
   merge-reports:
     if: ${{ !cancelled() }}
     needs: [e2e-tests]

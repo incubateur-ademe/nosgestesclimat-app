@@ -4,20 +4,20 @@ import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { prisma } from '../../../../../adapters/prisma/client.js'
-import { ApiScopeName } from '../../../../../adapters/prisma/generated.js'
-import { client } from '../../../../../adapters/scaleway/client.js'
-import app from '../../../../../app.js'
-import { config } from '../../../../../config.js'
-import logger from '../../../../../logger.js'
-import { ExternalServiceTypeEnum } from '../../../integrations.validator.js'
-import { recoverApiToken } from '../../authentication/__tests__/fixtures/authentication.fixtures.js'
-import { SCOPES_FOR_PARTNERS } from '../mapping-file.service.js'
+import { prisma } from '../../../../../adapters/prisma/client.ts'
+import { ApiScopeName } from '../../../../../adapters/prisma/generated.ts'
+import { client } from '../../../../../adapters/scaleway/client.ts'
+import app from '../../../../../app.ts'
+import { config } from '../../../../../config.ts'
+import logger from '../../../../../logger.ts'
+import { ExternalServiceTypeEnum } from '../../../integrations.validator.ts'
+import { recoverApiToken } from '../../authentication/__tests__/fixtures/authentication.fixtures.ts'
+import { SCOPES_FOR_PARTNERS } from '../mapping-file.service.ts'
 import {
   FETCH_MAPPING_FILE_ROUTE,
   randomMappingFileKind,
   randomPartner,
-} from './fixtures/index.js'
+} from './fixtures/index.ts'
 
 describe('Given a NGC integrations API user', () => {
   const agent = supertest(app)

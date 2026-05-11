@@ -2,18 +2,18 @@ import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import type supertest from 'supertest'
 import { vi } from 'vitest'
-import { brevoSendEmail } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../../adapters/prisma/client.js'
-import type { VerificationCodeMode } from '../../../../adapters/prisma/generated.js'
-import { redis } from '../../../../adapters/redis/client.js'
-import { KEYS } from '../../../../adapters/redis/constant.js'
+import { brevoSendEmail } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../../adapters/prisma/client.ts'
+import type { VerificationCodeMode } from '../../../../adapters/prisma/generated.ts'
+import { redis } from '../../../../adapters/redis/client.ts'
+import { KEYS } from '../../../../adapters/redis/constant.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../../core/event-bus/event-bus.js'
-import * as authenticationService from '../../authentication.service.js'
-import type { VerificationCodeCreateDto } from '../../verification-codes.validator.js'
+} from '../../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../../core/event-bus/event-bus.ts'
+import * as authenticationService from '../../authentication.service.ts'
+import type { VerificationCodeCreateDto } from '../../verification-codes.validator.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 

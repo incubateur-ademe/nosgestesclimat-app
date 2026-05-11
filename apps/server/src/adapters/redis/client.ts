@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis'
-import { config } from '../../config.js'
-import logger from '../../logger.js'
+import { config } from '../../config.ts'
+import logger from '../../logger.ts'
 
 export const redisClientFactory = () =>
   new Redis(config.app.redis.url, {

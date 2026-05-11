@@ -7,16 +7,16 @@ import {
   brevoRemoveFromList,
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { ListIds } from '../../../adapters/brevo/constant.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import logger from '../../../logger.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
-import * as authenticationService from '../../authentication/authentication.service.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { ListIds } from '../../../adapters/brevo/constant.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import logger from '../../../logger.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
+import * as authenticationService from '../../authentication/authentication.service.ts'
 
 vi.mock('../../../adapters/prisma/transaction', async () => ({
   ...(await vi.importActual('../../../adapters/prisma/transaction')),

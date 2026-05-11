@@ -1,11 +1,12 @@
 {
   "extends": ["../../tsconfig.json"],
   "compilerOptions": {
-    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
-    "target": "es2022",
-    "checkJs": true,
+    "target": "esnext",
     "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "checkJs": true,
     "types": ["node"],
     "incremental": true
   },

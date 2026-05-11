@@ -2,14 +2,14 @@ import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
-import { prisma } from '../../../adapters/prisma/client.js'
-import app from '../../../app.js'
-import type { SimulationCreateInputDto } from '../simulations.validator.js'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import app from '../../../app.ts'
+import type { SimulationCreateInputDto } from '../simulations.validator.ts'
 import {
   CREATE_SIMULATION_ROUTE,
   createSimulation,
   getRandomTestCase,
-} from './fixtures/simulations.fixtures.js'
+} from './fixtures/simulations.fixtures.ts'
 
 describe('Given a completed simulation (progression = 1)', () => {
   const agent = supertest(app)
