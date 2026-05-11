@@ -1,5 +1,5 @@
-import type { ISOSupportedLanguage } from '../../geo/types/language.js'
-import type { ActionMedia } from './action-media.js'
+import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import type { ActionMedia } from './action-media.ts'
 
 /** An action one can take to improve their CO2 footprint */
 export interface Action {

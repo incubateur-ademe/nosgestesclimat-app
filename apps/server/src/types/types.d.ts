@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type { NodeValue } from '@incubateur-ademe/nosgestesclimat'
-import type { CustomAdditionalQuestionType } from '../schemas/PollSchema.js'
+import type { CustomAdditionalQuestionType } from '../schemas/PollSchema.ts'
 
 declare global {
   namespace Express {

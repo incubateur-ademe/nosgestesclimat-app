@@ -9,8 +9,8 @@ import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json'
 import Engine from 'publicodes'
 
 import { describe, expect, test } from 'vitest'
-import type { SituationSchema } from '../../simulations.validator.js'
-import { getSituationDottedNameValue } from '../situation.service.js'
+import type { SituationSchema } from '../../simulations.validator.ts'
+import { getSituationDottedNameValue } from '../situation.service.ts'
 
 const frRules = modelRules as Partial<NGCRules>
 const funFactsRules = modelFunFacts as { [k in keyof FunFacts]: DottedName }

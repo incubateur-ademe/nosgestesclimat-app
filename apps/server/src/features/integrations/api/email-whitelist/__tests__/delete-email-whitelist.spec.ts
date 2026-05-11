@@ -3,20 +3,20 @@ import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { prisma } from '../../../../../adapters/prisma/client.js'
-import { ApiScopeName } from '../../../../../adapters/prisma/generated.js'
-import * as prismaTransactionAdapter from '../../../../../adapters/prisma/transaction.js'
-import app from '../../../../../app.js'
-import { config } from '../../../../../config.js'
-import logger from '../../../../../logger.js'
+import { prisma } from '../../../../../adapters/prisma/client.ts'
+import { ApiScopeName } from '../../../../../adapters/prisma/generated.ts'
+import * as prismaTransactionAdapter from '../../../../../adapters/prisma/transaction.ts'
+import app from '../../../../../app.ts'
+import { config } from '../../../../../config.ts'
+import logger from '../../../../../logger.ts'
 import {
   randomApiScopeName,
   recoverApiToken,
-} from '../../authentication/__tests__/fixtures/authentication.fixtures.js'
+} from '../../authentication/__tests__/fixtures/authentication.fixtures.ts'
 import {
   createEmailWhitelist,
   DELETE_EMAIL_WHITELIST_ROUTE,
-} from './fixtures/email-whitelist.fixture.js'
+} from './fixtures/email-whitelist.fixture.ts'
 
 describe('Given a NGC integrations API user', () => {
   const agent = supertest(app)
@@ -107,7 +107,7 @@ describe('Given a NGC integrations API user', () => {
         })
       })
 
-      describe(`And whitelist has ${scope} scope`, () => {
+      describe(`And whitelist has ${String(scope)} scope`, () => {
         beforeEach(async () => {
           ;({ id: whitelistId } = await createEmailWhitelist({
             agent,

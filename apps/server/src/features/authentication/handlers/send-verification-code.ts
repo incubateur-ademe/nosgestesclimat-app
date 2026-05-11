@@ -1,6 +1,6 @@
-import { sendVerificationCodeEmail } from '../../../adapters/brevo/client.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { VerificationCodeCreatedEvent } from '../events/VerificationCodeCreated.event.js'
+import { sendVerificationCodeEmail } from '../../../adapters/brevo/client.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { VerificationCodeCreatedEvent } from '../events/VerificationCodeCreated.event.ts'
 
 export const sendVerificationCode: Handler<VerificationCodeCreatedEvent> = ({
   attributes: {

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { LocaleQuery } from '../../core/i18n/lang.validator.js'
+import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
 export const LoginDto = z
   .object({

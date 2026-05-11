@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker'
 import dayjs from 'dayjs'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
-import { formatBrevoDate } from '../../../adapters/brevo/__tests__/fixtures/formatBrevoDate.js'
-import { brevoGetNewsletter } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { ListIds } from '../../../adapters/brevo/constant.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import type { BrevoNewsletterStats } from '../../../adapters/prisma/generated.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import logger from '../../../logger.js'
-import { recoverNewsletterSubscriptions } from '../stats.service.js'
+import { formatBrevoDate } from '../../../adapters/brevo/__tests__/fixtures/formatBrevoDate.ts'
+import { brevoGetNewsletter } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { ListIds } from '../../../adapters/brevo/constant.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import type { BrevoNewsletterStats } from '../../../adapters/prisma/generated.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import logger from '../../../logger.ts'
+import { recoverNewsletterSubscriptions } from '../stats.service.ts'
 
 describe('Given newsletter stats recover job', () => {
   let newsletterSubscriptions: Array<{

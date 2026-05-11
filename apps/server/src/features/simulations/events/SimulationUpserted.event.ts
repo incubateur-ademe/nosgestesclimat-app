@@ -4,11 +4,11 @@ import type {
   Poll,
   Simulation,
   User,
-} from '../../../adapters/prisma/generated.js'
-import { EventBusEvent } from '../../../core/event-bus/event.js'
-import type { Locales } from '../../../core/i18n/constant.js'
-import type { ModelToDto } from '../../../types/types.js'
-import type { SimulationCreateQuery } from '../simulations.validator.js'
+} from '../../../adapters/prisma/generated.ts'
+import { EventBusEvent } from '../../../core/event-bus/event.ts'
+import type { Locales } from '../../../core/i18n/constant.ts'
+import type { ModelToDto } from '../../../types/types.ts'
+import type { SimulationCreateQuery } from '../simulations.validator.ts'
 
 export type SimulationEvent = Pick<
   Simulation,

@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { addOrUpdateContact } from '../adapters/brevo/client.js'
 import { Attributes } from '../adapters/brevo/constant.js'
 import { prisma } from '../adapters/prisma/client.js'
@@ -55,9 +54,8 @@ export const syncOrganisationToBrevo = async (
       : {}),
     ...(organisationLastSimulationDate != null
       ? {
-          [Attributes.LAST_ORGANISATION_SIMULATION_DATE]: dayjs(
-            organisationLastSimulationDate
-          ).format('YYYY-MM-DD'),
+          [Attributes.LAST_ORGANISATION_SIMULATION_DATE]:
+            organisationLastSimulationDate.toISOString().slice(0, 10),
         }
       : {}),
   }

@@ -1,4 +1,4 @@
-import { EventBusEvent } from '../../../core/event-bus/event.js'
+import { EventBusEvent } from '../../../core/event-bus/event.ts'
 
 export class JobCreatedEvent extends EventBusEvent<{
   jobId: string

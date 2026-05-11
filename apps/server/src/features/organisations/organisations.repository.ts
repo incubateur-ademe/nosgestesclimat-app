@@ -1,18 +1,18 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { Request } from 'express'
 import slugify from 'slugify'
-import type { JsonValue } from '../../adapters/prisma/generated.js'
-import { Prisma } from '../../adapters/prisma/generated.js'
+import type { JsonValue } from '../../adapters/prisma/generated.ts'
+import { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   defaultOrganisationSelection,
   defaultOrganisationSelectionWithoutPolls,
   defaultPollSelection,
   defaultVerifiedUserSelection,
-} from '../../adapters/prisma/selection.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import type { PaginationQuery } from '../../core/pagination.js'
-import type { SimulationParams } from '../simulations/simulations.validator.js'
-import { ComputedResultSchema } from '../simulations/simulations.validator.js'
+} from '../../adapters/prisma/selection.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import type { PaginationQuery } from '../../core/pagination.ts'
+import type { SimulationParams } from '../simulations/simulations.validator.ts'
+import { ComputedResultSchema } from '../simulations/simulations.validator.ts'
 import type {
   OrganisationCreateDto,
   OrganisationParams,
@@ -22,7 +22,7 @@ import type {
   OrganisationUpdateDto,
   PollParams,
   PublicPollParams,
-} from './organisations.validator.js'
+} from './organisations.validator.ts'
 
 const findModelUniqueSlug = (model: 'organisation' | 'poll') => {
   const findUniqueSlug = async (
@@ -771,7 +771,7 @@ export type OrganisationsBatchBrevoStats = {
   organisationLastSimulationDate: Date | null
 }
 
-export const getOrganisationsBatchBrevoStats = async ({
+export const getOrganisationsBatchBrevoStats = ({
   session,
 }: {
   session: Session

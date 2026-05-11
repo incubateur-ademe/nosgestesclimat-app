@@ -1,5 +1,5 @@
 name: 'Setup site'
-description: 'Setup Node.js, install dependencies, and build the Next.js app'
+description: 'Setup Node.js and install dependencies'
 
 runs:
   using: 'composite'
@@ -16,12 +16,3 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
-
-    - name: Cache Next.js build
-      uses: actions/cache@v5
-      with:
-        path: |
-          ${{ github.workspace }}/apps/site/.next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/site/src/**/*.{js,jsx,ts,tsx}') }}
-        restore-keys: |
-          ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-

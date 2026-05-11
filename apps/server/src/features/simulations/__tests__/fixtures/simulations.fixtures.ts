@@ -9,25 +9,25 @@ import jwt from 'jsonwebtoken'
 import type { PublicodesExpression } from 'publicodes'
 import Engine, { utils } from 'publicodes'
 import type supertest from 'supertest'
-import { carbonMetric, waterMetric } from '../../simulation.constant.js'
+import { carbonMetric, waterMetric } from '../../simulation.constant.ts'
 
 import {
   brevoRemoveFromList,
   brevoUpdateContact,
-} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
+} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../../core/event-bus/event-bus.js'
-import type { Metric } from '../../../../types/types.js'
-import { COOKIE_NAME } from '../../../authentication/authentication.service.js'
+} from '../../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../../core/event-bus/event-bus.ts'
+import type { Metric } from '../../../../types/types.ts'
+import { COOKIE_NAME } from '../../../authentication/authentication.service.ts'
 import type {
   ExtendedSituationSchema,
   SimulationCreateInputDto,
   SimulationParticipantCreateInputDto,
-} from '../../simulations.validator.js'
-import { SituationSchema } from '../../simulations.validator.js'
+} from '../../simulations.validator.ts'
+import { SituationSchema } from '../../simulations.validator.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 

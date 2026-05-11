@@ -43,7 +43,7 @@ jobs:
           key: ${{ runner.os }}-tsc-${{ hashFiles('apps/*/tsconfig.json', 'packages/*/tsconfig.json') }}
 
       - name: Generate types, db client…
-        run: pnpm --filter "...[origin/main]" generate
+        run: pnpm --filter "...[origin/main]..." generate
 
       - name: Lint
         run: pnpm --filter "[origin/main]" lint --cache-strategy content

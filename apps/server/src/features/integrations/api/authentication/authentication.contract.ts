@@ -4,7 +4,7 @@ import { z } from 'zod'
 import {
   isValidRefreshToken,
   REFRESH_TOKEN_SCOPE,
-} from './authentication.service.js'
+} from './authentication.service.ts'
 
 const GenerateAPITokenRequestDto = z
   .object({

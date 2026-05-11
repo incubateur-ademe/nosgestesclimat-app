@@ -6,14 +6,14 @@ import {
   PutObjectCommand,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { ApiScopeName } from '../../../../adapters/prisma/generated.js'
-import { client } from '../../../../adapters/scaleway/client.js'
-import { config } from '../../../../config.js'
-import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../../../core/errors/ForbiddenException.js'
-import { isScalewayErrorNotFound } from '../../../../core/typeguards/isScalewayError.js'
-import { ExternalServiceTypeEnum } from '../../integrations.validator.js'
-import type { MappingFile, MappingFileParams } from './mapping-file.contract.js'
+import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
+import { client } from '../../../../adapters/scaleway/client.ts'
+import { config } from '../../../../config.ts'
+import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../../../core/errors/ForbiddenException.ts'
+import { isScalewayErrorNotFound } from '../../../../core/typeguards/isScalewayError.ts'
+import { ExternalServiceTypeEnum } from '../../integrations.validator.ts'
+import type { MappingFile, MappingFileParams } from './mapping-file.contract.ts'
 
 const MAPPING_FILES_ROOT_PATH = 'mapping-files'
 

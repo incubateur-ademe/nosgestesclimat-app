@@ -1,12 +1,12 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import logger from '../../logger.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
-import { exportSituation, getPartnerFeatures } from './integrations.service.js'
+import logger from '../../logger.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
+import { exportSituation, getPartnerFeatures } from './integrations.service.ts'
 import {
   FetchExternalServiceValidator,
   SituationExportValidator,
-} from './integrations.validator.js'
+} from './integrations.validator.ts'
 
 const router = express.Router()
 

@@ -1,4 +1,4 @@
-import type { ValueOf } from '../../types/types.js'
+import type { ValueOf } from '../../types/types.ts'
 
 export const Locales = {
   en: 'en',

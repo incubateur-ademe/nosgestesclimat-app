@@ -1,9 +1,9 @@
 import type {
   Organisation,
   VerifiedUser,
-} from '../../../adapters/prisma/generated.js'
-import { EventBusEvent } from '../../../core/event-bus/event.js'
-import { sanitizeOrganisationAdministratorName } from './event.mapper.js'
+} from '../../../adapters/prisma/generated.ts'
+import { EventBusEvent } from '../../../core/event-bus/event.ts'
+import { sanitizeOrganisationAdministratorName } from './event.mapper.ts'
 
 export type OrganisationUpdatedEventAttributes = {
   organisation: Organisation & { administrators: Array<{ user: VerifiedUser }> }

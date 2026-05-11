@@ -2,8 +2,8 @@ import type {
   Prisma,
   VerificationCode,
   VerificationCodeMode,
-} from '../../adapters/prisma/generated.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
+} from '../../adapters/prisma/generated.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
 
 type SignVerificationCode = {
   id: string

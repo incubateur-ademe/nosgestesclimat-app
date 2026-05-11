@@ -1,14 +1,14 @@
 import { z } from 'zod'
-import { ListIds } from '../../adapters/brevo/constant.js'
+import { ListIds } from '../../adapters/brevo/constant.ts'
 import {
   PollDefaultAdditionalQuestionType,
   SimulationAdditionalQuestionAnswerType,
-} from '../../adapters/prisma/generated.js'
-import { LocaleQuery } from '../../core/i18n/lang.validator.js'
-import { PaginationQuery } from '../../core/pagination.js'
-import { LoginDto } from '../authentication/authentication.validator.js'
-import { PublicPollParams } from '../organisations/organisations.validator.js'
-import { UserParams } from '../users/users.validator.js'
+} from '../../adapters/prisma/generated.ts'
+import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
+import { PaginationQuery } from '../../core/pagination.ts'
+import { LoginDto } from '../authentication/authentication.validator.ts'
+import { PublicPollParams } from '../organisations/organisations.validator.ts'
+import { UserParams } from '../users/users.validator.ts'
 
 const MODEL_REGEX = /^[A-Z]+-[a-z]+-\d+\.\d+\.\d+$/
 

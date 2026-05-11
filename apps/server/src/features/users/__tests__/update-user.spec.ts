@@ -7,22 +7,22 @@ import {
   brevoDeleteContact,
   brevoGetContact,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import type { BrevoContactDto } from '../../../adapters/brevo/client.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import logger from '../../../logger.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
-import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.js'
-import { createSimulation } from '../../simulations/__tests__/fixtures/simulations.fixtures.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import type { BrevoContactDto } from '../../../adapters/brevo/client.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import logger from '../../../logger.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
+import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.ts'
+import { createSimulation } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
 import {
   createUser,
   getBrevoContact,
   UPDATE_USER_ROUTE,
-} from './fixtures/users.fixture.js'
+} from './fixtures/users.fixture.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)

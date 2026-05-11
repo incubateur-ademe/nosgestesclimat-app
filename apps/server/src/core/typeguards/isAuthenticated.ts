@@ -1,5 +1,5 @@
 import type { Request } from 'express'
-import type { UserParams } from '../../features/users/users.validator.js'
+import type { UserParams } from '../../features/users/users.validator.ts'
 
 export const isAuthenticated = (
   user: UserParams | NonNullable<Request['user']>
