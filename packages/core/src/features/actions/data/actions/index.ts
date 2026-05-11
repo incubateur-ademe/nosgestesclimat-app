@@ -5,7 +5,7 @@ import {
   misc,
   societalServices,
   transport,
-} from '../themes/index.js'
+} from '../themes/index.ts'
 
 const buildSampleActions = (
   prefix: string,
