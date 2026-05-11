@@ -157,8 +157,8 @@ const classNames: Record<
   transport: { headerBg: 'bg-transport-100', themeColor: 'text-transport-800' },
   housing: { headerBg: 'bg-logement-100', themeColor: 'text-logement-800' },
   societal_services: {
-    headerBg: 'bg-services-societaux-100',
-    themeColor: 'text-services-societaux-800',
+    headerBg: 'bg-servicessocietaux-100',
+    themeColor: 'text-servicessocietaux-800',
   },
   misc: { headerBg: 'bg-divers-100', themeColor: 'text-divers-800' },
 }
