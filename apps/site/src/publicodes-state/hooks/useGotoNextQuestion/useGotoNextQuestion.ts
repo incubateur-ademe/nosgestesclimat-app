@@ -36,7 +36,12 @@ export function useGotoNextQuestion({ isEmbedded, question }: Props) {
   return {
     goToNextQuestion: () => {
       if (withIntercalaire && isIntercalaireNext) {
-        return router.push(`${SIMULATOR_INTERCALAIRE_PATH}/${currentCategory}`)
+        const encodedQuestion = encodeURIComponent(
+          question.replaceAll(' . ', '.').replaceAll(' ', '_')
+        )
+        return router.push(
+          `${SIMULATOR_INTERCALAIRE_PATH}/${currentCategory}?question=${encodedQuestion}`
+        )
       } else {
         gotoNextQuestion()
       }

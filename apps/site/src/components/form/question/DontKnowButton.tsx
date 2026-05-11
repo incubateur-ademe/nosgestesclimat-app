@@ -20,7 +20,7 @@ interface Props {
 
 export default function DontKnowButton({ question }: Props) {
   const { t } = useClientTranslation()
-  const gotoNextQuestion = useGotoNextQuestion()
+  const { goToNextQuestion } = useGotoNextQuestion({ question })
   const { updateCurrentSimulation } = useCurrentSimulation()
 
   const { questionsOfMosaicFromParent, isMissing } = useRule(question)
@@ -70,7 +70,7 @@ export default function DontKnowButton({ question }: Props) {
     // Fold the step with the default value (skip behavior)
     handleFoldWithDefaultValue()
 
-    gotoNextQuestion()
+    goToNextQuestion()
   }
 
   return (

@@ -6,7 +6,8 @@ import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
 import type { Categories, DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 import { useEndTest } from '../../[root]/_hooks/useEndPage'
 import { orderedCategoriesWithoutServices } from '../_constants/getOrderedCategoriesWithoutServices'
 
@@ -17,7 +18,21 @@ interface Props {
 export default function TransitionButtons({ category }: Props) {
   const router = useRouter()
 
-  const { gotoNextQuestion } = useFormState()
+  const { gotoNextQuestion, currentQuestion, setCurrentQuestion } =
+    useFormState()
+
+  const searchParams = useSearchParams()
+
+  const questionFromUrl = decodeURI(searchParams.get('question') ?? '')
+    .replaceAll('.', ' . ')
+    .replaceAll('_', ' ') as DottedName | ''
+
+  // Restore currentQuestion from URL on page refresh
+  useEffect(() => {
+    if (!currentQuestion && questionFromUrl) {
+      setCurrentQuestion(questionFromUrl)
+    }
+  }, [currentQuestion, questionFromUrl, setCurrentQuestion])
 
   const { endTest, isPending } = useEndTest()
 
