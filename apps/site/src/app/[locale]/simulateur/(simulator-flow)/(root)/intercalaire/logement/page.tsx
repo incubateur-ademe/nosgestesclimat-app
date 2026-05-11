@@ -57,7 +57,7 @@ export default async function Page({
         locale={locale}
         funFactContent={
           <>
-            <p className="mb-0 w-40 max-w-full">
+            <p className="mb-0 w-40 max-w-full text-center font-medium">
               <span>
                 <Trans
                   locale={locale}

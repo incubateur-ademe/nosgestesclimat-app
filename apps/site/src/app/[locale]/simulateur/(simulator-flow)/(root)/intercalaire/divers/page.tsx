@@ -57,7 +57,7 @@ export default async function Page({
         locale={locale}
         funFactContent={
           <>
-            <p className="text-primary-600 mb-0 text-center text-2xl font-bold">
+            <p className="text-primary-600 mb-0 text-center text-2xl font-bold font-medium">
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.divers.funFact.line1">

@@ -33,7 +33,7 @@ export default function TransitionInfoCard({
           <FunFactCard>{funFactContent}</FunFactCard>
 
           <div className="relative w-80 max-w-full md:ml-16">
-            <p className="text-primary-600 mt-10 mb-8 text-center md:mt-16 md:text-left">
+            <p className="text-primary-600 mt-10 mb-8 text-center font-medium md:mt-16 md:text-left">
               {arrowText ?? (
                 <Trans
                   locale={locale}

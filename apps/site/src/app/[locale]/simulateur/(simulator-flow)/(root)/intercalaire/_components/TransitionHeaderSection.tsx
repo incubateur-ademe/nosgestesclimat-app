@@ -45,7 +45,10 @@ export default function TransitionHeaderSection({
 
   return (
     <>
-      <Title tag="h1" hasSeparator={false} className="text-primary-600">
+      <Title
+        tag="h1"
+        hasSeparator={false}
+        className="text-primary-600 font-medium">
         <Trans
           locale={locale}
           values={{ category: getCategoryString(category) }}
