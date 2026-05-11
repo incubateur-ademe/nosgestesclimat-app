@@ -1,5 +1,5 @@
 export const SIMULATOR_PATH = '/simulateur/bilan'
-export const TUTORIAL_PATH = '/tutoriel'
+export const TUTORIAL_PATH = '/simulateur/tutoriel'
 export const SIMULATOR_INTERCALAIRE_PATH = '/simulateur/intercalaire'
 export const START_SIMULATION_PATH = '/simulateur/commencer'
 

@@ -1,5 +1,10 @@
 const redirects = [
   {
+    source: '/tutoriel',
+    destination: '/simulateur/tutoriel',
+    permanent: true,
+  },
+  {
     source: '/modele',
     destination: '/doc',
     permanent: true,

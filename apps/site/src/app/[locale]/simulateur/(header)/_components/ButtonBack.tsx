@@ -7,13 +7,18 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useRouter } from 'next/navigation'
 
-export default function ButtonBack() {
+interface Props {
+  className?: string
+}
+
+export default function ButtonBack({ className }: Props) {
   const { t } = useClientTranslation()
   const { back } = useRouter()
   return (
     <Button
       color="secondary"
       title={t("Revenir à l'accueil")}
+      className={className}
       onClick={() => {
         trackMatomoEvent__deprecated(tutorielClickPrecedent)
         back()
