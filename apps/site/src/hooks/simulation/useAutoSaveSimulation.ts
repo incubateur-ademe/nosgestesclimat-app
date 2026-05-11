@@ -12,9 +12,7 @@ export function useAutoSaveSimulation() {
     },
     2000
   )
-  // Debounced save on every situation/foldedSteps change.
-  // No cleanup needed: the debounce function internally clears stale
-  // timeouts when a new call is made.
+
   useEffect(() => {
     debouncedSaveSimulation({ simulation: currentSimulation })
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
