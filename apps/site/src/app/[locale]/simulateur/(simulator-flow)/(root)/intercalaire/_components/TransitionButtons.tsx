@@ -4,10 +4,10 @@ import Trans from '@/components/translation/trans/TransClient'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useRestoreQuestionFromSearchParams } from '@/hooks/useRestoreQuestionFromSearchParams'
 import { useFormState } from '@/publicodes-state'
 import type { Categories, DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useEndTest } from '../../[root]/_hooks/useEndPage'
 import { orderedCategoriesWithoutServices } from '../_constants/getOrderedCategoriesWithoutServices'
 
@@ -18,21 +18,9 @@ interface Props {
 export default function TransitionButtons({ category }: Props) {
   const router = useRouter()
 
-  const { gotoNextQuestion, currentQuestion, setCurrentQuestion } =
-    useFormState()
+  const { gotoNextQuestion } = useFormState()
 
-  const searchParams = useSearchParams()
-
-  const questionFromUrl = decodeURI(searchParams.get('question') ?? '')
-    .replaceAll('.', ' . ')
-    .replaceAll('_', ' ') as DottedName | ''
-
-  // Restore currentQuestion from URL on page refresh
-  useEffect(() => {
-    if (!currentQuestion && questionFromUrl) {
-      setCurrentQuestion(questionFromUrl)
-    }
-  }, [currentQuestion, questionFromUrl, setCurrentQuestion])
+  useRestoreQuestionFromSearchParams()
 
   const { endTest, isPending } = useEndTest()
 
