@@ -12,10 +12,9 @@ import { useEndTest } from '../../[root]/_hooks/useEndPage'
 
 interface Props {
   category: Categories
-  showResults?: boolean
 }
 
-export default function TransitionButtons({ category, showResults }: Props) {
+export default function TransitionButtons({ category }: Props) {
   const router = useRouter()
 
   const { remainingQuestionsByCategories, setCurrentQuestion } = useFormState()
@@ -28,6 +27,9 @@ export default function TransitionButtons({ category, showResults }: Props) {
     if (currentIndex === -1) return undefined
     return orderedCategories[currentIndex + 1] as Categories | undefined
   })()
+
+  const isLastCategory =
+    orderedCategories[orderedCategories.length - 1] === category
 
   const getCategoryString = (category: Categories) => {
     switch (category) {
@@ -49,7 +51,7 @@ export default function TransitionButtons({ category, showResults }: Props) {
   }
 
   const handleGoToNextQuestion = () => {
-    if (showResults) {
+    if (isLastCategory) {
       endTest()
       return
     }
@@ -90,7 +92,7 @@ export default function TransitionButtons({ category, showResults }: Props) {
       </Button>
 
       <Button onClick={handleGoToNextQuestion} disabled={isPending}>
-        {showResults || !nextCategory ? (
+        {isLastCategory || !nextCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
           </Trans>
