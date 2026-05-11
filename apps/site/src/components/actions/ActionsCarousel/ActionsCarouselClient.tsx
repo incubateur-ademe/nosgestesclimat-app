@@ -101,7 +101,7 @@ const NavigationButton = forwardRef(function NavigationButtonWithRef(
       {...props}
       className={twMerge(
         'absolute top-1/2 z-10 hidden -translate-y-1/2 md:flex',
-        'h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-[0_4px_4px_rgba(26,26,26,0.25)] transition-all',
+        'h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-all',
         'focus:outline-primary-700 hover:scale-110 disabled:opacity-0',
         className
       )}
