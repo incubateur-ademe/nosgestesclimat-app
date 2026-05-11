@@ -15,9 +15,7 @@ export function useAutoSaveSimulation() {
 
   useEffect(() => {
     debouncedSaveSimulation({ simulation: currentSimulation })
-  }, [currentSimulation.situation, currentSimulation.foldedSteps])
 
-  useEffect(() => {
     return () => {
       debouncedSaveSimulation.cancel()
     }
