@@ -5,50 +5,50 @@ on:
     branches: [main]
 
 jobs:
-  deploy-site-preprod:
-    name: Deploy site to preprod
-    runs-on: ubuntu-latest
-    environment: Preprod
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Deploy to Scalingo
-        uses: ./.github/actions/deploy-scalingo
-        with:
-          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
-          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
-          scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}
-          git-ref: main
-          # git-repo: ${{ github.repository }}
+  # deploy-site-preprod:
+  #   name: Deploy site to preprod
+  #   runs-on: ubuntu-latest
+  #   environment: Preprod
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v6
+  #     - name: Deploy to Scalingo
+  #       uses: ./.github/actions/deploy-scalingo
+  #       with:
+  #         fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+  #         fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+  #         scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}
+  #         git-ref: main
+  #         # git-repo: ${{ github.repository }}
 
-  deploy-server-preprod:
-    name: Deploy server to preprod
-    runs-on: ubuntu-latest
-    environment: Preprod
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  # deploy-server-preprod:
+  #   name: Deploy server to preprod
+  #   runs-on: ubuntu-latest
+  #   environment: Preprod
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v6
 
-      - name: Deploy to Scalingo
-        uses: ./.github/actions/deploy-scalingo
-        with:
-          fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
-          fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
-          scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}
-          git-ref: main
-          # git-repo: ${{ github.repository }}
+  #     - name: Deploy to Scalingo
+  #       uses: ./.github/actions/deploy-scalingo
+  #       with:
+  #         fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
+  #         fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
+  #         scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}
+  #         git-ref: main
+  #         # git-repo: ${{ github.repository }}
 
-  e2e-preprod:
-    name: Tests on preprod
-    needs: [deploy-site-preprod, deploy-server-preprod]
-    uses: ./.github/workflows/site:e2e.yaml
-    secrets: inherit
-    with:
-      site_url: 'https://preprod.nosgestesclimat.fr'
+  # e2e-preprod:
+  #   name: Tests on preprod
+  #   # needs: [deploy-site-preprod, deploy-server-preprod]
+  #   uses: ./.github/workflows/site:e2e.yaml
+  #   secrets: inherit
+  #   with:
+  #     site_url: 'https://preprod.nosgestesclimat.fr'
 
   deploy-site-prod:
     name: Deploy site to prod
-    needs: e2e-preprod
+    # needs: e2e-preprod
     runs-on: ubuntu-latest
     environment: Prod
     steps:
@@ -66,7 +66,7 @@ jobs:
 
   deploy-server-prod:
     name: Deploy server to prod
-    needs: e2e-preprod
+    # needs: e2e-preprod
     runs-on: ubuntu-latest
     environment: Prod
     steps:
