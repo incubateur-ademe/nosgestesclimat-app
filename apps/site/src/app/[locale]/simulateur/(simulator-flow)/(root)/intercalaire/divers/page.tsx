@@ -43,7 +43,7 @@ export default async function Page({
         remainingSteps={0}
       />
 
-      <TransitionButtons nextCategory="divers" showResults />
+      <TransitionButtons category="divers" showResults />
 
       <TransitionInfoCard
         className="bg-divers-100"

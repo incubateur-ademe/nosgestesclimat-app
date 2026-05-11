@@ -43,7 +43,7 @@ export default async function Page({
         remainingSteps={3}
       />
 
-      <TransitionButtons nextCategory="alimentation" />
+      <TransitionButtons category="logement" />
 
       <TransitionInfoCard
         className="bg-logement-100"

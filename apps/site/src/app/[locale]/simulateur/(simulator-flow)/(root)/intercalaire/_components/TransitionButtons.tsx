@@ -1,22 +1,21 @@
 'use client'
+
 import Trans from '@/components/translation/trans/TransClient'
+import { orderedCategories } from '@/constants/model/orderedCategories'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
-import type { Categories } from '@incubateur-ademe/nosgestesclimat'
+import type { Categories, DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
 import { useEndTest } from '../../[root]/_hooks/useEndPage'
 
 interface Props {
-  nextCategory: Categories
+  category: Categories
   showResults?: boolean
 }
 
-export default function TransitionButtons({
-  nextCategory,
-  showResults,
-}: Props) {
+export default function TransitionButtons({ category, showResults }: Props) {
   const router = useRouter()
 
   const { remainingQuestionsByCategories, setCurrentQuestion } = useFormState()
@@ -24,16 +23,28 @@ export default function TransitionButtons({
 
   const { t } = useClientTranslation()
 
+  const nextCategory: Categories | undefined = (() => {
+    const currentIndex = orderedCategories.indexOf(category as DottedName)
+    if (currentIndex === -1) return undefined
+    return orderedCategories[currentIndex + 1] as Categories | undefined
+  })()
+
   const getCategoryString = (category: Categories) => {
     switch (category) {
       case 'logement':
-        return t('au logement')
+        return t('simulator.intercalaire.goToLogement', 'Passer au logement')
       case 'alimentation':
-        return t("à l'alimentation")
+        return t(
+          'simulator.intercalaire.goToAlimentation',
+          "Passer à l'alimentation"
+        )
       case 'transport':
-        return t('au transport')
+        return t('simulator.intercalaire.goToTransport', 'Passer au transport')
       default:
-        return t('à la consommation')
+        return t(
+          'simulator.intercalaire.goToConsommation',
+          'Passer à la consommation'
+        )
     }
   }
 
@@ -43,9 +54,15 @@ export default function TransitionButtons({
       return
     }
 
-    // Use the deterministic nextCategory prop to find the first remaining
-    // question of the next category. This avoids relying on mutable
-    // currentQuestion state which is lost on page reload.
+    if (!nextCategory) {
+      endTest()
+      return
+    }
+
+    // Use the deterministic nextCategory (derived from orderedCategories)
+    // to find the first remaining question of the next category.
+    // This avoids relying on mutable currentQuestion state which is lost on
+    // page reload.
     const questionsOfNextCategory = remainingQuestionsByCategories[nextCategory]
     const firstQuestionOfNextCategory = questionsOfNextCategory[0]
 
@@ -73,18 +90,12 @@ export default function TransitionButtons({
       </Button>
 
       <Button onClick={handleGoToNextQuestion} disabled={isPending}>
-        {showResults ? (
+        {showResults || !nextCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
           </Trans>
         ) : (
-          <>
-            <Trans
-              values={{ nextCategory: getCategoryString(nextCategory) }}
-              i18nKey="simulator.intercalaire.nextButton">
-              Passer {{ nextCategory } as unknown as string}
-            </Trans>{' '}
-          </>
+          getCategoryString(nextCategory)
         )}
         <span aria-hidden className="ml-1.5 inline-block text-xl">
           →
