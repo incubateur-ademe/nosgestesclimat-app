@@ -22,15 +22,7 @@ export default function ActionsPage({
   className,
   ...props
 }: ActionsPageProps) {
-  const actionsByTheme = actions.reduce(
-    (acc, action) => {
-      const themeKey = action.theme.key
-      acc[themeKey] ??= []
-      acc[themeKey].push(action)
-      return acc
-    },
-    {} as Record<Theme['key'], Action[] | undefined>
-  )
+  const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
 
   return (
     <div {...props} className={twMerge('pb-24', className)}>
