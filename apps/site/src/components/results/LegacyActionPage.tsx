@@ -5,7 +5,7 @@ import NoResultsBlock from '../dashboard/NoResultsBlock'
 import TopBar from '../simulation/TopBar'
 import ActionAutoSave from './actions/ActionAutoSave'
 import ActionsContent from './actions/ActionsContent'
-import ActionsTutorial from './actions/ActionsTutorial'
+import MTaTerreBanner from './actions/MTaTerreBanner'
 
 interface Props {
   simulations: Simulation[]
@@ -22,7 +22,9 @@ export function LegacyActionPage({ simulations, locale }: Props) {
 
           <TopBar className="mb-6" simulationMode={false} showTotal />
 
-          <ActionsTutorial />
+          <MTaTerreBanner locale={locale} />
+
+          {/* Commented while displaying M ta Terre banner <ActionsTutorial /> */}
 
           <ActionsContent />
         </FormProvider>
