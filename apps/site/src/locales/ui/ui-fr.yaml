@@ -1048,6 +1048,7 @@ entries:
   actions.components.themeSection.description_other: '{{count}} actions recommendées'
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
+  actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   C'est quoi mon empreinte carbone ?: C'est quoi mon empreinte carbone ?
   Cliquez pour ouvrir la liste des régions disponibles: Cliquez pour ouvrir la liste des régions disponibles
   Comment on la mesure ?: Comment on la mesure ?

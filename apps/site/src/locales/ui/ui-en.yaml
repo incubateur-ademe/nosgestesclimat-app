@@ -2122,3 +2122,5 @@ entries:
   actions.detailPage.sections.act.lock: J'agis
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
   actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
+  actions.components.actionCard.link: See the action "{{actionTitle}}"
+  actions.components.actionCard.link.lock: Voir l'action "{{actionTitle}}"
