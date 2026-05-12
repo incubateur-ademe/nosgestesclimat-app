@@ -1033,6 +1033,8 @@ entries:
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
   actions.listPage.title: Construire mon plan d’action
   actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  actions.detailPage.404.title: Action non trouvée
+  actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.components.themeSection.description_one: '{{count}} action recommendée'
   actions.components.themeSection.description_other: '{{count}} actions recommendées'
   actions.components.highestImpactActionsSection.title: Le trio gagnant
