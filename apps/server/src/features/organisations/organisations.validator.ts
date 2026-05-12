@@ -1,12 +1,13 @@
 import { z } from 'zod'
+
 import {
   OrganisationType,
   PollDefaultAdditionalQuestionType,
   PollMode,
-} from '../../adapters/prisma/generated.js'
-import { LocaleQuery } from '../../core/i18n/lang.validator.js'
-import { PaginationQuery } from '../../core/pagination.js'
-import { UserParams } from '../users/users.validator.js'
+} from '@nosgestesclimat/core/prisma/generated/enums'
+import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
+import { PaginationQuery } from '../../core/pagination.ts'
+import { UserParams } from '../users/users.validator.ts'
 
 const OrganisationParams = z
   .object({
