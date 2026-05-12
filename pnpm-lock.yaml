@@ -82,11 +82,11 @@ importers:
         specifier: ^3.1023.0
         version: 3.1028.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: ^4.12.1
-        version: 4.12.1(publicodes@1.10.1)
+        specifier: ^4.12.2
+        version: 4.12.2(publicodes@1.10.1)
       '@nosgestesclimat/core':
         specifier: workspace:*
-        version: file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(magicast@0.5.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
+        version: file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(magicast@0.5.2)(publicodes@1.10.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -245,14 +245,14 @@ importers:
   apps/site:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: ^4.12.1
-        version: 4.12.1(publicodes@1.10.1)
+        specifier: ^4.12.2
+        version: 4.12.2(publicodes@1.10.1)
       '@next/mdx':
         specifier: ^16.2.2
         version: 16.2.2(@mdx-js/loader@3.1.1(webpack@5.105.4(esbuild@0.27.7)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.4))
       '@nosgestesclimat/core':
         specifier: workspace:*
-        version: file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+        version: file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(publicodes@1.10.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       '@publicodes/react-ui':
         specifier: ^1.10.0
         version: 1.10.0(publicodes@1.10.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -507,8 +507,8 @@ importers:
   packages/core:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.12.1
-        version: 4.12.1(publicodes@1.10.1)
+        specifier: 4.12.2
+        version: 4.12.2(publicodes@1.10.1)
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -2005,6 +2005,12 @@ packages:
 
   '@incubateur-ademe/nosgestesclimat@4.12.1':
     resolution: {integrity: sha512-eCMArH0/BORJVeICUnZsH+veDW2m3YTmLyBtte0nYeT/arLtbcbGh8t208jGTOjTVHSGvPTegY5D/1EfdDPGHQ==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      publicodes: ^1.8.5
+
+  '@incubateur-ademe/nosgestesclimat@4.12.2':
+    resolution: {integrity: sha512-xDoDo+56XeBH6SkKNIHSKh/9+YNe/trmBEuVuq94vp494Cfw5G98yfwsPM7kTrGEsIkWZ3Rqpm7LEEhzFOcXKw==}
     engines: {node: '>=24'}
     peerDependencies:
       publicodes: ^1.8.5
@@ -11666,6 +11672,10 @@ snapshots:
     dependencies:
       publicodes: 1.10.1
 
+  '@incubateur-ademe/nosgestesclimat@4.12.2(publicodes@1.10.1)':
+    dependencies:
+      publicodes: 1.10.1
+
   '@inquirer/ansi@1.0.2': {}
 
   '@inquirer/confirm@5.1.21(@types/node@18.19.130)':
@@ -11890,8 +11900,9 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@nosgestesclimat/core@file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(magicast@0.5.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)':
+  '@nosgestesclimat/core@file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(magicast@0.5.2)(publicodes@1.10.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)':
     dependencies:
+      '@incubateur-ademe/nosgestesclimat': 4.12.1(publicodes@1.10.1)
       '@prisma/adapter-pg': 7.8.0
       '@prisma/client': 7.8.0(prisma@7.8.0(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(magicast@0.5.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(typescript@5.9.3)
       dotenv: 17.4.2
@@ -11902,12 +11913,14 @@ snapshots:
       - better-sqlite3
       - magicast
       - pg-native
+      - publicodes
       - react
       - react-dom
       - typescript
 
-  '@nosgestesclimat/core@file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)':
+  '@nosgestesclimat/core@file:packages/core(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(publicodes@1.10.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)':
     dependencies:
+      '@incubateur-ademe/nosgestesclimat': 4.12.1(publicodes@1.10.1)
       '@prisma/adapter-pg': 7.8.0
       '@prisma/client': 7.8.0(prisma@7.8.0(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
       dotenv: 17.4.2
@@ -11918,6 +11931,7 @@ snapshots:
       - better-sqlite3
       - magicast
       - pg-native
+      - publicodes
       - react
       - react-dom
       - typescript

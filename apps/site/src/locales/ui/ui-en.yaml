@@ -1390,8 +1390,7 @@ entries:
   navigation.connexionInscription: Login/registration navigation
   navigation.connexionInscription.lock: Navigation connexion/inscription
   mon-espace.evolutionGraph.chartDisabledTitle.part2: to view the evolution of your footprint
-  mon-espace.evolutionGraph.chartDisabledTitle.part2.lock: pour avoir accès à l’évolution de votre empreinte
-  mon-espace.evolutionGraph.chartDisabledTitle.part2: to access the evolution of your footprint
+  mon-espace.evolutionGraph.chartDisabledTitle.part2.lock: pour avoir accès à l'évolution de votre empreinte
   mon-espace.actions.jagis.description.part5: and
   mon-espace.actions.jagis.description.part5.lock: et
   mon-espace.actions.jagis.description.part2: <0>Taking action</0>
@@ -2113,8 +2112,8 @@ entries:
   simulator.transition.divers.funFact.line2.lock: d'un appareil numérique
   simulator.funFact.housing.text1: The size of French homes has risen sharply
   simulator.funFact.housing.text1.lock: La taille des logements français a très fortement augmenté
-  simulator.intercalaire.subtitle.remaining.all: 'Only {{remainingCategories}} remaining!'
-  simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}}!
+  simulator.intercalaire.subtitle.remaining.all: More than {{remainingCategories}}!
+  simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}} !
   simulator.transition.alimentation.funFact.line1: Certain meals
   simulator.transition.alimentation.funFact.line1.lock: Certains repas
   simulator.transition.transport.funFact.line2: make the right choice!
