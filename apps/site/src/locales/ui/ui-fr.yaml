@@ -1101,7 +1101,7 @@ entries:
   mon-espace.shareSimulator.buttonLabel.mobile: Partager le test
   mon-espace.shareSimulator.title: Vous avez aimé calculer votre empreinte ?
   mon-espace.evolutionGraph.chartDisabledTitle.part1: Passez à nouveau le test
-  mon-espace.evolutionGraph.chartDisabledTitle.part2: pour avoir accès à l’évolution de votre empreinte
+  mon-espace.evolutionGraph.chartDisabledTitle.part2: pour avoir accès à l'évolution de votre empreinte
   mon-espace.evolutionGraph.simulationData: 'Résultat de test n°{{simulationNumber}} du {{simulationDate}} : {{simulationValue}} tonnes'
   Navigation de mon espace: Navigation de mon espace
   navigation.connexionInscription: Navigation connexion/inscription
@@ -1582,3 +1582,6 @@ entries:
   simulator.intercalaire.goToConsommation: Passer à la consommation
   simulator.intercalaire.goToLogement: Passer au logement
   simulator.intercalaire.goToTransport: Passer au transport
+  actions.mTaTerre.button: Explorer M ta Terre
+  actions.mTaTerre.text: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
+  actions.mTaTerre.title: Tu veux comprendre ET agir pour la planète ?

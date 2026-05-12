@@ -1391,6 +1391,7 @@ entries:
   navigation.connexionInscription.lock: Navigation connexion/inscription
   mon-espace.evolutionGraph.chartDisabledTitle.part2: to view the evolution of your footprint
   mon-espace.evolutionGraph.chartDisabledTitle.part2.lock: pour avoir accès à l’évolution de votre empreinte
+  mon-espace.evolutionGraph.chartDisabledTitle.part2: to access the evolution of your footprint
   mon-espace.actions.jagis.description.part5: and
   mon-espace.actions.jagis.description.part5.lock: et
   mon-espace.actions.jagis.description.part2: <0>Taking action</0>
@@ -2085,7 +2086,7 @@ entries:
   simulator.transition.alimentation.funFact.line2Suffix: <0>than others:</0>
   simulator.transition.alimentation.funFact.line2Suffix.lock: <0>que d'autres :</0>
   simulator.intercalaire.subtitle.remaining.one: One more to go!
-  simulator.intercalaire.subtitle.remaining.one.lock: Plus qu'une!
+  simulator.intercalaire.subtitle.remaining.one.lock: Plus qu'une !
   simulator.transition.logement.info.title: <0>Things to remember</0> about heating
   simulator.transition.logement.info.title.lock: <0>À retenir</0> sur le chauffage
   simulator.transition.divers.funFact.line4: manufacturing
@@ -2201,3 +2202,9 @@ entries:
   simulator.intercalaire.goToAlimentation.lock: Passer à l'alimentation
   simulator.intercalaire.goToTransport: Switching to transport
   simulator.intercalaire.goToTransport.lock: Passer au transport
+  actions.mTaTerre.button: Explore M ta Terre
+  actions.mTaTerre.button.lock: Explorer M ta Terre
+  actions.mTaTerre.title: Want to understand AND do something for the planet?
+  actions.mTaTerre.title.lock: Tu veux comprendre ET agir pour la planète ?
+  actions.mTaTerre.text: 'Climate, biodiversity, energy, food.<2>..</2><1></1><2></2> M<2>ta Terre</2> is the website for you: <5>articles</5>, <7>videos</7>, <10>podcasts</10> and <12>practical tips</12> to take action on a daily basis.'
+  actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."

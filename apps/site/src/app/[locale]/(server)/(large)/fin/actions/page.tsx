@@ -10,8 +10,8 @@ export default async function ResultatsActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUser()
-  // const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
-  const flag = true
+  const flag = false // await posthogClient.getFeatureFlag('actions-v2', user.id)
+
   if (!flag) {
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
