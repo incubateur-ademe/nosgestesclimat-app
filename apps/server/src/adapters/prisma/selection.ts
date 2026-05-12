@@ -2,7 +2,6 @@ export const defaultUserSelection = {
   id: true,
   name: true,
   email: true,
-  ageRange: true,
   createdAt: true,
   updatedAt: true,
 }
@@ -11,7 +10,6 @@ export const defaultVerifiedUserSelection = {
   id: true,
   name: true,
   email: true,
-  ageRange: true,
   position: true,
   telephone: true,
   optedInForCommunications: true,

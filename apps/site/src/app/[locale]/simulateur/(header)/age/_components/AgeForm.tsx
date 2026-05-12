@@ -22,7 +22,7 @@ export default function AgeForm() {
     { value: '18-24', label: t('simulator.age.options.18-24', '18 - 24 ans') },
     { value: '25-34', label: t('simulator.age.options.25-34', '25 - 34 ans') },
     { value: '35-49', label: t('simulator.age.options.35-49', '35 - 49 ans') },
-    { value: '50-64', label: t('simulator.age.options.50-64', '50 - 69 ans') },
+    { value: '50-64', label: t('simulator.age.options.50-64', '50 - 64 ans') },
     {
       value: 'over_65',
       label: t('simulator.age.options.65EtPlus', '65 ans et plus'),

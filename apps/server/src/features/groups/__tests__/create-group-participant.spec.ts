@@ -209,6 +209,7 @@ describe('Given a NGC user', () => {
             id: payload.userId,
             name: payload.name,
             email: payload.email,
+            ageRange: null,
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
           },

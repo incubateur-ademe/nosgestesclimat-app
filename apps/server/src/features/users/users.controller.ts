@@ -66,7 +66,7 @@ router
       return res.status(StatusCodes.OK).json({
         id: user!.id,
         email: user!.email,
-        ageRange: user!.ageRange,
+        ...(user!.ageRange ? { ageRange: user!.ageRange } : {}),
       })
     }
   )

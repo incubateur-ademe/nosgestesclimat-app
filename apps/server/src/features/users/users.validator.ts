@@ -22,11 +22,23 @@ export const FetchMeValidator = {
   query: z.object({}).strict(),
 }
 
+const AgeRange = z.enum([
+  'under_18',
+  '18-24',
+  '25-34',
+  '35-49',
+  '50-64',
+  'over_65',
+  'refused',
+])
+
+export type AgeRange = z.infer<typeof AgeRange>
+
 const UserUpdateDto = z
   .object({
     email: z.email().transform((email) => email.toLocaleLowerCase()),
     name: z.string(),
-    ageRange: z.string(),
+    ageRange: AgeRange,
     contact: z
       .object({
         listIds: z.array(z.enum(ListIds)),
