@@ -1,14 +1,13 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { AGE_RANGE_KEY, DEFAULT_TEST_VARIANT_KEY } from '@/constants/ab-test'
+import { AGE_RANGE_KEY } from '@/constants/ab-test'
 import { AGE_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { useFeatureFlagVariantKey } from '@posthog/react'
+import { useABTest } from '@/hooks/useABTest'
 
 export default function ButtonNext() {
-  const isTestVersion =
-    useFeatureFlagVariantKey(AGE_RANGE_KEY) == DEFAULT_TEST_VARIANT_KEY
+  const isTestVersion = useABTest(AGE_RANGE_KEY)
 
   return (
     <ButtonLink
