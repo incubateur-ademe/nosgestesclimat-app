@@ -1,3 +1,4 @@
+import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import Link from 'next/link'
@@ -34,7 +35,9 @@ export default function ActionCard({
       <div className="grow">
         <h3 className="mb-0 text-base/normal font-bold">{action.title}</h3>
       </div>
-      <Link href={`/actions/${action.slug}`} className="absolute inset-0 z-10">
+      <Link
+        href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
+        className="absolute inset-0 z-10">
         <span className="sr-only">Voir l'action "{action.title}"</span>
       </Link>
       {/* <div className="-mx-2 border-t border-slate-100 px-2 pt-2">
