@@ -17,14 +17,12 @@ import { useEffect } from 'react'
 
 interface Props {
   action: Action
-  category: DottedName
   onComplete: () => void
   handleUpdatePersistedActions?: () => void
 }
 
 export default function ActionForm({
   action,
-  category,
   onComplete,
   handleUpdatePersistedActions = () => {},
 }: Props) {

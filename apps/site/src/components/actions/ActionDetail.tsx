@@ -137,7 +137,6 @@ export default function ActionDetail({
             <FormProvider root={dottedName}>
               <ActionForm
                 key={dottedName}
-                category={getCategory(dottedName)}
                 onComplete={() => {
                   toggleActionChoice(dottedName)
 
