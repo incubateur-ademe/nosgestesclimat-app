@@ -33,10 +33,13 @@ const buildSampleActions = (
             }
           : undefined
 
+    const slug = `${prefix.toLowerCase().replace(/\s+/g, '-')}-${index}`
+
     return {
       id: ids[i],
       language: 'fr',
       title: `${prefix} ${index}`,
+      slug,
       theme,
       ruleId: `${theme.key}.action_${index}`,
       longDescription: `### Pourquoi agir sur ${prefix.toLowerCase()} ${index} ?
