@@ -1531,8 +1531,8 @@ entries:
   simulator.intercalaire.graphDefault: Ce graphique te permet de mieux comprendre les différents impacts
   simulator.intercalaire.nextButton: Passer {{nextCategory}}
   simulator.intercalaire.seeResults: Voir mes résultats
-  simulator.intercalaire.subtitle.remaining.all: Plus que {{remainingSteps}}!
-  simulator.intercalaire.subtitle.remaining.one: Plus qu'une!
+  simulator.intercalaire.subtitle.remaining.all: Plus que {{remainingCategories}} !
+  simulator.intercalaire.subtitle.remaining.one: Plus qu'une !
   simulator.intercalaire.title.default: Section {{category}} terminée
   simulator.intercalaire.title.last: Bravo, tu as terminé toutes les sections
   simulator.intercalaire.logement.meta.title: Section logement terminée - Nos Gestes Climat

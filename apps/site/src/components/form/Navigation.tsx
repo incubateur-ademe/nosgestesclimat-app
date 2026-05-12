@@ -95,14 +95,22 @@ export default function Navigation({
 
   const [persistedRemainingQuestions] = useState(remainingQuestions)
 
-  const { gotoPrevQuestion, noPrevQuestion, setCurrentQuestion } =
-    useFormState()
+  const {
+    gotoPrevQuestion,
+    noPrevQuestion,
+    noNextQuestion,
+    currentQuestion,
+    setCurrentQuestion,
+  } = useFormState()
 
-  const { goToNextQuestion, isLastQuestion, isIntercalaireNext } =
-    useGotoNextQuestion({
-      question,
-      isEmbedded,
-    })
+  const { goToNextQuestion, isIntercalaireNext } = useGotoNextQuestion()
+
+  // Determines if the current question is the last one of the test
+  const isLastQuestion = isEmbedded
+    ? (remainingQuestions.length === 1 &&
+        remainingQuestions[0] === currentQuestion) ||
+      remainingQuestions.length === 0
+    : noNextQuestion
 
   const {
     isMissing,

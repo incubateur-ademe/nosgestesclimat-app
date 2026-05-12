@@ -41,7 +41,7 @@ export default async function Layout({
       locale={locale}
       serverUserId={user.id}>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
-      <EngineProvider rules={rules}>
+      <EngineProvider rules={rules} root="bilan">
         <LocalisationBanner model={parseModelString(currentSimulation.model)} />
         <FormProvider root="bilan">{children}</FormProvider>
       </EngineProvider>

@@ -27,7 +27,7 @@ interface Props {
 }
 export default function EngineProvider({
   rules,
-  root = 'bilan',
+  root,
   children,
   initialSituation,
 }: PropsWithChildren<Props>) {

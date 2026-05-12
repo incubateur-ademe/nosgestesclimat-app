@@ -4,19 +4,16 @@ import Trans from '@/components/translation/trans/TransClient'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useRestoreQuestionFromSearchParams } from '@/hooks/useRestoreQuestionFromSearchParams'
 import { useFormState } from '@/publicodes-state'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
-import { useEndTest } from '../../[root]/_hooks/useEndPage'
+import { useState } from 'react'
+import { useEndTest } from '../../bilan/_hooks/useEndPage'
 
 export default function TransitionButtons() {
   const router = useRouter()
 
-  const { gotoNextQuestion, nextCategory } = useFormState()
-
-  useRestoreQuestionFromSearchParams()
-
+  const [{ gotoNextQuestion, nextCategory }] = useState(useFormState())
   const { endTest, isPending } = useEndTest()
 
   const { t } = useClientTranslation()
@@ -32,7 +29,7 @@ export default function TransitionButtons() {
         )
       case 'transport':
         return t('simulator.intercalaire.goToTransport', 'Passer au transport')
-      default:
+      case 'divers':
         return t(
           'simulator.intercalaire.goToConsommation',
           'Passer à la consommation'
@@ -69,7 +66,10 @@ export default function TransitionButtons() {
         </span>
       </Button>
 
-      <Button onClick={handleGoToNextQuestion} disabled={isPending}>
+      <Button
+        onClick={handleGoToNextQuestion}
+        disabled={isPending}
+        data-testid="skip-question-button">
         {!nextCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats

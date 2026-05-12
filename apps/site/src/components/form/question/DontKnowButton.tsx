@@ -20,7 +20,7 @@ interface Props {
 
 export default function DontKnowButton({ question }: Props) {
   const { t } = useClientTranslation()
-  const { goToNextQuestion } = useGotoNextQuestion({ question })
+  const { goToNextQuestion } = useGotoNextQuestion()
   const { updateCurrentSimulation } = useCurrentSimulation()
 
   const { questionsOfMosaicFromParent, isMissing } = useRule(question)

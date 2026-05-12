@@ -1,6 +1,6 @@
 'use client'
 
-import { orderedCategories } from '@/constants/model/orderedCategories'
+import { testOrderedCategories } from '@/constants/model/orderedCategories'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useContext, useMemo } from 'react'
 import formContext from '../../providers/formProvider/context'
@@ -40,16 +40,18 @@ export default function useFormState() {
 
   const nextCategory: Categories | undefined = useMemo(() => {
     if (!currentCategory) return undefined
-    const currentIndex = orderedCategories.indexOf(currentCategory)
+    const currentIndex = testOrderedCategories.indexOf(currentCategory)
     if (currentIndex === -1) return undefined
-    return orderedCategories[currentIndex + 1] as Categories | undefined
+    return testOrderedCategories[currentIndex + 1] as Categories | undefined
   }, [currentCategory])
 
   const remainingCategories = useMemo(() => {
-    return Object.values(remainingQuestionsByCategories).filter(
-      (q) => q.length > 0
-    ).length
-  }, [remainingQuestionsByCategories])
+    return (
+      testOrderedCategories.length -
+      testOrderedCategories.indexOf(currentCategory as Categories) -
+      1
+    )
+  }, [currentCategory])
 
   return {
     /**
