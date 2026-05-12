@@ -1,4 +1,4 @@
-type IframeInformation =
+export type IframeInformation =
   | {
       iframe: false
     }

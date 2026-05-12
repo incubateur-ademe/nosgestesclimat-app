@@ -19,7 +19,7 @@ interface Props {
   disabled?: boolean
 }
 
-export default function CategorySelector({
+export default function CategorySelectorDesktop({
   activeTab,
   setActiveTab,
   categoryLabels,

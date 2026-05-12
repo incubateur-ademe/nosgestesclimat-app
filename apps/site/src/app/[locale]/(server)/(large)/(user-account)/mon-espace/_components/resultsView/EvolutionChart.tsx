@@ -95,7 +95,7 @@ export default function EvolutionChart({
               </strong>
             </Link>{' '}
             <Trans i18nKey="mon-espace.evolutionGraph.chartDisabledTitle.part2">
-              pour avoir accès à l’évolution de votre empreinte
+              pour avoir accès à l'évolution de votre empreinte
             </Trans>
           </p>
         </div>

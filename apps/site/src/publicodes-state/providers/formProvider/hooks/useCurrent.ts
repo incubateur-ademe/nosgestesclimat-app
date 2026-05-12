@@ -16,11 +16,9 @@ export const useCurrent = (
     questionInQueryParams &&
     (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
       ? questionInQueryParams
-      : (relevantAnsweredQuestions.at(-1) ?? remainingQuestions.at(0))
+      : (relevantAnsweredQuestions.at(-1) ?? remainingQuestions.at(0) ?? null)
 
-  const [currentQuestion, setCurrentQuestion] = useState<
-    DottedName | undefined
-  >(defaultCurrentQuestion)
+  const [currentQuestion, setCurrentQuestion] = useState(defaultCurrentQuestion)
 
   const currentCategory = useMemo(() => {
     return getNamespace(currentQuestion) ?? null
