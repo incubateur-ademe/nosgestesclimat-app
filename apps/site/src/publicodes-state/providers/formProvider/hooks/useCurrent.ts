@@ -1,36 +1,59 @@
+import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
+import { useDebug } from '@/hooks/useDebug'
+import { useLocale } from '@/hooks/useLocale'
 import getNamespace from '@/publicodes-state/helpers/getNamespace'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useCallback, useState } from 'react'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat/types/dottedNames'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
 
-/**
- * Get and set current question and category.
- *
- * currentCategory could be inferred from current question. It is not deleted for now because it is used in the actions page
- */
-export default function useCurrent() {
-  const [currentQuestion, setCurrentQuestion] = useState<null | DottedName>(
-    null
-  )
+export const useCurrent = (
+  relevantAnsweredQuestions: DottedName[],
+  remainingQuestions: DottedName[]
+) => {
+  const isDebug = useDebug()
+  const questionInQueryParams = useQuestionInQueryParams()
+  const defaultCurrentQuestion =
+    questionInQueryParams &&
+    (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
+      ? questionInQueryParams
+      : (relevantAnsweredQuestions.at(-1) ?? remainingQuestions.at(0))
 
-  const [currentCategory, setCurrentCategory] = useState<null | DottedName>(
-    null
-  )
+  const [currentQuestion, setCurrentQuestion] = useState<
+    DottedName | undefined
+  >(defaultCurrentQuestion)
 
-  const exportedSetCurrentQuestion = useCallback(
-    (newCurrentQuestion: DottedName | null) => {
-      setCurrentQuestion(newCurrentQuestion)
-      const newCurrentQuestionNamespace = getNamespace(newCurrentQuestion)
-      if (newCurrentQuestion && newCurrentQuestionNamespace) {
-        setCurrentCategory(newCurrentQuestionNamespace)
-      }
-    },
-    [setCurrentQuestion, setCurrentCategory]
-  )
+  const currentCategory = useMemo(() => {
+    return getNamespace(currentQuestion) ?? null
+  }, [currentQuestion])
 
-  return {
-    currentQuestion,
-    currentCategory,
-    setCurrentQuestion: exportedSetCurrentQuestion,
-    setCurrentCategory,
-  }
+  return { currentQuestion, setCurrentQuestion, currentCategory }
+}
+
+const useQuestionInQueryParams = () => {
+  const searchParams = useSearchParams()
+  const question = searchParams.get('question')
+  if (!question) return
+  const questionInQueryParams = decodeURI(question)
+    .replaceAll('.', ' . ')
+    .replaceAll('_', ' ') as DottedName
+  return questionInQueryParams
+}
+
+export const useSyncQuestionWithQueryParams = (
+  currentQuestion: DottedName | null
+) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const locale = useLocale()
+  useEffect(() => {
+    if (!currentQuestion) return
+    router.replace(
+      getLinkToSimulateur({
+        question: currentQuestion,
+        locale,
+        searchParams,
+      }),
+      { scroll: false }
+    )
+  }, [currentQuestion])
 }

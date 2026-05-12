@@ -16,7 +16,6 @@ export default function useFormState() {
     currentQuestion,
     currentCategory,
     setCurrentQuestion,
-    setCurrentCategory,
     remainingQuestions,
     relevantAnsweredQuestions,
     remainingQuestionsByCategories,
@@ -37,13 +36,6 @@ export default function useFormState() {
     currentQuestion,
     setCurrentQuestion,
   })
-
-  const nextCategory: Categories | undefined = useMemo(() => {
-    if (!currentCategory) return undefined
-    const currentIndex = testOrderedCategories.indexOf(currentCategory)
-    if (currentIndex === -1) return undefined
-    return testOrderedCategories[currentIndex + 1] as Categories | undefined
-  }, [currentCategory])
 
   const remainingCategories = useMemo(() => {
     return (
@@ -67,21 +59,17 @@ export default function useFormState() {
      */
     currentQuestion,
     /**
+     * The next question as determined by relevantQuestions (and currentQuestion)
+     */
+    nextQuestion,
+    /**
      * The category of the current question
      */
     currentCategory,
     /**
-     * The next category to display after the current one
-     */
-    nextCategory,
-    /**
      * Setter for the current question
      */
     setCurrentQuestion,
-    /**
-     * Setter for the current category (shouldn't be used: use setCurrentQuestion instead)
-     */
-    setCurrentCategory,
     /**
      * Go to the previous question as determined by relevantQuestions (and currentQuestion)
      */
@@ -110,6 +98,7 @@ export default function useFormState() {
      * Every missing questions needed to complete the form
      */
     remainingQuestions,
+
     /**
      * Every answered questions that are still relevant and should be displayed in the form (foldedsteps minus questions that are disabled by parents and can't enable themselves)
      */
@@ -134,5 +123,10 @@ export default function useFormState() {
      * Is true if the next question has already been seen in the current session
      */
     nextQuestionAlreadySeen: relevantAnsweredQuestions.includes(nextQuestion),
+
+    /**
+     * Is true if the form provider has been initialized
+     */
+    isInitialized: !!relevantQuestions.length,
   }
 }

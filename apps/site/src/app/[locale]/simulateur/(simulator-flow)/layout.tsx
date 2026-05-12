@@ -13,10 +13,10 @@ import { EngineProvider, FormProvider } from '@/publicodes-state'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
-export default async function Layout({
+export default async function SimulationLayout({
   children,
   params,
-}: LayoutProps<'/[locale]/simulateur/intercalaire'>) {
+}: LayoutProps<'/[locale]/simulateur'>) {
   const { locale } = await params
 
   const user = await getUser()

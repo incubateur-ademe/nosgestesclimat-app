@@ -17,7 +17,7 @@ export function useAutoSaveSimulation() {
     debouncedSaveSimulation({ simulation: currentSimulation })
 
     return () => {
-      debouncedSaveSimulation.cancel()
+      debouncedSaveSimulation.flush()
     }
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
 }

@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 interface Props {
   relevantQuestions: DottedName[]
   currentQuestion: DottedName | null
-  setCurrentQuestion: (question: DottedName | null) => void
+  setCurrentQuestion: (question: DottedName) => void
 }
 
 export default function useNavigation({
@@ -45,7 +45,7 @@ export default function useNavigation({
       if (noPrevQuestion) {
         return undefined
       }
-      setCurrentQuestion(previousQuestion)
+      setCurrentQuestion(previousQuestion!)
       return previousQuestion
     }
 
@@ -54,7 +54,7 @@ export default function useNavigation({
         return undefined
       }
 
-      setCurrentQuestion(nextQuestion)
+      setCurrentQuestion(nextQuestion!)
       return nextQuestion
     }
 

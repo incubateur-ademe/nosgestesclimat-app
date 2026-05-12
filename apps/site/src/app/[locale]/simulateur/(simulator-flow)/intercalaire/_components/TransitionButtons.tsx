@@ -1,21 +1,15 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import Button from '@/design-system/buttons/Button'
+import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { useEndTest } from '../../bilan/_hooks/useEndPage'
-
+import getNamespace from '../../../../../../../e2e/utils/getNamespace'
 export default function TransitionButtons() {
-  const router = useRouter()
-
-  const [{ gotoNextQuestion, nextCategory }] = useState(useFormState())
-  const { endTest, isPending } = useEndTest()
-
+  const { gotoNextQuestion, nextQuestion } = useFormState()
+  const nextQuestionCategory = getNamespace(nextQuestion)
   const { t } = useClientTranslation()
 
   const getCategoryString = (category: Categories) => {
@@ -37,50 +31,40 @@ export default function TransitionButtons() {
     }
   }
 
-  const handleGoToNextQuestion = () => {
-    if (!nextCategory) {
-      endTest()
-      return
-    }
-
-    gotoNextQuestion()
-    router.push(SIMULATOR_PATH)
-  }
-
   return (
     <div className="my-8 flex gap-4 md:flex-row">
-      <Button
+      <ButtonLink
         title={t(
           'common.previousExtended',
           'Précédent, revenir à la page précédente'
         )}
+        href={SIMULATOR_PATH}
         className="h-full w-14 md:w-auto"
-        color="secondary"
-        onClick={() => router.back()}
-        disabled={isPending}>
+        color="secondary">
         <span aria-hidden className="text-xl md:mr-1.5">
           ←
         </span>
         <span className="sr-only md:not-sr-only">
           <Trans i18nKey="common.previous">Précédent</Trans>
         </span>
-      </Button>
+      </ButtonLink>
 
-      <Button
-        onClick={handleGoToNextQuestion}
-        disabled={isPending}
-        data-testid="skip-question-button">
-        {!nextCategory ? (
+      <ButtonLink
+        href={!nextQuestionCategory ? END_PAGE_PATH : SIMULATOR_PATH}
+        data-testid="skip-question-button"
+        onClick={gotoNextQuestion}>
+        {!nextQuestionCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
           </Trans>
         ) : (
-          getCategoryString(nextCategory)
+          getCategoryString(nextQuestionCategory as Categories)
         )}
+
         <span aria-hidden className="ml-1.5 inline-block text-xl">
           →
         </span>
-      </Button>
+      </ButtonLink>
     </div>
   )
 }

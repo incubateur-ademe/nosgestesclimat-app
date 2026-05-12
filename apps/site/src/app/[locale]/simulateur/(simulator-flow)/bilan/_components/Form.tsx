@@ -5,11 +5,9 @@ import Question from '@/components/form/Question'
 import ContentLarge from '@/components/layout/ContentLarge'
 import questions from '@/components/specialQuestions'
 import { getBgCategoryColor } from '@/helpers/getCategoryColorClass'
-import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
-import { useQuestionInQueryParams } from '@/hooks/useQuestionInQueryParams'
 
-import CategoryIllustration from '@/app/[locale]/simulateur/_components/summary/CategoryIllustration'
+import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/bilan/_components/summary/CategoryIllustration'
 import { useFormState } from '@/publicodes-state'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -19,41 +17,16 @@ import ResultsBlocksDesktop from './form/ResultsBlockDesktop'
 import ResultsBlockMobile from './form/ResultsBlockMobile'
 
 export default function Form() {
-  const isDebug = useDebug()
-
   const {
     remainingQuestions,
-    relevantAnsweredQuestions,
     currentQuestion,
-    setCurrentQuestion,
+
     currentCategory,
   } = useFormState()
-
-  const { questionInQueryParams } = useQuestionInQueryParams(currentQuestion)
 
   const { endTest, isPending } = useEndTest()
 
   const { isIframe } = useIframe()
-
-  useEffect(() => {
-    if (!relevantAnsweredQuestions || currentQuestion) {
-      return
-    }
-    if (
-      questionInQueryParams &&
-      (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
-    ) {
-      setCurrentQuestion(questionInQueryParams)
-    } else {
-      setCurrentQuestion(remainingQuestions[0])
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    relevantAnsweredQuestions,
-    setCurrentQuestion,
-    questionInQueryParams,
-    isDebug,
-  ])
 
   useEffect(() => {
     window.scrollTo(0, 0)
