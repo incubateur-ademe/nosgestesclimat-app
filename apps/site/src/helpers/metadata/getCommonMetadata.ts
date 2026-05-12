@@ -21,7 +21,7 @@ export const getCommonMetadata = <T extends DefaultPageProps>({
       follow: boolean
       noimageindex: boolean
       'max-video-preview': number
-      'max-image-preview': string
+      'max-image-preview': 'none' | 'standard' | 'large'
       'max-snippet': number
     }
   }

@@ -1,4 +1,6 @@
+import { noIndexObject } from '@/constants/metadata'
 import {
+  ACTION_DETAIL_PATH,
   END_PAGE_ACTIONS_PATH,
   MON_ESPACE_ACTIONS_PATH,
 } from '@/constants/urls/paths'
@@ -7,11 +9,14 @@ import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
+import { t } from '@/helpers/metadata/fakeMetadataT'
+import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
 import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 import { ActionMedia } from './_components/ActionMedia'
@@ -22,9 +27,35 @@ const SECTION_ID_I_ACT = 'j-agis'
 const SECTION_ID_I_BENEFIT = 'j-y-gagne'
 const SECTION_ID_FURTHER_READING = 'a-decouvrir-aussi'
 
-export default async function ActionPage({
-  params,
-}: DefaultPageProps<{ params: { slug: string } }>) {
+type Props = DefaultPageProps<{ params: { slug: string } }>
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { params } = props
+  const { locale, slug } = await params
+
+  const action = actions.find((a) => a.slug === slug)
+
+  if (!action) {
+    return getMetadataObject({
+      locale,
+      title: t('actions.detailPage.404.title'),
+      description: t('actions.detailPage.404.description'),
+      robots: noIndexObject,
+    })
+  }
+
+  return getMetadataObject({
+    locale,
+    // TODO: awaiting @fanny's SEO optimized texts
+    title: action.title,
+    description: action.longDescription,
+    alternates: {
+      canonical: ACTION_DETAIL_PATH.replace(':actionSlug', slug),
+    },
+  })
+}
+
+export default async function ActionPage({ params }: Props) {
   const { locale, slug } = await params
   const user = await getUser()
   const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
