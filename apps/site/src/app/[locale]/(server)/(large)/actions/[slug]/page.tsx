@@ -30,7 +30,7 @@ export default async function ActionPage({
   // TODO: use MON_ESPACE_ACTIONS_PATH if user is not anon
 
   // TODO: use slug instead of id
-  const action = actions.find((a) => a.id === slug)
+  const action = actions.find((a) => a.slug === slug)
 
   if (!action) notFound()
 
