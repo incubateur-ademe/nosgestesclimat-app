@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { orderedCategories } from '@/constants/model/orderedCategories'
+import { testOrderedCategories } from '@/constants/model/orderedCategories'
 import { captureClickCategorySelectorMobile } from '@/constants/tracking/posthogTrackers'
 import { clickCategorySelectorMobile } from '@/constants/tracking/user-account'
 import Alert from '@/design-system/alerts/alert/Alert'
@@ -34,12 +34,10 @@ export default function CategorySelectorMobile({
 
   const options: { value: TabId; label: string }[] = [
     { value: 'global', label: globalLabel },
-    ...orderedCategories
-      .filter((category) => category !== 'services sociétaux')
-      .map((category) => ({
-        value: category,
-        label: categoryLabels[category] ?? category,
-      })),
+    ...testOrderedCategories.map((category) => ({
+      value: category,
+      label: categoryLabels[category] ?? category,
+    })),
   ]
 
   return (

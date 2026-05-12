@@ -1,6 +1,8 @@
 'use client'
 
-import { useContext } from 'react'
+import { orderedCategories } from '@/constants/model/orderedCategories'
+import type { Categories } from '@incubateur-ademe/nosgestesclimat'
+import { useContext, useMemo } from 'react'
 import formContext from '../../providers/formProvider/context'
 import useNavigation from './hooks/useNavigation'
 
@@ -36,6 +38,19 @@ export default function useFormState() {
     setCurrentQuestion,
   })
 
+  const nextCategory: Categories | undefined = useMemo(() => {
+    if (!currentCategory) return undefined
+    const currentIndex = orderedCategories.indexOf(currentCategory)
+    if (currentIndex === -1) return undefined
+    return orderedCategories[currentIndex + 1] as Categories | undefined
+  }, [currentCategory])
+
+  const remainingCategories = useMemo(() => {
+    return Object.values(remainingQuestionsByCategories).filter(
+      (q) => q.length > 0
+    ).length
+  }, [remainingQuestionsByCategories])
+
   return {
     /**
      * Every questions sorted by category
@@ -53,6 +68,10 @@ export default function useFormState() {
      * The category of the current question
      */
     currentCategory,
+    /**
+     * The next category to display after the current one
+     */
+    nextCategory,
     /**
      * Setter for the current question
      */
@@ -93,6 +112,10 @@ export default function useFormState() {
      * Every answered questions that are still relevant and should be displayed in the form (foldedsteps minus questions that are disabled by parents and can't enable themselves)
      */
     relevantAnsweredQuestions,
+    /**
+     * The number of remaining categories to complete the form
+     */
+    remainingCategories,
     /**
      * Every missing questions needed to complete the form sorted by category
      */

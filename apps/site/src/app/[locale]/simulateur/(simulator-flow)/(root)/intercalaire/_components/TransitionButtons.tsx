@@ -6,38 +6,20 @@ import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useRestoreQuestionFromSearchParams } from '@/hooks/useRestoreQuestionFromSearchParams'
 import { useFormState } from '@/publicodes-state'
-import type { Categories, DottedName } from '@incubateur-ademe/nosgestesclimat'
+import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
 import { useEndTest } from '../../[root]/_hooks/useEndPage'
-import { orderedCategoriesWithoutServices } from '../_constants/getOrderedCategoriesWithoutServices'
 
-interface Props {
-  category: DottedName
-}
-
-export default function TransitionButtons({ category }: Props) {
+export default function TransitionButtons() {
   const router = useRouter()
 
-  const { gotoNextQuestion } = useFormState()
+  const { gotoNextQuestion, nextCategory } = useFormState()
 
   useRestoreQuestionFromSearchParams()
 
   const { endTest, isPending } = useEndTest()
 
   const { t } = useClientTranslation()
-
-  const nextCategory: Categories | undefined = (() => {
-    const currentIndex = orderedCategoriesWithoutServices.indexOf(category)
-    if (currentIndex === -1) return undefined
-    return orderedCategoriesWithoutServices[currentIndex + 1] as
-      | Categories
-      | undefined
-  })()
-
-  const isLastCategory =
-    orderedCategoriesWithoutServices[
-      orderedCategoriesWithoutServices.length - 1
-    ] === category
 
   const getCategoryString = (category: Categories) => {
     switch (category) {
@@ -59,7 +41,7 @@ export default function TransitionButtons({ category }: Props) {
   }
 
   const handleGoToNextQuestion = () => {
-    if (isLastCategory || !nextCategory) {
+    if (!nextCategory) {
       endTest()
       return
     }
@@ -88,7 +70,7 @@ export default function TransitionButtons({ category }: Props) {
       </Button>
 
       <Button onClick={handleGoToNextQuestion} disabled={isPending}>
-        {isLastCategory || !nextCategory ? (
+        {!nextCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
           </Trans>

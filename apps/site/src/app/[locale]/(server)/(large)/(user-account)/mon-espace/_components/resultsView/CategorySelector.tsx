@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransClient'
-import { orderedCategories } from '@/constants/model/orderedCategories'
+import { testOrderedCategories } from '@/constants/model/orderedCategories'
 import { captureClickCategorySelector } from '@/constants/tracking/posthogTrackers'
 import { clickCategorySelector } from '@/constants/tracking/user-account'
 import Tabs, { type TabItem } from '@/design-system/layout/Tabs'
@@ -44,21 +44,19 @@ export default function CategorySelector({
       },
       'aria-disabled': disabled,
     },
-    ...orderedCategories
-      .filter((category) => category !== 'services sociétaux')
-      .map((category) => ({
-        id: category,
-        label: categoryLabels[category] ?? category,
-        isActive: activeTab === category,
-        onClick: () => {
-          if (!disabled) {
-            setActiveTab(category)
-            trackMatomoEvent__deprecated(clickCategorySelector(category))
-            trackPosthogEvent(captureClickCategorySelector({ category }))
-          }
-        },
-        'aria-disabled': disabled,
-      })),
+    ...testOrderedCategories.map((category) => ({
+      id: category,
+      label: categoryLabels[category] ?? category,
+      isActive: activeTab === category,
+      onClick: () => {
+        if (!disabled) {
+          setActiveTab(category)
+          trackMatomoEvent__deprecated(clickCategorySelector(category))
+          trackPosthogEvent(captureClickCategorySelector({ category }))
+        }
+      },
+      'aria-disabled': disabled,
+    })),
   ]
 
   return (
