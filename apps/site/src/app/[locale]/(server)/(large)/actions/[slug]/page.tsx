@@ -1,3 +1,7 @@
+import {
+  END_PAGE_ACTIONS_PATH,
+  MON_ESPACE_ACTIONS_PATH,
+} from '@/constants/urls/paths'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
@@ -10,10 +14,6 @@ import { actions } from '@nosgestesclimat/core/features/actions/data/actions/ind
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
-import {
-  END_PAGE_ACTIONS_PATH,
-  MON_ESPACE_ACTIONS_PATH,
-} from '../../../../../../constants/urls/paths'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
 
