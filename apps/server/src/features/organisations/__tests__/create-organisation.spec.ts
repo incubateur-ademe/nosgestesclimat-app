@@ -478,9 +478,9 @@ describe('Given a NGC user', () => {
                       strict: true,
                     }
                   ),
-                  LAST_POLL_PARTICIPANTS_NUMBER: 0,
                   OPT_IN: true,
                   PRENOM: administratorPayload.name,
+                  ORGANISATION_TYPE: payload.type,
                 },
                 updateEnabled: true,
               },
@@ -526,9 +526,9 @@ describe('Given a NGC user', () => {
                       strict: true,
                     }
                   ),
-                  LAST_POLL_PARTICIPANTS_NUMBER: 0,
                   OPT_IN: false,
                   PRENOM: administratorPayload.name,
+                  ORGANISATION_TYPE: payload.type,
                 },
                 updateEnabled: true,
               },

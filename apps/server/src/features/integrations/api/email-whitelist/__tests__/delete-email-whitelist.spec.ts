@@ -107,7 +107,7 @@ describe('Given a NGC integrations API user', () => {
         })
       })
 
-      describe(`And whitelist has ${scope} scope`, () => {
+      describe(`And whitelist has ${String(scope)} scope`, () => {
         beforeEach(async () => {
           ;({ id: whitelistId } = await createEmailWhitelist({
             agent,

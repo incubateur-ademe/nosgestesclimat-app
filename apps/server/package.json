@@ -12,6 +12,7 @@
     "jobs:computePollStats": "node --experimental-strip-types ./src/jobs/compute-poll-stats.ts",
     "jobs:recoverMatomoStats": "node --experimental-strip-types ./src/jobs/recover-matomo-stats.ts",
     "jobs:recoverNewsletterStats": "node --experimental-strip-types ./src/jobs/recover-newsletter-stats.ts",
+    "jobs:syncBrevoContacts": "node --experimental-strip-types ./src/jobs/sync-brevo-contacts.ts",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "typecheck": "tsc --noEmit",
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/index.ts",

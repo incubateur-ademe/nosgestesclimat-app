@@ -211,7 +211,7 @@ afterEach(async () => {
         expect(await delegate.count({})).toBe(0)
       } catch {
         console.warn(
-          `${name} resources found after the test, please clean database after each test to avoid flaky tests`
+          `${String(name)} resources found after the test, please clean database after each test to avoid flaky tests`
         )
       }
     }),

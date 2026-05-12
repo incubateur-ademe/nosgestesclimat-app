@@ -369,8 +369,8 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 0,
                   OPT_IN: false,
+                  ORGANISATION_TYPE: organisation.type,
                 },
                 updateEnabled: true,
               },
@@ -582,25 +582,26 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationName: string
         let organisationSlug: string
+        let organisationType: string
 
-        beforeEach(
-          async () =>
-            ({
-              id: organisationId,
-              name: organisationName,
-              slug: organisationSlug,
-            } = await createOrganisation({
-              agent,
-              cookie,
-              organisation: {
-                administrators: [
-                  {
-                    optedInForCommunications: true,
-                  },
-                ],
-              },
-            }))
-        )
+        beforeEach(async () => {
+          ;({
+            id: organisationId,
+            name: organisationName,
+            slug: organisationSlug,
+            type: organisationType,
+          } = await createOrganisation({
+            agent,
+            cookie,
+            organisation: {
+              administrators: [
+                {
+                  optedInForCommunications: true,
+                },
+              ],
+            },
+          }))
+        })
 
         test('Then it updates organisation administrator in brevo', async () => {
           const payload: OrganisationPollCreateDto = {
@@ -628,8 +629,8 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 0,
                   OPT_IN: true,
+                  ORGANISATION_TYPE: organisationType,
                 },
                 updateEnabled: true,
               },

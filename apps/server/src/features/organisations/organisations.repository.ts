@@ -1,7 +1,8 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { Request } from 'express'
 import slugify from 'slugify'
-import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
+import type { JsonValue } from '../../adapters/prisma/generated.ts'
+import { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   defaultOrganisationSelection,
   defaultOrganisationSelectionWithoutPolls,
@@ -715,50 +716,6 @@ export const fetchOrganisationPublicPoll = async (
   }
 }
 
-export const getLastPollParticipantsCount = async (
-  organisationId: string,
-  { session }: { session: Session }
-) => {
-  /**
-   * Prisma does not handle the greatest-n-per-group
-   * https://github.com/prisma/prisma/discussions/17994
-   *
-   * We could replace it with
-   *   const [{ count }] = await prisma.$queryRaw<[{ count: bigint }]>(
-   * Prisma.sql`
-   *   Select count(id) from "SimulationPoll" where "pollId" in
-   *   (Select p1.id from "Poll" p1 left outer join "Poll" p2 on p1."organisationId" = p2."organisationId"
-   *   and (p1."createdAt" < p2."createdAt" or (p1."createdAt" = p2."createdAt" and p1.id < p2.id))
-   *   where p1."organisationId" = ${organisationId} and p2.id is null)
-   * `)
-   *
-   * But less readable
-   */
-
-  let count = 0
-  const poll = await session.poll.findFirst({
-    where: {
-      organisationId,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      id: true,
-    },
-  })
-
-  if (poll) {
-    count = await session.simulationPoll.count({
-      where: {
-        pollId: poll.id,
-      },
-    })
-  }
-
-  return count
-}
-
 export const findSimulationPoll = (
   { simulationId }: SimulationParams,
   { session }: { session: Session }
@@ -802,4 +759,72 @@ export const setPollStats = (
       computedResults: true,
     },
   })
+}
+
+export type OrganisationsBatchBrevoStats = {
+  organisationId: string
+  organisationType: string | null
+  administratorEmail: string | null
+  lastPollParticipantsCount: number
+  pollsCreatedCount: number
+  organisationSimulationsCompletedCount: number
+  organisationLastSimulationDate: Date | null
+}
+
+export const getOrganisationsBatchBrevoStats = ({
+  session,
+}: {
+  session: Session
+}): Promise<Array<OrganisationsBatchBrevoStats>> => {
+  return session
+    .$queryRaw<
+      Array<{
+        organisationId: string
+        organisationType: string | null
+        administratorEmail: string | null
+        lastPollParticipantsCount: bigint
+        pollsCreatedCount: bigint
+        organisationSimulationsCompletedCount: bigint
+        organisationLastSimulationDate: Date | null
+      }>
+    >(
+      Prisma.sql`
+      SELECT
+        o.id as "organisationId",
+        o.type as "organisationType",
+        (
+          SELECT vu.email FROM "ngc"."OrganisationAdministrator" oa
+          JOIN "ngc"."VerifiedUser" vu ON vu.email = oa."userEmail"
+          WHERE oa."organisationId" = o.id
+          ORDER BY oa."createdAt" ASC
+          LIMIT 1
+        ) as "administratorEmail",
+        COUNT(DISTINCT p.id) as "pollsCreatedCount",
+        COUNT(DISTINCT sp."simulationId") FILTER (WHERE s.progression = 1) as "organisationSimulationsCompletedCount",
+        MAX(s.date) FILTER (WHERE s.progression = 1) as "organisationLastSimulationDate",
+        COALESCE((
+          SELECT COUNT(*) FROM "ngc"."SimulationPoll" WHERE "pollId" = (
+            SELECT p2.id FROM "ngc"."Poll" p2 WHERE p2."organisationId" = o.id ORDER BY p2."createdAt" DESC LIMIT 1
+          )
+        ), 0) as "lastPollParticipantsCount"
+      FROM "ngc"."Organisation" o
+      LEFT JOIN "ngc"."Poll" p ON p."organisationId" = o.id
+      LEFT JOIN "ngc"."SimulationPoll" sp ON sp."pollId" = p.id
+      LEFT JOIN "ngc"."Simulation" s ON s.id = sp."simulationId"
+      GROUP BY o.id
+    `
+    )
+    .then((rows) =>
+      rows.map((row) => ({
+        organisationId: row.organisationId,
+        organisationType: row.organisationType,
+        administratorEmail: row.administratorEmail,
+        lastPollParticipantsCount: Number(row.lastPollParticipantsCount),
+        pollsCreatedCount: Number(row.pollsCreatedCount),
+        organisationSimulationsCompletedCount: Number(
+          row.organisationSimulationsCompletedCount
+        ),
+        organisationLastSimulationDate: row.organisationLastSimulationDate,
+      }))
+    )
 }
