@@ -6,6 +6,7 @@ import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { notFound } from 'next/navigation'
+import { twMerge } from 'tailwind-merge'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
 
@@ -85,9 +86,13 @@ export default async function ActionPage({
 
   return (
     <div>
-      <header className={`${themeClasses.headerBg} mb-10 rounded-[20px] p-5`}>
+      <header
+        className={twMerge('mb-10 rounded-[20px] p-5', themeClasses.headerBg)}>
         <p
-          className={`${themeClasses.themeColor} mb-0 text-sm leading-normal font-bold`}>
+          className={twMerge(
+            'mb-0 text-sm leading-normal font-bold',
+            themeClasses.themeColor
+          )}>
           <Emoji className="mr-1 text-lg leading-5.25">
             {action.theme.emoji}
           </Emoji>
@@ -151,14 +156,14 @@ const classNames: Record<
   Record<'headerBg' | 'themeColor', string>
 > = {
   food: {
-    headerBg: 'bg-alimentation-100',
+    headerBg: 'bg-alimentation-50',
     themeColor: 'text-alimentation-800',
   },
-  transport: { headerBg: 'bg-transport-100', themeColor: 'text-transport-800' },
-  housing: { headerBg: 'bg-logement-100', themeColor: 'text-logement-800' },
+  transport: { headerBg: 'bg-transport-50', themeColor: 'text-transport-800' },
+  housing: { headerBg: 'bg-logement-50', themeColor: 'text-logement-800' },
   societal_services: {
-    headerBg: 'bg-servicessocietaux-100',
+    headerBg: 'bg-servicessocietaux-50',
     themeColor: 'text-servicessocietaux-800',
   },
-  misc: { headerBg: 'bg-divers-100', themeColor: 'text-divers-800' },
+  misc: { headerBg: 'bg-divers-50', themeColor: 'text-divers-800' },
 }
