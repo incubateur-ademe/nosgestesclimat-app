@@ -120,7 +120,7 @@ export default function YouthTutorial({ locale, buttonNext }: Props) {
             <Trans
               locale={locale}
               i18nKey="youthTutorial.secondlist.dontKnow.title">
-              Pas grave si tu sais pas
+              Pas grave si tu ne sais pas
             </Trans>
           }
           subtitle={

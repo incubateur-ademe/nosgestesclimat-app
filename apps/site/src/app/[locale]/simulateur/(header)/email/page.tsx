@@ -7,7 +7,10 @@ import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUser } from '@/helpers/server/dal/user'
-import { getCurrentSimulation } from '@/helpers/server/model/simulations'
+import {
+  getCurrentSimulation,
+  getSimulationMode,
+} from '@/helpers/server/model/simulations'
 import { UserProvider } from '@/publicodes-state'
 import { notFound } from 'next/navigation'
 
@@ -21,6 +24,8 @@ export default async function Email({
   if (!currentSimulation) {
     notFound()
   }
+  const simulationMode = getSimulationMode(currentSimulation)
+  const isSchoolMode = simulationMode === 'scolaire'
   const pollSlug = currentSimulation.polls?.[0]?.slug
   const hasContest =
     pollSlug &&
@@ -33,18 +38,37 @@ export default async function Email({
       <Title
         data-testid="tutoriel-title"
         className="mt-10 text-lg md:text-2xl"
-        title={<Trans locale={locale}>Votre adresse electronique</Trans>}
+        title={
+          isSchoolMode ? (
+            <Trans locale={locale}>Ton adresse électronique</Trans>
+          ) : (
+            <Trans locale={locale}>Votre adresse électronique</Trans>
+          )
+        }
         subtitle={
           <>
-            <Trans locale={locale}>
-              Pour conserver vos résultats et les retrouver à l’avenir dans{' '}
-              <strong>votre espace personnel</strong>
-            </Trans>
+            {isSchoolMode ? (
+              <Trans locale={locale}>
+                Pour conserver tes résultats et les retrouver à l'avenir dans{' '}
+                <strong>ton espace personnel</strong>
+              </Trans>
+            ) : (
+              <Trans locale={locale}>
+                Pour conserver vos résultats et les retrouver à l'avenir dans{' '}
+                <strong>votre espace personnel</strong>
+              </Trans>
+            )}
             {hasContest ? (
               <span>
-                <Trans locale={locale}>
-                  Votre e-mail sera utilisé pour le tirage au sort.
-                </Trans>{' '}
+                {isSchoolMode ? (
+                  <Trans locale={locale}>
+                    Ton e-mail sera utilisé pour le tirage au sort.
+                  </Trans>
+                ) : (
+                  <Trans locale={locale}>
+                    Votre e-mail sera utilisé pour le tirage au sort.
+                  </Trans>
+                )}{' '}
                 <InlineLink
                   target="_blank"
                   href="/politique-de-confidentialite">

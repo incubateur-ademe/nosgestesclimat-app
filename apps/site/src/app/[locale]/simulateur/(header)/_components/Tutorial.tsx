@@ -29,7 +29,7 @@ export default function Tutorial({
         />
 
         <AvantDeCommencer disclaimer={disclaimer} />
-        <div className="mb-12 flex w-full items-end gap-4 sm:px-4 md:px-0">
+        <div className="mb-12 flex w-full items-stretch gap-1 sm:px-4 md:gap-4 md:px-0">
           <ButtonBack />
           {buttonNext}
         </div>

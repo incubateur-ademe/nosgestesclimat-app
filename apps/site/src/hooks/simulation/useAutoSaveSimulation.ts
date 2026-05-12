@@ -12,11 +12,12 @@ export function useAutoSaveSimulation() {
     },
     2000
   )
+
   useEffect(() => {
     debouncedSaveSimulation({ simulation: currentSimulation })
 
     return () => {
-      debouncedSaveSimulation.cancel()
+      debouncedSaveSimulation.flush()
     }
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
 }

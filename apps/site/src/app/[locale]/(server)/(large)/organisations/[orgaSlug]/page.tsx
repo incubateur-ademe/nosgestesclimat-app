@@ -43,9 +43,6 @@ export default async function OrganisationPage({
           </h1>
 
           <p className="max-w-lg">
-            <Trans>Sur l'espace organisation de </Trans>{' '}
-            <strong className="text-secondary-700">{organisation?.name}</strong>
-            .{' '}
             <Trans>
               Retrouvez vos tests collectifs et suivez leurs statistiques.
             </Trans>
