@@ -26,6 +26,7 @@ const UserUpdateDto = z
   .object({
     email: z.email().transform((email) => email.toLocaleLowerCase()),
     name: z.string(),
+    ageRange: z.string(),
     contact: z
       .object({
         listIds: z.array(z.enum(ListIds)),
