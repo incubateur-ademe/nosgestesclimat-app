@@ -1,3 +1,4 @@
+import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import {
   ACTION_DETAIL_PATH,
@@ -9,6 +10,7 @@ import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
@@ -66,6 +68,8 @@ export default async function ActionPage({ params }: Props) {
 
   if (!action) notFound()
 
+  const { t } = await getServerTranslation({ locale })
+
   const themeClasses = classNames[action.theme.key]
 
   const tabsItems: TabItem[] = [
@@ -73,7 +77,10 @@ export default async function ActionPage({ params }: Props) {
       id: 'understand',
       label: (
         <span>
-          <Emoji className="mr-1 hidden md:inline">💡</Emoji> Je comprends
+          <Emoji className="mr-1 hidden md:inline">💡</Emoji>
+          <Trans locale={locale} i18nKey="actions.detailPage.tabs.understand">
+            Je comprends
+          </Trans>
         </span>
       ),
       href: `#${SECTION_ID_I_UNDERSTAND}`,
@@ -85,7 +92,10 @@ export default async function ActionPage({ params }: Props) {
       id: 'act',
       label: (
         <span>
-          <Emoji className="mr-1 hidden md:inline">▶️</Emoji> J'agis
+          <Emoji className="mr-1 hidden md:inline">▶️</Emoji>
+          <Trans locale={locale} i18nKey="actions.detailPage.tabs.act">
+            J'agis
+          </Trans>
         </span>
       ),
       href: `#${SECTION_ID_I_ACT}`,
@@ -97,7 +107,10 @@ export default async function ActionPage({ params }: Props) {
       id: 'incentives',
       label: (
         <span>
-          <Emoji className="mr-1 hidden md:inline">💰</Emoji> J'y gagne
+          <Emoji className="mr-1 hidden md:inline">💰</Emoji>
+          <Trans locale={locale} i18nKey="actions.detailPage.tabs.incentives">
+            J'y gagne
+          </Trans>
         </span>
       ),
       href: `#${SECTION_ID_I_BENEFIT}`,
@@ -109,7 +122,12 @@ export default async function ActionPage({ params }: Props) {
       id: 'further-reading',
       label: (
         <span>
-          <Emoji className="mr-1 hidden md:inline">📖</Emoji> À découvrir aussi
+          <Emoji className="mr-1 hidden md:inline">📖</Emoji>
+          <Trans
+            locale={locale}
+            i18nKey="actions.detailPage.tabs.furtherReading">
+            À découvrir aussi
+          </Trans>
         </span>
       ),
       href: `#${SECTION_ID_FURTHER_READING}`,
@@ -146,7 +164,7 @@ export default async function ActionPage({ params }: Props) {
         <Tabs
           items={tabsItems}
           className="mb-10 whitespace-nowrap"
-          ariaLabel={'Navigation de la page'}
+          ariaLabel={t('actions.detailPage.nav')}
         />
       </div>
 
@@ -156,7 +174,13 @@ export default async function ActionPage({ params }: Props) {
           variant="highlighted"
           className="flex scroll-mt-24 flex-col gap-5 md:col-span-full md:flex-row">
           <div className={action.media ? 'flex-1/2' : ''}>
-            <SectionTitle emoji="💡">Je comprends l'enjeu</SectionTitle>
+            <SectionTitle emoji="💡">
+              <Trans
+                locale={locale}
+                i18nKey="actions.detailPage.sections.understand">
+                Je comprends l'enjeu
+              </Trans>
+            </SectionTitle>
             <Markdown>{action.longDescription}</Markdown>
           </div>
           {action.media ? (
@@ -169,19 +193,35 @@ export default async function ActionPage({ params }: Props) {
         </Section>
         {action.means ? (
           <Section id={SECTION_ID_I_ACT} className="scroll-mt-24">
-            <SectionTitle emoji="🚀">J’agis</SectionTitle>
+            <SectionTitle emoji="🚀">
+              <Trans locale={locale} i18nKey="actions.detailPage.sections.act">
+                J'agis
+              </Trans>
+            </SectionTitle>
             <Markdown>{action.means}</Markdown>
           </Section>
         ) : null}
         {action.incentives ? (
           <Section id={SECTION_ID_I_BENEFIT} className="scroll-mt-24">
-            <SectionTitle emoji="💡">J’y gagne</SectionTitle>
+            <SectionTitle emoji="💡">
+              <Trans
+                locale={locale}
+                i18nKey="actions.detailPage.sections.incentives">
+                J'y gagne
+              </Trans>
+            </SectionTitle>
             <Markdown>{action.incentives}</Markdown>
           </Section>
         ) : null}
         {action.furtherReading ? (
           <Section id={SECTION_ID_FURTHER_READING} className="scroll-mt-24">
-            <SectionTitle emoji="🔗">À découvrir aussi</SectionTitle>
+            <SectionTitle emoji="🔗">
+              <Trans
+                locale={locale}
+                i18nKey="actions.detailPage.sections.furtherReading">
+                À découvrir aussi
+              </Trans>
+            </SectionTitle>
             <Markdown>{action.furtherReading}</Markdown>
           </Section>
         ) : null}
