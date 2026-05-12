@@ -112,7 +112,7 @@ export default async function ActionPage({
           variant="highlighted"
           className="wscroll-mt-24 flex flex-col gap-5 md:col-span-full md:flex-row">
           <div className={action.media ? 'flex-1/2' : ''}>
-            <SectionTitle>Je comprends l'enjeu</SectionTitle>
+            <SectionTitle emoji="💡">Je comprends l'enjeu</SectionTitle>
             <Markdown>{action.longDescription}</Markdown>
           </div>
           {action.media ? (
@@ -125,19 +125,19 @@ export default async function ActionPage({
         </Section>
         {action.means ? (
           <Section id={SECTION_ID_I_ACT} className="wscroll-mt-24">
-            <SectionTitle>J’agis</SectionTitle>
+            <SectionTitle emoji="🚀">J’agis</SectionTitle>
             <Markdown>{action.means}</Markdown>
           </Section>
         ) : null}
         {action.incentives ? (
           <Section id={SECTION_ID_I_BENEFIT} className="wscroll-mt-24">
-            <SectionTitle>J’y gagne</SectionTitle>
+            <SectionTitle emoji="💡">J’y gagne</SectionTitle>
             <Markdown>{action.incentives}</Markdown>
           </Section>
         ) : null}
         {action.furtherReading ? (
           <Section id={SECTION_ID_FURTHER_READING} className="wscroll-mt-24">
-            <SectionTitle>À découvrir aussi</SectionTitle>
+            <SectionTitle emoji="🔗">À découvrir aussi</SectionTitle>
             <Markdown>{action.furtherReading}</Markdown>
           </Section>
         ) : null}
