@@ -2,6 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
+import Badge from '@/design-system/layout/Badge'
 import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
 import posthog from 'posthog-js'
@@ -45,6 +46,15 @@ export default function PollModeForm({ organisation }: Props) {
                 index === 0 ? 'bg-primary-50' : 'bg-slate-50'
               )}
               data-testid={`poll-mode-${mode.value}`}>
+              {mode.value === 'scolaire' && (
+                <Badge
+                  size="sm"
+                  color="secondary"
+                  className="absolute -top-2 right-2 z-10 rounded-full drop-shadow-lg">
+                  Beta
+                </Badge>
+              )}
+
               <input
                 type="radio"
                 value={mode.value}

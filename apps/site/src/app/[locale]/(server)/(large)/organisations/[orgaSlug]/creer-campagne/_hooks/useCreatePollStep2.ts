@@ -37,8 +37,7 @@ export const pollModes = [
     titleKey: 'collectiveTest.mode.scolaire.title',
     titleDefault: 'Mode scolaire',
     descriptionKey: 'collectiveTest.mode.scolaire.description',
-    descriptionDefault:
-      'Le test adapté aux jeunes (collège, lycée, étudiants...)',
+    descriptionDefault: 'Le test adapté aux jeunes (collège, lycée)',
     imageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_children_holding_hand_6951392e78.png',
     imageAlt: 'Illustration mode scolaire',
