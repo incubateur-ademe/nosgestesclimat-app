@@ -23,9 +23,7 @@ export function ActionMedia({
   const impactCO2Language = getImpactCO2Language(locale)
 
   return (
-    <figure
-      className={className}
-      {...props}>
+    <figure className={className} {...props}>
       {(() => {
         switch (media.type) {
           case 'impact_co2':
@@ -40,6 +38,8 @@ export function ActionMedia({
               </div>
             )
           case 'image':
+            // TODO: improve image handling (size, placeholder, performance, etc.)
+            // https://www.notion.so/accelerateur-transition-ecologique-ademe/Support-des-images-dans-le-d-tail-d-une-action-35e6523d57d7800898befc3e63f77395
             return (
               <Image
                 src={media.src}
