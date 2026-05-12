@@ -5,54 +5,14 @@ import Trans from '@/components/translation/trans/TransClient'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { useUpdateUserAgeRange } from '@/hooks/age/useUpdateUserAgeRange'
+import { useAgeForm } from '@/hooks/age/useAgeForm'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useUser } from '@/publicodes-state'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 export default function AgeForm() {
   const { t } = useClientTranslation()
 
-  const AGE_OPTIONS = [
-    {
-      value: 'under_18',
-      label: t('simulator.age.options.moinsDe18Ans', 'Moins de 18 ans'),
-    },
-    { value: '18-24', label: t('simulator.age.options.18-24', '18 - 24 ans') },
-    { value: '25-34', label: t('simulator.age.options.25-34', '25 - 34 ans') },
-    { value: '35-49', label: t('simulator.age.options.35-49', '35 - 49 ans') },
-    { value: '50-64', label: t('simulator.age.options.50-64', '50 - 64 ans') },
-    {
-      value: 'over_65',
-      label: t('simulator.age.options.65EtPlus', '65 ans et plus'),
-    },
-    {
-      value: 'refused',
-      label: t(
-        'simulator.age.options.nonPrecise',
-        'Je préfère ne pas le préciser ❌'
-      ),
-    },
-  ]
-
-  const router = useRouter()
-  const { user } = useUser()
-  const { mutateAsync: updateUser, isPending } = useUpdateUserAgeRange()
-
-  const [selectedAge, setSelectedAge] = useState<string | null>(null)
-
-  const handleSubmit = async () => {
-    if (!selectedAge || isPending) return
-
-    await updateUser({
-      userId: user.userId,
-      ageRange: selectedAge,
-    })
-
-    router.push(SIMULATOR_PATH)
-    router.refresh()
-  }
+  const { options, selectedAge, setSelectedAge, isPending, handleSubmit } =
+    useAgeForm({ t })
 
   return (
     <form
@@ -68,7 +28,7 @@ export default function AgeForm() {
           )}
         </legend>
 
-        {AGE_OPTIONS.map((option) => {
+        {options.map((option) => {
           return (
             <ChoiceInput
               key={option.value}
