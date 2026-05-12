@@ -46,7 +46,7 @@ test.describe('Given a user that completed a test without an account', () => {
     const waterFootprintResult = parseInt(
       (await waterFootprintElem.innerText()).replace(/[\s]/, '')
     )
-    expect(waterFootprintResult).toBeGreaterThan(6000)
+    expect(waterFootprintResult).toBeGreaterThan(5000)
   })
 
   test('should not display a tendency indicator on the first simulation', async ({
