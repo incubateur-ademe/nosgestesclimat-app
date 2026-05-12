@@ -1,10 +1,13 @@
 import { z } from 'zod'
-import { SituationSchema } from '../simulations/simulations.validator.js'
+import { SituationSchema } from '../simulations/simulations.validator.ts'
 
-export enum ExternalServiceTypeEnum {
-  agir = 'agir',
-  '2-tonnes' = '2-tonnes',
-}
+export const ExternalServiceTypeEnum = {
+  agir: 'agir',
+  '2-tonnes': '2-tonnes',
+} as const
+
+export type ExternalServiceTypeEnum =
+  (typeof ExternalServiceTypeEnum)[keyof typeof ExternalServiceTypeEnum]
 
 const ExternalServiceType = z.enum(ExternalServiceTypeEnum)
 

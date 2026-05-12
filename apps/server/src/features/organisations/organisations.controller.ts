@@ -1,33 +1,33 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import { withPaginationHeaders } from '../../core/pagination.js'
-import logger from '../../logger.js'
-import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.js'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import { withPaginationHeaders } from '../../core/pagination.ts'
+import logger from '../../logger.ts'
+import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
+import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
   COOKIE_NAME,
   getCookieOptions,
-} from '../authentication/authentication.service.js'
+} from '../authentication/authentication.service.ts'
 import {
   createPollSimulation,
   fetchPublicPollSimulations,
-} from '../simulations/simulations.service.js'
-import { OrganisationPollSimulationCreateValidator } from '../simulations/simulations.validator.js'
-import { OrganisationCreatedEvent } from './events/OrganisationCreated.event.js'
-import { OrganisationUpdatedEvent } from './events/OrganisationUpdated.event.js'
-import { PollCreatedEvent } from './events/PollCreated.event.js'
-import { PollDeletedEvent } from './events/PollDeletedEvent.js'
-import { PollUpdatedEvent } from './events/PollUpdated.event.js'
-import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.js'
-import { addOrUpdateConnectContact } from './handlers/add-or-update-connect-contact.js'
-import { sendOrganisationCreated } from './handlers/send-organisation-created.js'
-import { sendPollCreated } from './handlers/send-poll-created.js'
+} from '../simulations/simulations.service.ts'
+import { OrganisationPollSimulationCreateValidator } from '../simulations/simulations.validator.ts'
+import { OrganisationCreatedEvent } from './events/OrganisationCreated.event.ts'
+import { OrganisationUpdatedEvent } from './events/OrganisationUpdated.event.ts'
+import { PollCreatedEvent } from './events/PollCreated.event.ts'
+import { PollDeletedEvent } from './events/PollDeletedEvent.ts'
+import { PollUpdatedEvent } from './events/PollUpdated.event.ts'
+import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.ts'
+import { addOrUpdateConnectContact } from './handlers/add-or-update-connect-contact.ts'
+import { sendOrganisationCreated } from './handlers/send-organisation-created.ts'
+import { sendPollCreated } from './handlers/send-poll-created.ts'
 import {
   createOrganisation,
   createPoll,
@@ -41,8 +41,8 @@ import {
   startDownloadPollSimulationResultJob,
   updateOrganisation,
   updatePoll,
-} from './organisations.service.js'
-import type { OrganisationsFetchQuery } from './organisations.validator.js'
+} from './organisations.service.ts'
+import type { OrganisationsFetchQuery } from './organisations.validator.ts'
 import {
   OrganisationCreateValidator,
   OrganisationFetchValidator,
@@ -56,7 +56,7 @@ import {
   OrganisationPublicPollSimulationsFetchValidator,
   OrganisationsFetchValidator,
   OrganisationUpdateValidator,
-} from './organisations.validator.js'
+} from './organisations.validator.ts'
 
 const router = express.Router()
 

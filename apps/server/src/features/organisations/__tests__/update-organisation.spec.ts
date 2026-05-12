@@ -6,23 +6,23 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   brevoRemoveFromList,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { connectUpdateContact } from '../../../adapters/connect/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import logger from '../../../logger.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
-import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.js'
-import { COOKIE_NAME } from '../../authentication/authentication.service.js'
-import type { OrganisationUpdateDto } from '../organisations.validator.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { connectUpdateContact } from '../../../adapters/connect/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import logger from '../../../logger.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
+import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.ts'
+import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
+import type { OrganisationUpdateDto } from '../organisations.validator.ts'
 import {
   createOrganisation,
   randomOrganisationType,
   UPDATE_ORGANISATION_ROUTE,
-} from './fixtures/organisations.fixture.js'
+} from './fixtures/organisations.fixture.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)
@@ -221,8 +221,8 @@ describe('Given a NGC user', () => {
                     IS_ORGANISATION_ADMIN: true,
                     ORGANISATION_NAME: payload.name,
                     ORGANISATION_SLUG: organisation.slug,
-                    LAST_POLL_PARTICIPANTS_NUMBER: 0,
                     OPT_IN: true,
+                    ORGANISATION_TYPE: payload.type,
                   },
                   updateEnabled: true,
                 },
@@ -262,8 +262,8 @@ describe('Given a NGC user', () => {
                     IS_ORGANISATION_ADMIN: true,
                     ORGANISATION_NAME: payload.name,
                     ORGANISATION_SLUG: organisation.slug,
-                    LAST_POLL_PARTICIPANTS_NUMBER: 0,
                     OPT_IN: false,
+                    ORGANISATION_TYPE: payload.type,
                   },
                   updateEnabled: true,
                 },

@@ -1,4 +1,4 @@
-import type { EventBusEvent } from './event.js'
+import type { EventBusEvent } from './event.ts'
 
 /**
  * Base representation of an event handler

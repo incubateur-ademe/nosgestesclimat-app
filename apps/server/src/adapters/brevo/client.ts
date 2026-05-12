@@ -2,22 +2,23 @@ import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
 import { z } from 'zod'
-import { config } from '../../config.js'
-import { Locales } from '../../core/i18n/constant.js'
-import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.js'
+import { config } from '../../config.ts'
+import { Locales } from '../../core/i18n/constant.ts'
+import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type {
   ActionChoicesSchema,
   ComputedResultSchema,
-} from '../../features/simulations/simulations.validator.js'
+} from '../../features/simulations/simulations.validator.ts'
 import type {
   Group,
   Organisation,
+  OrganisationType,
   Poll,
   Simulation,
   User,
   VerifiedUser,
-} from '../prisma/generated.js'
-import type { GroupTemplateId, TemplateId } from './constant.js'
+} from '../prisma/generated.ts'
+import type { GroupTemplateId, TemplateId } from './constant.ts'
 import {
   AllNewsletters,
   Attributes,
@@ -28,7 +29,7 @@ import {
   MATOMO_KEYWORD_KEY,
   MATOMO_KEYWORDS,
   TemplateIds,
-} from './constant.js'
+} from './constant.ts'
 
 const brevo = axios.create({
   baseURL: config.thirdParty.brevo.url,
@@ -658,28 +659,28 @@ export const addOrUpdateContactAfterOrganisationChange = async ({
   organisationName,
   administratorName,
   optedInForCommunications,
-  lastPollParticipantsCount,
+  type,
 }: {
   slug: string
   email: string
   userId: string
   organisationName: string
-  lastPollParticipantsCount: number
   administratorName?: string | null
   optedInForCommunications?: boolean
+  type?: OrganisationType
 }) => {
   const attributes = {
     [Attributes.USER_ID]: userId,
     [Attributes.IS_ORGANISATION_ADMIN]: true,
     [Attributes.ORGANISATION_NAME]: organisationName,
     [Attributes.ORGANISATION_SLUG]: slug,
-    [Attributes.LAST_POLL_PARTICIPANTS_NUMBER]: lastPollParticipantsCount,
     [Attributes.OPT_IN]: !!optedInForCommunications,
     ...(administratorName
       ? {
           [Attributes.PRENOM]: administratorName,
         }
       : {}),
+    [Attributes.ORGANISATION_TYPE]: type,
   }
 
   await addOrUpdateContact({

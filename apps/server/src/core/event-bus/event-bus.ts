@@ -2,11 +2,11 @@ import { randomUUID } from 'crypto'
 import {
   isPromiseFullfilled,
   isPromiseRejected,
-} from '../typeguards/isPromiseAllSettled.js'
-import type { EventBusErrorReason } from './error.js'
-import { EventBusError } from './error.js'
-import type { EventBusEvent, EventBusEventConstructor } from './event.js'
-import type { Handler } from './handler.js'
+} from '../typeguards/isPromiseAllSettled.ts'
+import type { EventBusErrorReason } from './error.ts'
+import { EventBusError } from './error.ts'
+import type { EventBusEvent, EventBusEventConstructor } from './event.ts'
+import type { Handler } from './handler.ts'
 
 type EventSubscriptions<SubscribedEvent extends EventBusEvent = EventBusEvent> =
   {

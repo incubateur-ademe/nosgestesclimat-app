@@ -1,10 +1,10 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
 import { z } from 'zod'
-import { config } from '../../config.js'
-import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.js'
-import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.js'
-import type { SituationSchema } from '../../features/simulations/simulations.validator.js'
+import { config } from '../../config.ts'
+import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
+import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.ts'
+import type { SituationSchema } from '../../features/simulations/simulations.validator.ts'
 
 const agir = axios.create({
   baseURL: config.thirdParty.agir.url,

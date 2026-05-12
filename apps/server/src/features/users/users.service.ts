@@ -1,34 +1,34 @@
 import type { Request } from 'express'
-import type { BrevoContact } from '../../adapters/brevo/client.js'
+import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
   fetchContact,
   fetchContactOrThrow,
-} from '../../adapters/brevo/client.js'
-import { prisma } from '../../adapters/prisma/client.js'
-import type { User } from '../../adapters/prisma/generated.js'
+} from '../../adapters/brevo/client.ts'
+import { prisma } from '../../adapters/prisma/client.ts'
+import type { User } from '../../adapters/prisma/generated.ts'
 import {
   defaultUserSelection,
   defaultVerifiedUserSelection,
-} from '../../adapters/prisma/selection.js'
-import { transaction } from '../../adapters/prisma/transaction.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import { isAuthenticated } from '../../core/typeguards/isAuthenticated.js'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.js'
+} from '../../adapters/prisma/selection.ts'
+import { transaction } from '../../adapters/prisma/transaction.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import { isAuthenticated } from '../../core/typeguards/isAuthenticated.ts'
+import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import {
   createToken,
   verifyCode,
-} from '../authentication/authentication.service.js'
-import { UserUpdatedEvent } from './events/UserUpdated.event.js'
+} from '../authentication/authentication.service.ts'
+import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
 import {
   createOrUpdateUser,
   createOrUpdateVerifiedUser,
   fetchUser,
   transferOwnershipToUser,
   transferSimulationsFromUser,
-} from './users.repository.js'
-import type { UserParams, UserUpdateDto } from './users.validator.js'
+} from './users.repository.ts'
+import type { UserParams, UserUpdateDto } from './users.validator.ts'
 
 const userToDto = (
   user: User & {

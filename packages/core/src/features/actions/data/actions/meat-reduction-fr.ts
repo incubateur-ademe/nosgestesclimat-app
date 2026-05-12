@@ -1,5 +1,5 @@
-import type { ActionFile } from '../../types/action.js'
-import { foodFr } from '../themes/index.js'
+import type { ActionFile } from '../../types/action.ts'
+import { foodFr } from '../themes/index.ts'
 
 export const meatReduction: ActionFile = {
   id: 'c99b8fc3-67e5-4fdb-8239-00306692c10a',

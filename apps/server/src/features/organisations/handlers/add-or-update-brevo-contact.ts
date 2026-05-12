@@ -1,13 +1,10 @@
-import { addOrUpdateContactAfterOrganisationChange } from '../../../adapters/brevo/client.js'
-import { prisma } from '../../../adapters/prisma/client.js'
-import { transaction } from '../../../adapters/prisma/transaction.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.event.js'
-import type { OrganisationUpdatedEvent } from '../events/OrganisationUpdated.event.js'
-import type { PollCreatedEvent } from '../events/PollCreated.event.js'
-import type { PollDeletedEvent } from '../events/PollDeletedEvent.js'
-import type { PollUpdatedEvent } from '../events/PollUpdated.event.js'
-import { getLastPollParticipantsCount } from '../organisations.repository.js'
+import { addOrUpdateContactAfterOrganisationChange } from '../../../adapters/brevo/client.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.event.ts'
+import type { OrganisationUpdatedEvent } from '../events/OrganisationUpdated.event.ts'
+import type { PollCreatedEvent } from '../events/PollCreated.event.ts'
+import type { PollDeletedEvent } from '../events/PollDeletedEvent.ts'
+import type { PollUpdatedEvent } from '../events/PollUpdated.event.ts'
 
 export const addOrUpdateBrevoContact: Handler<
   | OrganisationCreatedEvent
@@ -19,9 +16,9 @@ export const addOrUpdateBrevoContact: Handler<
   const {
     attributes: {
       organisation: {
-        id: organisationId,
         name: organisationName,
         slug,
+        type,
         administrators: [
           {
             user: {
@@ -43,9 +40,6 @@ export const addOrUpdateBrevoContact: Handler<
     organisationName,
     administratorName,
     optedInForCommunications,
-    lastPollParticipantsCount: await transaction(
-      (session) => getLastPollParticipantsCount(organisationId, { session }),
-      prisma
-    ),
+    type,
   })
 }

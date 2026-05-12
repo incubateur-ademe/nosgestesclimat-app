@@ -1,10 +1,10 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import logger from '../../logger.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
-import { getModeleCountry } from './geolocation.service.js'
-import { GeolocationFetchValidator } from './modele.validator.js'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import logger from '../../logger.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
+import { getModeleCountry } from './geolocation.service.ts'
+import { GeolocationFetchValidator } from './modele.validator.ts'
 
 const router = express.Router()
 

@@ -2,13 +2,13 @@ import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { beforeEach, describe, expect, test } from 'vitest'
-import { redis } from '../../../adapters/redis/client.js'
-import { KEYS } from '../../../adapters/redis/constant.js'
-import app from '../../../app.js'
+import { redis } from '../../../adapters/redis/client.ts'
+import { KEYS } from '../../../adapters/redis/constant.ts'
+import app from '../../../app.ts'
 import {
   convertIpToNumber,
   initGeolocationStore,
-} from '../geolocation.repository.js'
+} from '../geolocation.repository.ts'
 
 const agent = supertest(app)
 const url = '/modele/v1/geolocation'

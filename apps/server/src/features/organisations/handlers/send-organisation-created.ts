@@ -1,6 +1,6 @@
-import { sendOrganisationCreatedEmail } from '../../../adapters/brevo/client.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.event.js'
+import { sendOrganisationCreatedEmail } from '../../../adapters/brevo/client.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.event.ts'
 
 export const sendOrganisationCreated: Handler<OrganisationCreatedEvent> = ({
   attributes,

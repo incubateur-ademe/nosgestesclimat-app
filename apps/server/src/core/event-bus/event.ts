@@ -31,5 +31,9 @@ export type EventBusEventConstructor<
 export abstract class EventBusEvent<
   Attributes extends EventBusEventAttributes = EventBusEventAttributes,
 > {
-  constructor(public readonly attributes: Readonly<Attributes>) {}
+  public readonly attributes: Readonly<Attributes>
+
+  constructor(attributes: Readonly<Attributes>) {
+    this.attributes = attributes
+  }
 }

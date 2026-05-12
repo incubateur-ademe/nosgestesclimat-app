@@ -1,7 +1,7 @@
-import { sendWelcomeEmail } from '../../../adapters/brevo/client.js'
-import { VerificationCodeMode } from '../../../adapters/prisma/generated.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import type { LoginEvent } from '../events/Login.event.js'
+import { sendWelcomeEmail } from '../../../adapters/brevo/client.ts'
+import { VerificationCodeMode } from '../../../adapters/prisma/generated.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import type { LoginEvent } from '../events/Login.event.ts'
 
 export const sendBrevoWelcomeEmail: Handler<LoginEvent> = ({
   attributes: {

@@ -1,15 +1,15 @@
 import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 import type supertest from 'supertest'
-import { formatBrevoDate } from '../../../../adapters/brevo/__tests__/fixtures/formatBrevoDate.js'
-import { brevoGetContact } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import type { BrevoContactDto } from '../../../../adapters/brevo/client.js'
+import { formatBrevoDate } from '../../../../adapters/brevo/__tests__/fixtures/formatBrevoDate.ts'
+import { brevoGetContact } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import type { BrevoContactDto } from '../../../../adapters/brevo/client.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../../core/event-bus/event-bus.js'
-import type { UserUpdateDto } from '../../users.validator.js'
+} from '../../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../../core/event-bus/event-bus.ts'
+import type { UserUpdateDto } from '../../users.validator.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 

@@ -1,9 +1,9 @@
-import { prisma } from '../../../adapters/prisma/client.js'
-import type { Handler } from '../../../core/event-bus/handler.js'
-import { uploadPollSimulationsResult } from '../../organisations/organisations.service.js'
-import type { JobCreatedAsyncEvent } from '../events/JobCreated.event.js'
-import { JobKind } from '../jobs.repository.js'
-import { runJob } from '../jobs.service.js'
+import { prisma } from '../../../adapters/prisma/client.ts'
+import type { Handler } from '../../../core/event-bus/handler.ts'
+import { uploadPollSimulationsResult } from '../../organisations/organisations.service.ts'
+import type { JobCreatedAsyncEvent } from '../events/JobCreated.event.ts'
+import { JobKind } from '../jobs.repository.ts'
+import { runJob } from '../jobs.service.ts'
 
 export const dispatchJob: Handler<JobCreatedAsyncEvent> = ({
   attributes: { jobId },

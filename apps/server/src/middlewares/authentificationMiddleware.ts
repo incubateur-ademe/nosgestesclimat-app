@@ -3,12 +3,12 @@ import type { ParamsDictionary, Query } from 'express-serve-static-core'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
-import { config } from '../config.js'
+import { config } from '../config.ts'
 import {
   COOKIE_NAME,
   createToken,
   getCookieOptions,
-} from '../features/authentication/authentication.service.js'
+} from '../features/authentication/authentication.service.ts'
 const isValidResult = (
   result?: string | JwtPayload | undefined
 ): result is JwtPayload & { email: string; userId: string } =>

@@ -1,24 +1,24 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import logger from '../../logger.js'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.js'
-import { validateRequest } from '../../middlewares/validateRequest.js'
+import { config } from '../../config.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import logger from '../../logger.ts'
+import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
+import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
   COOKIE_NAME,
   getCookieOptions,
   login,
-} from './authentication.service.js'
-import { LoginValidator } from './authentication.validator.js'
-import { AccountCreatedEvent } from './events/AccountCreated.event.js'
-import { LoginEvent } from './events/Login.event.js'
-import { reconcileSimulationsAfterLogin } from './handlers/reconcile-simulations-after-login.js'
-import { sendBrevoWelcomeEmail } from './handlers/send-welcome-email.js'
-import { syncUserDataAfterAccountCreated } from './handlers/sync-user-data-after-account-created.js'
-import { updateBrevoContact } from './handlers/update-brevo-contact.js'
+} from './authentication.service.ts'
+import { LoginValidator } from './authentication.validator.ts'
+import { AccountCreatedEvent } from './events/AccountCreated.event.ts'
+import { LoginEvent } from './events/Login.event.ts'
+import { reconcileSimulationsAfterLogin } from './handlers/reconcile-simulations-after-login.ts'
+import { sendBrevoWelcomeEmail } from './handlers/send-welcome-email.ts'
+import { syncUserDataAfterAccountCreated } from './handlers/sync-user-data-after-account-created.ts'
+import { updateBrevoContact } from './handlers/update-brevo-contact.ts'
 
 const router = express.Router()
 

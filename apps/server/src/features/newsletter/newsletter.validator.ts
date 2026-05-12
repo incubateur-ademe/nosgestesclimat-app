@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { ListIds } from '../../adapters/brevo/constant.js'
-import { LocaleQuery } from '../../core/i18n/lang.validator.js'
+import { ListIds } from '../../adapters/brevo/constant.ts'
+import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
 export const REACHABLE_NEWSLETTER_LIST_IDS = [
   ListIds.MAIN_NEWSLETTER,

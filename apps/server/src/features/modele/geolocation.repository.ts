@@ -1,6 +1,6 @@
-import { redis } from '../../adapters/redis/client.js'
-import { KEYS } from '../../adapters/redis/constant.js'
-import logger from '../../logger.js'
+import { redis } from '../../adapters/redis/client.ts'
+import { KEYS } from '../../adapters/redis/constant.ts'
+import logger from '../../logger.ts'
 
 type RedisStoredIp = { ipStartNum: number; countryCode: string }
 

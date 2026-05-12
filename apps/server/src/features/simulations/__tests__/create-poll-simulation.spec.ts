@@ -7,27 +7,27 @@ import {
   brevoRemoveFromList,
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
+} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
 import {
   PollDefaultAdditionalQuestionType,
   SimulationAdditionalQuestionAnswerType,
-} from '../../../adapters/prisma/generated.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import { Locales } from '../../../core/i18n/constant.js'
-import logger from '../../../logger.js'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.js'
+} from '../../../adapters/prisma/generated.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import { Locales } from '../../../core/i18n/constant.ts'
+import logger from '../../../logger.ts'
+import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import {
   CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE,
   createOrganisation,
   createOrganisationPoll,
   createOrganisationPollSimulation,
-} from '../../organisations/__tests__/fixtures/organisations.fixture.js'
-import type { SimulationCreateInputDto } from '../simulations.validator.js'
-import { getRandomTestCase } from './fixtures/simulations.fixtures.js'
+} from '../../organisations/__tests__/fixtures/organisations.fixture.ts'
+import type { SimulationCreateInputDto } from '../simulations.validator.ts'
+import { getRandomTestCase } from './fixtures/simulations.fixtures.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)
@@ -187,6 +187,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationSlug: string
         let organisationName: string
+        let organisationType: string
         let administratorEmail: string
         let administratorId: string
         let userId: string
@@ -200,13 +201,12 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
-          } = await createOrganisation({
-            agent,
-            cookie,
-          }))
+          } = await createOrganisation({ agent, cookie }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -394,8 +394,8 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: false,
+                  ORGANISATION_TYPE: organisationType,
                 },
                 updateEnabled: true,
               },
@@ -621,8 +621,8 @@ describe('Given a NGC user', () => {
                 {
                   attributes: {
                     IS_ORGANISATION_ADMIN: true,
-                    LAST_POLL_PARTICIPANTS_NUMBER: 1,
                     OPT_IN: false,
+                    ORGANISATION_TYPE: organisationType,
                     ORGANISATION_NAME: organisationName,
                     ORGANISATION_SLUG: organisationSlug,
                     USER_ID: administratorId,
@@ -904,6 +904,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationSlug: string
         let organisationName: string
+        let organisationType: string
         let administratorEmail: string
         let administratorId: string
         let pollId: string
@@ -916,6 +917,7 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
@@ -930,6 +932,7 @@ describe('Given a NGC user', () => {
               ],
             },
           }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -958,8 +961,8 @@ describe('Given a NGC user', () => {
                   IS_ORGANISATION_ADMIN: true,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: true,
+                  ORGANISATION_TYPE: organisationType,
                 },
                 updateEnabled: true,
               },
@@ -1065,6 +1068,7 @@ describe('Given a NGC user', () => {
         let organisationId: string
         let organisationName: string
         let organisationSlug: string
+        let organisationType: string
         let administratorId: string
         let administratorEmail: string
         let pollId: string
@@ -1077,13 +1081,12 @@ describe('Given a NGC user', () => {
             id: organisationId,
             name: organisationName,
             slug: organisationSlug,
+            type: organisationType,
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
-          } = await createOrganisation({
-            agent,
-            cookie,
-          }))
+          } = await createOrganisation({ agent, cookie }))
+
           poll = await createOrganisationPoll({
             agent,
             cookie,
@@ -1353,8 +1356,8 @@ describe('Given a NGC user', () => {
               {
                 attributes: {
                   IS_ORGANISATION_ADMIN: true,
-                  LAST_POLL_PARTICIPANTS_NUMBER: 1,
                   OPT_IN: false,
+                  ORGANISATION_TYPE: organisationType,
                   ORGANISATION_NAME: organisationName,
                   ORGANISATION_SLUG: organisationSlug,
                   USER_ID: administratorId,

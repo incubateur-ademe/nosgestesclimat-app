@@ -10,21 +10,21 @@ import {
   test,
   vi,
 } from 'vitest'
-import { brevoSendEmail } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../adapters/prisma/client.js'
+import { brevoSendEmail } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../adapters/prisma/client.ts'
 import {
   VerificationCodeMode,
   type VerifiedUser,
-} from '../../../adapters/prisma/generated.js'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.js'
-import app from '../../../app.js'
-import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../core/event-bus/event-bus.js'
-import { Locales } from '../../../core/i18n/constant.js'
-import logger from '../../../logger.js'
-import * as authenticationService from '../authentication.service.js'
-import type { VerificationCodeCreateDto } from '../verification-codes.validator.js'
-import { CREATE_VERIFICATION_CODE_ROUTE } from './fixtures/verification-codes.fixture.js'
+} from '../../../adapters/prisma/generated.ts'
+import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
+import app from '../../../app.ts'
+import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../core/event-bus/event-bus.ts'
+import { Locales } from '../../../core/i18n/constant.ts'
+import logger from '../../../logger.ts'
+import * as authenticationService from '../authentication.service.ts'
+import type { VerificationCodeCreateDto } from '../verification-codes.validator.ts'
+import { CREATE_VERIFICATION_CODE_ROUTE } from './fixtures/verification-codes.fixture.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)

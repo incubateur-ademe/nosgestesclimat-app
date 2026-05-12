@@ -5,14 +5,14 @@ import type supertest from 'supertest'
 import {
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
+} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../../core/event-bus/event-bus.js'
-import type { VerificationCodeCreateDto } from '../../verification-codes.validator.js'
-import { createVerificationCode } from './verification-codes.fixture.js'
+} from '../../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../../core/event-bus/event-bus.ts'
+import type { VerificationCodeCreateDto } from '../../verification-codes.validator.ts'
+import { createVerificationCode } from './verification-codes.fixture.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 

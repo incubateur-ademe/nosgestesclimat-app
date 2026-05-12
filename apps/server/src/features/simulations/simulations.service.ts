@@ -8,39 +8,39 @@ import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRule
 import dayjs from 'dayjs'
 import type { Request } from 'express'
 import type Engine from 'publicodes'
-import { prisma } from '../../adapters/prisma/client.js'
-import type { JsonValue, Prisma } from '../../adapters/prisma/generated.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import { transaction } from '../../adapters/prisma/transaction.js'
-import { redis } from '../../adapters/redis/client.js'
-import { KEYS } from '../../adapters/redis/constant.js'
-import { deepMergeSum } from '../../core/deep-merge.js'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.js'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.js'
-import { EventBus } from '../../core/event-bus/event-bus.js'
-import type { Locales } from '../../core/i18n/constant.js'
-import { createAccountOrSignin } from '../authentication/authentication.service.js'
+import { prisma } from '../../adapters/prisma/client.ts'
+import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import { transaction } from '../../adapters/prisma/transaction.ts'
+import { redis } from '../../adapters/redis/client.ts'
+import { KEYS } from '../../adapters/redis/constant.ts'
+import { deepMergeSum } from '../../core/deep-merge.ts'
+import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { EventBus } from '../../core/event-bus/event-bus.ts'
+import type { Locales } from '../../core/i18n/constant.ts'
+import { createAccountOrSignin } from '../authentication/authentication.service.ts'
 
 import {
   defaultUserSelection,
   defaultVerifiedUserSelection,
   simulationSelection,
-} from '../../adapters/prisma/selection.js'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.js'
-import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.js'
-import { findOrganisationPublicPollBySlugOrId } from '../organisations/organisations.repository.js'
+} from '../../adapters/prisma/selection.ts'
+import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
+import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.ts'
+import { findOrganisationPublicPollBySlugOrId } from '../organisations/organisations.repository.ts'
 import type {
   OrganisationPollCustomAdditionalQuestion,
   PublicPollParams,
-} from '../organisations/organisations.validator.js'
+} from '../organisations/organisations.validator.ts'
 import {
   createOrUpdateUser,
   fetchVerifiedUser,
-} from '../users/users.repository.js'
-import type { UserParams } from '../users/users.validator.js'
-import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.js'
-import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.js'
-import { carbonMetric, waterMetric } from './simulation.constant.js'
+} from '../users/users.repository.ts'
+import type { UserParams } from '../users/users.validator.ts'
+import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.ts'
+import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
+import { carbonMetric, waterMetric } from './simulation.constant.ts'
 import {
   batchPollSimulations,
   countOrganisationPublicPollSimulations,
@@ -50,21 +50,21 @@ import {
   fetchSimulationById,
   fetchUserSimulations,
   softDeleteSimulation as softDeleteSimulationFunc,
-} from './simulations.repository.js'
+} from './simulations.repository.ts'
 import type {
   SimulationCreateDto,
   SimulationCreateQuery,
   SimulationsFetchQuery,
   UserSimulationParams,
-} from './simulations.validator.js'
+} from './simulations.validator.ts'
 import {
   ComputedResultSchema,
   SituationSchema,
-} from './simulations.validator.js'
+} from './simulations.validator.ts'
 import {
   getSituationDottedNameValue,
   getSituationDottedNameValueWithEngine,
-} from './situation/situation.service.js'
+} from './situation/situation.service.ts'
 
 const frRules = modelRules as Partial<NGCRules>
 const funFactsRules = modelFunFacts as { [k in keyof FunFacts]: DottedName }

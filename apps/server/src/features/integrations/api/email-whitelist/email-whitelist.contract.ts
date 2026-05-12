@@ -1,7 +1,7 @@
 import { initContract, ZodErrorSchema } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import { z } from 'zod'
-import { ApiScopeName } from '../../../../adapters/prisma/generated.js'
+import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
 
 const EmailPatternSchema = z
   .union([z.email(), z.string().regex(/^\*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)])

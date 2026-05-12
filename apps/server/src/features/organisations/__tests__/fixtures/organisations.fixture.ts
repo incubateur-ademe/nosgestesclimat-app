@@ -8,22 +8,22 @@ import {
   brevoRemoveFromList,
   brevoSendEmail,
   brevoUpdateContact,
-} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.js'
-import { connectUpdateContact } from '../../../../adapters/connect/__tests__/fixtures/server.fixture.js'
-import { prisma } from '../../../../adapters/prisma/client.js'
-import { OrganisationType } from '../../../../adapters/prisma/generated.js'
+} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { connectUpdateContact } from '../../../../adapters/connect/__tests__/fixtures/server.fixture.ts'
+import { prisma } from '../../../../adapters/prisma/client.ts'
+import { OrganisationType } from '../../../../adapters/prisma/generated.ts'
 import {
   mswServer,
   resetMswServer,
-} from '../../../../core/__tests__/fixtures/server.fixture.js'
-import { EventBus } from '../../../../core/event-bus/event-bus.js'
-import { COOKIE_NAME } from '../../../authentication/authentication.service.js'
-import { getSimulationPayload } from '../../../simulations/__tests__/fixtures/simulations.fixtures.js'
-import type { SimulationCreateInputDto } from '../../../simulations/simulations.validator.js'
+} from '../../../../core/__tests__/fixtures/server.fixture.ts'
+import { EventBus } from '../../../../core/event-bus/event-bus.ts'
+import { COOKIE_NAME } from '../../../authentication/authentication.service.ts'
+import { getSimulationPayload } from '../../../simulations/__tests__/fixtures/simulations.fixtures.ts'
+import type { SimulationCreateInputDto } from '../../../simulations/simulations.validator.ts'
 import type {
   OrganisationCreateDto,
   OrganisationPollCreateDto,
-} from '../../organisations.validator.js'
+} from '../../organisations.validator.ts'
 
 export const CREATE_ORGANISATION_ROUTE = '/organisations/v1'
 

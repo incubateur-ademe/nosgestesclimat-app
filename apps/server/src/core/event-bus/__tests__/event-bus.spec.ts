@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { EventBusError } from '../error.js'
-import { EventBus } from '../event-bus.js'
-import { EventBusEvent } from '../event.js'
-import type { Handler } from '../handler.js'
+import { EventBusError } from '../error.ts'
+import { EventBus } from '../event-bus.ts'
+import { EventBusEvent } from '../event.ts'
+import type { Handler } from '../handler.ts'
 
 describe('EventBus', () => {
   type EventAttributes = { event: string }

@@ -1,23 +1,23 @@
 import type { Request } from 'express'
-import type { Prisma } from '../../adapters/prisma/generated.js'
+import type { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   defaultOrganisationSelectionWithoutPolls,
   defaultPollSelection,
   defaultSimulationSelectionWithoutPollAndSituation,
   simulationSelection,
   simulationSelectionWithPolls,
-} from '../../adapters/prisma/selection.js'
-import type { Session } from '../../adapters/prisma/transaction.js'
-import { batchFindMany } from '../../core/batch-find-many.js'
-import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.js'
+} from '../../adapters/prisma/selection.ts'
+import type { Session } from '../../adapters/prisma/transaction.ts'
+import { batchFindMany } from '../../core/batch-find-many.ts'
+import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
 
-import type { PublicPollParams } from '../organisations/organisations.validator.js'
-import type { UserParams } from '../users/users.validator.js'
+import type { PublicPollParams } from '../organisations/organisations.validator.ts'
+import type { UserParams } from '../users/users.validator.ts'
 import type {
   SimulationCreateDto,
   SimulationParticipantCreateDto,
   SimulationsFetchQuery,
-} from './simulations.validator.js'
+} from './simulations.validator.ts'
 
 export const createParticipantSimulation = async <
   T extends Prisma.SimulationSelect = typeof simulationSelectionWithPolls,
