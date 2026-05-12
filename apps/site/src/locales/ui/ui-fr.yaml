@@ -1035,6 +1035,15 @@ entries:
   actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
+  actions.detailPage.tabs.understand: Je comprends
+  actions.detailPage.tabs.act: J'agis
+  actions.detailPage.tabs.incentives: J'y gagne
+  actions.detailPage.tabs.furtherReading: À découvrir aussi
+  actions.detailPage.nav: Navigation de la page
+  actions.detailPage.sections.understand: Je comprends l'enjeu
+  actions.detailPage.sections.act: J'agis
+  actions.detailPage.sections.incentives: J'y gagne
+  actions.detailPage.sections.furtherReading: À découvrir aussi
   actions.components.themeSection.description_one: '{{count}} action recommendée'
   actions.components.themeSection.description_other: '{{count}} actions recommendées'
   actions.components.highestImpactActionsSection.title: Le trio gagnant
