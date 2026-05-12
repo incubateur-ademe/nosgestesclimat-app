@@ -1,16 +1,35 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
 import getNamespace from '../../../../../../../e2e/utils/getNamespace'
+import { useEndTest } from '../../bilan/_hooks/useEndPage'
 export default function TransitionButtons() {
   const { gotoNextQuestion, nextQuestion } = useFormState()
   const nextQuestionCategory = getNamespace(nextQuestion)
   const { t } = useClientTranslation()
+
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const { endTest } = useEndTest()
+  function handleGoToNextQuestion() {
+    if (isPending) return
+    startTransition(() => {
+      if (!nextQuestionCategory) {
+        endTest()
+      } else {
+        router.push(SIMULATOR_PATH)
+        gotoNextQuestion()
+      }
+    })
+  }
 
   const getCategoryString = (category: Categories) => {
     switch (category) {
@@ -49,10 +68,12 @@ export default function TransitionButtons() {
         </span>
       </ButtonLink>
 
-      <ButtonLink
-        href={!nextQuestionCategory ? END_PAGE_PATH : SIMULATOR_PATH}
-        data-testid="skip-question-button"
-        onClick={gotoNextQuestion}>
+      <Button
+        data-testid={
+          !nextQuestionCategory ? 'end-test-button' : 'skip-question-button'
+        }
+        disabled={isPending}
+        onClick={handleGoToNextQuestion}>
         {!nextQuestionCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
@@ -64,7 +85,7 @@ export default function TransitionButtons() {
         <span aria-hidden className="ml-1.5 inline-block text-xl">
           →
         </span>
-      </ButtonLink>
+      </Button>
     </div>
   )
 }
