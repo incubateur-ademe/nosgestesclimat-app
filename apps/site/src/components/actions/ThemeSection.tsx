@@ -74,7 +74,7 @@ export default function ThemeSection({
         className="-mx-2 md:mx-0"
         aria-labelledby={carouselLabelId}>
         {actions.map((action) => (
-          <ActionCard key={action.id} action={action} />
+          <ActionCard key={action.id} action={action} locale={locale} />
         ))}
       </ActionsCarousel>
     </section>
