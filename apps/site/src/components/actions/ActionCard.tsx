@@ -1,5 +1,6 @@
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import { ThemeBadge } from './ThemeBadge'
 
@@ -33,6 +34,9 @@ export default function ActionCard({
       <div className="grow">
         <h3 className="mb-0 text-base/normal font-bold">{action.title}</h3>
       </div>
+      <Link href={`/actions/${action.slug}`} className="absolute inset-0 z-10">
+        <span className="sr-only">Voir l'action "{action.title}"</span>
+      </Link>
       {/* <div className="-mx-2 border-t border-slate-100 px-2 pt-2">
         <Button color="secondary" size="sm" className="w-full">
           <PlusIcon className="stroke-primary-700 mr-2 size-4 fill-none" />
