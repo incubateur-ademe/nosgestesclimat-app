@@ -82,7 +82,7 @@ export default function ImpactCO2Iframe({
         id="impact-co2"
         title={title}
         data-type={type}
-        data-search={`?language=${locale}&theme=default${additionalSearchParams ? `&${additionalSearchParams}` : ''}`}
+        data-search={`?language=${locale}&hideButtons=true&theme=default${additionalSearchParams ? `&${additionalSearchParams}` : ''}`}
         className={`transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
       />
     </div>

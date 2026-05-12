@@ -60,7 +60,7 @@ export default function TransitionHeaderSection({
       <p className="mb-0">
         {remainingCategories === 1 ? (
           <Trans i18nKey="simulator.intercalaire.subtitle.remaining.one">
-            Plus qu'une!
+            Plus qu'une !
           </Trans>
         ) : (
           <Trans

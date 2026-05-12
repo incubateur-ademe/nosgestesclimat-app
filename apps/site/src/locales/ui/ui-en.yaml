@@ -2102,7 +2102,7 @@ entries:
   Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>: To save your results and retrieve them in the future in <2>your personal space</2>
   à la consommation: for consumption
   Votre adresse électronique: Your e-mail address
-  simulator.transition.logement.funFact.line2: have not
+  simulator.transition.logement.funFact.line2: have
   simulator.transition.logement.funFact.line2.lock: n'ont pas
   simulator.transition.transport.funFact.line1: 'Every journey counts:'
   simulator.transition.transport.funFact.line1.lock: 'Chaque trajet compte :'
@@ -2112,15 +2112,15 @@ entries:
   simulator.transition.divers.funFact.line2.lock: d'un appareil numérique
   simulator.funFact.housing.text1: The size of French homes has risen sharply
   simulator.funFact.housing.text1.lock: La taille des logements français a très fortement augmenté
-  simulator.intercalaire.subtitle.remaining.all: More than {{remain}}!
-  simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remain}}!
+  simulator.intercalaire.subtitle.remaining.all: 'Only {{remainingCategories}} remaining!'
+  simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}}!
   simulator.transition.alimentation.funFact.line1: Certain meals
   simulator.transition.alimentation.funFact.line1.lock: Certains repas
   simulator.transition.transport.funFact.line2: make the right choice!
   simulator.transition.transport.funFact.line2.lock: fais le bon choix !
   simulator.transition.divers.funFact.line3: comes from its
   simulator.transition.divers.funFact.line3.lock: provient de sa
-  simulator.transition.logement.funFact.line1: All types of <1>heating</1>
+  simulator.transition.logement.funFact.line1: Not all types of <1>heating</1>
   simulator.transition.logement.funFact.line1.lock: Tous les modes de <1>chauffage</1>
   Créez une organisation afin de diffuser un ou plusieurs liens de test collectif: Create an organisation to distribute one or more group test links
   simulator.funFact.clothing.title: Did you know?
@@ -2193,7 +2193,7 @@ entries:
   common.logement.lock: logement
   common.consommation: consumption
   common.consommation.lock: consommation
-  simulator.intercalaire.goToConsommation: Switching to consumption
+  simulator.intercalaire.goToConsommation: Switch to consumption
   simulator.intercalaire.goToConsommation.lock: Passer à la consommation
   simulator.intercalaire.goToLogement: Moving on to housing
   simulator.intercalaire.goToLogement.lock: Passer au logement
