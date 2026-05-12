@@ -2,13 +2,15 @@ import type { HTMLAttributes, PropsWithChildren } from 'react'
 import emoji from 'react-easy-emoji'
 import { twMerge } from 'tailwind-merge'
 
+export type EmojiProps = HTMLAttributes<HTMLSpanElement> &
+  PropsWithChildren<{ className?: string; alt?: string }>
+
 export default function Emoji({
   children = '...',
   className,
   alt,
   ...props
-}: HTMLAttributes<HTMLSpanElement> &
-  PropsWithChildren<{ className?: string; alt?: string }>) {
+}: EmojiProps) {
   return (
     // Emojis are decorative and don't need to be read by screen readers
     <span

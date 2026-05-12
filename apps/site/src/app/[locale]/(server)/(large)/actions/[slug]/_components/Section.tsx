@@ -1,3 +1,4 @@
+import { EmojiBadge } from '@/components/actions/EmojiBadge'
 import { twMerge } from 'tailwind-merge'
 
 type SectionVariant = 'default' | 'highlighted'
@@ -30,18 +31,24 @@ const sectionClassNamesByVariant: Record<SectionVariant, string> = {
   highlighted: 'bg-slate-50',
 }
 
-type SectionTitleProps = React.ComponentPropsWithoutRef<'h2'>
+interface SectionTitleProps extends React.ComponentPropsWithoutRef<'h2'> {
+  emoji: string
+}
 
 export function SectionTitle({
   className,
   children,
+  emoji,
   ...props
 }: SectionTitleProps) {
   return (
     <h2
-      className={twMerge('mb-5 text-lg leading-6.75 font-bold', className)}
+      className={twMerge(
+        'mb-5 flex items-center gap-1 text-lg leading-6.75 font-bold',
+        className
+      )}
       {...props}>
-      {/* TODO: emoji */}
+      <EmojiBadge>{emoji}</EmojiBadge>
       {children}
     </h2>
   )
