@@ -94,7 +94,10 @@ export default async function ActionPage({
         className="mb-10"
       />
       <header
-        className={twMerge('mb-10 rounded-[20px] p-5', themeClasses.headerBg)}>
+        className={twMerge(
+          'mb-10 rounded-[20px] border p-5',
+          themeClasses.header
+        )}>
         <p
           className={twMerge(
             'mb-0 text-sm leading-normal font-bold',
@@ -160,17 +163,26 @@ export default async function ActionPage({
 
 const classNames: Record<
   Theme['key'],
-  Record<'headerBg' | 'themeColor', string>
+  Record<'header' | 'themeColor', string>
 > = {
   food: {
-    headerBg: 'bg-alimentation-50',
+    header: 'bg-alimentation-50 border-alimentation-200',
     themeColor: 'text-alimentation-800',
   },
-  transport: { headerBg: 'bg-transport-50', themeColor: 'text-transport-800' },
-  housing: { headerBg: 'bg-logement-50', themeColor: 'text-logement-800' },
+  transport: {
+    header: 'bg-transport-50 border-transport-200',
+    themeColor: 'text-transport-800',
+  },
+  housing: {
+    header: 'bg-logement-50 border-logement-200',
+    themeColor: 'text-logement-800',
+  },
   societal_services: {
-    headerBg: 'bg-servicessocietaux-50',
+    header: 'bg-servicessocietaux-50 border-servicessocietaux-200',
     themeColor: 'text-servicessocietaux-800',
   },
-  misc: { headerBg: 'bg-divers-50', themeColor: 'text-divers-800' },
+  misc: {
+    header: 'bg-divers-50 border-divers-200',
+    themeColor: 'text-divers-800',
+  },
 }
