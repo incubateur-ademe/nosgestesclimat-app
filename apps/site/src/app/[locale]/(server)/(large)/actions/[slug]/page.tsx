@@ -31,8 +31,6 @@ export default async function ActionPage({
 
   if (!flag) notFound()
 
-  // TODO: use MON_ESPACE_ACTIONS_PATH if user is not anon
-
   const action = actions.find((a) => a.slug === slug)
 
   if (!action) notFound()
@@ -125,7 +123,7 @@ export default async function ActionPage({
         <Section
           id={SECTION_ID_I_UNDERSTAND}
           variant="highlighted"
-          className="wscroll-mt-24 flex flex-col gap-5 md:col-span-full md:flex-row">
+          className="flex scroll-mt-24 flex-col gap-5 md:col-span-full md:flex-row">
           <div className={action.media ? 'flex-1/2' : ''}>
             <SectionTitle emoji="💡">Je comprends l'enjeu</SectionTitle>
             <Markdown>{action.longDescription}</Markdown>
@@ -139,19 +137,19 @@ export default async function ActionPage({
           ) : null}
         </Section>
         {action.means ? (
-          <Section id={SECTION_ID_I_ACT} className="wscroll-mt-24">
+          <Section id={SECTION_ID_I_ACT} className="scroll-mt-24">
             <SectionTitle emoji="🚀">J’agis</SectionTitle>
             <Markdown>{action.means}</Markdown>
           </Section>
         ) : null}
         {action.incentives ? (
-          <Section id={SECTION_ID_I_BENEFIT} className="wscroll-mt-24">
+          <Section id={SECTION_ID_I_BENEFIT} className="scroll-mt-24">
             <SectionTitle emoji="💡">J’y gagne</SectionTitle>
             <Markdown>{action.incentives}</Markdown>
           </Section>
         ) : null}
         {action.furtherReading ? (
-          <Section id={SECTION_ID_FURTHER_READING} className="wscroll-mt-24">
+          <Section id={SECTION_ID_FURTHER_READING} className="scroll-mt-24">
             <SectionTitle emoji="🔗">À découvrir aussi</SectionTitle>
             <Markdown>{action.furtherReading}</Markdown>
           </Section>
