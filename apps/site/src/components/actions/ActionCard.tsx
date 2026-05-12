@@ -1,8 +1,10 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
+import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
+import Trans from '../translation/trans/TransServer'
 import { ThemeBadge } from './ThemeBadge'
 
 const classesByTheme: Record<Theme['key'], string> = {
@@ -16,11 +18,13 @@ const classesByTheme: Record<Theme['key'], string> = {
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   action: Action
+  locale: Locale
 }
 
 export default function ActionCard({
   action,
   className,
+  locale,
   ...props
 }: ActionCardProps) {
   return (
@@ -38,7 +42,14 @@ export default function ActionCard({
       <Link
         href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
         className="absolute inset-0 z-10">
-        <span className="sr-only">Voir l'action "{action.title}"</span>
+        <span className="sr-only">
+          <Trans
+            locale={locale}
+            i18nKey="actions.components.actionCard.link"
+            values={{ actionTitle: action.title }}>
+            Voir l'action "{action.title}"
+          </Trans>
+        </span>
       </Link>
       {/* <div className="-mx-2 border-t border-slate-100 px-2 pt-2">
         <Button color="secondary" size="sm" className="w-full">
