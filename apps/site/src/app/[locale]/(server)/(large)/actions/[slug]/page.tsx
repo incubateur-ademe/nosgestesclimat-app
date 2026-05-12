@@ -2,6 +2,8 @@ import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
+import { getUser } from '@/helpers/server/dal/user'
+import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
@@ -19,17 +21,13 @@ export default async function ActionPage({
   params,
 }: DefaultPageProps<{ params: { slug: string } }>) {
   const { locale, slug } = await params
+  const user = await getUser()
+  const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
 
-  // TODO: allow unauthenticated users to access the page
-  // const user = await throwNextError(getAuthUser)
-  // const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+  if (!flag) notFound()
 
-  // if (!flag) notFound()
-  // console.log(user)
-  // console.log(flag)
   // TODO: use MON_ESPACE_ACTIONS_PATH if user is not anon
 
-  // TODO: use slug instead of id
   const action = actions.find((a) => a.slug === slug)
 
   if (!action) notFound()
