@@ -20,11 +20,12 @@ test('should show youth tutorial when joining via the scolaire poll invite link'
 
 test.describe('When a user completes the test via the scolaire poll invite link', () => {
   // test.describe.configure({ mode: 'default' })
-  test.setTimeout(60_000)
 
   let page: Page
 
   test.beforeAll(async ({ browser }) => {
+    test.setTimeout(60_000)
+
     page = await browser.newPage()
 
     const adminContext = await browser.newContext({
