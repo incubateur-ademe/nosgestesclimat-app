@@ -21,7 +21,6 @@ export const useCurrent = (
         (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
       ? questionInQueryParams
       : nextQuestion
-
   const [currentQuestion, setCurrentQuestion] = useState(
     defaultCurrentQuestion ?? null
   )

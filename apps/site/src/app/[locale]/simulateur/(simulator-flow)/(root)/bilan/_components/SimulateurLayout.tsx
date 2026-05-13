@@ -5,7 +5,6 @@ import {
   simulateurCloseSommaire,
   simulateurOpenSommaire,
 } from '@/constants/tracking/pages/simulateur'
-import { useAutoSaveSimulation } from '@/hooks/simulation/useAutoSaveSimulation'
 import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
 import { useFormState } from '@/publicodes-state'
@@ -20,8 +19,6 @@ export default function SimulateurLayout({
 }: {
   children: React.ReactNode
 }) {
-  useAutoSaveSimulation()
-
   const { isIframe } = useIframe()
   const { currentCategory: isInitialized } = useFormState()
 
