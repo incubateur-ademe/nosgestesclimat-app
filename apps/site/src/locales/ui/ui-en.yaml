@@ -2207,3 +2207,23 @@ entries:
   actions.mTaTerre.title.lock: Tu veux comprendre ET agir pour la planète ?
   actions.mTaTerre.text: 'Climate, biodiversity, energy, food.<2>..</2><1></1><2></2> M<2>ta Terre</2> is the website for you: <5>articles</5>, <7>videos</7>, <10>podcasts</10> and <12>practical tips</12> to take action on a daily basis.'
   actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
+  common.skip: Skip
+  common.skip.lock: Passer
+  tutorial.email.title.youth: Your e-mail address
+  tutorial.email.title.youth.lock: Ton adresse électronique
+  tutorial.email.seeMore: Find out more
+  tutorial.email.seeMore.lock: En savoir plus
+  common.optional: optional
+  common.optional.lock: facultatif
+  tutorial.email.title.default: Your e-mail address
+  tutorial.email.title.default.lock: Votre adresse électronique
+  common.authentication.verifyEmail: Check my email address
+  common.authentication.verifyEmail.lock: Vérifier mon adresse email
+  tutorial.email.contest.youth: Your e-mail address will be used for the prize draw.
+  tutorial.email.contest.youth.lock: Ton e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.default: Your e-mail address will be used for the prize draw.
+  tutorial.email.contest.default.lock: Votre e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
+  tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
+  tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
+  tutorial.email.subtitle.default.lock: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
