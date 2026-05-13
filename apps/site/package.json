@@ -47,6 +47,7 @@
     "@incubateur-ademe/nosgestesclimat": "^4.12.2",
     "@next/mdx": "^16.2.2",
     "@nosgestesclimat/core": "workspace:*",
+    "@posthog/react": "^1.9.0",
     "@publicodes/react-ui": "^1.10.0",
     "@publicodes/tools": "^1.8.0",
     "@sentry/nextjs": "^10.46.0",
