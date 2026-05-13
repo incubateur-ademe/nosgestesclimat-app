@@ -48,10 +48,10 @@ export default function ThemeSection({
   return (
     <section
       className={twMerge(
-        '-mx-4 border-t-2 border-b-2 px-2 py-5 md:mx-0 md:rounded-[20px] md:border-2 md:px-5 md:py-8',
+        '-mx-4 border-t-2 border-b-2 px-2 pt-5 pb-4 md:mx-0 md:rounded-2xl md:border-2 md:px-5 md:pt-8 md:pb-7',
         classes.section
       )}>
-      <div className="mb-5 flex items-start justify-between gap-2">
+      <div className="mb-4 flex items-start justify-between gap-2">
         <div className="flex items-start gap-1">
           <EmojiBadge color={theme.key}>{theme.emoji}</EmojiBadge>
           <div className={classes.header}>
@@ -71,8 +71,9 @@ export default function ThemeSection({
       </div>
       <ActionsCarousel
         locale={locale}
+        aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
-        aria-labelledby={carouselLabelId}>
+        innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) => (
           <ActionCard key={action.id} action={action} locale={locale} />
         ))}

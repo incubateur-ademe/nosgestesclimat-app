@@ -8,12 +8,14 @@ import Trans from '../translation/trans/TransServer'
 import { ThemeBadge } from './ThemeBadge'
 
 const classesByTheme: Record<Theme['key'], string> = {
-  transport: 'border-transport-200 border-t-transport-400',
-  food: 'border-alimentation-200 border-t-alimentation-400',
-  housing: 'border-logement-200 border-t-logement-400',
-  misc: 'border-divers-200 border-t-divers-400',
+  transport:
+    'border-transport-200 border-t-transport-400! hover:border-transport-300 focus-within:border-transport-300',
+  food: 'border-alimentation-200 border-t-alimentation-400! hover:border-alimentation-300 focus-within:border-alimentation-300',
+  housing:
+    'border-logement-200 border-t-logement-400! hover:border-logement-300 focus-within:border-logement-300',
+  misc: 'border-divers-200 border-t-divers-400! hover:border-divers-300 focus-within:border-divers-300',
   societal_services:
-    'border-servicessocietaux-200 border-t-servicessocietaux-400',
+    'border-servicessocietaux-200 border-t-servicessocietaux-400! hover:border-servicessocietaux-300 focus-within:border-servicessocietaux-300',
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
@@ -32,6 +34,9 @@ export default function ActionCard({
       {...props}
       className={twMerge(
         `relative flex min-h-56 flex-col gap-2 rounded-lg border border-t-8 bg-white p-2`,
+        'translate-y-0 transition-[box-shadow_border-color_transform] duration-300 ease-out',
+        'hover:-translate-y-0.5 hover:shadow-sm',
+        'focus-within:-translate-y-0.5 focus-within:shadow-sm',
         classesByTheme[action.theme.key],
         className
       )}>
