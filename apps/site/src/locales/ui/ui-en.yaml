@@ -2074,3 +2074,29 @@ entries:
   youthTutorial.title.lock: Découvre ton impact <2>sur la planète</2>
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre.lock: actions.jva.banner.cta.label
+  actions.components.themeSection.description_other: '{{count}} recommended actions'
+  actions.components.themeSection.description_other.lock: '{{count}} actions recommendées'
+  components.carousel.nextSlideMessage: Next slide
+  components.carousel.nextSlideMessage.lock: Diapo suivante
+  actions.listPage.title: Building my action plan
+  actions.listPage.title.lock: Construire mon plan d’action
+  components.carousel.paginationBulletMessage: Go to slide {{index}}
+  components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
+  components.carousel.prevSlideMessage: Previous slide
+  components.carousel.prevSlideMessage.lock: Diapo précédente
+  actions.components.themeSection.description_one: '{{count}} recommended action'
+  actions.components.themeSection.description_one.lock: '{{count}} action recommendée'
+  components.carousel.firstSlideMessage: This is the first slide
+  components.carousel.firstSlideMessage.lock: Ceci est la première diapo
+  actions.components.highestImpactActionsSection.title: The winning trio
+  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
+  components.carousel.lastSlideMessage: This is the last slide
+  components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
+  actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
+  actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
+  actions.listPage.description: The following actions are recommended based on your answers to the test. <1 />Choose the ones that seem achievable, the most important thing is to get moving!
+  actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  components.carousel.itemRoleDescriptionMessage: Slide
+  components.carousel.itemRoleDescriptionMessage.lock: Diapo
+  components.carousel.roleDescription: Carousel
+  components.carousel.roleDescription.lock: Carrousel

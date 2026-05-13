@@ -1,0 +1,4 @@
+@import 'swiper/css' layer(base);
+@import 'swiper/css/navigation' layer(base);
+@import 'swiper/css/a11y' layer(base);
+@import 'swiper/css/keyboard' layer(base);

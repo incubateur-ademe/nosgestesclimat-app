@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { endClickActions } from '@/constants/tracking/pages/end'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import RecommendedActions from './howToAct/RecommendedActions'
+import RecommendedActions from './RecommendedActions'
 
 export default function HowToAct({
   shouldLeadToTest = true,

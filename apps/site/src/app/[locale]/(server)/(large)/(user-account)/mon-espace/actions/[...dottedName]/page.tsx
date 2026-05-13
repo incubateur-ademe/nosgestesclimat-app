@@ -1,4 +1,4 @@
-import ActionDetail from '@/components/actions/ActionDetail'
+import ActionDetail from '@/components/results/actions/ActionDetail'
 import Trans from '@/components/translation/trans/TransClient'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
