@@ -26,9 +26,8 @@ export function LegacyActionPage({ simulations, locale }: Props) {
 
           <TopBar className="mb-6" simulationMode={false} showTotal />
           {lastSimulation &&
-            getSimulationMode(lastSimulation) === 'scolaire' && (
-              <MTaTerreBanner locale={locale} />
-            )}
+            getSimulationMode(lastSimulation) === 'scolaire' &&
+            locale === 'fr' && <MTaTerreBanner locale={locale} />}
 
           {/* Commented while displaying M ta Terre banner <ActionsTutorial /> */}
 
