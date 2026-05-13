@@ -1523,3 +1523,5 @@ entries:
   components.carousel.firstSlideMessage: Ceci est la première diapo
   components.carousel.lastSlideMessage: Ceci est la dernière diapo
   components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
+  components.carousel.itemRoleDescriptionMessage: Diapo
+  components.carousel.roleDescription: Carrousel

@@ -2096,3 +2096,7 @@ entries:
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.listPage.description: The following actions are recommended based on your answers to the test. <1 />Choose the ones that seem achievable, the most important thing is to get moving!
   actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  components.carousel.itemRoleDescriptionMessage: Slide
+  components.carousel.itemRoleDescriptionMessage.lock: Diapo
+  components.carousel.roleDescription: Carousel
+  components.carousel.roleDescription.lock: Carrousel

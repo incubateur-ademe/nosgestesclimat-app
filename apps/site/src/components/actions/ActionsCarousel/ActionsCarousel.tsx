@@ -36,10 +36,20 @@ export default async function ActionsCarousel({
       'components.carousel.paginationBulletMessage',
       'Aller à la diapo {{index}}'
     ),
+    itemRoleDescriptionMessage: t(
+      'components.carousel.itemRoleDescriptionMessage',
+      'Diapo'
+    ),
   }
 
+  const roleDescription = t('components.carousel.roleDescription', 'Carrousel')
+
   return (
-    <div {...rest} className={twMerge('relative', className)}>
+    <div
+      {...rest}
+      className={twMerge('relative', className)}
+      role="region"
+      aria-roledescription={roleDescription}>
       <ActionsCarouselClient translations={translations}>
         {children}
       </ActionsCarouselClient>

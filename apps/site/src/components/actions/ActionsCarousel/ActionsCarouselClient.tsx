@@ -15,6 +15,7 @@ export interface ActionsCarouselTranslations {
   firstSlideMessage: string
   lastSlideMessage: string
   paginationBulletMessage: string
+  itemRoleDescriptionMessage: string
 }
 
 interface ActionsCarouselClientProps {

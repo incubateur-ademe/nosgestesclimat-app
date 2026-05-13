@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
+import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
@@ -16,6 +17,7 @@ export default function HighestImpactActionsSection({
   className,
   ...props
 }: HighestImpactActionsSectionProps) {
+  const carouselLabelId = useId()
   return (
     <section
       {...props}
@@ -34,7 +36,7 @@ export default function HighestImpactActionsSection({
           🏆
         </span>
         <div className="text-white">
-          <h2 className="mb-0 text-lg/normal font-bold">
+          <h2 id={carouselLabelId} className="mb-0 text-lg/normal font-bold">
             <Trans
               locale={locale}
               i18nKey="actions.components.highestImpactActionsSection.title">
@@ -50,7 +52,10 @@ export default function HighestImpactActionsSection({
           </p>
         </div>
       </div>
-      <ActionsCarousel locale={locale} className="-mx-2 md:mx-0">
+      <ActionsCarousel
+        locale={locale}
+        className="-mx-2 md:mx-0"
+        aria-labelledby={carouselLabelId}>
         {actions.map((action) => (
           <ActionCard key={action.id} action={action} />
         ))}

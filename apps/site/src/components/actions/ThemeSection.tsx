@@ -2,6 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
@@ -47,6 +48,7 @@ export default function ThemeSection({
   actions: Action[]
   locale: Locale
 }) {
+  const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
   return (
     <section
@@ -64,7 +66,9 @@ export default function ThemeSection({
             {theme.emoji}
           </Emoji>
           <div className={classes.header}>
-            <h2 className="mb-0 text-lg/normal font-bold">{theme.title}</h2>
+            <h2 id={carouselLabelId} className="mb-0 text-lg/normal font-bold">
+              {theme.title}
+            </h2>
             <p className="text-sm/normal font-normal">
               <Trans
                 locale={locale}
@@ -76,7 +80,10 @@ export default function ThemeSection({
           </div>
         </div>
       </div>
-      <ActionsCarousel locale={locale} className="-mx-2 md:mx-0">
+      <ActionsCarousel
+        locale={locale}
+        className="-mx-2 md:mx-0"
+        aria-labelledby={carouselLabelId}>
         {actions.map((action) => (
           <ActionCard key={action.id} action={action} />
         ))}
