@@ -4,7 +4,7 @@ import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
-import ActionCard from './ActionCard'
+import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 import { EmojiBadge } from './EmojiBadge'
 
