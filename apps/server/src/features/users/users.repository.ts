@@ -7,7 +7,6 @@ import type {
   RequestOptionsOrNull,
   Session,
 } from '../../adapters/prisma/transaction.ts'
-import type { UserUpdateDto } from './users.validator.ts'
 
 /**
  * Legacy migration function. Finds all anonymous users sharing the same
@@ -364,18 +363,36 @@ export const createOrUpdateUser = async <
   }
 }
 
+type VerifiedUserPayload = {
+  email?: string | undefined
+  name?: string | null | undefined
+  position?: string | null | undefined
+  telephone?: string | null | undefined
+  optedInForCommunications?: boolean | undefined
+}
+
 export const createOrUpdateVerifiedUser = async <
   Select extends Prisma.VerifiedUserSelect = { id: true },
 >(
   {
     id: { userId, email },
-    user: { name, email: newEmail },
+    user: {
+      email: newEmail,
+      name,
+      position,
+      telephone,
+      optedInForCommunications,
+    },
     select = { email: true } as Select,
-  }: { id: NonNullable<Request['user']>; user: UserUpdateDto; select?: Select },
+  }: {
+    id: NonNullable<Request['user']>
+    user: VerifiedUserPayload
+    select?: Select
+  },
   { session }: { session: Session }
 ) => {
   const existingUser = await fetchVerifiedUser({ email }, { session })
-
+  const userData = { name, position, telephone, optedInForCommunications }
   const [user] = await Promise.all([
     existingUser
       ? session.verifiedUser.update({
@@ -384,7 +401,7 @@ export const createOrUpdateVerifiedUser = async <
           },
           data: {
             id: userId,
-            name,
+            ...userData,
             ...(newEmail ? { email: newEmail } : {}),
           },
           select,
@@ -393,7 +410,7 @@ export const createOrUpdateVerifiedUser = async <
           data: {
             id: userId,
             email: newEmail || email,
-            name,
+            ...userData,
           },
           select,
         }),
@@ -403,7 +420,7 @@ export const createOrUpdateVerifiedUser = async <
         id: userId,
         user: {
           email: newEmail || email,
-          name,
+          name: userData.name,
         },
       },
       { session }

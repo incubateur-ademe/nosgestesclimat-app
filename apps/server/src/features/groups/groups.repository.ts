@@ -6,10 +6,7 @@ import {
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { createParticipantSimulation } from '../simulations/simulations.repository.ts'
-import {
-  createOrUpdateUser,
-  transferOwnershipToUser,
-} from '../users/users.repository.ts'
+import { createOrUpdateUser } from '../users/users.repository.ts'
 import type { UserParams } from '../users/users.validator.ts'
 import type {
   GroupCreateDto,
@@ -138,14 +135,9 @@ export const updateUserGroup = (
 
 export const createParticipantAndUser = async (
   { groupId }: GroupParams,
-  { userId, name, email, simulation: simulationDto }: ParticipantCreateDto,
+  { userId, name, simulation: simulationDto }: ParticipantCreateDto,
   { session }: { session: Session }
 ) => {
-  // Dedupe user
-  if (email) {
-    await transferOwnershipToUser({ user: { email, id: userId } }, { session })
-  }
-
   const existingParticipant = await session.groupParticipant.findUnique({
     where: {
       groupId_userId: {
@@ -161,7 +153,6 @@ export const createParticipantAndUser = async (
       id: userId,
       user: {
         name,
-        email,
       },
     },
     { session }
