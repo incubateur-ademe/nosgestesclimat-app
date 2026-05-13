@@ -2112,7 +2112,7 @@ entries:
   simulator.transition.divers.funFact.line2.lock: d'un appareil numérique
   simulator.funFact.housing.text1: The size of French homes has risen sharply
   simulator.funFact.housing.text1.lock: La taille des logements français a très fortement augmenté
-  simulator.intercalaire.subtitle.remaining.all: More than {{remainingCategories}}!
+  simulator.intercalaire.subtitle.remaining.all: Only {{remainingCategories}} remaining!
   simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}} !
   simulator.transition.alimentation.funFact.line1: Certain meals
   simulator.transition.alimentation.funFact.line1.lock: Certains repas
