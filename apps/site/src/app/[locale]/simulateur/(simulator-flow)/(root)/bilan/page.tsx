@@ -7,10 +7,10 @@ import { useSyncQuestionWithQueryParams } from '@/publicodes-state/providers/for
 import Form from './_components/Form'
 
 export default function Page() {
-  useAutoSaveSimulation()
   useTrackSimulator()
   const { currentQuestion } = useFormState()
   useSyncQuestionWithQueryParams(currentQuestion)
+  useAutoSaveSimulation()
 
   return <Form />
 }

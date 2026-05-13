@@ -7,7 +7,7 @@ import questions from '@/components/specialQuestions'
 import { getBgCategoryColor } from '@/helpers/getCategoryColorClass'
 import { useIframe } from '@/hooks/useIframe'
 
-import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/bilan/_components/summary/CategoryIllustration'
+import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/(root)/bilan/_components/summary/CategoryIllustration'
 import { useFormState } from '@/publicodes-state'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'

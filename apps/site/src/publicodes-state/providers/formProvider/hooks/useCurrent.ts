@@ -3,7 +3,7 @@ import { useDebug } from '@/hooks/useDebug'
 import { useLocale } from '@/hooks/useLocale'
 import getNamespace from '@/publicodes-state/helpers/getNamespace'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat/types/dottedNames'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
 export const useCurrent = (
@@ -12,13 +12,18 @@ export const useCurrent = (
 ) => {
   const isDebug = useDebug()
   const questionInQueryParams = useQuestionInQueryParams()
-  const defaultCurrentQuestion =
-    questionInQueryParams &&
-    (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
+  const pathname = usePathname()
+  const nextQuestion = remainingQuestions.at(0)
+  const lastQuestion = relevantAnsweredQuestions.at(-1)
+  const defaultCurrentQuestion = pathname.includes('intercalaire')
+    ? lastQuestion
+    : questionInQueryParams &&
+        (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
       ? questionInQueryParams
-      : (relevantAnsweredQuestions.at(-1) ?? remainingQuestions.at(0) ?? null)
-
-  const [currentQuestion, setCurrentQuestion] = useState(defaultCurrentQuestion)
+      : nextQuestion
+  const [currentQuestion, setCurrentQuestion] = useState(
+    defaultCurrentQuestion ?? null
+  )
 
   const currentCategory = useMemo(() => {
     return getNamespace(currentQuestion) ?? null

@@ -1390,8 +1390,7 @@ entries:
   navigation.connexionInscription: Login/registration navigation
   navigation.connexionInscription.lock: Navigation connexion/inscription
   mon-espace.evolutionGraph.chartDisabledTitle.part2: to view the evolution of your footprint
-  mon-espace.evolutionGraph.chartDisabledTitle.part2.lock: pour avoir accès à l’évolution de votre empreinte
-  mon-espace.evolutionGraph.chartDisabledTitle.part2: to access the evolution of your footprint
+  mon-espace.evolutionGraph.chartDisabledTitle.part2.lock: pour avoir accès à l'évolution de votre empreinte
   mon-espace.actions.jagis.description.part5: and
   mon-espace.actions.jagis.description.part5.lock: et
   mon-espace.actions.jagis.description.part2: <0>Taking action</0>
@@ -2113,8 +2112,8 @@ entries:
   simulator.transition.divers.funFact.line2.lock: d'un appareil numérique
   simulator.funFact.housing.text1: The size of French homes has risen sharply
   simulator.funFact.housing.text1.lock: La taille des logements français a très fortement augmenté
-  simulator.intercalaire.subtitle.remaining.all: 'Only {{remainingCategories}} remaining!'
-  simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}}!
+  simulator.intercalaire.subtitle.remaining.all: Only {{remainingCategories}} left!
+  simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}} !
   simulator.transition.alimentation.funFact.line1: Certain meals
   simulator.transition.alimentation.funFact.line1.lock: Certains repas
   simulator.transition.transport.funFact.line2: make the right choice!
@@ -2222,3 +2221,23 @@ entries:
   simulator.age.options.65EtPlus.lock: 65 ans et +
   simulator.age.options.nonPrecise: I prefer not to say ❌
   simulator.age.options.nonPrecise.lock: Je préfère ne pas le préciser ❌
+  common.skip: Skip
+  common.skip.lock: Passer
+  tutorial.email.title.youth: Your e-mail address
+  tutorial.email.title.youth.lock: Ton adresse électronique
+  tutorial.email.seeMore: Find out more
+  tutorial.email.seeMore.lock: En savoir plus
+  common.optional: optional
+  common.optional.lock: facultatif
+  tutorial.email.title.default: Your e-mail address
+  tutorial.email.title.default.lock: Votre adresse électronique
+  common.authentication.verifyEmail: Check my email address
+  common.authentication.verifyEmail.lock: Vérifier mon adresse email
+  tutorial.email.contest.youth: Your e-mail address will be used for the prize draw.
+  tutorial.email.contest.youth.lock: Ton e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.default: Your e-mail address will be used for the prize draw.
+  tutorial.email.contest.default.lock: Votre e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
+  tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
+  tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
+  tutorial.email.subtitle.default.lock: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>

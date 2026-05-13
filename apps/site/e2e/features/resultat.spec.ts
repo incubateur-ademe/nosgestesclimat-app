@@ -70,7 +70,7 @@ test.describe('Given an authenticated user that completed the test twice with di
 
     // 2. Restart and do a second simulation with different answers
     await page.goto('/')
-    await page.getByTestId('restart-link').click()
+    await page.getByTestId('restart-link').first().click()
     const differentSituation: Situation = {
       'transport . voiture . utilisateur': "'propriétaire'",
       'transport . voiture . km': Math.round(Math.random() * 10000),

@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
-import SimulateurLayout from './bilan/_components/SimulateurLayout'
-import SimulateurSkeleton from './bilan/_components/skeleton'
+import SimulateurLayout from './(root)/bilan/_components/SimulateurLayout'
+import SimulateurSkeleton from './(root)/bilan/_components/skeleton'
 
 export default function Loading() {
   const pathname = usePathname()

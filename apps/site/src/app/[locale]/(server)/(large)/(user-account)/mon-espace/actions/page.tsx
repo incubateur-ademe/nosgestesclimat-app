@@ -15,7 +15,7 @@ export default async function MonEspaceActionsPage({
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
   // const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
-  const flag = true
+  const flag = false
   if (!flag) {
     return <LegacyMonEspaceActionsPage user={user} locale={locale} />
   }

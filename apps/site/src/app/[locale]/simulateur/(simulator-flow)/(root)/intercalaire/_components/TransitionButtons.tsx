@@ -6,10 +6,10 @@ import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useFormState } from '@/publicodes-state'
+import getNamespace from '@/publicodes-state/helpers/getNamespace'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import getNamespace from '../../../../../../../e2e/utils/getNamespace'
 import { useEndTest } from '../../bilan/_hooks/useEndPage'
 export default function TransitionButtons() {
   const { gotoNextQuestion, nextQuestion } = useFormState()

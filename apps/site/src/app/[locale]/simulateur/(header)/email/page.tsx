@@ -40,20 +40,24 @@ export default async function Email({
         className="mt-10 text-lg md:text-2xl"
         title={
           isSchoolMode ? (
-            <Trans locale={locale}>Ton adresse électronique</Trans>
+            <Trans i18nKey="tutorial.email.title.youth" locale={locale}>
+              Ton adresse électronique
+            </Trans>
           ) : (
-            <Trans locale={locale}>Votre adresse électronique</Trans>
+            <Trans i18nKey="tutorial.email.title.default" locale={locale}>
+              Votre adresse électronique
+            </Trans>
           )
         }
         subtitle={
           <>
             {isSchoolMode ? (
-              <Trans locale={locale}>
+              <Trans i18nKey="tutorial.email.subtitle.youth" locale={locale}>
                 Pour conserver tes résultats et les retrouver à l'avenir dans{' '}
                 <strong>ton espace personnel</strong>
               </Trans>
             ) : (
-              <Trans locale={locale}>
+              <Trans i18nKey="tutorial.email.subtitle.default" locale={locale}>
                 Pour conserver vos résultats et les retrouver à l'avenir dans{' '}
                 <strong>votre espace personnel</strong>
               </Trans>
@@ -61,24 +65,30 @@ export default async function Email({
             {hasContest ? (
               <span>
                 {isSchoolMode ? (
-                  <Trans locale={locale}>
+                  <Trans i18nKey="tutorial.email.contest.youth" locale={locale}>
                     Ton e-mail sera utilisé pour le tirage au sort.
                   </Trans>
                 ) : (
-                  <Trans locale={locale}>
+                  <Trans
+                    i18nKey="tutorial.email.contest.default"
+                    locale={locale}>
                     Votre e-mail sera utilisé pour le tirage au sort.
                   </Trans>
                 )}{' '}
                 <InlineLink
                   target="_blank"
                   href="/politique-de-confidentialite">
-                  <Trans locale={locale}>En savoir plus</Trans>
+                  <Trans i18nKey="tutorial.email.seeMore" locale={locale}>
+                    En savoir plus
+                  </Trans>
                 </InlineLink>
               </span>
             ) : null}
 
             <span className="text-secondary-700 ml-2 inline-block font-bold italic">
-              <Trans locale={locale}>facultatif</Trans>
+              <Trans i18nKey="common.optional" locale={locale}>
+                facultatif
+              </Trans>
             </span>
           </>
         }
@@ -86,13 +96,18 @@ export default async function Email({
       <UserProvider serverUserId={user.id}>
         <QueryClientProviderWrapper>
           <AuthenticateUserForm
-            buttonLabel={t('Vérifier mon adresse email')}
+            buttonLabel={t(
+              'common.authentication.verifyEmail',
+              'Vérifier mon adresse email'
+            )}
             additionnalButton={
               <ButtonLink
                 color="secondary"
                 href={END_PAGE_PATH}
                 data-testid="skip-email-button">
-                <Trans locale={locale}>Passer</Trans>
+                <Trans i18nKey="common.skip" locale={locale}>
+                  Passer
+                </Trans>
               </ButtonLink>
             }
             redirectPathname={END_PAGE_PATH}

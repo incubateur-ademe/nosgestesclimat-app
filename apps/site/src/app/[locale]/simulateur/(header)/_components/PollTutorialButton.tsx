@@ -13,7 +13,6 @@ interface Props {
 export default function PollTutorialButton({
   poll,
   locale,
-
   createSimulation,
 }: Props) {
   if (poll.simulations.hasParticipated && poll.progression === 1) {
