@@ -16,7 +16,7 @@ import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
 import Tutorial from '../../_components/Tutorial'
 import YouthTutorial from '../../_components/YouthTutorial'
 
-export default async function Commencer({
+export default async function CampagnePage({
   params,
   searchParams,
 }: PageProps<'/[locale]/simulateur/campagne/[pollIdOrSlug]'>) {

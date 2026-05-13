@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 interface DebouncedFunction<T extends unknown[]> {
   (...args: T): void
@@ -49,8 +49,17 @@ export function useDebounce<T extends unknown[]>(
   func: (...args: T) => void | Promise<void>,
   wait: number
 ): DebouncedFunction<T> {
-  return useMemo(() => {
-    return debounce(func, wait)
+  const funcRef = useRef(func)
+
+  // Update funcRef at each render
+  // avoids stale setValue function calls
+  useEffect(() => {
+    funcRef.current = func
+  })
+
+  return useMemo(
+    () => debounce((...args: T) => funcRef.current(...args), wait),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    []
+  )
 }
