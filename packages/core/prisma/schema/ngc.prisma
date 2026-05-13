@@ -243,7 +243,7 @@ model Poll {
   organisationId               String
   organisation                 Organisation                    @relation(fields: [organisationId], onDelete: Cascade, references: [id])
   simulations                  SimulationPoll[]
-  mode                         PollMode                        @default(standard)
+  mode                         PollMode                        @default(standard) @map("pollMode")
   computeRealTimeStats         Boolean                         @default(true)
   createdAt                    DateTime                        @default(now())
   updatedAt                    DateTime                        @updatedAt
