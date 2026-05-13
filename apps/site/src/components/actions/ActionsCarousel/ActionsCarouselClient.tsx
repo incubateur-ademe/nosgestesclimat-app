@@ -36,7 +36,7 @@ export default function ActionsCarouselClient({
         ref={prevButton}
         className={twMerge(
           !isInitialized && 'pointer-events-none opacity-0',
-          'left-2.5 md:-left-2.5 md:-translate-x-1/2 xl:-left-5'
+          'left-2 md:-left-2 md:-translate-x-1/2 xl:-left-5'
         )}>
         <ChevronLeft />
       </NavigationButton>
@@ -44,12 +44,12 @@ export default function ActionsCarouselClient({
         ref={nextButton}
         className={twMerge(
           !isInitialized && 'pointer-events-none opacity-0',
-          'right-2.5 md:-right-2.5 md:translate-x-1/2 xl:-right-5'
+          'right-2 md:-right-2 md:translate-x-1/2 xl:-right-5'
         )}>
         <ChevronRight />
       </NavigationButton>
       <Swiper
-        className="px-2.5 md:px-0"
+        className="px-2 md:px-0"
         modules={[Navigation, Keyboard, A11y]}
         navigation={{
           addIcons: false,
@@ -58,7 +58,7 @@ export default function ActionsCarouselClient({
           enabled: true,
         }}
         a11y={translations}
-        spaceBetween={10}
+        spaceBetween={8}
         // Use width of slides to determine how many slides are visible
         slidesPerView="auto"
         // Skip all fully visible slides when navigating
@@ -80,7 +80,7 @@ export default function ActionsCarouselClient({
           return (
             <SwiperSlide
               className={twMerge(
-                !isInitialized && 'mr-2.5', // Same value as `spaceBetween` to prevent layout shift before initialization
+                !isInitialized && 'mr-2', // Same value as `spaceBetween` to prevent layout shift before initialization
                 'w-3/4 max-w-55 sm:w-62 sm:max-w-none'
               )}>
               {child}

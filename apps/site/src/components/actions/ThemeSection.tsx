@@ -2,6 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
@@ -49,11 +50,17 @@ export default function ThemeSection({
   const classes = classesByTheme[theme.key]
   return (
     <section
-      className={`-mx-4 border-t-2 border-b-2 px-2.5 py-5 md:mx-0 md:rounded-[20px] md:border-2 md:px-5 md:py-7.5 ${classes.section}`}>
+      className={twMerge(
+        '-mx-4 border-t-2 border-b-2 px-2 py-5 md:mx-0 md:rounded-[20px] md:border-2 md:px-5 md:py-8',
+        classes.section
+      )}>
       <div className="mb-5 flex items-start justify-between gap-2">
         <div className="flex items-start gap-1">
           <Emoji
-            className={`flex size-7.5 items-center justify-center rounded-lg border bg-white text-base leading-none shadow-md ${classes.emoji}`}>
+            className={twMerge(
+              'flex size-7 items-center justify-center rounded-lg border bg-white text-base leading-none shadow-md',
+              classes.emoji
+            )}>
             {theme.emoji}
           </Emoji>
           <div className={classes.header}>
@@ -69,7 +76,7 @@ export default function ThemeSection({
           </div>
         </div>
       </div>
-      <ActionsCarousel locale={locale} className="-mx-2.5 md:mx-0">
+      <ActionsCarousel locale={locale} className="-mx-2 md:mx-0">
         {actions.map((action) => (
           <ActionCard key={action.id} action={action} />
         ))}

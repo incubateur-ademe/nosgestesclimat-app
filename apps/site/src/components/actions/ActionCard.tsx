@@ -25,15 +25,15 @@ export default function ActionCard({
     <article
       {...props}
       className={twMerge(
-        `relative flex min-h-56 flex-col gap-2.5 rounded-[10px] border border-t-8 bg-white p-2.5`,
+        `relative flex min-h-56 flex-col gap-2 rounded-lg border border-t-8 bg-white p-2`,
         classesByTheme[action.theme.key],
         className
       )}>
       <ThemeBadge theme={action.theme} className="self-start" />
       <div className="grow">
-        <h3 className="mb-0 text-base leading-6 font-bold">{action.title}</h3>
+        <h3 className="mb-0 text-base/normal font-bold">{action.title}</h3>
       </div>
-      {/* <div className="-mx-2.5 border-t border-slate-100 px-2.5 pt-2.5">
+      {/* <div className="-mx-2 border-t border-slate-100 px-2 pt-2">
         <Button color="secondary" size="sm" className="w-full">
           <PlusIcon className="stroke-primary-700 mr-2 size-4 fill-none" />
           Ajouter
