@@ -16,7 +16,7 @@ export function Section({
   return (
     <section
       className={twMerge(
-        'rounded-[20px] border border-slate-200 p-5 md:p-10',
+        'rounded-2xl border border-slate-200 p-5 md:p-10',
         sectionClassNamesByVariant[variant],
         className
       )}
@@ -44,7 +44,7 @@ export function SectionTitle({
   return (
     <h2
       className={twMerge(
-        'mb-5 flex items-center gap-1 text-lg leading-6.75 font-bold',
+        'mb-5 flex items-center gap-1 text-lg/normal font-bold',
         className
       )}
       {...props}>
