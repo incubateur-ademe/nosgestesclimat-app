@@ -10,14 +10,10 @@ export function useAutoSaveSimulation() {
     async (props: Parameters<typeof saveSimulation>[0]) => {
       await saveSimulation(props)
     },
-    2000
+    3000
   )
 
   useEffect(() => {
     debouncedSaveSimulation({ simulation: currentSimulation })
-
-    return () => {
-      debouncedSaveSimulation.flush()
-    }
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
 }
