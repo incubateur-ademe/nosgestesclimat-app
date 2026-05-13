@@ -142,7 +142,7 @@ export default async function ActionPage({ params }: Props) {
       />
       <header
         className={twMerge(
-          'mb-10 rounded-[20px] border p-5',
+          'mb-10 rounded-2xl border p-5',
           themeClasses.header
         )}>
         <p
