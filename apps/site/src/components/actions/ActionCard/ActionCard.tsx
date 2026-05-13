@@ -4,8 +4,10 @@ import type { Action } from '@nosgestesclimat/core/features/actions/types/action
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
-import Trans from '../translation/trans/TransServer'
-import { ThemeBadge } from './ThemeBadge'
+import Trans from '../../translation/trans/TransServer'
+import { ThemeBadge } from '../ThemeBadge'
+
+import styles from './ActionCard.module.css'
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport:
@@ -46,7 +48,10 @@ export default function ActionCard({
       </div>
       <Link
         href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
-        className="absolute inset-0 z-10">
+        className={twMerge(
+          'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
+          styles.actionLink
+        )}>
         <span className="sr-only">
           <Trans
             locale={locale}
