@@ -33,7 +33,7 @@ export default function PollModeForm({ organisation }: Props) {
         <legend className="sr-only">
           <Trans>Choisissez le mode du test</Trans>
         </legend>
-        <div className="flex flex-col items-center gap-8 md:flex-row md:items-stretch">
+        <div className="flex items-center gap-8 md:flex-row md:items-stretch">
           {modes.map((mode, index) => (
             <label
               key={mode.value}
