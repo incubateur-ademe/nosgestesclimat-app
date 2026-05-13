@@ -26,24 +26,26 @@ export default function PollModeForm({ organisation }: Props) {
 
   return (
     <form
-      className="mt-8"
+      className="mt-2"
       onSubmit={isPending ? () => {} : onSubmit}
       id="poll-form">
       <fieldset>
         <legend className="sr-only">
           <Trans>Choisissez le mode du test</Trans>
         </legend>
-        <div className="flex items-center gap-8 md:flex-row md:items-stretch">
+
+        <div className="flex flex-row items-stretch gap-1 md:gap-8">
           {modes.map((mode, index) => (
             <label
               key={mode.value}
               className={twMerge(
-                'group relative flex w-60 cursor-pointer flex-col items-center rounded-xl border-2 p-6 transition-all',
-                'has-checked:border-primary-700 has-checked:hover:border-primary-700 border-transparent has-[:checked]:shadow-lg',
-                mode.value !== 'scolaire' || modeScolaireEnabled
-                  ? 'hover:border-gray-200'
-                  : 'grayscale',
-                index === 0 ? 'bg-primary-50' : 'bg-slate-50'
+                'group relative flex flex-1 cursor-pointer flex-col items-center rounded-xl border px-2 py-4 transition-all has-checked:shadow-lg md:w-60 md:flex-none md:p-6',
+                mode.value === 'scolaire' &&
+                  !modeScolaireEnabled &&
+                  'grayscale',
+                index === 0
+                  ? 'border-violet-500 bg-violet-50 hover:border-violet-700 has-checked:border-violet-700'
+                  : 'border-slate-500 bg-slate-50 hover:border-slate-700 has-checked:border-slate-700'
               )}
               data-testid={`poll-mode-${mode.value}`}>
               {mode.value === 'scolaire' && (
@@ -55,6 +57,11 @@ export default function PollModeForm({ organisation }: Props) {
                 </Badge>
               )}
 
+              {/* Mobile radio dot */}
+              <span className="group-has-checked:border-primary-700 mx-auto flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 md:hidden">
+                <span className="bg-primary-700 hidden h-3 w-3 rounded-full group-has-checked:block" />
+              </span>
+
               <input
                 type="radio"
                 value={mode.value}
@@ -63,14 +70,17 @@ export default function PollModeForm({ organisation }: Props) {
                 defaultChecked={mode.value === 'standard'}
                 {...register('mode')}
               />
-              <h3 className="mb-2 text-lg font-bold text-gray-900">
+
+              <h3 className="mt-3 mb-2 text-base font-bold text-gray-900 md:mt-0 md:text-lg">
                 <Trans i18nKey={mode.titleKey}>{mode.titleDefault}</Trans>
               </h3>
+
               <p className="mb-4 text-center text-sm text-gray-700">
                 <Trans i18nKey={mode.descriptionKey}>
                   {mode.descriptionDefault}
                 </Trans>
               </p>
+
               <Image
                 src={mode.imageSrc}
                 alt={mode.imageAlt}
@@ -78,6 +88,7 @@ export default function PollModeForm({ organisation }: Props) {
                 height={150}
                 className="my-auto mb-6"
               />
+
               {mode.value === 'scolaire' && !modeScolaireEnabled ? (
                 <p
                   id={`${mode.value}-soon-available`}
@@ -87,7 +98,9 @@ export default function PollModeForm({ organisation }: Props) {
               ) : (
                 <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
                   <Trans>Sélectionner</Trans>
-                  <span className="group-has-checked:border-primary-700 flex h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300">
+
+                  {/* Desktop radio dot */}
+                  <span className="group-has-checked:border-primary-700 hidden h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 md:flex">
                     <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
                   </span>
                 </span>
