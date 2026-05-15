@@ -52,3 +52,7 @@ export const themes: Theme[] = [
   housing,
   misc,
 ]
+
+export const themesById = Object.fromEntries(
+  themes.map((theme) => [theme.id, theme])
+)

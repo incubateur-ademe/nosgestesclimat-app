@@ -9,8 +9,8 @@ import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
 import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
-import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
-import { themes } from '@nosgestesclimat/core/features/actions/data/themes/index'
+import { getActions } from '@nosgestesclimat/core/features/actions/services/actions.service'
+import { getThemes } from '@nosgestesclimat/core/features/actions/services/themes.service'
 import ProfileTab from '../_components/ProfileTabs'
 
 export default async function MonEspaceActionsPage({
@@ -19,6 +19,10 @@ export default async function MonEspaceActionsPage({
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
   const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+
+  const [actions, themes] = flag
+    ? await Promise.all([getActions(), getThemes()])
+    : [undefined, undefined]
 
   return (
     <div className="flex flex-col">
@@ -30,9 +34,9 @@ export default async function MonEspaceActionsPage({
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
-      {flag ? (
+      {flag && actions ? (
         <ActionsPage
-          topActions={actions.slice(0, 3)}
+          // topActions={topActions}
           actions={actions}
           themes={themes}
           locale={locale}

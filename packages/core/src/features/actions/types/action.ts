@@ -1,5 +1,6 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { ActionMedia } from './action-media.ts'
+import type { SeoMetadata } from './seo-metadata.ts'
 import type { Theme } from './theme.ts'
 
 /** An action one can take to improve their CO2 footprint */
@@ -29,11 +30,7 @@ export interface Action {
   /** Additional resources (Markdown) */
   furtherExplore?: string
   /** Metadata for SEO */
-  metadata: {
-    title?: string
-    description?: string
-    jsonLd?: Record<string, unknown>
-  }
+  metadata: SeoMetadata
 }
 
 /** Type for the raw data persisted in code files */
