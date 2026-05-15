@@ -1,4 +1,4 @@
-import { prisma } from '../src/adapters/prisma/client.ts'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { batchFindMany } from '../src/core/batch-find-many.ts'
 import { updatePollStats } from '../src/features/organisations/organisations.service.ts'
 import logger from '../src/logger.ts'

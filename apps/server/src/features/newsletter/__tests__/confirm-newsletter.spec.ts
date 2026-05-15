@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -10,7 +11,6 @@ import {
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { ListIds } from '../../../adapters/brevo/constant.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
 import {
