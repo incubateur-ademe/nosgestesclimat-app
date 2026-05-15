@@ -37,7 +37,11 @@
     "db:generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed": "node --env-file .env --experimental-strip-types prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "node --env-file .env --experimental-strip-types prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -51,6 +55,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
+    "fishery": "^2.4.0",
     "typescript": "^5.9.3"
   }
 }
