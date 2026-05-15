@@ -1,5 +1,5 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { JsonObject, JsonValue } from '@prisma/client/runtime/client'
-import { prisma } from '../src/adapters/prisma/client.ts'
 import { batchFindMany } from '../src/core/batch-find-many.ts'
 import logger from '../src/logger.ts'
 

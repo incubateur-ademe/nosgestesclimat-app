@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import type supertest from 'supertest'
 import { vi } from 'vitest'
 import { brevoSendEmail } from '../../../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../../../../adapters/prisma/client.ts'
 import {
   ApiScopeName,
   type IntegrationApiScope,

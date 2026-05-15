@@ -1,6 +1,6 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { addOrUpdateContact } from '../adapters/brevo/client.js'
 import { Attributes } from '../adapters/brevo/constant.js'
-import { prisma } from '../adapters/prisma/client.js'
 import type { Session } from '../adapters/prisma/transaction.js'
 import {
   getOrganisationsBatchBrevoStats,

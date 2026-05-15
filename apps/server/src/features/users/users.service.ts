@@ -1,10 +1,10 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Request } from 'express'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
   fetchContact,
   fetchContactOrThrow,
 } from '../../adapters/brevo/client.ts'
-import { prisma } from '../../adapters/prisma/client.ts'
 import type { User } from '../../adapters/prisma/generated.ts'
 import {
   defaultUserSelection,
