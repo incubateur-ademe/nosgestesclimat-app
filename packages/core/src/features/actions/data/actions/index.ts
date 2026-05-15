@@ -40,6 +40,7 @@ const buildSampleActions = (
       language: 'fr',
       title: `${prefix} ${index}`,
       slug,
+      trackingId: `action_${slug}`,
       theme,
       ruleId: `${theme.key}.action_${index}`,
       longDescription: `### Pourquoi agir sur ${prefix.toLowerCase()} ${index} ?
@@ -61,19 +62,20 @@ Avec une approche simple et reguliere, vous pouvez obtenir des resultats concret
 3. Generaliser la pratique dans votre routine
 
 Points clefs de vigilance: **impact**, *regularite*, <u>priorisation</u> et ~~perfection immediate~~.`,
-      means: `- Commencez par une action simple a mettre en oeuvre cette semaine, puis faites un point en fin de semaine pour observer ce qui fonctionne. Voir la methode dans [ce guide pratique](https://agirpourlatransition.ademe.fr/particuliers).
+      tips: `- Commencez par une action simple a mettre en oeuvre cette semaine, puis faites un point en fin de semaine pour observer ce qui fonctionne. Voir la methode dans [ce guide pratique](https://agirpourlatransition.ademe.fr/particuliers).
 
 - Definissez un objectif realiste sur 30 jours, avec un indicateur facile a suivre. Un exemple de demarche est propose dans [la boite a outils Nos Gestes Climat](https://nosgestesclimat.fr).
 
 - Impliquez une personne de votre entourage pour maintenir la motivation et partager les apprentissages. Vous pouvez vous inspirer de [ces conseils d'accompagnement au changement](https://librairie.ademe.fr).`,
-      incentives: `- Aides locales proposees par certaines collectivites
+      financialIncentives: `- Aides locales proposees par certaines collectivites
 - Subventions nationales selon votre profil et votre situation
 - Accompagnement gratuit par des structures publiques ou associatives`,
-      furtherReading: `- [Nos Gestes Climat](https://nosgestesclimat.fr)
+      furtherExplore: `- [Nos Gestes Climat](https://nosgestesclimat.fr)
 - [ADEME - Guides et ressources](https://agirpourlatransition.ademe.fr/particuliers)
 - [Service Public - Simulateurs et aides](https://www.service-public.fr)
 - [ANIL - Information logement et renovation](https://www.anil.org)`,
       media,
+      metadata: {},
     }
   })
 

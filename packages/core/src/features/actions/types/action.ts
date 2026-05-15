@@ -7,6 +7,7 @@ export interface Action {
   id: string
   title: string
   slug: string
+  trackingId: string
   language: ISOSupportedLanguage
   /**
    * Explanation of the action and its impact (Markdown)
@@ -20,13 +21,19 @@ export interface Action {
   /**
    * Suggestions on how to implement the action in practice (Markdown)
    */
-  means?: string
+  tips?: string
   /**
    * Financial benefits, aid or subsidies in order to implement the action (Markdown)
    */
-  incentives?: string
+  financialIncentives?: string
   /** Additional resources (Markdown) */
-  furtherReading?: string
+  furtherExplore?: string
+  /** Metadata for SEO */
+  metadata: {
+    title?: string
+    description?: string
+    jsonLd?: Record<string, unknown>
+  }
 }
 
 /** Type for the raw data persisted in code files */
