@@ -984,7 +984,7 @@ entries:
   actions.thresholdDescription: Actions avec un impact de {{label}} ou plus
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
   actions.listPage.title: Construire mon plan d’action
-  actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
   actions.components.themeSection.description_one: '{{count}} action recommendée'
   actions.components.themeSection.description_other: '{{count}} actions recommendées'
   actions.components.highestImpactActionsSection.title: Le trio gagnant
@@ -1315,7 +1315,7 @@ entries:
   fin.seeGroupResultsBanner.text: Découvrez les résultats du test collectif
   fin.seeGroupResultsBanner.title: Merci d'avoir complété le test !
   common.co2eAn: CO₂e / an
-  common.parAn: / an
+  common.parAn: par an
   common.vous: Vous
   Objectif 2050: Objectif 2050
   results.objective.chart.trajectory: Trajectoire proposée par Nos Gestes Climat
@@ -1609,3 +1609,6 @@ entries:
   components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Diapo
   components.carousel.roleDescription: Carrousel
+  actions.components.themeSection.description: '{actions.length} actions recommandées'
+  common.byDay: / jour
+  Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.

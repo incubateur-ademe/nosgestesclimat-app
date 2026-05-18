@@ -35,8 +35,8 @@ export default function WaterFootprintResults({
         }
         metric={eauMetric}
         unitSuffix={
-          <Trans locale={locale} i18nKey="common.parAn">
-            / an
+          <Trans locale={locale} i18nKey="common.byDay">
+            / jour
           </Trans>
         }
       />

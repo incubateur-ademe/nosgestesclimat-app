@@ -1726,8 +1726,8 @@ entries:
   fin.seeGroupResultsBanner.text.lock: Découvrez les résultats du test collectif
   results.objective.collectiveEffort.state: The French State
   results.objective.collectiveEffort.state.lock: L'État français
-  common.parAn: / year
-  common.parAn.lock: / an
+  common.parAn: per year
+  common.parAn.lock: par an
   common.vous: You
   common.vous.lock: Vous
   Vous aujourd'hui: You today
@@ -2249,9 +2249,14 @@ entries:
   components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.listPage.description: The following actions are recommended based on your answers to the test. <1 />Choose the ones that seem achievable, the most important thing is to get moving!
-  actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  actions.listPage.description: The following actions are recommended based on your answers to the test.<1></1>Choose the ones that seem achievable - the most important thing is to get moving!
+  actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
   components.carousel.itemRoleDescriptionMessage: Slide
   components.carousel.itemRoleDescriptionMessage.lock: Diapo
   components.carousel.roleDescription: Carousel
   components.carousel.roleDescription.lock: Carrousel
+  common.byDay: / day
+  common.byDay.lock: / jour
+  actions.components.themeSection.description: '{actions.length} recommended actions'
+  actions.components.themeSection.description.lock: '{actions.length} actions recommandées'
+  Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oops! An error has occurred while retrieving the group test information. Please try again later.
