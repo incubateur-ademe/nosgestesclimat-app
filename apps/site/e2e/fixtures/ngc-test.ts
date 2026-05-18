@@ -97,6 +97,7 @@ export class NGCTest {
     while (!(await this.canEndTest())) {
       await this.clickOnSkip()
     }
+    await this.page.waitForTimeout(500)
     await this.endButton().click()
   }
 
