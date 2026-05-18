@@ -1,5 +1,3 @@
-'use client'
-
 import ImpactCO2Widget from '@/components/ImpactCO2Widget'
 import type { Locale } from '@/i18nConfig'
 import { type ActionMedia as ActionMediaType } from '@nosgestesclimat/core/features/actions/types/action-media'
