@@ -93,11 +93,14 @@ export class NGCTest {
     await this.skipAllQuestions()
   }
 
-  async skipAllQuestions() {
+  async skipAllQuestions(
+    { withDelay }: { withDelay: boolean } = { withDelay: false }
+  ) {
     while (!(await this.canEndTest())) {
       await this.clickOnSkip()
+      if (withDelay) await this.page.waitForTimeout(500)
     }
-    await this.page.waitForTimeout(500)
+
     await this.endButton().click()
   }
 
