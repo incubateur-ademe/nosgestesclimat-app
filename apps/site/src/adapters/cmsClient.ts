@@ -207,7 +207,7 @@ export interface PartnerCampaignType {
   htmlContent: string
   labelCTA?: string
   image?: ImageType | null
-  logo: ImageType
+  logo?: ImageType
   backgroundColor?: string
   faq?: FAQType | null
 }
