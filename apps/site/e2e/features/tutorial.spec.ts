@@ -69,7 +69,7 @@ test.describe('when a user completes a test', () => {
     page,
   }) => {
     await page.goto('/')
-    await page.getByTestId('restart-link').click()
+    await page.getByTestId('restart-link').first().click()
     await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
   })
 })
