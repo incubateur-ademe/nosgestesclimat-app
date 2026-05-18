@@ -17,6 +17,8 @@ import {
 } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
+import { useClearFromSituation } from '../hooks/useClearFromSituation'
+import { useQuestionDuration } from '../hooks/useQuestionDuration'
 
 interface Props {
   question: DottedName
@@ -33,7 +35,10 @@ export default function DontKnowButton({ question }: Props) {
 
   const { getValue } = useEngine()
 
-  // @TODO: refacto this with the logic from https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs/blob/ddf31819dfb0628c0e883cec90113cb2f823afe0/apps/site/src/components/form/Navigation.tsx#L240-L311
+  const { getQuestionDuration } = useQuestionDuration(question)
+
+  const { clearFromSituation } = useClearFromSituation()
+
   const handleFoldWithDefaultValue = useCallback(() => {
     if (questionsOfMosaicFromParent.length > 0) {
       questionsOfMosaicFromParent.forEach((mosaicChild) => {
@@ -59,21 +64,28 @@ export default function DontKnowButton({ question }: Props) {
   }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
+    const timeSpent = getQuestionDuration()
     trackMatomoEvent__deprecated(
-      // Dummy time for AB test
-      questionClickPass({ question, timeSpentOnQuestion: 0 })
+      questionClickPass({
+        question,
+        timeSpentOnQuestion: timeSpent,
+      })
     )
     trackPosthogEvent(
       captureClickFormNav({
         actionType: 'passer',
         question,
         answer: getValue(question),
-        // Dummy time for AB test
-        timeSpentOnQuestion: 0,
+        timeSpentOnQuestion: timeSpent,
       })
     )
 
-    // Fold the step with the default value (skip behavior)
+    if (!isMissing) {
+      // User has already provided an answer: reset to the model's default
+      clearFromSituation([question, ...questionsOfMosaicFromParent])
+    }
+
+    // Fold with engine-computed values (model defaults after clearing)
     handleFoldWithDefaultValue()
 
     gotoNextQuestion()
@@ -85,7 +97,6 @@ export default function DontKnowButton({ question }: Props) {
         onClick={handleClick}
         className="text-sm!"
         color="borderless"
-        disabled={!isMissing}
         data-testid="skip-question-button"
         aria-label={t(
           'common.navigation.nextQuestion.dontKnow.title',
