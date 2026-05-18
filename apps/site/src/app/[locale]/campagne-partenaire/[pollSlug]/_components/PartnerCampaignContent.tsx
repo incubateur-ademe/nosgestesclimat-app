@@ -57,6 +57,7 @@ export default function PartnerCampaignContent({
             {isError && (
               <Alert
                 type="error"
+                className="mt-4"
                 description={
                   <Trans>
                     Oups ! Une erreur s'est produite au moment de récupérer les
