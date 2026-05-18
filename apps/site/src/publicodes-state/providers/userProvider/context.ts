@@ -1,9 +1,10 @@
 'use client'
 
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Migration } from '@publicodes/tools/migration'
 import type { Dispatch, SetStateAction } from 'react'
 import { createContext } from 'react'
-import type { Simulation, Tutorials, User } from '../../types'
+import type { Tutorials, User } from '../../types'
 
 interface UserContextType {
   user: User
@@ -15,23 +16,13 @@ interface UserContextType {
   currentSimulationId: string
   setCurrentSimulationId: Dispatch<SetStateAction<string>>
   migrationInstructions: Migration
-  isInitialized: boolean
 }
 
 export default createContext<UserContextType>({
   user: {
-    region: {
-      code: '',
-      name: '',
-    },
-    initialRegion: {
-      code: '',
-      name: '',
-    },
     name: '',
     email: '',
     userId: '',
-    administratorEmail: '',
   },
   setUser: () => {},
   tutorials: {},
@@ -44,5 +35,4 @@ export default createContext<UserContextType>({
     keysToMigrate: {},
     valuesToMigrate: {},
   },
-  isInitialized: false,
 })

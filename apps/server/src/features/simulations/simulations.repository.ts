@@ -145,7 +145,7 @@ export const fetchUserSimulations = async (
 ) => {
   const where = {
     ...{ userId },
-    progression: completedOnly ? 1 : { gt: 0 },
+    progression: completedOnly ? 1 : undefined,
   }
 
   const [simulations, count] = await Promise.all([

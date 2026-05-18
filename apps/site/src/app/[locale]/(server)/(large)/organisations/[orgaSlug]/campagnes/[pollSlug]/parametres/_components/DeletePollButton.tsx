@@ -35,14 +35,12 @@ export default function DeletePollButton() {
     <>
       <Button color="link" onClick={() => setIsOpen(true)}>
         <TrashIcon className="fill-primary-700 mr-2 w-4" />
-        <Trans>Supprimer cette campagne</Trans>
+        <Trans>Supprimer ce test collectif</Trans>
       </Button>
 
       {error && (
         <div className="mt-4 text-red-800">
-          <Trans>
-            Une erreur est survenue lors de la suppression de la campagne.
-          </Trans>
+          <Trans>Une erreur est survenue lors de la suppression du test.</Trans>
         </div>
       )}
 
@@ -50,13 +48,13 @@ export default function DeletePollButton() {
         <ConfirmationModal
           ariaLabel={t(
             'organisations.polls.settings.confirmDeletion',
-            'Fenêtre modale de confirmation de suppression de la campagne'
+            'Fenêtre modale de confirmation de suppression du test collectif'
           )}
           ariaLabelledBy="delete-poll-title"
           closeModal={() => setIsOpen(false)}
           onConfirm={handleDeletePoll}>
           <h2 id="delete-poll-title">
-            <Trans>Supprimer cette campagne ?</Trans>
+            <Trans>Supprimer ce test collectif ?</Trans>
           </h2>
           <p>
             <Trans>Cette opération est définitive.</Trans>

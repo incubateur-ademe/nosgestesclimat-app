@@ -1,8 +1,8 @@
 import ObjectiveWithRhythm from '@/components/results/objective/_components/ObjectiveWithRhythm'
 import Trans from '@/components/translation/trans/TransServer'
 import Separator from '@/design-system/layout/Separator'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import type { Simulation } from '@/publicodes-state/types'
 import SeeDetailLink from './latestResults/SeeDetailLink'
 
 export default function LatestResults({

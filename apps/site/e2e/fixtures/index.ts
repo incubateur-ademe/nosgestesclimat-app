@@ -4,6 +4,7 @@ import { test as groupTest } from '../fixtures/groups'
 import { test as ngcTest } from '../fixtures/ngc-test'
 import { test as organisationTest } from '../fixtures/organisations'
 import { test as pollTest } from '../fixtures/polls'
+import { test as scolairePollTest } from '../fixtures/scolaire-poll'
 
 import { test as userAccountTest } from '../fixtures/user-account'
 
@@ -13,6 +14,7 @@ export const test = mergeTests(
   cookieBannerTest,
   organisationTest,
   userAccountTest,
-  pollTest
+  pollTest,
+  scolairePollTest
 )
 export { expect } from '@playwright/test'

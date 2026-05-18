@@ -4,10 +4,9 @@ import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import type { AppUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
-import { getSimulations } from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
-import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
 import { themes } from '@nosgestesclimat/core/features/actions/data/themes/index'
@@ -18,7 +17,12 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
-  const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+
+  const flag = false // await posthogClient.getFeatureFlag('actions-v2', user.id)
+
+  if (!flag) {
+    return <LegacyMonEspaceActionsPage user={user} locale={locale} />
+  }
 
   return (
     <div className="flex flex-col">
@@ -51,10 +55,7 @@ async function LegacyMonEspaceActionsPage({
   user: AppUser
   locale: Locale
 }) {
-  const simulations = await getSimulations(
-    { user },
-    { completedOnly: true, pageSize: 1 }
-  )
+  const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />
 }

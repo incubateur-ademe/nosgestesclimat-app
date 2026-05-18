@@ -13,18 +13,15 @@ entries:
   Copier le lien: Copier le lien
   Documentation: Documentation
   Démarrer: Démarrer
-  En développement actif: En développement actif
   En savoir plus: En savoir plus
   Envie de contribuer à une version pour votre région ?: Envie de contribuer à une version pour votre région ?
   Faire le test: Faire le test
   Fermer: Fermer
   Fermer les options de tri: Fermer les options de tri
   J'ai compris: J'ai compris
-  Le modèle d'empreinte carbone de référence: Le modèle d'empreinte carbone de référence
   Le test: Le test
   Non: Non
   Non applicable: Non applicable
-  Nous avons détecté que vous faites cette simulation depuis: Nous avons détecté que vous faites cette simulation depuis
   Nouveautés: Nouveautés
   Oui: Oui
   Ouvrir les options de tri: Ouvrir les options de tri
@@ -38,25 +35,11 @@ entries:
   Sur le même sujet: Sur le même sujet
   'Tri :': 'Tri :'
   'Triées par :': 'Triées par :'
-  Un modèle complet: Un modèle complet
-  Une technologie moderne: Une technologie moderne
   actions choisies: actions choisies
-  components.localisation.Localisation.warnMessage: Pour le moment, il n'existe pas de modèle de calcul pour {{countryName}}, le modèle Français vous est proposé par défaut.
-  components.localisation.Localisation.warnMessage2: Nous n'avons pas pu détecter votre pays de simulation, le modèle Français vous est proposé par défaut.
   components.localisation.LocalisationMessage.betaMsg: Elle est actuellement en version <1>bêta</1>.
-  components.localisation.LocalisationMessage.warnMessage: Votre région n'est pas encore supportée, le modèle Français vous est proposé par défaut
   et: et
   le + d'impact climat: le + d'impact climat
   le - d'impact climat: le - d'impact climat
-  model.active.documented: La construction du modèle (pistes de travail, réflexions en cours, feuille de route, etc.) est amplement <2>documentée publiquement</2>.
-  model.intro: Derrière le site nosgestesclimat.fr, se cache le modèle d'empreinte climat individuelle de consommation de référence.
-  model.intro2: Entièrement ouvert (open source) et contributif, chacun peut l'<1>explorer</1>, <4>l'améliorer</4>.
-  model.modern: Le modèle est basé sur <2>publicodes</2>, un langage conçu par l'État pour exprimer des algorithmes d'intérêt public.
-  model.modern2: Entièrement paramétrable, depuis les questions posées à l'utilisateur jusqu'aux hypothèses du modèle de calcul, il peut être réutilisé <2>librement</2> par tout type d'acteur.
-  model.modern3: ⬇️ Ci-dessous, vous pouvez voir l'influence de 3 paramètres de calcul sur les résultats finaux.
-  model.modern4: Le modèle de calcul est directement embarqué chez le client, le calcul a lieu là dans votre navigateur, pas sur nos serveurs. Les données collectées sont si descriptives de la vie des utilisateurs, donc sensibles en termes de vie privée, que faire les calculs côté serveur <2>et les stocker</2> poserait un risque trop élevé.
-  model.stats: Le modèle comprend aujourd'hui <1></1> règles de calcul. Parmi elles, <3></3> règles sont des questions à poser à l'utilisateur pour calculer un résultat précis.
-  model.stats2: Il est constitué d'une combinaison de centaines de modèles micro "bottom-up" pour les consommations carbonées de notre vie quotidienne, et d'un modèle "top-down" dérivé des travaux du SDES pour estimer l'empreinte par personne des services dits sociétaux (services publics et services de base tels les télécom). <2>En savoir plus sur cette hybridation</2>.
   participant: participant
   plus d'1 kg: plus d'1 kg
   plus d'1 tonne: plus d'1 tonne
@@ -71,7 +54,6 @@ entries:
   publicodes.ActionVignette.questionsRestantesText: '{{nbRemainingQuestions}} question{{pluralSuffix}} restante{{pluralSuffix}}'
   publicodes.ActionsOptionsBar.actionsRecap: '{{numberOfAvailableFinalActions}} actions disponibles, '
   publicodes.AllActions.msgPlusActions: <0>Nous n'avons plus d'actions chiffrées très impactantes à vous proposer 🤷</0><1>Découvrez plus bas quelques pistes pour agir autrement ⏬</1>
-  publicodes.Personas.description: 'Nous les avons définis pour qu’ils représentent la diversité des cas d’usage du calculateur.<1>Toute ressemblance avec une personne existant ou ayant existé serait purement fortuite !</1>En aucune mesure, on ne peut dire qu’ils sont représentatifs de la distribution de la population française : il ne s’agit pas de coller aux statistiques de la population, mais de retrouver parmi nos dix personas au moins un qui représente chaque usage majeur et différenciant pour le calculateur. Ainsi, nous avons fait varier pour chacun d’entre eux :<3><0>Leur genre : même s’il n’influe pas sur l’empreinte, il serait étonnant de n’avoir que des personas “femmes”</0><1>Leur âge et situation personnelle / professionnelle : au moins un étudiant, un retraité, un adulte au foyer, un actif</1><2>La taille de leur foyer : de 1 personne à famille nombreuse</2><3>Leur lieu de vie : de l’urbain, du rural et du péri-urbain, dans le nord, dans le sud, les plaines, la montagne et sur une île</3><4>Leur logement : de l’appartement à la maison, du neuf à l’ancien</4><5>Leurs modes de transport : de la marche à la voiture en passant par le ferry et l’avion</5><6>Leur régime alimentaire : au moins un végétalien, un végétarien, une personne ne mangeant que du poisson, et un amateur de viande rouge</6><7>Leur tendance à l’achat : du tout occasion au tout neuf, de l’acheteur compulsif à celui ou celle qui n’achète presque rien</7><8>Leur façon de partir en vacances : mode de transport, hébergement, on trouve de tout</8><9>Leurs loisirs : de la culture, du sport, du bien-être…</9></3>'
   publicodes.planDuSite.title: Plan du site
   publicodes.planDuSite.actionsPlus: Les actions
   sites.publicodes.Tutorial.questionE: 💡 Mais que veut dire ce petit <1>e</1> ?
@@ -80,7 +62,6 @@ entries:
   tonnes: tonnes
   '{unit}': '{unit}'
   À propos: À propos
-  components.localisation.LocalisationMessage.warnMessage2: Nous n'avons pas pu détecter votre pays de simulation, le modèle Français vous est proposé par défaut
   international.comment.1: Pour chaque pays, nous ajoutons les données locales nécessaires afin de proposer un calcul adapté aux modes de vie et au mix énergétique du territoire.
   international.comment.titre: Quels régions / pays sont disponibles ?
   international.ensuite.1: 'Si le vôtre n’est pas encore dans la liste, dites-le-nous : nous serons ravis d’en tenir compte. <2>Écrivez-nous !</2>'
@@ -90,7 +71,6 @@ entries:
   international.pourquoi.titre: Adapté à votre pays
   international.pourquoi.3: Lorsque c’est possible, nous utilisons les données de <2><0></0></2> pour intégrer l’empreinte carbone réelle de l’électricité du pays.
   Ce modèle a été conçu par: Ce modèle a été conçu par
-  model.questions: Découvrez <2>la liste des questions disponibles dans le modèle</2>.
   Oups, nous n'avons pas d'article correspondant: Oups, nous n'avons pas d'article correspondant
   Blog: Blog
   Contact: Contact
@@ -118,13 +98,6 @@ entries:
   Rejoindre et passer mon test: Rejoindre et passer mon test
   Supprimer vos données de groupe enregistrées ? Seules vos données de membre seront supprimées. Cette action est irréversible.: Supprimer vos données de groupe enregistrées ? Seules vos données de membre seront supprimées. Cette action est irréversible.
   Supprimer votre groupe <1>{group?.name}</1> ? Les données sauvegardées seront supprimées pour tous les membres du groupe. Cette action est irréversible.: Supprimer votre groupe <1>{group?.name}</1> ? Les données sauvegardées seront supprimées pour tous les membres du groupe. Cette action est irréversible.
-  Personas: Personas
-  Qui sont-ils ?: Qui sont-ils ?
-  Comment les mettons-nous à jour ?: Comment les mettons-nous à jour ?
-  publicodes.Personas.maj: Pour qu’ils ou elles continuent de représenter la diversité des cas d’usage du calculateur d’empreinte carbone, nous les éditons à chaque ajout ou modification de ce dernier, en respectant les règles suivantes :<1><0>Chaque réponse possible est attribuée à au moins un persona</0><1>Au moins un persona ne répond rien à la question (il lui est donc attribué la valeur par défaut donnée dans le calculateur).</1></1>
-  Cette page vous permet de naviguer dans les parcours Nos Gestes Climat comme si vous étiez l'un des profils types que nous avons listés.: Cette page vous permet de naviguer dans les parcours Nos Gestes Climat comme si vous étiez l'un des profils types que nous avons listés.
-  ' Retour à la liste': ' Retour à la liste'
-  10 minutes: 10 minutes
   Avant de commencer: Avant de commencer
   Bientôt disponible: Bientôt disponible
   C'est un test individuel !: C'est un test individuel !
@@ -132,7 +105,6 @@ entries:
   disponibles: disponibles
   Il concerne votre vie personnelle, et non pas votre activité.: Il concerne votre vie personnelle, et non pas votre activité.
   international.comment.2: La liste ci-dessous présente les pays déjà intégrés.
-  Les personas nous servent à tester le calculateur sous toutes ses coutures, et à vérifier qu’il s’adapte bien à toutes les situations de vie des citoyens métropolitains. De par leur présence, ils nous forcent à penser à tous les cas d’usage, pour nous projeter dans différentes réalités, et inclure ces réalités dans nos refontes du parcours de test et des actions proposées à la fin de ce dernier.: Les personas nous servent à tester le calculateur sous toutes ses coutures, et à vérifier qu’il s’adapte bien à toutes les situations de vie des citoyens métropolitains. De par leur présence, ils nous forcent à penser à tous les cas d’usage, pour nous projeter dans différentes réalités, et inclure ces réalités dans nos refontes du parcours de test et des actions proposées à la fin de ce dernier.
   publicodes.Tutoriel.slide1.p1: Le climat se réchauffe à cause des activités humaines, c'est un fait. Tout ce que nous consommons, utilisons, puis jetons a nécessité de la matière et de l'énergie. Que ce soit pour la phase de production, d'utilisation, ou de fin de vie du bien, ou du service. Ainsi, toutes nos activités participent à émettre des gaz à effet de serre. Certaines énormément, d'autres très peu. Mais quel est notre impact, à notre échelle de citoyen ?
   publicodes.Tutoriel.slide1.p2: Pour estimer sa propre contribution au réchauffement de la planète (son "impact climat"), il est d'usage de calculer ce qu'on appelle l'empreinte carbone individuelle de consommation.
   publicodes.Tutoriel.slide2.blockquote: "D'autres gaz, surtout le méthane <2></2> et le protoxyde d'azote <6></6> réchauffent aussi la planète : on convertit leur potentiel de réchauffement en CO₂e pour simplifier la mesure. "
@@ -142,7 +114,6 @@ entries:
   Recommencer: Recommencer
   Répondez aux questions en votre nom, pas pour votre foyer.: Répondez aux questions en votre nom, pas pour votre foyer.
   'Revenir à ma région par défaut ': 'Revenir à ma région par défaut '
-  Sélectionné·e: Sélectionné·e
   Sélectionner: Sélectionner
   Supprimer: Supprimer
   Vous: Vous
@@ -200,7 +171,6 @@ entries:
   (une fois par mois maximum !): (une fois par mois maximum !)
   Accéder à mon espace: Accéder à mon espace
   Bienvenue: Bienvenue
-  Bienvenue sur votre espace !: Bienvenue sur votre espace !
   Créer un compte: Créer un compte
   Demander une démo: Demander une démo
   Entrez votre code de vérification pour continuer: Entrez votre code de vérification pour continuer
@@ -210,7 +180,6 @@ entries:
   Nous vérifions votre code...: Nous vérifions votre code...
   Plus que quelques petites questions: Plus que quelques petites questions
   Renvoyer le code, désactivé pendant 30 secondes: Renvoyer le code, désactivé pendant 30 secondes
-  "Sur l'espace organisation de ": "Sur l'espace organisation de "
   Votre code est valide !: Votre code est valide !
   Votre organisation: Votre organisation
   Votre prénom: Votre prénom
@@ -225,8 +194,6 @@ entries:
   Vous avez une question ?: Vous avez une question ?
   Voir mes résultats: Voir mes résultats
   La valeur minimum pour ce champ est de: La valeur minimum pour ce champ est de
-  '{group?.administrator?.name} vous a invité à rejoindre le groupe <3>{group?.name}</3>': '{group?.administrator?.name} vous a invité à rejoindre le groupe <3>{group?.name}</3>'
-  '{linkToSimulateurPageLabel}': '{linkToSimulateurPageLabel}'
   Accéder au kit: Accéder au kit
   Administrateur·ice: Administrateur·ice
   Impact CO2: Impact CO2
@@ -245,12 +212,8 @@ entries:
   Oups ! Une erreur est survenue: Oups ! Une erreur est survenue
   Partage de vos résultats à {{ parent }} ?: Partage de vos résultats à {{ parent }} ?
   Aller plus loin: Aller plus loin
-  Calculez votre empreinte sur le climat: Calculez votre empreinte sur le climat
   Découvrez les conseils de l'ADEME: Découvrez les conseils de l'ADEME
   Découvrez les conseils de l'ADEME, ouvrir dans un nouvel onglet: Découvrez les conseils de l'ADEME, ouvrir dans un nouvel onglet
-  en 10 minutes: en 10 minutes
-  top chrono.: top chrono.
-  Vous avez déja participé à ce sondage.: Vous avez déja participé à ce sondage.
   Découvrir le calculateur: Découvrir le calculateur
   écartez celles qui vous semblent trop ambitieuses ou déplacées.: écartez celles qui vous semblent trop ambitieuses ou déplacées.
   Empreinte: Empreinte
@@ -284,10 +247,8 @@ entries:
   Contact - Nos Gestes Climat: Contact - Nos Gestes Climat
   Contactez l'équipe de Nos Gestes Climat.: Contactez l'équipe de Nos Gestes Climat.
   Découvrez comment nous utilisons vos données personnelles pour vous proposer un calculateur de bilan carbone personnel.: Découvrez comment nous utilisons vos données personnelles pour vous proposer un calculateur de bilan carbone personnel.
-  Découvrez le modèle de données de notre calculateur d'empreinte climat: Découvrez le modèle de données de notre calculateur d'empreinte climat
   Découvrez les actions que vous pouvez mettre en place pour réduire votre empreinte carbone.: Découvrez les actions que vous pouvez mettre en place pour réduire votre empreinte carbone.
   Découvrez les nouveautés du site Nos Gestes Climat.: Découvrez les nouveautés du site Nos Gestes Climat.
-  Découvrez les personas d'utilisateurs types qui nous servent à tester le calculateur sous toutes ses coutures.: Découvrez les personas d'utilisateurs types qui nous servent à tester le calculateur sous toutes ses coutures.
   Diffuser notre calculateur d'empreinte climat - Nos Gestes Climat: Diffuser notre calculateur d'empreinte climat - Nos Gestes Climat
   Diffusez Nos Gestes Climat dans votre organisation.: Diffusez Nos Gestes Climat dans votre organisation.
   Informations relatives à l'accessibilité de Nos Gestes Climat.: Informations relatives à l'accessibilité de Nos Gestes Climat.
@@ -295,10 +256,8 @@ entries:
   Le guide - Nos Gestes Climat: Le guide - Nos Gestes Climat
   Mentions légales - Nos Gestes Climat: Mentions légales - Nos Gestes Climat
   Mentions légales du site Nos Gestes Climat.: Mentions légales du site Nos Gestes Climat.
-  Nos personas d'utilisateurs types - Nos Gestes Climat: Nos personas d'utilisateurs types - Nos Gestes Climat
   Nos Statistiques d'utilisation - Nos Gestes Climat: Nos Statistiques d'utilisation - Nos Gestes Climat
   Notre documentation détaille les calculs qui nous ont permis de calculer votre bilan carbone personnel.: Notre documentation détaille les calculs qui nous ont permis de calculer votre bilan carbone personnel.
-  Notre modèle de données - Nos Gestes Climat: Notre modèle de données - Nos Gestes Climat
   nouveautés - Nos Gestes Climat: nouveautés - Nos Gestes Climat
   Observez l'évolution de l'impact de Nos Gestes Climat en mesures chiffrées.: Observez l'évolution de l'impact de Nos Gestes Climat en mesures chiffrées.
   Organisations, accéder à mon espace - Nos Gestes Climat: Organisations, accéder à mon espace - Nos Gestes Climat
@@ -469,7 +428,6 @@ entries:
   d'eau par jour: d'eau par jour
   de CO₂e par an: de CO₂e par an
   Liste des questions: Liste des questions
-  Votre région a bien été mise à jour.: Votre région a bien été mise à jour.
   '{{name}}, supprimer cette participation': '{{name}}, supprimer cette participation'
   Supprimer ce participant ? Cette opération est définitive.: Supprimer ce participant ? Cette opération est définitive.
   Une erreur est survenue: Une erreur est survenue
@@ -698,7 +656,6 @@ entries:
   production de biens et consommation croissante: production de biens et consommation croissante
   transports: transports
   Contactez-nous: Contactez-nous
-  La taille des logements français a très fortement augmenté: La taille des logements français a très fortement augmenté
   Retrouvez toute l’expertise de: Retrouvez toute l’expertise de
   l’Agence de la Transition Écologique: l’Agence de la Transition Écologique
   "dans le calculateur de Nos Gestes Climat : données, perspectives, leviers d'action.": "dans le calculateur de Nos Gestes Climat : données, perspectives, leviers d'action."
@@ -752,8 +709,6 @@ entries:
   Contenu: Contenu
   Menu: Menu
   Pied de page: Pied de page
-  9,5 kg de vêtements... mais n'en trient que 3,4 kg !: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
-  En moyenne, les Français achètent chaque année,: En moyenne, les Français achètent chaque année,
   Plusieurs milliers d’organisations nous font confiance pour sensibiliser efficacement: Plusieurs milliers d’organisations nous font confiance pour sensibiliser efficacement
   Rejoignez-les: Rejoignez-les
   ": aucun acteur cité ci-dessous ne finance Nos Gestes Climat, qui est et restera un service public, indépendant et gratuit de l'ADEME.": ": aucun acteur cité ci-dessous ne finance Nos Gestes Climat, qui est et restera un service public, indépendant et gratuit de l'ADEME."
@@ -768,8 +723,6 @@ entries:
   Voici mes empreintes carbone et eau ; tu connais les tiennes ?: Voici mes empreintes carbone et eau ; tu connais les tiennes ?
   Whatsapp: Whatsapp
   'Oups, la copie du lien a échoué, le voici :': 'Oups, la copie du lien a échoué, le voici :'
-  Nous chargeons les données de l'organisation partenaire.: Nous chargeons les données de l'organisation partenaire.
-  Une erreur s'est produite au moment de récupérer les informations liées à l'organisation partenaire. Veuillez réessayer plus tard ou contacter notre support.: Une erreur s'est produite au moment de récupérer les informations liées à l'organisation partenaire. Veuillez réessayer plus tard ou contacter notre support.
   avec une empreinte carbone de: avec une empreinte carbone de
   Confirmation d'inscription à nos infolettres - Nos Gestes Climat: Confirmation d'inscription à nos infolettres - Nos Gestes Climat
   Confirmation de votre inscription à nos e-mails: Confirmation de votre inscription à nos e-mails
@@ -783,7 +736,6 @@ entries:
   Revenir à la page d'accueil: Revenir à la page d'accueil
   Une erreur est survenue, merci de recommencer votre inscription.: Une erreur est survenue, merci de recommencer votre inscription.
   Une erreur s'est produite au moment de mettre à jour votre participation. Veuillez réessayer ultérieurement. Si le problème persiste, veuillez nous contacter via notre page de contact.: Une erreur s'est produite au moment de mettre à jour votre participation. Veuillez réessayer ultérieurement. Si le problème persiste, veuillez nous contacter via notre page de contact.
-  Votre adresse electronique: Votre adresse electronique
   Votre e-mail a été vérifié, vous êtes bien inscrit à notre infolettre.: Votre e-mail a été vérifié, vous êtes bien inscrit à notre infolettre.
   Votre participation a bien été mise à jour avec vos résultats de test les plus récents.: Votre participation a bien été mise à jour avec vos résultats de test les plus récents.
   Vous devez recommencer votre inscription et valider votre e-mail.: Vous devez recommencer votre inscription et valider votre e-mail.
@@ -955,7 +907,7 @@ entries:
   group.results.rankingMember.delete.modal.ariaLabel: Fenêtre modale de confirmation de suppression du membre du groupe
   organisations.additionalQuestions.deletion.modal.ariaLabel: Fenêtre de confirmation de suppression de la question personnalisée
   organisations.emailVerificationModal.title: Fenêtre modale de confirmation d'e-mail
-  organisations.polls.settings.confirmDeletion: Fenêtre modale de confirmation de suppression de la campagne
+  organisations.polls.settings.confirmDeletion: Fenêtre modale de confirmation de suppression du test collectif
   Ouvrir le menu: Ouvrir le menu
   results.informationBlock.carbon.closeButton: Fermer l'explication sur l'empreinte eau
   results.informationBlock.carbon.openButton: Voir le détail de l'objectif 2 tonnes en 2050
@@ -1073,7 +1025,6 @@ entries:
   Choisir l'action: Choisir l'action
   Choisir l'action - désactivé: Choisir l'action - désactivé
   common.navigation.nextQuestion.dontKnow.title: Je ne sais pas répondre, passer et aller à la question suivante
-  simulator.navigation.nextButton.dontKnow.label: Je ne sais pas
   login.colourBlock.highlight1.title.prefix: Visualisez
   login.colourBlock.highlight1.title.strong: vos derniers résultats
   login.colourBlock.highlight2.title.prefix: Continuez à
@@ -1110,8 +1061,6 @@ entries:
   signIn.verificationForm.notReceived.text: Vérifiez vos spams ou outils anti-spam (MailinBlack, Altospam, etc...)
   signIn.verificationForm.notReceived.title: Vous n'avez pas reçu de code ?
   Vérifiez vos e-mails: Vérifiez vos e-mails
-  90 m² en moyenne pour un foyer de 2,2 personnes.: 90 m² en moyenne pour un foyer de 2,2 personnes.
-  sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit: sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit
   mon-espace.actions.title: Mes actions
   mon-espace.groups.title: Mes tests collectifs "Amis" et "Famille"
   mon-espace.instructions.description.part1: Avant toute chose, nous vous invitons à
@@ -1304,7 +1253,6 @@ entries:
   Nom du groupe: Nom du groupe
   Un compte avec cette adresse e-mail existe déjà: Un compte avec cette adresse e-mail existe déjà
   Veuillez entrer votre nom.: Veuillez entrer votre nom.
-  '{mainButtonLabel}': '{mainButtonLabel}'
   <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Comparez vos résultats avec votre famille ou un groupe d'amis.
   newsletterManagement.alimentationNewsletter.description: 4 infolettres (sur 4 semaines), pour découvrir l'empreinte de notre alimentation, et comprendre comment aligner son assiette avec les enjeux planétaires.
@@ -1390,7 +1338,6 @@ entries:
   Part de la sous-catégorie {{percentage}}: Part de la sous-catégorie {{percentage}}
   results.categories.services.text: Les services (santé, éducation, télécoms…) représentent environ <2>1,5 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
   Passer: Passer
-  Pour conserver vos résultats et les retrouver à l’avenir dans <2>votre espace personnel</2>: Pour conserver vos résultats et les retrouver à l’avenir dans <2>votre espace personnel</2>
   Vérifier mon adresse email: Vérifier mon adresse email
   error.contactSupport: Si le problème persiste, merci de <2>contacter le support.</2>
   results.groups.createFirstGroup: <0>Créez votre premier groupe</0> et invitez vos proches pour comparer vos résultats. Cela prend <4>1 minute</4> !
@@ -1477,7 +1424,6 @@ entries:
   results.objective.collectiveEffort.collectivitiesDescription: Par leurs choix d’aménagements du territoire, elles participent à <2>l'adoption de nouvelles pratiques plus durables</2> à l’échelle locale.
   results.objective.collectiveEffort.companies: Les entreprises
   results.objective.collectiveEffort.companiesDescription: Sous l'impulsion de l'État et des citoyens, les entreprises travaillent à la <2>réduction progressive de l'empreinte des biens et services</2>.
-  Chargement...: Chargement...
   banner.link.ariaLabel: "{{label}}, s'ouvre dans une nouvelle fenêtre"
   cookies.management.required.detail.description1: Choix de langue
   cookies.management.required.detail.description2: Sauvegarde de la session anonyme (pour retrouver les simulations précédentes)
@@ -1494,6 +1440,60 @@ entries:
   actions.jva.banner.title: Faites du bénévolat pour préserver l’environnement
   Retour à la liste: Retour à la liste
   common.navigation.nextQuestion.next.labelDisabled: Aller à la question suivante, désactivé, veuillez répondre à la question avant de passer à la suivante
+  ctaButtons.collective.label: Créer un test collectif
+  ctaButtons.retake.label: Repasser le test
+  Résultats immédiats, confidentiel et gratuit.: Résultats immédiats, confidentiel et gratuit.
+  (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.): (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.)
+  '{mode.descriptionDefault}': '{mode.descriptionDefault}'
+  '{mode.titleDefault}': '{mode.titleDefault}'
+  Choisissez le mode du test: Choisissez le mode du test
+  collectiveTest.form.name.label: Choisissez un nom pour votre test collectif
+  collectiveTest.form.name.placeholder: 'ex : Défi climat équipe RH, Classe 5ème A…'
+  collectiveTest.form.name.required: Veuillez renseigner un nom
+  collectiveTest.mode.title: Choisissez le mode du test
+  collectiveTest.text1: Créez un lien personnalisé <2>à partager dans votre organisation</2>.
+  collectiveTest.text2: Les participants passent le test <1>anonymement</1> et vous accédez à une <3>synthèse des résultats</3>.
+  collectiveTest.title: Choisissez un nom pour votre test collectif
+  common.facultatif: facultatif
+  common.suivant: Suivant
+  Communiquez sur le test collectif: Communiquez sur le test collectif
+  Créer mon lien de test: Créer mon lien de test
+  Créer mon premier test collectif: Créer mon premier test collectif
+  Créer un test collectif: Créer un test collectif
+  Créer un test collectif - Nos Gestes Climat: Créer un test collectif - Nos Gestes Climat
+  Créez un test collectif Nos Gestes Climat personnalisé au sein de votre organisation et accédez à un kit clé en main pour sensibiliser vos partenaires au sein de votre organisation.: Créez un test collectif Nos Gestes Climat personnalisé au sein de votre organisation et accédez à un kit clé en main pour sensibiliser vos partenaires au sein de votre organisation.
+  'Entreprises, collectivités, associations, écoles ou festivals : <2>engagez votre organisation dans une démarche durable</2> avec un test collectif Nos Gestes Climat. Sensibilisez vos parties prenantes à l’empreinte carbone et à l’empreinte eau <6>grâce à nos outils clés en main</6>.': 'Entreprises, collectivités, associations, écoles ou festivals : <2>engagez votre organisation dans une démarche durable</2> avec un test collectif Nos Gestes Climat. Sensibilisez vos parties prenantes à l’empreinte carbone et à l’empreinte eau <6>grâce à nos outils clés en main</6>.'
+  Lancez un test collectif dans votre organisation: Lancez un test collectif dans votre organisation
+  Lancez un test collectif Nos Gestes Climat personnalisé: Lancez un test collectif Nos Gestes Climat personnalisé
+  Masquer les autres tests collectifs: Masquer les autres tests collectifs
+  Mes tests collectifs: Mes tests collectifs
+  Nom du test collectif: Nom du test collectif
+  Nous récupérons les données du test collectif...: Nous récupérons les données du test collectif...
+  organisations.connexion.subtitle: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de vous connecter à votre espace personnel.
+  organisations.connexion.title: Connectez-vous pour diffuser un lien collectif
+  organisations.createPoll.type.closeButton.aria: Abandonner le processus de création de test collectif et revenir à la page d'accueil de votre organisation
+  organisations.createPoll.type.closeButton.title: Abandonner la création du test collectif et revenir à la page d'accueil de votre organisation
+  organisations.inscription.breadcrumb: Inscription
+  organisations.inscription.cta: Créer mon compte
+  organisations.inscription.subtitle: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de créer votre espace personnel.
+  organisations.inscription.title: Créez votre compte pour diffuser un lien collectif
+  Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.
+  Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oups, nous n'avons pas trouvé les résultats de ce test collectif
+  Paramètres de mon test collectif - Nos Gestes Climat: Paramètres de mon test collectif - Nos Gestes Climat
+  Précisez le nombre de participants attendus: Précisez le nombre de participants attendus
+  Résultats de mon test collectif - Nos Gestes Climat: Résultats de mon test collectif - Nos Gestes Climat
+  Résultats de votre test collectif: Résultats de votre test collectif
+  Retrouvez vos tests collectifs et suivez leurs statistiques.: Retrouvez vos tests collectifs et suivez leurs statistiques.
+  Supprimer ce test collectif: Supprimer ce test collectif
+  Supprimer ce test collectif ?: Supprimer ce test collectif ?
+  Test collectif créé par: Test collectif créé par
+  Test collectif personnalisé: Test collectif personnalisé
+  Une erreur est survenue lors de la suppression du test.: Une erreur est survenue lors de la suppression du test.
+  Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
+  Voir tous les tests collectifs: Voir tous les tests collectifs
+  Votre e-mail, rejoindre un test collectif - Nos Gestes Climat: Votre e-mail, rejoindre un test collectif - Nos Gestes Climat
+  vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !: vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !
+  Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.: Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.
   groups.results.rankingMember.simulationDeleted: Utilisateur anonyme (données supprimées par le participant)
   mon-espace.resultsList.hasMigratedSimulations: Nous avons retrouvé des simulations sur ce navigateur et les avons ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
   mySpace.resultList.item.delete.mainButton.label: Supprimer
@@ -1508,7 +1508,7 @@ entries:
   youthTutorial.list.custom: Résultat perso
   youthTutorial.list.time: Rapide
   youthTutorial.secondlist.dontKnow.body: Choisis "je ne sais pas", on gère
-  youthTutorial.secondlist.dontKnow.title: Pas grave si tu sais pas
+  youthTutorial.secondlist.dontKnow.title: Pas grave si tu ne sais pas
   youthTutorial.secondlist.fast.body: Quelques minutes pour tout comprendre
   youthTutorial.secondlist.fast.title: Rapide et utile
   youthTutorial.secondlist.forYou.body: C'est ton empreinte, pas celle de ta famille
@@ -1517,6 +1517,90 @@ entries:
   youthTutorial.secondlist.result.title: Résultat + actions
   youthTutorial.subtitle: Un test rapide pour comprendre ton empreinte carbone et agir !
   youthTutorial.title: Découvre ton impact <2>sur la planète</2>
+  '{group.administrator.name} vous a invité à rejoindre le groupe <3>{group.name}</3>': '{group.administrator.name} vous a invité à rejoindre le groupe <3>{group.name}</3>'
+  à l'alimentation: à l'alimentation
+  au logement: au logement
+  au transport: au transport
+  common.previous: Précédent
+  Divers: Divers
+  à la consommation: à la consommation
+  Créez une organisation afin de diffuser un ou plusieurs liens de test collectif: Créez une organisation afin de diffuser un ou plusieurs liens de test collectif
+  Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
+  Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
+  simulator.funFact.clothing.text1: En moyenne, les Français achètent chaque année,
+  simulator.funFact.clothing.text2: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
+  simulator.funFact.clothing.title: Le saviez-vous ?
+  simulator.funFact.housing.text1: La taille des logements français a très fortement augmenté
+  simulator.funFact.housing.text2: sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit
+  simulator.funFact.housing.text3: 90 m² en moyenne pour un foyer de 2,2 personnes.
+  simulator.funFact.housing.title: Le saviez-vous ?
+  simulator.intercalaire.graphDefault: Ce graphique te permet de mieux comprendre les différents impacts
+  simulator.intercalaire.nextButton: Passer {{nextCategory}}
+  simulator.intercalaire.seeResults: Voir mes résultats
+  simulator.intercalaire.subtitle.remaining.all: Plus que {{remainingCategories}} !
+  simulator.intercalaire.subtitle.remaining.one: Plus qu'une !
+  simulator.intercalaire.title.default: Section {{category}} terminée
+  simulator.intercalaire.title.last: Bravo, tu as terminé toutes les sections
+  simulator.intercalaire.logement.meta.title: Section logement terminée - Nos Gestes Climat
+  simulator.intercalaire.logement.meta.description: Bravo, tu as terminé la section logement. Découvre l’impact des différents modes de chauffage sur le climat.
+  simulator.intercalaire.logement.iframe.title: Comparateur d'impact CO₂ du chauffage
+  simulator.intercalaire.alimentation.meta.title: Section alimentation terminée - Nos Gestes Climat
+  simulator.intercalaire.alimentation.meta.description: Bravo, tu as terminé la section alimentation. Découvre l’impact carbone de différents repas.
+  simulator.intercalaire.alimentation.iframe.title: Comparateur d'impact CO₂ de l'alimentation
+  simulator.intercalaire.transport.meta.title: Section transport terminée - Nos Gestes Climat
+  simulator.intercalaire.transport.meta.description: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
+  simulator.intercalaire.transport.iframe.title: Comparateur d'impact CO₂ des transports
+  simulator.intercalaire.divers.meta.title: Section divers terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.iframe.title: Comparateur d'impact CO₂ du numérique
+  simulator.transition.alimentation.funFact.line1: Certains repas
+  simulator.transition.alimentation.funFact.line2: pèsent plus
+  simulator.transition.alimentation.funFact.line2Suffix: <0>que d'autres :</0>
+  simulator.transition.alimentation.funFact.line3: attention à ton assiette !
+  simulator.transition.alimentation.info.title: <0>À retenir</0> sur l'alimentation
+  simulator.transition.divers.funFact.line1: 85% de l'impact
+  simulator.transition.divers.funFact.line2: d'un appareil numérique
+  simulator.transition.divers.funFact.line3: provient de sa
+  simulator.transition.divers.funFact.line4: fabrication
+  simulator.transition.divers.info.title: <0>À retenir</0> sur le numérique
+  simulator.transition.logement.funFact.line1: Tous les modes de <1>chauffage</1>
+  simulator.transition.logement.funFact.line2: n'ont pas
+  simulator.transition.logement.funFact.line3: <0>le même impact</0> sur le climat
+  simulator.transition.logement.info.title: <0>À retenir</0> sur le chauffage
+  simulator.transition.transport.funFact.graphDescription: Ce graphique te permet de comparer l'impact de différents moyens de transport
+  simulator.transition.transport.funFact.line1: 'Chaque trajet compte :'
+  simulator.transition.transport.funFact.line2: fais le bon choix !
+  simulator.transition.transport.info.title: <0>À retenir</0> sur les transports
+  Ton adresse électronique: Ton adresse électronique
+  Ton e-mail sera utilisé pour le tirage au sort.: Ton e-mail sera utilisé pour le tirage au sort.
+  Votre adresse électronique: Votre adresse électronique
+  common.previousExtended: Précédent, revenir à la page précédente
+  actions.jva.banner.cta.label: J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre
+  Tu as déja participé à ce test.: Tu as déja participé à ce test.
+  Vous avez déjà participé à ce sondage.: Vous avez déjà participé à ce sondage.
+  alimentation: alimentation
+  consommation: consommation
+  logement: logement
+  transport: transport
+  common.consommation: consommation
+  common.logement: logement
+  simulator.intercalaire.goToAlimentation: Passer à l'alimentation
+  simulator.intercalaire.goToConsommation: Passer à la consommation
+  simulator.intercalaire.goToLogement: Passer au logement
+  simulator.intercalaire.goToTransport: Passer au transport
+  actions.mTaTerre.button: Explorer M ta Terre
+  actions.mTaTerre.text: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
+  actions.mTaTerre.title: Tu veux comprendre ET agir pour la planète ?
+  common.authentication.verifyEmail: Vérifier mon adresse email
+  common.optional: facultatif
+  common.skip: Passer
+  tutorial.email.contest.default: Votre e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.youth: Ton e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.seeMore: En savoir plus
+  tutorial.email.subtitle.default: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
+  tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
+  tutorial.email.title.default: Votre adresse électronique
+  tutorial.email.title.youth: Ton adresse électronique
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
   components.carousel.prevSlideMessage: Diapo précédente
   components.carousel.nextSlideMessage: Diapo suivante

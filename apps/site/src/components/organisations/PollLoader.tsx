@@ -9,12 +9,12 @@ export default function PollLoader() {
     <div className="py-12 text-center">
       <Loader color="dark" className="mb-8" />
       <p>
-        <Trans>Nous récupérons les données de la campagne...</Trans>
+        <Trans>Nous récupérons les données du test collectif...</Trans>
       </p>
       <p className="text-sm text-gray-700">
         <Trans>
-          (Cela peut durer quelques dizaines de secondes pour les campagnes avec
-          un grand nombre de participants ! Merci pour votre patience.)
+          (Cela peut durer quelques dizaines de secondes pour les tests avec un
+          grand nombre de participants ! Merci pour votre patience.)
         </Trans>{' '}
         <Emoji>🙏</Emoji>
       </p>

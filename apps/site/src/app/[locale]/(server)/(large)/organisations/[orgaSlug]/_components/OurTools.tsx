@@ -25,7 +25,7 @@ export default function OurTools() {
         <li className="flex">
           <CTACard
             className="border-2 border-gray-200 px-8"
-            overLabel={<Trans>Communiquez sur la campagne</Trans>}
+            overLabel={<Trans>Communiquez sur le test collectif</Trans>}
             title={<Trans>Kit de diffusion</Trans>}
             tag="h3"
             description={

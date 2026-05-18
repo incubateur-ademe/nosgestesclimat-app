@@ -124,6 +124,7 @@ export const createOrganisationPoll = async ({
 }) => {
   const payload: OrganisationPollCreateDto = {
     name: name || faker.company.buzzNoun(),
+    mode: 'standard',
     customAdditionalQuestions,
     defaultAdditionalQuestions,
     expectedNumberOfParticipants,

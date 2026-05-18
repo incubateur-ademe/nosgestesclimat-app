@@ -3,12 +3,7 @@
 import { actionsClickYes } from '@/constants/tracking/pages/actions'
 import Modal from '@/design-system/modals/Modal'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import {
-  FormProvider,
-  useCurrentSimulation,
-  useEngine,
-  useUser,
-} from '@/publicodes-state'
+import { FormProvider, useCurrentSimulation, useUser } from '@/publicodes-state'
 import type { Action } from '@/publicodes-state/types'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type {
@@ -43,7 +38,6 @@ export default function ActionList({
   ariaLabelledBy,
   listId,
 }: Props) {
-  const { getCategory } = useEngine()
   const { toggleActionChoice } = useUser()
 
   const { actionChoices } = useCurrentSimulation()
@@ -138,7 +132,6 @@ export default function ActionList({
                       <ActionForm
                         key={action.dottedName}
                         action={action}
-                        category={getCategory(action.dottedName)}
                         onComplete={() => {
                           toggleActionChoice(action.dottedName)
 

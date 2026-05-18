@@ -11,7 +11,11 @@ export default async function Trans({
   const { t } = await getServerTranslation({ locale })
 
   return (
-    <TransReactI18n i18nKey={i18nKey} t={t} values={values}>
+    <TransReactI18n
+      i18nKey={i18nKey}
+      t={t}
+      values={values}
+      tOptions={{ interpolation: { escapeValue: false } }}>
       {children}
     </TransReactI18n>
   )

@@ -1,22 +1,17 @@
-import type { SupportedRegions } from '@incubateur-ademe/nosgestesclimat'
+import type { Locale } from '@/i18nConfig'
+import { supportedRegions } from '../server/model/models'
 
 export const sortSupportedRegions = ({
-  supportedRegions,
-  currentLocale,
+  locale: locale,
 }: {
-  supportedRegions: SupportedRegions
-  currentLocale: string
+  locale: Locale
 }) => {
-  if (!supportedRegions) {
-    return {}
-  }
-
   return Object.fromEntries(
     Object.entries(supportedRegions).sort(
       (supportedRegionA, supportedRegionB) => {
-        const nameA = supportedRegionA[1][currentLocale]?.nom.toUpperCase() // ignore upper and lowercase
+        const nameA = supportedRegionA[1][locale].nom.toUpperCase() // ignore upper and lowercase
 
-        const nameB = supportedRegionB[1][currentLocale]?.nom.toUpperCase() // ignore upper and lowercase
+        const nameB = supportedRegionB[1][locale].nom.toUpperCase() // ignore upper and lowercase
 
         if (nameA < nameB) {
           return -1

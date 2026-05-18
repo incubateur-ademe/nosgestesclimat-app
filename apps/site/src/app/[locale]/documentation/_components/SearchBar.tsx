@@ -1,3 +1,4 @@
+'use client'
 import SearchIcon from '@/components/icons/SearchIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import TextInput from '@/design-system/inputs/TextInput'

@@ -1,7 +1,7 @@
 'use server'
 
 import { SERVER_URL } from '@/constants/urls/main'
-import { cookies } from 'next/headers'
+import { cookies, headers as getHeaders } from 'next/headers'
 import { SERVER_AUTH_COOKIE_NAME } from './dal/authCookie'
 import {
   ForbiddenError,
@@ -21,24 +21,27 @@ export async function fetchServer<T = unknown>(
     next,
   }: {
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-    body?: Record<string, unknown>
+    body?: unknown
     next?: NextFetchRequestConfig
   } = {}
 ): Promise<T> {
   if (!url.startsWith(SERVER_URL)) {
     throw new InternalServerError()
   }
-
+  const [nextHeaders, cookieStore] = await Promise.all([
+    getHeaders(),
+    cookies(),
+  ])
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    // Some server route need IP of the client (for instance geolocation)
+    'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
   }
 
-  const cookieStore = await cookies()
   const ngcCookie = cookieStore.get(SERVER_AUTH_COOKIE_NAME)
   if (ngcCookie) {
     headers.cookie = `${ngcCookie.name}=${ngcCookie.value}`
   }
-
   const response = await fetch(url, {
     method,
     body: body ? JSON.stringify(body) : undefined,
@@ -46,7 +49,6 @@ export async function fetchServer<T = unknown>(
     credentials: 'include',
     next,
   })
-
   if (!response.ok) {
     switch (response.status) {
       case 404:
