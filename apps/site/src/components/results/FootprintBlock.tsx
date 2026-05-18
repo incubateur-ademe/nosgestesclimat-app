@@ -24,6 +24,7 @@ export default async function FootprintBlock({
   title,
   metric,
   locale,
+  unitSuffix,
 }: Props) {
   const { t } = await getServerTranslation({ locale })
   const { formattedValue, unit } = formatFootprint(value, {
@@ -46,8 +47,7 @@ export default async function FootprintBlock({
             'text-primary-600 font-bold!'
           )}>
           {formattedValue}&nbsp;{unit}&nbsp;
-          {metric === 'carbone' ? <span>CO₂e&nbsp;</span> : ''}/&nbsp;
-          {t('results.year', 'an')}
+          {unitSuffix}
         </span>
       </h1>
       {tendency && <TendencyIndicator locale={locale} tendency={tendency} />}
