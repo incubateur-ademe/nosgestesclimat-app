@@ -34,7 +34,39 @@ const randomMedia = (): ActionMedia | undefined => {
   return undefined
 }
 
-export const actionFactory = Factory.define<ActionData>(({ onCreate }) => {
+class ActionFactory extends Factory<ActionData> {
+  published() {
+    return this.params({
+      publishedAt: faker.date.past(),
+    })
+  }
+
+  draft() {
+    return this.params({
+      publishedAt: null,
+    })
+  }
+
+  scheduled() {
+    return this.params({
+      publishedAt: faker.date.future(),
+    })
+  }
+
+  deleted() {
+    return this.params({
+      deletedAt: faker.date.past(),
+    })
+  }
+
+  pendingDeletion() {
+    return this.params({
+      deletedAt: faker.date.future(),
+    })
+  }
+}
+
+export const actionFactory = ActionFactory.define(({ onCreate }) => {
   onCreate(async (data) => {
     await prisma.action.create({
       data: {
