@@ -983,6 +983,12 @@ entries:
   actions.negativeIcon.ariaLabel: Les actions se trouvent en dessous
   actions.thresholdDescription: Actions avec un impact de {{label}} ou plus
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
+  actions.listPage.title: Construire mon plan d’action
+  actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test. <1 />Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  actions.components.themeSection.description_one: '{{count}} action recommendée'
+  actions.components.themeSection.description_other: '{{count}} actions recommendées'
+  actions.components.highestImpactActionsSection.title: Le trio gagnant
+  actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
   C'est quoi mon empreinte carbone ?: C'est quoi mon empreinte carbone ?
   Cliquez pour ouvrir la liste des régions disponibles: Cliquez pour ouvrir la liste des régions disponibles
   Comment on la mesure ?: Comment on la mesure ?
@@ -1595,3 +1601,11 @@ entries:
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.title.default: Votre adresse électronique
   tutorial.email.title.youth: Ton adresse électronique
+  J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
+  components.carousel.prevSlideMessage: Diapo précédente
+  components.carousel.nextSlideMessage: Diapo suivante
+  components.carousel.firstSlideMessage: Ceci est la première diapo
+  components.carousel.lastSlideMessage: Ceci est la dernière diapo
+  components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
+  components.carousel.itemRoleDescriptionMessage: Diapo
+  components.carousel.roleDescription: Carrousel

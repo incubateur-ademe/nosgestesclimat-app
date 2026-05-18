@@ -1,9 +1,12 @@
+import ActionsPage from '@/components/actions/pages/ActionsPage'
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
 import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import type { DefaultPageProps } from '@/types'
+import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
+import { themes } from '@nosgestesclimat/core/features/actions/data/themes/index'
 
 export default async function ResultatsActionsPage({
   params,
@@ -16,7 +19,14 @@ export default async function ResultatsActionsPage({
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
 
-  return <div>Page en construction</div>
+  return (
+    <ActionsPage
+      topActions={actions.slice(0, 3)}
+      actions={actions}
+      themes={themes}
+      locale={locale}
+    />
+  )
 }
 
 async function LegacyResultatsActionsPage({

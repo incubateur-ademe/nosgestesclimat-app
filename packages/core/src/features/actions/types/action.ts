@@ -1,5 +1,6 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { ActionMedia } from './action-media.ts'
+import type { Theme } from './theme.ts'
 
 /** An action one can take to improve their CO2 footprint */
 export interface Action {
@@ -10,10 +11,7 @@ export interface Action {
    * Explanation of the action and its impact (Markdown)
    */
   longDescription: string
-  theme: {
-    id: string
-    title: string
-  }
+  theme: Pick<Theme, 'id' | 'key' | 'trackingId' | 'title' | 'emoji'>
   /** Publicodes rule. Using an id is more stable than the rule name */
   ruleId: string
   /** Visual content that illustrates the action such as ImpactCO2 widgets */
