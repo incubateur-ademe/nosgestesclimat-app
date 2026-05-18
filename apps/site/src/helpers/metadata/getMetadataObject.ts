@@ -1,6 +1,7 @@
 import { noIndexObject } from '@/constants/metadata'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
+import type { Metadata } from 'next'
 
 interface Props {
   locale: string
@@ -18,7 +19,7 @@ interface Props {
       follow: boolean
       noimageindex: boolean
       'max-video-preview': number
-      'max-image-preview': string
+      'max-image-preview': 'none' | 'standard' | 'large'
       'max-snippet': number
     }
   }
@@ -72,7 +73,7 @@ export function getMetadataObject({
   locale,
   locales: localesProp,
   ...props
-}: Props) {
+}: Props): Metadata {
   const url = buildURL({
     params,
     searchParams,

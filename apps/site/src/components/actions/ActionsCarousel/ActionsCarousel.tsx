@@ -5,10 +5,13 @@ import ActionsCarouselClient from './ActionsCarouselClient'
 
 interface ActionsCarouselProps extends React.ComponentPropsWithoutRef<'div'> {
   locale: Locale
+  /** className applied to the inner carousel that has `overflow: hidden` for padding tricks */
+  innerClassName?: string
 }
 
 export default async function ActionsCarousel({
   className,
+  innerClassName,
   children,
   locale,
   ...rest
@@ -50,7 +53,9 @@ export default async function ActionsCarousel({
       className={twMerge('relative', className)}
       role="region"
       aria-roledescription={roleDescription}>
-      <ActionsCarouselClient translations={translations}>
+      <ActionsCarouselClient
+        translations={translations}
+        className={innerClassName}>
         {children}
       </ActionsCarouselClient>
     </div>
