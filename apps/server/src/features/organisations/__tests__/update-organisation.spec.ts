@@ -401,7 +401,7 @@ describe('Given a NGC user', () => {
           .expect(StatusCodes.FORBIDDEN)
 
         expect(response.text).toEqual(
-          'Forbidden ! Cannot update administrator email. You must use the user route'
+          'Forbidden ! Cannot update administrator email.'
         )
       })
     })

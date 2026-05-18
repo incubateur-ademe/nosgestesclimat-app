@@ -166,7 +166,7 @@ export const updateOrganisation = async ({
   const { administrators: [{ email }] = [{}] } = organisationDto
   if (email && email !== user.email) {
     throw new ForbiddenException(
-      'Forbidden ! Cannot update administrator email. You must use the user route'
+      'Forbidden ! Cannot update administrator email.'
     )
   }
 
