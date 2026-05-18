@@ -6,8 +6,8 @@ import { getSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { posthogClient } from '@/services/tracking/posthogServer'
 import type { DefaultPageProps } from '@/types'
-import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
-import { themes } from '@nosgestesclimat/core/features/actions/data/themes/index'
+import { getActions } from '@nosgestesclimat/core/features/actions/services/actions.service'
+import { getThemes } from '@nosgestesclimat/core/features/actions/services/themes.service'
 
 export default async function ResultatsActionsPage({
   params,
@@ -20,9 +20,11 @@ export default async function ResultatsActionsPage({
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
 
+  const [actions, themes] = await Promise.all([getActions(), getThemes()])
+
   return (
     <ActionsPage
-      topActions={actions.slice(0, 3)}
+      // topActions={topActions}
       actions={actions}
       themes={themes}
       locale={locale}

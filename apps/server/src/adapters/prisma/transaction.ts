@@ -1,4 +1,4 @@
-import { prisma } from './client.ts'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Prisma } from './generated.ts'
 
 export type Session = Prisma.TransactionClient

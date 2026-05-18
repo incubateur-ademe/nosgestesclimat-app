@@ -142,7 +142,7 @@ vi.mock('winston', async () => ({
     })),
   },
 }))
-vi.mock('./src/adapters/prisma/client', () => ({
+vi.mock('@nosgestesclimat/core/prisma/client', () => ({
   prisma,
 }))
 vi.mock('./src/adapters/redis/client', () => ({

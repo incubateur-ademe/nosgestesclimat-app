@@ -1,11 +1,14 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { ActionMedia } from './action-media.ts'
+import type { SeoMetadata } from './seo-metadata.ts'
 import type { Theme } from './theme.ts'
 
 /** An action one can take to improve their CO2 footprint */
 export interface Action {
   id: string
   title: string
+  slug: string
+  trackingId: string
   language: ISOSupportedLanguage
   /**
    * Explanation of the action and its impact (Markdown)
@@ -19,13 +22,15 @@ export interface Action {
   /**
    * Suggestions on how to implement the action in practice (Markdown)
    */
-  means?: string
+  tips?: string
   /**
    * Financial benefits, aid or subsidies in order to implement the action (Markdown)
    */
-  incentives?: string
+  financialIncentives?: string
   /** Additional resources (Markdown) */
-  furtherReading?: string
+  furtherExplore?: string
+  /** Metadata for SEO */
+  metadata: SeoMetadata
 }
 
 /** Type for the raw data persisted in code files */

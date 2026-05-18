@@ -48,7 +48,7 @@ export default function Markdown({
                   width={props.width ?? 900}
                   height={props.height ?? 500}
                   style={{ width: '100%', height: 'auto' }}
-                  alt={props.alt! ?? ''}
+                  alt={props.alt ?? ''}
                   src={props.src!}
                 />
               ),

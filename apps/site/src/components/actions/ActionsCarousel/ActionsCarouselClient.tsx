@@ -20,11 +20,13 @@ export interface ActionsCarouselTranslations {
 
 interface ActionsCarouselClientProps {
   children: React.ReactNode
+  className?: string
   translations: ActionsCarouselTranslations
 }
 
 export default function ActionsCarouselClient({
   children,
+  className,
   translations,
 }: ActionsCarouselClientProps) {
   const [isInitialized, setIsInitialized] = useState(false)
@@ -50,7 +52,7 @@ export default function ActionsCarouselClient({
         <ChevronRight />
       </NavigationButton>
       <Swiper
-        className="px-2 md:px-0"
+        className={className}
         modules={[Navigation, Keyboard, A11y]}
         navigation={{
           addIcons: false,
