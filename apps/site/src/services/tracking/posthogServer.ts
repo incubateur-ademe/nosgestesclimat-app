@@ -26,6 +26,7 @@ class PosthogServer implements PosthogServerInterface {
   }
 
   async getFeatureFlag(flag: string, userId: string) {
+    if (flag === 'actions-v2') return true
     return this.client.getFeatureFlag(flag, userId)
   }
 

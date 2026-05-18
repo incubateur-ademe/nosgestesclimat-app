@@ -2100,3 +2100,27 @@ entries:
   components.carousel.itemRoleDescriptionMessage.lock: Diapo
   components.carousel.roleDescription: Carousel
   components.carousel.roleDescription.lock: Carrousel
+  actions.detailPage.404.title: Action not found
+  actions.detailPage.404.title.lock: Action non trouvée
+  actions.detailPage.tabs.act: Taking action
+  actions.detailPage.tabs.act.lock: J'agis
+  actions.detailPage.sections.furtherReading: Also worth discovering
+  actions.detailPage.sections.furtherReading.lock: À découvrir aussi
+  actions.detailPage.tabs.furtherReading: Also worth discovering
+  actions.detailPage.tabs.furtherReading.lock: À découvrir aussi
+  actions.detailPage.tabs.understand: I understand
+  actions.detailPage.tabs.understand.lock: Je comprends
+  actions.detailPage.sections.understand: I understand what's at stake
+  actions.detailPage.sections.understand.lock: Je comprends l'enjeu
+  actions.detailPage.sections.incentives: What's in it for me?
+  actions.detailPage.sections.incentives.lock: J'y gagne
+  actions.detailPage.tabs.incentives: What's in it for me?
+  actions.detailPage.tabs.incentives.lock: J'y gagne
+  actions.detailPage.nav: Page navigation
+  actions.detailPage.nav.lock: Navigation de la page
+  actions.detailPage.sections.act: Taking action
+  actions.detailPage.sections.act.lock: J'agis
+  actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
+  actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
+  actions.components.actionCard.link: See the action "{{actionTitle}}"
+  actions.components.actionCard.link.lock: Voir l'action "{{actionTitle}}"

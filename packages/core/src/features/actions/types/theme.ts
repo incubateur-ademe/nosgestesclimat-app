@@ -1,6 +1,11 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 
-type ThemeKey = 'food' | 'transport' | 'societal_services' | 'housing' | 'misc'
+export type ThemeKey =
+  | 'food'
+  | 'transport'
+  | 'societal_services'
+  | 'housing'
+  | 'misc'
 
 export interface Theme {
   id: string
