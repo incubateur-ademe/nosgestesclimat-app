@@ -1,9 +1,12 @@
 import type { NextRequest, ProxyConfig } from 'next/server'
 import { userMiddleware } from './helpers/server/dal/middleware'
+import { featureFlagMiddleware } from './middlewares/featureFlagMiddleware'
 import i18nMiddleware from './middlewares/i18nMiddleware'
 
 export async function proxy(request: NextRequest) {
-  return await userMiddleware(request, i18nMiddleware)
+  return await featureFlagMiddleware(request, (req) =>
+    userMiddleware(req, i18nMiddleware)
+  )
 }
 
 export const config: ProxyConfig = {

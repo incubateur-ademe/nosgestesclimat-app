@@ -14,7 +14,7 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
-import { posthogClient } from '@/services/tracking/posthogServer'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
@@ -60,7 +60,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function ActionPage({ params }: Props) {
   const { locale, slug } = await params
   const user = await getUser()
-  const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+  const flag = await getFeatureFlag('actions-v2', user.id)
 
   if (!flag) notFound()
 
