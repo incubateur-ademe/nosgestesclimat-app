@@ -1,5 +1,7 @@
+import type { Graph } from 'schema-dts'
+
 export interface SeoMetadata {
   title?: string
   description?: string
-  jsonLd?: Record<string, unknown>
+  jsonLd?: Graph
 }

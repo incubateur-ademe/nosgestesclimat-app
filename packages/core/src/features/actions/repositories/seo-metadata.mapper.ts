@@ -6,5 +6,5 @@ export const mapSeoMetadata = (
 ): SeoMetadata => ({
   title: dbSeoMetadata?.title ?? undefined,
   description: dbSeoMetadata?.description ?? undefined,
-  jsonLd: dbSeoMetadata?.jsonLd as Record<string, unknown> | undefined,
+  jsonLd: (dbSeoMetadata?.jsonLd ?? undefined) as SeoMetadata['jsonLd'],
 })
