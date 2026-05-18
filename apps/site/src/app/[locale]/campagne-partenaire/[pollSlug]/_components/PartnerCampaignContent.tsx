@@ -110,7 +110,7 @@ export default function PartnerCampaignContent({
             width={400}
             height={300}
             className="w-96"
-            alt={partnerCampaign.image?.alternativeText ?? ''}
+            alt=""
           />
         }
       />
