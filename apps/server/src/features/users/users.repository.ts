@@ -322,7 +322,7 @@ export const createOrUpdateUser = async <
 >(
   {
     id,
-    user: { email, name, createdAt, updatedAt },
+    user: { email, name, ageRange, createdAt, updatedAt },
     select = { id: true } as Select,
   }: {
     id: string
@@ -341,6 +341,7 @@ export const createOrUpdateUser = async <
         data: {
           name,
           email,
+          ageRange,
           updatedAt,
           createdAt,
         },
@@ -351,6 +352,7 @@ export const createOrUpdateUser = async <
           id,
           name,
           email,
+          ageRange,
           updatedAt,
           createdAt,
         },
@@ -369,7 +371,7 @@ export const createOrUpdateVerifiedUser = async <
 >(
   {
     id: { userId, email },
-    user: { name, email: newEmail },
+    user: { name, email: newEmail, ageRange },
     select = { email: true } as Select,
   }: { id: NonNullable<Request['user']>; user: UserUpdateDto; select?: Select },
   { session }: { session: Session }
@@ -386,6 +388,7 @@ export const createOrUpdateVerifiedUser = async <
             id: userId,
             name,
             ...(newEmail ? { email: newEmail } : {}),
+            ...(ageRange ? { ageRange } : {}),
           },
           select,
         })
@@ -394,6 +397,7 @@ export const createOrUpdateVerifiedUser = async <
             id: userId,
             email: newEmail || email,
             name,
+            ...(ageRange ? { ageRange } : {}),
           },
           select,
         }),
@@ -404,6 +408,7 @@ export const createOrUpdateVerifiedUser = async <
         user: {
           email: newEmail || email,
           name,
+          ageRange,
         },
       },
       { session }

@@ -393,6 +393,7 @@ model User {
   id            String               @id @db.Uuid
   name          String?
   email         String?
+  ageRange      String?
   administrator GroupAdministrator[]
   member        GroupParticipant[]
   simulations   Simulation[]
@@ -425,6 +426,7 @@ model VerifiedUser {
   email                    String                      @id
   id                       String                      @db.Uuid
   name                     String?
+  ageRange                 String?
   telephone                String?
   position                 String?
   optedInForCommunications Boolean                     @default(false)

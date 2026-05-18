@@ -1585,6 +1585,13 @@ entries:
   actions.mTaTerre.button: Explorer M ta Terre
   actions.mTaTerre.text: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
   actions.mTaTerre.title: Tu veux comprendre ET agir pour la planète ?
+  simulator.age.options.moinsDe18Ans: Moins de 18 ans
+  simulator.age.options.18-24: 18 - 24 ans
+  simulator.age.options.25-34: 25 - 34 ans
+  simulator.age.options.35-49: 35 - 49 ans
+  simulator.age.options.50-64: 50 - 64 ans
+  simulator.age.options.65EtPlus: 65 ans et +
+  simulator.age.options.nonPrecise: Je préfère ne pas le préciser ❌
   common.authentication.verifyEmail: Vérifier mon adresse email
   common.optional: facultatif
   common.skip: Passer

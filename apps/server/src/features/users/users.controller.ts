@@ -1,5 +1,6 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { prisma } from '../../adapters/prisma/client.ts'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
@@ -57,12 +58,16 @@ router
   .get(
     authentificationMiddleware(),
     validateRequest(FetchMeValidator),
-    (req, res) => {
-      const user = req.user!
+    async (req, res) => {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user!.userId },
+        select: { id: true, email: true, ageRange: true },
+      })
 
       return res.status(StatusCodes.OK).json({
-        id: user.userId,
-        email: user.email,
+        id: user!.id,
+        email: user!.email,
+        ...(user!.ageRange ? { ageRange: user!.ageRange } : {}),
       })
     }
   )

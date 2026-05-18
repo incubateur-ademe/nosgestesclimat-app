@@ -4,6 +4,7 @@ import { fetchServer } from '../fetchServer'
 interface UserServer {
   id: string
   email: string
+  ageRange?: string
 }
 
 export interface AuthUser extends UserServer {

@@ -9,11 +9,13 @@ export function useUpdateUserSettings() {
       userId,
       email,
       name,
+      ageRange,
       code,
     }: {
       userId: string
       email?: string
       name?: string
+      ageRange?: string
       code?: string
     }) => {
       return await axios
@@ -22,6 +24,7 @@ export function useUpdateUserSettings() {
           {
             email,
             name,
+            ageRange,
           },
           {
             params: {
