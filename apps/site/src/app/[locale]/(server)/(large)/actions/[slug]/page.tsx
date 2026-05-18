@@ -164,7 +164,7 @@ export default async function ActionPage({ params }: Props) {
         <Tabs
           items={tabsItems}
           className="mb-10 whitespace-nowrap"
-          ariaLabel={t('actions.detailPage.nav')}
+          ariaLabel={t('actions.detailPage.nav', 'Navigation de la page')}
         />
       </div>
 
