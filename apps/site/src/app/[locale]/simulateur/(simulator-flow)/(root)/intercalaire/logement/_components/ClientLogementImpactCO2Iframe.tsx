@@ -1,6 +1,6 @@
 'use client'
 
-import ImpactCO2Iframe from '@/../components/iframe/ImpactCO2Iframe'
+import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Locale } from '@/i18nConfig'
 import { useRule } from '@/publicodes-state'
