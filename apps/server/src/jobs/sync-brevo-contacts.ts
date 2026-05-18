@@ -1,12 +1,12 @@
-import { addOrUpdateContact } from '../adapters/brevo/client.js'
-import { Attributes } from '../adapters/brevo/constant.js'
-import { prisma } from '../adapters/prisma/client.js'
-import type { Session } from '../adapters/prisma/transaction.js'
+import { addOrUpdateContact } from '../adapters/brevo/client.ts'
+import { Attributes } from '../adapters/brevo/constant.ts'
+import { prisma } from '../adapters/prisma/client.ts'
+import type { Session } from '../adapters/prisma/transaction.ts'
 import {
   getOrganisationsBatchBrevoStats,
   type OrganisationsBatchBrevoStats,
-} from '../features/organisations/organisations.repository.js'
-import logger from '../logger.js'
+} from '../features/organisations/organisations.repository.ts'
+import logger from '../logger.ts'
 
 const MAX_RETRIES = 2
 const RETRY_DELAY_MS = 300
