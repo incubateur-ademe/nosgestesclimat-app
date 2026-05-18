@@ -16,7 +16,6 @@ import { getSimulationPayload } from '../../simulations/__tests__/fixtures/simul
 import {
   createGroup,
   DELETE_USER_GROUP_ROUTE,
-  joinGroup,
 } from './fixtures/groups.fixture.ts'
 
 describe('Given a NGC user', () => {
@@ -74,41 +73,6 @@ describe('Given a NGC user', () => {
             url.replace(':groupId', groupId).replace(':userId', administratorId)
           )
           .expect(StatusCodes.NO_CONTENT)
-      })
-
-      describe('And another participant joined leaving his email', () => {
-        let participantUserEmail: string
-
-        beforeEach(
-          async () =>
-            ({ email: participantUserEmail } = await joinGroup({
-              agent,
-              groupId,
-              participant: {
-                email: faker.internet.email(),
-              },
-            }))
-        )
-
-        test('Then it updates group participant in brevo', async () => {
-          mswServer.use(
-            brevoRemoveFromList(30, {
-              expectBody: {
-                emails: [participantUserEmail],
-              },
-            })
-          )
-
-          await agent
-            .delete(
-              url
-                .replace(':groupId', groupId)
-                .replace(':userId', administratorId)
-            )
-            .expect(StatusCodes.NO_CONTENT)
-
-          await EventBus.flush()
-        })
       })
     })
 

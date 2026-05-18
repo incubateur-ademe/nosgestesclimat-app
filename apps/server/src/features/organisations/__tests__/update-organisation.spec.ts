@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
-import jwt from 'jsonwebtoken'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
@@ -15,7 +14,6 @@ import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
 import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.ts'
 import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import type { OrganisationUpdateDto } from '../organisations.validator.ts'
 import {
@@ -387,205 +385,24 @@ describe('Given a NGC user', () => {
         ;({ id: organisationId } = organisation)
       })
 
-      describe('And no verification code', () => {
-        test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
-          const payload: OrganisationUpdateDto = {
-            administrators: [
-              {
-                email: faker.internet.email(),
-              },
-            ],
-          }
+      test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
+        const payload: OrganisationUpdateDto = {
+          administrators: [
+            {
+              email: faker.internet.email(),
+            },
+          ],
+        }
 
-          const response = await agent
-            .put(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
-            .send(payload)
-            .expect(StatusCodes.FORBIDDEN)
+        const response = await agent
+          .put(url.replace(':organisationIdOrSlug', organisationId))
+          .set('cookie', cookie)
+          .send(payload)
+          .expect(StatusCodes.FORBIDDEN)
 
-          expect(response.text).toEqual(
-            'Forbidden ! Cannot update administrator email without a verification code.'
-          )
-        })
-      })
-
-      describe('And invalid verification code', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          const payload: OrganisationUpdateDto = {
-            administrators: [
-              {
-                email: faker.internet.email(),
-              },
-            ],
-          }
-
-          await agent
-            .put(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
-            .query({
-              code: '42',
-            })
-            .send(payload)
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And verification code does not exist', () => {
-        test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
-          const payload: OrganisationUpdateDto = {
-            administrators: [
-              {
-                email: faker.internet.email(),
-              },
-            ],
-          }
-
-          const response = await agent
-            .put(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
-            .query({
-              code: faker.number.int({ min: 100000, max: 999999 }).toString(),
-            })
-            .send(payload)
-            .expect(StatusCodes.FORBIDDEN)
-
-          expect(response.text).toEqual(
-            'Forbidden ! Invalid verification code.'
-          )
-        })
-      })
-
-      describe('And verification code does exist', () => {
-        let email: string
-        let code: string
-
-        beforeEach(async () => {
-          email = faker.internet.email().toLocaleLowerCase()
-          ;({ code } = await createVerificationCode({
-            agent,
-            verificationCode: { email },
-          }))
-        })
-
-        test(`Then it returns a ${StatusCodes.OK} response with the updated organisation and a new cookie`, async () => {
-          const administratorPayload = {
-            email,
-            name: faker.person.fullName(),
-            telephone: faker.phone.number(),
-            position: faker.person.jobDescriptor(),
-            optedInForCommunications: true,
-          }
-          const payload: OrganisationUpdateDto = {
-            administrators: [administratorPayload],
-          }
-
-          mswServer.use(brevoUpdateContact(), connectUpdateContact())
-
-          const response = await agent
-            .put(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
-            .query({
-              code,
-            })
-            .send(payload)
-            .expect(StatusCodes.OK)
-
-          const [existingAdministrator] = organisation.administrators
-          expect(response.body).toEqual({
-            ...organisation,
-            administrators: [
-              {
-                ...existingAdministrator,
-                ...administratorPayload,
-                updatedAt: expect.any(String),
-              },
-            ],
-            updatedAt: expect.any(String),
-          })
-
-          // Cookies are kept in supertest
-          const [, newCookie] = response.headers['set-cookie']
-          const token = newCookie
-            .split(';')
-            .shift()
-            ?.replace('ngc_server_auth_jwt=', '')
-
-          expect(jwt.decode(token!)).toEqual({
-            userId,
-            email,
-            exp: expect.any(Number),
-            iat: expect.any(Number),
-          })
-        })
-
-        test('Then it adds or updates the contact in connect', async () => {
-          const administratorPayload = {
-            email,
-            name: faker.person.fullName(),
-            telephone: faker.phone.number(),
-            position: faker.person.jobDescriptor(),
-            optedInForCommunications: true,
-          }
-          const payload: OrganisationUpdateDto = {
-            administrators: [administratorPayload],
-          }
-
-          mswServer.use(
-            brevoUpdateContact(),
-            connectUpdateContact({
-              expectBody: {
-                email,
-                nom: administratorPayload.name,
-                fonction: administratorPayload.position,
-                source: 'Nos gestes Climat',
-              },
-            })
-          )
-
-          await agent
-            .put(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
-            .query({
-              code,
-            })
-            .send(payload)
-            .expect(StatusCodes.OK)
-
-          await EventBus.flush()
-        })
-
-        describe('And Organisation does exist for the target email', () => {
-          beforeEach(async () => {
-            const { cookie } = await login({
-              agent,
-              verificationCode: { email },
-            })
-            await createOrganisation({ agent, cookie })
-          })
-
-          test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
-            const payload: OrganisationUpdateDto = {
-              administrators: [
-                {
-                  email,
-                },
-              ],
-            }
-
-            const response = await agent
-              .put(url.replace(':organisationIdOrSlug', organisationId))
-              .set('cookie', cookie)
-              .query({
-                code,
-              })
-              .send(payload)
-              .expect(StatusCodes.FORBIDDEN)
-
-            expect(response.text).toEqual(
-              'Forbidden ! This email already belongs to another organisation.'
-            )
-          })
-        })
+        expect(response.text).toEqual(
+          'Forbidden ! Cannot update administrator email.'
+        )
       })
     })
   })

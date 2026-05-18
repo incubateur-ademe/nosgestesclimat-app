@@ -11,10 +11,6 @@ import { authentificationMiddleware } from '../../middlewares/authentificationMi
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
-  COOKIE_NAME,
-  getCookieOptions,
-} from '../authentication/authentication.service.ts'
-import {
   createPollSimulation,
   fetchPublicPollSimulations,
 } from '../simulations/simulations.service.ts'
@@ -106,19 +102,13 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationUpdateValidator),
     async (req, res) => {
-      const { body, params, query, user } = req
+      const { body, params, user } = req
       try {
-        const { organisation, token } = await updateOrganisation({
+        const { organisation } = await updateOrganisation({
           params,
           organisationDto: body,
-          code: query.code,
           user: user!,
         })
-
-        if (token) {
-          const origin = req.get('origin') || config.app.origin
-          res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
-        }
 
         return res.status(StatusCodes.OK).json(organisation)
       } catch (err) {

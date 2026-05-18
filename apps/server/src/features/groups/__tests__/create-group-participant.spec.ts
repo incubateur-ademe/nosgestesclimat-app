@@ -17,7 +17,6 @@ import type { ParticipantInputCreateDto } from '../groups.validator.ts'
 import {
   CREATE_PARTICIPANT_ROUTE,
   createGroup,
-  joinGroup,
 } from './fixtures/groups.fixture.ts'
 
 describe('Given a NGC user', () => {
@@ -25,6 +24,7 @@ describe('Given a NGC user', () => {
   const url = CREATE_PARTICIPANT_ROUTE
 
   afterEach(async () => {
+    mswServer.resetHandlers()
     await Promise.all([
       prisma.groupAdministrator.deleteMany(),
       prisma.groupParticipant.deleteMany(),
@@ -48,11 +48,10 @@ describe('Given a NGC user', () => {
 
     describe('And group does exist', () => {
       let groupId: string
-      let groupName: string
 
       beforeEach(
         async () =>
-          ({ id: groupId, name: groupName } = await createGroup({
+          ({ id: groupId } = await createGroup({
             agent,
           }))
       )
@@ -175,7 +174,6 @@ describe('Given a NGC user', () => {
         const payload: ParticipantInputCreateDto = {
           userId: faker.string.uuid(),
           name: faker.person.fullName(),
-          email: faker.internet.email().toLocaleLowerCase(),
           simulation: getSimulationPayload(),
         }
 
@@ -208,9 +206,9 @@ describe('Given a NGC user', () => {
           user: {
             id: payload.userId,
             name: payload.name,
-            email: payload.email,
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
+            email: null,
           },
           simulationId: payload.simulation.id,
           createdAt: expect.any(Date),
@@ -273,259 +271,9 @@ describe('Given a NGC user', () => {
           ],
           user: {
             name: payload.name,
-            email: payload.email,
             id: payload.userId,
+            email: null,
           },
-        })
-      })
-
-      describe('And leaving his/her email', () => {
-        test('Then it adds or updates contact in brevo', async () => {
-          const date = new Date()
-          const userId = faker.string.uuid()
-          const name = faker.person.fullName()
-          const email = faker.internet.email().toLocaleLowerCase()
-          const simulationPayload = getSimulationPayload({ date })
-          const { computedResults } = simulationPayload
-          const payload: ParticipantInputCreateDto = {
-            name,
-            email,
-            userId,
-            simulation: simulationPayload,
-          }
-
-          mswServer.use(
-            brevoSendEmail(),
-            brevoUpdateContact({
-              expectBody: {
-                email,
-                listIds: [30],
-                attributes: {
-                  USER_ID: userId,
-                  LAST_SIMULATION_DATE: date.toISOString(),
-                  ACTIONS_SELECTED_NUMBER: 0,
-                  LAST_SIMULATION_BILAN_FOOTPRINT: (
-                    computedResults.carbone.bilan / 1000
-                  ).toLocaleString('fr-FR', {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                    computedResults.carbone.categories.transport / 1000
-                  ).toLocaleString('fr-FR', {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                    computedResults.carbone.categories.alimentation / 1000
-                  ).toLocaleString('fr-FR', {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                    computedResults.carbone.categories.logement / 1000
-                  ).toLocaleString('fr-FR', {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                    computedResults.carbone.categories.divers / 1000
-                  ).toLocaleString('fr-FR', {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                    computedResults.carbone.categories['services sociétaux'] /
-                    1000
-                  ).toLocaleString('fr-FR', {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_BILAN_WATER: Math.round(
-                    computedResults.eau.bilan / 365
-                  ).toString(),
-                  PRENOM: name,
-                },
-                updateEnabled: true,
-              },
-            })
-          )
-
-          await agent
-            .post(url.replace(':groupId', groupId))
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-        })
-
-        test('Then it sends a join email', async () => {
-          const email = faker.internet.email().toLocaleLowerCase()
-          const userId = faker.string.uuid()
-          const payload: ParticipantInputCreateDto = {
-            email,
-            userId,
-            name: faker.person.fullName(),
-            simulation: getSimulationPayload(),
-          }
-
-          mswServer.use(
-            brevoSendEmail({
-              expectBody: {
-                to: [
-                  {
-                    name: email,
-                    email,
-                  },
-                ],
-                templateId: 58,
-                params: {
-                  GROUP_URL: `https://nosgestesclimat.fr/amis/resultats?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-invite-voir-classement`,
-                  SHARE_URL: `https://nosgestesclimat.fr/amis/invitation?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-invite-url-partage`,
-                  DELETE_URL: `https://nosgestesclimat.fr/amis/supprimer?groupId=${groupId}&userId=${userId}&mtm_campaign=email-automatise&mtm_kwd=groupe-invite-delete`,
-                  GROUP_NAME: groupName,
-                  NAME: payload.name,
-                },
-              },
-            }),
-            brevoUpdateContact()
-          )
-
-          await agent
-            .post(url.replace(':groupId', groupId))
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-        })
-
-        describe('And incomplete simulation', () => {
-          test('Then it sends a continuation email', async () => {
-            const email = faker.internet.email().toLocaleLowerCase()
-            const userId = faker.string.uuid()
-            const payload: ParticipantInputCreateDto = {
-              email,
-              userId,
-              name: faker.person.fullName(),
-              simulation: getSimulationPayload({
-                progression: 0.5,
-              }),
-            }
-
-            mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 102,
-                  params: {
-                    SIMULATION_URL: `https://nosgestesclimat.fr/simulateur/bilan?sid=${payload.simulation.id}&mtm_campaign=email-automatise&mtm_kwd=pause-test-en-cours`,
-                  },
-                },
-              })
-            )
-
-            await agent
-              .post(url.replace(':groupId', groupId))
-              .send(payload)
-              .expect(StatusCodes.CREATED)
-
-            await EventBus.flush()
-          })
-        })
-
-        describe('And custom user origin (preprod)', () => {
-          test('Then it sends a join email', async () => {
-            const email = faker.internet.email().toLocaleLowerCase()
-            const userId = faker.string.uuid()
-            const payload: ParticipantInputCreateDto = {
-              email,
-              userId,
-              name: faker.person.fullName(),
-              simulation: getSimulationPayload(),
-            }
-
-            mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 58,
-                  params: {
-                    GROUP_URL: `https://preprod.nosgestesclimat.fr/amis/resultats?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-invite-voir-classement`,
-                    SHARE_URL: `https://preprod.nosgestesclimat.fr/amis/invitation?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-invite-url-partage`,
-                    DELETE_URL: `https://preprod.nosgestesclimat.fr/amis/supprimer?groupId=${groupId}&userId=${userId}&mtm_campaign=email-automatise&mtm_kwd=groupe-invite-delete`,
-                    GROUP_NAME: groupName,
-                    NAME: payload.name,
-                  },
-                },
-              }),
-              brevoUpdateContact()
-            )
-
-            await agent
-              .post(url.replace(':groupId', groupId))
-              .set('origin', 'https://preprod.nosgestesclimat.fr')
-              .send(payload)
-              .expect(StatusCodes.CREATED)
-
-            await EventBus.flush()
-          })
-        })
-
-        describe('And joining twice', () => {
-          let participant: Awaited<ReturnType<typeof joinGroup>>
-
-          beforeEach(async () => {
-            participant = await joinGroup({
-              agent,
-              groupId,
-              participant: {
-                email: faker.internet.email(),
-              },
-            })
-          })
-
-          test('Then it does not send email twice', async () => {
-            const {
-              id: _1,
-              createdAt: _2,
-              updatedAt: _3,
-              ...payload
-            } = participant
-
-            mswServer.use(brevoUpdateContact())
-
-            await agent
-              .post(url.replace(':groupId', groupId))
-              .send(payload)
-              .expect(StatusCodes.CREATED)
-
-            await EventBus.flush()
-          })
-
-          describe('And from another device', () => {
-            test('Then it does not send email twice', async () => {
-              const { email } = participant
-              const payload = {
-                email,
-                userId: faker.string.uuid(),
-                name: faker.person.fullName(),
-                simulation: getSimulationPayload(),
-              }
-
-              mswServer.use(brevoUpdateContact())
-
-              await agent
-                .post(url.replace(':groupId', groupId))
-                .send(payload)
-                .expect(StatusCodes.CREATED)
-
-              await EventBus.flush()
-            })
-          })
         })
       })
 
