@@ -9,8 +9,8 @@ import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { getActions } from '@nosgestesclimat/core/features/actions/services/actions.service'
-import { getThemes } from '@nosgestesclimat/core/features/actions/services/themes.service'
+import { getActions } from '@nosgestesclimat/core/features/actions/services/get-actions.service'
+import { getThemes } from '@nosgestesclimat/core/features/actions/services/get-themes.service'
 import ProfileTab from '../_components/ProfileTabs'
 
 export default async function MonEspaceActionsPage({
