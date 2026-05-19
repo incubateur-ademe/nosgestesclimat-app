@@ -2075,7 +2075,7 @@ entries:
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre: actions.jva.banner.cta.label
   J'y vais, accéder au site je veux aider.gouv, nouvelle fenêtre.lock: actions.jva.banner.cta.label
   actions.components.themeSection.description_other: '{{count}} recommended actions'
-  actions.components.themeSection.description_other.lock: '{{count}} actions recommendées'
+  actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
   components.carousel.nextSlideMessage: Next slide
   components.carousel.nextSlideMessage.lock: Diapo suivante
   actions.listPage.title: Building my action plan
@@ -2085,7 +2085,7 @@ entries:
   components.carousel.prevSlideMessage: Previous slide
   components.carousel.prevSlideMessage.lock: Diapo précédente
   actions.components.themeSection.description_one: '{{count}} recommended action'
-  actions.components.themeSection.description_one.lock: '{{count}} action recommendée'
+  actions.components.themeSection.description_one.lock: '{{count}} action recommandée'
   components.carousel.firstSlideMessage: This is the first slide
   components.carousel.firstSlideMessage.lock: Ceci est la première diapo
   actions.components.highestImpactActionsSection.title: The winning trio

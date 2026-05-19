@@ -1044,8 +1044,8 @@ entries:
   actions.detailPage.sections.act: J'agis
   actions.detailPage.sections.incentives: J'y gagne
   actions.detailPage.sections.furtherReading: À découvrir aussi
-  actions.components.themeSection.description_one: '{{count}} action recommendée'
-  actions.components.themeSection.description_other: '{{count}} actions recommendées'
+  actions.components.themeSection.description_one: '{{count}} action recommandée'
+  actions.components.themeSection.description_other: '{{count}} actions recommandées'
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
