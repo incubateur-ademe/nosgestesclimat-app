@@ -16,7 +16,7 @@ import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
+import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -35,7 +35,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { params } = props
   const { locale, slug } = await params
 
-  const action = actions.find((a) => a.slug === slug)
+  const action = await getAction(slug)
 
   if (!action) {
     return getMetadataObject({
@@ -64,7 +64,7 @@ export default async function ActionPage({ params }: Props) {
 
   if (!flag) notFound()
 
-  const action = actions.find((a) => a.slug === slug)
+  const action = await getAction(slug)
 
   if (!action) notFound()
 

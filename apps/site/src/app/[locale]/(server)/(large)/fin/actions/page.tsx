@@ -6,8 +6,8 @@ import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { getActions } from '@nosgestesclimat/core/features/actions/services/actions.service'
-import { getThemes } from '@nosgestesclimat/core/features/actions/services/themes.service'
+import { getActions } from '@nosgestesclimat/core/features/actions/services/get-actions.service'
+import { getThemes } from '@nosgestesclimat/core/features/actions/services/get-themes.service'
 
 export default async function ResultatsActionsPage({
   params,
