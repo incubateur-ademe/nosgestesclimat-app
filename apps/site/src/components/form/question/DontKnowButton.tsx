@@ -14,7 +14,7 @@ import {
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
 import { useClearFromSituation } from '../hooks/useClearFromSituation'
-import { useQuestionDuration } from '../hooks/useQuestionDuration'
+import { useQuestionTimeSpent } from '../hooks/useQuestionTimeSpent'
 
 interface Props {
   question: DottedName
@@ -30,7 +30,7 @@ export default function DontKnowButton({ question }: Props) {
 
   const { getValue } = useEngine()
 
-  const { getQuestionDuration } = useQuestionDuration(question)
+  const { getQuestionTimeSpent } = useQuestionTimeSpent(question)
 
   const { clearFromSituation } = useClearFromSituation()
 
@@ -59,7 +59,7 @@ export default function DontKnowButton({ question }: Props) {
   }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
-    const timeSpent = getQuestionDuration()
+    const timeSpent = getQuestionTimeSpent()
     trackMatomoEvent__deprecated(
       questionClickPass({
         question,

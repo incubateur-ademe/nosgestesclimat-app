@@ -31,7 +31,7 @@ import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
-import { useQuestionDuration } from './hooks/useQuestionDuration'
+import { useQuestionTimeSpent } from './hooks/useQuestionTimeSpent'
 
 type SubmitButtonKind = 'loading' | 'finish' | 'next'
 
@@ -155,7 +155,7 @@ export default function Navigation({
     ? persistedRemainingQuestions.indexOf(question) === 0
     : noPrevQuestion
 
-  const { getQuestionDuration } = useQuestionDuration(question)
+  const { getQuestionTimeSpent } = useQuestionTimeSpent(question)
 
   const handleMoveFocus = () => {
     setTimeout(() => {
@@ -248,7 +248,7 @@ export default function Navigation({
     (e: KeyboardEvent | MouseEvent) => {
       e.preventDefault()
 
-      const timeSpentOnQuestion = getQuestionDuration()
+      const timeSpentOnQuestion = getQuestionTimeSpent()
 
       trackNextNavigation(timeSpentOnQuestion)
 
@@ -271,7 +271,7 @@ export default function Navigation({
       }
     },
     [
-      getQuestionDuration,
+      getQuestionTimeSpent,
       trackNextNavigation,
       isMissing,
       handleAnswerQuestion,
@@ -291,7 +291,7 @@ export default function Navigation({
 
       if (hasNoPreviousQuestion) return
 
-      trackPrevNavigation(getQuestionDuration())
+      trackPrevNavigation(getQuestionTimeSpent())
 
       if (isEmbedded) {
         navigateToPrevEmbeddedQuestion()
@@ -305,7 +305,7 @@ export default function Navigation({
     },
     [
       hasNoPreviousQuestion,
-      getQuestionDuration,
+      getQuestionTimeSpent,
       trackPrevNavigation,
       isEmbedded,
       gotoPrevQuestion,
