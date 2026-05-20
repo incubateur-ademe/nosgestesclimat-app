@@ -1,16 +1,16 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export function useQuestionDuration(question: DottedName) {
-  const [startTime, setStartTime] = useState(() => Date.now())
+  const startTimeRef = useRef<number>(0)
 
   useEffect(() => {
-    setStartTime(Date.now())
+    startTimeRef.current = Date.now()
   }, [question])
 
   return {
     getQuestionDuration: () => {
-      return Date.now() - startTime
+      return Date.now() - startTimeRef.current
     },
   }
 }
