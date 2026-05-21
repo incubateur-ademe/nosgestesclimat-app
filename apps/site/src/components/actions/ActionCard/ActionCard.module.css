@@ -1,0 +1,4 @@
+/* The global link ring is not in a @layer so we can't override it using utility classes we need custom css */
+.actionLink {
+  @apply focus-visible:ring-0 focus-visible:inset-ring-2 focus-visible:ring-offset-0;
+}

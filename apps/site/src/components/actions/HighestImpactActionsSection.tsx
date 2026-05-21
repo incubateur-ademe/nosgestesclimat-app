@@ -3,7 +3,7 @@ import type { Action } from '@nosgestesclimat/core/features/actions/types/action
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
-import ActionCard from './ActionCard'
+import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
@@ -22,14 +22,14 @@ export default function HighestImpactActionsSection({
     <section
       {...props}
       className={twMerge(
-        'relative -mx-4 px-2 py-5 shadow-lg md:mx-0 md:rounded-2xl md:px-5 md:py-8',
+        'relative -mx-4 px-2 pt-5 pb-4 shadow-lg md:mx-0 md:rounded-2xl md:px-5 md:pt-8 md:pb-7',
         className
       )}
       style={{
         background:
           'linear-gradient(90deg, rgba(26,26,26,0.2), rgba(26,26,26,0.2)), linear-gradient(114deg, var(--color-indigo-900) 0%, var(--color-indigo-600) 100%)',
       }}>
-      <div className="mb-5 flex gap-2">
+      <div className="mb-4 flex gap-2">
         <span
           className="relative flex size-12 shrink-0 items-center justify-center rounded-lg bg-yellow-500 text-xl shadow-[0px_2px_4px_rgba(240,177,0,.25)]"
           aria-hidden="true">
@@ -54,10 +54,11 @@ export default function HighestImpactActionsSection({
       </div>
       <ActionsCarousel
         locale={locale}
+        aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
-        aria-labelledby={carouselLabelId}>
+        innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) => (
-          <ActionCard key={action.id} action={action} />
+          <ActionCard key={action.id} action={action} locale={locale} />
         ))}
       </ActionsCarousel>
     </section>
