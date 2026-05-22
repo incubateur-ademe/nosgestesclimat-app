@@ -54,15 +54,8 @@ export class NGCTest {
     return isAnswered
   }
 
-  private skipButton() {
+  skipButton() {
     return this.page.getByTestId('skip-question-button')
-  }
-
-  private async canSkipQuestion() {
-    return (
-      (await this.skipButton().isVisible()) &&
-      (await this.skipButton().isEnabled())
-    )
   }
 
   private endButton() {

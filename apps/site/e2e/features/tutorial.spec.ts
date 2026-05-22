@@ -28,8 +28,8 @@ test.describe('when a user starts to answer test', () => {
   test.beforeEach(async ({ page, ngcTest }) => {
     await ngcTest.start()
     await page.waitForURL(/\/simulateur\/bilan/)
-    await ngcTest.clickOnSkip()
-    await ngcTest.clickOnSkip()
+    await ngcTest.skipButton().click()
+    await ngcTest.skipButton().click()
     // Wait for the autosave to trigger
     await page.waitForTimeout(4000)
   })
