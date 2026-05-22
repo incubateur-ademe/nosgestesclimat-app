@@ -51,7 +51,7 @@ const GroupCreateDto = v.strictObject({
   name: v.string(),
   emoji: v.string(),
   administrator: GroupCreateUser,
-  participants: v.optional(v.tuple([GroupCreateParticipant])),
+  participants: v.optional(v.strictTuple([GroupCreateParticipant])),
 })
 
 export type GroupCreateDto = v.InferOutput<typeof GroupCreateDto>

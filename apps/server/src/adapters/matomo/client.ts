@@ -83,7 +83,7 @@ const DayVisitSchema = v.strictObject({
 
 export type DayVisitSchema = v.InferOutput<typeof DayVisitSchema>
 
-const DayActionSchema = v.object({
+const DayActionSchema = v.looseObject({
   label: v.string(),
   nb_uniq_visitors: v.number(),
   nb_visits: v.union([v.string(), v.number()]),
@@ -126,7 +126,7 @@ const getFullSegments = ({
 
 export const matomoClientFactory = ({
   timeout,
-  secure,
+  secure = false,
   siteId,
   token,
   url,
@@ -134,7 +134,7 @@ export const matomoClientFactory = ({
   siteId: string
   token: string
   url: string
-  secure: boolean
+  secure?: boolean
   timeout: number
 }) => {
   const client = axios.create({

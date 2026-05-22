@@ -1,6 +1,7 @@
-import { initContract, ZodErrorSchema } from '@ts-rest/core'
+import { initContract } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import * as v from 'valibot'
+import { ValidationErrorSchema } from '../../../../core/middlewares/validation-error.schema.ts'
 import { SituationSchema } from '../../../simulations/simulations.validator.ts'
 import { ExternalServiceTypeEnum } from '../../integrations.validator.ts'
 import { MAPPING_CASES } from './mapping-situation.constant.ts'
@@ -36,7 +37,7 @@ const contract = c.router({
     body: MappingSituationDto,
     responses: {
       [StatusCodes.OK as number]: v.unknown(),
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Maps a ngc situation following partner configuration',

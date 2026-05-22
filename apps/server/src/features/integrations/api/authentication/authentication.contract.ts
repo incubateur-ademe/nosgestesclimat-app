@@ -1,6 +1,7 @@
-import { initContract, ZodErrorSchema } from '@ts-rest/core'
+import { initContract } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import * as v from 'valibot'
+import { ValidationErrorSchema } from '../../../../core/middlewares/validation-error.schema.ts'
 import {
   isValidRefreshToken,
   REFRESH_TOKEN_SCOPE,
@@ -61,7 +62,7 @@ const contract = c.router({
     body: GenerateAPITokenRequestDto,
     responses: {
       [StatusCodes.CREATED as number]: GenerateAPITokenResponseDto,
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Ask for an API token for the given email',
@@ -73,7 +74,7 @@ const contract = c.router({
     pathParams: v.strictObject({}),
     responses: {
       [StatusCodes.OK as number]: RecoverApiTokenResponseDto,
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Recover an API token from the given email',
@@ -86,7 +87,7 @@ const contract = c.router({
     body: RefreshApiTokenRequestDto,
     responses: {
       [StatusCodes.OK as number]: RecoverApiTokenResponseDto,
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.UNAUTHORIZED as number]: v.string(),
       [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },

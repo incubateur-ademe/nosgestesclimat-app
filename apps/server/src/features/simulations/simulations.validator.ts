@@ -52,12 +52,12 @@ export type ComputedResultSchema = v.InferOutput<typeof ComputedResultSchema>
 
 const AdditionalQuestionsAnswersSchema = v.array(
   v.union([
-    v.looseObject({
+    v.object({
       type: v.literal(SimulationAdditionalQuestionAnswerType.custom),
       key: v.string(),
       answer: v.string(),
     }),
-    v.looseObject({
+    v.object({
       type: v.literal(SimulationAdditionalQuestionAnswerType.default),
       key: v.enum(PollDefaultAdditionalQuestionType),
       answer: v.string(),
@@ -92,7 +92,7 @@ const SituationNodeValue = v.union([
     nodeKind: v.literal('constant'),
     rawNode: v.number(),
     isNullable: v.optional(v.boolean()),
-    missingVariables: v.optional(v.looseObject({})),
+    missingVariables: v.optional(v.object({})),
   }),
   v.strictObject({
     explanation: v.strictObject({
@@ -107,7 +107,7 @@ const SituationNodeValue = v.union([
         }),
       }),
       isNullable: v.optional(v.boolean()),
-      missingVariables: v.optional(v.looseObject({})),
+      missingVariables: v.optional(v.object({})),
     }),
     unit: v.strictObject({
       numerators: v.string(),
@@ -132,7 +132,7 @@ const ExtendedSituationSchema = v.record(
     v.strictObject({
       source: v.literal('omitted'),
     }),
-    v.looseObject({
+    v.object({
       source: v.union([v.literal('answered'), v.literal('default')]),
       nodeValue: ExtendedSituationNodeValue,
     }),
@@ -156,7 +156,7 @@ const SimulationCreateUser = v.strictObject({
 
 export type SimulationCreateUser = v.InferOutput<typeof SimulationCreateUser>
 
-export const SimulationParticipantCreateDto = v.strictObject({
+export const SimulationParticipantCreateDto = v.object({
   id: v.pipe(v.string(), v.uuid()),
   date: v.optional(
     v.pipe(
@@ -184,7 +184,7 @@ export type SimulationParticipantCreateInputDto = v.InferInput<
   typeof SimulationParticipantCreateDto
 >
 
-const SimulationCreateDto = v.strictObject({
+const SimulationCreateDto = v.object({
   ...SimulationParticipantCreateDto.entries,
   user: v.optional(SimulationCreateUser),
 })
@@ -211,7 +211,7 @@ const SimulationCreateNewsletterList = v.pipe(
 
 const SimulationCreateBaseQuery = v.strictObject({
   newsletters: v.optional(SimulationCreateNewsletterList, []),
-  sendEmail: v.optional(v.pipe(v.string(), v.parseBoolean())),
+  sendEmail: v.optional(v.pipe(v.string(), v.parseBoolean()), 'false'),
   ...LocaleQuery.entries,
 })
 

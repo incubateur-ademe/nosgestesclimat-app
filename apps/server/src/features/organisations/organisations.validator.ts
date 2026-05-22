@@ -1,9 +1,9 @@
-import * as v from 'valibot'
 import {
   OrganisationType,
   PollDefaultAdditionalQuestionType,
   PollMode,
 } from '@nosgestesclimat/core/prisma/generated/enums'
+import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { PaginationQuery } from '../../core/pagination.ts'
 import { UserParams } from '../users/users.validator.ts'
@@ -50,7 +50,7 @@ export type OrganisationCreateAdministrator = v.InferOutput<
 const OrganisationCreateDto = v.strictObject({
   name: v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
   type: v.optional(v.enum(OrganisationType)),
-  administrators: v.optional(v.tuple([OrganisationCreateAdministrator])),
+  administrators: v.optional(v.strictTuple([OrganisationCreateAdministrator])),
   numberOfCollaborators: v.optional(v.nullable(v.number())),
 })
 
@@ -80,7 +80,9 @@ export type OrganisationUpdateAdministrator = v.InferOutput<
 const OrganisationUpdateDto = v.partial(
   v.strictObject({
     ...OrganisationCreateDto.entries,
-    administrators: v.optional(v.tuple([OrganisationUpdateAdministrator])),
+    administrators: v.optional(
+      v.strictTuple([OrganisationUpdateAdministrator])
+    ),
   })
 )
 

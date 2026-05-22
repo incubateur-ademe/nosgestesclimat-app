@@ -1,7 +1,8 @@
-import { initContract, ZodErrorSchema } from '@ts-rest/core'
+import { initContract } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import * as v from 'valibot'
 import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
+import { ValidationErrorSchema } from '../../../../core/middlewares/validation-error.schema.ts'
 
 const EmailPatternSchema = v.pipe(
   v.union([
@@ -64,7 +65,7 @@ const contract = c.router({
     body: EmailWhitelistCreateDto,
     responses: {
       [StatusCodes.CREATED as number]: EmailWhitelistDto,
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.UNAUTHORIZED as number]: v.string(),
       [StatusCodes.FORBIDDEN as number]: v.string(),
       [StatusCodes.NOT_FOUND as number]: v.string(),
@@ -87,7 +88,7 @@ const contract = c.router({
     body: EmailWhitelistUpdateDto,
     responses: {
       [StatusCodes.OK as number]: EmailWhitelistDto,
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.UNAUTHORIZED as number]: v.string(),
       [StatusCodes.NOT_FOUND as number]: v.string(),
       [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
@@ -109,7 +110,7 @@ const contract = c.router({
     body: v.optional(v.strictObject({})),
     responses: {
       [StatusCodes.NO_CONTENT as number]: v.strictObject({}),
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
       [StatusCodes.UNAUTHORIZED as number]: v.string(),
       [StatusCodes.NOT_FOUND as number]: v.string(),
       [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),

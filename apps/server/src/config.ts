@@ -11,14 +11,17 @@ const EnvSchema = v.optional(
 )
 
 const ListCommaSeparatedSchema = v.pipe(
-  v.optional(v.string()),
-  v.transform((list: string | undefined = '') => new Set(list.split(',')))
+  v.fallback(v.string(), ''),
+  v.transform((list) => new Set(list.split(',')))
 )
 
 const AppSchema = v.strictObject({
   env: EnvSchema,
   origin: v.optional(v.pipe(v.string(), v.url()), 'https://nosgestesclimat.fr'),
-  organisationIdsWithCustomQuestionsEnabled: ListCommaSeparatedSchema,
+  organisationIdsWithCustomQuestionsEnabled: v.optional(
+    ListCommaSeparatedSchema,
+    ''
+  ),
   port: v.optional(v.pipe(v.unknown(), v.toNumber(), v.number())),
   serverUrl: v.optional(v.string()),
   redis: v.strictObject({
@@ -53,7 +56,12 @@ const ConnectSchema = v.strictObject({
 const MatomoInstanceBaseSchema = v.strictObject({
   token: v.string(),
   timeout: v.optional(v.pipe(v.unknown(), v.toNumber(), v.number()), 60000),
-  secure: v.optional(v.pipe(v.string(), v.parseBoolean())),
+  secure: v.optional(
+    v.pipe(
+      v.string(),
+      v.transform((val) => val === 'true')
+    )
+  ),
 })
 
 const MatomoBetaSchema = v.strictObject({

@@ -1,24 +1,11 @@
 import * as v from 'valibot'
 import { PERIODS } from './stats.constant.ts'
 
-export const PeriodValues = [
-  PERIODS.year,
-  PERIODS.month,
-  PERIODS.week,
-  PERIODS.day,
-] as const
-
 export const NorthstarStatsFetchQuery = v.strictObject({
-  periodicity: v.optional(v.picklist(PeriodValues), PERIODS.month),
+  periodicity: v.optional(v.enum(PERIODS), PERIODS.month),
   since: v.optional(
     v.nullable(
-      v.pipe(
-        v.unknown(),
-        v.transform(Number),
-        v.number(),
-        v.integer(),
-        v.minValue(1)
-      )
+      v.pipe(v.unknown(), v.transform(Number), v.integer(), v.minValue(1))
     ),
     null
   ),
