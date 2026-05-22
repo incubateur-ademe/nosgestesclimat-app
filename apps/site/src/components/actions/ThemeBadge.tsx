@@ -1,5 +1,5 @@
 import Emoji from '@/design-system/utils/Emoji'
-import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import type { Theme } from '@/types/themes'
 import { twMerge } from 'tailwind-merge'
 
 const classesByTheme: Record<Theme['key'], string> = {

@@ -31,6 +31,8 @@ export interface Action {
   furtherExplore?: string
   /** Metadata for SEO */
   metadata: SeoMetadata
+  publishedAt: Date | null
+  deletedAt: Date | null
 }
 
 /** Type for the raw data persisted in code files */

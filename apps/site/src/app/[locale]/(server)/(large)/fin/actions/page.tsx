@@ -4,10 +4,10 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { getActions } from '@/services/actions/get-actions'
+import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { getActions } from '@nosgestesclimat/core/features/actions/services/get-actions.service'
-import { getThemes } from '@nosgestesclimat/core/features/actions/services/get-themes.service'
 
 export default async function ResultatsActionsPage({
   params,

@@ -42,27 +42,7 @@ describe('getAction', () => {
 
     const result = await getAction(action.slug)
 
-    expect(result).toEqual({
-      id: action.id,
-      title: action.title,
-      slug: action.slug,
-      trackingId: action.trackingId,
-      language: 'fr',
-      longDescription: action.longDescription,
-      theme: {
-        id: action.theme.id,
-        key: action.theme.key,
-        trackingId: action.theme.trackingId,
-        title: action.theme.title,
-        emoji: action.theme.emoji,
-      },
-      ruleId: action.ruleId,
-      media: action.media,
-      tips: action.tips,
-      financialIncentives: action.financialIncentives,
-      furtherExplore: action.furtherExplore,
-      metadata: action.metadata,
-    })
+    expect(result).toEqual(action)
   })
 
   it('returns published action with future deletedAt (pending deletion)', async () => {
@@ -70,26 +50,6 @@ describe('getAction', () => {
 
     const result = await getAction(action.slug)
 
-    expect(result).toEqual({
-      id: action.id,
-      title: action.title,
-      slug: action.slug,
-      trackingId: action.trackingId,
-      language: 'fr',
-      longDescription: action.longDescription,
-      theme: {
-        id: action.theme.id,
-        key: action.theme.key,
-        trackingId: action.theme.trackingId,
-        title: action.theme.title,
-        emoji: action.theme.emoji,
-      },
-      ruleId: action.ruleId,
-      media: action.media,
-      tips: action.tips,
-      financialIncentives: action.financialIncentives,
-      furtherExplore: action.furtherExplore,
-      metadata: action.metadata,
-    })
+    expect(result).toEqual(action)
   })
 })

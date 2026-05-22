@@ -29,22 +29,6 @@ describe('getActions', () => {
 
     const actions = await getActions()
 
-    expect(actions).toEqual(
-      [published, publishedPendingDeletion].map((a) => ({
-        id: a.id,
-        title: a.title,
-        slug: a.slug,
-        trackingId: a.trackingId,
-        language: a.language,
-        longDescription: a.longDescription,
-        theme: a.theme,
-        ruleId: a.ruleId,
-        media: a.media,
-        tips: a.tips,
-        financialIncentives: a.financialIncentives,
-        furtherExplore: a.furtherExplore,
-        metadata: a.metadata,
-      }))
-    )
+    expect(actions).toEqual([published, publishedPendingDeletion])
   })
 })

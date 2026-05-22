@@ -1,6 +1,6 @@
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
-import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import type { Action } from '@/types/actions'
+import type { Theme } from '@/types/themes'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'

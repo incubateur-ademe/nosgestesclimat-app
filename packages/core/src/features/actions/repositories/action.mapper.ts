@@ -33,4 +33,6 @@ export const mapAction = (
   financialIncentives: dbAction.financialIncentives ?? undefined,
   furtherExplore: dbAction.furtherExplore ?? undefined,
   metadata: mapSeoMetadata(dbAction.seoMetadata),
+  publishedAt: dbAction.publishedAt,
+  deletedAt: dbAction.deletedAt,
 })

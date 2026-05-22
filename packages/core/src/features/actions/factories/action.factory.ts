@@ -7,12 +7,6 @@ import type { ActionMedia } from '../types/action-media.ts'
 import type { Action } from '../types/action.ts'
 import { seoMetadataFactory } from './seo-metadata.factory.ts'
 
-type ActionData = Action & {
-  themeId: string
-  publishedAt: Date | null
-  deletedAt: Date | null
-}
-
 const md = (title: string): string =>
   `### ${title}\n\n${faker.lorem.paragraph()}\n\n${faker.lorem.paragraph()}\n\n- ${faker.lorem.sentence()}\n- ${faker.lorem.sentence()}\n- ${faker.lorem.sentence()}`
 
@@ -34,7 +28,7 @@ const randomMedia = (): ActionMedia | undefined => {
   return undefined
 }
 
-class ActionFactory extends Factory<ActionData> {
+class ActionFactory extends Factory<Action> {
   published() {
     return this.params({
       publishedAt: faker.date.past(),
@@ -75,7 +69,7 @@ export const actionFactory = ActionFactory.define(({ onCreate }) => {
         slug: data.slug,
         trackingId: data.trackingId,
         longDescription: data.longDescription,
-        themeId: data.themeId,
+        themeId: data.theme.id,
         ruleId: data.ruleId,
         media: data.media as unknown as object,
         tips: data.tips ?? null,
@@ -115,14 +109,13 @@ export const actionFactory = ActionFactory.define(({ onCreate }) => {
       title: theme.title,
       emoji: theme.emoji,
     },
-    themeId: theme.id,
     ruleId: faker.string.uuid(),
     media: faker.helpers.maybe(randomMedia),
     tips: faker.helpers.maybe(() => md(faker.lorem.sentence())),
     financialIncentives: faker.helpers.maybe(() => md(faker.lorem.sentence())),
     furtherExplore: faker.helpers.maybe(() => md(faker.lorem.sentence())),
     metadata: seoMetadataFactory.build(),
-    publishedAt: faker.date.past(),
+    publishedAt: faker.helpers.maybe(faker.date.anytime) ?? null,
     deletedAt: null,
   }
 })

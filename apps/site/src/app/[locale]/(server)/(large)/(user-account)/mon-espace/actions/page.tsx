@@ -7,10 +7,10 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
+import { getActions } from '@/services/actions/get-actions'
+import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { getActions } from '@nosgestesclimat/core/features/actions/services/get-actions.service'
-import { getThemes } from '@nosgestesclimat/core/features/actions/services/get-themes.service'
 import ProfileTab from '../_components/ProfileTabs'
 
 export default async function MonEspaceActionsPage({
