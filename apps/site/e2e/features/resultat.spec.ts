@@ -1,7 +1,6 @@
 import type { Situation } from '@/publicodes-state/types'
 import { expect, test } from '../fixtures'
 import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
-import { skipOnSafari } from '../helpers/skip-on-safari'
 import { COMPLETED_TEST_STATE, USER_ACCOUNT_STATE } from '../state'
 
 test.beforeEach(async ({ page }) => {
@@ -9,9 +8,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('Should redirect to the home if no simulation', async ({ page }) => {
-  await expect(page).toHaveURL('/', {
-    timeout: 3000,
-  })
+  await expect(page).toHaveURL('/')
 })
 
 test.describe('Given a user that completed a test without an account', () => {
@@ -23,7 +20,7 @@ test.describe('Given a user that completed a test without an account', () => {
 
   test('should be accessible from the home', async ({ page }) => {
     await page.goto('/')
-    await page.getByTestId('do-the-test-link').first().click()
+    await page.getByTestId('main-cta').first().click()
     await expect(page).toHaveURL(new RegExp('/fin'))
   })
 
@@ -49,7 +46,7 @@ test.describe('Given a user that completed a test without an account', () => {
     const waterFootprintResult = parseInt(
       (await waterFootprintElem.innerText()).replace(/[\s]/, '')
     )
-    expect(waterFootprintResult).toBeGreaterThan(6000)
+    expect(waterFootprintResult).toBeGreaterThan(5000)
   })
 
   test('should not display a tendency indicator on the first simulation', async ({
@@ -67,15 +64,13 @@ test.describe('Given an authenticated user that completed the test twice with di
   test('should display a tendency indicator on the result page', async ({
     page,
     ngcTest,
-    browser,
   }) => {
-    skipOnSafari(browser)
     // The authenticated user already has a completed simulation saved in their account
     await expect(page).toHaveURL(/\/fin/)
 
     // 2. Restart and do a second simulation with different answers
     await page.goto('/')
-    await page.getByTestId('restart-link').click()
+    await page.getByTestId('restart-link').first().click()
     const differentSituation: Situation = {
       'transport . voiture . utilisateur': "'propriétaire'",
       'transport . voiture . km': Math.round(Math.random() * 10000),

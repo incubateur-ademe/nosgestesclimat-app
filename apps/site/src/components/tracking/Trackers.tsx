@@ -1,14 +1,8 @@
-'use client'
-
-import { useTrackLocale } from '@/hooks/tracking/useTrackLocale'
-import { useTrackPageview } from '@/hooks/tracking/useTrackPageview'
+import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import type { Locale } from '@/i18nConfig'
+import { ClientTrackers } from './ClientTrackers'
 
-/**
- * This component is used to track page views and locale.
- */
-export default function Trackers({ locale }: { locale: Locale }) {
-  useTrackLocale({ locale })
-  useTrackPageview()
-  return null
+export default async function Trackers({ locale }: { locale: Locale }) {
+  const anonSession = await getAnonSession()
+  return <ClientTrackers region={anonSession.region} locale={locale} />
 }

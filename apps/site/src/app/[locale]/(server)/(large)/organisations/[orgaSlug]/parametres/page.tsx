@@ -9,7 +9,7 @@ import type {
   Organisation,
   OrgaSettingsInputsType,
 } from '@/types/organisations'
-import { organisationAdminGuard } from '../organisation-guard'
+import { organisationAdminGuard } from '../guard'
 import OrganisationForm from './_components/OrganisationForm'
 
 export default async function ParametresPage({

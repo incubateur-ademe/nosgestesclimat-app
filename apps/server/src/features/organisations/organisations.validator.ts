@@ -1,8 +1,10 @@
 import { z } from 'zod'
+
 import {
   OrganisationType,
   PollDefaultAdditionalQuestionType,
-} from '../../adapters/prisma/generated.ts'
+  PollMode,
+} from '@nosgestesclimat/core/prisma/generated/enums'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { PaginationQuery } from '../../core/pagination.ts'
 import { UserParams } from '../users/users.validator.ts'
@@ -152,6 +154,7 @@ const OrganisationPollCreateDto = z
       .max(MAX_CUSTOM_ADDITIONAL_QUESTIONS)
       .optional()
       .nullable(),
+    mode: z.nativeEnum(PollMode).optional().default(PollMode.standard),
   })
   .strict()
 

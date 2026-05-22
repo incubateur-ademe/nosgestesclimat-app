@@ -1,8 +1,8 @@
 import Trans from '@/components/translation/trans/TransServer'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import type { Simulation } from '@/publicodes-state/types'
 
 interface Props {
   simulation: Simulation

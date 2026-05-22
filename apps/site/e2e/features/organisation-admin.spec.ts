@@ -39,7 +39,7 @@ test.describe('The dashboard', () => {
     page,
     organisation,
   }) => {
-    await expect(page.getByText(organisation.name)).toHaveCount(2)
+    await expect(page.getByText(organisation.name)).toBeVisible()
   })
 
   test('lists the created poll', async ({ page, poll }) => {

@@ -32,10 +32,16 @@ export default async function CreationPage({
         }}
       />
 
-      <section className="w-full bg-[#fff]">
-        <div className="mx-auto max-w-5xl px-0">
+      <section className="w-full bg-white">
+        <div className="mx-auto flex max-w-5xl flex-col gap-6 px-0">
           <Title
-            title={<Trans locale={locale}>Bienvenue sur votre espace !</Trans>}
+            size="lg"
+            title={
+              <Trans locale={locale}>
+                Créez une organisation afin de diffuser un ou plusieurs liens de
+                test collectif
+              </Trans>
+            }
             subtitle={
               <Trans locale={locale}>Plus que quelques petites questions</Trans>
             }

@@ -1,9 +1,9 @@
 import { metrics } from '@/constants/model/metric'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { migrateSimulation } from '@/publicodes-state/helpers/migrateSimulation'
 import type {
   ComputedResults,
   ComputedResultsFootprint,
-  Simulation,
 } from '@/publicodes-state/types'
 import type { Migration } from '@publicodes/tools/migration'
 import { captureException } from '@sentry/nextjs'
@@ -36,6 +36,7 @@ export function generateSimulation({
   polls,
   groups,
   migrationInstructions,
+  model,
 }: Partial<Simulation> & {
   migrationInstructions?: Migration
 } = {}): Simulation {
@@ -51,6 +52,7 @@ export function generateSimulation({
     progression,
     polls,
     groups,
+    model,
   } as Simulation
 
   try {

@@ -17,23 +17,17 @@ import { useEffect } from 'react'
 
 interface Props {
   action: Action
-  category: DottedName
   onComplete: () => void
   handleUpdatePersistedActions?: () => void
 }
 
 export default function ActionForm({
   action,
-  category,
   onComplete,
   handleUpdatePersistedActions = () => {},
 }: Props) {
-  const {
-    currentQuestion,
-    setCurrentQuestion,
-    setCurrentCategory,
-    currentCategory,
-  } = useFormState()
+  const { currentQuestion, setCurrentQuestion, currentCategory } =
+    useFormState()
 
   const {
     everyQuestions,
@@ -63,12 +57,6 @@ export default function ActionForm({
       safeEvaluate,
       rawMissingVariables: {} as MissingVariables,
     }) && numericValue !== 0
-
-  useEffect(() => {
-    if (category && !currentCategory) {
-      setCurrentCategory(category)
-    }
-  }, [category, currentCategory, setCurrentCategory])
 
   useEffect(() => {
     if (currentCategory && !currentQuestion) {

@@ -10,7 +10,7 @@ for (const persona of Object.values(personas)) {
     ngcTest,
     page,
   }) => {
-    await ngcTest.goto()
+    await ngcTest.start()
     await ngcTest.answerTest(persona.situation)
     await expect(page).toHaveURL(/\/fin/)
   })
@@ -55,9 +55,9 @@ async function testDeselectAnswer(
   getAnswerInput: () => Locator
 ) {
   //  1. Trouver la question du type spécifique
-  await ngcTest.goto()
+  await ngcTest.start()
   while (!(await isQuestionType())) {
-    await ngcTest.clickOnSkip()
+    await ngcTest.skipButton().click()
   }
 
   //  2. Récupérer la valeur du bilan

@@ -1,7 +1,7 @@
-import CTAButtonsPlaceholder from '@/components/cta/CTAButtonsPlaceholder'
-import DynamicCTAButtons from '@/components/cta/DynamicCTAButtons'
+import CTAButtons from '@/components/cta/CTAButtons'
+
 import DailyGestures from '@/components/landing-pages/DailyGestures'
-import DidYouKnowSliderServer from '@/components/landing-pages/DidYouKnowSliderServer'
+import DidYouKnowSlider from '@/components/landing-pages/DidYouKnowSlider'
 import FAQ from '@/components/landing-pages/FAQ'
 import Legend from '@/components/landing-pages/Legend'
 import MotivationSection from '@/components/landing-pages/MotivationSection'
@@ -12,20 +12,10 @@ import WhatItIs from '@/components/landing-pages/WhatItIs'
 import Footer from '@/components/layout/Footer'
 import Link from '@/components/Link'
 import JSONLD from '@/components/seo/JSONLD'
-import {
-  trackingActionClickCTA,
-  trackingActionClickPageBottom,
-} from '@/constants/tracking/actions'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
-import {
-  getLandingClickCTARestart,
-  getLandingClickCTAResults,
-  getLandingClickCTAResume,
-  getLandingClickCTAStart,
-} from '@/helpers/tracking/landings'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import { fetchThematicLandingPage } from '@/services/cms/fetchThematicLandingPage'
@@ -34,7 +24,6 @@ import type { DefaultPageProps } from '@/types'
 import { getArticleHref } from '@/utils/cms/getArticleHref'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
 import { ClientLayout } from '../../../../components/layout/ClientLayout'
 
 export async function generateMetadata({
@@ -133,28 +122,7 @@ export default async function ThematicLandingPage({
                 __html: block1?.htmlDescription ?? '',
               }}></p>
             <div className="flex w-full justify-center md:justify-start">
-              <Suspense fallback={<CTAButtonsPlaceholder />}>
-                <DynamicCTAButtons
-                  trackingEvents={{
-                    start: getLandingClickCTAStart(
-                      `/${landingPageSlug}`,
-                      trackingActionClickCTA
-                    ),
-                    resume: getLandingClickCTAResume(
-                      `/${landingPageSlug}`,
-                      trackingActionClickCTA
-                    ),
-                    results: getLandingClickCTAResults(
-                      `/${landingPageSlug}`,
-                      trackingActionClickCTA
-                    ),
-                    restart: getLandingClickCTARestart(
-                      `/${landingPageSlug}`,
-                      trackingActionClickCTA
-                    ),
-                  }}
-                />
-              </Suspense>
+              <CTAButtons locale={locale} />
             </div>
 
             <div className="mx-auto mt-4 max-w-80 md:mt-0 md:hidden">
@@ -206,7 +174,8 @@ export default async function ThematicLandingPage({
         )}
 
         {block4 && (
-          <DidYouKnowSliderServer
+          <DidYouKnowSlider
+            ctaButtons={<CTAButtons locale={locale} />}
             slides={block4?.map(({ text, image, pinkText }) => ({
               content: <div dangerouslySetInnerHTML={{ __html: text }} />,
               illustration: image?.url ?? '',
@@ -217,20 +186,7 @@ export default async function ThematicLandingPage({
 
         {block5 && (
           <DailyGestures
-            trackingEvents={{
-              start: getLandingClickCTAStart(
-                `/${landingPageSlug}`,
-                trackingActionClickPageBottom
-              ),
-              resume: getLandingClickCTAResume(
-                `/${landingPageSlug}`,
-                trackingActionClickPageBottom
-              ),
-              results: getLandingClickCTAResults(
-                `/${landingPageSlug}`,
-                trackingActionClickPageBottom
-              ),
-            }}
+            locale={locale}
             title={block5.title}
             description={
               <div

@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import type { AppUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
-import { getSimulations } from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
@@ -51,10 +51,7 @@ async function LegacyMonEspaceActionsPage({
   user: AppUser
   locale: Locale
 }) {
-  const simulations = await getSimulations(
-    { user },
-    { completedOnly: true, pageSize: 1 }
-  )
+  const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />
 }

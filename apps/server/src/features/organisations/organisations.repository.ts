@@ -345,6 +345,7 @@ type SimulationsInfo = {
     }
   | {
       hasParticipated: true
+      progression: number
       userComputedResults: ComputedResultSchema
     }
 )
@@ -383,6 +384,7 @@ const fetchPollSimulationsInfo = async (
         simulation: {
           select: {
             computedResults: true,
+            progression: true,
           },
         },
       },
@@ -404,6 +406,7 @@ const fetchPollSimulationsInfo = async (
     ...(userComputedResults.success
       ? {
           hasParticipated: true,
+          progression: userSimulation!.simulation.progression,
           userComputedResults: userComputedResults.data,
         }
       : {
@@ -434,6 +437,7 @@ export const createOrganisationPoll = async (
     expectedNumberOfParticipants,
     defaultAdditionalQuestions,
     customAdditionalQuestions,
+    mode,
   }: OrganisationPollCreateDto,
   user: NonNullable<Request['user']>,
   { session }: { session: Session }
@@ -452,6 +456,7 @@ export const createOrganisationPoll = async (
           name,
           customAdditionalQuestions: customAdditionalQuestions ?? [],
           expectedNumberOfParticipants,
+          mode,
           ...(defaultAdditionalQuestions?.length
             ? {
                 defaultAdditionalQuestions: {
@@ -499,6 +504,7 @@ export const updateOrganisationPoll = async (
     expectedNumberOfParticipants,
     defaultAdditionalQuestions,
     customAdditionalQuestions: updateCustomAdditionalQuestions,
+    mode,
   }: OrganisationPollUpdateDto,
   user: NonNullable<Request['user']>,
   { session }: { session: Session }
@@ -528,6 +534,7 @@ export const updateOrganisationPoll = async (
     data: {
       name,
       expectedNumberOfParticipants,
+      mode,
       ...(customAdditionalQuestions
         ? {
             customAdditionalQuestions,

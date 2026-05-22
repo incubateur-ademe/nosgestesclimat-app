@@ -1,5 +1,5 @@
 import { SIMULATION_URL } from '@/constants/urls/main'
-import type { Simulation } from '@/publicodes-state/types'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { captureException } from '@sentry/nextjs'
 import type { SaveSimulationPayload } from './saveSimulation'
 

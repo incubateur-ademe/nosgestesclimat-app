@@ -2,7 +2,7 @@ import ActionsPage from '@/components/actions/pages/ActionsPage'
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
 import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
-import { getSimulations } from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
@@ -37,10 +37,7 @@ async function LegacyResultatsActionsPage({
   user: AppUser
   locale: Locale
 }) {
-  const simulations = await getSimulations(
-    { user },
-    { completedOnly: true, pageSize: 1 }
-  )
+  const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />
 }
