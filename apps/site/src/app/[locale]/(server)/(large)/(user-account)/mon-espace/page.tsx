@@ -22,7 +22,7 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
   })
 
   return (
-    <div data-track>
+    <div>
       {showWelcomeBanner && <WelcomeBanner locale={locale} />}
 
       <ResultsView

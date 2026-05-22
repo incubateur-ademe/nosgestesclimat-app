@@ -19,7 +19,7 @@ export default async function Layout({
   })
 
   return (
-    <div data-track>
+    <div>
       <UserProvider serverSimulations={simulations} serverUserId={user.id}>
         <QueryClientProviderWrapper>
           <EngineProvider rules={rules}>{children}</EngineProvider>
