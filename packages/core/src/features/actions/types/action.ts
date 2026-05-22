@@ -6,6 +6,7 @@ import type { Theme } from './theme.ts'
 export interface Action {
   id: string
   title: string
+  slug: string
   language: ISOSupportedLanguage
   /**
    * Explanation of the action and its impact (Markdown)

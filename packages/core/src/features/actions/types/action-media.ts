@@ -1,5 +1,8 @@
+import { z } from 'zod'
+
 /** ISO 639-1 language codes */
-type ImpactCO2Language = 'fr' | 'en' | 'es'
+export const ImpactCO2LanguageSchema = z.enum(['fr', 'en', 'es'])
+export type ImpactCO2Language = z.infer<typeof ImpactCO2LanguageSchema>
 
 interface MediaBase {
   title: string
@@ -12,6 +15,7 @@ interface MediaImpactCO2 extends MediaBase {
     type: string
     /** Inherits the language if not specified */
     language?: ImpactCO2Language
+    options?: Record<string, string>
   }
 }
 

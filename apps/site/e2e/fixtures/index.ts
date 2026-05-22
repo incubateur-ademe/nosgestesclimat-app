@@ -1,5 +1,6 @@
 import { mergeTests } from '@playwright/test'
 import { test as cookieBannerTest } from '../fixtures/cookie-banner'
+import { test as featureFlagsTest } from '../fixtures/feature-flags'
 import { test as groupTest } from '../fixtures/groups'
 import { test as ngcTest } from '../fixtures/ngc-test'
 import { test as organisationTest } from '../fixtures/organisations'
@@ -12,6 +13,7 @@ export const test = mergeTests(
   groupTest,
   ngcTest,
   cookieBannerTest,
+  featureFlagsTest,
   organisationTest,
   userAccountTest,
   pollTest,
