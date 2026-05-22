@@ -3,8 +3,11 @@ import { test as base, type Page } from '@playwright/test'
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
 import type { FeatureFlagName } from '@/services/feature-flags/flags'
 
+const DOMAIN = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
+
 const DEFAULT_FLAGS = {
   'actions-v2': false,
+  'mode-scolaire': true,
 } satisfies Record<FeatureFlagName, boolean>
 
 export class FeatureFlags {
@@ -15,6 +18,7 @@ export class FeatureFlags {
       {
         name: FF_COOKIE_NAME,
         value: JSON.stringify(flags),
+        domain: DOMAIN,
         path: '/',
         sameSite: 'Lax' as const,
       },
@@ -46,11 +50,14 @@ interface FeatureFlagFixtures {
 }
 
 const test = base.extend<FeatureFlagFixtures>({
-  featureFlags: async ({ page }, use) => {
-    const featureFlags = new FeatureFlags(page)
-    await featureFlags.set({ ...DEFAULT_FLAGS })
-    await use(featureFlags)
-  },
+  featureFlags: [
+    async ({ page }, use) => {
+      const featureFlags = new FeatureFlags(page)
+      await featureFlags.set({ ...DEFAULT_FLAGS })
+      await use(featureFlags)
+    },
+    { auto: true },
+  ],
 })
 
 export { test }
