@@ -1,80 +1,74 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { SimulationParticipantCreateDto } from '../simulations/simulations.validator.ts'
 import { UserParams } from '../users/users.validator.ts'
 
-const GroupParams = z
-  .object({
-    groupId: z.string(),
-  })
-  .strict()
+const GroupParams = v.strictObject({
+  groupId: v.string(),
+})
 
-export type GroupParams = z.infer<typeof GroupParams>
+export type GroupParams = v.InferOutput<typeof GroupParams>
 
-const UserGroupParams = GroupParams.extend(UserParams.shape)
+const UserGroupParams = v.strictObject({
+  ...GroupParams.entries,
+  ...UserParams.entries,
+})
 
-export type UserGroupParams = z.infer<typeof UserGroupParams>
+export type UserGroupParams = v.InferOutput<typeof UserGroupParams>
 
-const UserGroupParticipantParams = UserGroupParams.extend(
-  z
-    .object({
-      participantId: z.uuid(),
-    })
-    .strict().shape
-)
+const UserGroupParticipantParams = v.strictObject({
+  ...UserGroupParams.entries,
+  participantId: v.pipe(v.string(), v.uuid()),
+})
 
-export type UserGroupParticipantParams = z.infer<
+export type UserGroupParticipantParams = v.InferOutput<
   typeof UserGroupParticipantParams
 >
 
-const GroupCreateParticipant = z
-  .object({
-    simulation: SimulationParticipantCreateDto,
-  })
-  .strict()
+const GroupCreateParticipant = v.strictObject({
+  simulation: SimulationParticipantCreateDto,
+})
 
-export type GroupCreateParticipant = z.infer<typeof GroupCreateParticipant>
+export type GroupCreateParticipant = v.InferOutput<
+  typeof GroupCreateParticipant
+>
 
-const GroupCreateUser = z
-  .object({
-    userId: z.uuid(),
-    email: z
-      .email()
-      .transform((email) => email.toLocaleLowerCase())
-      .optional(),
-    name: z.string(),
-  })
-  .strict()
+const GroupCreateUser = v.strictObject({
+  userId: v.pipe(v.string(), v.uuid()),
+  email: v.optional(
+    v.pipe(
+      v.string(),
+      v.email(),
+      v.transform((email) => email.toLocaleLowerCase())
+    )
+  ),
+  name: v.string(),
+})
 
-export type GroupCreateAdministrator = z.infer<typeof GroupCreateUser>
+export type GroupCreateAdministrator = v.InferOutput<typeof GroupCreateUser>
 
-const GroupCreateDto = z
-  .object({
-    name: z.string(),
-    emoji: z.string(),
-    administrator: GroupCreateUser,
-    participants: z.tuple([GroupCreateParticipant]).optional(),
-  })
-  .strict()
+const GroupCreateDto = v.strictObject({
+  name: v.string(),
+  emoji: v.string(),
+  administrator: GroupCreateUser,
+  participants: v.optional(v.tuple([GroupCreateParticipant])),
+})
 
-export type GroupCreateDto = z.infer<typeof GroupCreateDto>
+export type GroupCreateDto = v.InferOutput<typeof GroupCreateDto>
 
-export type GroupCreateInputDto = z.input<typeof GroupCreateDto>
+export type GroupCreateInputDto = v.InferInput<typeof GroupCreateDto>
 
 export const GroupCreateValidator = {
   body: GroupCreateDto,
-  params: z.object({}).strict().optional(),
+  params: v.optional(v.strictObject({})),
   query: LocaleQuery,
 }
 
-const GroupUpdateDto = GroupCreateDto.omit({
-  administrator: true,
-  participants: true,
-})
-  .partial()
-  .strict()
+const GroupUpdateDto = v.partial(
+  v.omit(GroupCreateDto, ['administrator', 'participants'])
+)
 
-export type GroupUpdateDto = z.infer<typeof GroupUpdateDto>
+export type GroupUpdateDto = v.InferOutput<typeof GroupUpdateDto>
 
 export const GroupUpdateValidator = {
   body: GroupUpdateDto,
@@ -82,13 +76,16 @@ export const GroupUpdateValidator = {
   query: LocaleQuery,
 }
 
-const ParticipantCreateDto = GroupCreateUser.extend(
-  GroupCreateParticipant.shape
-)
+const ParticipantCreateDto = v.strictObject({
+  ...GroupCreateUser.entries,
+  ...GroupCreateParticipant.entries,
+})
 
-export type ParticipantCreateDto = z.infer<typeof ParticipantCreateDto>
+export type ParticipantCreateDto = v.InferOutput<typeof ParticipantCreateDto>
 
-export type ParticipantInputCreateDto = z.input<typeof ParticipantCreateDto>
+export type ParticipantInputCreateDto = v.InferInput<
+  typeof ParticipantCreateDto
+>
 
 export const ParticipantCreateValidator = {
   body: ParticipantCreateDto,
@@ -97,34 +94,32 @@ export const ParticipantCreateValidator = {
 }
 
 export const ParticipantDeleteValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: UserGroupParticipantParams,
   query: LocaleQuery,
 }
 
-const GroupsFetchQuery = z
-  .object({
-    groupIds: z.array(z.string()).optional(),
-  })
-  .extend(LocaleQuery.shape)
-  .strict()
+const GroupsFetchQuery = v.strictObject({
+  groupIds: v.optional(v.array(v.string())),
+  ...LocaleQuery.entries,
+})
 
-export type GroupsFetchQuery = z.infer<typeof GroupsFetchQuery>
+export type GroupsFetchQuery = v.InferOutput<typeof GroupsFetchQuery>
 
 export const GroupsFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: UserParams,
   query: GroupsFetchQuery,
 }
 
 export const GroupFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: UserGroupParams,
   query: LocaleQuery,
 }
 
 export const GroupDeleteValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: UserGroupParams,
   query: LocaleQuery,
 }

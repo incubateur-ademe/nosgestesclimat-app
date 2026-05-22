@@ -3,13 +3,13 @@ import type { Redis } from 'ioredis'
 import { isIPv4 } from 'node:net'
 import { createGunzip } from 'node:zlib'
 import Papa from 'papaparse'
-import { z } from 'zod'
+import * as v from 'valibot'
 import { KEYS } from '../../src/adapters/redis/constant.ts'
 import { convertIpToNumber } from '../../src/features/modele/geolocation.repository.ts'
 
-const GeoIpCsvValidator = z.object({
-  ipStart: z.string(),
-  countryCode: z.string().regex(/^[A-Z]{2}$/),
+const GeoIpCsvValidator = v.object({
+  ipStart: v.string(),
+  countryCode: v.pipe(v.string(), v.regex(/^[A-Z]{2}$/)),
 })
 
 export const exec = async ({ redis }: { redis: Redis }) => {
@@ -45,27 +45,27 @@ export const exec = async ({ redis }: { redis: Redis }) => {
     for await (const chunk of parseStream) {
       const [ipStart, _, countryCode] = chunk
 
-      const parsed = GeoIpCsvValidator.safeParse({ ipStart, countryCode })
+      const parsed = v.safeParse(GeoIpCsvValidator, { ipStart, countryCode })
 
       if (!parsed.success) {
         console.warn('Invalid CSV row:', {
           chunk,
           ipStart,
           countryCode,
-          error: parsed.error,
+          error: parsed.issues,
         })
         continue
       }
 
       // Ignore IPv6 addresses
-      if (!isIPv4(parsed.data.ipStart)) {
+      if (!isIPv4(parsed.output.ipStart)) {
         continue
       }
 
-      const ipStartNumber = convertIpToNumber(parsed.data.ipStart)
+      const ipStartNumber = convertIpToNumber(parsed.output.ipStart)
       sortedArray.push({
         ipStartNum: ipStartNumber,
-        countryCode: parsed.data.countryCode,
+        countryCode: parsed.output.countryCode,
       })
     }
 

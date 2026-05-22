@@ -1,48 +1,53 @@
 import { initContract, ZodErrorSchema } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
-import { z } from 'zod'
+import * as v from 'valibot'
 import {
   isValidRefreshToken,
   REFRESH_TOKEN_SCOPE,
 } from './authentication.service.ts'
 
-const GenerateAPITokenRequestDto = z
-  .object({
-    email: z.email().transform((email) => email.toLocaleLowerCase()),
-  })
-  .strict()
+const GenerateAPITokenRequestDto = v.strictObject({
+  email: v.pipe(
+    v.string(),
+    v.email(),
+    v.transform((email) => email.toLocaleLowerCase())
+  ),
+})
 
-export type GenerateAPITokenRequestDto = z.infer<
+export type GenerateAPITokenRequestDto = v.InferOutput<
   typeof GenerateAPITokenRequestDto
 >
 
-const GenerateAPITokenResponseDto = z.object({
-  message: z.string(),
+const GenerateAPITokenResponseDto = v.strictObject({
+  message: v.string(),
 })
 
-const RecoverApiTokenQuery = z
-  .object({
-    code: z.string().regex(/^\d{6}$/),
-    email: z.email().transform((email) => email.toLocaleLowerCase()),
-  })
-  .strict()
-
-export type RecoverApiTokenQuery = z.infer<typeof RecoverApiTokenQuery>
-
-const RecoverApiTokenResponseDto = z.object({
-  token: z.string(),
-  refreshToken: z.string(),
+const RecoverApiTokenQuery = v.strictObject({
+  code: v.pipe(v.string(), v.regex(/^\d{6}$/)),
+  email: v.pipe(
+    v.string(),
+    v.email(),
+    v.transform((email) => email.toLocaleLowerCase())
+  ),
 })
 
-const RefreshApiTokenRequestDto = z
-  .object({
-    refreshToken: z.string(),
-  })
-  .strict()
+export type RecoverApiTokenQuery = v.InferOutput<typeof RecoverApiTokenQuery>
 
-export const AsyncRefreshApiTokenRequestDto = RefreshApiTokenRequestDto.refine(
-  ({ refreshToken }) => isValidRefreshToken(refreshToken),
-  `Refresh token must be a valid, non expired JWT with a ${REFRESH_TOKEN_SCOPE} scope`
+const RecoverApiTokenResponseDto = v.strictObject({
+  token: v.string(),
+  refreshToken: v.string(),
+})
+
+const RefreshApiTokenRequestDto = v.strictObject({
+  refreshToken: v.string(),
+})
+
+export const AsyncRefreshApiTokenRequestDto = v.pipeAsync(
+  RefreshApiTokenRequestDto,
+  v.checkAsync(
+    async ({ refreshToken }) => !!(await isValidRefreshToken(refreshToken)),
+    `Refresh token must be a valid, non expired JWT with a ${REFRESH_TOKEN_SCOPE} scope`
+  )
 )
 
 const c = initContract()
@@ -51,13 +56,13 @@ const contract = c.router({
   generateApiToken: {
     method: 'POST',
     path: '/integrations-api/v1/tokens',
-    query: z.object({}).strict(),
-    pathParams: z.object({}).strict(),
+    query: v.strictObject({}),
+    pathParams: v.strictObject({}),
     body: GenerateAPITokenRequestDto,
     responses: {
       [StatusCodes.CREATED as number]: GenerateAPITokenResponseDto,
       [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
-      [StatusCodes.INTERNAL_SERVER_ERROR as number]: z.object({}).strict(),
+      [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Ask for an API token for the given email',
   },
@@ -65,25 +70,25 @@ const contract = c.router({
     method: 'GET',
     path: '/integrations-api/v1/tokens',
     query: RecoverApiTokenQuery,
-    pathParams: z.object({}).strict(),
+    pathParams: v.strictObject({}),
     responses: {
       [StatusCodes.OK as number]: RecoverApiTokenResponseDto,
       [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
-      [StatusCodes.INTERNAL_SERVER_ERROR as number]: z.object({}).strict(),
+      [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Recover an API token from the given email',
   },
   refreshApiToken: {
     method: 'POST',
     path: '/integrations-api/v1/tokens/refresh',
-    query: z.object({}).strict(),
-    pathParams: z.object({}).strict(),
+    query: v.strictObject({}),
+    pathParams: v.strictObject({}),
     body: RefreshApiTokenRequestDto,
     responses: {
       [StatusCodes.OK as number]: RecoverApiTokenResponseDto,
       [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
-      [StatusCodes.UNAUTHORIZED as number]: z.string(),
-      [StatusCodes.INTERNAL_SERVER_ERROR as number]: z.object({}).strict(),
+      [StatusCodes.UNAUTHORIZED as number]: v.string(),
+      [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Refresh an API token with the given refreshToken',
     metadata: {

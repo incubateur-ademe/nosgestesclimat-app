@@ -1,17 +1,35 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { PERIODS } from './stats.constant.ts'
 
-export const NorthstarStatsFetchQuery = z
-  .object({
-    periodicity: z.enum(PERIODS).default(PERIODS.month),
-    since: z.coerce.number().int().positive().nullable().default(null),
-  })
-  .strict()
+export const PeriodValues = [
+  PERIODS.year,
+  PERIODS.month,
+  PERIODS.week,
+  PERIODS.day,
+] as const
 
-export type NorthstarStatsFetchQuery = z.infer<typeof NorthstarStatsFetchQuery>
+export const NorthstarStatsFetchQuery = v.strictObject({
+  periodicity: v.optional(v.picklist(PeriodValues), PERIODS.month),
+  since: v.optional(
+    v.nullable(
+      v.pipe(
+        v.unknown(),
+        v.transform(Number),
+        v.number(),
+        v.integer(),
+        v.minValue(1)
+      )
+    ),
+    null
+  ),
+})
+
+export type NorthstarStatsFetchQuery = v.InferOutput<
+  typeof NorthstarStatsFetchQuery
+>
 
 export const NorthstarStatsFetchValidator = {
-  body: z.object({}).strict().optional(),
-  params: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
+  params: v.optional(v.strictObject({})),
   query: NorthstarStatsFetchQuery,
 }
