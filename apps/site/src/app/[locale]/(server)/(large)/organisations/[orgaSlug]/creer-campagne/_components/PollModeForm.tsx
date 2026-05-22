@@ -3,11 +3,10 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Badge from '@/design-system/layout/Badge'
+import { useFeatureFlag } from '@/hooks/useFeatureFlag'
 import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
-import posthog from 'posthog-js'
 import { twMerge } from 'tailwind-merge'
-import { APP_ENV } from '../../../../../../../../../config/app-env'
 import { useCreatePollStep2 } from '../_hooks/useCreatePollStep2'
 import { revalidationOrganisationPath } from './actions/revalidationOrganisationPath'
 
@@ -21,8 +20,7 @@ export default function PollModeForm({ organisation }: Props) {
     revalidatePath: revalidationOrganisationPath,
   })
 
-  const modeScolaireEnabled =
-    APP_ENV !== 'production' || posthog.isFeatureEnabled('mode-scolaire')
+  const modeScolaireEnabled = useFeatureFlag('mode-scolaire')
 
   return (
     <form
