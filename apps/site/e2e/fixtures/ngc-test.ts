@@ -14,7 +14,7 @@ export class NGCTest {
     await this.tutorialPage.skip()
   }
 
-  async answerQuestion(situation: Situation) {
+  private async answerQuestion(situation: Situation) {
     const inputs = this.page.locator('input')
     let isAnswered = false
     for (const input of await inputs.all()) {
@@ -54,15 +54,22 @@ export class NGCTest {
     return isAnswered
   }
 
-  async clickOnSkip() {
-    await this.page.getByTestId('skip-question-button').click()
+  private skipButton() {
+    return this.page.getByTestId('skip-question-button')
   }
 
-  endButton() {
+  private async canSkipQuestion() {
+    return (
+      (await this.skipButton().isVisible()) &&
+      (await this.skipButton().isEnabled())
+    )
+  }
+
+  private endButton() {
     return this.page.getByTestId('end-test-button')
   }
 
-  async canEndTest() {
+  private async canEndTest() {
     return (
       (await this.endButton().isVisible()) &&
       (await this.endButton().isEnabled())
@@ -93,14 +100,14 @@ export class NGCTest {
     await this.skipAllQuestions()
   }
 
-  async skipAllQuestions(
-    { withDelay }: { withDelay: boolean } = { withDelay: false }
-  ) {
+  async skipAllQuestions() {
     while (!(await this.canEndTest())) {
-      await this.clickOnSkip()
-      if (withDelay) await this.page.waitForTimeout(500)
+      try {
+        await this.skipButton().click({ timeout: 2000 })
+      } catch {
+        continue
+      }
     }
-
     await this.endButton().click()
   }
 
@@ -108,7 +115,7 @@ export class NGCTest {
     while (!(await this.canEndTest())) {
       const isAnswered = await this.answerQuestion(situation)
       if (!isAnswered) {
-        await this.clickOnSkip()
+        await this.skipButton().click()
         continue
       }
       try {

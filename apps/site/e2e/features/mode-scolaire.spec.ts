@@ -45,7 +45,7 @@ test.describe('When a user completes the test via the scolaire poll invite link'
     await page.getByTestId('youth-tutorial-start-button').click()
 
     const ngcTest = new NGCTest(page)
-    await ngcTest.skipAllQuestions({ withDelay: true })
+    await ngcTest.skipAllQuestions()
 
     // Skip the email step
     await page.getByTestId('skip-email-button').click()
