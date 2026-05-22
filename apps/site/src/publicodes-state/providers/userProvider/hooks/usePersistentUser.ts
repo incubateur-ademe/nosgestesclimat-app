@@ -26,7 +26,11 @@ export default function usePersistentUser({ serverUserId }: Props) {
 
   // Save the user to local storage after initialization
   useEffect(() => {
-    safeLocalStorage.setItem(STORAGE_KEY, JSON.stringify(user))
+    const currentStorage = JSON.parse(
+      safeLocalStorage.getItem(STORAGE_KEY) || '{}'
+    )
+    const updatedStorage = { ...currentStorage, user }
+    safeLocalStorage.setItem(STORAGE_KEY, JSON.stringify(updatedStorage))
   }, [user])
 
   return { user, setUser }
