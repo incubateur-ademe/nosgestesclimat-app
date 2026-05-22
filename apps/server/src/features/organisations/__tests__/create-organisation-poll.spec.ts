@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import slugify from 'slugify'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -9,7 +10,6 @@ import {
   brevoSendEmail,
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import { PollDefaultAdditionalQuestionType } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'

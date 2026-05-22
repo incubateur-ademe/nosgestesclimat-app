@@ -1,10 +1,10 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isAxiosError } from 'axios'
 import dayjs from 'dayjs'
 import { fetchNewsletter } from '../../adapters/brevo/client.ts'
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import { ReferrerKind } from '../../adapters/matomo/client.ts'
 import { clients } from '../../adapters/matomo/index.ts'
-import { prisma } from '../../adapters/prisma/client.ts'
 import {
   MatomoStatsDevice,
   MatomoStatsSource,

@@ -4,10 +4,10 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { getActions } from '@/services/actions/get-actions'
+import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
-import { themes } from '@nosgestesclimat/core/features/actions/data/themes/index'
 
 export default async function ResultatsActionsPage({
   params,
@@ -20,9 +20,11 @@ export default async function ResultatsActionsPage({
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
 
+  const [actions, themes] = await Promise.all([getActions(), getThemes()])
+
   return (
     <ActionsPage
-      topActions={actions.slice(0, 3)}
+      // topActions={topActions}
       actions={actions}
       themes={themes}
       locale={locale}

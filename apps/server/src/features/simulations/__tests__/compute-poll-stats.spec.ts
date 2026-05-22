@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import { simulationSelection } from '../../../adapters/prisma/selection.ts'
 import { redis } from '../../../adapters/redis/client.ts'
 import { KEYS } from '../../../adapters/redis/constant.ts'

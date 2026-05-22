@@ -14,10 +14,10 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
+import { getAction } from '@/services/actions/get-action'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
-import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import type { Theme } from '@/types/themes'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
@@ -35,7 +35,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { params } = props
   const { locale, slug } = await params
 
-  const action = actions.find((a) => a.slug === slug)
+  const action = await getAction(slug)
 
   if (!action) {
     return getMetadataObject({
@@ -64,7 +64,7 @@ export default async function ActionPage({ params }: Props) {
 
   if (!flag) notFound()
 
-  const action = actions.find((a) => a.slug === slug)
+  const action = await getAction(slug)
 
   if (!action) notFound()
 
@@ -87,7 +87,7 @@ export default async function ActionPage({ params }: Props) {
     },
   ]
 
-  if (action.means) {
+  if (action.tips) {
     tabsItems.push({
       id: 'act',
       label: (
@@ -102,7 +102,7 @@ export default async function ActionPage({ params }: Props) {
     })
   }
 
-  if (action.incentives) {
+  if (action.financialIncentives) {
     tabsItems.push({
       id: 'incentives',
       label: (
@@ -117,7 +117,7 @@ export default async function ActionPage({ params }: Props) {
     })
   }
 
-  if (action.furtherReading) {
+  if (action.furtherExplore) {
     tabsItems.push({
       id: 'further-reading',
       label: (
@@ -191,17 +191,17 @@ export default async function ActionPage({ params }: Props) {
             />
           ) : null}
         </Section>
-        {action.means ? (
+        {action.tips ? (
           <Section id={SECTION_ID_I_ACT} className="scroll-mt-24">
             <SectionTitle emoji="🚀">
               <Trans locale={locale} i18nKey="actions.detailPage.sections.act">
                 J'agis
               </Trans>
             </SectionTitle>
-            <Markdown>{action.means}</Markdown>
+            <Markdown>{action.tips}</Markdown>
           </Section>
         ) : null}
-        {action.incentives ? (
+        {action.financialIncentives ? (
           <Section id={SECTION_ID_I_BENEFIT} className="scroll-mt-24">
             <SectionTitle emoji="💡">
               <Trans
@@ -210,10 +210,10 @@ export default async function ActionPage({ params }: Props) {
                 J'y gagne
               </Trans>
             </SectionTitle>
-            <Markdown>{action.incentives}</Markdown>
+            <Markdown>{action.financialIncentives}</Markdown>
           </Section>
         ) : null}
-        {action.furtherReading ? (
+        {action.furtherExplore ? (
           <Section id={SECTION_ID_FURTHER_READING} className="scroll-mt-24">
             <SectionTitle emoji="🔗">
               <Trans
@@ -222,7 +222,7 @@ export default async function ActionPage({ params }: Props) {
                 À découvrir aussi
               </Trans>
             </SectionTitle>
-            <Markdown>{action.furtherReading}</Markdown>
+            <Markdown>{action.furtherExplore}</Markdown>
           </Section>
         ) : null}
       </div>
