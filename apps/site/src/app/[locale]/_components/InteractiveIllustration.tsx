@@ -16,6 +16,8 @@ export default function InteractiveIllustration() {
         )}
         width={580}
         height={580}
+        priority
+        fetchPriority="high"
       />
       <FloatingElementDisplayedProvider>
         {/* Computer */}
