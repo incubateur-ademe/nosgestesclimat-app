@@ -4,7 +4,7 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { posthogClient } from '@/services/tracking/posthogServer'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import { actions } from '@nosgestesclimat/core/features/actions/data/actions/index'
 import { themes } from '@nosgestesclimat/core/features/actions/data/themes/index'
@@ -14,7 +14,7 @@ export default async function ResultatsActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUser()
-  const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
+  const flag = await getFeatureFlag('actions-v2', user.id)
 
   if (!flag) {
     return <LegacyResultatsActionsPage user={user} locale={locale} />
