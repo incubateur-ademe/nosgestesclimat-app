@@ -1,6 +1,6 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { CookieOptions } from 'express'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../../adapters/prisma/client.ts'
 import {
   type VerificationCode,
   VerificationCodeMode,

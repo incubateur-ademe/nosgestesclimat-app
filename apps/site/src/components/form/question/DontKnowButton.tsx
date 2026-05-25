@@ -22,7 +22,6 @@ interface Props {
 
 export default function DontKnowButton({ question }: Props) {
   const { t } = useClientTranslation()
-
   const { goToNextQuestion } = useGotoNextQuestion()
   const { updateCurrentSimulation } = useCurrentSimulation()
 

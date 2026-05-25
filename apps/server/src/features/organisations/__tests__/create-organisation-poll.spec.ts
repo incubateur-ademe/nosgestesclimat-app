@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { StatusCodes } from 'http-status-codes'
 
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import slugify from 'slugify'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -9,7 +10,6 @@ import {
   brevoSendEmail,
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import { PollDefaultAdditionalQuestionType } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
@@ -145,6 +145,24 @@ describe('Given a NGC user', () => {
         })
       })
 
+      describe('And invalid mode', () => {
+        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+          await agent
+            .post(
+              url.replace(
+                ':organisationIdOrSlug',
+                faker.database.mongodbObjectId()
+              )
+            )
+            .set('cookie', cookie)
+            .send({
+              name: faker.company.buzzNoun(),
+              mode: 'invalid-mode',
+            })
+            .expect(StatusCodes.BAD_REQUEST)
+        })
+      })
+
       describe('And invalid customAdditionalQuestions', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
@@ -266,6 +284,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             computedResults: null,
@@ -281,6 +300,7 @@ describe('Given a NGC user', () => {
         test('Then it stores a poll in database', async () => {
           const payload: OrganisationPollCreateDto = {
             name: faker.company.buzzNoun(),
+            mode: 'standard',
             defaultAdditionalQuestions: [
               PollDefaultAdditionalQuestionType.postalCode,
             ],
@@ -325,6 +345,7 @@ describe('Given a NGC user', () => {
               funFacts: true,
               organisationId: true,
               expectedNumberOfParticipants: true,
+              mode: true,
               createdAt: true,
               updatedAt: true,
             },
@@ -336,6 +357,7 @@ describe('Given a NGC user', () => {
             funFacts: null,
             slug: slugify.default(payload.name.toLowerCase(), { strict: true }),
             organisationId,
+            mode: 'standard',
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
             defaultAdditionalQuestions: payload.defaultAdditionalQuestions?.map(
@@ -347,6 +369,7 @@ describe('Given a NGC user', () => {
         test('Then it updates organisation administrator in brevo', async () => {
           const payload: OrganisationPollCreateDto = {
             name: faker.company.buzzNoun(),
+            mode: 'standard',
             defaultAdditionalQuestions: [
               PollDefaultAdditionalQuestionType.postalCode,
             ],
@@ -564,6 +587,7 @@ describe('Given a NGC user', () => {
               defaultAdditionalQuestions: [],
               customAdditionalQuestions: [],
               expectedNumberOfParticipants: null,
+              mode: 'standard',
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
               computedResults: null,
@@ -606,6 +630,7 @@ describe('Given a NGC user', () => {
         test('Then it updates organisation administrator in brevo', async () => {
           const payload: OrganisationPollCreateDto = {
             name: faker.company.buzzNoun(),
+            mode: 'standard',
             defaultAdditionalQuestions: [
               PollDefaultAdditionalQuestionType.postalCode,
             ],
@@ -694,6 +719,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             computedResults: null,

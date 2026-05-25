@@ -12,7 +12,7 @@ export async function generateMetadata({
 
   return getMetadataObject({
     locale,
-    title: t('Créer une campagne pour mon organisation - Nos Gestes Climat'),
+    title: t('Créer un test collectif - Nos Gestes Climat'),
     description: t(
       'Accédez à des services sur mesure pour sensibiliser vos partenaires au sein de votre organisation.'
     ),
@@ -22,7 +22,7 @@ export async function generateMetadata({
   })
 }
 /* global LayoutProps */
-export default async function Layout({
+export default function Layout({
   children,
 }: LayoutProps<'/[locale]/organisations/[orgaSlug]/creer-campagne'>) {
   return children

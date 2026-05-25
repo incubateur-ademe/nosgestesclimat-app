@@ -4,11 +4,9 @@ import CountryListItem from '@/components/misc/CountryListItem'
 import { sortSupportedRegions } from '@/helpers/localisation/sortSupportedRegions'
 import { useLocale } from '@/hooks/useLocale'
 import { capitalizeString } from '@/utils/capitalizeString'
-import type { SupportedRegions } from '@incubateur-ademe/nosgestesclimat'
 import type { HTMLAttributes } from 'react'
 
 interface Props {
-  supportedRegions: SupportedRegions
   shouldShowButton?: boolean
   selectedRegionCode?: string
   updateCurrentRegion?: (code: string) => void
@@ -16,7 +14,6 @@ interface Props {
 }
 
 export default function RegionGrid({
-  supportedRegions,
   shouldShowButton = true,
   selectedRegionCode,
   updateCurrentRegion,
@@ -26,8 +23,7 @@ export default function RegionGrid({
   const locale = useLocale()
 
   const sortedSupportedRegions = sortSupportedRegions({
-    supportedRegions,
-    currentLocale: locale,
+    locale,
   })
 
   return (
@@ -41,7 +37,7 @@ export default function RegionGrid({
             <CountryListItem
               code={code}
               shouldShowButton={shouldShowButton}
-              label={capitalizeString(params[locale]?.nom) ?? ''}
+              label={capitalizeString(params[locale].nom) ?? ''}
               isSelected={code === selectedRegionCode}
               updateCurrentRegion={updateCurrentRegion}
             />

@@ -1,7 +1,8 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Migration } from '@publicodes/tools/migration'
 import { migrateSituation } from '@publicodes/tools/migration'
-import type { ComputedResults, Simulation } from '../types'
+import type { Simulation } from '../../helpers/server/model/simulations'
+import type { ComputedResults } from '../types'
 
 export function migrateSimulation(
   simulation: Simulation & {

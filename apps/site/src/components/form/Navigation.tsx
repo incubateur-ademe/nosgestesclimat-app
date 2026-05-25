@@ -27,6 +27,7 @@ import {
   useRule,
 } from '@/publicodes-state'
 import getValueIsOverFloorOrCeiling from '@/publicodes-state/helpers/getValueIsOverFloorOrCeiling'
+import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -97,11 +98,20 @@ export default function Navigation({
 
   const {
     gotoPrevQuestion,
-    gotoNextQuestion,
     noPrevQuestion,
     noNextQuestion,
+    currentQuestion,
     setCurrentQuestion,
   } = useFormState()
+
+  const { goToNextQuestion, isIntercalaireNext } = useGotoNextQuestion()
+
+  // Determines if the current question is the last one of the test
+  const isLastQuestion = isEmbedded
+    ? (remainingQuestions.length === 1 &&
+        remainingQuestions[0] === currentQuestion) ||
+      remainingQuestions.length === 0
+    : noNextQuestion
 
   const {
     isMissing,
@@ -143,12 +153,6 @@ export default function Navigation({
           return isBelowFloor || isOverCeiling
         })()
       : false
-
-  // Determines if the current question is the last one of the test
-  const isLastQuestion = isEmbedded
-    ? (remainingQuestions.length === 1 && remainingQuestions[0] === question) ||
-      remainingQuestions.length === 0
-    : noNextQuestion
 
   // Disable "Précédent" only when there's truly no previous question
   const hasNoPreviousQuestion = isEmbedded
@@ -263,10 +267,10 @@ export default function Navigation({
       if (isEmbedded && persistedRemainingQuestions.length > 0) {
         navigateToNextEmbeddedQuestion()
       } else {
-        gotoNextQuestion()
+        goToNextQuestion()
       }
 
-      if (isLastQuestion) {
+      if (isLastQuestion && !isIntercalaireNext) {
         onComplete()
       }
     },
@@ -277,9 +281,10 @@ export default function Navigation({
       handleAnswerQuestion,
       resetNotification,
       isEmbedded,
-      gotoNextQuestion,
+      goToNextQuestion,
       navigateToNextEmbeddedQuestion,
       isLastQuestion,
+      isIntercalaireNext,
       onComplete,
       persistedRemainingQuestions.length,
     ]
@@ -321,7 +326,7 @@ export default function Navigation({
 
   const submitButtonKind = getSubmitButtonKind({
     isPending,
-    isLastQuestion,
+    isLastQuestion: isLastQuestion && !isIntercalaireNext,
   })
 
   const submitButtonTitle = {

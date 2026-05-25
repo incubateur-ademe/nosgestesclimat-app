@@ -1,4 +1,4 @@
-import { prisma } from '../../../../adapters/prisma/client.ts'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { transaction } from '../../../../adapters/prisma/transaction.ts'
 import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../../../core/errors/ForbiddenException.ts'

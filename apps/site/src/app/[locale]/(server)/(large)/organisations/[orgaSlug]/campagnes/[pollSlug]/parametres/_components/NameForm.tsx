@@ -75,7 +75,7 @@ export default function NameForm({
           containerClassName="max-w-[30rem]"
           label={
             <span className="text-lg font-medium">
-              <Trans>Nom de la campagne</Trans>
+              <Trans>Nom du test collectif</Trans>
             </span>
           }
           value={nameValue}

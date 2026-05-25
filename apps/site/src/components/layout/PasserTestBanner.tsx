@@ -1,33 +1,45 @@
-'use client'
-
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
-import { useSimulateurPage } from '@/hooks/navigation/useSimulateurPage'
-import { useCurrentSimulation } from '@/publicodes-state'
-import Trans from '../translation/trans/TransClient'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getUser } from '@/helpers/server/dal/user'
+import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
+import {
+  getCompletedSimulations,
+  getCurrentSimulation,
+} from '@/helpers/server/model/simulations'
+import { Suspense } from 'react'
+import Trans from '../translation/trans/TransServer'
 
-export default function PasserTestBanner() {
-  const { progression } = useCurrentSimulation()
+export default function PasserTestBanner({ locale }: { locale: string }) {
+  return (
+    <Suspense>
+      <PasserTestBannerServer locale={locale} />
+    </Suspense>
+  )
+}
 
-  const { getLinkToSimulateurPage, linkToSimulateurPageLabel } =
-    useSimulateurPage()
+async function PasserTestBannerServer({ locale }: { locale: string }) {
+  const user = await getUser()
+  const [currentSimulation, completedSimulations] = await Promise.all([
+    getCurrentSimulation({ user }),
+    getCompletedSimulations({ user }, { pageSize: 1 }),
+  ])
+  const { t } = await getServerTranslation({ locale })
 
   // Do not show the banner if the user has completed his/her test
-  if (progression === 1) return null
-
+  if (currentSimulation?.progression === 1) return null
   return (
     <Card className="mb-4 flex-row flex-wrap items-baseline justify-between gap-4 border-none bg-gray-100 p-4 sm:flex-nowrap sm:p-6">
       <p className="mb-0">
-        <Trans>Calculez votre empreinte sur le climat</Trans>{' '}
-        <span className="text-secondary-800 font-bold">
-          <Trans>en 10 minutes</Trans>
-        </span>{' '}
-        <Trans>top chrono.</Trans>
+        <Trans locale={locale}>
+          Calculez votre empreinte sur le climat
+          <span className="text-secondary-800 font-bold"> en 10 minutes </span>
+          top chrono.
+        </Trans>
       </p>
-
-      <ButtonLink href={getLinkToSimulateurPage()}>
-        {linkToSimulateurPageLabel}
-      </ButtonLink>
+      <ButtonLink
+        {...getMainCTA({ currentSimulation, completedSimulations, user, t })}
+      />
     </Card>
   )
 }

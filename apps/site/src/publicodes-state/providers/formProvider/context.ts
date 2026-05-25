@@ -12,8 +12,7 @@ interface FormContextType {
   remainingQuestionsByCategories: Record<DottedName, DottedName[]>
   currentQuestion: DottedName | null
   currentCategory: DottedName | null
-  setCurrentQuestion: (question: DottedName | null) => void
-  setCurrentCategory: (category: DottedName | null) => void
+  setCurrentQuestion: (question: DottedName) => void
   missingVariables: MissingVariables
 }
 export default createContext<FormContextType>({
@@ -25,6 +24,5 @@ export default createContext<FormContextType>({
   currentQuestion: null,
   currentCategory: null,
   setCurrentQuestion: () => '',
-  setCurrentCategory: () => '',
   missingVariables: {} as MissingVariables,
 })

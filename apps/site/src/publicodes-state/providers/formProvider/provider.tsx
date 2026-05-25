@@ -7,15 +7,15 @@ import { notFound } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
 import { useMemo } from 'react'
 import FormContext from './context'
-import useCurrent from './hooks/useCurrent'
+import { useCurrent } from './hooks/useCurrent'
 import useProgression from './hooks/useProgression'
 import useQuestions from './hooks/useQuestions'
 
 interface Props {
-  root?: DottedName
+  root: DottedName
 }
 
-function FormProvider({ root = 'bilan', children }: PropsWithChildren<Props>) {
+function FormProvider({ root, children }: PropsWithChildren<Props>) {
   const {
     categories,
     subcategories,
@@ -26,13 +26,6 @@ function FormProvider({ root = 'bilan', children }: PropsWithChildren<Props>) {
 
   const { situation, foldedSteps, updateCurrentSimulation, progression } =
     useCurrentSimulation()
-
-  const {
-    currentQuestion,
-    currentCategory,
-    setCurrentQuestion,
-    setCurrentCategory,
-  } = useCurrent()
 
   const {
     remainingQuestions,
@@ -50,6 +43,11 @@ function FormProvider({ root = 'bilan', children }: PropsWithChildren<Props>) {
     everyQuestions,
     everyMosaicChildrenWithParent,
   })
+
+  const { currentQuestion, setCurrentQuestion, currentCategory } = useCurrent(
+    relevantAnsweredQuestions,
+    remainingQuestions
+  )
 
   const { remainingQuestionsByCategories } = useProgression({
     categories,
@@ -70,7 +68,6 @@ function FormProvider({ root = 'bilan', children }: PropsWithChildren<Props>) {
         currentQuestion,
         currentCategory,
         setCurrentQuestion,
-        setCurrentCategory,
         missingVariables,
       }}>
       {children}

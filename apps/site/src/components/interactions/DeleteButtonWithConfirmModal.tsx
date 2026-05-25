@@ -50,7 +50,6 @@ export function DeleteButtonWithConfirmModal({
         isLoading={isPending}
         buttons={[
           <Button
-            data-track
             disabled={isPending}
             onClick={handleDeleteAction}
             key="submit"

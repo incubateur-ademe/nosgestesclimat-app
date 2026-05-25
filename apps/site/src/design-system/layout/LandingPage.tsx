@@ -25,7 +25,7 @@ export default function LandingPage({
     <>
       <HeaderServer locale={locale} />
 
-      <Main data-track>
+      <Main>
         <Hero
           illustration={heroIllustration}
           title={heroTitle}

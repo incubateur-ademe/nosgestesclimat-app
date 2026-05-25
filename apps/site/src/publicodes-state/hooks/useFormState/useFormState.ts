@@ -1,6 +1,8 @@
 'use client'
 
-import { useContext } from 'react'
+import { testOrderedCategories } from '@/constants/model/orderedCategories'
+import type { Categories } from '@incubateur-ademe/nosgestesclimat'
+import { useContext, useMemo } from 'react'
 import formContext from '../../providers/formProvider/context'
 import useNavigation from './hooks/useNavigation'
 
@@ -14,7 +16,6 @@ export default function useFormState() {
     currentQuestion,
     currentCategory,
     setCurrentQuestion,
-    setCurrentCategory,
     remainingQuestions,
     relevantAnsweredQuestions,
     remainingQuestionsByCategories,
@@ -26,6 +27,7 @@ export default function useFormState() {
     gotoNextQuestion,
     noPrevQuestion,
     noNextQuestion,
+    nextQuestion,
     isFirstQuestionOfCategory,
     isLastQuestionOfCategory,
     testAdvancement,
@@ -34,6 +36,14 @@ export default function useFormState() {
     currentQuestion,
     setCurrentQuestion,
   })
+
+  const remainingCategories = useMemo(() => {
+    return (
+      testOrderedCategories.length -
+      testOrderedCategories.indexOf(currentCategory as Categories) -
+      1
+    )
+  }, [currentCategory])
 
   return {
     /**
@@ -49,6 +59,10 @@ export default function useFormState() {
      */
     currentQuestion,
     /**
+     * The next question as determined by relevantQuestions (and currentQuestion)
+     */
+    nextQuestion,
+    /**
      * The category of the current question
      */
     currentCategory,
@@ -56,10 +70,6 @@ export default function useFormState() {
      * Setter for the current question
      */
     setCurrentQuestion,
-    /**
-     * Setter for the current category (shouldn't be used: use setCurrentQuestion instead)
-     */
-    setCurrentCategory,
     /**
      * Go to the previous question as determined by relevantQuestions (and currentQuestion)
      */
@@ -88,10 +98,15 @@ export default function useFormState() {
      * Every missing questions needed to complete the form
      */
     remainingQuestions,
+
     /**
      * Every answered questions that are still relevant and should be displayed in the form (foldedsteps minus questions that are disabled by parents and can't enable themselves)
      */
     relevantAnsweredQuestions,
+    /**
+     * The number of remaining categories to complete the form
+     */
+    remainingCategories,
     /**
      * Every missing questions needed to complete the form sorted by category
      */
@@ -104,5 +119,14 @@ export default function useFormState() {
      * Missing variables and score with the current situation
      */
     missingVariables,
+    /**
+     * Is true if the next question has already been seen in the current session
+     */
+    nextQuestionAlreadySeen: relevantAnsweredQuestions.includes(nextQuestion),
+
+    /**
+     * Is true if the form provider has been initialized
+     */
+    isInitialized: !!relevantQuestions.length,
   }
 }

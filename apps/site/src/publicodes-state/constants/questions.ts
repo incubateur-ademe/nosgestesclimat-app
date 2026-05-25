@@ -26,7 +26,7 @@ export const MUST_NOT_ASK_QUESTIONS = new Set<DottedName>([
 ])
 
 // We use the DottedName type from nosgestesclimat to make sure the build will break when using rules that are not in the model.
-export const PRIORITY_QUESTIONS = new Set<DottedName>([
+const PRIORITY_QUESTIONS_BASE_MODE = new Set<DottedName>([
   'alimentation . plats',
   'logement . type',
   'logement . propriétaire',
@@ -36,6 +36,16 @@ export const PRIORITY_QUESTIONS = new Set<DottedName>([
   'transport . voiture . voyageurs',
   'divers . numérique . internet . durée journalière',
 ])
+
+const PRIORITY_QUESTIONS_ED_MODE = new Set<string>([
+  'transport . voiture . km . hebdo . possibilités',
+  'transport . voiture . km . annuel . possibilités',
+])
+
+export const PRIORITY_QUESTIONS = new Set([
+  ...PRIORITY_QUESTIONS_BASE_MODE,
+  ...PRIORITY_QUESTIONS_ED_MODE,
+]) as Set<DottedName>
 
 export const NON_PRIORITY_QUESTIONS = new Set<DottedName>([
   'logement . électricité . réseau . consommation',

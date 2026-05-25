@@ -26,7 +26,6 @@ export default function useEngine() {
     categories,
     subcategories,
     addToEngineSituation,
-    isInitialized,
   } = useContext(EngineContext)
 
   const getValue = (dottedName: DottedName): NodeValue =>
@@ -72,7 +71,6 @@ export default function useEngine() {
     categories,
     subcategories,
     addToEngineSituation,
-    isInitialized,
     getValue,
     getNumericValue,
     getCategory,

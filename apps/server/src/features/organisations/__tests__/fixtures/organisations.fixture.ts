@@ -1,6 +1,7 @@
 import type supertest from 'supertest'
 
 import { faker } from '@faker-js/faker'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
@@ -10,7 +11,6 @@ import {
   brevoUpdateContact,
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { connectUpdateContact } from '../../../../adapters/connect/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../../adapters/prisma/client.ts'
 import { OrganisationType } from '../../../../adapters/prisma/generated.ts'
 import {
   mswServer,
@@ -124,6 +124,7 @@ export const createOrganisationPoll = async ({
 }) => {
   const payload: OrganisationPollCreateDto = {
     name: name || faker.company.buzzNoun(),
+    mode: 'standard',
     customAdditionalQuestions,
     defaultAdditionalQuestions,
     expectedNumberOfParticipants,

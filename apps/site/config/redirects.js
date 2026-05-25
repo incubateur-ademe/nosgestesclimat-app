@@ -1,5 +1,15 @@
 const redirects = [
   {
+    source: '/tutoriel',
+    destination: '/simulateur/tutoriel',
+    permanent: true,
+  },
+  {
+    source: '/modele',
+    destination: '/doc',
+    permanent: true,
+  },
+  {
     source: '/actions/liste',
     destination: '/actions',
     permanent: true,
@@ -129,7 +139,7 @@ const redirects = [
   },
   {
     source: '/o/:organisation/:poll',
-    destination: '/tutoriel/?poll=:poll&organisation=:organisation',
+    destination: '/simulateur/campagne/:poll',
     permanent: true,
   },
   {

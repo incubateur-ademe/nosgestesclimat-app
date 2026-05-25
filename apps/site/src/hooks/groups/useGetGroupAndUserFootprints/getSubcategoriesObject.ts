@@ -1,7 +1,5 @@
-import type {
-  ComputedResultsSubcategories,
-  Simulation,
-} from '@/publicodes-state/types'
+import type { Simulation } from '@/helpers/server/model/simulations'
+import type { ComputedResultsSubcategories } from '@/publicodes-state/types'
 import type { ValueObject } from '@/types/groups'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 

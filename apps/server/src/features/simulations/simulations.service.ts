@@ -5,10 +5,10 @@ import type {
 } from '@incubateur-ademe/nosgestesclimat'
 import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
 import type { Request } from 'express'
 import type Engine from 'publicodes'
-import { prisma } from '../../adapters/prisma/client.ts'
 import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'

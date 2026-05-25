@@ -1,22 +1,13 @@
-import CTAButtonsPlaceholder from '@/components/cta/CTAButtonsPlaceholder'
-import DynamicCTAButtons from '@/components/cta/DynamicCTAButtons'
+import CTAButtons from '@/components/cta/CTAButtons'
 import Partners from '@/components/landing-pages/Partners'
 import Footer from '@/components/layout/Footer'
 import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
-import { trackingActionClickCTA } from '@/constants/tracking/actions'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
-import {
-  getLandingClickCTARestart,
-  getLandingClickCTAResults,
-  getLandingClickCTAResume,
-  getLandingClickCTAStart,
-} from '@/helpers/tracking/landings'
 import type { DefaultPageProps } from '@/types'
-import { Suspense } from 'react'
 import { ClientLayout } from '../../../components/layout/ClientLayout'
 import InteractiveIllustration from '../_components/InteractiveIllustration'
 
@@ -64,30 +55,8 @@ export default async function Homepage({ params }: DefaultPageProps) {
               </Trans>
             </p>
 
-            <div className="flex flex-col items-center gap-6 md:order-2 md:mt-0 md:max-w-[300px] md:items-start">
-              <Suspense fallback={<CTAButtonsPlaceholder />}>
-                <DynamicCTAButtons
-                  trackingEvents={{
-                    start: getLandingClickCTAStart(
-                      '/accueil-iframe',
-                      trackingActionClickCTA
-                    ),
-                    resume: getLandingClickCTAResume(
-                      '/accueil-iframe',
-                      trackingActionClickCTA
-                    ),
-                    results: getLandingClickCTAResults(
-                      '/accueil-iframe',
-                      trackingActionClickCTA
-                    ),
-                    restart: getLandingClickCTARestart(
-                      '/accueil-iframe',
-                      trackingActionClickCTA
-                    ),
-                  }}
-                  className="w-full"
-                />
-              </Suspense>
+            <div className="flex flex-col items-center gap-6 md:order-2 md:mt-0 md:max-w-75 md:items-start">
+              <CTAButtons locale={locale} className="w-full" />
 
               {/* Displayed on mobile only */}
               <div className="mx-auto mt-4 max-w-80 md:mt-0 md:hidden">

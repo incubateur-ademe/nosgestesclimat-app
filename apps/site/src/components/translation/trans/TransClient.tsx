@@ -13,7 +13,11 @@ export default function Trans({
   const { t } = useClientTranslation()
 
   return (
-    <TransReactI18n t={t} i18nKey={i18nKey} values={values}>
+    <TransReactI18n
+      t={t}
+      i18nKey={i18nKey}
+      values={values}
+      tOptions={{ interpolation: { escapeValue: false } }}>
       {children}
     </TransReactI18n>
   )

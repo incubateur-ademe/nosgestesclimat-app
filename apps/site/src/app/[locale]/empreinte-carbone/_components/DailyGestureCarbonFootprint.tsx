@@ -1,12 +1,6 @@
 import DailyGestures from '@/components/landing-pages/DailyGestures'
 import Trans from '@/components/translation/trans/TransServer'
-import { trackingActionClickPageBottom } from '@/constants/tracking/actions'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import {
-  getLandingClickCTAResults,
-  getLandingClickCTAResume,
-  getLandingClickCTAStart,
-} from '@/helpers/tracking/landings'
 
 export default async function DailyGestureCarbonFootprint({
   locale,
@@ -45,20 +39,7 @@ export default async function DailyGestureCarbonFootprint({
           </Trans>
         </p>
       }
-      trackingEvents={{
-        start: getLandingClickCTAStart(
-          '/empreinte-carbone',
-          trackingActionClickPageBottom
-        ),
-        resume: getLandingClickCTAResume(
-          '/empreinte-carbone',
-          trackingActionClickPageBottom
-        ),
-        results: getLandingClickCTAResults(
-          '/empreinte-carbone',
-          trackingActionClickPageBottom
-        ),
-      }}
+      locale={locale}
       gestures={{
         [gesturesKeysForTranslation.transport]: {
           imageSrc:

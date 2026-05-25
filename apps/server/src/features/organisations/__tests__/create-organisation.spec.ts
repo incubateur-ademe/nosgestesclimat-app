@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import slugify from 'slugify'
 import supertest from 'supertest'
@@ -9,7 +10,6 @@ import {
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { connectUpdateContact } from '../../../adapters/connect/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import { OrganisationType } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'

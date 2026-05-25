@@ -1,4 +1,4 @@
-import { prisma } from '../../../adapters/prisma/client.ts'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Handler } from '../../../core/event-bus/handler.ts'
 import { uploadPollSimulationsResult } from '../../organisations/organisations.service.ts'
 import type { JobCreatedAsyncEvent } from '../events/JobCreated.event.ts'

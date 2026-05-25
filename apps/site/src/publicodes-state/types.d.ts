@@ -1,7 +1,6 @@
 import type { Group } from '@/types/groups'
 import type {
   DottedName,
-  ExtendedSituation,
   Metrics,
   NGCRuleNode,
   NodeValue,
@@ -38,8 +37,6 @@ export interface User {
   userId: string
   name?: string
   email?: string
-  region?: RegionFromGeolocation
-  initialRegion?: RegionFromGeolocation
   northStarRatings?: Record<string, unknown> // TODO: should be NorthStartType or something
   loginExpirationDate?: Date
   pendingVerification?: { expirationDate: Date; email: string }
@@ -83,23 +80,6 @@ export interface UpdateCurrentSimulationProps {
   groupToAdd?: string | null
   groupToDelete?: string | null
 }
-
-export interface Simulation {
-  id: string
-  date: Date | string
-  situation: Situation
-  extendedSituation: ExtendedSituation
-  foldedSteps: DottedName[]
-  actionChoices: Partial<Record<DottedName, boolean>>
-  persona?: string
-  computedResults: ComputedResults
-  progression: number
-  model?: string
-  user?: { id: string; name?: string; email?: string }
-  polls?: { id: string; slug: string }[]
-  groups?: { id: string }[]
-}
-
 export interface LocalStorage {
   user: User
   tutorials: Tutorials

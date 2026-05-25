@@ -1,5 +1,6 @@
+import type { Simulation } from '@/helpers/server/model/simulations'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import type { Simulation, UpdateCurrentSimulationProps } from '../../../types'
+import type { UpdateCurrentSimulationProps } from '../../../types'
 
 interface Props {
   currentSimulation: Simulation

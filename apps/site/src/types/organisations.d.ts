@@ -1,4 +1,5 @@
 import type { OrganisationTypeEnum } from '@/constants/organisations/organisationTypes'
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import type { ComputedResults } from '@/publicodes-state/types'
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 
@@ -52,12 +53,14 @@ interface BaseOrganisationPoll {
   expectedNumberOfParticipants?: number
   createdAt: string
   updatedAt: string
+  mode: SimulationMode
   organisation: Omit<Organisation, 'polls'> | PublicOrganisation
   simulations: {
     count: number
     finished: number
     hasParticipated: boolean
   }
+  progression?: number
   /**
    * computedResults de toutes les simulations (somme)
    */

@@ -1,7 +1,7 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import app from '../../../app.ts'
 import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import { ME_ROUTE } from './fixtures/users.fixture.ts'

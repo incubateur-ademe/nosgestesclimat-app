@@ -1,4 +1,3 @@
-import EngineProviders from '@/components/providers/EngineProviders'
 import Trans from '@/components/translation/trans/TransServer'
 import {
   CONNEXION_PATH,
@@ -10,6 +9,8 @@ import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
+import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
+import { EngineProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
 import Actions from './_components/Actions'
 import LinkList from './_components/LinkList'
@@ -27,7 +28,7 @@ export const generateMetadata = getCommonMetadata({
 export default async function PlanDuSitePage({ params }: DefaultPageProps) {
   const { locale } = await params
   const { t } = await getServerTranslation({ locale })
-
+  const rules = await getCachedRules({ locale })
   const links = {
     'Nos outils': {
       bilan: {
@@ -160,9 +161,9 @@ export default async function PlanDuSitePage({ params }: DefaultPageProps) {
       </section>
 
       <section>
-        <EngineProviders>
+        <EngineProvider rules={rules}>
           <Actions />
-        </EngineProviders>
+        </EngineProvider>
       </section>
     </div>
   )

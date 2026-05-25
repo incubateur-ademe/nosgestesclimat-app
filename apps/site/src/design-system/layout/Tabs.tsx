@@ -110,10 +110,7 @@ export default function Tabs({
   const borderClasses = hideBorder ? '' : 'border-b-2 border-slate-200'
 
   return (
-    <div
-      data-track
-      className={twMerge(borderClasses, className)}
-      id={containerId}>
+    <div className={twMerge(borderClasses, className)} id={containerId}>
       <nav aria-label={ariaLabel}>
         <ul
           role={isLocked ? undefined : 'tablist'}

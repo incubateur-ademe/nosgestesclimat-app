@@ -5,19 +5,13 @@
  */
 'use client'
 
-import { useAutoSaveSimulation } from '@/hooks/simulation/useAutoSaveSimulation'
-import { useTrackRegion } from '@/hooks/tracking/useTrackRegion'
-import { useFixedRegion } from '@/hooks/useFixedRegion'
 import { useInitSimulationParam } from '@/hooks/useInitSimulationParam'
 import { useRedirectIfInAppBrowser } from '@/hooks/useRedirectIfInAppBrowser'
 import { useUserInfosParams } from '@/hooks/useUserInfosParams'
 
 export default function MainHooks() {
-  useTrackRegion()
-  useFixedRegion()
   useUserInfosParams()
   useInitSimulationParam()
   useRedirectIfInAppBrowser()
-  useAutoSaveSimulation()
   return null
 }

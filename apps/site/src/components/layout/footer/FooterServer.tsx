@@ -36,7 +36,6 @@ export default async function FooterServer({
   return (
     <footer
       id="footer"
-      data-track
       tabIndex={-1}
       role="contentinfo"
       className={twMerge(

@@ -6,6 +6,13 @@ import { getIsIframe } from '@/utils/getIsIframe'
 import * as Sentry from '@sentry/nextjs'
 import { createContext, useEffect, useState } from 'react'
 
+const STORAGE_KEYS = {
+  IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
+  IFRAME_ONLY_SIMULATION: 'ngc-iframe-only-simulation',
+  IFRAME_REGION: 'ngc-iframe-region',
+  IFRAME_LANG: 'ngc-iframe-lang',
+} as const
+
 export const BODY_ID = 'ngc-body'
 
 const getIsAllowedToBypassConsentDataShare = () => {
@@ -64,32 +71,54 @@ export const IframeOptionsProvider = ({
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
-  const [isIframeShareData, setIsIframeShareData] = useState(false)
-  const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(false)
-  const [iframeLang, setIframeLang] = useState<string | null>(null)
-  const [iframeRegion, setIframeRegion] = useState<string | null>(null)
+  const [isIframeShareData, setIsIframeShareData] = useState(() => {
+    if (!isIframe) return false
+    return sessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
+  })
+  const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(() => {
+    if (!isIframe) return false
+    return (
+      sessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
+    )
+  })
+  const [iframeLang, setIframeLang] = useState<string | null>(() => {
+    if (!isIframe) return null
+    return sessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
+  })
+  const [iframeRegion, setIframeRegion] = useState<string | null>(() => {
+    if (!isIframe) return null
+    return sessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
+  })
 
-  // Read iframe parameters from URL
+  // Read iframe parameters from URL and persist to sessionStorage
   useEffect(() => {
     if (!isIframe) return
 
-    if (!isIframeShareData) {
-      setIsIframeShareData(Boolean(searchParams.get('shareData')))
+    const urlShareData = Boolean(searchParams.get('shareData'))
+    if (urlShareData) {
+      setIsIframeShareData(true)
+      sessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
     }
 
-    if (!isIframeOnlySimulation) {
-      setIsIframeOnlySimulation(Boolean(searchParams.get('onlySimulation')))
+    const urlOnlySimulation = Boolean(searchParams.get('onlySimulation'))
+    if (urlOnlySimulation) {
+      setIsIframeOnlySimulation(true)
+      sessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
     }
 
-    if (!iframeRegion) {
-      setIframeRegion(searchParams.get('region'))
+    const urlRegion = searchParams.get('region')
+    if (urlRegion) {
+      setIframeRegion(urlRegion)
+      sessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, urlRegion)
     }
 
-    if (!iframeLang) {
-      setIframeLang(searchParams.get('lang'))
+    const urlLang = searchParams.get('lang')
+    if (urlLang) {
+      setIframeLang(urlLang)
+      sessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIframe, searchParams])
+  }, [isIframe])
 
   const isAllowedToBypassConsentDataShare =
     getIsAllowedToBypassConsentDataShare()

@@ -10,7 +10,6 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
 import type { DefaultPageProps } from '@/types'
-import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
 import Image from 'next/image'
 
 export const generateMetadata = getCommonMetadata({
@@ -151,11 +150,7 @@ export default async function International({ params }: DefaultPageProps) {
       <div className="rounded-xl bg-gray-100">
         <Container maxWidth="3xl" className="pt-8 pb-12">
           <div className="mx-auto my-0">
-            <RegionGrid
-              className="mx-auto"
-              shouldShowButton={false}
-              supportedRegions={supportedRegions}
-            />
+            <RegionGrid className="mx-auto" shouldShowButton={false} />
           </div>
         </Container>
       </div>

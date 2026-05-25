@@ -1,41 +1,36 @@
-import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
-import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import type { Action } from '@/types/actions'
+import type { Theme } from '@/types/themes'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
-import ActionCard from './ActionCard'
+import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
+import { EmojiBadge } from './EmojiBadge'
 
 const classesByTheme: Record<
   Theme['key'],
-  Record<'section' | 'header' | 'emoji', string>
+  Record<'section' | 'header', string>
 > = {
   transport: {
     section: 'bg-transport-50 border-transport-200',
     header: 'text-transport-800',
-    emoji: 'border-transport-200',
   },
   food: {
     section: 'bg-alimentation-50 border-alimentation-200',
     header: 'text-alimentation-800',
-    emoji: 'border-alimentation-200',
   },
   housing: {
     section: 'bg-logement-50 border-logement-200',
     header: 'text-logement-800',
-    emoji: 'border-logement-200',
   },
   misc: {
     section: 'bg-divers-50 border-divers-200',
     header: 'text-divers-800',
-    emoji: 'border-divers-200',
   },
   societal_services: {
     section: 'bg-servicessocietaux-50 border-servicessocietaux-200',
     header: 'text-servicessocietaux-800',
-    emoji: 'border-servicessocietaux-200',
   },
 }
 
@@ -53,18 +48,12 @@ export default function ThemeSection({
   return (
     <section
       className={twMerge(
-        '-mx-4 border-t-2 border-b-2 px-2 py-5 md:mx-0 md:rounded-[20px] md:border-2 md:px-5 md:py-8',
+        '-mx-4 border-t-2 border-b-2 px-2 pt-5 pb-4 md:mx-0 md:rounded-2xl md:border-2 md:px-5 md:pt-8 md:pb-7',
         classes.section
       )}>
-      <div className="mb-5 flex items-start justify-between gap-2">
+      <div className="mb-4 flex items-start justify-between gap-2">
         <div className="flex items-start gap-1">
-          <Emoji
-            className={twMerge(
-              'flex size-7 items-center justify-center rounded-lg border bg-white text-base leading-none shadow-md',
-              classes.emoji
-            )}>
-            {theme.emoji}
-          </Emoji>
+          <EmojiBadge color={theme.key}>{theme.emoji}</EmojiBadge>
           <div className={classes.header}>
             <h2 id={carouselLabelId} className="mb-0 text-lg/normal font-bold">
               {theme.title}
@@ -82,10 +71,11 @@ export default function ThemeSection({
       </div>
       <ActionsCarousel
         locale={locale}
+        aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
-        aria-labelledby={carouselLabelId}>
+        innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) => (
-          <ActionCard key={action.id} action={action} />
+          <ActionCard key={action.id} action={action} locale={locale} />
         ))}
       </ActionsCarousel>
     </section>

@@ -1,0 +1,119 @@
+import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
+import AuthenticateUserForm from '@/components/AuthenticateUserForm'
+import Trans from '@/components/translation/trans/TransServer'
+import { END_PAGE_PATH } from '@/constants/urls/paths'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
+import InlineLink from '@/design-system/inputs/InlineLink'
+import Title from '@/design-system/layout/Title'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getUser } from '@/helpers/server/dal/user'
+import {
+  getCurrentSimulation,
+  getSimulationMode,
+} from '@/helpers/server/model/simulations'
+import { UserProvider } from '@/publicodes-state'
+import { notFound } from 'next/navigation'
+
+export default async function Email({
+  params,
+}: PageProps<'/[locale]/simulateur/email'>) {
+  const { locale } = await params
+  const { t } = await getServerTranslation({ locale })
+  const user = await getUser()
+  const currentSimulation = await getCurrentSimulation({ user })
+  if (!currentSimulation) {
+    notFound()
+  }
+  const simulationMode = getSimulationMode(currentSimulation)
+  const isSchoolMode = simulationMode === 'scolaire'
+  const pollSlug = currentSimulation.polls?.[0]?.slug
+  const hasContest =
+    pollSlug &&
+    (process.env.NEXT_PUBLIC_POLL_CONTEST_SLUGS ?? '')
+      .split(',')
+      .includes(pollSlug)
+
+  return (
+    <>
+      <Title
+        data-testid="tutoriel-title"
+        className="mt-10 text-lg md:text-2xl"
+        title={
+          isSchoolMode ? (
+            <Trans i18nKey="tutorial.email.title.youth" locale={locale}>
+              Ton adresse électronique
+            </Trans>
+          ) : (
+            <Trans i18nKey="tutorial.email.title.default" locale={locale}>
+              Votre adresse électronique
+            </Trans>
+          )
+        }
+        subtitle={
+          <>
+            {isSchoolMode ? (
+              <Trans i18nKey="tutorial.email.subtitle.youth" locale={locale}>
+                Pour conserver tes résultats et les retrouver à l'avenir dans{' '}
+                <strong>ton espace personnel</strong>
+              </Trans>
+            ) : (
+              <Trans i18nKey="tutorial.email.subtitle.default" locale={locale}>
+                Pour conserver vos résultats et les retrouver à l'avenir dans{' '}
+                <strong>votre espace personnel</strong>
+              </Trans>
+            )}
+            {hasContest ? (
+              <span>
+                {isSchoolMode ? (
+                  <Trans i18nKey="tutorial.email.contest.youth" locale={locale}>
+                    Ton e-mail sera utilisé pour le tirage au sort.
+                  </Trans>
+                ) : (
+                  <Trans
+                    i18nKey="tutorial.email.contest.default"
+                    locale={locale}>
+                    Votre e-mail sera utilisé pour le tirage au sort.
+                  </Trans>
+                )}{' '}
+                <InlineLink
+                  target="_blank"
+                  href="/politique-de-confidentialite">
+                  <Trans i18nKey="tutorial.email.seeMore" locale={locale}>
+                    En savoir plus
+                  </Trans>
+                </InlineLink>
+              </span>
+            ) : null}
+
+            <span className="text-secondary-700 ml-2 inline-block font-bold italic">
+              <Trans i18nKey="common.optional" locale={locale}>
+                facultatif
+              </Trans>
+            </span>
+          </>
+        }
+      />
+      <UserProvider serverUserId={user.id}>
+        <QueryClientProviderWrapper>
+          <AuthenticateUserForm
+            buttonLabel={t(
+              'common.authentication.verifyEmail',
+              'Vérifier mon adresse email'
+            )}
+            additionnalButton={
+              <ButtonLink
+                color="secondary"
+                href={END_PAGE_PATH}
+                data-testid="skip-email-button">
+                <Trans i18nKey="common.skip" locale={locale}>
+                  Passer
+                </Trans>
+              </ButtonLink>
+            }
+            redirectPathname={END_PAGE_PATH}
+          />
+        </QueryClientProviderWrapper>
+      </UserProvider>
+    </>
+  )
+}

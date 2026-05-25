@@ -1,4 +1,4 @@
-import { prisma } from '../src/adapters/prisma/client.ts'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import logger from '../src/logger.ts'
 
 const main = async () => {
