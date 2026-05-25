@@ -1,12 +1,12 @@
 import type { Organisation, Poll } from '../../../adapters/prisma/generated.ts'
-import type { SelectedVerifiedUser } from '../../../adapters/prisma/selection.ts'
 import { EventBusEvent } from '../../../core/event-bus/event.ts'
 import type { Locales } from '../../../core/i18n/constant.ts'
+import type { VerifiedUser } from '../../../core/types/verified-user.ts'
 import { sanitizeOrganisationAdministratorName } from './event.mapper.ts'
 
 export type PollCreatedEventAttributes = {
   organisation: Organisation & {
-    administrators: Array<{ user: SelectedVerifiedUser }>
+    administrators: Array<{ user: VerifiedUser }>
   }
   locale: Locales
   origin: string

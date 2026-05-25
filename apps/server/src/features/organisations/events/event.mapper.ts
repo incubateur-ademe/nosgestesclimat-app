@@ -1,4 +1,4 @@
-import type { SelectedVerifiedUser } from '../../../adapters/prisma/selection.ts'
+import type { VerifiedUser } from '../../../core/types/verified-user.ts'
 import type { OrganisationCreatedEventAttributes } from './OrganisationCreated.event.ts'
 import type { OrganisationUpdatedEventAttributes } from './OrganisationUpdated.event.ts'
 import type { PollCreatedEventAttributes } from './PollCreated.event.ts'
@@ -17,7 +17,7 @@ type PollEventAttributes = { administrator?: undefined } & (
 
 const ADMINISTRATOR_SEPARATOR = '\n_\n'
 
-const sanitizeName = (user?: SelectedVerifiedUser) => {
+const sanitizeName = (user?: VerifiedUser) => {
   if (user?.name) {
     user.name = user.name.split(ADMINISTRATOR_SEPARATOR).join(' ')
   }

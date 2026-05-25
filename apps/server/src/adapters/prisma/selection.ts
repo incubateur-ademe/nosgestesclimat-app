@@ -1,24 +1,3 @@
-import type { User, VerifiedUser } from './generated.ts'
-
-/** Type matching the fields selected by defaultUserSelection */
-export type SelectedUser = Pick<
-  User,
-  'id' | 'name' | 'email' | 'createdAt' | 'updatedAt'
->
-
-/** Type matching the fields selected by defaultVerifiedUserSelection */
-export type SelectedVerifiedUser = Pick<
-  VerifiedUser,
-  | 'id'
-  | 'name'
-  | 'email'
-  | 'position'
-  | 'telephone'
-  | 'optedInForCommunications'
-  | 'createdAt'
-  | 'updatedAt'
->
-
 export const defaultUserSelection = {
   id: true,
   name: true,
