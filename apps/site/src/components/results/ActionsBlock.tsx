@@ -1,8 +1,14 @@
 import { END_PAGE_PATH } from '@/constants/urls/paths'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
+import {
+  baseClassNames,
+  colorClassNames,
+  sizeClassNames,
+} from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
+import Link from 'next/link'
+import { twMerge } from 'tailwind-merge'
 import CarIcon from '../icons/CarIcon'
 import DownArrow from '../icons/DownArrow'
 import FoodIcon from '../icons/FoodIcon'
@@ -15,7 +21,7 @@ interface Props {
 
 export default function ActionsBlock({ locale }: Props) {
   return (
-    <Card className="mb-20">
+    <Card className="mb-20" tag={Link} href={`${END_PAGE_PATH}/actions`}>
       <div className="flex flex-col items-stretch gap-10 md:flex-row md:gap-4">
         <div className="w-full max-w-full sm:w-md">
           <Title
@@ -41,14 +47,18 @@ export default function ActionsBlock({ locale }: Props) {
             </Trans>
           </p>
 
-          <ButtonLink
-            href={`${END_PAGE_PATH}/actions`}
-            className="hover:animate-button-lift w-full text-base transition-[transform,box-shadow] duration-200 ease-out sm:w-auto">
+          <span
+            className={twMerge(
+              baseClassNames,
+              colorClassNames.primary,
+              sizeClassNames.md,
+              'hover:animate-button-lift w-full cursor-pointer text-base transition-[transform,box-shadow] duration-200 ease-out sm:w-auto'
+            )}>
             <Trans locale={locale} i18nKey="results.actions.linkLabel">
               Découvrir mes actions
             </Trans>
             <DownArrow className="ml-2 w-6 -rotate-90" />
-          </ButtonLink>
+          </span>
         </div>
 
         <div className="group mb relative flex h-full min-h-44 flex-1 items-center self-stretch md:min-h-64 md:translate-y-12">
