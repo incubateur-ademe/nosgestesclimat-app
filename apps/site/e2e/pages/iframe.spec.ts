@@ -3,17 +3,13 @@ import { NGCTest } from '../fixtures/ngc-test'
 
 test.describe('/demo-iframe-datashare.html', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/demos/demo-iframe-datashare.html')
+    await page.goto('/demos/demo-iframeSimulation-datashare.html')
   })
 
   test('displays the data-share modal when simulation is complete', async ({
     page,
   }) => {
     const iframe = page.frameLocator('iframe').first()
-
-    await iframe.getByTestId('main-cta').first().click({
-      timeout: 3000,
-    })
 
     await iframe.getByTestId('skip-tutorial-button').click()
     const ngcTest = new NGCTest(iframe.locator('body') as unknown as Page)

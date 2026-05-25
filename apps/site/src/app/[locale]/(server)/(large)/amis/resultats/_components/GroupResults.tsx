@@ -1,6 +1,6 @@
 'use client'
 
-import HowToAct from '@/components/actions/HowToAct'
+import HowToAct from '@/components/actions/howToAct/HowToAct'
 import FootprintSelector from '@/components/footprints/FootprintSelector'
 import CategoriesAccordionLegacy from '@/components/results/CategoriesAccordionLegacy'
 import CategoriesChart from '@/components/results/CategoriesChart'

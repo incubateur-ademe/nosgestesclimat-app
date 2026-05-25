@@ -10,7 +10,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
     },
-    globalSetup: 'vite.env.ts',
-    setupFiles: 'vite.setup.ts',
+    globalSetup: 'vitest.env.ts',
+    setupFiles: 'vitest.setup.ts',
   },
 })

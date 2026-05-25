@@ -1,10 +1,10 @@
+import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
 import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
-import ImpactCO2Iframe from '../_components/transitionInfoCard/ImpactCO2Iframe'
 
 export async function generateMetadata({
   params,

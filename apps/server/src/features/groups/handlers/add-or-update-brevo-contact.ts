@@ -1,8 +1,8 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import {
   addOrUpdateAdministratorContactAfterGroupChange,
   addOrUpdateParticipantContactAfterGroupChange,
 } from '../../../adapters/brevo/client.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import { transaction } from '../../../adapters/prisma/transaction.ts'
 import type { Handler } from '../../../core/event-bus/handler.ts'
 import type { GroupCreatedEvent } from '../events/GroupCreated.event.ts'

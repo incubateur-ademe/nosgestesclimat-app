@@ -13,6 +13,7 @@ import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
 import type { SimulationParams } from '../simulations/simulations.validator.ts'
 import { ComputedResultSchema } from '../simulations/simulations.validator.ts'
+import { createOrUpdateVerifiedUser } from '../users/users.repository.ts'
 import type {
   OrganisationCreateDto,
   OrganisationParams,
@@ -171,28 +172,19 @@ export const createOrganisationAndAdministrator = async (
   { userId, email }: NonNullable<Request['user']>,
   { session }: { session: Session }
 ) => {
-  // upsert administrator
-  const administrator = await session.verifiedUser.upsert({
-    where: {
-      email,
+  const { user: administrator } = await createOrUpdateVerifiedUser(
+    {
+      id: { userId, email },
+      user: {
+        name: administratorName,
+        position,
+        telephone,
+        optedInForCommunications,
+      },
+      select: defaultVerifiedUserSelection,
     },
-    create: {
-      email,
-      id: userId,
-      name: administratorName,
-      position,
-      telephone,
-      optedInForCommunications,
-    },
-    update: {
-      id: userId,
-      name: administratorName,
-      position,
-      telephone,
-      optedInForCommunications,
-    },
-    select: defaultVerifiedUserSelection,
-  })
+    { session }
+  )
 
   const slug = await findUniqueOrganisationSlug(name, {
     session,
@@ -260,21 +252,21 @@ export const updateAdministratorOrganisation = async (
       },
     ] = administrators
 
-    // update administrator
-    administrator = await session.verifiedUser.update({
-      where: {
-        email: userEmail,
+    const { user: adminUser } = await createOrUpdateVerifiedUser(
+      {
+        id: { userId: user.userId, email: userEmail },
+        user: {
+          name: administratorName,
+          email,
+          position,
+          telephone,
+          optedInForCommunications,
+        },
+        select: defaultVerifiedUserSelection,
       },
-      data: {
-        id: user.userId,
-        name: administratorName,
-        email,
-        position,
-        telephone,
-        optedInForCommunications,
-      },
-      select: defaultVerifiedUserSelection,
-    })
+      { session }
+    )
+    administrator = adminUser
 
     if (email) {
       user.email = email

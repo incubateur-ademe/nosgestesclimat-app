@@ -1726,8 +1726,8 @@ entries:
   fin.seeGroupResultsBanner.text.lock: Découvrez les résultats du test collectif
   results.objective.collectiveEffort.state: The French State
   results.objective.collectiveEffort.state.lock: L'État français
-  common.parAn: / year
-  common.parAn.lock: / an
+  common.parAn: per year
+  common.parAn.lock: par an
   common.vous: You
   common.vous.lock: Vous
   Vous aujourd'hui: You today

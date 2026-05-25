@@ -50,7 +50,7 @@ export default async function DemanderDemoPage({
               height="1000px"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
               className="mt-8 -ml-[5%] rounded-lg sm:h-150"
-              src="https://rdv.incubateur.ademe.fr/team/nos-gestes-climat/demo?overlayCalendar=true&month=2026-04&theme=light"
+              src="https://rdv.incubateur.ademe.fr/team/nos-gestes-climat/demo?overlayCalendar=true&theme=light"
             />
           </div>
         </div>

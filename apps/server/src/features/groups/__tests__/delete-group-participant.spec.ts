@@ -1,12 +1,9 @@
 import { faker } from '@faker-js/faker'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import {
-  brevoRemoveFromList,
-  brevoUpdateContact,
-} from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
+import { brevoUpdateContact } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
@@ -155,129 +152,24 @@ describe('Given a NGC user', () => {
         })
       })
 
-      describe('And he did join leaving his/her email', () => {
-        let participantId: string
-        let userId: string
-        let participantUserEmail: string
+      describe('And group does exist And administrator left his/her email', () => {
+        let groupId: string
+        let groupCreatedAt: string
+        let administratorId: string
+        let administratorName: string
+        let administratorEmail: string
 
-        beforeEach(
-          async () =>
-            ({
-              id: participantId,
-              userId,
-              email: participantUserEmail,
-            } = await joinGroup({
-              agent,
-              groupId,
-              participant: {
-                email: faker.internet.email(),
-              },
-            }))
-        )
-
-        test('Then it updates group participant in brevo', async () => {
-          mswServer.use(
-            brevoRemoveFromList(30, {
-              expectBody: {
-                emails: [participantUserEmail],
-              },
-            })
-          )
-
-          await agent
-            .delete(
-              url
-                .replace(':groupId', groupId)
-                .replace(':participantId', participantId)
-                .replace(':userId', userId)
-            )
-            .expect(StatusCodes.NO_CONTENT)
-
-          await EventBus.flush()
-        })
-      })
-    })
-
-    describe('And group does exist And administrator left his/her email', () => {
-      let groupId: string
-      let groupCreatedAt: string
-      let administratorId: string
-      let administratorName: string
-      let administratorEmail: string
-
-      beforeEach(async () => {
-        const simulation = getSimulationPayload()
-        ;({
-          id: groupId,
-          createdAt: groupCreatedAt,
-          administrator: {
-            id: administratorId,
-            email: administratorEmail,
-            name: administratorName,
-          },
-        } = await createGroup({
-          agent,
-          group: {
+        beforeEach(async () => {
+          const simulation = getSimulationPayload()
+          ;({
+            id: groupId,
+            createdAt: groupCreatedAt,
             administrator: {
-              userId: faker.string.uuid(),
-              email: faker.internet.email(),
-              name: faker.person.fullName(),
+              id: administratorId,
+              email: administratorEmail,
+              name: administratorName,
             },
-            participants: [{ simulation }],
-          },
-        }))
-      })
-
-      describe('And he did join', () => {
-        let participantId: string
-        let userId: string
-
-        beforeEach(
-          async () =>
-            ({ id: participantId, userId } = await joinGroup({
-              agent,
-              groupId,
-            }))
-        )
-
-        test('Then it updates group administrator in brevo', async () => {
-          mswServer.use(
-            brevoUpdateContact({
-              expectBody: {
-                email: administratorEmail,
-                listIds: [29],
-                attributes: {
-                  USER_ID: administratorId,
-                  NUMBER_CREATED_GROUPS: 1,
-                  LAST_GROUP_CREATION_DATE: groupCreatedAt,
-                  NUMBER_CREATED_GROUPS_WITH_ONE_PARTICIPANT: 1,
-                  PRENOM: administratorName,
-                },
-                updateEnabled: true,
-              },
-            })
-          )
-
-          await agent
-            .delete(
-              url
-                .replace(':groupId', groupId)
-                .replace(':participantId', participantId)
-                .replace(':userId', userId)
-            )
-            .expect(StatusCodes.NO_CONTENT)
-
-          await EventBus.flush()
-        })
-      })
-    })
-
-    describe('And group does exist And administrator left his/her email but did not join', () => {
-      let groupId: string
-
-      beforeEach(
-        async () =>
-          ({ id: groupId } = await createGroup({
+          } = await createGroup({
             agent,
             group: {
               administrator: {
@@ -285,31 +177,94 @@ describe('Given a NGC user', () => {
                 email: faker.internet.email(),
                 name: faker.person.fullName(),
               },
+              participants: [{ simulation }],
             },
           }))
-      )
+        })
 
-      describe('And he did join', () => {
-        let participantId: string
-        let userId: string
+        describe('And he did join', () => {
+          let participantId: string
+          let userId: string
+
+          beforeEach(
+            async () =>
+              ({ id: participantId, userId } = await joinGroup({
+                agent,
+                groupId,
+              }))
+          )
+
+          test('Then it updates group administrator in brevo', async () => {
+            mswServer.use(
+              brevoUpdateContact({
+                expectBody: {
+                  email: administratorEmail,
+                  listIds: [29],
+                  attributes: {
+                    USER_ID: administratorId,
+                    NUMBER_CREATED_GROUPS: 1,
+                    LAST_GROUP_CREATION_DATE: groupCreatedAt,
+                    NUMBER_CREATED_GROUPS_WITH_ONE_PARTICIPANT: 1,
+                    PRENOM: administratorName,
+                  },
+                  updateEnabled: true,
+                },
+              })
+            )
+
+            await agent
+              .delete(
+                url
+                  .replace(':groupId', groupId)
+                  .replace(':participantId', participantId)
+                  .replace(':userId', userId)
+              )
+              .expect(StatusCodes.NO_CONTENT)
+
+            await EventBus.flush()
+          })
+        })
+      })
+
+      describe('And group does exist And administrator left his/her email but did not join', () => {
+        let groupId: string
 
         beforeEach(
           async () =>
-            ({ id: participantId, userId } = await joinGroup({
+            ({ id: groupId } = await createGroup({
               agent,
-              groupId,
+              group: {
+                administrator: {
+                  userId: faker.string.uuid(),
+                  email: faker.internet.email(),
+                  name: faker.person.fullName(),
+                },
+              },
             }))
         )
 
-        test('Then it updates group administrator in brevo', async () => {
-          await agent
-            .delete(
-              url
-                .replace(':groupId', groupId)
-                .replace(':participantId', participantId)
-                .replace(':userId', userId)
-            )
-            .expect(StatusCodes.NO_CONTENT)
+        describe('And he did join', () => {
+          let participantId: string
+          let userId: string
+
+          beforeEach(
+            async () =>
+              ({ id: participantId, userId } = await joinGroup({
+                agent,
+                groupId,
+              }))
+          )
+
+          test('Then it updates group administrator in brevo', async () => {
+            await agent
+              .delete(
+                url
+                  .replace(':groupId', groupId)
+                  .replace(':participantId', participantId)
+                  .replace(':userId', userId)
+              )
+              .expect(StatusCodes.NO_CONTENT)
+          })
         })
       })
     })

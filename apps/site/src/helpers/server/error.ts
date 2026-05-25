@@ -36,8 +36,8 @@ export class TooManyRequestsError extends Error {
 }
 
 export class InternalServerError extends Error {
-  constructor() {
-    super('Internal Server Error')
+  constructor(message = 'Internal Server Error') {
+    super(message)
 
     this.name = 'InternalServerError'
   }

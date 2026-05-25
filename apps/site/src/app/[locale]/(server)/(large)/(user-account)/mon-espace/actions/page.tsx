@@ -1,3 +1,4 @@
+import ActionsPage from '@/components/actions/pages/ActionsPage'
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
@@ -6,6 +7,9 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
+import { getActions } from '@/services/actions/get-actions'
+import { getThemes } from '@/services/actions/get-themes'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
 
@@ -14,13 +18,34 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
-  // const flag = await posthogClient.getFeatureFlag('actions-v2', user.id)
-  const flag = false
-  if (!flag) {
-    return <LegacyMonEspaceActionsPage user={user} locale={locale} />
-  }
+  const flag = await getFeatureFlag('actions-v2', user.id)
 
-  return <div>Page en construction</div>
+  const [actions, themes] = flag
+    ? await Promise.all([getActions(), getThemes()])
+    : [undefined, undefined]
+
+  return (
+    <div className="flex flex-col">
+      <h1 className="sr-only mb-6 text-2xl font-bold">
+        <Trans i18nKey="mon-espace.actions.title" locale={locale}>
+          Mes actions
+        </Trans>
+      </h1>
+
+      <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
+
+      {flag && actions ? (
+        <ActionsPage
+          // topActions={topActions}
+          actions={actions}
+          themes={themes}
+          locale={locale}
+        />
+      ) : (
+        <LegacyMonEspaceActionsPage user={user} locale={locale} />
+      )}
+    </div>
+  )
 }
 
 async function LegacyMonEspaceActionsPage({
@@ -32,16 +57,5 @@ async function LegacyMonEspaceActionsPage({
 }) {
   const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
 
-  return (
-    <div className="flex flex-col">
-      <h1 className="sr-only mb-6 text-2xl font-bold">
-        <Trans i18nKey="mon-espace.actions.title" locale={locale}>
-          Mes actions
-        </Trans>
-      </h1>
-
-      <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
-      <LegacyActionPage simulations={simulations} locale={locale} />
-    </div>
-  )
+  return <LegacyActionPage simulations={simulations} locale={locale} />
 }

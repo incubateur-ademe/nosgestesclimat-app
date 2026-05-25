@@ -4,9 +4,9 @@ import {
   PutObjectCommand,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Request } from 'express'
 import { utils, write } from 'xlsx'
-import { prisma } from '../../adapters/prisma/client.ts'
 import type { Organisation } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
@@ -23,10 +23,7 @@ import {
   isPrismaErrorUniqueConstraintFailed,
 } from '../../core/typeguards/isPrismaError.ts'
 import logger from '../../logger.ts'
-import {
-  createToken,
-  verifyCode,
-} from '../authentication/authentication.service.ts'
+import { createToken } from '../authentication/authentication.service.ts'
 import type { JobParams } from '../jobs/jobs.repository.ts'
 import { JobKind } from '../jobs/jobs.repository.ts'
 import {
@@ -159,35 +156,18 @@ export const createOrganisation = async ({
 export const updateOrganisation = async ({
   params,
   organisationDto,
-  code,
   user,
 }: {
   params: OrganisationParams
   organisationDto: OrganisationUpdateDto
-  code?: string
   user: NonNullable<Request['user']>
 }) => {
   let token: string | undefined
   const { administrators: [{ email }] = [{}] } = organisationDto
   if (email && email !== user.email) {
-    if (!code) {
-      throw new ForbiddenException(
-        'Forbidden ! Cannot update administrator email without a verification code.'
-      )
-    }
-
-    try {
-      await verifyCode({
-        ...user,
-        code,
-        email,
-      })
-    } catch (e) {
-      if (e instanceof EntityNotFoundException) {
-        throw new ForbiddenException('Forbidden ! Invalid verification code.')
-      }
-      throw e
-    }
+    throw new ForbiddenException(
+      'Forbidden ! Cannot update administrator email.'
+    )
   }
 
   try {

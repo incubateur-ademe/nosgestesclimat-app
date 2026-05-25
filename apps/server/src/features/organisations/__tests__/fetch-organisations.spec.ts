@@ -1,7 +1,7 @@
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
 import logger from '../../../logger.ts'

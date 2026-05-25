@@ -57,7 +57,7 @@ async function testDeselectAnswer(
   //  1. Trouver la question du type spécifique
   await ngcTest.start()
   while (!(await isQuestionType())) {
-    await ngcTest.clickOnSkip()
+    await ngcTest.skipButton().click()
   }
 
   //  2. Récupérer la valeur du bilan

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
@@ -6,7 +7,6 @@ import {
   brevoRemoveFromList,
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import { prisma } from '../../../adapters/prisma/client.ts'
 import app from '../../../app.ts'
 import {
   mswServer,

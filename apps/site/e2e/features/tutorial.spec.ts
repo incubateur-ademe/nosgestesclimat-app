@@ -28,10 +28,11 @@ test.describe('when a user starts to answer test', () => {
   test.beforeEach(async ({ page, ngcTest }) => {
     await ngcTest.start()
     await page.waitForURL(/\/simulateur\/bilan/)
-    await ngcTest.clickOnSkip()
-    await ngcTest.clickOnSkip()
+    await ngcTest.skipButton().click()
+    await ngcTest.skipButton().click()
+    await ngcTest.skipButton().click()
     // Wait for the autosave to trigger
-    await page.waitForTimeout(4000)
+    await page.waitForTimeout(5000)
   })
 
   test('it should not be displayed if the user continue the test', async ({
@@ -69,7 +70,7 @@ test.describe('when a user completes a test', () => {
     page,
   }) => {
     await page.goto('/')
-    await page.getByTestId('restart-link').click()
+    await page.getByTestId('restart-link').first().click()
     await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
   })
 })
