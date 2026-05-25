@@ -106,6 +106,8 @@ export default function AuthenticateUserForm({
 
   const login = useLogin()
 
+  const verificationMutationToUse = verificationMutation ?? login
+
   if (pendingVerification || isRedirecting) {
     return (
       <div
@@ -117,10 +119,13 @@ export default function AuthenticateUserForm({
           onRegisterNewVerification={registerVerification}
           email={pendingVerification?.email ?? user.email ?? ''}
           onVerificationCompleted={completeVerification}
-          verificationMutation={verificationMutation ?? login}
+          verificationMutation={verificationMutationToUse}
         />
         <Button
-          onClick={resetVerification}
+          onClick={() => {
+            resetVerification()
+            verificationMutationToUse.reset()
+          }}
           color="link"
           className="dark:text-primary-50 dark:hover:text-primary-100 mt-2 -ml-2 flex items-center font-normal">
           <Trans i18nKey="signIn.verificationForm.notReceived.backButton">
