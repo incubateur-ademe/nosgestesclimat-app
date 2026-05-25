@@ -6,11 +6,16 @@ import GroupNotFound from '@/components/groups/GroupNotFound'
 import { useFetchGroup } from '@/hooks/groups/useFetchGroup'
 import { useGroupIdInQueryParams } from '@/hooks/groups/useGroupIdInQueryParams'
 import { useGroupPagesGuard } from '@/hooks/navigation/useGroupPagesGuard'
+import type { ReactNode } from 'react'
 import EditableGroupTitle from './EditableGroupTitle'
 import GroupResults from './GroupResults'
 import UpdateSimulationUsed from './UpdateSimulationUsed'
 
-export default function GroupPage() {
+export default function GroupPage({
+  categoriesAccordion,
+}: {
+  categoriesAccordion?: ReactNode
+}) {
   // Guarding the route and redirecting if necessary
   const { isGuardRedirecting } = useGroupPagesGuard({
     isDashboard: true,
@@ -39,7 +44,11 @@ export default function GroupPage() {
 
       <UpdateSimulationUsed group={group} refetchGroup={refetchGroup} />
 
-      <GroupResults group={group} refetchGroup={refetchGroup} />
+      <GroupResults
+        group={group}
+        refetchGroup={refetchGroup}
+        categoriesAccordion={categoriesAccordion}
+      />
     </>
   )
 }
