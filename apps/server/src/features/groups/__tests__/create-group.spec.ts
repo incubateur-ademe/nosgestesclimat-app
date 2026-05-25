@@ -214,6 +214,7 @@ describe('Given a NGC user', () => {
           administrator: {
             id: userId,
             name,
+            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             email: null,
@@ -348,6 +349,7 @@ describe('Given a NGC user', () => {
           administrator: {
             id: userId,
             name,
+            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             email: null,
@@ -356,6 +358,7 @@ describe('Given a NGC user', () => {
             {
               id: expect.any(String),
               ...payload.administrator,
+              ageRange: null,
               email: null,
               simulation: {
                 ...simulation,

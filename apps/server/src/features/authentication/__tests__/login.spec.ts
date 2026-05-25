@@ -195,7 +195,6 @@ describe('Given a NGC user', () => {
             email,
             id: payload.userId,
             name: null,
-            ageRange: null,
             optedInForCommunications: false,
             position: null,
             telephone: null,
