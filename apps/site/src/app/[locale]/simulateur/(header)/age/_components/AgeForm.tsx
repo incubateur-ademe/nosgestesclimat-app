@@ -40,7 +40,7 @@ export default function AgeForm({ ageRange }: Props) {
               label={option.label}
               labelText={option.label}
               active={selectedAge === option.value}
-              onClick={() => setSelectedAge(option.value as AgeRange)}
+              onClick={() => setSelectedAge(option.value)}
               data-testid={`age-choice-${option.value}`}
             />
           )
