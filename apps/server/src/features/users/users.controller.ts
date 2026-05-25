@@ -1,4 +1,3 @@
-import { prisma } from '@nosgestesclimat/core/prisma/client'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { config } from '../../config.ts'
@@ -29,7 +28,6 @@ const router = express.Router()
  */
 router
   .route('/v1/me/contact')
-
   .get(
     authentificationMiddleware(),
     validateRequest(FetchUserContactValidator),
@@ -58,16 +56,10 @@ router
   .get(
     authentificationMiddleware(),
     validateRequest(FetchMeValidator),
-    async (req, res) => {
-      const user = await prisma.user.findUnique({
-        where: { id: req.user!.userId },
-        select: { id: true, email: true, ageRange: true },
-      })
-
+    (req, res) => {
       return res.status(StatusCodes.OK).json({
-        id: user!.id,
-        email: user!.email,
-        ...(user!.ageRange ? { ageRange: user!.ageRange } : {}),
+        id: req.user!.userId,
+        email: req.user!.email,
       })
     }
   )

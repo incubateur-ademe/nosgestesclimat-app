@@ -7,6 +7,7 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
+import { getUserAgeRange } from '@/services/users/get-user-age-range'
 import { redirect } from 'next/navigation'
 import AgeForm from './_components/AgeForm'
 
@@ -27,8 +28,9 @@ export default async function AgePage({
   const { locale } = await params
 
   const user = await getUser()
+  const ageRange = await getUserAgeRange()
 
-  if ('ageRange' in user && !!user.ageRange) {
+  if (ageRange) {
     redirect(SIMULATOR_PATH)
   }
 
