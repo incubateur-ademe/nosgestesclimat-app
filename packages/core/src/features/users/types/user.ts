@@ -1,3 +1,5 @@
+import type { AgeRange } from './age-range.ts'
+
 export interface UserProfile {
-  ageRange: string | null
+  ageRange: AgeRange | null
 }

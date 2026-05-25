@@ -1,4 +1,5 @@
 import { USER_URL } from '@/constants/urls/main'
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -10,7 +11,7 @@ export function useUpdateUserAgeRange() {
       ageRange,
     }: {
       userId: string
-      ageRange: string
+      ageRange: AgeRange
     }) => {
       return await axios
         .put(`${USER_URL}/${userId}`, { ageRange }, { withCredentials: true })

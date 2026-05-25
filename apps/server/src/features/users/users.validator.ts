@@ -1,3 +1,4 @@
+import { AgeRangeSchema } from '@nosgestesclimat/core/features/users/types/age-range'
 import { z } from 'zod'
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
@@ -22,23 +23,11 @@ export const FetchMeValidator = {
   query: z.object({}).strict(),
 }
 
-const AgeRange = z.enum([
-  'under_18',
-  '18-24',
-  '25-34',
-  '35-49',
-  '50-64',
-  'over_65',
-  'refused',
-])
-
-export type AgeRange = z.infer<typeof AgeRange>
-
 const UserUpdateDto = z
   .object({
     email: z.email().transform((email) => email.toLocaleLowerCase()),
     name: z.string(),
-    ageRange: AgeRange,
+    ageRange: AgeRangeSchema,
     contact: z
       .object({
         listIds: z.array(z.enum(ListIds)),

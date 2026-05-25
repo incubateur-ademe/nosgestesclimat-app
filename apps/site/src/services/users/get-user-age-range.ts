@@ -1,7 +1,8 @@
 'use server'
 
-import { getUserAgeRange as getUserAgeRangeService } from '@nosgestesclimat/core/features/users/services/get-user-age-range.service'
 import { getUser } from '@/helpers/server/dal/user'
+import { getUserAgeRange as getUserAgeRangeService } from '@nosgestesclimat/core/features/users/services/get-user-age-range.service'
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 
 /**
  * Récupère l'âge (tranche d'âge) de l'utilisateur courant depuis la base de
@@ -11,7 +12,7 @@ import { getUser } from '@/helpers/server/dal/user'
  *
  * Retourne `null` si l'utilisateur n'a pas encore renseigné son âge.
  */
-export async function getUserAgeRange(): Promise<string | null> {
+export async function getUserAgeRange(): Promise<AgeRange | null> {
   const user = await getUser()
 
   const ageRange = await getUserAgeRangeService(user.id)

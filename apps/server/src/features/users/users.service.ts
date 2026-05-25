@@ -193,8 +193,6 @@ export const updateUserAndContact = async ({
           ? userDto
           : { ...userDto, email: previousEmail }
 
-      const hasAgeRange = 'ageRange' in userDto
-
       let user
       if (isVerifiedUser) {
         user = (
@@ -202,10 +200,7 @@ export const updateUserAndContact = async ({
             {
               id: params,
               user: update,
-              select: {
-                ...defaultVerifiedUserSelection,
-                ...(hasAgeRange ? { ageRange: true } : {}),
-              },
+              select: defaultVerifiedUserSelection,
             },
             { session }
           )
@@ -217,10 +212,7 @@ export const updateUserAndContact = async ({
             {
               id: params.userId,
               user: update,
-              select: {
-                ...defaultUserSelection,
-                ...(hasAgeRange ? { ageRange: true } : {}),
-              },
+              select: defaultUserSelection,
             },
             { session }
           )
