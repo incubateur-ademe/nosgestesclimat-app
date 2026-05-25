@@ -1,14 +1,14 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
-import { AGE_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import { AGE_PAGE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
 import { getUserAgeRange } from '@/services/users/get-user-age-range'
-import { redirect } from 'next/navigation'
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import AgeForm from './_components/AgeForm'
 
 export const generateMetadata = getCommonMetadata({
@@ -28,11 +28,8 @@ export default async function AgePage({
   const { locale } = await params
 
   const user = await getUser()
-  const ageRange = await getUserAgeRange()
-
-  if (ageRange) {
-    redirect(SIMULATOR_PATH)
-  }
+  // Added | null to avoid linting warning "Unsafe assignment of an error typed value."
+  const ageRange: AgeRange | null = await getUserAgeRange()
 
   return (
     <>
@@ -62,7 +59,7 @@ export default async function AgePage({
       />
       <UserProvider serverUserId={user.id}>
         <QueryClientProviderWrapper>
-          <AgeForm />
+          <AgeForm ageRange={ageRange} />
         </QueryClientProviderWrapper>
       </UserProvider>
     </>

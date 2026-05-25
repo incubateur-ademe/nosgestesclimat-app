@@ -4,10 +4,15 @@ import Trans from '@/components/translation/trans/TransClient'
 import { AGE_RANGE_KEY } from '@/constants/ab-test'
 import { AGE_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { useABTest } from '@/hooks/useABTest'
+import posthog from 'posthog-js'
 
-export default function ButtonNext() {
-  const isTestVersion = useABTest(AGE_RANGE_KEY)
+interface Props {
+  hasSelectedAgeRange?: boolean
+}
+
+export default function ButtonNext({ hasSelectedAgeRange }: Props) {
+  const isTestVersion =
+    posthog.getFeatureFlag(AGE_RANGE_KEY) && !hasSelectedAgeRange
 
   return (
     <ButtonLink

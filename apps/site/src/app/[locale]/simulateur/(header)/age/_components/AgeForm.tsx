@@ -7,12 +7,17 @@ import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useAgeForm } from '@/hooks/age/useAgeForm'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 
-export default function AgeForm() {
+interface Props {
+  ageRange: AgeRange | null
+}
+
+export default function AgeForm({ ageRange }: Props) {
   const { t } = useClientTranslation()
 
   const { options, selectedAge, setSelectedAge, isPending, handleSubmit } =
-    useAgeForm({ t })
+    useAgeForm({ t, defaultValue: ageRange })
 
   return (
     <form
@@ -35,7 +40,7 @@ export default function AgeForm() {
               label={option.label}
               labelText={option.label}
               active={selectedAge === option.value}
-              onClick={() => setSelectedAge(option.value)}
+              onClick={() => setSelectedAge(option.value as AgeRange)}
               data-testid={`age-choice-${option.value}`}
             />
           )

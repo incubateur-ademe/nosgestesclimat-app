@@ -1,43 +1,69 @@
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import { useUpdateUserAgeRange } from '@/hooks/age/useUpdateUserAgeRange'
 import { useUser } from '@/publicodes-state'
-import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
+import {
+  AgeRangeSchema,
+  type AgeRange,
+} from '@nosgestesclimat/core/features/users/types/age-range'
 import type { TFunction } from 'i18next'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 interface Props {
   t: TFunction
+  defaultValue: AgeRange | null
 }
 
-export function useAgeForm({ t }: Props) {
+export function useAgeForm({ t, defaultValue }: Props) {
   const router = useRouter()
   const { user } = useUser()
   const { mutateAsync: updateUser, isPending } = useUpdateUserAgeRange()
 
-  const AGE_OPTIONS = [
-    {
-      value: 'under_18',
-      label: t('simulator.age.options.moinsDe18Ans', 'Moins de 18 ans'),
+  const AGE_RANGE_LABEL_CONFIG: Record<
+    AgeRange,
+    { tKey: string; defaultLabel: string }
+  > = {
+    under_18: {
+      tKey: 'simulator.age.options.moinsDe18Ans',
+      defaultLabel: 'Moins de 18 ans',
     },
-    { value: '18-24', label: t('simulator.age.options.18-24', '18 - 24 ans') },
-    { value: '25-34', label: t('simulator.age.options.25-34', '25 - 34 ans') },
-    { value: '35-49', label: t('simulator.age.options.35-49', '35 - 49 ans') },
-    { value: '50-64', label: t('simulator.age.options.50-64', '50 - 64 ans') },
-    {
-      value: 'over_65',
-      label: t('simulator.age.options.65EtPlus', '65 ans et plus'),
+    '18-24': {
+      tKey: 'simulator.age.options.18-24',
+      defaultLabel: '18 - 24 ans',
     },
-    {
-      value: 'undisclosed',
-      label: t(
-        'simulator.age.options.nonPrecise',
-        'Je préfère ne pas le préciser ❌'
-      ),
+    '25-34': {
+      tKey: 'simulator.age.options.25-34',
+      defaultLabel: '25 - 34 ans',
     },
-  ]
+    '35-49': {
+      tKey: 'simulator.age.options.35-49',
+      defaultLabel: '35 - 49 ans',
+    },
+    '50-64': {
+      tKey: 'simulator.age.options.50-64',
+      defaultLabel: '50 - 64 ans',
+    },
+    over_65: {
+      tKey: 'simulator.age.options.65EtPlus',
+      defaultLabel: '65 ans et plus',
+    },
+    undisclosed: {
+      tKey: 'simulator.age.options.nonPrecise',
+      defaultLabel: 'Je préfère ne pas le préciser ❌',
+    },
+  }
 
-  const [selectedAge, setSelectedAge] = useState<AgeRange | null>(null)
+  const AGE_OPTIONS = (Object.keys(AgeRangeSchema.enum) as AgeRange[]).map(
+    (value) => ({
+      value,
+      label: t(
+        AGE_RANGE_LABEL_CONFIG[value].tKey,
+        AGE_RANGE_LABEL_CONFIG[value].defaultLabel
+      ),
+    })
+  )
+
+  const [selectedAge, setSelectedAge] = useState<AgeRange | null>(defaultValue)
 
   const handleSubmit = async () => {
     if (!selectedAge || isPending) return
