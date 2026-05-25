@@ -31,7 +31,7 @@ import {
 import type { UserParams, UserUpdateDto } from './users.validator.ts'
 
 const userToDto = (
-  user: User & {
+  user: Omit<User, 'ageRange'> & { ageRange?: string | null } & {
     contact?: BrevoContact
   }
 ) => user

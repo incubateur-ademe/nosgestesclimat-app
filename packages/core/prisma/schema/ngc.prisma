@@ -13,22 +13,22 @@ model Answer {
 }
 
 model Action {
-  id                   String    @id @default(uuid()) @db.Uuid
-  title                String
-  slug                 String
-  trackingId           String
-  longDescription      String
-  ruleId               String    @db.Uuid
-  themeId              String    @db.Uuid
-  media                Json?
-  tips                 String?
-  financialIncentives  String?
-  furtherExplore       String?
-  seoMetadata          SeoMetadata?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  publishedAt          DateTime?
-  deletedAt            DateTime?
+  id                  String       @id @default(uuid()) @db.Uuid
+  title               String
+  slug                String
+  trackingId          String
+  longDescription     String
+  ruleId              String       @db.Uuid
+  themeId             String       @db.Uuid
+  media               Json?
+  tips                String?
+  financialIncentives String?
+  furtherExplore      String?
+  seoMetadata         SeoMetadata?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  publishedAt         DateTime?
+  deletedAt           DateTime?
 
   @@unique([slug])
   @@index([deletedAt, publishedAt])
@@ -462,7 +462,6 @@ model VerifiedUser {
   email                    String                      @id
   id                       String                      @db.Uuid
   name                     String?
-  ageRange                 String?
   telephone                String?
   position                 String?
   optedInForCommunications Boolean                     @default(false)

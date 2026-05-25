@@ -16,7 +16,6 @@ export const defaultVerifiedUserSelection = {
   optedInForCommunications: true,
   createdAt: true,
   updatedAt: true,
-  ageRange: true,
 }
 
 export const defaultGroupParticipantSelection = {
