@@ -12,8 +12,12 @@ import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-ra
 import AgeForm from './_components/AgeForm'
 
 export const generateMetadata = getCommonMetadata({
-  title: t('Pour mieux vous connaitre - Nos Gestes Climat'),
+  title: t(
+    'simulator.age.metadata.title',
+    'Pour mieux vous connaitre - Nos Gestes Climat'
+  ),
   description: t(
+    'simulator.age.metadata.description',
     'Une première question avant de calculer votre empreinte sur le climat.'
   ),
   alternates: {
