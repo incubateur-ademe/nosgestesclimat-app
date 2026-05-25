@@ -253,9 +253,6 @@ importers:
       '@nosgestesclimat/core':
         specifier: workspace:*
         version: file:packages/core(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))(publicodes@1.10.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(vite@6.4.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
-      '@posthog/react':
-        specifier: ^1.9.0
-        version: 1.9.0(@types/react@19.2.2)(posthog-js@1.364.1)(react@19.2.4)
       '@publicodes/react-ui':
         specifier: ^1.10.0
         version: 1.10.0(publicodes@1.10.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2941,16 +2938,6 @@ packages:
 
   '@posthog/core@1.27.7':
     resolution: {integrity: sha512-6rzOZajUkhuezgPeF+ReMMly0D9oiwIZtMQrsJtZcS/mwi5OtvuYgxeaohgP9PKOhkK1c7cvGskX0Y2YUtBYCw==}
-
-  '@posthog/react@1.9.0':
-    resolution: {integrity: sha512-lVdTsWT5+PtHBu44gSQ7QohbLjAYqHkFAIGAQ+HV8Eh9yj+OcnQ7mXCmyhaMlTBD3z7D0H1eWMp4vQaFnsIyWQ==}
-    peerDependencies:
-      '@types/react': '>=16.8.0'
-      posthog-js: '>=1.257.2'
-      react: '>=16.8.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   '@posthog/types@1.364.1':
     resolution: {integrity: sha512-COB9L+EF9gqGTcK06392yCPC1mbPtqStguFLDin57dxekJM6uwygfxciBi6f6XoFiNEkACpykZYIgjgk5FsuaQ==}
@@ -12738,13 +12725,6 @@ snapshots:
   '@posthog/core@1.27.7':
     dependencies:
       '@posthog/types': 1.372.3
-
-  '@posthog/react@1.9.0(@types/react@19.2.2)(posthog-js@1.364.1)(react@19.2.4)':
-    dependencies:
-      posthog-js: 1.364.1
-      react: 19.2.4
-    optionalDependencies:
-      '@types/react': 19.2.2
 
   '@posthog/types@1.364.1': {}
 
