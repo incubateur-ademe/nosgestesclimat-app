@@ -1,3 +1,4 @@
+import { parseImpactCO2Script } from '@nosgestesclimat/core/features/actions/helpers/parse-impact-co2-script'
 import {
   createManyActions,
   deleteManyActions,
@@ -10,73 +11,57 @@ import type {
   NewAction,
   UpdatedAction,
 } from '@nosgestesclimat/core/features/actions/types/action'
+import type { ActionMedia } from '@nosgestesclimat/core/features/actions/types/action-media'
 import type { SeoMetadata } from '@nosgestesclimat/core/features/actions/types/seo-metadata'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { Client, isFullDatabase } from '@notionhq/client'
 import type { BaseIssue, InferOutput } from 'valibot'
-import {
-  custom,
-  object,
-  optional,
-  parseJson,
-  pipe,
-  regex,
-  safeParse,
-  string,
-  toDate,
-  toLowerCase,
-  toNumber,
-  transform,
-  trim,
-  uuid,
-} from 'valibot'
+import * as v from 'valibot'
 import { config } from '../config.ts'
 import logger from '../logger.ts'
 
-const trimmedString = pipe(string(), trim())
-const trimmedLowercaseString = pipe(trimmedString, toLowerCase())
+const trimmedString = v.pipe(v.string(), v.trim())
+const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
 
-const NotionActionRowSchema = pipe(
-  object({
-    ID: pipe(string(), toNumber()),
-    theme_id: pipe(string(), uuid()),
-    published_at: optional(pipe(string(), toDate())),
-    rule_id: pipe(trimmedString, uuid()),
-    slug: pipe(
+const NotionActionRowSchema = v.pipe(
+  v.object({
+    ID: v.pipe(v.string(), v.toNumber()),
+    theme_id: v.pipe(v.string(), v.uuid()),
+    published_at: v.optional(v.pipe(v.string(), v.toDate())),
+    rule_id: v.pipe(trimmedString, v.uuid()),
+    slug: v.pipe(
       trimmedLowercaseString,
-      regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Invalid slug format')
+      v.regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Invalid slug format')
     ),
-    tracking_id: pipe(
+    tracking_id: v.pipe(
       trimmedLowercaseString,
-      regex(/^[a-z0-9]+(_[a-z0-9]+)*$/, 'Invalid tracking id format')
+      v.regex(/^[a-z0-9]+(_[a-z0-9]+)*$/, 'Invalid tracking id format')
     ),
     front_title_fr: trimmedString,
     long_description_fr: trimmedString, // TODO: convert to md
-    media_fr: optional(
-      pipe(
+    media_fr: v.optional(
+      v.pipe(
         trimmedString,
-        transform((str) => (str ? str : undefined))
+        v.rawTransform((ctx) => {
+          const rawMedia = ctx.dataset.value
+          const result = parseMedia(rawMedia)
+          if (!result.success) {
+            ctx.addIssue({
+              message: `Invalid media: ${result.error}`,
+            })
+            return ctx.NEVER
+          }
+          return result.data
+        })
       )
     ),
-    media_title_fr: optional(trimmedString),
-    tips_fr: optional(trimmedString), // TODO: convert to md
-    financial_incentives_fr: optional(trimmedString), // TODO: convert to md
-    further_explore_fr: optional(trimmedString), // TODO: convert to md
-    seo_title_fr: optional(trimmedString),
-    seo_description_fr: optional(trimmedString),
-    seo_json_ld: optional(pipe(string(), parseJson())),
-  }),
-  custom((input) => {
-    const data = input as Record<string, unknown>
-    if (
-      (data.media_fr && !data.media_title_fr) ||
-      (!data.media_fr && data.media_title_fr)
-    ) {
-      throw new Error(
-        'media_title_fr is required when media_fr is provided, and vice versa'
-      )
-    }
-    return true
+    media_title_fr: v.optional(trimmedString),
+    tips_fr: v.optional(trimmedString), // TODO: convert to md
+    financial_incentives_fr: v.optional(trimmedString), // TODO: convert to md
+    further_explore_fr: v.optional(trimmedString), // TODO: convert to md
+    seo_title_fr: v.optional(trimmedString),
+    seo_description_fr: v.optional(trimmedString),
+    seo_json_ld: v.optional(v.pipe(v.string(), v.parseJson())),
   })
 )
 
@@ -175,7 +160,7 @@ function validateNotionRows(themes: Theme[], rows: NotionRawRow[]) {
     issues?: BaseIssue<unknown>[]
   }[] = []
   for (const row of rows) {
-    const result = safeParse(NotionActionRowSchema, row)
+    const result = v.safeParse(NotionActionRowSchema, row)
     if (!result.success) {
       invalidRows.push({
         row,
@@ -304,21 +289,49 @@ function getPropertyValue(property: any): string | boolean | undefined {
   }
 }
 
-function mapNotionRowToAction(row: NotionActionRow): NewAction {
-  const media =
-    row.media_fr && row.media_title_fr
-      ? {
-          type: 'image' as const,
-          title: row.media_title_fr,
-          src: row.media_fr,
-          alt: row.media_title_fr,
-        }
-      : undefined
+function parseMedia(
+  media: string
+): { success: true; data: ActionMedia } | { success: false; error: string } {
+  const result = parseImpactCO2Script(media)
 
+  if (!result.success) {
+    return { success: false, error: result.error }
+  }
+
+  const { type, searchParams } = result.data
+
+  // Build options from remaining search params
+  const options = Object.fromEntries(searchParams)
+
+  // Let UI control display
+  delete options.language
+  delete options.theme
+  delete options.hideButtons
+
+  return {
+    success: true,
+    data: {
+      type: 'impact_co2',
+      title: '', // add it later for simplicity
+      data: {
+        type,
+        options: Object.keys(options).length > 0 ? options : undefined,
+      },
+    },
+  }
+}
+
+function mapNotionRowToAction(row: NotionActionRow): NewAction {
   const metadata: SeoMetadata = {
     title: row.seo_title_fr,
     description: row.seo_description_fr,
     jsonLd: row.seo_json_ld as SeoMetadata['jsonLd'],
+  }
+
+  const media = row.media_fr
+
+  if (media && row.media_title_fr) {
+    media.title = row.media_title_fr
   }
 
   return {
