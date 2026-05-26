@@ -1,3 +1,5 @@
+'use client'
+
 import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
 
 export async function fetchClient<T = unknown>(
