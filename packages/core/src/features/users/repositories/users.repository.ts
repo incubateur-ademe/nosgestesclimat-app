@@ -1,13 +1,14 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { AgeRange } from '../types/age-range.ts'
+import type { User, VerifiedUser } from '../../../prisma/generated/client.ts'
 
-export const findUserAgeRange = async (
-  userId: string
-): Promise<AgeRange | null> => {
-  const user = await prisma.user.findUnique({
+export const findUser = async (userId: string): Promise<User | null> =>
+  prisma.user.findUnique({
     where: { id: userId },
-    select: { ageRange: true },
   })
 
-  return (user?.ageRange ?? null) as AgeRange | null
-}
+export const findVerifiedUser = async (
+  email: string
+): Promise<VerifiedUser | null> =>
+  prisma.verifiedUser.findUnique({
+    where: { email },
+  })
