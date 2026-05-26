@@ -53,15 +53,13 @@ export function useAgeForm({ t, defaultValue }: Props) {
   const { user } = useUser()
   const { mutateAsync: updateUser, isPending } = useUpdateUserAgeRange()
 
-  const AGE_OPTIONS = (Object.keys(AgeRangeSchema.enum) as AgeRange[]).map(
-    (value) => ({
-      value,
-      label: t(
-        AGE_RANGE_LABEL_CONFIG[value].tKey,
-        AGE_RANGE_LABEL_CONFIG[value].defaultLabel
-      ),
-    })
-  )
+  const AGE_OPTIONS = AgeRangeSchema.options.map((value) => ({
+    value,
+    label: t(
+      AGE_RANGE_LABEL_CONFIG[value].tKey,
+      AGE_RANGE_LABEL_CONFIG[value].defaultLabel
+    ),
+  }))
 
   const [selectedAge, setSelectedAge] = useState<AgeRange | null>(defaultValue)
 
