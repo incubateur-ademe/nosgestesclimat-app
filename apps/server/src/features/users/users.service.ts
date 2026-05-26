@@ -5,7 +5,6 @@ import {
   fetchContact,
   fetchContactOrThrow,
 } from '../../adapters/brevo/client.ts'
-import type { User } from '../../adapters/prisma/generated.ts'
 import {
   defaultUserSelection,
   defaultVerifiedUserSelection,
@@ -30,11 +29,17 @@ import {
 } from './users.repository.ts'
 import type { UserParams, UserUpdateDto } from './users.validator.ts'
 
-const userToDto = (
-  user: Omit<User, 'ageRange'> & { ageRange?: string | null } & {
-    contact?: BrevoContact
-  }
-) => user
+interface UserDto {
+  id: string
+  name: string | null
+  email: string | null
+  ageRange?: string | null
+  createdAt: Date
+  updatedAt: Date
+  contact?: BrevoContact
+}
+
+const userToDto = (user: UserDto) => user
 
 export const reconcileSimulationsAfterLogin = ({
   user,
