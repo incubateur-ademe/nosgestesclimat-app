@@ -1,53 +1,48 @@
 import { AgeRangeSchema } from '@nosgestesclimat/core/features/users/types/age-range'
-import { z } from 'zod'
+import * as v from 'valibot'
+
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
-export const UserParams = z
-  .object({
-    userId: z.uuid(),
-  })
-  .strict()
+export const UserParams = v.strictObject({
+  userId: v.pipe(v.string(), v.uuid()),
+})
 
-export type UserParams = z.infer<typeof UserParams>
+export type UserParams = v.InferOutput<typeof UserParams>
 
 export const FetchUserContactValidator = {
-  body: z.object({}).strict().optional(),
-  params: z.object({}).strict(),
+  body: v.optional(v.strictObject({})),
+  params: v.strictObject({}),
   query: LocaleQuery,
 }
 
 export const FetchMeValidator = {
-  body: z.object({}).strict().optional(),
-  params: z.object({}).strict(),
-  query: z.object({}).strict(),
+  body: v.optional(v.strictObject({})),
+  params: v.strictObject({}),
+  query: v.strictObject({}),
 }
 
-const UserUpdateDto = z
-  .object({
-    email: z.email().transform((email) => email.toLocaleLowerCase()),
-    name: z.string(),
+const UserUpdateDto = v.partial(
+  v.strictObject({
+    email: v.pipe(
+      v.string(),
+      v.email(),
+      v.transform((email: string) => email.toLocaleLowerCase())
+    ),
+    name: v.string(),
     ageRange: AgeRangeSchema,
-    contact: z
-      .object({
-        listIds: z.array(z.enum(ListIds)),
-      })
-      .strict(),
+    contact: v.strictObject({
+      listIds: v.array(v.enum(ListIds)),
+    }),
   })
-  .strict()
-  .partial()
+)
 
-export type UserUpdateDto = z.infer<typeof UserUpdateDto>
+export type UserUpdateDto = v.InferOutput<typeof UserUpdateDto>
 
-const UserUpdateQuery = z
-  .object({
-    code: z
-      .string()
-      .regex(/^\d{6}$/)
-      .optional(),
-  })
-  .extend(LocaleQuery.shape)
-  .strict()
+const UserUpdateQuery = v.strictObject({
+  ...LocaleQuery.entries,
+  code: v.optional(v.pipe(v.string(), v.regex(/^\d{6}$/))),
+})
 
 export const UpdateUserValidator = {
   body: UserUpdateDto,

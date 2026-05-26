@@ -9,6 +9,7 @@ import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
 import type { Request } from 'express'
 import type Engine from 'publicodes'
+import * as v from 'valibot'
 import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
@@ -432,19 +433,20 @@ const isValidSimulation = <T>(
     return false
   }
 
-  const computedResults = ComputedResultSchema.safeParse(
+  const computedResults = v.safeParse(
+    ComputedResultSchema,
     simulation.computedResults
   )
 
-  const situation = SituationSchema.safeParse(simulation.situation)
+  const situation = v.safeParse(SituationSchema, simulation.situation)
 
-  if (computedResults.error || situation.error) {
+  if (computedResults.issues || situation.issues) {
     return false
   }
 
   return [
-    computedResults.data.carbone.bilan,
-    ...Object.values(computedResults.data.carbone.categories),
+    computedResults.output.carbone.bilan,
+    ...Object.values(computedResults.output.carbone.categories),
   ].every((v) => v <= MAX_VALUE)
 }
 
@@ -654,13 +656,14 @@ export const getPollSimulationsExcelData = async (
     if (simulation.progression !== 1) {
       continue
     }
-    const computedResults = ComputedResultSchema.safeParse(
+    const computedResults = v.safeParse(
+      ComputedResultSchema,
       simulation.computedResults
     )
 
     const line = {}
 
-    if (computedResults.error) {
+    if (computedResults.issues) {
       Object.assign(line, {
         date: dayjs(simulation.date).format('DD/MM/YYYY'),
         'total carbone': EXCEL_ERROR,
@@ -677,8 +680,8 @@ export const getPollSimulationsExcelData = async (
         'services sociétaux eau': EXCEL_ERROR,
       })
     } else {
-      const carbon = computedResults.data[carbonMetric]
-      const water = computedResults.data[waterMetric]
+      const carbon = computedResults.output[carbonMetric]
+      const water = computedResults.output[waterMetric]
       Object.assign(line, {
         date: dayjs(simulation.date).format('DD/MM/YYYY'),
         'total carbone': Math.round(carbon.bilan),

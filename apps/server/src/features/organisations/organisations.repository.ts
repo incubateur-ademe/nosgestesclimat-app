@@ -1,6 +1,7 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { Request } from 'express'
 import slugify from 'slugify'
+import * as v from 'valibot'
 import type { JsonValue } from '../../adapters/prisma/generated.ts'
 import { Prisma } from '../../adapters/prisma/generated.ts'
 import {
@@ -396,7 +397,8 @@ const fetchPollSimulationsInfo = async (
     }),
   ])
 
-  const userComputedResults = ComputedResultSchema.safeParse(
+  const userComputedResults = v.safeParse(
+    ComputedResultSchema,
     userSimulation?.simulation.computedResults
   )
 
@@ -407,7 +409,7 @@ const fetchPollSimulationsInfo = async (
       ? {
           hasParticipated: true,
           progression: userSimulation!.simulation.progression,
-          userComputedResults: userComputedResults.data,
+          userComputedResults: userComputedResults.output,
         }
       : {
           hasParticipated: false,
@@ -421,11 +423,11 @@ const sanitizePollComputedResults = <T extends { computedResults: JsonValue }>({
 }: T): Omit<T, 'computedResults'> & {
   computedResults: ComputedResultSchema | null
 } => {
-  const computedResults = ComputedResultSchema.safeParse(rawComputedResults)
+  const computedResults = v.safeParse(ComputedResultSchema, rawComputedResults)
   return {
     ...poll,
     ...(computedResults.success
-      ? { computedResults: computedResults.data }
+      ? { computedResults: computedResults.output }
       : { computedResults: null }),
   }
 }

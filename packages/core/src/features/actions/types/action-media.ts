@@ -1,8 +1,8 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 
 /** ISO 639-1 language codes */
-export const ImpactCO2LanguageSchema = z.enum(['fr', 'en', 'es'])
-export type ImpactCO2Language = z.infer<typeof ImpactCO2LanguageSchema>
+export const ImpactCO2LanguageSchema = v.picklist(['fr', 'en', 'es'])
+export type ImpactCO2Language = v.InferOutput<typeof ImpactCO2LanguageSchema>
 
 interface MediaBase {
   title: string
