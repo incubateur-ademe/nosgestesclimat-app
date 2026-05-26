@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { verifiedUserFactory } from '../../factories/verified-user.factory.ts'
-import { getFullUser } from '../get-full-user.ts'
+import { getFullUser } from '../get-full-user.service.ts'
 
 describe('getFullUser', () => {
   afterEach(async () => {
