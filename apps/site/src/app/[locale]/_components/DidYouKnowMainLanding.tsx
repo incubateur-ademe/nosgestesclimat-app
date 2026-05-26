@@ -26,11 +26,11 @@ export default function DidYouKnowMainLanding({
               'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_ordinateur_392d915ff0.svg',
             content: (
               <Trans locale={locale}>
-                L'empreinte carbone moyenne d'un français est de{' '}
+                L'empreinte moyenne d'un Français est de{' '}
                 <strong className="text-primary-600">
-                  9,1 tonnes de CO2e par an
-                </strong>
-                .
+                  8,2 tonnes de CO2e par an
+                </strong>{' '}
+                (source SDES).
               </Trans>
             ),
             highlight: <Trans locale={locale}>Et la vôtre ?</Trans>,

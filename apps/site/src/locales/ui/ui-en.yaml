@@ -452,7 +452,6 @@ entries:
   Découvrir la documentation: Discover the documentation
   Connaissez-vous votre empreinte écologique ?: Do you know your ecological footprint?
   Décryptez les défis environnementaux: Decode environmental challenges
-  L'empreinte carbone moyenne d'un français est de <2>9,1 tonnes de CO2e par an</2>.: The average carbon footprint of a French person is <2>9.1 tonnes of CO2e per year</2>.
   L'empreinte eau: Water footprint
   L'empreinte carbone: Carbon footprint
   L'empreinte eau moyenne d'un français se compte <2>milliers de litres par jour</2>.: The average French person's water footprint is <2>thousands of litres a day</2>.
@@ -1983,3 +1982,4 @@ entries:
   simulator.transition.alimentation.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   simulator.transition.divers.graph.arrowText: This graph shows the carbon footprint of all your digital devices
   simulator.transition.divers.graph.arrowText.lock: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
+  L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
