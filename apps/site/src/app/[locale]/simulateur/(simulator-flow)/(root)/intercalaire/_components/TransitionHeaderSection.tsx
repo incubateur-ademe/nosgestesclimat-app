@@ -35,7 +35,7 @@ export default function TransitionHeaderSection({
     return (
       <Title tag="h1" hasSeparator={false} className="text-primary-600">
         <Trans i18nKey="simulator.intercalaire.title.last">
-          Bravo, tu as terminé toutes les sections
+          Bravo, tu as répondu à toutes les questions
         </Trans>{' '}
         <Emoji>🥳</Emoji>
       </Title>
