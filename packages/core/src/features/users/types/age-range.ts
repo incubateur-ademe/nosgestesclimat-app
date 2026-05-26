@@ -1,6 +1,6 @@
-import { z } from 'zod'
+import { picklist } from 'valibot'
 
-export const AgeRangeSchema = z.enum([
+export const AgeRangeSchema = picklist([
   'under_18',
   '18-24',
   '25-34',
@@ -10,4 +10,4 @@ export const AgeRangeSchema = z.enum([
   'undisclosed',
 ])
 
-export type AgeRange = z.infer<typeof AgeRangeSchema>
+export type AgeRange = (typeof AgeRangeSchema)['type']
