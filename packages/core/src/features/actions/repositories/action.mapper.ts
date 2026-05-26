@@ -1,11 +1,14 @@
-import type { ActionModel } from '../../../prisma/generated/models/Action.ts'
-import type { SeoMetadataModel } from '../../../prisma/generated/models/SeoMetadata.ts'
-import type { Action } from '../types/action.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
+import type { Action, NewAction, UpdatedAction } from '../types/action.ts'
 import type { Theme } from '../types/theme.ts'
-import { mapSeoMetadata } from './seo-metadata.mapper.ts'
+import {
+  mapSeoMetadata,
+  mapSeoMetadataToPrismaCreate,
+  mapSeoMetadataToPrismaUpsert,
+} from './seo-metadata.mapper.ts'
 
-export interface DbActionWithRelations extends ActionModel {
-  seoMetadata: SeoMetadataModel | null
+export interface DbActionWithRelations extends Prisma.ActionModel {
+  seoMetadata: Prisma.SeoMetadataModel | null
 }
 
 export const mapAction = (
@@ -35,4 +38,42 @@ export const mapAction = (
   metadata: mapSeoMetadata(dbAction.seoMetadata),
   publishedAt: dbAction.publishedAt,
   deletedAt: dbAction.deletedAt,
+})
+
+export const mapNewActionToPrisma = (
+  action: NewAction
+): Prisma.ActionCreateInput => ({
+  title: action.title,
+  slug: action.slug,
+  trackingId: action.trackingId,
+  longDescription: action.longDescription,
+  ruleId: action.ruleId,
+  themeId: action.themeId,
+  media: action.media as Prisma.InputJsonValue | undefined,
+  tips: action.tips,
+  financialIncentives: action.financialIncentives,
+  furtherExplore: action.furtherExplore,
+  publishedAt: action.publishedAt,
+  deletedAt: action.deletedAt,
+  seoMetadata: mapSeoMetadataToPrismaCreate(action.metadata),
+})
+
+export const mapUpdatedActionToPrisma = (
+  data: UpdatedAction
+): Prisma.ActionUpdateInput => ({
+  title: data.title,
+  slug: data.slug,
+  trackingId: data.trackingId,
+  longDescription: data.longDescription,
+  ruleId: data.ruleId,
+  themeId: data.themeId,
+  media: data.media as unknown as Prisma.InputJsonValue,
+  tips: data.tips,
+  financialIncentives: data.financialIncentives,
+  furtherExplore: data.furtherExplore,
+  publishedAt: data.publishedAt,
+  deletedAt: data.deletedAt,
+  seoMetadata: data.metadata
+    ? mapSeoMetadataToPrismaUpsert(data.metadata)
+    : undefined,
 })

@@ -1,8 +1,12 @@
 import { prisma } from '../../../prisma/client.ts'
 import { themesById } from '../data/themes/index.ts'
-import type { Action } from '../types/action.ts'
+import type { Action, NewAction, UpdatedAction } from '../types/action.ts'
 import type { DbActionWithRelations } from './action.mapper.ts'
-import { mapAction } from './action.mapper.ts'
+import {
+  mapAction,
+  mapNewActionToPrisma,
+  mapUpdatedActionToPrisma,
+} from './action.mapper.ts'
 
 const getVisibleFilter = () => {
   const now = new Date()
@@ -16,6 +20,22 @@ const getVisibleFilter = () => {
       },
     ],
   }
+}
+
+export const findAllActions = async (): Promise<Action[]> => {
+  const dbActions = await prisma.action.findMany({
+    where: {
+      deletedAt: null,
+    },
+    include: {
+      seoMetadata: true,
+    },
+  })
+
+  return dbActions.map((dbAction) => {
+    const theme = themesById[dbAction.themeId]
+    return mapAction(dbAction, theme)
+  })
 }
 
 export const findVisibleActions = async (): Promise<Action[]> => {
@@ -51,4 +71,34 @@ export const findVisibleActionBySlug = async (
 
   const theme = themesById[dbAction.themeId]
   return mapAction(dbAction, theme)
+}
+
+export const createManyActions = async (
+  actions: NewAction[]
+): Promise<void> => {
+  await prisma.action.createMany({
+    data: actions.map(mapNewActionToPrisma),
+  })
+}
+
+export const updateAction = async (
+  id: string,
+  data: UpdatedAction
+): Promise<void> => {
+  await prisma.action.update({
+    where: { id },
+    data: mapUpdatedActionToPrisma(data),
+  })
+}
+
+export const deleteManyActions = async (ids: string[]): Promise<number> => {
+  const now = new Date()
+  const result = await prisma.action.updateMany({
+    where: {
+      id: { in: ids },
+    },
+    data: { deletedAt: now },
+  })
+
+  return result.count
 }

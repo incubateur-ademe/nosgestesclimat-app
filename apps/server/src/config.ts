@@ -99,6 +99,11 @@ const TwoTonsSchema = v.strictObject({
   bearerToken: v.string(),
 })
 
+const NotionSchema = v.strictObject({
+  apiKey: v.string(),
+  actionDatabaseId: v.string(),
+})
+
 const ThirdPartySchema = v.strictObject({
   agir: AgirSchema,
   brevo: BrevoSchema,
@@ -107,6 +112,7 @@ const ThirdPartySchema = v.strictObject({
   scaleway: ScalewaySchema,
   sentry: SentrySchema,
   twoTons: TwoTonsSchema,
+  notion: NotionSchema,
 })
 
 const ConfigSchema = v.pipe(
@@ -151,6 +157,8 @@ const {
     MATOMO_BETA_TIMEOUT,
     MATOMO_BETA_TOKEN,
     MATOMO_BETA_URL,
+    NOTION_API_KEY,
+    NOTION_ACTION_DATABASE_ID,
     NODE_ENV,
     ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
     ORIGIN,
@@ -214,6 +222,10 @@ export const config = v.parse(ConfigSchema, {
         token: MATOMO_BETA_TOKEN,
         url: MATOMO_BETA_URL,
       },
+    },
+    notion: {
+      apiKey: NOTION_API_KEY,
+      actionDatabaseId: NOTION_ACTION_DATABASE_ID,
     },
     scaleway: {
       secretAccessKey: SCALEWAY_SECRET_ACCESS_KEY,
