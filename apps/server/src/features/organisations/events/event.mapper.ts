@@ -1,4 +1,4 @@
-import type { VerifiedUser } from '../../../core/types/verified-user.ts'
+import type { VerifiedUser } from '../../../adapters/prisma/generated.ts'
 import type { OrganisationCreatedEventAttributes } from './OrganisationCreated.event.ts'
 import type { OrganisationUpdatedEventAttributes } from './OrganisationUpdated.event.ts'
 import type { PollCreatedEventAttributes } from './PollCreated.event.ts'

@@ -33,7 +33,7 @@ export const addOrUpdateContact = async ({
   email,
   name,
   position,
-}: Pick<VerifiedUser, 'email' | 'name' | 'position'>) => {
+}: VerifiedUser) => {
   try {
     await connect.post('/api/v1/personnes', {
       email,
