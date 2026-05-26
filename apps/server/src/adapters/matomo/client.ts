@@ -1,6 +1,6 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
-import { z } from 'zod'
+import * as v from 'valibot'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import logger from '../../logger.ts'
 import { MatomoStatsDevice, StatsKind } from '../prisma/generated.ts'
@@ -43,62 +43,61 @@ export const MatomoIframeVisits = [
 
 export const MatomoIframeVisitsSet = new Set<string>(MatomoIframeVisits)
 
-const ReferrerBaseSchema = z
-  .object({
-    label: z.string(),
-    nb_visits: z.number(),
-    segment: z.string().optional(),
-    nb_uniq_visitors: z.number().optional(),
-    nb_actions: z.number().optional(),
-    nb_users: z.number().optional(),
-    max_actions: z.number().optional(),
-    sum_visit_length: z.number().optional(),
-    bounce_count: z.number().optional(),
-    goals: z.record(z.string(), z.unknown()).optional(),
-    nb_visits_converted: z.number().optional(),
-    nb_conversions: z.number().optional(),
-    revenue: z.number().optional(),
-    idsubdatatable: z.number().optional(),
-  })
-  .strict()
+const ReferrerBaseSchema = v.strictObject({
+  label: v.string(),
+  nb_visits: v.number(),
+  segment: v.optional(v.string()),
+  nb_uniq_visitors: v.optional(v.number()),
+  nb_actions: v.optional(v.number()),
+  nb_users: v.optional(v.number()),
+  max_actions: v.optional(v.number()),
+  sum_visit_length: v.optional(v.number()),
+  bounce_count: v.optional(v.number()),
+  goals: v.optional(v.record(v.string(), v.unknown())),
+  nb_visits_converted: v.optional(v.number()),
+  nb_conversions: v.optional(v.number()),
+  revenue: v.optional(v.number()),
+  idsubdatatable: v.optional(v.number()),
+})
 
-const ReferrerTypeSchema = ReferrerBaseSchema.extend({
-  referrer_type: z.enum(ReferrerType),
-}).strict()
+const ReferrerTypeSchema = v.strictObject({
+  ...ReferrerBaseSchema.entries,
+  referrer_type: v.enum(ReferrerType),
+})
 
-export type ReferrerTypeSchema = z.infer<typeof ReferrerTypeSchema>
+export type ReferrerTypeSchema = v.InferOutput<typeof ReferrerTypeSchema>
 
 const ReferrerWebsiteSchema = ReferrerBaseSchema
 
-export type ReferrerWebsiteSchema = z.infer<typeof ReferrerWebsiteSchema>
+export type ReferrerWebsiteSchema = v.InferOutput<typeof ReferrerWebsiteSchema>
 
 const ReferrerCampaignSchema = ReferrerBaseSchema
 
-export type ReferrerCampaignSchema = z.infer<typeof ReferrerCampaignSchema>
+export type ReferrerCampaignSchema = v.InferOutput<
+  typeof ReferrerCampaignSchema
+>
 
-const DayVisitSchema = z
-  .object({
-    value: z.number(),
-  })
-  .strict()
-
-export type DayVisitSchema = z.infer<typeof DayVisitSchema>
-
-const DayActionSchema = z.object({
-  label: z.string(),
-  nb_uniq_visitors: z.number(),
-  nb_visits: z.union([z.string(), z.number()]),
-  nb_events: z.union([z.string(), z.number()]),
-  nb_events_with_value: z.union([z.string(), z.number()]),
-  sum_event_value: z.number(),
-  min_event_value: z.union([z.number(), z.boolean()]).nullable(),
-  max_event_value: z.number().nullable(),
-  avg_event_value: z.number(),
-  segment: z.string(),
-  idsubdatatable: z.number().optional(),
+const DayVisitSchema = v.strictObject({
+  value: v.number(),
 })
 
-export type DayActionSchema = z.infer<typeof DayActionSchema>
+export type DayVisitSchema = v.InferOutput<typeof DayVisitSchema>
+
+const DayActionSchema = v.looseObject({
+  label: v.string(),
+  nb_uniq_visitors: v.number(),
+  nb_visits: v.union([v.string(), v.number()]),
+  nb_events: v.union([v.string(), v.number()]),
+  nb_events_with_value: v.union([v.string(), v.number()]),
+  sum_event_value: v.number(),
+  min_event_value: v.nullable(v.union([v.number(), v.boolean()])),
+  max_event_value: v.nullable(v.number()),
+  avg_event_value: v.number(),
+  segment: v.string(),
+  idsubdatatable: v.optional(v.number()),
+})
+
+export type DayActionSchema = v.InferOutput<typeof DayActionSchema>
 
 const getFullSegments = ({
   iframe,
@@ -127,7 +126,7 @@ const getFullSegments = ({
 
 export const matomoClientFactory = ({
   timeout,
-  secure,
+  secure = false,
   siteId,
   token,
   url,
@@ -135,7 +134,7 @@ export const matomoClientFactory = ({
   siteId: string
   token: string
   url: string
-  secure: boolean
+  secure?: boolean
   timeout: number
 }) => {
   const client = axios.create({
@@ -182,7 +181,7 @@ export const matomoClientFactory = ({
         },
       })
 
-      return z.array(ReferrerTypeSchema).parse(data)
+      return v.parse(v.array(ReferrerTypeSchema), data)
     },
 
     async getReferrersWebsites(date: string) {
@@ -194,7 +193,7 @@ export const matomoClientFactory = ({
         },
       })
 
-      return z.array(ReferrerWebsiteSchema).parse(data)
+      return v.parse(v.array(ReferrerWebsiteSchema), data)
     },
 
     async getReferrersCampaigns(date: string) {
@@ -208,7 +207,7 @@ export const matomoClientFactory = ({
         },
       })
 
-      const campaigns = z.array(ReferrerWebsiteSchema).parse(data)
+      const campaigns = v.parse(v.array(ReferrerWebsiteSchema), data)
 
       for (const campaign of campaigns) {
         const { idsubdatatable: idSubtable } = campaign
@@ -227,9 +226,8 @@ export const matomoClientFactory = ({
         })
 
         referrersCampaignsByKeyWord.push(
-          ...z
-            .array(ReferrerCampaignSchema)
-            .parse(dataWithKeyWords)
+          ...v
+            .parse(v.array(ReferrerCampaignSchema), dataWithKeyWords)
             .map((referrerWithKeyWords) => ({
               ...referrerWithKeyWords,
               label: `${campaign.label} - ${referrerWithKeyWords.label}`,
@@ -262,7 +260,7 @@ export const matomoClientFactory = ({
           },
         })
 
-        const { success, data: safeData } = DayVisitSchema.safeParse(data)
+        const { success, output: safeData } = v.safeParse(DayVisitSchema, data)
 
         if (success) {
           dayVisits.value += safeData.value
@@ -298,9 +296,10 @@ export const matomoClientFactory = ({
             },
           })
 
-          const { success, data: safeData } = z
-            .array(DayActionSchema)
-            .safeParse(data)
+          const { success, output: safeData } = v.safeParse(
+            v.array(DayActionSchema),
+            data
+          )
 
           if (success) {
             safeData.forEach(({ label, nb_visits }) => {
@@ -352,9 +351,10 @@ export const matomoClientFactory = ({
           },
         })
 
-        const { success, data: safeData } = z
-          .array(DayActionSchema)
-          .safeParse(data)
+        const { success, output: safeData } = v.safeParse(
+          v.array(DayActionSchema),
+          data
+        )
 
         if (success) {
           safeData.forEach(({ label, nb_visits }) => {
