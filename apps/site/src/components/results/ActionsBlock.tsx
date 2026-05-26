@@ -6,6 +6,7 @@ import {
 } from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -15,13 +16,16 @@ import FoodIcon from '../icons/FoodIcon'
 import HousingIcon from '../icons/HousingIcon'
 import Trans from '../translation/trans/TransServer'
 
+const ACTIONS_HREF = `${END_PAGE_PATH}/actions` as const
+
 interface Props {
   locale: Locale
 }
 
-export default function ActionsBlock({ locale }: Props) {
+export default async function ActionsBlock({ locale }: Props) {
+  const { t } = await getServerTranslation({ locale })
   return (
-    <Card className="mb-20" tag={Link} href={`${END_PAGE_PATH}/actions`}>
+    <Card className="group/card focus-within:ring-primary-700 relative mb-20 focus-within:ring-2 focus-within:ring-offset-3 focus-within:outline-hidden">
       <div className="flex flex-col items-stretch gap-10 md:flex-row md:gap-4">
         <div className="w-full max-w-full sm:w-md">
           <Title
@@ -52,7 +56,7 @@ export default function ActionsBlock({ locale }: Props) {
               baseClassNames,
               colorClassNames.primary,
               sizeClassNames.md,
-              'hover:animate-button-lift w-full cursor-pointer text-base transition-[transform,box-shadow] duration-200 ease-out sm:w-auto'
+              'group-hover/card:animate-button-lift pointer-events-none w-full text-base transition-[transform,box-shadow] duration-200 ease-out sm:w-auto'
             )}>
             <Trans locale={locale} i18nKey="results.actions.linkLabel">
               Découvrir mes actions
@@ -61,8 +65,8 @@ export default function ActionsBlock({ locale }: Props) {
           </span>
         </div>
 
-        <div className="group mb relative flex h-full min-h-44 flex-1 items-center self-stretch md:min-h-64 md:translate-y-12">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 transition-all duration-500 ease-out group-hover:left-[48%] motion-reduce:group-hover:left-1/2 md:left-2/5 md:group-hover:left-[45%] motion-reduce:group-hover:md:left-2/5">
+        <div className="mb relative flex h-full min-h-44 flex-1 items-center self-stretch md:min-h-64 md:translate-y-12">
+          <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 transition-all duration-500 ease-out group-hover/card:left-[48%] motion-reduce:group-hover/card:left-1/2 md:left-2/5 md:group-hover/card:left-[45%] motion-reduce:group-hover/card:md:left-2/5">
             <div className="animate-float-leaf-1 inline-flex items-center gap-2 rounded-lg border border-blue-800 bg-blue-50 px-4 py-2 text-lg font-bold text-blue-800">
               <span className="rounded-sm bg-blue-100 p-1">
                 <CarIcon />
@@ -74,7 +78,7 @@ export default function ActionsBlock({ locale }: Props) {
             </div>
           </div>
 
-          <div className="absolute bottom-2 left-3/7 -translate-x-1/2 transition-all duration-500 ease-out group-hover:bottom-0 group-hover:left-[40%] motion-reduce:group-hover:bottom-2 motion-reduce:group-hover:left-3/7 md:top-4/7 md:bottom-auto md:left-2/7 md:group-hover:top-[45%] md:group-hover:left-[25%] motion-reduce:group-hover:md:top-4/7 motion-reduce:group-hover:md:left-2/7 lg:top-2/6 lg:group-hover:top-[35%] motion-reduce:group-hover:lg:top-2/6">
+          <div className="pointer-events-none absolute bottom-2 left-3/7 -translate-x-1/2 transition-all duration-500 ease-out group-hover/card:bottom-0 group-hover/card:left-[40%] motion-reduce:group-hover/card:bottom-2 motion-reduce:group-hover/card:left-3/7 md:top-4/7 md:bottom-auto md:left-2/7 md:group-hover/card:top-[45%] md:group-hover/card:left-[25%] motion-reduce:group-hover/card:md:top-4/7 motion-reduce:group-hover/card:md:left-2/7 lg:top-2/6 lg:group-hover/card:top-[35%] motion-reduce:group-hover/card:lg:top-2/6">
             <div className="animate-float-leaf-2 inline-flex items-center gap-2 rounded-lg border border-orange-800 bg-orange-50 px-4 py-2 text-lg font-bold text-orange-800">
               <span className="rounded-sm bg-orange-100 p-1">
                 <FoodIcon />
@@ -86,7 +90,7 @@ export default function ActionsBlock({ locale }: Props) {
             </div>
           </div>
 
-          <div className="absolute top-1/3 left-6/9 -translate-x-1/2 transition-all duration-500 ease-out group-hover:left-[74%] motion-reduce:group-hover:left-6/9 md:group-hover:left-[70%] motion-reduce:group-hover:md:left-6/9">
+          <div className="pointer-events-none absolute top-1/3 left-6/9 -translate-x-1/2 transition-all duration-500 ease-out group-hover/card:left-[74%] motion-reduce:group-hover/card:left-6/9 md:group-hover/card:left-[70%] motion-reduce:group-hover/card:md:left-6/9">
             <div className="animate-float-leaf-3 inline-flex items-center gap-2 rounded-lg border border-green-800 bg-green-50 px-4 py-2 text-lg font-bold text-green-800">
               <span className="rounded-sm bg-green-100 p-1">
                 <HousingIcon />
@@ -99,6 +103,15 @@ export default function ActionsBlock({ locale }: Props) {
           </div>
         </div>
       </div>
+
+      <Link
+        href={ACTIONS_HREF}
+        className="absolute inset-0 z-10 focus:outline-hidden"
+        aria-label={t(
+          'results.actions.afterLink.label',
+          'Découvrir mes actions personnalisées'
+        )}
+      />
     </Card>
   )
 }
