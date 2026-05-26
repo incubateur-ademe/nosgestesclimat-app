@@ -1,11 +1,11 @@
 'use client'
 
+import { useAgeForm } from '@/app/[locale]/simulateur/(header)/age/_hooks/useAgeForm'
 import ChoiceInput from '@/components/misc/ChoiceInput'
 import Trans from '@/components/translation/trans/TransClient'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { useAgeForm } from '@/hooks/age/useAgeForm'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 
