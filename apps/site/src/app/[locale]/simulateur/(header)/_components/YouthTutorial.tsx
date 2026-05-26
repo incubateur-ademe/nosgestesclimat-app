@@ -127,7 +127,7 @@ export default function YouthTutorial({ locale, buttonNext }: Props) {
             <Trans
               locale={locale}
               i18nKey="youthTutorial.secondlist.dontKnow.body">
-              Choisis "je ne sais pas", on gère
+              Choisis "je ne sais pas", on gère la suite
             </Trans>
           }
         />

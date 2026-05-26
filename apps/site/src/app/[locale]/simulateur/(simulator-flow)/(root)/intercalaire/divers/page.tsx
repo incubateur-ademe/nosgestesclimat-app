@@ -88,6 +88,14 @@ export default async function Page({
             type="numerique"
           />
         }
+        arrowText={
+          <Trans
+            locale={locale}
+            i18nKey="simulator.transition.divers.graph.arrowText">
+            Ce graphique te permet d’observer l’empreinte carbone de tous tes
+            appareils numériques
+          </Trans>
+        }
       />
     </>
   )

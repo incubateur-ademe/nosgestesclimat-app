@@ -96,9 +96,20 @@ export default async function Email({
       <UserProvider serverUserId={user.id}>
         <QueryClientProviderWrapper>
           <AuthenticateUserForm
+            inputLabel={
+              isSchoolMode ? (
+                <Trans i18nKey="tutorial.email.title.youth" locale={locale}>
+                  Ton adresse électronique
+                </Trans>
+              ) : (
+                <Trans i18nKey="tutorial.email.title.default" locale={locale}>
+                  Votre adresse électronique
+                </Trans>
+              )
+            }
             buttonLabel={t(
               'common.authentication.verifyEmail',
-              'Vérifier mon adresse email'
+              'Vérifier mon adresse électronique'
             )}
             additionnalButton={
               <ButtonLink
