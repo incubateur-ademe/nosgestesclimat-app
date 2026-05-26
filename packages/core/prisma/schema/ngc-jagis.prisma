@@ -33,5 +33,29 @@ model ActionAssessment {
   simulationId String     @db.Uuid
   actionId     String     @db.Uuid
 
+  @@unique([simulationId, actionId])
+  @@schema("ngc")
+}
+
+model SimulationComputation {
+  simulationId String            @id @db.Uuid
+  simulation   Simulation        @relation(fields: [simulationId], references: [id])
+  status       ComputationStatus @default(pending)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  error        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([status, createdAt])
+  @@schema("ngc")
+}
+
+enum ComputationStatus {
+  pending
+  processing
+  completed
+  failed
+
   @@schema("ngc")
 }

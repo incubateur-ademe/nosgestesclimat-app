@@ -62,8 +62,7 @@ interface ActionChoice {
   chosenAt: Date
 }
 
-type ActionAssessment = {
-  id: string
+export type ActionAssessmentInput = {
   simulationId: string
   actionId: string
 } & (
@@ -78,6 +77,8 @@ type ActionAssessment = {
       applicable: false | undefined
     }
 )
+
+export type ActionAssessment = ActionAssessmentInput & { id: string }
 
 export interface PersonalizedAction {
   userId: string
