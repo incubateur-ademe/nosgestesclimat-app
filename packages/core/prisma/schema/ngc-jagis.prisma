@@ -1,0 +1,37 @@
+model Action {
+  id                  String             @id @default(uuid()) @db.Uuid
+  title               String
+  slug                String
+  trackingId          String
+  longDescription     String
+  ruleId              String             @db.Uuid
+  themeId             String             @db.Uuid
+  media               Json?
+  tips                String?
+  financialIncentives String?
+  furtherExplore      String?
+  seoMetadata         SeoMetadata?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  publishedAt         DateTime?
+  deletedAt           DateTime?
+  actionAssessments   ActionAssessment[]
+
+  @@unique([slug])
+  @@index([deletedAt, publishedAt])
+  @@schema("ngc")
+}
+
+model ActionAssessment {
+  id           String     @id @default(uuid()) @db.Uuid
+  simulation   Simulation @relation(fields: [simulationId], references: [id])
+  action       Action     @relation(fields: [actionId], references: [id])
+  impact       Float
+  applicable   Boolean
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  simulationId String     @db.Uuid
+  actionId     String     @db.Uuid
+
+  @@schema("ngc")
+}
