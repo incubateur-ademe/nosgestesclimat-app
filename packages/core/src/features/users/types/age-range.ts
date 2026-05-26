@@ -1,4 +1,4 @@
-import { picklist } from 'valibot'
+import { type InferOutput, picklist } from 'valibot'
 
 export const AgeRangeSchema = picklist([
   'under_18',
@@ -10,4 +10,4 @@ export const AgeRangeSchema = picklist([
   'undisclosed',
 ])
 
-export type AgeRange = (typeof AgeRangeSchema)['type']
+export type AgeRange = InferOutput<typeof AgeRangeSchema>
