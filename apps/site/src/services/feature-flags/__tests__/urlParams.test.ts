@@ -28,9 +28,9 @@ describe('parseFeatureFlagParams', () => {
     ).toEqual({ 'variant-flag': 'test' })
   })
 
-  it('ignores empty values', () => {
+  it('ignores flags not in FLAGS', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_flag='))
+      parseFeatureFlagParams(new URLSearchParams('?ff_unknown=true'))
     ).toBeNull()
   })
 })

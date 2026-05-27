@@ -1,4 +1,5 @@
 import { FF_PARAM_PREFIX } from './constants'
+import { FLAGS } from './flags'
 
 /**
  * Extracts feature flag overrides from URL search parameters.
@@ -14,6 +15,7 @@ export function parseFeatureFlagParams(
   for (const [key, value] of searchParams.entries()) {
     if (!key.startsWith(FF_PARAM_PREFIX)) continue
     const flagName = key.slice(FF_PARAM_PREFIX.length)
+    if (!(flagName in FLAGS)) continue
     if (value === 'true') overrides[flagName] = true
     else if (value === 'false') overrides[flagName] = false
     else if (value.length > 0) overrides[flagName] = value
