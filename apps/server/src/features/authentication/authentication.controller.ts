@@ -50,7 +50,11 @@ router
           locale: req.query.locale,
         })
 
-        res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
+        res.cookie(
+          COOKIE_NAME,
+          token,
+          getCookieOptions(origin, req.get('user-agent'))
+        )
 
         return res.status(StatusCodes.OK).json(user)
       } catch (err) {

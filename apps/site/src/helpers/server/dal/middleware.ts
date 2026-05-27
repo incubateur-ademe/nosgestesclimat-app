@@ -1,3 +1,4 @@
+import { isLegacySafariUA } from '@nosgestesclimat/core/utils/userAgent'
 import { getIronSession } from 'iron-session'
 import type { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
@@ -10,6 +11,7 @@ import {
   type AnonSessionData,
   anonSessionOptions,
   getAnonSession,
+  getLegacySafariAnonSessionOptions,
 } from './anonSession'
 import { ANON_USER_ID_HEADER } from './constants'
 
@@ -25,6 +27,9 @@ export async function userMiddleware(
 ) {
   const session = await getAnonSession()
   const searchParams = request.nextUrl.searchParams
+
+  // Detect legacy Safari early so we can use compatible cookie options
+  const isLegacySafari = isLegacySafariUA(request.headers.get('user-agent'))
 
   if (session.userId) {
     if (!session.region || !(session.region in supportedRegions)) {
@@ -57,10 +62,15 @@ export async function userMiddleware(
 
   const response = next(request)
 
+  // Use legacy-Safari-compatible cookie options when saving the session
+  const sessionOpts = isLegacySafari
+    ? getLegacySafariAnonSessionOptions()
+    : anonSessionOptions
+
   const newSession = await getIronSession<AnonSessionData>(
     request,
     response,
-    anonSessionOptions
+    sessionOpts
   )
 
   newSession.userId = userId
