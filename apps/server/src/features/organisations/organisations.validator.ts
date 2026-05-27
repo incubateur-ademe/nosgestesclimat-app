@@ -1,106 +1,101 @@
-import { z } from 'zod'
-
 import {
   OrganisationType,
   PollDefaultAdditionalQuestionType,
   PollMode,
 } from '@nosgestesclimat/core/prisma/generated/enums'
+import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { PaginationQuery } from '../../core/pagination.ts'
 import { UserParams } from '../users/users.validator.ts'
 
-const OrganisationParams = z
-  .object({
-    organisationIdOrSlug: z.string(),
-  })
-  .strict()
+const OrganisationParams = v.strictObject({
+  organisationIdOrSlug: v.string(),
+})
 
-export type OrganisationParams = z.infer<typeof OrganisationParams>
+export type OrganisationParams = v.InferOutput<typeof OrganisationParams>
 
-const PollParams = z
-  .object({
-    pollIdOrSlug: z.string(),
-  })
-  .strict()
+const PollParams = v.strictObject({
+  pollIdOrSlug: v.string(),
+})
 
-export type PollParams = z.infer<typeof PollParams>
+export type PollParams = v.InferOutput<typeof PollParams>
 
-const OrganisationPollParams = OrganisationParams.extend(PollParams.shape)
+const OrganisationPollParams = v.strictObject({
+  ...OrganisationParams.entries,
+  ...PollParams.entries,
+})
 
-export type OrganisationPollParams = z.infer<typeof OrganisationPollParams>
+export type OrganisationPollParams = v.InferOutput<
+  typeof OrganisationPollParams
+>
 
-export const PublicPollParams = UserParams.extend(PollParams.shape)
+export const PublicPollParams = v.strictObject({
+  ...UserParams.entries,
+  ...PollParams.entries,
+})
 
-export type PublicPollParams = z.infer<typeof PublicPollParams>
+export type PublicPollParams = v.InferOutput<typeof PublicPollParams>
 
-const OrganisationCreateAdministrator = z
-  .object({
-    name: z.string().optional().nullable(),
-    telephone: z.string().optional().nullable(),
-    position: z.string().optional().nullable(),
-    optedInForCommunications: z.boolean().optional(),
-  })
-  .strict()
+const OrganisationCreateAdministrator = v.strictObject({
+  name: v.optional(v.nullable(v.string())),
+  telephone: v.optional(v.nullable(v.string())),
+  position: v.optional(v.nullable(v.string())),
+  optedInForCommunications: v.optional(v.boolean()),
+})
 
-export type OrganisationCreateAdministrator = z.infer<
+export type OrganisationCreateAdministrator = v.InferOutput<
   typeof OrganisationCreateAdministrator
 >
 
-const OrganisationCreateDto = z
-  .object({
-    name: z.string().min(1).max(100),
-    type: z.enum(OrganisationType).optional(),
-    administrators: z.tuple([OrganisationCreateAdministrator]).optional(),
-    numberOfCollaborators: z.number().optional().nullable(),
-  })
-  .strict()
+const OrganisationCreateDto = v.strictObject({
+  name: v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
+  type: v.optional(v.enum(OrganisationType)),
+  administrators: v.optional(v.strictTuple([OrganisationCreateAdministrator])),
+  numberOfCollaborators: v.optional(v.nullable(v.number())),
+})
 
-export type OrganisationCreateDto = z.infer<typeof OrganisationCreateDto>
+export type OrganisationCreateDto = v.InferOutput<typeof OrganisationCreateDto>
 
 export const OrganisationCreateValidator = {
   body: OrganisationCreateDto,
-  params: z.object({}).strict().optional(),
+  params: v.optional(v.strictObject({})),
   query: LocaleQuery,
 }
 
-const OrganisationUpdateAdministrator = OrganisationCreateAdministrator.extend(
-  z
-    .object({
-      email: z
-        .email()
-        .transform((email) => email.toLocaleLowerCase())
-        .optional(),
-    })
-    .strict().shape
-)
+const OrganisationUpdateAdministrator = v.strictObject({
+  ...OrganisationCreateAdministrator.entries,
+  email: v.optional(
+    v.pipe(
+      v.string(),
+      v.email(),
+      v.transform((email: string) => email.toLocaleLowerCase())
+    )
+  ),
+})
 
-export type OrganisationUpdateAdministrator = z.infer<
+export type OrganisationUpdateAdministrator = v.InferOutput<
   typeof OrganisationUpdateAdministrator
 >
 
-const OrganisationUpdateDto = OrganisationCreateDto.extend(
-  z
-    .object({
-      administrators: z.tuple([OrganisationUpdateAdministrator]).optional(),
-    })
-    .strict().shape
-)
-  .partial()
-  .strict()
-
-export type OrganisationUpdateDto = z.infer<typeof OrganisationUpdateDto>
-
-const OrganisationUpdateQuery = z
-  .object({
-    code: z
-      .string()
-      .regex(/^\d{6}$/)
-      .optional(),
+const OrganisationUpdateDto = v.partial(
+  v.strictObject({
+    ...OrganisationCreateDto.entries,
+    administrators: v.optional(
+      v.strictTuple([OrganisationUpdateAdministrator])
+    ),
   })
-  .extend(LocaleQuery.shape)
-  .strict()
+)
 
-export type OrganisationUpdateQuery = z.infer<typeof OrganisationUpdateQuery>
+export type OrganisationUpdateDto = v.InferOutput<typeof OrganisationUpdateDto>
+
+const OrganisationUpdateQuery = v.strictObject({
+  code: v.optional(v.pipe(v.string(), v.regex(/^\d{6}$/))),
+  ...LocaleQuery.entries,
+})
+
+export type OrganisationUpdateQuery = v.InferOutput<
+  typeof OrganisationUpdateQuery
+>
 
 export const OrganisationUpdateValidator = {
   body: OrganisationUpdateDto,
@@ -108,57 +103,60 @@ export const OrganisationUpdateValidator = {
   query: OrganisationUpdateQuery,
 }
 
-const OrganisationsFetchQuery = PaginationQuery.extend(LocaleQuery.shape)
+const OrganisationsFetchQuery = v.strictObject({
+  ...PaginationQuery.entries,
+  ...LocaleQuery.entries,
+})
 
-export type OrganisationsFetchQuery = z.infer<typeof OrganisationsFetchQuery>
+export type OrganisationsFetchQuery = v.InferOutput<
+  typeof OrganisationsFetchQuery
+>
 
 export const OrganisationsFetchValidator = {
-  body: z.object({}).strict().optional(),
-  params: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
+  params: v.optional(v.strictObject({})),
   query: OrganisationsFetchQuery,
 }
 
 export const OrganisationFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: OrganisationParams,
   query: LocaleQuery,
 }
 
-const OrganisationPollCustomAdditionalQuestion = z
-  .object({
-    question: z.string(),
-    isEnabled: z.boolean(),
-  })
-  .strict()
+const OrganisationPollCustomAdditionalQuestion = v.strictObject({
+  question: v.string(),
+  isEnabled: v.boolean(),
+})
 
-export type OrganisationPollCustomAdditionalQuestion = z.infer<
+export type OrganisationPollCustomAdditionalQuestion = v.InferOutput<
   typeof OrganisationPollCustomAdditionalQuestion
 >
 
-export const OrganisationPollCustomAdditionalQuestions = z.array(
+export const OrganisationPollCustomAdditionalQuestions = v.array(
   OrganisationPollCustomAdditionalQuestion
 )
 
 const MAX_CUSTOM_ADDITIONAL_QUESTIONS = 4
 
-const OrganisationPollCreateDto = z
-  .object({
-    name: z.string().min(1).max(150),
-    expectedNumberOfParticipants: z.number().optional().nullable(),
-    defaultAdditionalQuestions: z
-      .array(z.enum(PollDefaultAdditionalQuestionType))
-      .optional()
-      .nullable(),
-    customAdditionalQuestions: z
-      .array(OrganisationPollCustomAdditionalQuestion)
-      .max(MAX_CUSTOM_ADDITIONAL_QUESTIONS)
-      .optional()
-      .nullable(),
-    mode: z.nativeEnum(PollMode).optional().default(PollMode.standard),
-  })
-  .strict()
+const OrganisationPollCreateDto = v.strictObject({
+  name: v.pipe(v.string(), v.minLength(1), v.maxLength(150)),
+  expectedNumberOfParticipants: v.optional(v.nullable(v.number())),
+  defaultAdditionalQuestions: v.optional(
+    v.nullable(v.array(v.enum(PollDefaultAdditionalQuestionType)))
+  ),
+  customAdditionalQuestions: v.optional(
+    v.nullable(
+      v.pipe(
+        v.array(OrganisationPollCustomAdditionalQuestion),
+        v.maxLength(MAX_CUSTOM_ADDITIONAL_QUESTIONS)
+      )
+    )
+  ),
+  mode: v.optional(v.enum(PollMode), PollMode.standard),
+})
 
-export type OrganisationPollCreateDto = z.infer<
+export type OrganisationPollCreateDto = v.InferOutput<
   typeof OrganisationPollCreateDto
 >
 
@@ -168,18 +166,16 @@ export const OrganisationPollCreateValidator = {
   query: LocaleQuery,
 }
 
-const OrganisationPollUpdateDto = OrganisationPollCreateDto.partial()
+const OrganisationPollUpdateDto = v.partial(OrganisationPollCreateDto)
 
-export type OrganisationPollUpdateDto = z.infer<
+export type OrganisationPollUpdateDto = v.InferOutput<
   typeof OrganisationPollUpdateDto
 >
 
-const OrganisationPollSimulationsDownloadQuery = z
-  .object({
-    jobId: z.string().optional(),
-  })
-  .extend(LocaleQuery.shape)
-  .strict()
+const OrganisationPollSimulationsDownloadQuery = v.strictObject({
+  jobId: v.optional(v.string()),
+  ...LocaleQuery.entries,
+})
 
 export const OrganisationPollUpdateValidator = {
   body: OrganisationPollUpdateDto,
@@ -188,43 +184,43 @@ export const OrganisationPollUpdateValidator = {
 }
 
 export const OrganisationPollDeleteValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: OrganisationPollParams,
   query: LocaleQuery,
 }
 
 export const OrganisationPollsFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: OrganisationParams,
   query: LocaleQuery,
 }
 
 export const OrganisationPollFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: OrganisationPollParams,
   query: LocaleQuery,
 }
 
 export const OrganisationPollSimulationsDownloadValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: OrganisationPollParams,
   query: OrganisationPollSimulationsDownloadQuery,
 }
 
 export const OrganisationPublicPollFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: PublicPollParams,
   query: LocaleQuery,
 }
 
 export const OrganisationPublicPollSimulationsFetchValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: PublicPollParams,
   query: LocaleQuery,
 }
 
 export const OrganisationPublicPollDashboardValidator = {
-  body: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
   params: PublicPollParams,
   query: LocaleQuery,
 }

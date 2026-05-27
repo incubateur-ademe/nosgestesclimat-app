@@ -3,8 +3,8 @@ import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { AxiosError } from 'axios'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
+import * as v from 'valibot'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
-import { ZodError } from 'zod'
 import { brevoGetContact } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import app from '../../../app.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
@@ -162,7 +162,7 @@ describe('Given a NGC user', () => {
           expect(body).toEqual({})
           expect(logger.error).toHaveBeenCalledWith(
             'User contact fetch failed',
-            expect.any(ZodError)
+            expect.any(v.ValiError)
           )
         })
       })

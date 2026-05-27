@@ -78,6 +78,14 @@ export default async function Page({
         rightContent={
           <ClientLogementImpactCO2Iframe locale={locale as Locale} />
         }
+        arrowText={
+          <Trans
+            locale={locale}
+            i18nKey="simulator.transition.housing.graph.arrowText">
+            Ce graphique te permet de mieux comprendre l’impact carbone des
+            différents modes de chauffage
+          </Trans>
+        }
       />
     </>
   )

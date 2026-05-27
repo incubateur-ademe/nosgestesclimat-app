@@ -1,3 +1,4 @@
+import HideInIframe from '@/components/layout/HideInIframe'
 import type { SimulationResult } from '@/helpers/server/model/simulationResult'
 import type { Tendency } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
@@ -6,8 +7,8 @@ import ActionsBlock from '../ActionsBlock'
 import FootprintBlock from '../FootprintBlock'
 import FootprintDetail from '../FootprintDetail'
 import GroupThankYouBlock from '../GroupThankYouBlock'
-import SaveResultsBlock from '../SaveResultsBlock'
 import Objective from '../objective/Objective'
+import SaveResultsBlock from '../SaveResultsBlock'
 
 interface Props {
   simulationResult: SimulationResult
@@ -61,10 +62,12 @@ export default function CarbonFootprintResults({
         />
       )}
 
-      <Objective
-        locale={locale}
-        carbonFootprint={simulationResult.computedResults.carbone.bilan}
-      />
+      <HideInIframe>
+        <Objective
+          locale={locale}
+          carbonFootprint={simulationResult.computedResults.carbone.bilan}
+        />
+      </HideInIframe>
 
       <p className="text-primary-600 mx-auto mb-12 w-2xl max-w-full text-center">
         <Trans locale={locale} i18nKey="carbonResults.objective.description">

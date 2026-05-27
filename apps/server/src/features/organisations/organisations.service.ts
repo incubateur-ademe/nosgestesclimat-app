@@ -6,6 +6,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Request } from 'express'
+import * as v from 'valibot'
 import { utils, write } from 'xlsx'
 import type { Organisation } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
@@ -630,10 +631,10 @@ const generatePollSimulationsResultExcel = async (
   const excelData = await getPollSimulationsExcelData(
     {
       id,
-      customAdditionalQuestions:
-        OrganisationPollCustomAdditionalQuestions.parse(
-          customAdditionalQuestions
-        ),
+      customAdditionalQuestions: v.parse(
+        OrganisationPollCustomAdditionalQuestions,
+        customAdditionalQuestions
+      ),
     },
     { session }
   )

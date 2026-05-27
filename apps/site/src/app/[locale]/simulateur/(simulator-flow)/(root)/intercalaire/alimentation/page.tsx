@@ -46,11 +46,11 @@ export default async function Page({
         locale={locale}
         funFactContent={
           <>
-            <p className="mb-0 w-40 max-w-full text-center">
+            <p className="text-primary-600 mb-0 w-40 max-w-full text-center font-bold">
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.alimentation.funFact.line1">
-                Certains repas
+                Tous les repas
               </Trans>
             </p>
 
@@ -59,25 +59,15 @@ export default async function Page({
                 <Trans
                   locale={locale}
                   i18nKey="simulator.transition.alimentation.funFact.line2">
-                  pèsent plus
+                  n'ont pas
                 </Trans>
               </TiltedBadge>
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.alimentation.funFact.line2Suffix">
-                <span className="ml-2">que d'autres :</span>
+                <span className="ml-2">le même impact&nbsp;!</span>
               </Trans>
             </div>
-
-            <p className="text-primary-600">
-              <strong>
-                <Trans
-                  locale={locale}
-                  i18nKey="simulator.transition.alimentation.funFact.line3">
-                  attention à ton assiette !
-                </Trans>
-              </strong>
-            </p>
           </>
         }
         rightContent={
@@ -90,6 +80,14 @@ export default async function Page({
             locale={locale}
             type="alimentation"
           />
+        }
+        arrowText={
+          <Trans
+            locale={locale}
+            i18nKey="simulator.transition.alimentation.graph.arrowText">
+            Ce graphique te permet de mieux comprendre l’impact carbone de tout
+            ce que tu manges
+          </Trans>
         }
       />
     </>

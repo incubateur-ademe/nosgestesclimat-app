@@ -1,11 +1,11 @@
 import type { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import type { z, ZodType } from 'zod'
+import * as v from 'valibot'
 
 type ValidationSchema<
-  TParams extends ZodType = ZodType,
-  TQuery extends ZodType = ZodType,
-  TBody extends ZodType = ZodType,
+  TParams extends v.GenericSchema = v.GenericSchema,
+  TQuery extends v.GenericSchema = v.GenericSchema,
+  TBody extends v.GenericSchema = v.GenericSchema,
 > = {
   params: TParams
   query: TQuery
@@ -13,35 +13,45 @@ type ValidationSchema<
 }
 
 export const validateRequest =
-  <TParams extends ZodType, TQuery extends ZodType, TBody extends ZodType>(
+  <
+    TParams extends v.GenericSchema,
+    TQuery extends v.GenericSchema,
+    TBody extends v.GenericSchema,
+  >(
     schemas: ValidationSchema<TParams, TQuery, TBody>
   ): RequestHandler<
-    z.output<TParams>,
+    v.InferOutput<TParams>,
     unknown,
-    z.output<TBody>,
-    z.output<TQuery>
+    v.InferOutput<TBody>,
+    v.InferOutput<TQuery>
   > =>
   async (req, res, next) => {
-    const params = await schemas.params.safeParseAsync(req.params)
+    const params = await v.safeParseAsync(schemas.params, req.params)
 
     if (!params.success) {
-      return res.status(StatusCodes.BAD_REQUEST).json(params.error)
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ name: 'ZodError', issues: params.issues })
     }
-    req.params = params.data
+    req.params = params.output as Record<string, string>
 
-    const query = await schemas.query.safeParseAsync(req.query)
+    const query = await v.safeParseAsync(schemas.query, req.query)
 
     if (!query.success) {
-      return res.status(StatusCodes.BAD_REQUEST).json(query.error)
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ name: 'ZodError', issues: query.issues })
     }
-    req.query = query.data
+    req.query = query.output as Record<string, string>
 
-    const body = await schemas.body.safeParseAsync(req.body)
+    const body = await v.safeParseAsync(schemas.body, req.body)
 
     if (!body.success) {
-      return res.status(StatusCodes.BAD_REQUEST).json(body.error)
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ name: 'ZodError', issues: body.issues })
     }
-    req.body = body.data
+    req.body = body.output
 
     return next()
   }
