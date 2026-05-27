@@ -1,6 +1,7 @@
 import type { RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import multer from 'multer'
+import * as v from 'valibot'
 import yaml from 'yaml'
 import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../../../core/errors/ForbiddenException.ts'
@@ -21,7 +22,7 @@ const upload = multer({
 
 const validateMappingFile: RequestHandler = (req, res, next) => {
   try {
-    yaml.parse(MappingFile.parse(req.file).buffer.toString())
+    yaml.parse(v.parse(MappingFile, req.file).buffer.toString())
     return next()
   } catch (err) {
     return res.status(StatusCodes.BAD_REQUEST).send(err).end()

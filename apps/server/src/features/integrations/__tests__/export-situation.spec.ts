@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
+import * as v from 'valibot'
 import { beforeEach, describe, expect, test } from 'vitest'
-import { ZodError } from 'zod'
 import { twoTonsExportSituation } from '../../../adapters/2tonnes/__tests__/fixtures/server.fixture.ts'
 import { agirExportSituation } from '../../../adapters/agir/__tests__/fixtures/server.fixture.ts'
 import app from '../../../app.ts'
@@ -108,7 +108,7 @@ describe('Given a NGC user', () => {
 
           expect(logger.error).toHaveBeenCalledWith(
             'Situation export failed',
-            expect.any(ZodError)
+            expect.any(v.ValiError)
           )
         })
       })
@@ -357,7 +357,7 @@ describe('Given a NGC user', () => {
 
           expect(logger.error).toHaveBeenCalledWith(
             'Situation export failed',
-            expect.any(ZodError)
+            expect.any(v.ValiError)
           )
         })
 

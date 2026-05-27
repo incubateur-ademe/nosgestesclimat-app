@@ -1,27 +1,30 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { VerificationCodeMode } from '../../adapters/prisma/generated.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
-export const VerificationCodeCreateDto = z
-  .object({
-    email: z.email().transform((email) => email.toLocaleLowerCase()),
-  })
-  .strict()
+export const VerificationCodeCreateDto = v.strictObject({
+  email: v.pipe(
+    v.string(),
+    v.email(),
+    v.transform((email: string) => email.toLocaleLowerCase())
+  ),
+})
 
-export type VerificationCodeCreateDto = z.infer<
+export type VerificationCodeCreateDto = v.InferOutput<
   typeof VerificationCodeCreateDto
 >
 
-export const VerificationCodeCreateQuery = LocaleQuery.extend({
-  mode: z.enum(VerificationCodeMode).optional(),
+export const VerificationCodeCreateQuery = v.strictObject({
+  ...LocaleQuery.entries,
+  mode: v.optional(v.enum(VerificationCodeMode)),
 })
 
-export type VerificationCodeCreateQuery = z.infer<
+export type VerificationCodeCreateQuery = v.InferOutput<
   typeof VerificationCodeCreateQuery
 >
 
 export const VerificationCodeCreateValidator = {
   body: VerificationCodeCreateDto,
-  params: z.object({}).strict().optional(),
+  params: v.optional(v.strictObject({})),
   query: VerificationCodeCreateQuery,
 }

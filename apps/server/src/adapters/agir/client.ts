@@ -1,6 +1,6 @@
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
-import { z } from 'zod'
+import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.ts'
@@ -20,11 +20,9 @@ axiosRetry(agir, {
   shouldResetTimeout: true,
 })
 
-const AgirResponseSchema = z
-  .object({
-    redirect_url: z.string(),
-  })
-  .strict()
+const AgirResponseSchema = v.strictObject({
+  redirect_url: v.string(),
+})
 
 export const exportSituation = async (
   situation: SituationSchema,
@@ -38,6 +36,6 @@ export const exportSituation = async (
   )
 
   return {
-    redirectUrl: AgirResponseSchema.parse(data).redirect_url,
+    redirectUrl: v.parse(AgirResponseSchema, data).redirect_url,
   }
 }

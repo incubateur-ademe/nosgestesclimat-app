@@ -1,7 +1,7 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import * as v from 'valibot'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { z } from 'zod'
 import { deleteContact, fetchContact } from '../src/adapters/brevo/client.ts'
 import { defaultVerifiedUserSelection } from '../src/adapters/prisma/selection.ts'
 import { Locales } from '../src/core/i18n/constant.ts'
@@ -42,10 +42,10 @@ const args = yargs(hideBin(process.argv))
   .alias('o', 'deleteOrganisations')
   .default('deleteOrganisations', false)
   .check(({ email: rawEmail }) => {
-    const email = z.string().email().safeParse(rawEmail)
+    const result = v.safeParse(v.pipe(v.string(), v.email()), rawEmail)
 
-    if (!email.success) {
-      throw email.error
+    if (!result.success) {
+      throw new v.ValiError(result.issues)
     }
 
     return true
@@ -67,7 +67,7 @@ if (deleteOrganisations) {
     })
 
     const { id: userId } = verifiedUser
-    const query = PaginationQuery.parse({})
+    const query = v.parse(PaginationQuery, {})
 
     while (true) {
       const { organisations } = await fetchOrganisations({
@@ -181,7 +181,7 @@ if (deleteUser) {
       }
 
       const query = {
-        ...PaginationQuery.parse({}),
+        ...v.parse(PaginationQuery, {}),
         locale: 'fr' as const,
       }
 

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { Redis } from 'ioredis'
-import { z } from 'zod'
+import * as v from 'valibot'
 import { KEYS } from '../../src/adapters/redis/constant.ts'
 import type { ValueOf } from '../../src/types/types.ts'
 
@@ -15,13 +15,13 @@ const REGIONS = {
 
 type REGIONS = ValueOf<typeof REGIONS>
 
-const RestCountriesValidator = z.array(
-  z.object({
-    name: z.object({
-      common: z.string(),
+const RestCountriesValidator = v.array(
+  v.object({
+    name: v.object({
+      common: v.string(),
     }),
-    cca2: z.string().regex(/^[A-Z]{2}$/),
-    region: z.enum(REGIONS),
+    cca2: v.pipe(v.string(), v.regex(/^[A-Z]{2}$/)),
+    region: v.enum(REGIONS),
   })
 )
 
@@ -39,7 +39,7 @@ export const exec = async ({ redis }: { redis: Redis }) => {
       },
     })
 
-    const countries = RestCountriesValidator.parse(data)
+    const countries = v.parse(RestCountriesValidator, data)
 
     await redis.set(
       KEYS.geolocationCountries,
