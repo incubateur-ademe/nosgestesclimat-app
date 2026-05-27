@@ -1,11 +1,13 @@
 import { FF_PARAM_PREFIX } from './constants'
 import { FLAGS } from './flags'
+import type { FlagDefinition } from './flags'
 
 /**
  * Extracts feature flag overrides from URL search parameters.
  *
  * Recognises params with the `FF_PARAM_PREFIX` prefix (e.g. `?ff_actions-v2=true`).
- * Values `true` / `false` are parsed as booleans; any other non-empty value is kept as a string.
+ * Values `true` / `false` are parsed as booleans; variant values are validated against
+ * the flag definition. Unknown flags or invalid values are silently ignored.
  * Returns `null` when no valid overrides are present.
  */
 export function parseFeatureFlagParams(
@@ -16,17 +18,12 @@ export function parseFeatureFlagParams(
     if (!key.startsWith(FF_PARAM_PREFIX)) continue
     const flagName = key.slice(FF_PARAM_PREFIX.length)
     if (!(flagName in FLAGS)) continue
-    const def = FLAGS[flagName as keyof typeof FLAGS]
+    const def = FLAGS[flagName as keyof typeof FLAGS] as FlagDefinition
     if (def.kind === 'boolean') {
       if (value === 'true') overrides[flagName] = true
       else if (value === 'false') overrides[flagName] = false
-    } else {
-      const variants: readonly string[] = (
-        def as unknown as { variants: readonly string[] }
-      ).variants
-      if (variants.includes(value)) {
-        overrides[flagName] = value
-      }
+    } else if (def.variants.includes(value)) {
+      overrides[flagName] = value
     }
   }
   return Object.keys(overrides).length > 0 ? overrides : null

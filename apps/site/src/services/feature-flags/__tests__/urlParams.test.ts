@@ -1,4 +1,13 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('../flags', () => ({
+  FLAGS: {
+    'actions-v2': { kind: 'boolean' },
+    'mode-scolaire': { kind: 'boolean' },
+    variant: { kind: 'variant', variants: ['control', 'test'] },
+  },
+}))
+
 import {
   parseFeatureFlagCookie,
   parseFeatureFlagParams,
@@ -24,17 +33,13 @@ describe('parseFeatureFlagParams', () => {
 
   it('parses a known variant value', () => {
     expect(
-      parseFeatureFlagParams(
-        new URLSearchParams('?ff_ab-test-tranche=test')
-      )
-    ).toEqual({ 'ab-test-tranche': 'test' })
+      parseFeatureFlagParams(new URLSearchParams('?ff_variant=test'))
+    ).toEqual({ variant: 'test' })
   })
 
   it('ignores unknown variant value', () => {
     expect(
-      parseFeatureFlagParams(
-        new URLSearchParams('?ff_ab-test-tranche=wrong')
-      )
+      parseFeatureFlagParams(new URLSearchParams('?ff_variant=wrong'))
     ).toBeNull()
   })
 
@@ -70,8 +75,8 @@ describe('parseFeatureFlagCookie', () => {
 
   it('parses a variant override', () => {
     expect(
-      parseFeatureFlagCookie('{"ab-test-tranche":"test"}')
-    ).toEqual({ 'ab-test-tranche': 'test' })
+      parseFeatureFlagCookie('{"variant":"test"}')
+    ).toEqual({ variant: 'test' })
   })
 
   it('returns empty object for undefined, empty, or malformed input', () => {
