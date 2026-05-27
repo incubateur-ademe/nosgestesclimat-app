@@ -25,7 +25,7 @@ interface Props {
 export default async function ActionsBlock({ locale }: Props) {
   const { t } = await getServerTranslation({ locale })
   return (
-    <Card className="group/card focus-within:ring-primary-700 relative mb-20 focus-within:ring-2 focus-within:ring-offset-3 focus-within:outline-hidden">
+    <Card className="group/card focus-within:ring-primary-700 relative mb-20 shadow-md transition-all duration-200 ease-out focus-within:ring-2 focus-within:ring-offset-3 focus-within:outline-hidden hover:scale-[1.02] hover:shadow-xl">
       <div className="flex flex-col items-stretch gap-10 md:flex-row md:gap-4">
         <div className="w-full max-w-full sm:w-md">
           <Title
