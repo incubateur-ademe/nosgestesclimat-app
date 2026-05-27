@@ -10,7 +10,7 @@ import { getLinkToGroupInvitation } from '@/helpers/navigation/groupPages'
 import { getUser } from '@/helpers/server/dal/user'
 import { getGroup } from '@/helpers/server/model/groups'
 import type { DefaultPageProps } from '@/types'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import GroupPage from './_components/GroupPage'
 
 export default async function GroupResultsPage({
@@ -18,7 +18,18 @@ export default async function GroupResultsPage({
   searchParams,
 }: DefaultPageProps<{ searchParams: Promise<{ groupId: string }> }>) {
   const locale = (await params).locale
-  const { groupId } = await searchParams!
+
+  const searchParamsObject = await searchParams
+
+  if (!searchParamsObject) {
+    notFound()
+  }
+
+  const { groupId } = searchParamsObject
+
+  if (!groupId) {
+    notFound()
+  }
 
   const user = await getUser()
 
