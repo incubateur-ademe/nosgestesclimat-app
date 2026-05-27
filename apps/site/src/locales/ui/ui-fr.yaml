@@ -426,7 +426,6 @@ entries:
   Et la vôtre ?: Et la vôtre ?
   Impressionnant, non ?: Impressionnant, non ?
   L'empreinte carbone: L'empreinte carbone
-  L'empreinte carbone moyenne d'un français est de <2>9,1 tonnes de CO2e par an</2>.: L'empreinte carbone moyenne d'un français est de <2>9,1 tonnes de CO2e par an</2>.
   L'empreinte eau: L'empreinte eau
   L'empreinte eau moyenne d'un français se compte <2>milliers de litres par jour</2>.: L'empreinte eau moyenne d'un français se compte <2>milliers de litres par jour</2>.
   La production d'un jean nécessite près de <2>30 000 litres d'eau</2>.: La production d'un jean nécessite près de <2>30 000 litres d'eau</2>.
@@ -1387,3 +1386,4 @@ entries:
   simulator.transition.alimentation.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   simulator.transition.divers.graph.arrowText: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   simulator.transition.housing.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
+  L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).
