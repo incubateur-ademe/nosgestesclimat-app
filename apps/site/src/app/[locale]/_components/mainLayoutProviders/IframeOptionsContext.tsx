@@ -5,6 +5,8 @@ import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
 import { getIsIframe } from '@/utils/getIsIframe'
 import * as Sentry from '@sentry/nextjs'
 import { createContext, useEffect, useState } from 'react'
+import StorageAccessOverlay from './StorageAccessOverlay'
+import { useSafariStorageAccess } from './_hooks/useSafariStorageAccess'
 
 const STORAGE_KEYS = {
   IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
@@ -71,6 +73,9 @@ export const IframeOptionsProvider = ({
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
+  const { isBlocked, needsOverlay, handleAskPermission } =
+    useSafariStorageAccess(isIframe)
+
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
     if (!isIframe) return false
     return sessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
@@ -90,7 +95,6 @@ export const IframeOptionsProvider = ({
     return sessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
   })
 
-  // Read iframe parameters from URL and persist to sessionStorage
   useEffect(() => {
     if (!isIframe) return
 
@@ -117,8 +121,7 @@ export const IframeOptionsProvider = ({
       setIframeLang(urlLang)
       sessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIframe])
+  }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const isAllowedToBypassConsentDataShare =
     getIsAllowedToBypassConsentDataShare()
@@ -153,7 +156,11 @@ export const IframeOptionsProvider = ({
         iframeLang,
         isFrenchRegion,
       }}>
-      {children}
+      {!isIframe || !isBlocked ? (
+        children
+      ) : needsOverlay ? (
+        <StorageAccessOverlay onAskPermission={handleAskPermission} />
+      ) : null}
     </IframeOptionsContext.Provider>
   )
 }

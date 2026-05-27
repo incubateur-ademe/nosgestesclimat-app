@@ -1387,3 +1387,8 @@ entries:
   simulator.transition.divers.graph.arrowText: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   simulator.transition.housing.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).
+  iframe.safari.askPermission: Autoriser
+  iframe.safari.step1: Pour que le calculateur fonctionne, votre navigateur a besoin d'accéder aux cookies de Nos Gestes Climat.
+  iframe.safari.step2: Cliquez sur le bouton ci-dessous puis sur "Autoriser" dans la fenêtre qui s'affichera.
+  iframe.safari.title: Autorisation des cookies requise
+  results.actions.afterLink.label: Découvrir mes actions personnalisées
