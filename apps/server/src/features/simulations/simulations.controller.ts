@@ -69,11 +69,7 @@ router.route('/v1/:userId').post(
       })
 
       if (token) {
-        res.cookie(
-          COOKIE_NAME,
-          token,
-          getCookieOptions(origin, req.get('user-agent'))
-        )
+        res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
       }
 
       return res.status(StatusCodes.CREATED).json(simulation)

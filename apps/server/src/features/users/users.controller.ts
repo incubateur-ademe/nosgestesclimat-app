@@ -94,11 +94,7 @@ router
         })
 
         if (token) {
-          res.cookie(
-            COOKIE_NAME,
-            token,
-            getCookieOptions(origin, req.get('user-agent'))
-          )
+          res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
         }
 
         return verified

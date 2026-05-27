@@ -1,5 +1,4 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
-import { isLegacySafariUA } from '@nosgestesclimat/core/utils/userAgent'
 import type { CookieOptions } from 'express'
 import jwt from 'jsonwebtoken'
 import {
@@ -30,25 +29,9 @@ import {
 
 export const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 61 // 2 months
 
-export function getCookieOptions(
-  origin: string,
-  userAgent?: string | null
-): CookieOptions {
+export function getCookieOptions(origin: string): CookieOptions {
   const domain = new URL(origin).hostname
   const secure = !origin.startsWith('http://localhost')
-  const isLegacySafari = isLegacySafariUA(userAgent ?? null)
-
-  if (isLegacySafari) {
-    return {
-      maxAge: COOKIE_MAX_AGE,
-      httpOnly: true,
-      secure,
-      sameSite: secure ? 'lax' : 'strict',
-      // No domain — Safari may reject cookies with explicit Domain
-      // No partitioned — not supported by Safari < 17
-    }
-  }
-
   return {
     maxAge: COOKIE_MAX_AGE,
     httpOnly: true,

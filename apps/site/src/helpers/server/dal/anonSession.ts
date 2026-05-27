@@ -1,10 +1,7 @@
 import { getIronSession, type SessionOptions } from 'iron-session'
 import { cookies } from 'next/headers'
 import type { UserRegion } from '../model/models'
-import {
-  DEFAULT_COOKIE_OPTION,
-  LEGACY_SAFARI_COOKIE_OPTION,
-} from './authCookie'
+import { DEFAULT_COOKIE_OPTION } from './authCookie'
 
 export interface AnonSessionData {
   userId?: string
@@ -25,16 +22,6 @@ export const anonSessionOptions: SessionOptions = {
   cookieName: 'ngc_anon_user',
   ttl: TWO_YEARS_IN_SECONDS,
   cookieOptions: DEFAULT_COOKIE_OPTION,
-}
-
-/** Returns session options tuned for legacy Safari (< 17) cookie compatibility. */
-export function getLegacySafariAnonSessionOptions(): SessionOptions {
-  return {
-    password: process.env.IRON_SESSION_PASSWORD!,
-    cookieName: 'ngc_anon_user',
-    ttl: TWO_YEARS_IN_SECONDS,
-    cookieOptions: LEGACY_SAFARI_COOKIE_OPTION,
-  }
 }
 
 export async function getAnonSession() {

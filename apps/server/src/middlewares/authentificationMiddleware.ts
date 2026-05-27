@@ -59,11 +59,7 @@ export const authentificationMiddleware =
 
       const newToken = createToken({ email, id: userId })
       const origin = req.get('origin') || config.app.origin
-      res.cookie(
-        COOKIE_NAME,
-        newToken,
-        getCookieOptions(origin, req.get('user-agent'))
-      )
+      res.cookie(COOKIE_NAME, newToken, getCookieOptions(origin))
 
       next()
     })
