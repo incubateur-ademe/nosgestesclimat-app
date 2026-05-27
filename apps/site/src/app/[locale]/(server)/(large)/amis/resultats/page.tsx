@@ -38,7 +38,7 @@ export default async function GroupResultsPage({
     getGroup({ groupId, user }),
   ])
 
-  const userSimulation = group.participants?.find(
+  const userSimulation = group.participants.find(
     (participant) => participant.userId === user.id
   )?.simulation
 
