@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
@@ -9,52 +9,68 @@ export const REACHABLE_NEWSLETTER_LIST_IDS = [
   ListIds.ALIMENTATION_NEWSLETTER,
 ] as const
 
-const ReachableNewsletterListId = z.preprocess(
-  (val) => (Array.isArray(val) ? val : [val]),
-  z.array(
-    z.coerce
-      .number()
-      .pipe(z.union(REACHABLE_NEWSLETTER_LIST_IDS.map((id) => z.literal(id))))
+const ReachableNewsletterListId = v.pipe(
+  v.unknown(),
+  v.transform((val: unknown) => (Array.isArray(val) ? val : [val])),
+  v.array(
+    v.pipe(
+      v.unknown(),
+      v.transform(Number),
+      v.picklist(REACHABLE_NEWSLETTER_LIST_IDS)
+    )
   )
 )
-export type ReachableNewsletterListId = z.infer<
+
+export type ReachableNewsletterListId = v.InferOutput<
   typeof ReachableNewsletterListId
 >
-export const NewsletterInscriptionDto = z.object({
-  email: z.email().transform((email) => email.toLocaleLowerCase()),
+
+export const NewsletterInscriptionDto = v.strictObject({
+  email: v.pipe(
+    v.string(),
+    v.email(),
+    v.transform((email: string) => email.toLocaleLowerCase())
+  ),
   listIds: ReachableNewsletterListId,
 })
 
 export const NewsletterInscriptionValidator = {
   body: NewsletterInscriptionDto,
   query: LocaleQuery,
-  params: z.object({}),
+  params: v.strictObject({}),
 }
 
-export type NewsletterInscriptionDto = z.infer<typeof NewsletterInscriptionDto>
+export type NewsletterInscriptionDto = v.InferOutput<
+  typeof NewsletterInscriptionDto
+>
 
-const NewsletterConfirmationQuery = z
-  .object({
-    code: z.string().regex(/^\d{6}$/),
-    origin: z.string().refine((url) => {
+const NewsletterConfirmationQuery = v.strictObject({
+  ...LocaleQuery.entries,
+  code: v.pipe(v.string(), v.regex(/^\d{6}$/)),
+  origin: v.pipe(
+    v.string(),
+    v.check((url: string) => {
       try {
         return new URL(url).origin === url
       } catch {
         return false
       }
-    }),
-    email: z.email().transform((email) => email.toLocaleLowerCase()),
-    listIds: ReachableNewsletterListId,
-  })
-  .extend(LocaleQuery.shape)
-  .strict()
+    })
+  ),
+  email: v.pipe(
+    v.string(),
+    v.email(),
+    v.transform((email: string) => email.toLocaleLowerCase())
+  ),
+  listIds: ReachableNewsletterListId,
+})
 
-export type NewsletterConfirmationQuery = z.infer<
+export type NewsletterConfirmationQuery = v.InferOutput<
   typeof NewsletterConfirmationQuery
 >
 
 export const NewsletterConfirmationValidator = {
-  body: z.object({}).optional(),
+  body: v.optional(v.strictObject({})),
   query: NewsletterConfirmationQuery,
-  params: z.object({}),
+  params: v.strictObject({}),
 }

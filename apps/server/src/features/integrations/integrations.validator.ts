@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { SituationSchema } from '../simulations/simulations.validator.ts'
 
 export const ExternalServiceTypeEnum = {
@@ -9,42 +9,40 @@ export const ExternalServiceTypeEnum = {
 export type ExternalServiceTypeEnum =
   (typeof ExternalServiceTypeEnum)[keyof typeof ExternalServiceTypeEnum]
 
-const ExternalServiceType = z.enum(ExternalServiceTypeEnum)
+const ExternalServiceType = v.enum(ExternalServiceTypeEnum)
 
-const ExternalServiceParams = z
-  .object({
-    externalService: ExternalServiceType,
-  })
-  .strict()
+const ExternalServiceParams = v.strictObject({
+  externalService: ExternalServiceType,
+})
 
-export type ExternalServiceParams = z.infer<typeof ExternalServiceParams>
+export type ExternalServiceParams = v.InferOutput<typeof ExternalServiceParams>
 
 const partnerPrefix = 'partner-'
 
-const SituationExportQueryParamsSchema = z
-  .record(
-    z.string(),
-    z.union([
-      z.array(z.string().nullable()),
-      z.number().nullable(),
-      z.string().nullable(),
-      z.boolean().nullable(),
+const SituationExportQueryParamsSchema = v.pipe(
+  v.record(
+    v.string(),
+    v.union([
+      v.array(v.nullable(v.string())),
+      v.nullable(v.number()),
+      v.nullable(v.string()),
+      v.nullable(v.boolean()),
     ])
+  ),
+  v.check(
+    (data) =>
+      Object.keys(data).every((key: string) => key.startsWith(partnerPrefix)),
+    `Each key must start with the prefix '${partnerPrefix}*'`
   )
-  .refine(
-    (data) => Object.keys(data).every((key) => key.startsWith(partnerPrefix)),
-    {
-      message: `Each key must start with the prefix '${partnerPrefix}*'`,
-    }
-  )
+)
 
-export type SituationExportQueryParamsSchema = z.infer<
+export type SituationExportQueryParamsSchema = v.InferOutput<
   typeof SituationExportQueryParamsSchema
 >
 
 export const FetchExternalServiceValidator = {
-  body: z.object({}).strict(),
-  query: z.object({}).strict().optional(),
+  body: v.strictObject({}),
+  query: v.optional(v.strictObject({})),
   params: ExternalServiceParams,
 }
 

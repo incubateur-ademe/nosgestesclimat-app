@@ -36,7 +36,9 @@ export default function LocalisationBanner({ model }: { model: Model }) {
   const versionName = regionParams[currentLocale].gentilé
 
   if (tutorials.localisationBanner || isServerSide()) return null
-  if (region === DEFAULT_REGION) return null
+
+  // Hide banner for the default region and for our Swiss partners
+  if (region === DEFAULT_REGION || region === 'CH') return null
 
   return (
     <Card

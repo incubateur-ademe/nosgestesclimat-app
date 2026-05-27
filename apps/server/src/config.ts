@@ -1,132 +1,121 @@
 import dotenv from 'dotenv'
-import { z } from 'zod'
+import * as v from 'valibot'
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ quiet: true })
 }
 
-const EnvSchema = z
-  .enum(['development', 'production', 'test'])
-  .default('development')
+const EnvSchema = v.optional(
+  v.picklist(['development', 'production', 'test']),
+  'development'
+)
 
-const ListCommaSeparatedSchema = z
-  .string()
-  .optional()
-  .transform((list = '') => new Set(list.split(',')))
+const ListCommaSeparatedSchema = v.pipe(
+  v.fallback(v.string(), ''),
+  v.transform((list) => new Set(list.split(',')))
+)
 
-const AppSchema = z
-  .object({
-    env: EnvSchema,
-    origin: z.string().url().default('https://nosgestesclimat.fr'),
-    organisationIdsWithCustomQuestionsEnabled: ListCommaSeparatedSchema,
-    port: z.coerce.number().optional(),
-    serverUrl: z.string().optional(),
-    redis: z
-      .object({
-        url: z.string().default('redis://localhost:6379'),
-      })
-      .strict(),
-  })
-  .strict()
+const AppSchema = v.strictObject({
+  env: EnvSchema,
+  origin: v.optional(v.pipe(v.string(), v.url()), 'https://nosgestesclimat.fr'),
+  organisationIdsWithCustomQuestionsEnabled: v.optional(
+    ListCommaSeparatedSchema,
+    ''
+  ),
+  port: v.optional(v.pipe(v.unknown(), v.toNumber(), v.number())),
+  serverUrl: v.optional(v.string()),
+  redis: v.strictObject({
+    url: v.optional(v.string(), 'redis://localhost:6379'),
+  }),
+})
 
-const SecuritySchema = z
-  .object({
-    cookie: z
-      .object({ name: z.string().default('ngc_server_auth_jwt') })
-      .strict(),
-    job: z.object({ secret: z.string() }).strict(),
-    jwt: z.object({ secret: z.string() }).strict(),
-  })
-  .strict()
+const SecuritySchema = v.strictObject({
+  cookie: v.strictObject({
+    name: v.optional(v.string(), 'ngc_server_auth_jwt'),
+  }),
+  job: v.strictObject({ secret: v.string() }),
+  jwt: v.strictObject({ secret: v.string() }),
+})
 
-const AgirSchema = z
-  .object({ apiKey: z.string(), url: z.string().url() })
-  .strict()
+const AgirSchema = v.strictObject({
+  apiKey: v.string(),
+  url: v.pipe(v.string(), v.url()),
+})
 
-const BrevoSchema = z
-  .object({ apiKey: z.string(), url: z.string().url() })
-  .strict()
+const BrevoSchema = v.strictObject({
+  apiKey: v.string(),
+  url: v.pipe(v.string(), v.url()),
+})
 
-const ConnectSchema = z
-  .object({
-    clientId: z.string(),
-    clientSecret: z.string(),
-    url: z.string().url(),
-  })
-  .strict()
+const ConnectSchema = v.strictObject({
+  clientId: v.string(),
+  clientSecret: v.string(),
+  url: v.pipe(v.string(), v.url()),
+})
 
-const MatomoInstanceBaseSchema = z
-  .object({
-    token: z.string(),
-    timeout: z.coerce.number().default(60000),
-    secure: z
-      .string()
-      .optional()
-      .transform((val) => val === 'true'),
-  })
-  .strict()
+const MatomoInstanceBaseSchema = v.strictObject({
+  token: v.string(),
+  timeout: v.optional(v.pipe(v.unknown(), v.toNumber(), v.number()), 60000),
+  secure: v.optional(
+    v.pipe(
+      v.string(),
+      v.transform((val) => val === 'true')
+    )
+  ),
+})
 
-const MatomoBetaSchema = MatomoInstanceBaseSchema.extend({
-  siteId: z.string().default('20'),
-  url: z.string().url().default('https://stats.beta.gouv.fr'),
-}).strict()
+const MatomoBetaSchema = v.strictObject({
+  ...MatomoInstanceBaseSchema.entries,
+  siteId: v.optional(v.string(), '20'),
+  url: v.optional(v.pipe(v.string(), v.url()), 'https://stats.beta.gouv.fr'),
+})
 
-const MatomoDataSchema = MatomoInstanceBaseSchema.extend({
-  siteId: z.string().default('153'),
-  url: z.string().url().default('https://stats.data.gouv.fr'),
-}).strict()
+const MatomoDataSchema = v.strictObject({
+  ...MatomoInstanceBaseSchema.entries,
+  siteId: v.optional(v.string(), '153'),
+  url: v.optional(v.pipe(v.string(), v.url()), 'https://stats.data.gouv.fr'),
+})
 
-const MatomoSchema = z
-  .object({
-    beta: MatomoBetaSchema,
-    data: MatomoDataSchema.optional(),
-  })
-  .strict()
+const MatomoSchema = v.strictObject({
+  beta: MatomoBetaSchema,
+  data: v.optional(MatomoDataSchema),
+})
 
-const ScalewaySchema = z
-  .object({
-    accessKeyId: z.string(),
-    secretAccessKey: z.string(),
-    bucket: z.string(),
-    endpoint: z.string().default('https://s3.fr-par.scw.cloud'),
-    region: z.string().default('fr-par'),
-    rootPath: z.string().default('ngc'),
-  })
-  .strict()
+const ScalewaySchema = v.strictObject({
+  accessKeyId: v.string(),
+  secretAccessKey: v.string(),
+  bucket: v.string(),
+  endpoint: v.optional(v.string(), 'https://s3.fr-par.scw.cloud'),
+  region: v.optional(v.string(), 'fr-par'),
+  rootPath: v.optional(v.string(), 'ngc'),
+})
 
-const SentrySchema = z
-  .object({
-    dsn: z.string().optional(),
-  })
-  .strict()
+const SentrySchema = v.strictObject({
+  dsn: v.optional(v.string()),
+})
 
-const TwoTonsSchema = z
-  .object({
-    url: z.string().url(),
-    bearerToken: z.string(),
-  })
-  .strict()
+const TwoTonsSchema = v.strictObject({
+  url: v.pipe(v.string(), v.url()),
+  bearerToken: v.string(),
+})
 
-const ThirdPartySchema = z
-  .object({
-    agir: AgirSchema,
-    brevo: BrevoSchema,
-    connect: ConnectSchema,
-    matomo: MatomoSchema,
-    scaleway: ScalewaySchema,
-    sentry: SentrySchema,
-    twoTons: TwoTonsSchema,
-  })
-  .strict()
+const ThirdPartySchema = v.strictObject({
+  agir: AgirSchema,
+  brevo: BrevoSchema,
+  connect: ConnectSchema,
+  matomo: MatomoSchema,
+  scaleway: ScalewaySchema,
+  sentry: SentrySchema,
+  twoTons: TwoTonsSchema,
+})
 
-const ConfigSchema = z
-  .object({
+const ConfigSchema = v.pipe(
+  v.strictObject({
     app: AppSchema,
     security: SecuritySchema,
     thirdParty: ThirdPartySchema,
-  })
-  .strict()
-  .transform(({ app, ...config }) => ({
+  }),
+  v.transform(({ app, ...config }) => ({
     ...config,
     app: {
       ...app,
@@ -143,6 +132,7 @@ const ConfigSchema = z
           : 'https://server.nosgestesclimat.fr'),
     },
   }))
+)
 
 const {
   env: {
@@ -179,7 +169,7 @@ const {
   },
 } = process
 
-export const config = ConfigSchema.parse({
+export const config = v.parse(ConfigSchema, {
   app: {
     env: NODE_ENV,
     origin: ORIGIN,

@@ -1,19 +1,35 @@
 import type { Response } from 'express'
-import z from 'zod'
+import * as v from 'valibot'
 
-export const PaginationQuery = z.object({
-  page: z.coerce
-    .number()
-    .int()
-    .positive()
-    .min(1)
-    .default(1)
+export const PaginationQuery = v.strictObject({
+  page: v.pipe(
+    v.optional(
+      v.pipe(
+        v.unknown(),
+        v.transform(Number),
+        v.number(),
+        v.integer(),
+        v.minValue(1)
+      ),
+      1
+    ),
     // allows pagination to be 0 indexed
-    .transform((val) => val - 1),
-  pageSize: z.coerce.number().int().positive().min(1).max(50).default(20),
+    v.transform((val) => val - 1)
+  ),
+  pageSize: v.optional(
+    v.pipe(
+      v.unknown(),
+      v.transform(Number),
+      v.number(),
+      v.integer(),
+      v.minValue(1),
+      v.maxValue(50)
+    ),
+    20
+  ),
 })
 
-export type PaginationQuery = z.infer<typeof PaginationQuery>
+export type PaginationQuery = v.InferOutput<typeof PaginationQuery>
 
 export const withPaginationHeaders = ({
   pageSize,

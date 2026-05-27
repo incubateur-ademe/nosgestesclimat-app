@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import supertest from 'supertest'
+import * as v from 'valibot'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { simulationSelection } from '../../../adapters/prisma/selection.ts'
 import { redis } from '../../../adapters/redis/client.ts'
@@ -137,7 +138,7 @@ describe('Given a poll participation', () => {
       })
 
       expect(
-        ComputedResultSchema.safeParse(cache.computedResults).error
+        v.safeParse(ComputedResultSchema, cache.computedResults).issues
       ).toBeUndefined()
     })
 

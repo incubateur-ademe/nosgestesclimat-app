@@ -58,14 +58,14 @@ export default async function Page({
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.transport.funFact.line1">
-                Chaque trajet compte :
+                Privilégie
               </Trans>
             </span>
-            <span className="text-primary-600 mb-0 block text-2xl font-bold">
+            <span className="text-primary-600 mb-0 block text-center text-xl font-bold">
               <Trans
                 locale={locale}
                 i18nKey="simulator.transition.transport.funFact.line2">
-                fais le bon choix !
+                la marche, le vélo ou la trottinette
               </Trans>
             </span>
             <Emoji className="text-3xl">🚲 🛴🚶</Emoji>

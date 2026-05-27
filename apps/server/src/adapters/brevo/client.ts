@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
-import { z } from 'zod'
+import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { Locales } from '../../core/i18n/constant.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
@@ -96,20 +96,20 @@ export type BrevoContactDto = {
   statistics: unknown
 }
 
-const BrevoContactSchema = z.object({
-  id: z.number(),
-  email: z.string(),
-  listIds: z.array(z.number()),
+const BrevoContactSchema = v.object({
+  id: v.number(),
+  email: v.string(),
+  listIds: v.array(v.number()),
 })
 
-export type BrevoContact = z.infer<typeof BrevoContactSchema>
+export type BrevoContact = v.InferOutput<typeof BrevoContactSchema>
 
 export const fetchContactOrThrow = async (email: string) => {
   const { data } = await brevo.get<BrevoContactDto>(
     `/v3/contacts/${encodeURIComponent(email)}`
   )
 
-  return BrevoContactSchema.parse(data)
+  return v.parse(BrevoContactSchema, data)
 }
 
 export const fetchContact = async (email: string) => {

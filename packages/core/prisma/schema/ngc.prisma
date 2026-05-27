@@ -12,29 +12,6 @@ model Answer {
   @@schema("ngc")
 }
 
-model Action {
-  id                   String    @id @default(uuid()) @db.Uuid
-  title                String
-  slug                 String
-  trackingId           String
-  longDescription      String
-  ruleId               String    @db.Uuid
-  themeId              String    @db.Uuid
-  media                Json?
-  tips                 String?
-  financialIncentives  String?
-  furtherExplore       String?
-  seoMetadata          SeoMetadata?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  publishedAt          DateTime?
-  deletedAt            DateTime?
-
-  @@unique([slug])
-  @@index([deletedAt, publishedAt])
-  @@schema("ngc")
-}
-
 model BrevoNewsletterStats {
   id            String   @id @default(uuid()) @db.Uuid
   date          DateTime @db.Date
@@ -353,6 +330,7 @@ model Simulation {
   verifiedUser               VerifiedUser?                        @relation(fields: [userEmail], references: [email], onDelete: Cascade)
   createdAt                  DateTime                             @default(now())
   updatedAt                  DateTime                             @updatedAt
+  actionAssessments          ActionAssessment[]
 
   @@index([userId])
   @@index([userEmail])

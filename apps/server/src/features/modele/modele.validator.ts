@@ -1,7 +1,7 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 
 export const GeolocationFetchValidator = {
-  body: z.object({}).strict().optional(),
-  params: z.object({}).strict().optional(),
-  query: z.object({}).strict().optional(),
+  body: v.optional(v.strictObject({})),
+  params: v.optional(v.strictObject({})),
+  query: v.optional(v.strictObject({})),
 }
