@@ -16,9 +16,18 @@ export function parseFeatureFlagParams(
     if (!key.startsWith(FF_PARAM_PREFIX)) continue
     const flagName = key.slice(FF_PARAM_PREFIX.length)
     if (!(flagName in FLAGS)) continue
-    if (value === 'true') overrides[flagName] = true
-    else if (value === 'false') overrides[flagName] = false
-    else if (value.length > 0) overrides[flagName] = value
+    const def = FLAGS[flagName as keyof typeof FLAGS]
+    if (def.kind === 'boolean') {
+      if (value === 'true') overrides[flagName] = true
+      else if (value === 'false') overrides[flagName] = false
+    } else {
+      const variants: readonly string[] = (
+        def as unknown as { variants: readonly string[] }
+      ).variants
+      if (variants.includes(value)) {
+        overrides[flagName] = value
+      }
+    }
   }
   return Object.keys(overrides).length > 0 ? overrides : null
 }

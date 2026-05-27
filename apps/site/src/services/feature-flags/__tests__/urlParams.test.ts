@@ -12,20 +12,36 @@ describe('parseFeatureFlagParams', () => {
 
   it('parses a single truthy flag', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_my-flag=true'))
-    ).toEqual({ 'my-flag': true })
+      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=true'))
+    ).toEqual({ 'actions-v2': true })
   })
 
   it('parses a single falsy flag', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_my-flag=false'))
-    ).toEqual({ 'my-flag': false })
+      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=false'))
+    ).toEqual({ 'actions-v2': false })
   })
 
-  it('keeps non-boolean values as strings', () => {
+  it('parses a known variant value', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_variant-flag=test'))
-    ).toEqual({ 'variant-flag': 'test' })
+      parseFeatureFlagParams(
+        new URLSearchParams('?ff_ab-test-tranche=test')
+      )
+    ).toEqual({ 'ab-test-tranche': 'test' })
+  })
+
+  it('ignores unknown variant value', () => {
+    expect(
+      parseFeatureFlagParams(
+        new URLSearchParams('?ff_ab-test-tranche=wrong')
+      )
+    ).toBeNull()
+  })
+
+  it('ignores non-boolean values on boolean flags', () => {
+    expect(
+      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=test'))
+    ).toBeNull()
   })
 
   it('ignores flags not in FLAGS', () => {
