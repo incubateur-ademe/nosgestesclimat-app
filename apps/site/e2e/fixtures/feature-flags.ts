@@ -1,14 +1,15 @@
 import { test as base, type Page } from '@playwright/test'
 
+import { AGE_RANGE_KEY } from '@/constants/ab-test'
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
-import type { FeatureFlagName } from '@/services/feature-flags/flags'
 
 const DOMAIN = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
 
 const DEFAULT_FLAGS = {
   'actions-v2': false,
   'mode-scolaire': true,
-} satisfies Record<FeatureFlagName, boolean>
+  [AGE_RANGE_KEY]: false,
+} satisfies Record<string, boolean>
 
 export class FeatureFlags {
   constructor(private page: Page) {}
