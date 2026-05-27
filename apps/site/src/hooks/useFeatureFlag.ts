@@ -7,21 +7,19 @@ import { getClientCookie } from '@/utils/cookie'
 import posthog from 'posthog-js'
 import { useEffect, useState } from 'react'
 
-type Maybe<T> = T | undefined
-
 function resolveFlagValue<K extends FeatureFlagName>(
   flag: K
-): Maybe<FeatureFlagValue<K>> {
+): FeatureFlagValue<K> | undefined {
   const raw = getClientCookie(FF_COOKIE_NAME)
   const overrides = parseFeatureFlagCookie(raw)
   if (flag in overrides) return overrides[flag] as FeatureFlagValue<K>
-  return posthog?.getFeatureFlag(flag) as Maybe<FeatureFlagValue<K>>
+  return posthog?.getFeatureFlag(flag) as FeatureFlagValue<K> | undefined
 }
 
 export function useFeatureFlag<K extends FeatureFlagName>(
   flag: K
-): Maybe<FeatureFlagValue<K>> {
-  const [value, setValue] = useState<Maybe<FeatureFlagValue<K>>>(() =>
+): FeatureFlagValue<K> | undefined {
+  const [value, setValue] = useState<FeatureFlagValue<K> | undefined>(() =>
     resolveFlagValue(flag)
   )
 
