@@ -12,7 +12,7 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useClearFromSituation } from '../hooks/useClearFromSituation'
 import { useQuestionTimeSpent } from '../hooks/useQuestionTimeSpent'
 
@@ -32,6 +32,8 @@ export default function DontKnowButton({ question }: Props) {
   const { getQuestionTimeSpent } = useQuestionTimeSpent(question)
 
   const { clearFromSituation } = useClearFromSituation()
+
+  const pendingNavigationRef = useRef(false)
 
   const handleFoldWithDefaultValue = useCallback(() => {
     if (questionsOfMosaicFromParent.length > 0) {
@@ -82,8 +84,16 @@ export default function DontKnowButton({ question }: Props) {
     // Fold with engine-computed values (model defaults after clearing)
     handleFoldWithDefaultValue()
 
-    goToNextQuestion()
+    pendingNavigationRef.current = true
   }
+
+  // Necessary to avoid race condition when clearing value
+  useEffect(() => {
+    if (pendingNavigationRef.current) {
+      pendingNavigationRef.current = false
+      goToNextQuestion()
+    }
+  })
 
   return (
     <div className="mt-4 mb-4 flex flex-col items-start gap-4 md:flex-row">
