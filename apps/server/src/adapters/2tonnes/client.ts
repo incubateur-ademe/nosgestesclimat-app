@@ -1,6 +1,6 @@
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
-import { z } from 'zod'
+import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.ts'
@@ -20,11 +20,9 @@ axiosRetry(twoTons, {
   shouldResetTimeout: true,
 })
 
-const TwoTonsResponseSchema = z
-  .object({
-    redirect_url: z.string(),
-  })
-  .strict()
+const TwoTonsResponseSchema = v.strictObject({
+  redirect_url: v.string(),
+})
 
 export const exportSituation = async (
   situation: SituationSchema,
@@ -42,11 +40,14 @@ export const exportSituation = async (
     )
 
     return {
-      redirectUrl: TwoTonsResponseSchema.parse(data).redirect_url,
+      redirectUrl: v.parse(TwoTonsResponseSchema, data).redirect_url,
     }
   } catch (e) {
     if (isAxiosError(e) && e.response?.data) {
-      const { success, data } = TwoTonsResponseSchema.safeParse(e.response.data)
+      const { success, output: data } = v.safeParse(
+        TwoTonsResponseSchema,
+        e.response.data
+      )
 
       if (success) {
         return {
@@ -55,7 +56,7 @@ export const exportSituation = async (
       }
     }
 
-    const { success, data } = TwoTonsResponseSchema.safeParse({
+    const { success, output: data } = v.safeParse(TwoTonsResponseSchema, {
       redirect_url: params['fallback'],
     })
 

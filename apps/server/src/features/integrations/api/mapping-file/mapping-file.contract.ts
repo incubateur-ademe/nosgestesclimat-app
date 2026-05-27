@@ -1,8 +1,8 @@
-import { initContract, ZodErrorSchema } from '@ts-rest/core'
+import { initContract } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import { Stream } from 'stream'
-import { z } from 'zod'
-import type { ValueOf } from '../../../../types/types.ts'
+import * as v from 'valibot'
+import { ValidationErrorSchema } from '../../../../core/middlewares/validation-error.schema.ts'
 import { ExternalServiceTypeEnum } from '../../integrations.validator.ts'
 
 export const MappingFileKind = {
@@ -12,33 +12,30 @@ export const MappingFileKind = {
   values: 'values',
 } as const
 
-export type MappingFileKind = ValueOf<typeof MappingFileKind>
+export type MappingFileKind =
+  (typeof MappingFileKind)[keyof typeof MappingFileKind]
 
-const MappingFileParams = z
-  .object({
-    kind: z.enum(MappingFileKind),
-    partner: z.enum(ExternalServiceTypeEnum),
-  })
-  .strict()
+const MappingFileParams = v.strictObject({
+  kind: v.enum(MappingFileKind),
+  partner: v.enum(ExternalServiceTypeEnum),
+})
 
-export type MappingFileParams = z.infer<typeof MappingFileParams>
+export type MappingFileParams = v.InferOutput<typeof MappingFileParams>
 
-export const MappingFile = z
-  .object({
-    buffer: z.instanceof(Buffer),
-    encoding: z.string(),
-    fieldname: z.string(),
-    mimetype: z.string().regex(/ya?ml/),
-    originalname: z.string().regex(/\.ya?ml$/),
-    size: z.number(),
-    path: z.string().optional(),
-    filename: z.string().optional(),
-    destination: z.string().optional(),
-    stream: z.instanceof(Stream).optional(),
-  })
-  .strict()
+export const MappingFile = v.strictObject({
+  buffer: v.instance(Buffer),
+  encoding: v.string(),
+  fieldname: v.string(),
+  mimetype: v.pipe(v.string(), v.regex(/ya?ml/)),
+  originalname: v.pipe(v.string(), v.regex(/\.ya?ml$/)),
+  size: v.number(),
+  path: v.optional(v.string()),
+  filename: v.optional(v.string()),
+  destination: v.optional(v.string()),
+  stream: v.optional(v.instance(Stream)),
+})
 
-export type MappingFile = z.infer<typeof MappingFile>
+export type MappingFile = v.InferOutput<typeof MappingFile>
 
 const c = initContract()
 
@@ -47,15 +44,15 @@ const contract = c.router({
     method: 'PUT',
     path: '/integrations-api/v1/mapping-files',
     contentType: 'multipart/form-data',
-    query: z.object({}).strict(),
-    pathParams: z.object({}).strict(),
+    query: v.strictObject({}),
+    pathParams: v.strictObject({}),
     body: MappingFileParams,
     responses: {
-      [StatusCodes.CREATED as number]: z.string(),
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
-      [StatusCodes.UNAUTHORIZED as number]: z.string(),
-      [StatusCodes.FORBIDDEN as number]: z.string(),
-      [StatusCodes.INTERNAL_SERVER_ERROR as number]: z.object({}).strict(),
+      [StatusCodes.CREATED as number]: v.string(),
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
+      [StatusCodes.UNAUTHORIZED as number]: v.string(),
+      [StatusCodes.FORBIDDEN as number]: v.string(),
+      [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Uploads a configuration file for the situation mapping',
     metadata: {
@@ -94,16 +91,16 @@ const contract = c.router({
   deleteMappingFile: {
     method: 'DELETE',
     path: '/integrations-api/v1/mapping-files/:partner/:kind',
-    query: z.object({}).strict(),
+    query: v.strictObject({}),
     pathParams: MappingFileParams,
-    body: z.object({}).strict(),
+    body: v.optional(v.strictObject({})),
     responses: {
-      [StatusCodes.NO_CONTENT as number]: z.string(),
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
-      [StatusCodes.UNAUTHORIZED as number]: z.string(),
-      [StatusCodes.FORBIDDEN as number]: z.string(),
-      [StatusCodes.NOT_FOUND as number]: z.string(),
-      [StatusCodes.INTERNAL_SERVER_ERROR as number]: z.object({}).strict(),
+      [StatusCodes.NO_CONTENT as number]: v.string(),
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
+      [StatusCodes.UNAUTHORIZED as number]: v.string(),
+      [StatusCodes.FORBIDDEN as number]: v.string(),
+      [StatusCodes.NOT_FOUND as number]: v.string(),
+      [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Deletes a configuration file',
     metadata: {
@@ -117,15 +114,15 @@ const contract = c.router({
   fetchMappingFile: {
     method: 'GET',
     path: '/integrations-api/v1/mapping-files/:partner/:kind',
-    query: z.object({}).strict(),
+    query: v.strictObject({}),
     pathParams: MappingFileParams,
     responses: {
-      [StatusCodes.MOVED_TEMPORARILY as number]: z.void(),
-      [StatusCodes.BAD_REQUEST as number]: ZodErrorSchema,
-      [StatusCodes.UNAUTHORIZED as number]: z.string(),
-      [StatusCodes.FORBIDDEN as number]: z.string(),
-      [StatusCodes.NOT_FOUND as number]: z.string(),
-      [StatusCodes.INTERNAL_SERVER_ERROR as number]: z.object({}).strict(),
+      [StatusCodes.MOVED_TEMPORARILY as number]: v.void_(),
+      [StatusCodes.BAD_REQUEST as number]: ValidationErrorSchema,
+      [StatusCodes.UNAUTHORIZED as number]: v.string(),
+      [StatusCodes.FORBIDDEN as number]: v.string(),
+      [StatusCodes.NOT_FOUND as number]: v.string(),
+      [StatusCodes.INTERNAL_SERVER_ERROR as number]: v.strictObject({}),
     },
     summary: 'Fetches a configuration file',
     metadata: {

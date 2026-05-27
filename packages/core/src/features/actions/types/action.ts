@@ -49,15 +49,22 @@ interface ActionChoice {
   chosenAt: Date
 }
 
-interface ActionAssessment {
+type ActionAssessment = {
   id: string
   simulationId: string
   actionId: string
-  /** The impact of the action for the user, in kgCO2e */
-  impact: number
-  /** Whether the action is applicable for the user or not */
-  applicable: boolean
-}
+} & (
+  | {
+      /** The impact of the action for the user, in kgCO2e */
+      impact: number
+      /** Whether the action is applicable for the user or not */
+      applicable: true
+    }
+  | {
+      impact: undefined
+      applicable: false | undefined
+    }
+)
 
 export interface PersonalizedAction {
   userId: string

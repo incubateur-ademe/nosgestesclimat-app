@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken'
 import type { PublicodesExpression } from 'publicodes'
 import Engine, { utils } from 'publicodes'
 import type supertest from 'supertest'
+import * as v from 'valibot'
 import { carbonMetric, waterMetric } from '../../simulation.constant.ts'
 
 import {
@@ -198,7 +199,7 @@ export const getSimulationPayload = ({
 }: Partial<SimulationParticipantCreateInputDto> = {}): SimulationParticipantCreateInputDto => {
   situation = situation || getRandomPersonaSituation()
   computedResults =
-    computedResults || getComputedResults(SituationSchema.parse(situation))
+    computedResults || getComputedResults(v.parse(SituationSchema, situation))
   model = model || `FR-fr-${defaultModelVersion}`
 
   return {

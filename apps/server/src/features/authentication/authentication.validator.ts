@@ -1,18 +1,20 @@
-import { z } from 'zod'
+import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
-export const LoginDto = z
-  .object({
-    userId: z.uuid(),
-    email: z.email().transform((email) => email.toLocaleLowerCase()),
-    code: z.string().regex(/^\d{6}$/),
-  })
-  .strict()
+export const LoginDto = v.strictObject({
+  userId: v.pipe(v.string(), v.uuid()),
+  email: v.pipe(
+    v.string(),
+    v.email(),
+    v.transform((email: string) => email.toLocaleLowerCase())
+  ),
+  code: v.pipe(v.string(), v.regex(/^\d{6}$/)),
+})
 
-export type LoginDto = z.infer<typeof LoginDto>
+export type LoginDto = v.InferOutput<typeof LoginDto>
 
 export const LoginValidator = {
   body: LoginDto,
-  params: z.object({}).strict().optional(),
+  params: v.optional(v.strictObject({})),
   query: LocaleQuery,
 }
