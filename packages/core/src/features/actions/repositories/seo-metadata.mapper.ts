@@ -34,7 +34,7 @@ export const mapSeoMetadataToPrismaUpsert = (
   metadata?: SeoMetadata | null
 ): { upsert: Prisma.SeoMetadataUpsertWithoutActionInput } => ({
   upsert: {
-    create: mapSeoMetadataToPrismaCreate(metadata),
+    ...mapSeoMetadataToPrismaCreate(metadata),
     update: {
       title: metadata?.title ?? undefined,
       description: metadata?.description ?? undefined,

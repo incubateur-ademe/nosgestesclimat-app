@@ -23,7 +23,7 @@ import logger from '../logger.ts'
 const trimmedString = v.pipe(v.string(), v.trim())
 const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
 
-const NotionActionRowSchema = v.pipe(
+export const NotionActionRowSchema = v.pipe(
   v.object({
     ID: v.pipe(v.string(), v.toNumber()),
     theme_id: v.pipe(v.string(), v.uuid()),
@@ -67,86 +67,102 @@ const NotionActionRowSchema = v.pipe(
 
 type NotionActionRow = InferOutput<typeof NotionActionRowSchema>
 
-type NotionRawRow = Record<string, string | boolean | undefined>
+export interface NotionRawRow {
+  ID?: string
+  theme_id?: string
+  published_at?: string
+  rule_id?: string
+  slug?: string
+  tracking_id?: string
+  front_title_fr?: string
+  long_description_fr?: string
+  media_fr?: string
+  media_title_fr?: string
+  tips_fr?: string
+  financial_incentives_fr?: string
+  further_explore_fr?: string
+  seo_title_fr?: string
+  seo_description_fr?: string
+  seo_json_ld?: string
+}
 
 export async function syncNotionActions({
   fetchAllPages,
+  actionDatabaseId,
 }: {
   fetchAllPages: FetchAllPages
-}) {
-  try {
-    logger.info('Starting Notion actions sync...')
+  actionDatabaseId: string
+}): Promise<void> {
+  logger.info('Starting Notion actions sync...')
 
-    const { actionDatabaseId } = config.thirdParty.notion
+  logger.info(
+    `Fetching all rows from Notion action database "${actionDatabaseId}"`
+  )
 
-    if (!actionDatabaseId) {
-      logger.error('Notion action database ID not configured')
-      process.exit(1)
-    }
+  const [rows, themes, existingDbActions] = await Promise.all([
+    fetchAllPages(actionDatabaseId),
+    findThemes(),
+    findAllActions(),
+  ])
 
-    logger.info(
-      `Fetching all rows from Notion action database: ${actionDatabaseId}`
+  logger.info(`Fetched ${rows.length} rows from Notion action database`)
+
+  if (rows.length === 0) {
+    logger.warn(
+      'Notion database returned 0 rows, skipping sync to protect production data'
     )
-
-    const rows = await fetchAllPages(actionDatabaseId)
-
-    logger.info(`Fetched ${rows.length} rows from Notion action database`)
-
-    const [themes, existingDbActions] = await Promise.all([
-      findThemes(),
-      findAllActions(),
-    ])
-
-    const { validRows, invalidRows } = validateNotionRows(themes, rows)
-    const { toCreate, toUpdate, toDelete } = categorizeNotionRows(
-      rows,
-      validRows,
-      existingDbActions
-    )
-
-    // Create new actions
-    if (toCreate.length > 0) {
-      logger.info(`Creating ${toCreate.length} actions`)
-      await createManyActions(toCreate)
-      logger.info(`Created ${toCreate.length} actions`)
-    }
-
-    // Update actions
-    for (const { id, data } of toUpdate) {
-      logger.info(`Updating action "${id}"`)
-      await updateAction(id, data)
-    }
-    logger.info(`Updated ${toUpdate.length} actions`)
-
-    // Soft delete actions
-    if (toDelete.length > 0) {
-      logger.info(`Soft deleting ${toDelete.length} actions`)
-      await deleteManyActions(toDelete)
-      logger.info(`Soft deleted ${toDelete.length} actions`)
-    }
-
-    logger.info('Notion actions sync completed successfully')
-    logger.info(
-      `Summary: ${toCreate.length} created, ${toUpdate.length} updated, ${toDelete.length} deleted, ${invalidRows.length} invalid rows`
-    )
-    toCreate.forEach((action) => {
-      logger.info(`Created action "${action.slug}"`, { action })
-    })
-    toDelete.forEach((id) => {
-      logger.info(`Deleted action with id "${id}"`, { id })
-    })
-    invalidRows.forEach(({ row, reason, issues }) => {
-      logger.warn(`Row "${row.slug}" failed validation and was ignored`, {
-        row,
-        reason,
-        issues: issues,
-      })
-    })
-    process.exit(0)
-  } catch (e) {
-    logger.error('Error syncing Notion actions', { error: e })
-    process.exit(1)
+    return
   }
+
+  logger.info(
+    `Found ${existingDbActions.length} existing actions from database`
+  )
+
+  const { validRows, invalidRows } = validateNotionRows(themes, rows)
+  const { toCreate, toUpdate, toDelete } = categorizeNotionRows(
+    rows,
+    validRows,
+    existingDbActions
+  )
+
+  // Create new actions
+  if (toCreate.length > 0) {
+    logger.info(`Creating ${toCreate.length} actions`)
+    await createManyActions(toCreate)
+    logger.info(`Created ${toCreate.length} actions`)
+  }
+
+  // Update actions
+  for (const { id, data } of toUpdate) {
+    logger.info(`Updating action "${id}"`)
+    await updateAction(id, data)
+  }
+  logger.info(`Updated ${toUpdate.length} actions`)
+
+  // Soft delete actions
+  if (toDelete.length > 0) {
+    logger.info(`Soft deleting ${toDelete.length} actions`)
+    await deleteManyActions(toDelete)
+    logger.info(`Soft deleted ${toDelete.length} actions`)
+  }
+
+  logger.info('Notion actions sync completed successfully')
+  logger.info(
+    `Summary: ${toCreate.length} created, ${toUpdate.length} updated, ${toDelete.length} deleted, ${invalidRows.length} invalid rows`
+  )
+  toCreate.forEach((action) => {
+    logger.info(`Created action "${action.slug}"`, { action })
+  })
+  toDelete.forEach((id) => {
+    logger.info(`Deleted action with id "${id}"`, { id })
+  })
+  invalidRows.forEach(({ row, reason, issues }) => {
+    logger.warn(`Row "${row.slug}" failed validation and was ignored`, {
+      row,
+      reason,
+      issues: issues,
+    })
+  })
 }
 
 function validateNotionRows(themes: Theme[], rows: NotionRawRow[]) {
@@ -245,7 +261,7 @@ const createFetchAllPages = (client: Client): FetchAllPages =>
 
       for (const [key, property] of Object.entries(properties)) {
         const value = getPropertyValue(property)
-        row[key] = value
+        row[key as keyof NotionRawRow] = value
       }
 
       rows.push(row)
@@ -261,7 +277,7 @@ const createFetchAllPages = (client: Client): FetchAllPages =>
 
 // TODO: find real data structure
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getPropertyValue(property: any): string | boolean | undefined {
+function getPropertyValue(property: any): string | undefined {
   switch (property?.type) {
     case 'rich_text':
       return property.rich_text?.[0]?.plain_text || ''
@@ -356,12 +372,17 @@ const isMain =
   process.argv[1] && import.meta.url === `file://${process.argv[1]}`
 
 if (isMain) {
-  const { apiKey } = config.thirdParty.notion
-  if (!apiKey) {
-    logger.error('Notion API key not configured')
+  const { apiKey, actionDatabaseId } = config.thirdParty.notion
+  if (!apiKey || !actionDatabaseId) {
+    logger.error('Notion API key or action database ID not configured')
     process.exit(1)
   }
   const client = new Client({ auth: apiKey })
   const fetchAllPages = createFetchAllPages(client)
-  syncNotionActions({ fetchAllPages })
+  syncNotionActions({ fetchAllPages, actionDatabaseId })
+    .then(() => process.exit(0))
+    .catch((e) => {
+      logger.error(e instanceof Error ? e.message : String(e), { error: e })
+      process.exit(1)
+    })
 }

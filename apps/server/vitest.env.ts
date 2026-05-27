@@ -19,4 +19,6 @@ export default () => {
   process.env.SCALEWAY_REGION = 'fr-par'
   process.env.SCALEWAY_ROOT_PATH = 'ngc'
   process.env.SERVER_URL = 'https://server.nosgestesclimat.fr'
+  process.env.NOTION_API_KEY = 'mySuperTestNotionApiKey'
+  process.env.NOTION_ACTION_DATABASE_ID = 'mySuperTestNotionActionDatabaseId'
 }

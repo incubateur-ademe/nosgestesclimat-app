@@ -22,11 +22,11 @@ const getVisibleFilter = () => {
   }
 }
 
-export const findAllActions = async (): Promise<Action[]> => {
+export const findAllActions = async ({
+  includeDeleted = false,
+}: { includeDeleted?: boolean } = {}): Promise<Action[]> => {
   const dbActions = await prisma.action.findMany({
-    where: {
-      deletedAt: null,
-    },
+    where: includeDeleted ? undefined : { deletedAt: null },
     include: {
       seoMetadata: true,
     },
@@ -76,9 +76,12 @@ export const findVisibleActionBySlug = async (
 export const createManyActions = async (
   actions: NewAction[]
 ): Promise<void> => {
-  await prisma.action.createMany({
-    data: actions.map(mapNewActionToPrisma),
-  })
+  // Prisma does not support nested writes in createMany
+  await prisma.$transaction(
+    actions.map((action) =>
+      prisma.action.create({ data: mapNewActionToPrisma(action) })
+    )
+  )
 }
 
 export const updateAction = async (
