@@ -22,9 +22,15 @@ describe('parseFeatureFlagParams', () => {
     ).toEqual({ 'my-flag': false })
   })
 
-  it('ignores values other than true/false', () => {
+  it('keeps non-boolean values as strings', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_flag=yes'))
+      parseFeatureFlagParams(new URLSearchParams('?ff_variant-flag=test'))
+    ).toEqual({ 'variant-flag': 'test' })
+  })
+
+  it('ignores empty values', () => {
+    expect(
+      parseFeatureFlagParams(new URLSearchParams('?ff_flag='))
     ).toBeNull()
   })
 })
@@ -44,6 +50,12 @@ describe('parseFeatureFlagCookie', () => {
     expect(parseFeatureFlagCookie('{"actions-v2":true}')).toEqual({
       'actions-v2': true,
     })
+  })
+
+  it('parses a variant override', () => {
+    expect(
+      parseFeatureFlagCookie('{"ab-test-tranche":"test"}')
+    ).toEqual({ 'ab-test-tranche': 'test' })
   })
 
   it('returns empty object for undefined, empty, or malformed input', () => {
