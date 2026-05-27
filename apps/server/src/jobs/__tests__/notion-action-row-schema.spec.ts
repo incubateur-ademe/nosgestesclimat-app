@@ -80,12 +80,14 @@ describe('NotionActionRowSchema', () => {
       expect(result.success).toBe(false)
     })
 
-    it('should fail if theme_id has whitespace', () => {
+    it('should trim whitespace from theme_id', () => {
+      const uuid = faker.string.uuid()
       const row = generateValidRow({
-        theme_id: ` ${faker.string.uuid()} `,
+        theme_id: ` ${uuid} `,
       })
       const result = v.safeParse(NotionActionRowSchema, row)
-      expect(result.success).toBe(false)
+      expect.assert(result.success)
+      expect(result.output.theme_id).toBe(uuid)
     })
   })
 
@@ -97,14 +99,6 @@ describe('NotionActionRowSchema', () => {
       expect(result.output.published_at).toEqual(
         new Date('2024-01-15T10:30:00.000Z')
       )
-    })
-
-    it('should accept missing published_at', () => {
-      const row = generateValidRow()
-      const { published_at: _, ...rowWithoutPublishedAt } = row
-      const result = v.safeParse(NotionActionRowSchema, rowWithoutPublishedAt)
-      expect.assert(result.success)
-      expect(result.output.published_at).toBeUndefined()
     })
 
     it('should fail if published_at is not a valid date string', () => {

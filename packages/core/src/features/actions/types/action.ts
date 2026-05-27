@@ -63,8 +63,8 @@ export interface UpdatedAction {
   financialIncentives?: string | null
   furtherExplore?: string | null
   metadata?: SeoMetadata
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  publishedAt?: Date | null
+  deletedAt?: Date | null
 }
 
 interface ActionChoice {

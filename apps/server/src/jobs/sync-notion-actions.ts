@@ -14,6 +14,7 @@ import type {
 import type { ActionMedia } from '@nosgestesclimat/core/features/actions/types/action-media'
 import type { SeoMetadata } from '@nosgestesclimat/core/features/actions/types/seo-metadata'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
+import { trackingIdSchema } from '@nosgestesclimat/core/features/tracking/schema'
 import { Client, isFullDatabase } from '@notionhq/client'
 import type { BaseIssue, InferOutput } from 'valibot'
 import * as v from 'valibot'
@@ -26,17 +27,11 @@ const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
 export const NotionActionRowSchema = v.pipe(
   v.object({
     ID: v.pipe(v.string(), v.toNumber()),
-    theme_id: v.pipe(v.string(), v.uuid()),
+    theme_id: v.pipe(trimmedLowercaseString, v.uuid()),
     published_at: v.optional(v.pipe(v.string(), v.toDate())),
-    rule_id: v.pipe(trimmedString, v.uuid()),
-    slug: v.pipe(
-      trimmedLowercaseString,
-      v.regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Invalid slug format')
-    ),
-    tracking_id: v.pipe(
-      trimmedLowercaseString,
-      v.regex(/^[a-z0-9]+(_[a-z0-9]+)*$/, 'Invalid tracking id format')
-    ),
+    rule_id: v.pipe(trimmedLowercaseString, v.uuid()),
+    slug: v.pipe(trimmedLowercaseString, v.slug()),
+    tracking_id: v.pipe(trimmedLowercaseString, trackingIdSchema),
     front_title_fr: trimmedString,
     long_description_fr: trimmedString, // TODO: convert to md
     media_fr: v.optional(
@@ -202,10 +197,14 @@ function categorizeNotionRows(
 ) {
   const allNotionActionSlugs = new Set(allRows.map((r) => r.slug))
   // Map existing actions by slug for easy lookup
-  const existingActionsBySlug: Record<string, Action> = {}
-  for (const action of existingDbActions) {
-    existingActionsBySlug[action.slug] = action
-  }
+  const existingActionsBySlug: Record<string, Action> =
+    existingDbActions.reduce(
+      (acc, action) => {
+        acc[action.slug] = action
+        return acc
+      },
+      {} as Record<string, Action>
+    )
 
   const toCreate: NewAction[] = []
   const toUpdate: { id: string; data: UpdatedAction }[] = []
