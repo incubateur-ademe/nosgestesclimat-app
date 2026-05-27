@@ -51,21 +51,7 @@ export interface NewAction {
   deletedAt?: Date | null
 }
 
-export interface UpdatedAction {
-  title?: string
-  slug?: string
-  trackingId?: string
-  longDescription?: string
-  themeId?: string
-  ruleId?: string
-  media?: ActionMedia
-  tips?: string | null
-  financialIncentives?: string | null
-  furtherExplore?: string | null
-  metadata?: SeoMetadata
-  publishedAt?: Date | null
-  deletedAt?: Date | null
-}
+export type UpdatedAction = Partial<NewAction>
 
 interface ActionChoice {
   id: string
