@@ -132,12 +132,13 @@ describe('NotionActionRowSchema', () => {
     })
 
     it('should accept uppercase UUID', () => {
+      const ruleId = faker.string.uuid()
       const row = generateValidRow({
-        rule_id: faker.string.uuid().toUpperCase(),
+        rule_id: ruleId.toUpperCase(),
       })
       const result = v.safeParse(NotionActionRowSchema, row)
       expect.assert(result.success)
-      expect(result.output.rule_id).toBe(row.rule_id)
+      expect(result.output.rule_id).toBe(ruleId)
     })
   })
 
