@@ -1379,7 +1379,6 @@ entries:
   Illustration du groupe: Illustration of the group
   Veuillez entrer votre nom.: Please enter your name.
   Un compte avec cette adresse e-mail existe déjà: An account with this e-mail address already exists
-  <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <2>Already used by</2> <0>2.7 million people</0>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Compare your results with your family or a group of friends.
   newsletterManagement.logementNewsletter.title: Our Housing Gestures
   newsletterManagement.logementNewsletter.title.lock: Nos Gestes Logement
@@ -1983,3 +1982,7 @@ entries:
   simulator.transition.divers.graph.arrowText: This graph shows the carbon footprint of all your digital devices
   simulator.transition.divers.graph.arrowText.lock: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
+  results.actions.afterLink.label: Discover my custom actions
+  results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
+  homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
+  homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
