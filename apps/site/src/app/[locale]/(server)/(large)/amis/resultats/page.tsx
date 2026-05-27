@@ -6,26 +6,34 @@ import {
 } from '@/constants/urls/paths'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
+import { getLinkToGroupInvitation } from '@/helpers/navigation/groupPages'
 import { getUser } from '@/helpers/server/dal/user'
-import { getCurrentSimulation } from '@/helpers/server/model/simulations'
-import type { Locale } from '@/i18nConfig'
+import { getGroup } from '@/helpers/server/model/groups'
 import type { DefaultPageProps } from '@/types'
+import { redirect } from 'next/navigation'
 import GroupPage from './_components/GroupPage'
 
-export default async function GroupResultsPage({ params }: DefaultPageProps) {
-  const user = await getUser()
-  const locale = (await params).locale as Locale
-  const rules = await getCachedRules({ locale })
-  const currentSimulation = await getCurrentSimulation({ user })
+export default async function GroupResultsPage({
+  params,
+  searchParams,
+}: DefaultPageProps<{ searchParams: Promise<{ groupId: string }> }>) {
+  const locale = (await params).locale
+  const { groupId } = await searchParams!
 
-  const categoriesAccordion = currentSimulation?.computedResults ? (
-    <CategoriesAccordion
-      locale={locale}
-      rules={rules}
-      computedResults={currentSimulation.computedResults}
-      metric={carboneMetric}
-    />
-  ) : undefined
+  const user = await getUser()
+
+  const [rules, group] = await Promise.all([
+    getCachedRules({ locale }),
+    getGroup({ groupId, user }),
+  ])
+
+  const userSimulation = group.participants?.find(
+    (participant) => participant.userId === user.id
+  )?.simulation
+
+  if (!userSimulation) {
+    redirect(getLinkToGroupInvitation({ group }))
+  }
 
   return (
     <div className="pb-8">
@@ -33,7 +41,16 @@ export default async function GroupResultsPage({ params }: DefaultPageProps) {
         className="mb-4 font-bold"
         href={user.isAuth ? MON_ESPACE_GROUPS_PATH : END_PAGE_GROUPS_PATH}
       />
-      <GroupPage categoriesAccordion={categoriesAccordion} />
+      <GroupPage
+        categoriesAccordion={
+          <CategoriesAccordion
+            locale={locale}
+            rules={rules}
+            computedResults={userSimulation.computedResults}
+            metric={carboneMetric}
+          />
+        }
+      />
     </div>
   )
 }
