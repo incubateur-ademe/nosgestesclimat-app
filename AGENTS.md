@@ -19,9 +19,11 @@
 - **DRY, not clever.** Deduplicating identical blocks → yes. A type alias saving 10 chars → no.
 - **Validate at runtime unknown values.**
 
+
 ## Communication
 
 - **When the user says "this is wrong", don't ignore it.** Either comply or state your case _before_ writing code.
 - **Push only when asked.**
 - **Always verify lint + typecheck + tests before proposing a commit.**
+- First, complete the implementation to the best of your understanding. Then, **perform an architectural self-review**: read every file you created or touched, compare it against the surrounding codebase for naming consistency, layer violations, and missing conventions (factory, mapper, barrel). Fix any drift before you declare completion.
 - **Code in English, communicate in French.**
