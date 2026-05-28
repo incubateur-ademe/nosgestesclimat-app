@@ -19,5 +19,12 @@ export async function requestStorageAccess(): Promise<void> {
 }
 
 export function requiresStoragePermissions(): boolean {
-  return isSafari() && supportStorageAccessApi()
+  const safari = isSafari()
+  const api = supportStorageAccessApi()
+  console.log('[NGC Safari Fix]', {
+    safari,
+    storageAccessApi: api,
+    ua: navigator.userAgent,
+  })
+  return safari && api
 }

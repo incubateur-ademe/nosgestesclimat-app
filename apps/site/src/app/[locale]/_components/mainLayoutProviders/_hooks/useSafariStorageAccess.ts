@@ -11,10 +11,6 @@ export function useSafariStorageAccess(isIframe: boolean) {
   const { needPermission, askForPermission, haveCheckedPermission } =
     useStoragePermissions()
 
-  const handleAskPermission = () => {
-    askForPermission()
-  }
-
   useEffect(() => {
     if (!isIframe) return
     if (haveCheckedPermission && !needPermission) {
@@ -25,6 +21,6 @@ export function useSafariStorageAccess(isIframe: boolean) {
   return {
     isBlocked: !haveCheckedPermission,
     needsOverlay: needPermission,
-    handleAskPermission,
+    handleAskPermission: () => askForPermission(),
   }
 }
