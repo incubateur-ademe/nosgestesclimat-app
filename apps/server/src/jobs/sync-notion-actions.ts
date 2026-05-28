@@ -52,7 +52,7 @@ const themeIdByNotionOption = {
 
 export const NotionActionRowSchema = v.pipe(
   v.object({
-    ID: v.number(),
+    ID: v.union([v.number(), v.pipe(v.string(), v.toNumber())]),
     theme: v.pipe(
       themeNotionOptionSchema,
       v.transform((value) => themeIdByNotionOption[value]),
@@ -94,7 +94,7 @@ export const NotionActionRowSchema = v.pipe(
 type NotionActionRow = InferOutput<typeof NotionActionRowSchema>
 
 export interface NotionRawRow {
-  ID?: string
+  ID?: string | number
   theme?: string
   published_at?: string
   rule_id?: string

@@ -1,13 +1,14 @@
 import { faker } from '@faker-js/faker'
 import * as v from 'valibot'
 import { describe, expect, it } from 'vitest'
+import type { NotionRawRow } from '../../sync-notion-actions.ts'
 import { NotionActionRowSchema } from '../../sync-notion-actions.ts'
 
 describe('NotionActionRowSchema', () => {
   const generateValidRow = (
-    overrides: Partial<Record<string, string>> = {}
-  ): Record<string, string> => ({
-    ID: '123',
+    overrides: Partial<NotionRawRow> = {}
+  ): NotionRawRow => ({
+    ID: 123,
     theme: 'Alimentation',
     published_at: '2024-01-15',
     rule_id: faker.string.uuid(),
