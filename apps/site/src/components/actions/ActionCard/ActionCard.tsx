@@ -23,12 +23,14 @@ const classesByTheme: Record<Theme['key'], string> = {
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   action: Action
   locale: Locale
+  withThemeBadge?: boolean
 }
 
 export default function ActionCard({
   action,
   className,
   locale,
+  withThemeBadge = true,
   ...props
 }: ActionCardProps) {
   return (
@@ -42,7 +44,9 @@ export default function ActionCard({
         classesByTheme[action.theme.key],
         className
       )}>
-      <ThemeBadge theme={action.theme} className="self-start" />
+      {withThemeBadge ? (
+        <ThemeBadge theme={action.theme} className="self-start" />
+      ) : null}
       <div className="grow">
         <h3 className="mb-0 text-base/normal font-bold">{action.title}</h3>
       </div>

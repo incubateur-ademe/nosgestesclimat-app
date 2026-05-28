@@ -76,7 +76,12 @@ export default function ThemeSection({
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) => (
-          <ActionCard key={action.id} action={action} locale={locale} />
+          <ActionCard
+            key={action.id}
+            action={action}
+            locale={locale}
+            withThemeBadge={false}
+          />
         ))}
       </ActionsCarousel>
     </section>
