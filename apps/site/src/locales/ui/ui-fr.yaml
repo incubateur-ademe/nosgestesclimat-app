@@ -1380,7 +1380,7 @@ entries:
   components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Diapo
   components.carousel.roleDescription: Carrousel
-  actions.components.themeSection.description: '{actions.length} actions recommandées'
+  actions.components.themeSection.description: '{{count}} actions recommandées'
   common.byDay: / jour
   simulator.transition.alimentation.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   simulator.transition.divers.graph.arrowText: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques

@@ -35,10 +35,23 @@ export interface Action {
   deletedAt: Date | null
 }
 
-/** Type for the raw data persisted in code files */
-export type ActionFile = Omit<Action, 'theme'> & {
+export interface NewAction {
+  title: string
+  slug: string
+  trackingId: string
+  longDescription: string
+  ruleId: string
   themeId: string
+  media?: ActionMedia
+  tips?: string
+  financialIncentives?: string
+  furtherExplore?: string
+  metadata?: SeoMetadata
+  publishedAt?: Date | null
+  deletedAt?: Date | null
 }
+
+export type UpdatedAction = Partial<NewAction>
 
 interface ActionChoice {
   id: string
