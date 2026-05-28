@@ -1,3 +1,10 @@
+import {
+  food,
+  housing,
+  misc,
+  societalServices,
+  transport,
+} from '@nosgestesclimat/core/features/actions/data/themes/index'
 import { parseImpactCO2Script } from '@nosgestesclimat/core/features/actions/helpers/parse-impact-co2-script'
 import {
   createManyActions,
@@ -15,30 +22,54 @@ import type { ActionMedia } from '@nosgestesclimat/core/features/actions/types/a
 import type { SeoMetadata } from '@nosgestesclimat/core/features/actions/types/seo-metadata'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { trackingIdSchema } from '@nosgestesclimat/core/features/tracking/schema'
-import { Client, isFullDatabase } from '@notionhq/client'
+import { Client, isFullPage } from '@notionhq/client'
 import type { BaseIssue, InferOutput } from 'valibot'
 import * as v from 'valibot'
 import { config } from '../config.ts'
 import logger from '../logger.ts'
+import { convertNotionRichTextToMd } from './helpers/convert-notion-rich-text-to-md.ts'
 
 const trimmedString = v.pipe(v.string(), v.trim())
 const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
 
+const themeNotionOptionSchema = v.picklist([
+  'Alimentation',
+  'Transport',
+  'Services sociétaux',
+  'Logement',
+  'Divers',
+])
+
+type ThemeNotionOption = InferOutput<typeof themeNotionOptionSchema>
+
+const themeIdByNotionOption = {
+  Alimentation: food.id,
+  Transport: transport.id,
+  'Services sociétaux': societalServices.id,
+  Logement: housing.id,
+  Divers: misc.id,
+} as const satisfies Record<ThemeNotionOption, string>
+
 export const NotionActionRowSchema = v.pipe(
   v.object({
-    ID: v.pipe(v.string(), v.toNumber()),
-    theme_id: v.pipe(trimmedLowercaseString, v.uuid()),
+    ID: v.number(),
+    theme: v.pipe(
+      themeNotionOptionSchema,
+      v.transform((value) => themeIdByNotionOption[value]),
+      v.uuid()
+    ),
     published_at: v.optional(v.pipe(v.string(), v.toDate())),
     rule_id: v.pipe(trimmedLowercaseString, v.uuid()),
     slug: v.pipe(trimmedLowercaseString, v.slug()),
     tracking_id: v.pipe(trimmedLowercaseString, trackingIdSchema),
     front_title_fr: trimmedString,
-    long_description_fr: trimmedString, // TODO: convert to md
+    long_description_fr: trimmedString,
     media_fr: v.optional(
       v.pipe(
         trimmedString,
         v.rawTransform((ctx) => {
           const rawMedia = ctx.dataset.value
+          if (!rawMedia) return undefined
           const result = parseMedia(rawMedia)
           if (!result.success) {
             ctx.addIssue({
@@ -51,9 +82,9 @@ export const NotionActionRowSchema = v.pipe(
       )
     ),
     media_title_fr: v.optional(trimmedString),
-    tips_fr: v.optional(trimmedString), // TODO: convert to md
-    financial_incentives_fr: v.optional(trimmedString), // TODO: convert to md
-    further_explore_fr: v.optional(trimmedString), // TODO: convert to md
+    tips_fr: v.optional(trimmedString),
+    financial_incentives_fr: v.optional(trimmedString),
+    further_explore_fr: v.optional(trimmedString),
     seo_title_fr: v.optional(trimmedString),
     seo_description_fr: v.optional(trimmedString),
     seo_json_ld: v.optional(v.pipe(v.string(), v.parseJson())),
@@ -64,7 +95,7 @@ type NotionActionRow = InferOutput<typeof NotionActionRowSchema>
 
 export interface NotionRawRow {
   ID?: string
-  theme_id?: string
+  theme?: string
   published_at?: string
   rule_id?: string
   slug?: string
@@ -79,6 +110,7 @@ export interface NotionRawRow {
   seo_title_fr?: string
   seo_description_fr?: string
   seo_json_ld?: string
+  [key: string]: unknown
 }
 
 export async function syncNotionActions({
@@ -142,14 +174,11 @@ export async function syncNotionActions({
   }
 
   logger.info('Notion actions sync completed successfully')
-  logger.info(
-    `Summary: ${toCreate.length} created, ${toUpdate.length} updated, ${toDelete.length} deleted, ${invalidRows.length} invalid rows`
-  )
   toCreate.forEach((action) => {
-    logger.info(`Created action "${action.slug}"`, { action })
+    logger.info(`Created action "${action.slug}"`)
   })
   toDelete.forEach((id) => {
-    logger.info(`Deleted action with id "${id}"`, { id })
+    logger.info(`Deleted action with id "${id}"`)
   })
   invalidRows.forEach(({ row, reason, issues }) => {
     logger.warn(`Row "${row.slug}" failed validation and was ignored`, {
@@ -158,6 +187,9 @@ export async function syncNotionActions({
       issues: issues,
     })
   })
+  logger.info(
+    `Summary: ${rows.length} total, ${toCreate.length} created, ${toUpdate.length} updated, ${toDelete.length} deleted, ${invalidRows.length} invalid rows`
+  )
 }
 
 function validateNotionRows(themes: Theme[], rows: NotionRawRow[]) {
@@ -167,7 +199,7 @@ function validateNotionRows(themes: Theme[], rows: NotionRawRow[]) {
   const validRows: NotionActionRow[] = []
   const invalidRows: {
     row: NotionRawRow
-    reason: 'schema_validation' | 'invalid_theme_id'
+    reason: 'schema_validation' | 'invalid_theme'
     issues?: BaseIssue<unknown>[]
   }[] = []
   for (const row of rows) {
@@ -180,8 +212,8 @@ function validateNotionRows(themes: Theme[], rows: NotionRawRow[]) {
       })
       continue
     }
-    if (!validThemeIds.has(result.output.theme_id)) {
-      invalidRows.push({ row, reason: 'invalid_theme_id' })
+    if (!validThemeIds.has(result.output.theme)) {
+      invalidRows.push({ row, reason: 'invalid_theme' })
       continue
     }
     validRows.push(result.output)
@@ -250,7 +282,7 @@ const createFetchAllPages = (client: Client): FetchAllPages =>
     const rows: NotionRawRow[] = []
 
     for (const page of response.results) {
-      if (!isFullDatabase(page)) {
+      if (!isFullPage(page)) {
         logger.warn('Skipping page without properties', { pageId: page.id })
         continue
       }
@@ -274,32 +306,59 @@ const createFetchAllPages = (client: Client): FetchAllPages =>
     return rows
   }
 
-// TODO: find real data structure
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getPropertyValue(property: any): string | undefined {
-  switch (property?.type) {
+type NotionDatabaseResult = Awaited<
+  ReturnType<Client['databases']['query']>
+>['results'][number]
+type PageObjectResponse = Extract<
+  NotionDatabaseResult,
+  { object: 'page'; properties: unknown }
+>
+type NotionProperty = PageObjectResponse['properties'][string]
+
+function getPropertyValue(
+  property: NotionProperty
+): string | boolean | number | undefined {
+  const propertyType = property.type
+  switch (propertyType) {
     case 'rich_text':
-      return property.rich_text?.[0]?.plain_text || ''
+      return convertNotionRichTextToMd(property.rich_text)
     case 'title':
-      return property.title?.[0]?.plain_text || ''
+      return convertNotionRichTextToMd(property.title)
     case 'url':
-      return property.url || ''
+      return property.url ?? undefined
     case 'date':
-      return property.date?.start || ''
+      return property.date?.start
     case 'relation':
-      return property.relation?.[0]?.id || ''
+      return property.relation?.[0]?.id
     case 'select':
-      return property.select?.name || ''
+      return property.select?.name
     case 'number':
-      return property.number?.toString() || ''
+      return property.number ?? undefined
     case 'email':
-      return property.email || ''
+      return property.email ?? undefined
     case 'phone_number':
-      return property.phone_number || ''
+      return property.phone_number ?? undefined
     case 'checkbox':
       return property.checkbox
+    case 'unique_id':
+      return property.unique_id?.number ?? undefined
+    case 'multi_select':
+    case 'status':
+    case 'files':
+    case 'created_by':
+    case 'created_time':
+    case 'last_edited_by':
+    case 'last_edited_time':
+    case 'formula':
+    case 'button':
+    case 'verification':
+    case 'people':
+    case 'rollup':
+      logger.warn('Unsupported Notion property type', { type: propertyType })
+      return undefined
     default:
-      logger.warn('Unsupported Notion property type', { type: property?.type })
+      propertyType satisfies never
+      logger.warn('Unknown Notion property type', { type: propertyType })
       return undefined
   }
 }
@@ -355,7 +414,7 @@ function mapNotionRowToAction(row: NotionActionRow): NewAction {
     trackingId: row.tracking_id,
     longDescription: row.long_description_fr,
     ruleId: row.rule_id,
-    themeId: row.theme_id,
+    themeId: row.theme,
     media,
     tips: row.tips_fr,
     financialIncentives: row.financial_incentives_fr,

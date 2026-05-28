@@ -130,8 +130,8 @@ describe('syncNotionActions', () => {
     expect(await findAllActions()).toEqual([])
   })
 
-  it('skips rows with unknown theme_id', async () => {
-    const row = buildNotionRow({ theme_id: faker.string.uuid() })
+  it('skips rows with unknown theme', async () => {
+    const row = buildNotionRow({ theme: 'Invalid Theme' })
     const fetchAllPages = vi.fn().mockResolvedValue([row])
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
@@ -141,11 +141,11 @@ describe('syncNotionActions', () => {
 
   it('does not soft-delete an existing action when an invalid row shares its slug', async () => {
     const existing = await actionFactory.create({ slug: 'my-slug' })
-    // Row has correct slug but unknown theme_id thus fails theme validation
+    // Row has correct slug but unknown theme thus fails theme validation
     // but slug is still in allNotionActionSlugs, so the DB action is protected
     const row = buildNotionRow({
       slug: 'my-slug',
-      theme_id: faker.string.uuid(),
+      theme: 'Invalid Theme',
     })
     const fetchAllPages = vi.fn().mockResolvedValue([row])
 
@@ -220,7 +220,7 @@ function buildNotionRow<T extends Partial<NotionRawRow> = Record<never, never>>(
   overrides: T = {} as T
 ): NotionRawRow & {
   ID: string
-  theme_id: string
+  theme: string
   rule_id: string
   slug: string
   tracking_id: string
@@ -233,7 +233,7 @@ function buildNotionRow<T extends Partial<NotionRawRow> = Record<never, never>>(
     .replace(/[^a-z0-9-]/g, '')
   return {
     ID: '1',
-    theme_id: validTheme.id,
+    theme: 'Alimentation',
     rule_id: faker.string.uuid(),
     slug,
     tracking_id: slug.replace(/-/g, '_'),

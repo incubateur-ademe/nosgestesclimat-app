@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker'
 import * as v from 'valibot'
 import { describe, expect, it } from 'vitest'
-import { NotionActionRowSchema } from '../sync-notion-actions.ts'
+import { NotionActionRowSchema } from '../../sync-notion-actions.ts'
 
 describe('NotionActionRowSchema', () => {
   const generateValidRow = (
     overrides: Partial<Record<string, string>> = {}
   ): Record<string, string> => ({
     ID: '123',
-    theme_id: faker.string.uuid(),
+    theme: 'Alimentation',
     published_at: '2024-01-15',
     rule_id: faker.string.uuid(),
     slug: 'test-action',
@@ -33,7 +33,7 @@ describe('NotionActionRowSchema', () => {
   it('should handle optional fields being undefined', () => {
     const minimalValidRow = {
       ID: '456',
-      theme_id: faker.string.uuid(),
+      theme: 'Transport',
       rule_id: faker.string.uuid(),
       slug: 'minimal-action',
       tracking_id: 'minimal_action',
@@ -67,27 +67,42 @@ describe('NotionActionRowSchema', () => {
     })
   })
 
-  describe('theme_id field', () => {
-    it('should validate UUID format', () => {
+  describe('theme field', () => {
+    it('should validate and transform theme to UUID', () => {
       const row = generateValidRow()
       const result = v.safeParse(NotionActionRowSchema, row)
       expect.assert(result.success)
+      expect(result.output.theme).toMatch(/^[0-9a-fA-F-]{36}$/)
     })
 
-    it('should fail if theme_id is not a valid UUID', () => {
-      const row = generateValidRow({ theme_id: 'not-a-uuid' })
+    it('should accept all valid theme options', () => {
+      const validThemes = [
+        'Alimentation',
+        'Transport',
+        'Services sociétaux',
+        'Logement',
+        'Divers',
+      ]
+
+      for (const theme of validThemes) {
+        const row = generateValidRow({ theme })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.theme).toMatch(/^[0-9a-fA-F-]{36}$/)
+      }
+    })
+
+    it('should fail if theme is not a valid option', () => {
+      const row = generateValidRow({ theme: 'Invalid Theme' })
       const result = v.safeParse(NotionActionRowSchema, row)
       expect(result.success).toBe(false)
     })
 
-    it('should trim whitespace from theme_id', () => {
-      const uuid = faker.string.uuid()
-      const row = generateValidRow({
-        theme_id: ` ${uuid} `,
-      })
-      const result = v.safeParse(NotionActionRowSchema, row)
-      expect.assert(result.success)
-      expect(result.output.theme_id).toBe(uuid)
+    it('should fail if theme is missing', () => {
+      const row = generateValidRow()
+      const { theme: _, ...rowWithoutTheme } = row
+      const result = v.safeParse(NotionActionRowSchema, rowWithoutTheme)
+      expect(result.success).toBe(false)
     })
   })
 
@@ -176,10 +191,11 @@ describe('NotionActionRowSchema', () => {
       expect(result.output.slug).toBe('testslug')
     })
 
-    it('should fail if slug has underscores', () => {
+    it('should accept slug with underscores', () => {
       const row = generateValidRow({ slug: 'test_slug' })
       const result = v.safeParse(NotionActionRowSchema, row)
-      expect(result.success).toBe(false)
+      expect.assert(result.success)
+      expect(result.output.slug).toBe('test_slug')
     })
 
     it('should fail if slug has special characters', () => {
