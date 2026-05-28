@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 
-import Engine from 'publicodes'
 import rules from '@incubateur-ademe/nosgestesclimat'
-// eslint-disable-next-line import/no-unresolved
 import { processNextPendingComputation } from '@nosgestesclimat/core/features/publicodes-computation/services/coordination.service'
+import Engine from 'publicodes'
 
 const POLL_INTERVAL_MS = 2000
 
@@ -13,8 +12,12 @@ const engine = new Engine(rules, {
     noOrphanRule: false,
   },
   logger: {
-    log: () => {},
-    warn: () => {},
+    log: () => {
+      // nothing
+    },
+    warn: () => {
+      // nothing
+    },
     error: console.error,
   },
 })
@@ -34,8 +37,7 @@ process.on('SIGINT', () => {
 async function main() {
   while (running) {
     try {
-      const engineCopy = engine.shallowCopy()
-      const processed = await processNextPendingComputation(engineCopy)
+      const processed = await processNextPendingComputation(engine)
       if (processed) {
         console.log('[worker] Job processed')
         // Drain the queue without delay

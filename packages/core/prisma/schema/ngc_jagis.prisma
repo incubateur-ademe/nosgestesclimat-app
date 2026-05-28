@@ -39,11 +39,10 @@ model ActionAssessment {
 
 model SimulationComputation {
   simulationId String            @id @db.Uuid
-  simulation   Simulation        @relation(fields: [simulationId], references: [id])
+  simulation   Simulation        @relation(fields: [simulationId], references: [id], onDelete: Cascade)
   status       ComputationStatus @default(pending)
   startedAt    DateTime?
   completedAt  DateTime?
-  error        String?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 

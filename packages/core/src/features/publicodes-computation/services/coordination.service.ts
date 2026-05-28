@@ -1,4 +1,6 @@
 import type Engine from 'publicodes'
+import { log } from '../../logger/index.ts'
+import { SimulationComputationFail } from '../exceptions/coordination.exception.ts'
 import {
   claimNextPendingSimulationComputation,
   markSimulationComputationCompleted,
@@ -19,17 +21,26 @@ export const processNextPendingComputation = async (
 ): Promise<boolean> => {
   const job = await claimNextPendingSimulationComputation()
   if (!job) return false
-
   try {
-    await computeDerivedSimulationData(engine, job.simulationId)
+    await computeDerivedSimulationData(engine.shallowCopy(), job.simulationId)
     await markSimulationComputationCompleted(job.simulationId)
     return true
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
     try {
-      await markSimulationComputationFailed(job.simulationId, message)
-    } catch {
-      // Best-effort: ignore failure to mark the job as failed
+      await markSimulationComputationFailed(job.simulationId)
+      log(
+        new SimulationComputationFail({
+          simulationId: job.simulationId,
+          cause: error,
+        })
+      )
+    } catch (cleanupError) {
+      log(
+        new SimulationComputationFail({
+          simulationId: job.simulationId,
+          cause: new SuppressedError(cleanupError, error),
+        })
+      )
     }
     throw error
   }

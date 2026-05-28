@@ -2,19 +2,6 @@ import { prisma } from '../../../prisma/client.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
 
-export const createSimulationComputation = async (
-  simulationId: string
-): Promise<void> => {
-  await prisma.simulationComputation.create({
-    data: { simulationId, status: 'pending' },
-  })
-}
-
-export const findSimulationComputation = async (simulationId: string) =>
-  prisma.simulationComputation.findUnique({
-    where: { simulationId },
-  })
-
 const CLAIM_QUERY = `
   SELECT "simulationId"
   FROM "ngc"."SimulationComputation"
@@ -28,11 +15,23 @@ const CLAIM_QUERY = `
   FOR UPDATE SKIP LOCKED
 `
 
+export const createSimulationComputation = async (
+  simulationId: string
+): Promise<void> => {
+  await prisma.simulationComputation.create({
+    data: { simulationId, status: 'pending' },
+  })
+}
+
+export const findSimulationComputation = async (simulationId: string) =>
+  prisma.simulationComputation.findUnique({
+    where: { simulationId },
+  })
+
 export const claimNextPendingSimulationComputation = async () =>
   prisma.$transaction(async (tx) => {
-    const jobs = await tx.$queryRawUnsafe<Array<{ simulationId: string }>>(
-      CLAIM_QUERY
-    )
+    const jobs =
+      await tx.$queryRawUnsafe<Array<{ simulationId: string }>>(CLAIM_QUERY)
 
     if (jobs.length === 0) return null
 
@@ -55,11 +54,10 @@ export const markSimulationComputationCompleted = async (
 }
 
 export const markSimulationComputationFailed = async (
-  simulationId: string,
-  error: string
+  simulationId: string
 ): Promise<void> => {
   await prisma.simulationComputation.update({
     where: { simulationId },
-    data: { status: 'failed', error, completedAt: new Date() },
+    data: { status: 'failed', completedAt: new Date() },
   })
 }

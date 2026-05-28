@@ -62,23 +62,28 @@ interface ActionChoice {
   chosenAt: Date
 }
 
-export type ActionAssessmentInput = {
+export type NewActionAssessment = {
   simulationId: string
   actionId: string
 } & (
-  | {
-      /** The impact of the action for the user, in kgCO2e */
-      impact: number
-      /** Whether the action is applicable for the user or not */
+  | // Case 1. The action is applicable and the impact is either a number or not evaluable
+  {
       applicable: true
+      impact: number | undefined
     }
+  // Case 2. The action is not applicable
   | {
+      applicable: false
       impact: undefined
-      applicable: false | undefined
+    }
+  // Case 3. Missing data to assess the action
+  | {
+      applicable: undefined
+      impact: undefined
     }
 )
 
-export type ActionAssessment = ActionAssessmentInput & { id: string }
+export type ActionAssessment = NewActionAssessment & { id: string }
 
 export interface PersonalizedAction {
   userId: string

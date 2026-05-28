@@ -1,8 +1,9 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { ActionAssessment, ActionAssessmentInput } from '../types/action.ts'
-import { mapActionAssessment } from './action-assessment.mapper.ts'
-
-export { type ActionAssessmentInput }
+import type { ActionAssessment, NewActionAssessment } from '../types/action.ts'
+import {
+  mapActionAssessment,
+  mapNewActionAssessmentToPrisma,
+} from './action-assessment.mapper.ts'
 
 export const findActionAssessmentsBySimulation = async (
   simulationId: string
@@ -13,24 +14,10 @@ export const findActionAssessmentsBySimulation = async (
   return rows.map(mapActionAssessment)
 }
 
-export const upsertActionAssessments = async (
-  assessments: ActionAssessmentInput[]
+export const createActionAssessments = async (
+  assessments: NewActionAssessment[]
 ): Promise<void> => {
-  await prisma.$transaction(
-    assessments.map((a) =>
-      prisma.actionAssessment.upsert({
-        where: {
-          simulationId_actionId: {
-            simulationId: a.simulationId,
-            actionId: a.actionId,
-          },
-        },
-        create: a,
-        update: {
-          impact: a.applicable === true ? a.impact : null,
-          applicable: a.applicable,
-        },
-      })
-    )
-  )
+  await prisma.actionAssessment.createMany({
+    data: assessments.map(mapNewActionAssessmentToPrisma),
+  })
 }
