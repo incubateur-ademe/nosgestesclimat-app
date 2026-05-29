@@ -64,7 +64,7 @@ export default function ThemeSection({
                 locale={locale}
                 i18nKey="actions.components.themeSection.description"
                 values={{ count }}>
-                {count} actions recommandées
+                {'{{count}} actions recommandées'}
               </Trans>
             </p>
           </div>

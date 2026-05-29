@@ -1,4 +1,5 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
+import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { Action } from '@/types/actions'
 import type { Theme } from '@/types/themes'
@@ -22,6 +23,7 @@ const classesByTheme: Record<Theme['key'], string> = {
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   action: Action
+  impact?: number
   locale: Locale
   withThemeBadge?: boolean
 }
@@ -30,6 +32,7 @@ export default function ActionCard({
   action,
   className,
   locale,
+  impact,
   withThemeBadge = true,
   ...props
 }: ActionCardProps) {
@@ -48,7 +51,10 @@ export default function ActionCard({
         <ThemeBadge theme={action.theme} className="self-start" />
       ) : null}
       <div className="grow">
-        <h3 className="mb-0 text-base/normal font-bold">{action.title}</h3>
+        <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
+        {typeof impact === 'number' ? (
+          <ImpactTag impact={impact} locale={locale} />
+        ) : null}
       </div>
       <Link
         href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
@@ -72,5 +78,29 @@ export default function ActionCard({
         </Button>
       </div> */}
     </article>
+  )
+}
+
+interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
+  impact: number
+  locale: Locale
+}
+
+function ImpactTag({ impact, locale, className, ...rest }: ImpactTagProps) {
+  const { formattedValue, unit } = formatFootprint(impact, { locale })
+  return (
+    <span
+      className={twMerge(
+        `inline-flex justify-center rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
+        className
+      )}
+      {...rest}>
+      <Trans
+        locale={locale}
+        i18nKey="actions.components.actionCard.impactTag"
+        values={{ formattedValue, unit }}>
+        Jusqu'à -{'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
+      </Trans>
+    </span>
   )
 }
