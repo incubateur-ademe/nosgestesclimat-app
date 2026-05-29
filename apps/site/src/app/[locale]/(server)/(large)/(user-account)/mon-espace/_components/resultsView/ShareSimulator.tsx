@@ -10,6 +10,9 @@ interface Props {
 
 export default async function ShareSimulator({ locale }: Props) {
   const { t } = await getServerTranslation({ locale })
+
+  const shareLink = `https://nosgestesclimat.fr${SIMULATOR_PATH}?utm_medium=sharelink&utm_source=NGC`
+
   return (
     <div className="py-8 text-center md:py-10">
       <p>
@@ -20,7 +23,7 @@ export default async function ShareSimulator({ locale }: Props) {
 
       <span className="hidden md:block">
         <ShareSimulationButton
-          url={`https://nosgestesclimat.fr${SIMULATOR_PATH}`}
+          url={shareLink}
           buttonLabel={t(
             'mon-espace.shareSimulator.buttonLabel.desktop',
             'Partager le test Nos Gestes Climat'
@@ -31,7 +34,7 @@ export default async function ShareSimulator({ locale }: Props) {
       </span>
       <span className="block md:hidden">
         <ShareSimulationButton
-          url={`https://nosgestesclimat.fr${SIMULATOR_PATH}`}
+          url={shareLink}
           buttonLabel={t(
             'mon-espace.shareSimulator.buttonLabel.mobile',
             'Partager le test'
