@@ -1,4 +1,4 @@
-export type Tendency = 'increase' | 'decrease'
+import type { Tendency } from '../types/simulation-result.ts'
 
 export const getTendency = ({
   previousValue,

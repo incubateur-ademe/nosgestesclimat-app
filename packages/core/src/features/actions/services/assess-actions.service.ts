@@ -1,5 +1,5 @@
 import type Engine from 'publicodes'
-import { log } from '../../logger/index.ts'
+import { logException } from '../../logger/logger.service.ts'
 import { ActionAssessmentPublicodesException } from '../exceptions/action-assessment.exception.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
 import { findVisibleActions } from '../repositories/actions.repository.ts'
@@ -18,8 +18,8 @@ const buildRuleIdToDottedName = (engine: Engine): Map<string, string> => {
   return map
 }
 
-export const assessActions = async (
-  engine: Engine,
+export const assessActions = async <DottedName extends string>(
+  engine: Engine<DottedName>,
   simulationId: string
 ): Promise<void> => {
   const actions = await findVisibleActions()
@@ -30,7 +30,7 @@ export const assessActions = async (
     .map(({ id, ruleId }) => {
       const dottedName = ruleIdToDottedName.get(ruleId)
       if (!dottedName) {
-        log(
+        logException(
           new ActionAssessmentPublicodesException({
             message: `No rule found with this id`,
             action: {
@@ -68,7 +68,7 @@ export const assessActions = async (
             impact: undefined,
           }
         } else {
-          log(
+          logException(
             new ActionAssessmentPublicodesException({
               message: `Unexpected nodeValue type: ${typeof nodeValue}`,
               action: { id, ruleId },
@@ -78,7 +78,7 @@ export const assessActions = async (
           return undefined
         }
       } catch (error) {
-        log(
+        logException(
           new ActionAssessmentPublicodesException({
             message: 'Error calling publicodes `engine.evaluate`',
             cause: error,

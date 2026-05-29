@@ -1,10 +1,10 @@
 import { eauMetric } from '@/constants/model/metric'
-import type { SimulationResult } from '@/helpers/server/model/simulationResult'
 import type { Locale } from '@/i18nConfig'
+import type { SimulationResult } from '@nosgestesclimat/core/features/simulations/types/simulation-result'
 import Trans from '../../translation/trans/TransServer'
+import EspacePersoBlock from '../EspacePersoBlock'
 import FootprintBlock from '../FootprintBlock'
 import FootprintDetail from '../FootprintDetail'
-import SaveResultsBlock from '../SaveResultsBlock'
 import ClimateAndWater from './_components/ClimateAndWater'
 import DocumentationBlock from './_components/DocumentationBlock'
 import IsItALot from './_components/IsItALot'
@@ -51,7 +51,7 @@ export default function WaterFootprintResults({
 
       <WhatIsWaterFootprint locale={locale} />
 
-      {!hideSaveBlock && <SaveResultsBlock locale={locale} />}
+      {!hideSaveBlock && <EspacePersoBlock locale={locale} />}
 
       <div className="mb-16 w-full md:w-2xl">
         <ClimateAndWater />

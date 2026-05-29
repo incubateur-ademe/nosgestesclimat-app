@@ -28,8 +28,9 @@
   ],
   "scripts": {
     "prepare": "pnpm generate && pnpm build",
-    "build": "tsc -p tsconfig.build.json",
-    "dev": "tsc -p tsconfig.build.json --watch",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist tsconfig.build.tsbuildinfo",
+    "dev": "pnpm clean && tsc -p tsconfig.build.json --watch",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "format": "prettier --write ./**/*.{js,ts,tsx,json,md}",
     "typecheck": "tsc --noEmit",

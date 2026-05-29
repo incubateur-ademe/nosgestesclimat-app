@@ -6,11 +6,9 @@ import {
 } from '@/constants/urls/paths'
 import Breadcrumbs from '@/design-system/layout/Breadcrumbs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { throwNextError } from '@/helpers/server/error'
-import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getSimulation } from '@/helpers/server/model/simulations'
-import { getAuthUser } from '@/helpers/server/model/user'
 import type { DefaultPageProps } from '@/types'
+import { findSimulationResult } from '@nosgestesclimat/core/features/simulations/repositories/simulation-result.repository'
+import { notFound } from 'next/navigation'
 
 export default async function DetailledResultsWaterPage({
   params,
@@ -19,14 +17,11 @@ export default async function DetailledResultsWaterPage({
 
   const { t } = await getServerTranslation({ locale })
 
-  const simulationResult = await throwNextError(async () => {
-    const user = await getAuthUser()
-    const simulation = await getSimulation({ user, simulationId })
-    return getSimulationResult({
-      simulation,
-      user,
-    })
-  })
+  const simulationResult = await findSimulationResult(simulationId)
+
+  if (!simulationResult) {
+    notFound()
+  }
 
   return (
     <>

@@ -1,6 +1,7 @@
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
 import { assessActions } from '../../actions/services/assess-actions.service.ts'
-import { findSimulationById } from '../repositories/simulation.repository.ts'
+import type { Simulation } from '../../simulations/types/simulation.ts'
 
 /**
  * Computes all data derived from a simulation in a single engine pass.
@@ -9,14 +10,9 @@ import { findSimulationById } from '../repositories/simulation.repository.ts'
  * benefit from the publicodes internal cache.
  */
 export const computeDerivedSimulationData = async (
-  engine: Engine,
-  simulationId: string
+  engine: Engine<DottedName>,
+  simulation: Simulation
 ): Promise<void> => {
-  const simulation = await findSimulationById(simulationId)
-
-  engine.setSituation(
-    simulation.situation as Parameters<typeof engine.setSituation>[0]
-  )
-
-  await assessActions(engine, simulationId)
+  const newEngine = engine.shallowCopy().setSituation(simulation.situation)
+  await assessActions(newEngine, simulation.id)
 }

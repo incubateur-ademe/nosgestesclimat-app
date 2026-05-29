@@ -1,6 +1,6 @@
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
-import type { Tendency } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
+import type { Tendency } from '@nosgestesclimat/core/features/simulations/types/simulation-result'
 import { twMerge } from 'tailwind-merge'
 import DownArrow from '../icons/DownArrow'
 import Link from '../Link'

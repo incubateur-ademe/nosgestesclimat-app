@@ -2,27 +2,17 @@ import IframeDataShareModal from '@/components/iframe/IframeDataShareModal'
 import CarbonFootprintResults from '@/components/results/carbonFootprint/CarbonFootprintResults'
 import FootprintsLinks from '@/components/results/FootprintsLinks'
 import { noIndexObject } from '@/constants/metadata'
-import {
-  END_PAGE_PATH,
-  MON_ESPACE_RESULTS_DETAIL_PATH,
-} from '@/constants/urls/paths'
+import { END_PAGE_PATH } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import { getUser } from '@/helpers/server/dal/user'
-import {
-  NoSessionFoundError,
-  NotFoundError,
-  throwNextError,
-} from '@/helpers/server/error'
-import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
-import {
-  getTendency,
-  type Tendency,
-} from '@/helpers/server/model/utils/getTendency'
+import { NoSessionFoundError } from '@/helpers/server/error'
 import type { Locale } from '@/i18nConfig'
 import type { DefaultPageProps } from '@/types'
+import { logException } from '@nosgestesclimat/core'
+import { NoCompletedSimulationForUserException } from '@nosgestesclimat/core/features/simulations/exceptions/simulation-result.exception'
+import { getSimulationResult } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
@@ -50,50 +40,29 @@ export default async function FinPage({
   const { locale } = await params
   const { sid } = await searchParams
 
-  // Legacy feature, allowed to load a simulation data by passing an sid param in the URL, used in transactionnal e-mailing
   if (sid) {
-    redirect(
-      MON_ESPACE_RESULTS_DETAIL_PATH.replace(':simulationId', sid as string)
-    )
+    redirect(`/mon-espace/resultats/${sid as string}`)
   }
 
-  const user = await getUser()
-  let simulations
-  try {
-    simulations = await getCompletedSimulations(
-      { user },
-      { pageSize: user.isAuth ? 2 : 1 }
-    )
-  } catch (e) {
-    captureException(e)
+  const [user, session] = await Promise.all([getUser(), getAnonSession()])
+  if (!session.userId) {
+    captureException(new NoSessionFoundError())
     redirect('/')
   }
 
-  const [simulation, previousSimulation] = simulations
-
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!simulation) {
-    const session = await getAnonSession()
-    if (!session.userId) {
-      captureException(new NoSessionFoundError())
+  let simulationResult
+  try {
+    simulationResult = await getSimulationResult({
+      userId: session.userId,
+      withTendency: user.isAuth,
+    })
+  } catch (error) {
+    if (error instanceof NoCompletedSimulationForUserException) {
+      logException(error)
     } else {
-      captureException(new NotFoundError(), { level: 'warning' })
+      captureException(error)
     }
     redirect('/')
-  }
-  const simulationResult = await throwNextError(async () => {
-    return getSimulationResult({
-      user,
-      simulation,
-    })
-  })
-  let tendency: Tendency | undefined
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (previousSimulation) {
-    tendency = getTendency({
-      previousValue: previousSimulation.computedResults.carbone.bilan,
-      currentValue: simulation.computedResults.carbone.bilan,
-    })
   }
 
   return (
@@ -106,9 +75,7 @@ export default async function FinPage({
 
       <CarbonFootprintResults
         simulationResult={simulationResult}
-        hasPreviousSimulation={!!previousSimulation}
         locale={locale as Locale}
-        tendency={tendency}
       />
 
       <IframeDataShareModal

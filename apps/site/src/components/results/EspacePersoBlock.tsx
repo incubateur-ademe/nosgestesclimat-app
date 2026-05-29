@@ -19,7 +19,7 @@ interface Props {
   hasPreviousSimulation?: boolean
 }
 
-export default async function SaveResultsBlock({
+export default async function EspacePersoBlock({
   locale,
   hasPreviousSimulation,
 }: Props) {

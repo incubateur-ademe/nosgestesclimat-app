@@ -1,4 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
+import { mapSimulation } from '../../simulations/repositories/simulation.mapper.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
 
@@ -36,12 +37,15 @@ export const claimNextPendingSimulationComputation = async () =>
     if (jobs.length === 0) return null
 
     const { simulationId } = jobs[0]
-    await tx.simulationComputation.update({
+    const result = await tx.simulationComputation.update({
       where: { simulationId },
+      include: {
+        simulation: true,
+      },
       data: { status: 'processing', startedAt: new Date() },
     })
 
-    return { simulationId }
+    return { simulation: mapSimulation(result.simulation) }
   })
 
 export const markSimulationComputationCompleted = async (

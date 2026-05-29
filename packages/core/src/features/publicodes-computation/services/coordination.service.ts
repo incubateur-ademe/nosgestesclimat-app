@@ -1,5 +1,6 @@
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import { log } from '../../logger/index.ts'
+import { logException } from '../../logger/logger.service.ts'
 import { SimulationComputationFail } from '../exceptions/coordination.exception.ts'
 import {
   claimNextPendingSimulationComputation,
@@ -17,27 +18,27 @@ import { computeDerivedSimulationData } from './simulation-computation.service.t
  * Returns `true` if a job was processed, `false` if the queue was empty.
  */
 export const processNextPendingComputation = async (
-  engine: Engine
+  engine: Engine<DottedName>
 ): Promise<boolean> => {
   const job = await claimNextPendingSimulationComputation()
   if (!job) return false
   try {
-    await computeDerivedSimulationData(engine.shallowCopy(), job.simulationId)
-    await markSimulationComputationCompleted(job.simulationId)
+    await computeDerivedSimulationData(engine, job.simulation)
+    await markSimulationComputationCompleted(job.simulation.id)
     return true
   } catch (error) {
     try {
-      await markSimulationComputationFailed(job.simulationId)
-      log(
+      await markSimulationComputationFailed(job.simulation.id)
+      logException(
         new SimulationComputationFail({
-          simulationId: job.simulationId,
+          simulationId: job.simulation.id,
           cause: error,
         })
       )
     } catch (cleanupError) {
-      log(
+      logException(
         new SimulationComputationFail({
-          simulationId: job.simulationId,
+          simulationId: job.simulation.id,
           cause: new SuppressedError(cleanupError, error),
         })
       )

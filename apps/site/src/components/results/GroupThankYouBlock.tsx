@@ -5,11 +5,12 @@ import type { ReactElement } from 'react'
 
 interface Props {
   locale: Locale
-  group: { name: string; href: string }
+  group: { name: string; id: string }
 }
 
 export default function GroupThankYouBlock({ locale, group }: Props) {
   const groupName = group.name
+  const href = `/amis/resultats?groupId=${group.id}`
   return (
     <section
       className="mb-12 rounded-2xl bg-pink-100 px-8 py-10 text-center"
@@ -28,7 +29,7 @@ export default function GroupThankYouBlock({ locale, group }: Props) {
       </p>
 
       <ButtonLink
-        href={group.href}
+        href={href}
         color="primary"
         size="md"
         data-testid="see-group-result-button">

@@ -1,35 +1,28 @@
 import HideInIframe from '@/components/layout/HideInIframe'
-import type { SimulationResult } from '@/helpers/server/model/simulationResult'
-import type { Tendency } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
+import type { SimulationResult } from '@nosgestesclimat/core/features/simulations/types/simulation-result'
 import Trans from '../../translation/trans/TransServer'
 import ActionsBlock from '../ActionsBlock'
+import EspacePersoBlock from '../EspacePersoBlock'
 import FootprintBlock from '../FootprintBlock'
 import FootprintDetail from '../FootprintDetail'
 import GroupThankYouBlock from '../GroupThankYouBlock'
 import Objective from '../objective/Objective'
-import SaveResultsBlock from '../SaveResultsBlock'
 
 interface Props {
   simulationResult: SimulationResult
   locale: Locale
-  hideSaveBlock?: boolean
-  tendency?: Tendency
-  hasPreviousSimulation?: boolean
 }
 
 export default function CarbonFootprintResults({
   simulationResult,
   locale,
-  tendency,
-  hideSaveBlock = false,
-  hasPreviousSimulation = false,
 }: Props) {
   return (
     <>
       <FootprintBlock
         className="mb-12"
-        tendency={tendency}
+        tendency={simulationResult.tendency}
         locale={locale}
         value={simulationResult.computedResults.carbone.bilan}
         title={
@@ -55,12 +48,10 @@ export default function CarbonFootprintResults({
         <GroupThankYouBlock locale={locale} group={simulationResult.group} />
       )}
 
-      {!hideSaveBlock && (
-        <SaveResultsBlock
-          hasPreviousSimulation={hasPreviousSimulation}
-          locale={locale}
-        />
-      )}
+      <EspacePersoBlock
+        hasPreviousSimulation={simulationResult.hasPreviousResult}
+        locale={locale}
+      />
 
       <HideInIframe>
         <Objective
