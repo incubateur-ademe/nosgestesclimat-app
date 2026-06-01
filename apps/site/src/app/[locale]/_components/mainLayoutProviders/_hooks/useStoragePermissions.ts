@@ -5,7 +5,7 @@ import {
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 export const useStoragePermissions = (): {
   needPermission: boolean
@@ -39,17 +39,19 @@ export const useStoragePermissions = (): {
 
   const askForPermission = useCallback(async () => {
     try {
+      console.log(
+        '[NGC Safari Fix] askForPermission: calling requestStorageAccess'
+      )
       await requestStorageAccess()
+      console.log(
+        '[NGC Safari Fix] askForPermission: requestStorageAccess succeeded'
+      )
       await checkPermission()
-    } catch {
+    } catch (error) {
+      console.log('[NGC Safari Fix] askForPermission: failed', error)
       // User denied or API not available — unblock the UI
+      setNeedPermission(false)
       setHaveCheckedPermission(true)
-    }
-  }, [checkPermission])
-
-  useEffect(() => {
-    if (requiresStoragePermissions()) {
-      checkPermission().catch(() => undefined)
     }
   }, [checkPermission])
 

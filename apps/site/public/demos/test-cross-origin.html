@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Cross-Origin Iframe – Storage Access</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 1rem">
+    <h1>Test Storage Access API</h1>
+    <p>
+      Page hébergée sur <strong>port 8080</strong>, l'iframe pointe vers
+      <strong>localhost:3000</strong> → cross-origin ✅
+    </p>
+    <main>
+      <script
+        id="nosgestesclimat"
+        src="https://preprod.nosgestesclimat.fr/iframeSimulation.js"
+        data-only-simulation="true"
+        data-lang="fr"></script>
+    </main>
+  </body>
+</html>

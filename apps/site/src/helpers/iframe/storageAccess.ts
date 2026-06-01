@@ -7,14 +7,18 @@ export function isSafari(): boolean {
 }
 
 export function supportStorageAccessApi(): boolean {
+  if (typeof document === 'undefined') return false
   return 'hasStorageAccess' in document && 'requestStorageAccess' in document
 }
 
 export async function hasStorageAccess(): Promise<boolean> {
+  if (typeof document === 'undefined') return false
   return document.hasStorageAccess()
 }
 
 export async function requestStorageAccess(): Promise<void> {
+  console.log('requestStorageAccess', document)
+  if (typeof document === 'undefined') return
   return document.requestStorageAccess()
 }
 
