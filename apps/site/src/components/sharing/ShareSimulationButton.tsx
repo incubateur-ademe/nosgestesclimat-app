@@ -88,7 +88,7 @@ export default function ShareSimulationButton({
         {
           icon: <MailIcon className="fill-primary-700 w-4" />,
           label: t('Envoyer par e-mail'),
-          link: `mailto:?subject=${t('Voici mes empreintes carbone et eau ; tu connais les tiennes ?')}&body=${url}`,
+          link: `mailto:?subject=${t('Voici mes empreintes carbone et eau ; tu connais les tiennes ?')}&body=${encodeURIComponent(url)}`,
           eventTracked: getShareTrackEvent({
             page: 'Fin',
             target: 'E-mail',
