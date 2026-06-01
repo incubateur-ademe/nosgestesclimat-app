@@ -28,15 +28,13 @@
     </style>
   </head>
   <body>
-    <div class="warning">
-      ⚠️ Cette page doit être servie depuis <strong>localhost</strong> — par
-      exemple avec <code>npx serve .</code> dans ce dossier. L'important est que
-      le domaine hôte soit différent de preprod.nosgestesclimat.fr pour
-      déclencher le blocage des cookies tiers.
-    </div>
-    <h2>NGC Iframe (preview PR1814)</h2>
-    <iframe
-      src="https://nosgestesclimat-site-preprod-pr1814.osc-fr1.scalingo.io/"
-      title="NGC Iframe Test"></iframe>
+    <main>
+      <h1>Exemple d'iframe ayant une origine différente</h1>
+      <script
+        id="nosgestesclimat"
+        src="https://nosgestesclimat-site-preprod-pr1814.osc-fr1.scalingo.io/iframeSimulation.js"
+        data-only-simulation="true"
+        data-lang="fr"></script>
+    </main>
   </body>
 </html>
