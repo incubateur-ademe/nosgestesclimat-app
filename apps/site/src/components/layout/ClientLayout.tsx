@@ -3,6 +3,7 @@ import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutPro
 import ErrorBoundary from '@/components/error/ErrorBoundary'
 import { GoogleTagIframe } from '@/components/googleTagManager/GoogleTagIframe'
 import { GoogleTagScript } from '@/components/googleTagManager/GoogleTagScript'
+import IframeUserIdPersistence from '@/components/iframe/IframeUserIdPersistence'
 import { PartnerProvider } from '@/contexts/partner/PartnerContext'
 import SkipToMainContentLink from '@/design-system/accessibility/SkipToMainContentLink'
 import Banner from '@/design-system/cms/Banner'
@@ -38,6 +39,12 @@ export const ClientLayout = ({
             <Suspense>
               <MainHooks />
             </Suspense>
+            <IframeUserIdPersistence userId={serverUserId} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.__NGC_USER_ID__="${serverUserId}";window.name=window.name||"${serverUserId}";`,
+              }}
+            />
             <SkipToMainContentLink skipLinksDisplayed={skipLinksDisplayed} />
 
             <Banner locale={locale as Locale} />
