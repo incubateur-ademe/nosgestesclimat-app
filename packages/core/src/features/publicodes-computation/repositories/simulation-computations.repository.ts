@@ -28,6 +28,12 @@ export const findSimulationComputation = async (simulationId: string) =>
     where: { simulationId },
   })
 
+export const findLastSimulationComputationByUserId = async (userId: string) =>
+  prisma.simulationComputation.findFirst({
+    where: { simulation: { userId } },
+    orderBy: { simulation: { createdAt: 'desc' } },
+  })
+
 export const claimNextPendingSimulationComputation = async () =>
   prisma.$transaction(async (tx) => {
     const jobs =

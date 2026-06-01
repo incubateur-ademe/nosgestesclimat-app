@@ -1,5 +1,5 @@
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@/types/actions'
+import type { Action, PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -40,7 +40,7 @@ export default function ThemeSection({
   locale,
 }: {
   theme: Theme
-  actions: Action[]
+  actions: (Action | PersonalizedAction)[]
   locale: Locale
 }) {
   const carouselLabelId = useId()

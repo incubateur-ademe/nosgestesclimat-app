@@ -4,10 +4,11 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { getActions } from '@/services/actions/get-actions'
+import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
+import { getPersonalizedActions } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions.service'
 
 export default async function ResultatsActionsPage({
   params,
@@ -20,12 +21,19 @@ export default async function ResultatsActionsPage({
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
 
-  const [actions, themes] = await Promise.all([getActions(), getThemes()])
+  // TODO: determine what to do when:
+  // - the user has no simulation
+  // - the user has simulations but no computation
+  // - the user last simulation computation is not completed
+  const [{ lastSimulationAssessmentStatus: _, actions }, themes] =
+    await Promise.all([getPersonalizedActions(user.id), getThemes()])
+
+  const actionsDto = actions.map(toPersonalizedActionDto)
 
   return (
     <ActionsPage
-      // topActions={topActions}
-      actions={actions}
+      topActions={actionsDto.slice(0, 3)}
+      actions={actionsDto}
       themes={themes}
       locale={locale}
     />

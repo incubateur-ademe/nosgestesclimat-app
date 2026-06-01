@@ -1,7 +1,7 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@/types/actions'
+import type { Action, PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -22,8 +22,7 @@ const classesByTheme: Record<Theme['key'], string> = {
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
-  action: Action
-  impact?: number
+  action: Action | PersonalizedAction
   locale: Locale
   withThemeBadge?: boolean
 }
@@ -32,15 +31,18 @@ export default function ActionCard({
   action,
   className,
   locale,
-  impact,
   withThemeBadge = true,
   ...props
 }: ActionCardProps) {
+  const impact =
+    'assessment' in action && typeof action.assessment.impact === 'number'
+      ? action.assessment.impact
+      : undefined
   return (
     <article
       {...props}
       className={twMerge(
-        `relative flex min-h-56 flex-col gap-2 rounded-lg border border-t-8 bg-white p-2`,
+        `relative flex min-h-38 flex-col gap-2 rounded-lg border border-t-8 bg-white p-2`,
         'translate-y-0 transition-[box-shadow_border-color_transform] duration-300 ease-out',
         'hover:-translate-y-0.5 hover:shadow-sm',
         'focus-within:-translate-y-0.5 focus-within:shadow-sm',
@@ -52,9 +54,7 @@ export default function ActionCard({
       ) : null}
       <div className="grow">
         <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
-        {typeof impact === 'number' ? (
-          <ImpactTag impact={impact} locale={locale} />
-        ) : null}
+        {impact ? <ImpactTag impact={impact} locale={locale} /> : null}
       </div>
       <Link
         href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
@@ -87,7 +87,10 @@ interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
 }
 
 function ImpactTag({ impact, locale, className, ...rest }: ImpactTagProps) {
-  const { formattedValue, unit } = formatFootprint(impact, { locale })
+  const { formattedValue, unit } = formatFootprint(impact, {
+    locale,
+    shouldUseAbbreviation: true,
+  })
   return (
     <span
       className={twMerge(

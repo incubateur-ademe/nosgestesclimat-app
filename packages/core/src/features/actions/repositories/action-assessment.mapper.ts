@@ -1,25 +1,20 @@
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import type { ActionAssessmentModel } from '../../../prisma/generated/models/ActionAssessment.ts'
 import type { ActionAssessment, NewActionAssessment } from '../types/action.ts'
+
 export const mapActionAssessment = (
   db: ActionAssessmentModel
 ): ActionAssessment => {
-  if (db.applicable === true) {
-    return {
-      id: db.id,
-      simulationId: db.simulationId,
-      actionId: db.actionId,
-      impact: db.impact || undefined,
-      applicable: true,
-    }
-  }
-  return {
+  const base = {
     id: db.id,
     simulationId: db.simulationId,
     actionId: db.actionId,
-    impact: undefined,
-    applicable: db.applicable ?? undefined,
+    createdAt: db.createdAt,
   }
+  if (db.applicable === true) {
+    return { ...base, applicable: true, impact: db.impact ?? undefined }
+  }
+  return { ...base, applicable: db.applicable ?? undefined, impact: undefined }
 }
 
 export const mapNewActionAssessmentToPrisma = (

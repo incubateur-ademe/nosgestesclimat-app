@@ -1,10 +1,15 @@
 import { prisma } from '../../../prisma/client.ts'
 import { themesById } from '../data/themes/index.ts'
-import type { Action, NewAction, UpdatedAction } from '../types/action.ts'
-import type { DbActionWithRelations } from './action.mapper.ts'
+import type {
+  Action,
+  NewAction,
+  PersonalizedAction,
+  UpdatedAction,
+} from '../types/action.ts'
 import {
   mapAction,
   mapNewActionToPrisma,
+  mapPersonalizedAction,
   mapUpdatedActionToPrisma,
 } from './action.mapper.ts'
 
@@ -46,7 +51,7 @@ export const findVisibleActions = async (): Promise<Action[]> => {
     },
   })
 
-  return dbActions.map((dbAction: DbActionWithRelations) => {
+  return dbActions.map((dbAction) => {
     const theme = themesById[dbAction.themeId]
     return mapAction(dbAction, theme)
   })
@@ -104,4 +109,28 @@ export const deleteManyActions = async (ids: string[]): Promise<number> => {
   })
 
   return result.count
+}
+
+export const findVisiblePersonalizedActions = async (
+  userId: string
+): Promise<PersonalizedAction[]> => {
+  const [actions, assessments] = await Promise.all([
+    findVisibleActions(),
+    prisma.actionAssessment.findMany({
+      where: {
+        applicable: true,
+        simulation: { userId },
+      },
+      orderBy: { createdAt: 'desc' },
+      distinct: ['actionId'],
+    }),
+  ])
+
+  const latestByActionId = new Map(assessments.map((a) => [a.actionId, a]))
+
+  return actions
+    .filter((action) => latestByActionId.has(action.id))
+    .map((action) =>
+      mapPersonalizedAction(action, latestByActionId.get(action.id)!)
+    )
 }

@@ -7,10 +7,11 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
-import { getActions } from '@/services/actions/get-actions'
+import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
+import { getPersonalizedActions } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions.service'
 import ProfileTab from '../_components/ProfileTabs'
 
 export default async function MonEspaceActionsPage({
@@ -20,9 +21,15 @@ export default async function MonEspaceActionsPage({
   const user = await throwNextError(getAuthUser)
   const flag = await getFeatureFlag('actions-v2', user.id)
 
-  const [actions, themes] = flag
-    ? await Promise.all([getActions(), getThemes()])
+  const [maybePersonalizedActionsResult, themes] = flag
+    ? await Promise.all([getPersonalizedActions(user.id), getThemes()])
     : [undefined, undefined]
+
+  const actionsDto = maybePersonalizedActionsResult
+    ? maybePersonalizedActionsResult.actions.map((action) =>
+        toPersonalizedActionDto(action)
+      )
+    : undefined
 
   return (
     <div className="flex flex-col">
@@ -34,10 +41,10 @@ export default async function MonEspaceActionsPage({
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
-      {flag && actions ? (
+      {flag && themes && actionsDto ? (
         <ActionsPage
-          // topActions={topActions}
-          actions={actions}
+          topActions={actionsDto.slice(0, 3)}
+          actions={actionsDto}
           themes={themes}
           locale={locale}
         />
