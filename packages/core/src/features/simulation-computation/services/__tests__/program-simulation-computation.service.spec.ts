@@ -1,19 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { prisma } from '../../../prisma/client.ts'
+import { prisma } from '../../../../prisma/client.ts'
 import {
   SimulationNotFinished,
   UnsupportedModel,
-} from '../exceptions/simulation-computation.exception.ts'
-import { simulationFactory } from '../factories/simulation.factory.ts'
-import { findSimulationComputation } from '../repositories/simulation-computations.repository.ts'
-import { programSimulationComputation } from '../services/program-simulation-computation.ts'
+} from '../../exceptions/simulation-computation.exception.ts'
+import { simulationFactory } from '../../factories/simulation.factory.ts'
+import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
+import { programSimulationComputation } from '../program-simulation-computation.ts'
 
 vi.mock('@incubateur-ademe/nosgestesclimat/package.json', () => ({
   default: { version: '1.0.0' },
 }))
 
 const { log: mockLog } = vi.hoisted(() => ({ log: vi.fn() }))
-vi.mock('../../logger/index.ts', () => ({ log: mockLog }))
+vi.mock('../../../logger/index.ts', () => ({ log: mockLog }))
 
 describe('programSimulationComputation', () => {
   afterEach(async () => {

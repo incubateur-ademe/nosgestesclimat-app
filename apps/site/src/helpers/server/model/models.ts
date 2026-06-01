@@ -2,7 +2,10 @@ import { MODELE_URL } from '@/constants/urls/main'
 import packageJson from '@incubateur-ademe/nosgestesclimat/package.json'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
-import { parseModelString } from '@nosgestesclimat/core/features/simulations/repository/model.mapper'
+import {
+  parseModelString,
+  serializeModel,
+} from '@nosgestesclimat/core/features/simulations/repository/model.mapper'
 import {
   type Model,
   type ModelLocale,
@@ -25,12 +28,7 @@ export { parseModelString }
 export const CURRENT_MODEL_VERSION = packageJson.version
 export const DEFAULT_REGION: UserRegion = 'FR'
 
-export function stringifyModel(model: Model): string {
-  const { region, locale, version } = model
-  const versionStr =
-    'publishedTag' in version ? version.publishedTag : `pr-${version.PRNumber}`
-  return `${region}-${locale}-${versionStr}`
-}
+export const stringifyModel = serializeModel
 
 export function getCurrentModel({
   mode = 'standard',

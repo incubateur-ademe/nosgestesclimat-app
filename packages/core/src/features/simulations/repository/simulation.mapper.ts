@@ -1,3 +1,5 @@
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import type { Situation } from 'publicodes'
 import type { SimulationModel } from '../../../prisma/generated/models.ts'
 import { InvalidModelString } from '../exceptions/simulations.exception.ts'
 
@@ -18,7 +20,7 @@ export const mapSimulation = (db: SimulationModel): Simulation => {
     date: db.date,
     progression: db.progression,
     model,
-    situation: db.situation as Simulation['situation'],
+    situation: db.situation as Situation<DottedName>,
     createdAt: db.createdAt,
     updatedAt: db.updatedAt,
     userId: db.userId,

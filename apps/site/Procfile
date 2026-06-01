@@ -1,4 +1,4 @@
 # NextJS is bundled in standalone mode
 # https://nextjs.org/docs/app/api-reference/config/next-config-js/output
 web: node apps/site/server.js
-worker: node apps/site/worker/worker.js
+worker: node --experimental-strip-types apps/site/worker/worker.ts

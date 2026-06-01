@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
 
-// Bypass --experimental-strip-types node_modules/.d.ts limitation by importing the runtime JSON directly
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 
-import { processNextPendingComputation } from '@nosgestesclimat/core/features/publicodes-computation/services/coordination.service'
+import { processNextPendingComputation } from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
 import Engine from 'publicodes'
 
 const POLL_INTERVAL_MS = 2000

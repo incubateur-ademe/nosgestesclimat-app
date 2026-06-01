@@ -46,7 +46,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@incubateur-ademe/nosgestesclimat": "https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@2762",
+    "@incubateur-ademe/nosgestesclimat": "^4.12.5",
     "@next/mdx": "^16.2.2",
     "@nosgestesclimat/core": "workspace:*",
     "@publicodes/react-ui": "^1.10.0",

@@ -34,6 +34,7 @@ export default async function SimulationLayout({
     modelStr: currentSimulation.model,
     locale: locale as Locale,
   })
+  const model = parseModelString(currentSimulation.model)
   return (
     <ClientLayout
       serverSimulations={serverSimulations}
@@ -42,7 +43,7 @@ export default async function SimulationLayout({
       serverUserId={user.id}>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
       <EngineProvider rules={rules} root="bilan">
-        <LocalisationBanner model={parseModelString(currentSimulation.model)} />
+        {model && <LocalisationBanner model={model} />}
         <FormProvider root="bilan">{children}</FormProvider>
       </EngineProvider>
     </ClientLayout>

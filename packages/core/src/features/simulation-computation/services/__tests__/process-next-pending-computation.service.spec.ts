@@ -1,16 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { prisma } from '../../../prisma/client.ts'
-import { SimulationComputationFail } from '../exceptions/simulation-computation.exception.ts'
-import { createTestEngine } from '../factories/engine.factory.ts'
-import { simulationFactory } from '../factories/simulation.factory.ts'
-import { findSimulationComputation } from '../repositories/simulation-computations.repository.ts'
-import { processNextPendingComputation } from '../services/process-next-pending-computation.service.ts'
+import { prisma } from '../../../../prisma/client.ts'
+import { SimulationComputationFail } from '../../exceptions/simulation-computation.exception.ts'
+import { createTestEngine } from '../../factories/engine.factory.ts'
+import { simulationFactory } from '../../factories/simulation.factory.ts'
+import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
+import { processNextPendingComputation } from '../process-next-pending-computation.service.ts'
 
 const { assessActions: mockAssessActions } = vi.hoisted(() => ({
   assessActions: vi.fn(),
 }))
 
-vi.mock('../../actions/services/assess-actions.service.ts', () => ({
+vi.mock('../../../actions/services/assess-actions.service.ts', () => ({
   assessActions: mockAssessActions,
 }))
 
