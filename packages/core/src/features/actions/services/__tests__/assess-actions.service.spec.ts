@@ -1,10 +1,12 @@
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { createTestEngine } from '../../../publicodes-computation/factories/engine.factory.ts'
-import { simulationFactory } from '../../../publicodes-computation/factories/simulation.factory.ts'
+import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { assessActions } from '../assess-actions.service.ts'
+
+vi.mock('../../../logger/index.ts', () => ({ log: vi.fn() }))
 
 const APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000001'
 const NOT_APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000002'

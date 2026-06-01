@@ -54,13 +54,13 @@
     "@incubateur-ademe/nosgestesclimat": "4.12.2",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
-    "@sentry/nextjs": "^10.46.0",
+    "@sentry/node": "^10.48.0",
     "dotenv": "^17.4.2",
     "prisma": "^7.8.0",
     "publicodes": "^1.10.1",
     "schema-dts": "^2.0.0",
-    "vitest": "^4.1.4",
-    "valibot": "^1.4.0"
+    "valibot": "^1.4.0",
+    "vitest": "^4.1.4"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.16",

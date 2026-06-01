@@ -1,23 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../prisma/client.ts'
+import { SimulationComputationFail } from '../exceptions/simulation-computation.exception.ts'
 import { createTestEngine } from '../factories/engine.factory.ts'
 import { simulationFactory } from '../factories/simulation.factory.ts'
 import { findSimulationComputation } from '../repositories/simulation-computations.repository.ts'
-import { processNextPendingComputation } from '../services/coordination.service.ts'
+import { processNextPendingComputation } from '../services/process-next-pending-computation.service.ts'
 
-const { computeDerivedSimulationData: mockCompute } = vi.hoisted(() => ({
-  computeDerivedSimulationData: vi.fn(),
+const { assessActions: mockAssessActions } = vi.hoisted(() => ({
+  assessActions: vi.fn(),
 }))
 
-vi.mock('../services/simulation-computation.service.ts', () => ({
-  computeDerivedSimulationData: mockCompute,
+vi.mock('../../actions/services/assess-actions.service.ts', () => ({
+  assessActions: mockAssessActions,
 }))
 
-describe('coordination service', () => {
+describe('processNextPendingComputation', () => {
   const engine = createTestEngine({})
 
   beforeEach(() => {
-    mockCompute.mockResolvedValue(undefined)
+    mockAssessActions.mockResolvedValue(undefined)
   })
 
   afterEach(async () => {
@@ -56,13 +57,13 @@ describe('coordination service', () => {
     expect(computation!.completedAt).not.toBeNull()
   })
 
-  it('marks the computation as failed and rethrows when an error occurs', async () => {
+  it('marks the computation as failed and throws SimulationComputationFail when an error occurs', async () => {
     const simulation = await simulationFactory.withPendingComputation().create()
 
-    mockCompute.mockRejectedValue(new Error('Engine evaluation failed'))
+    mockAssessActions.mockRejectedValue(new Error('Engine evaluation failed'))
 
     await expect(processNextPendingComputation(engine)).rejects.toThrow(
-      'Engine evaluation failed'
+      SimulationComputationFail
     )
 
     const computation = await findSimulationComputation(simulation.id)

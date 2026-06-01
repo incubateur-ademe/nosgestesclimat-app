@@ -1,9 +1,9 @@
-import { captureException } from '@sentry/nextjs'
+import sentry from '@sentry/node'
 import type { Exception } from '../../exception.ts'
 
 export function log(exception: Exception<Record<string, unknown>>) {
-  // @TOFIX : use something else that @sentry/next here (couple with nextjs in core not good)
-  captureException(exception, {
+  // @TODO : use a proper loguer abstraction here (winston?)
+  sentry.captureException(exception, {
     level: exception.level,
     extra: exception.payload,
   })

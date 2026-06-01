@@ -1,4 +1,7 @@
 import { prisma } from '../../../prisma/client.ts'
+import { isPrismaError, PrismaErrorCodes } from '../../../prisma/utils.ts'
+import { mapSimulation } from '../../simulations/repository/simulation.mapper.ts'
+import { ComputationAlreadyExists } from '../exceptions/simulation-computation.exception.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
 
@@ -18,9 +21,16 @@ const CLAIM_QUERY = `
 export const createSimulationComputation = async (
   simulationId: string
 ): Promise<void> => {
-  await prisma.simulationComputation.create({
-    data: { simulationId, status: 'pending' },
-  })
+  try {
+    await prisma.simulationComputation.create({
+      data: { simulationId, status: 'pending' },
+    })
+  } catch (error) {
+    if (isPrismaError(error, PrismaErrorCodes.UniqueConstraintFailed)) {
+      throw new ComputationAlreadyExists({ simulationId })
+    }
+    throw error
+  }
 }
 
 export const findSimulationComputation = async (simulationId: string) =>
@@ -36,12 +46,15 @@ export const claimNextPendingSimulationComputation = async () =>
     if (jobs.length === 0) return null
 
     const { simulationId } = jobs[0]
-    await tx.simulationComputation.update({
+    const result = await tx.simulationComputation.update({
       where: { simulationId },
+      include: {
+        simulation: true,
+      },
       data: { status: 'processing', startedAt: new Date() },
     })
 
-    return { simulationId }
+    return { simulation: mapSimulation(result.simulation) }
   })
 
 export const markSimulationComputationCompleted = async (
