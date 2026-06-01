@@ -67,6 +67,15 @@ export async function userMiddleware(
   newSession.region = session.region
   newSession.initialRegion = session.initialRegion
 
+  // Handle forcing the region via the search param
+  if (searchParams.has('region')) {
+    const region = searchParams.get('region')
+    if (region && region in supportedRegions) {
+      newSession.region = region as UserRegion
+      newSession.initialRegion = region as UserRegion
+    }
+  }
+
   await newSession.save()
 
   return response
