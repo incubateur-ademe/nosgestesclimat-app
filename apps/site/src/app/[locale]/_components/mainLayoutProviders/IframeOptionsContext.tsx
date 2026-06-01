@@ -73,7 +73,8 @@ export const IframeOptionsProvider = ({
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
-  const { needsOverlay, handleAskPermission } = useSafariStorageAccess(isIframe)
+  const { needsOverlay, handleAskPermission, storageAccessError } =
+    useSafariStorageAccess(isIframe)
 
   console.log('[NGC Safari Fix] IframeOptionsProvider', {
     isIframe,
@@ -161,7 +162,10 @@ export const IframeOptionsProvider = ({
         isFrenchRegion,
       }}>
       {isIframe && needsOverlay ? (
-        <StorageAccessOverlay onAskPermission={handleAskPermission} />
+        <StorageAccessOverlay
+          onAskPermission={handleAskPermission}
+          error={storageAccessError}
+        />
       ) : (
         children
       )}

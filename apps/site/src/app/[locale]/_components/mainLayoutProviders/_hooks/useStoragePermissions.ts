@@ -7,10 +7,16 @@ import {
 } from '@/helpers/iframe/storageAccess'
 import { useCallback, useState } from 'react'
 
+interface StorageAccessError {
+  name: string
+  message: string
+}
+
 export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
   haveCheckedPermission: boolean
+  storageAccessError: StorageAccessError | null
 } => {
   const [needPermission, setNeedPermission] = useState(
     requiresStoragePermissions()
@@ -18,6 +24,8 @@ export const useStoragePermissions = (): {
   const [haveCheckedPermission, setHaveCheckedPermission] = useState(
     !requiresStoragePermissions()
   )
+  const [storageAccessError, setStorageAccessError] =
+    useState<StorageAccessError | null>(null)
 
   const isHavingPermissionFn = useCallback(async () => {
     try {
@@ -39,18 +47,35 @@ export const useStoragePermissions = (): {
 
   const askForPermission = useCallback(async () => {
     try {
-      console.log(
-        '[NGC Safari Fix] askForPermission: calling requestStorageAccess'
-      )
+      setStorageAccessError(null)
       await requestStorageAccess()
-      console.log(
-        '[NGC Safari Fix] askForPermission: requestStorageAccess succeeded'
-      )
       await checkPermission()
     } catch (error) {
-      console.log('[NGC Safari Fix] askForPermission: failed', error)
-      // User denied or API not available — unblock the UI
-      setNeedPermission(false)
+      const name = error instanceof Error ? error.name : 'Unknown'
+      const message = error instanceof Error ? error.message : String(error)
+
+      // eslint-disable-next-line no-console
+      console.error('[NGC Safari Fix] askForPermission failed', {
+        name,
+        message,
+        error,
+      })
+
+      // Post to parent window so it's visible without opening iframe devtools
+      try {
+        window.parent.postMessage(
+          {
+            type: 'NGC_STORAGE_ACCESS_ERROR',
+            name,
+            message,
+          },
+          '*'
+        )
+      } catch {
+        // cross-origin postMessage may fail
+      }
+
+      setStorageAccessError({ name, message })
       setHaveCheckedPermission(true)
     }
   }, [checkPermission])
@@ -61,5 +86,6 @@ export const useStoragePermissions = (): {
       ? askForPermission
       : () => undefined,
     haveCheckedPermission,
+    storageAccessError,
   }
 }

@@ -10,8 +10,12 @@ import { useStoragePermissions } from './useStoragePermissions'
 const RELOADED_KEY = 'ngc-safari-storage-reloaded'
 
 export function useSafariStorageAccess(isIframe: boolean) {
-  const { needPermission, askForPermission, haveCheckedPermission } =
-    useStoragePermissions()
+  const {
+    needPermission,
+    askForPermission,
+    haveCheckedPermission,
+    storageAccessError,
+  } = useStoragePermissions()
 
   useEffect(() => {
     if (!isIframe) return
@@ -29,5 +33,6 @@ export function useSafariStorageAccess(isIframe: boolean) {
     isBlocked: !haveCheckedPermission,
     needsOverlay: needPermission,
     handleAskPermission: () => askForPermission(),
+    storageAccessError,
   }
 }

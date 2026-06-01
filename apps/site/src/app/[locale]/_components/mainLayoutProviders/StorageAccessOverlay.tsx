@@ -4,11 +4,20 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 
-interface Props {
-  onAskPermission: () => void
+interface StorageAccessError {
+  name: string
+  message: string
 }
 
-export default function StorageAccessOverlay({ onAskPermission }: Props) {
+interface Props {
+  onAskPermission: () => void
+  error?: StorageAccessError | null
+}
+
+export default function StorageAccessOverlay({
+  onAskPermission,
+  error,
+}: Props) {
   return (
     <div className="fixed inset-0 z-1000 overflow-auto bg-black/50">
       <Card className="absolute top-4 left-1/2 z-1000 w-[calc(100%-16px)] -translate-x-1/2 bg-white sm:max-w-lg">
@@ -30,6 +39,11 @@ export default function StorageAccessOverlay({ onAskPermission }: Props) {
               fenêtre qui s'affichera.
             </Trans>
           </p>
+          {error && (
+            <p className="mt-2 rounded border border-red-300 bg-red-50 p-2 text-red-700">
+              Erreur : {error.name} — {error.message}
+            </p>
+          )}
           <div className="mt-4">
             <Button onClick={onAskPermission}>
               <Trans i18nKey="iframe.safari.askPermission">Autoriser</Trans>

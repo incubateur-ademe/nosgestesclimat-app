@@ -7,16 +7,33 @@
   </head>
   <body style="font-family: sans-serif; padding: 1rem">
     <h1>Test Storage Access API</h1>
-    <p>
-      Page hébergée sur <strong>port 8080</strong>, l'iframe pointe vers
-      <strong>localhost:3000</strong> → cross-origin ✅
-    </p>
+    <p>Parent: <code id="parent-origin"></code></p>
+    <p>Messages de l'iframe :</p>
+    <pre
+      id="log"
+      style="
+        background: #f5f5f5;
+        padding: 1rem;
+        max-height: 400px;
+        overflow: auto;
+      "></pre>
     <main>
       <script
         id="nosgestesclimat"
-        src="https://preprod.nosgestesclimat.fr/iframeSimulation.js"
+        src="https://nosgestesclimat-site-preprod-pr1814.osc-fr1.scalingo.io/iframeSimulation.js"
         data-only-simulation="true"
         data-lang="fr"></script>
     </main>
+    <script>
+      document.getElementById('parent-origin').textContent =
+        window.location.origin
+
+      const logEl = document.getElementById('log')
+      window.addEventListener('message', (event) => {
+        const entry = `[${new Date().toLocaleTimeString()}] origin=${event.origin} data=${JSON.stringify(event.data, null, 2)}`
+        logEl.textContent += entry + '\n'
+        console.log('[NGC Parent] postMessage received:', event.data)
+      })
+    </script>
   </body>
 </html>

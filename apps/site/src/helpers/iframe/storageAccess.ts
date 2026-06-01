@@ -13,13 +13,34 @@ export function supportStorageAccessApi(): boolean {
 
 export async function hasStorageAccess(): Promise<boolean> {
   if (typeof document === 'undefined') return false
-  return document.hasStorageAccess()
+  try {
+    const result = await document.hasStorageAccess()
+    // eslint-disable-next-line no-console
+    console.log('[NGC Safari Fix] document.hasStorageAccess() →', result)
+    return result
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[NGC Safari Fix] document.hasStorageAccess() error', error)
+    return false
+  }
 }
 
 export async function requestStorageAccess(): Promise<void> {
-  console.log('requestStorageAccess', document)
   if (typeof document === 'undefined') return
-  return document.requestStorageAccess()
+  // eslint-disable-next-line no-console
+  console.log('[NGC Safari Fix] document.requestStorageAccess() called')
+  try {
+    await document.requestStorageAccess()
+    // eslint-disable-next-line no-console
+    console.log('[NGC Safari Fix] document.requestStorageAccess() → resolved')
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[NGC Safari Fix] document.requestStorageAccess() error', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+    })
+    throw error
+  }
 }
 
 export function requiresStoragePermissions(): boolean {
