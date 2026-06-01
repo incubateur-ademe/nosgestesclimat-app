@@ -2,6 +2,7 @@ import { getIronSession } from 'iron-session'
 import type { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
 import { getGeolocation, supportedRegions } from '../model/models'
+import { getRegionFromSearchParams } from './_helpers/getRegionFromParams'
 import {
   type AnonSessionData,
   anonSessionOptions,
