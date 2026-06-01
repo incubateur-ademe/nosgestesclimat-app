@@ -127,12 +127,13 @@ export async function createNewSimulation({
 }: {
   user: AppUser
   model: Model
-}): Promise<void> {
+}): Promise<{ id: string }> {
   const simulation = generateSimulation({ model: stringifyModel(model) })
   await fetchServer<Simulation>(`${SIMULATION_URL}/${user.id}`, {
     method: 'POST',
     body: simulation,
   })
+  return { id: simulation.id }
 }
 
 export function getSimulationMode(simulation: Simulation): SimulationMode {

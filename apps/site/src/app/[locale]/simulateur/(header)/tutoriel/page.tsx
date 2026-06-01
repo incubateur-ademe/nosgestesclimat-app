@@ -2,17 +2,14 @@ import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTra
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { ensureSimulation } from '@/helpers/iframe/ensureSimulation'
-import { isSafariIframe } from '@/helpers/iframe/isSafariIframe'
+import { handleSafariIframeTutorial } from '@/helpers/iframe/handleSafariIframeFallback'
 import { getUser } from '@/helpers/server/dal/user'
 import {
   getCompletedSimulations,
   getCurrentSimulation,
 } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { getNewSimulationModelService } from '../../_service/getNewSimulationModelService'
 import Tutorial from '../_components/Tutorial'
 
 export default async function TutorielPage({
@@ -28,17 +25,12 @@ export default async function TutorielPage({
   ])
 
   if (!currentSimulation) {
-    const head = await headers()
-    if (isSafariIframe(head)) {
-      // Fallback for Safari-based iframes where third-party cookies
-      // don't persist across redirects. Create the simulation right here
-      // within the same request context so the user ID is stable.
-      const model = await getNewSimulationModelService({
-        searchParams,
-        locale: locale as Locale,
-      })
-      currentSimulation = await ensureSimulation(user, model)
-    } else {
+    currentSimulation = await handleSafariIframeTutorial(
+      user,
+      searchParams,
+      locale as Locale
+    )
+    if (!currentSimulation) {
       redirect('/')
     }
   }
