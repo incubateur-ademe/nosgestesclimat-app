@@ -1,4 +1,5 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import type { Request } from 'express'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
@@ -15,7 +16,6 @@ import { EntityNotFoundException } from '../../core/errors/EntityNotFoundExcepti
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { isAuthenticated } from '../../core/typeguards/isAuthenticated.ts'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import {
   createToken,
   verifyCode,

@@ -1,5 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
-import { isPrismaError, PrismaErrorCodes } from '../../../prisma/utils.ts'
+import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
 import { mapSimulation } from '../../simulations/repository/simulation.mapper.ts'
 import { ComputationAlreadyExists } from '../exceptions/simulation-computation.exception.ts'
 
@@ -26,7 +26,7 @@ export const createSimulationComputation = async (
       data: { simulationId, status: 'pending' },
     })
   } catch (error) {
-    if (isPrismaError(error, PrismaErrorCodes.UniqueConstraintFailed)) {
+    if (isPrismaErrorUniqueConstraintFailed(error)) {
       throw new ComputationAlreadyExists({ simulationId })
     }
     throw error
