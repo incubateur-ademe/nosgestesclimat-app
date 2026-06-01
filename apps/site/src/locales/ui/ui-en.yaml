@@ -1988,3 +1988,5 @@ entries:
   results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
+  actions.components.actionCard.noImpactTag: Real impact, unquantifiable
+  actions.components.actionCard.noImpactTag.lock: Impact réel, non quantifiable

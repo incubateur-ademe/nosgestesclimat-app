@@ -879,6 +879,7 @@ entries:
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.components.actionCard.link: Voir l'action "{action.title}"
   actions.components.actionCard.impactTag: Jusqu'à -{{formattedValue}} {{unit}} CO<5>2</5>e / an
+  actions.components.actionCard.noImpactTag: Impact réel, non quantifiable
   C'est quoi mon empreinte carbone ?: C'est quoi mon empreinte carbone ?
   Cliquez pour ouvrir la liste des régions disponibles: Cliquez pour ouvrir la liste des régions disponibles
   Comment on la mesure ?: Comment on la mesure ?

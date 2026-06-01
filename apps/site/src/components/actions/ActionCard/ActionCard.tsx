@@ -3,6 +3,7 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { Action, PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
+import { isPersonalizedAction } from '@nosgestesclimat/core/features/actions/helpers/is-personalized-action'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
@@ -34,10 +35,6 @@ export default function ActionCard({
   withThemeBadge = true,
   ...props
 }: ActionCardProps) {
-  const impact =
-    'assessment' in action && typeof action.assessment.impact === 'number'
-      ? action.assessment.impact
-      : undefined
   return (
     <article
       {...props}
@@ -54,7 +51,9 @@ export default function ActionCard({
       ) : null}
       <div className="grow">
         <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
-        {impact ? <ImpactTag impact={impact} locale={locale} /> : null}
+        {isPersonalizedAction(action) ? (
+          <ImpactTag impact={action.assessment.impact} locale={locale} />
+        ) : null}
       </div>
       <Link
         href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
@@ -82,15 +81,36 @@ export default function ActionCard({
 }
 
 interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
-  impact: number
+  impact?: number
   locale: Locale
 }
 
 function ImpactTag({ impact, locale, className, ...rest }: ImpactTagProps) {
-  const { formattedValue, unit } = formatFootprint(impact, {
-    locale,
-    shouldUseAbbreviation: true,
-  })
+  let text
+
+  if (typeof impact === 'number') {
+    const { formattedValue, unit } = formatFootprint(impact, {
+      locale,
+      shouldUseAbbreviation: true,
+    })
+    text = (
+      <Trans
+        locale={locale}
+        i18nKey="actions.components.actionCard.impactTag"
+        values={{ formattedValue, unit }}>
+        Jusqu'à -{'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
+      </Trans>
+    )
+  } else {
+    text = (
+      <Trans
+        locale={locale}
+        i18nKey="actions.components.actionCard.noImpactTag">
+        Impact réel, non quantifiable
+      </Trans>
+    )
+  }
+
   return (
     <span
       className={twMerge(
@@ -98,12 +118,7 @@ function ImpactTag({ impact, locale, className, ...rest }: ImpactTagProps) {
         className
       )}
       {...rest}>
-      <Trans
-        locale={locale}
-        i18nKey="actions.components.actionCard.impactTag"
-        values={{ formattedValue, unit }}>
-        Jusqu'à -{'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
-      </Trans>
+      {text}
     </span>
   )
 }
