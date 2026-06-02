@@ -1,7 +1,10 @@
 'use client'
 
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
-import type { FeatureFlagName, FeatureFlagValue } from '@/services/feature-flags/flags'
+import type {
+  FeatureFlagName,
+  FeatureFlagValue,
+} from '@/services/feature-flags/flags'
 import { parseFeatureFlagCookie } from '@/services/feature-flags/urlParams'
 import { getClientCookie } from '@/utils/cookie'
 import posthog from 'posthog-js'
@@ -19,11 +22,10 @@ function resolveFlagValue<K extends FeatureFlagName>(
 export function useFeatureFlag<K extends FeatureFlagName>(
   flag: K
 ): FeatureFlagValue<K> | undefined {
-  const [value, setValue] = useState<FeatureFlagValue<K> | undefined>(() =>
-    resolveFlagValue(flag)
-  )
+  const [value, setValue] = useState<FeatureFlagValue<K> | undefined>(undefined)
 
   useEffect(() => {
+    setValue(resolveFlagValue(flag))
     const unsubscribe = posthog?.onFeatureFlags(() =>
       setValue(resolveFlagValue(flag))
     )
