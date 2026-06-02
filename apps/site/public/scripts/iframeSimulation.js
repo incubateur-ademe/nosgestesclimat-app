@@ -48,7 +48,7 @@
     } else if (withHomepage) {
       url.pathname = `/${lang ? lang + '/accueil-iframe' : 'accueil-iframe'}`
     } else {
-      url.pathname = `/${lang ? lang + '/' : ''}simulateur/commencer`
+      url.pathname = `/${lang ? lang + '/' : ''}simulateur/bilan`
     }
 
     // Append iframe and integratorUrl params to allow iframe event to be triggered
