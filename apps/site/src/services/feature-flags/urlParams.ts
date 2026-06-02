@@ -1,23 +1,30 @@
 import { FF_PARAM_PREFIX } from './constants'
-import type { FeatureFlagName } from './flags'
+import { FLAGS } from './flags'
+import type { FlagDefinition } from './flags'
 
 /**
  * Extracts feature flag overrides from URL search parameters.
  *
  * Recognises params with the `FF_PARAM_PREFIX` prefix (e.g. `?ff_actions-v2=true`).
+ * Values `true` / `false` are parsed as booleans; variant values are validated against
+ * the flag definition. Unknown flags or invalid values are silently ignored.
  * Returns `null` when no valid overrides are present.
- *
- * @example `?ff_actions-v2=true&ff_new-feature=false` → `{ 'actions-v2': true, 'new-feature': false }`
  */
 export function parseFeatureFlagParams(
   searchParams: URLSearchParams
-): Record<string, boolean> | null {
-  const overrides: Record<string, boolean> = {}
+): Record<string, string | boolean> | null {
+  const overrides: Record<string, string | boolean> = {}
   for (const [key, value] of searchParams.entries()) {
     if (!key.startsWith(FF_PARAM_PREFIX)) continue
     const flagName = key.slice(FF_PARAM_PREFIX.length)
-    if (value === 'true') overrides[flagName] = true
-    else if (value === 'false') overrides[flagName] = false
+    if (!(flagName in FLAGS)) continue
+    const def = FLAGS[flagName as keyof typeof FLAGS] as FlagDefinition
+    if (def.kind === 'boolean') {
+      if (value === 'true') overrides[flagName] = true
+      else if (value === 'false') overrides[flagName] = false
+    } else if (def.variants.includes(value)) {
+      overrides[flagName] = value
+    }
   }
   return Object.keys(overrides).length > 0 ? overrides : null
 }
@@ -34,12 +41,12 @@ export function stripFeatureFlagParams(url: URL): URL {
 }
 
 /**
- * Parses the raw feature flag cookie value into a typed overrides map.
+ * Parses the raw feature flag cookie value into an overrides map.
  * Returns an empty record for malformed, missing, or non-object input.
  */
 export function parseFeatureFlagCookie(
   raw: string | undefined
-): Partial<Record<FeatureFlagName, boolean>> {
+): Record<string, string | boolean> {
   if (!raw) return {}
   try {
     const parsed = JSON.parse(raw)

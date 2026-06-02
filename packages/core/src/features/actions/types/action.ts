@@ -35,10 +35,23 @@ export interface Action {
   deletedAt: Date | null
 }
 
-/** Type for the raw data persisted in code files */
-export type ActionFile = Omit<Action, 'theme'> & {
+export interface NewAction {
+  title: string
+  slug: string
+  trackingId: string
+  longDescription: string
+  ruleId: string
   themeId: string
+  media?: ActionMedia
+  tips?: string
+  financialIncentives?: string
+  furtherExplore?: string
+  metadata?: SeoMetadata
+  publishedAt?: Date | null
+  deletedAt?: Date | null
 }
+
+export type UpdatedAction = Partial<NewAction>
 
 interface ActionChoice {
   id: string
@@ -49,22 +62,28 @@ interface ActionChoice {
   chosenAt: Date
 }
 
-type ActionAssessment = {
-  id: string
+export type NewActionAssessment = {
   simulationId: string
   actionId: string
 } & (
-  | {
-      /** The impact of the action for the user, in kgCO2e */
-      impact: number
-      /** Whether the action is applicable for the user or not */
+  | // Case 1. The action is applicable and the impact is either a number or not evaluable
+  {
       applicable: true
+      impact: number | undefined
     }
+  // Case 2. The action is not applicable
   | {
+      applicable: false
       impact: undefined
-      applicable: false | undefined
+    }
+  // Case 3. Missing data to assess the action
+  | {
+      applicable: undefined
+      impact: undefined
     }
 )
+
+export type ActionAssessment = NewActionAssessment & { id: string }
 
 export interface PersonalizedAction {
   userId: string

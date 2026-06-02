@@ -1379,7 +1379,6 @@ entries:
   Illustration du groupe: Illustration of the group
   Veuillez entrer votre nom.: Please enter your name.
   Un compte avec cette adresse e-mail existe déjà: An account with this e-mail address already exists
-  <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <2>Already used by</2> <0>2.7 million people</0>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Compare your results with your family or a group of friends.
   newsletterManagement.logementNewsletter.title: Our Housing Gestures
   newsletterManagement.logementNewsletter.title.lock: Nos Gestes Logement
@@ -1950,8 +1949,8 @@ entries:
   components.carousel.roleDescription.lock: Carrousel
   common.byDay: / day
   common.byDay.lock: / jour
-  actions.components.themeSection.description: '{actions.length} recommended actions'
-  actions.components.themeSection.description.lock: '{actions.length} actions recommandées'
+  actions.components.themeSection.description: '{{count}} recommended actions'
+  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
   actions.detailPage.404.title: Action not found
   actions.detailPage.404.title.lock: Action non trouvée
   actions.detailPage.tabs.act: Taking action
@@ -1993,3 +1992,5 @@ entries:
   iframe.safari.step2.lock: Cliquez sur le bouton ci-dessous puis sur "Autoriser" dans la fenêtre qui s'affichera.
   iframe.safari.step1: For the calculator to work, your browser needs to access Nos Gestes Climat cookies.
   iframe.safari.step1.lock: Pour que le calculateur fonctionne, votre navigateur a besoin d'accéder aux cookies de Nos Gestes Climat.
+  homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
+  homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>

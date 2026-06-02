@@ -4,9 +4,11 @@ import Script from 'next/script'
 export default function ImpactCO2Widget({
   type,
   language,
+  hideButtons,
   options,
 }: {
   type: string
+  hideButtons?: boolean
   language?: ImpactCO2Language
   options?: Record<string, string>
 }) {
@@ -14,14 +16,18 @@ export default function ImpactCO2Widget({
     theme: 'default',
   })
 
-  if (language) {
-    searchParams.set('language', language)
-  }
-
   if (options) {
     Object.entries(options).forEach(([key, value]) => {
       searchParams.set(key, value)
     })
+  }
+
+  if (language) {
+    searchParams.set('language', language)
+  }
+
+  if (hideButtons) {
+    searchParams.set('hideButtons', String(hideButtons))
   }
 
   /*
