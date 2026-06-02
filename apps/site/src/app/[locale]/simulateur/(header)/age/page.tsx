@@ -39,7 +39,7 @@ export default async function AgePage({
     <>
       <Title
         data-testid="tutoriel-title"
-        className="mt-10 text-lg md:text-2xl"
+        className="mt-4 text-lg md:mt-10 md:text-2xl"
         title={
           <span>
             <Trans i18nKey="simulator.age.title" locale={locale}>

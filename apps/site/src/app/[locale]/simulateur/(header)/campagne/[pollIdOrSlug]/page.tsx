@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import { AGE_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
 import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
@@ -8,6 +8,7 @@ import {
   getCurrentSimulation,
 } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { posthogClient } from '@/services/tracking/posthogServer'
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import { getNewSimulationModelService } from '../../../_service/getNewSimulationModelService'
@@ -26,14 +27,17 @@ export default async function CampagnePage({
   }
 
   const user = await getUser()
-  const [poll, [lastCompletedSimulation], currentSimulation] =
+
+  const [poll, [lastCompletedSimulation], currentSimulation, featureFlagValue] =
     await throwNextError(() =>
       Promise.all([
         getUserPoll({ user, pollIdOrSlug }),
         getCompletedSimulations({ user }, { pageSize: 1 }),
         getCurrentSimulation({ user }),
+        posthogClient.getFeatureFlag('ab-test-question-tranche-dage', user.id),
       ])
     )
+
   if (
     currentSimulation &&
     currentSimulation.progression < 1 &&
@@ -41,6 +45,8 @@ export default async function CampagnePage({
   ) {
     redirect(SIMULATOR_PATH)
   }
+  console.log({ featureFlagValue })
+  const shouldRedirectToAgeQuestion = featureFlagValue === 'test'
 
   async function createNewSimulation() {
     'use server'
@@ -54,7 +60,7 @@ export default async function CampagnePage({
         mode: poll.mode,
       }),
     })
-    redirect(SIMULATOR_PATH)
+    redirect(shouldRedirectToAgeQuestion ? AGE_PAGE_PATH : SIMULATOR_PATH)
   }
 
   async function reuseSimulation() {
@@ -65,7 +71,7 @@ export default async function CampagnePage({
       simulation: lastCompletedSimulation,
       locale,
     })
-    redirect(END_PAGE_PATH)
+    redirect(shouldRedirectToAgeQuestion ? AGE_PAGE_PATH : SIMULATOR_PATH)
   }
 
   const allowToReuseExistingSimulation =

@@ -48,6 +48,7 @@ export default function AgeForm({ ageRange }: Props) {
       <div className="mt-8 flex w-full flex-col items-stretch gap-2 pb-8 sm:flex-row md:items-stretch md:gap-4">
         <Button
           type="submit"
+          className="md:order-1"
           disabled={!selectedAge || isPending}
           data-testid="submit-age-button">
           <Trans i18nKey="common.suivant">Suivant</Trans>

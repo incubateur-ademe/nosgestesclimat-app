@@ -1,4 +1,4 @@
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import { useUser } from '@/publicodes-state'
 import {
   AgeRangeSchema,
@@ -50,7 +50,7 @@ const AGE_RANGE_LABEL_CONFIG: Record<
 
 export function useAgeForm({ t, defaultValue }: Props) {
   const router = useRouter()
-  const { user } = useUser()
+  const { user, currentSimulation } = useUser()
   const { mutateAsync: updateUser, isPending } = useUpdateUserAgeRange()
 
   const AGE_OPTIONS = AgeRangeSchema.options.map((value) => ({
@@ -71,7 +71,9 @@ export function useAgeForm({ t, defaultValue }: Props) {
       ageRange: selectedAge,
     })
 
-    router.push(SIMULATOR_PATH)
+    router.push(
+      currentSimulation.progression === 1 ? END_PAGE_PATH : SIMULATOR_PATH
+    )
     router.refresh()
   }
 

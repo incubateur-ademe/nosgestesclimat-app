@@ -44,7 +44,11 @@ class PosthogServerNoop implements PosthogServerInterface {
     //
   }
 }
-
+console.log(
+  process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+    process.env.NEXT_PUBLIC_POSTHOG_HOST &&
+    process.env.POSTHOG_PERSONAL_API_KEY
+)
 export const posthogClient =
   process.env.NEXT_PUBLIC_POSTHOG_KEY &&
   process.env.NEXT_PUBLIC_POSTHOG_HOST &&
