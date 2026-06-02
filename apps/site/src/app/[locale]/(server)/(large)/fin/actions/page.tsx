@@ -27,11 +27,11 @@ export default async function ResultatsActionsPage({
 
   return (
     <ActionsPage
-      topActions={actionsCatalogue.actions.slice(0, 3)}
+      topActions={actionsCatalogue.topActions}
       actions={actionsCatalogue.actions}
+      assessmentStatus={actionsCatalogue.assessmentStatus}
       themes={themes}
       locale={locale}
-      assessmentStatus={actionsCatalogue.assessmentStatus}
     />
   )
 }

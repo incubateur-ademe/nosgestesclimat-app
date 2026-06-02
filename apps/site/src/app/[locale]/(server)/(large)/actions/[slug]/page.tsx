@@ -71,7 +71,7 @@ export default async function ActionPage({ params }: Props) {
   if (!action) notFound()
 
   const impact = action.assessment?.impact
-    ? formatFootprint(action.assessment.impact, {
+    ? formatFootprint(-1 * action.assessment.impact, {
         locale,
       })
     : null
@@ -188,7 +188,7 @@ export default async function ActionPage({ params }: Props) {
                   }}>
                   <span
                     className={`mr-1 text-[40px]/normal font-extrabold ${themeClasses.impactColor}`}>
-                    -{'{{formattedValue}}'}
+                    {'{{formattedValue}}'}
                   </span>{' '}
                   {'{{unit}}'} CO<sub>2</sub>e / an
                 </Trans>

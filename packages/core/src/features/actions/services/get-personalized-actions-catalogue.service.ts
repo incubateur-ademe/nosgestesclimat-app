@@ -8,6 +8,7 @@ export const getPersonalizedActionsCatalogue = async (
 ): Promise<{
   assessmentStatus: SimulationComputationStatus | null
   actions: PersonalizedAction[]
+  topActions: PersonalizedAction[]
 }> => {
   const [personalizedActions, lastComputation] = await Promise.all([
     findAllVisiblePersonalizedActions(userId),
@@ -32,5 +33,8 @@ export const getPersonalizedActionsCatalogue = async (
   return {
     assessmentStatus: lastComputation?.status ?? null,
     actions,
+    topActions: actions
+      .filter((action) => typeof action.assessment?.impact === 'number')
+      .slice(0, 3),
   }
 }

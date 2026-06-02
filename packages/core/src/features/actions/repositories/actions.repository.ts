@@ -152,7 +152,6 @@ export const findAllVisiblePersonalizedActions = async (
       actionId: { in: actions.map((a) => a.id) },
       simulationId: simulation.id,
     },
-    distinct: ['actionId'],
   })
 
   const latestByActionId = new Map(assessments.map((a) => [a.actionId, a]))

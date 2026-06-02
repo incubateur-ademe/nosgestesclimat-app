@@ -36,11 +36,11 @@ export default async function MonEspaceActionsPage({
 
       {flag && maybePersonalizedActionsCatalogue ? (
         <ActionsPage
-          topActions={maybePersonalizedActionsCatalogue.actions.slice(0, 3)}
+          topActions={maybePersonalizedActionsCatalogue.topActions}
           actions={maybePersonalizedActionsCatalogue.actions}
+          assessmentStatus={maybePersonalizedActionsCatalogue.assessmentStatus}
           themes={themes}
           locale={locale}
-          assessmentStatus={maybePersonalizedActionsCatalogue.assessmentStatus}
         />
       ) : (
         <LegacyMonEspaceActionsPage user={user} locale={locale} />

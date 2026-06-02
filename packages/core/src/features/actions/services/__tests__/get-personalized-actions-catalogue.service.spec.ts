@@ -14,15 +14,16 @@ describe('getPersonalizedActionsCatalogue', () => {
     await prisma.action.deleteMany()
   })
 
-  it('returns null status and no actions when there are no actions', async () => {
+  it('returns null status, no actions and no top actions when there are no actions', async () => {
     const user = await userFactory.create()
     const result = await getPersonalizedActionsCatalogue(user.id)
     expect(result.assessmentStatus).toBeNull()
     expect(result.actions).toEqual([])
+    expect(result.topActions).toEqual([])
   })
 
   describe('when the user has no simulation', () => {
-    it('returns null status and all visible actions without assessments', async () => {
+    it('returns null status, all visible actions without assessments, and no top actions', async () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
 
@@ -30,12 +31,13 @@ describe('getPersonalizedActionsCatalogue', () => {
       expect(result).toEqual({
         assessmentStatus: null,
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
+        topActions: [],
       })
     })
   })
 
   describe('when the latest completed simulation has no computation (old simulation)', () => {
-    it('returns null status and all visible actions without assessments', async () => {
+    it('returns null status, all visible actions without assessments, and no top actions', async () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
       await simulationFactory.completed().params({ userId: user.id }).create()
@@ -44,6 +46,7 @@ describe('getPersonalizedActionsCatalogue', () => {
       expect(result).toEqual({
         assessmentStatus: null,
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
+        topActions: [],
       })
     })
   })
@@ -66,6 +69,7 @@ describe('getPersonalizedActionsCatalogue', () => {
           actions: [
             expect.objectContaining({ id: action.id, assessment: null }),
           ],
+          topActions: [],
         })
       }
     )
@@ -112,6 +116,7 @@ describe('getPersonalizedActionsCatalogue', () => {
           expect.objectContaining({ id: applicable.id, assessment: null }),
           expect.objectContaining({ id: inapplicable.id, assessment: null }),
         ]),
+        topActions: [],
       })
     })
   })
@@ -170,7 +175,55 @@ describe('getPersonalizedActionsCatalogue', () => {
           { ...low, assessment: lowAssessment, choice: null },
           { ...noImpact, assessment: noImpactAssessment, choice: null },
         ],
+        topActions: [
+          { ...high, assessment: highAssessment, choice: null },
+          { ...low, assessment: lowAssessment, choice: null },
+        ],
       })
+    })
+
+    it('returns at most 3 top actions when more than 3 actions have impact', async () => {
+      const user = await userFactory.create()
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: user.id })
+        .withCompletedComputation()
+        .create()
+
+      const [first, second, third, fourth] = await Promise.all([
+        actionFactory.published().create(),
+        actionFactory.published().create(),
+        actionFactory.published().create(),
+        actionFactory.published().create(),
+      ])
+
+      const [firstAssessment, secondAssessment, thirdAssessment] =
+        await Promise.all([
+          actionAssessmentFactory
+            .params({ simulationId: simulation.id, actionId: first.id })
+            .applicable({ impact: 1000 })
+            .create(),
+          actionAssessmentFactory
+            .params({ simulationId: simulation.id, actionId: second.id })
+            .applicable({ impact: 800 })
+            .create(),
+          actionAssessmentFactory
+            .params({ simulationId: simulation.id, actionId: third.id })
+            .applicable({ impact: 600 })
+            .create(),
+          actionAssessmentFactory
+            .params({ simulationId: simulation.id, actionId: fourth.id })
+            .applicable({ impact: 400 })
+            .create(),
+        ])
+
+      const result = await getPersonalizedActionsCatalogue(user.id)
+
+      expect(result.topActions).toEqual([
+        { ...first, assessment: firstAssessment, choice: null },
+        { ...second, assessment: secondAssessment, choice: null },
+        { ...third, assessment: thirdAssessment, choice: null },
+      ])
     })
 
     it('excludes deleted and unpublished actions', async () => {
@@ -206,6 +259,7 @@ describe('getPersonalizedActionsCatalogue', () => {
       expect(result).toEqual({
         assessmentStatus: 'completed',
         actions: [],
+        topActions: [],
       })
     })
   })

@@ -1,8 +1,8 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@/types/themes'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -101,7 +101,10 @@ function ImpactTag({
 }: ImpactTagProps) {
   let text
 
-  if (assessmentStatus && assessmentStatus !== 'completed') {
+  if (
+    assessmentStatus &&
+    shouldDisplayComputationInProgressText(assessmentStatus)
+  ) {
     text = (
       <Trans
         locale={locale}
@@ -110,7 +113,7 @@ function ImpactTag({
       </Trans>
     )
   } else if (typeof impact === 'number') {
-    const { formattedValue, unit } = formatFootprint(impact, {
+    const { formattedValue, unit } = formatFootprint(-1 * impact, {
       locale,
       shouldUseAbbreviation: true,
     })
@@ -119,7 +122,7 @@ function ImpactTag({
         locale={locale}
         i18nKey="actions.components.actionCard.impactTag"
         values={{ formattedValue, unit }}>
-        Jusqu'à -{'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
+        Jusqu'à {'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
       </Trans>
     )
   } else {
@@ -142,4 +145,20 @@ function ImpactTag({
       {text}
     </span>
   )
+}
+
+function shouldDisplayComputationInProgressText(
+  status: SimulationComputationStatus
+) {
+  switch (status) {
+    case 'completed':
+      return false
+    case 'pending':
+    case 'processing':
+    case 'failed':
+      return true
+    default:
+      status satisfies never
+      return true
+  }
 }
