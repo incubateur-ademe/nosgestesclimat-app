@@ -155,6 +155,7 @@ describe('getPersonalizedActionDetails', () => {
       const action = await actionFactory.published().pendingDeletion().create()
       const user = await userFactory.create()
       const simulation = await simulationFactory
+        .completed()
         .params({ userId: user.id })
         .create()
 
