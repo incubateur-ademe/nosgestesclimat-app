@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { SimulationComputationFail } from '../../exceptions/simulation-computation.exception.ts'
+import { SimulationComputationFailedException } from '../../exceptions/simulation-computation.exception.ts'
 import { createTestEngine } from '../../factories/engine.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
@@ -45,6 +45,7 @@ describe('processNextPendingComputation', () => {
 
   it('reclaims stale processing jobs past the timeout', async () => {
     const simulation = await simulationFactory
+      .withProgression(1)
       .withStaleProcessingComputation()
       .create()
 
@@ -57,13 +58,16 @@ describe('processNextPendingComputation', () => {
     expect(computation!.completedAt).not.toBeNull()
   })
 
-  it('marks the computation as failed and throws SimulationComputationFail when an error occurs', async () => {
-    const simulation = await simulationFactory.withPendingComputation().create()
+  it('marks the computation as failed and throws SimulationComputationFailedException when an error occurs', async () => {
+    const simulation = await simulationFactory
+      .withProgression(1)
+      .withPendingComputation()
+      .create()
 
     mockAssessActions.mockRejectedValue(new Error('Engine evaluation failed'))
 
     await expect(processNextPendingComputation(engine)).rejects.toThrow(
-      SimulationComputationFail
+      SimulationComputationFailedException
     )
 
     const computation = await findSimulationComputation(simulation.id)

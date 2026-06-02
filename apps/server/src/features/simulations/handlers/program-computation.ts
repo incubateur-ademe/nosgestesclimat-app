@@ -1,4 +1,4 @@
-import { ComputationAlreadyExists } from '@nosgestesclimat/core/features/simulation-computation/exceptions/simulation-computation.exception'
+import { ComputationAlreadyExistsException } from '@nosgestesclimat/core/features/simulation-computation/exceptions/simulation-computation.exception'
 import { programSimulationComputation } from '@nosgestesclimat/core/features/simulation-computation/services/program-simulation-computation'
 import type { Handler } from '../../../core/event-bus/handler.ts'
 import logger from '../../../logger.ts'
@@ -12,7 +12,7 @@ export const programComputation: Handler<SimulationUpsertedEvent> = async ({
   try {
     await programSimulationComputation(simulation.id)
   } catch (error) {
-    if (error instanceof ComputationAlreadyExists) {
+    if (error instanceof ComputationAlreadyExistsException) {
       logger.warn(error.name, { simulationId: simulation.id })
       return
     }

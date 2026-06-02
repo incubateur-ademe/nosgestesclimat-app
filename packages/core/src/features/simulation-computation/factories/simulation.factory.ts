@@ -17,6 +17,7 @@ interface SimulationFixture {
 }
 
 interface SimulationTransientParams {
+  progression?: number
   modelVersion?: Model['version']
   modelRegion?: ModelRegion
   modelLocale?: ModelLocale
@@ -27,6 +28,9 @@ class SimulationFactory extends Factory<
   SimulationTransientParams,
   SimulationFixture
 > {
+  withProgression(progression: number) {
+    return this.params({ progression })
+  }
   withModelVersion(version: Model['version']) {
     return this.transient({ modelVersion: version })
   }
@@ -81,7 +85,7 @@ export const simulationFactory = SimulationFactory.define(
 
     return {
       id: faker.string.uuid(),
-      progression: 1,
+      progression: faker.number.float({ min: 0, max: 1 }),
       model: {
         region:
           transientParams.modelRegion ??

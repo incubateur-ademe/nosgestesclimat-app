@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import {
-  SimulationNotFinished,
-  UnsupportedModel,
+  SimulationNotFinishedException,
+  UnsupportedModelException,
 } from '../../exceptions/simulation-computation.exception.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
@@ -26,7 +26,7 @@ describe('programSimulationComputation', () => {
     const { id } = await simulationFactory.params({ progression: 0.5 }).create()
 
     await expect(programSimulationComputation(id)).rejects.toThrow(
-      SimulationNotFinished
+      SimulationNotFinishedException
     )
   })
 
@@ -34,31 +34,42 @@ describe('programSimulationComputation', () => {
     it.each([
       [
         'when model version is outdated',
-        () => simulationFactory.withModelVersion({ publishedTag: '0.9.0' }),
+        () =>
+          simulationFactory
+            .withProgression(1)
+            .withModelVersion({ publishedTag: '0.9.0' }),
       ],
       [
         'when model version is a PR version',
-        () => simulationFactory.withModelVersion({ PRNumber: '42' }),
+        () =>
+          simulationFactory
+            .withProgression(1)
+            .withModelVersion({ PRNumber: '42' }),
       ],
       [
         'when model is unsupported region',
-        () => simulationFactory.withModelRegion('UK'),
+        () => simulationFactory.withProgression(1).withModelRegion('UK'),
       ],
       [
         'when model is unsupported language',
-        () => simulationFactory.withModelLocale('en'),
+        () => simulationFactory.withProgression(1).withModelLocale('en'),
       ],
     ])('%s', async (_, setup) => {
       const { id } = await setup().create()
       await programSimulationComputation(id)
-      expect(mockLog).toHaveBeenCalledWith(expect.any(UnsupportedModel))
+      expect(mockLog).toHaveBeenCalledWith(
+        expect.any(UnsupportedModelException)
+      )
       const computation = await findSimulationComputation(id)
       expect(computation).toBeNull()
     })
   })
 
   it('creates a pending computation when simulation is finished and model matches current version', async () => {
-    const { id } = await simulationFactory.withModelRegion('FR').create()
+    const { id } = await simulationFactory
+      .withProgression(1)
+      .withModelRegion('FR')
+      .create()
 
     await programSimulationComputation(id)
 

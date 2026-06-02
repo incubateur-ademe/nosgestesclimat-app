@@ -1,7 +1,7 @@
 import type Engine from 'publicodes'
 import { assessActions } from '../../actions/services/assess-actions.service.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
-import { SimulationComputationFail } from '../exceptions/simulation-computation.exception.ts'
+import { SimulationComputationFailedException } from '../exceptions/simulation-computation.exception.ts'
 import {
   claimNextPendingSimulationComputation,
   markSimulationComputationCompleted,
@@ -29,12 +29,12 @@ export const processNextPendingComputation = async (
     try {
       await markSimulationComputationFailed(job.simulation.id)
     } catch (cleanupError) {
-      throw new SimulationComputationFail({
+      throw new SimulationComputationFailedException({
         simulationId: job.simulation.id,
         cause: new SuppressedError(cleanupError, error),
       })
     }
-    throw new SimulationComputationFail({
+    throw new SimulationComputationFailedException({
       simulationId: job.simulation.id,
       cause: error,
     })

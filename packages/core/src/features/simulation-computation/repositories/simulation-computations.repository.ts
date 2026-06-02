@@ -1,7 +1,7 @@
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
 import { mapSimulation } from '../../simulations/repository/simulation.mapper.ts'
-import { ComputationAlreadyExists } from '../exceptions/simulation-computation.exception.ts'
+import { ComputationAlreadyExistsException } from '../exceptions/simulation-computation.exception.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
 
@@ -27,7 +27,7 @@ export const createSimulationComputation = async (
     })
   } catch (error) {
     if (isPrismaErrorUniqueConstraintFailed(error)) {
-      throw new ComputationAlreadyExists({ simulationId })
+      throw new ComputationAlreadyExistsException({ simulationId })
     }
     throw error
   }
