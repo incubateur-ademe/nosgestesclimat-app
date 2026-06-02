@@ -45,7 +45,7 @@ export default async function CampagnePage({
   ) {
     redirect(SIMULATOR_PATH)
   }
-  console.log({ featureFlagValue })
+
   const shouldRedirectToAgeQuestion = featureFlagValue === 'test'
 
   async function createNewSimulation() {
