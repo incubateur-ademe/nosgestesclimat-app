@@ -30,5 +30,5 @@ export interface PersonalizedAction extends Action {
   assessment: Pick<
     ActionAssessment,
     'simulationId' | 'actionId' | 'applicable' | 'impact' | 'id'
-  >
+  > | null
 }

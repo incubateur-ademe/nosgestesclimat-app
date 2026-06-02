@@ -1,9 +1,8 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
-import type { Action, PersonalizedAction } from '@/types/actions'
+import type { PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
-import { isPersonalizedAction } from '@nosgestesclimat/core/features/actions/helpers/is-personalized-action'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
@@ -23,7 +22,7 @@ const classesByTheme: Record<Theme['key'], string> = {
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
-  action: Action | PersonalizedAction
+  action: PersonalizedAction
   locale: Locale
   withThemeBadge?: boolean
 }
@@ -51,7 +50,7 @@ export default function ActionCard({
       ) : null}
       <div className="grow">
         <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
-        {isPersonalizedAction(action) ? (
+        {action.assessment ? (
           <ImpactTag impact={action.assessment.impact} locale={locale} />
         ) : null}
       </div>

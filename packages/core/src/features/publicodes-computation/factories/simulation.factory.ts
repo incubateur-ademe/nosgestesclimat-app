@@ -5,6 +5,7 @@ import { prisma } from '../../../prisma/client.ts'
 interface SimulationFixture {
   id: string
   userId: string | null
+  progression: number
   createdAt: Date
 }
 
@@ -47,6 +48,14 @@ class SimulationFactory extends Factory<SimulationFixture> {
     return this.withComputationStatus('completed')
   }
 
+  started() {
+    return this.params({ progression: 0.1 })
+  }
+
+  completed() {
+    return this.params({ progression: 1 })
+  }
+
   withFailedComputation() {
     return this.withComputationStatus('failed')
   }
@@ -58,7 +67,7 @@ export const simulationFactory = SimulationFactory.define(({ onCreate }) => {
       data: {
         id: data.id,
         date: new Date(),
-        progression: 1,
+        progression: data.progression,
         model: 'FR-fr-0.0.0',
         computedResults: {},
         situation: {},
@@ -73,6 +82,7 @@ export const simulationFactory = SimulationFactory.define(({ onCreate }) => {
   return {
     id: faker.string.uuid(),
     userId: null,
+    progression: 1,
     createdAt: new Date(),
   }
 })

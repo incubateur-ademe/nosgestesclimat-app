@@ -1,5 +1,5 @@
 import type { Locale } from '@/i18nConfig'
-import type { Action, PersonalizedAction } from '@/types/actions'
+import type { PersonalizedAction } from '@/types/actions'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
@@ -7,7 +7,7 @@ import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
-  actions: (Action | PersonalizedAction)[]
+  actions: PersonalizedAction[]
   locale: Locale
 }
 

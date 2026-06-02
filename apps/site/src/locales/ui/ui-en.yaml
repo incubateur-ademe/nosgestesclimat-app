@@ -1990,3 +1990,7 @@ entries:
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   actions.components.actionCard.noImpactTag: Real impact, unquantifiable
   actions.components.actionCard.noImpactTag.lock: Impact réel, non quantifiable
+  actions.detailPage.impact.title: Potential gains for your footprint
+  actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.value: -<0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
+  actions.detailPage.impact.value.lock: <0>-{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an

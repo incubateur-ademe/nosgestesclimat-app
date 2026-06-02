@@ -11,7 +11,7 @@ import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { getPersonalizedActions } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions.service'
+import { getPersonalizedActionsCatalogue } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import ProfileTab from '../_components/ProfileTabs'
 
 export default async function MonEspaceActionsPage({
@@ -22,7 +22,7 @@ export default async function MonEspaceActionsPage({
   const flag = await getFeatureFlag('actions-v2', user.id)
 
   const [maybePersonalizedActionsResult, themes] = flag
-    ? await Promise.all([getPersonalizedActions(user.id), getThemes()])
+    ? await Promise.all([getPersonalizedActionsCatalogue(user.id), getThemes()])
     : [undefined, undefined]
 
   const actionsDto = maybePersonalizedActionsResult

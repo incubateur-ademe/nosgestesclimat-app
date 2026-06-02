@@ -8,7 +8,7 @@ import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
-import { getPersonalizedActions } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions.service'
+import { getPersonalizedActionsCatalogue } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 
 export default async function ResultatsActionsPage({
   params,
@@ -21,14 +21,12 @@ export default async function ResultatsActionsPage({
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
 
-  // TODO: determine what to do when:
-  // - the user has no simulation
-  // - the user has simulations but no computation
-  // - the user last simulation computation is not completed
-  const [{ lastSimulationAssessmentStatus: _, actions }, themes] =
-    await Promise.all([getPersonalizedActions(user.id), getThemes()])
+  const [actionsCatalogue, themes] = await Promise.all([
+    getPersonalizedActionsCatalogue(user.id),
+    getThemes(),
+  ])
 
-  const actionsDto = actions.map(toPersonalizedActionDto)
+  const actionsDto = actionsCatalogue.actions.map(toPersonalizedActionDto)
 
   return (
     <ActionsPage

@@ -1,16 +1,16 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@/types/actions'
+import type { PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
 import { twMerge } from 'tailwind-merge'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
 
 interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
-  topActions?: Action[]
+  topActions?: PersonalizedAction[]
   themes: Theme[]
-  actions: Action[]
+  actions: PersonalizedAction[]
   locale: Locale
 }
 

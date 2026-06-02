@@ -10,14 +10,17 @@ import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
+import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
+import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getAction } from '@/services/actions/get-action'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
+import { getPersonalizedActionDetails } from '@nosgestesclimat/core/features/actions/services/get-personalized-action-details.service'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
@@ -64,9 +67,16 @@ export default async function ActionPage({ params }: Props) {
 
   if (!flag) notFound()
 
-  const action = await getAction(slug)
+  const actionEntity = await getPersonalizedActionDetails(slug, user.id)
 
-  if (!action) notFound()
+  if (!actionEntity) notFound()
+
+  const action = toPersonalizedActionDto(actionEntity)
+  const impact = action.assessment?.impact
+    ? formatFootprint(action.assessment.impact, {
+        locale,
+      })
+    : null
 
   const { t } = await getServerTranslation({ locale })
 
@@ -158,6 +168,36 @@ export default async function ActionPage({ params }: Props) {
         <h1 className="mb-0 text-3xl leading-11 md:text-4xl md:leading-14">
           {action.title}
         </h1>
+        {impact ? (
+          <div className="mt-4 flex items-start">
+            <div
+              className={`rounded-xl border px-5 py-2 ${themeClasses.impactBorder}`}>
+              <p
+                className={`mb-0 text-sm/normal font-bold ${themeClasses.impactColor}`}>
+                <Trans
+                  locale={locale}
+                  i18nKey="actions.detailPage.impact.title">
+                  Gain potentiel pour votre empreinte
+                </Trans>
+              </p>
+              <p className="text-sm/normal font-bold text-slate-600">
+                <Trans
+                  locale={locale}
+                  i18nKey="actions.detailPage.impact.value"
+                  values={{
+                    formattedValue: impact.formattedValue,
+                    unit: impact.unit,
+                  }}>
+                  <span
+                    className={`mr-1 text-[40px]/normal font-extrabold ${themeClasses.impactColor}`}>
+                    -{'{{formattedValue}}'}
+                  </span>{' '}
+                  {'{{unit}}'} CO<sub>2</sub>e / an
+                </Trans>
+              </p>
+            </div>
+          </div>
+        ) : null}
       </header>
 
       <div className="flex items-start overflow-scroll md:overflow-auto">
@@ -232,26 +272,36 @@ export default async function ActionPage({ params }: Props) {
 
 const classNames: Record<
   Theme['key'],
-  Record<'header' | 'themeColor', string>
+  Record<'header' | 'themeColor' | 'impactBorder' | 'impactColor', string>
 > = {
   food: {
     header: 'bg-alimentation-50 border-alimentation-200',
     themeColor: 'text-alimentation-800',
+    impactBorder: 'border-alimentation-300',
+    impactColor: 'text-alimentation-800',
   },
   transport: {
     header: 'bg-transport-50 border-transport-200',
     themeColor: 'text-transport-800',
+    impactBorder: 'border-transport-300',
+    impactColor: 'text-transport-800',
   },
   housing: {
     header: 'bg-logement-50 border-logement-200',
     themeColor: 'text-logement-800',
+    impactBorder: 'border-logement-300',
+    impactColor: 'text-logement-800',
   },
   societal_services: {
     header: 'bg-servicessocietaux-50 border-servicessocietaux-200',
     themeColor: 'text-servicessocietaux-800',
+    impactBorder: 'border-servicessocietaux-300',
+    impactColor: 'text-servicessocietaux-800',
   },
   misc: {
     header: 'bg-divers-50 border-divers-200',
     themeColor: 'text-divers-800',
+    impactBorder: 'border-divers-300',
+    impactColor: 'text-divers-800',
   },
 }

@@ -56,12 +56,14 @@ export function toPersonalizedActionDto(
           chosenAt: choice.chosenAt,
         }
       : null,
-    assessment: {
-      id: assessment.id,
-      simulationId: assessment.simulationId,
-      actionId: assessment.actionId,
-      applicable: assessment.applicable,
-      impact: assessment.impact,
-    },
+    assessment: assessment
+      ? {
+          id: assessment.id,
+          simulationId: assessment.simulationId,
+          actionId: assessment.actionId,
+          applicable: assessment.applicable,
+          impact: assessment.impact,
+        }
+      : null,
   }
 }

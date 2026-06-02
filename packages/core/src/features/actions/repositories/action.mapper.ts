@@ -86,10 +86,10 @@ export const mapUpdatedActionToPrisma = (
 
 export const mapPersonalizedAction = (
   action: Action,
-  assessment: Prisma.ActionAssessmentModel
+  assessment: Prisma.ActionAssessmentModel | null
 ): PersonalizedAction => ({
   ...action,
-  assessment: mapAssessment(assessment),
+  assessment: assessment ? mapAssessment(assessment) : null,
   choice: null, // TODO: map choice when the feature will be implemented
 })
 
