@@ -1,6 +1,7 @@
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@/types/actions'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@/types/themes'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
@@ -38,10 +39,12 @@ export default function ThemeSection({
   theme,
   actions,
   locale,
+  assessmentStatus,
 }: {
   theme: Theme
-  actions: Action[]
+  actions: PersonalizedAction[]
   locale: Locale
+  assessmentStatus?: SimulationComputationStatus | null
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -64,7 +67,7 @@ export default function ThemeSection({
                 locale={locale}
                 i18nKey="actions.components.themeSection.description"
                 values={{ count }}>
-                {count} actions recommandées
+                {'{{count}} actions recommandées'}
               </Trans>
             </p>
           </div>
@@ -76,7 +79,13 @@ export default function ThemeSection({
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) => (
-          <ActionCard key={action.id} action={action} locale={locale} />
+          <ActionCard
+            key={action.id}
+            action={action}
+            locale={locale}
+            withThemeBadge={false}
+            assessmentStatus={assessmentStatus}
+          />
         ))}
       </ActionsCarousel>
     </section>
