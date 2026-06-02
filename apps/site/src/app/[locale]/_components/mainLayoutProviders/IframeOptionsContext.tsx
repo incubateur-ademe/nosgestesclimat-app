@@ -75,11 +75,6 @@ export const IframeOptionsProvider = ({
 
   const { needsOverlay, handleAskPermission } = useSafariStorageAccess(isIframe)
 
-  console.log('[NGC Safari Fix] IframeOptionsProvider', {
-    isIframe,
-    needsOverlay,
-  })
-
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
     if (!isIframe) return false
     return sessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'

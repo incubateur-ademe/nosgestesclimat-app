@@ -1949,8 +1949,8 @@ entries:
   components.carousel.roleDescription.lock: Carrousel
   common.byDay: / day
   common.byDay.lock: / jour
-  actions.components.themeSection.description: '{{count}} recommended actions'
-  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
+  actions.components.themeSection.description: '{count} recommended actions'
+  actions.components.themeSection.description.lock: '{count} actions recommandées'
   actions.detailPage.404.title: Action not found
   actions.detailPage.404.title.lock: Action non trouvée
   actions.detailPage.tabs.act: Taking action
@@ -1984,12 +1984,12 @@ entries:
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
   iframe.safari.askPermission: Authorise
   iframe.safari.askPermission.lock: Autoriser
-  iframe.safari.title: Cookie authorisation required
-  iframe.safari.title.lock: Autorisation des cookies requise
+  iframe.safari.title: Authorisation required to display the footprint calculator
+  iframe.safari.title.lock: Autorisation requise pour afficher le calculateur d'empreinte
   results.actions.afterLink.label: Discover my personalised actions
   results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
-  iframe.safari.step2: Click on the button below and then on "Authorise" in the window that appears.
-  iframe.safari.step2.lock: Cliquez sur le bouton ci-dessous puis sur "Autoriser" dans la fenêtre qui s'affichera.
+  iframe.safari.step2: In some cases, a window will open to confirm the action; please click on "Authorise" in this window.
+  iframe.safari.step2.lock: Dans certains cas, une fenêtre s'ouvrira pour confirmer l'action ; veuillez cliquer sur "Autoriser" dans celle-ci.
   iframe.safari.step1: For the calculator to work, your browser needs to access Nos Gestes Climat cookies.
   iframe.safari.step1.lock: Pour que le calculateur fonctionne, votre navigateur a besoin d'accéder aux cookies de Nos Gestes Climat.
   homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>

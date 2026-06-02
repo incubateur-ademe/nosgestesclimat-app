@@ -4,14 +4,8 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 
-interface StorageAccessError {
-  name: string
-  message: string
-}
-
 interface Props {
   onAskPermission: () => void
-  error?: StorageAccessError | null
 }
 
 export default function StorageAccessOverlay({ onAskPermission }: Props) {

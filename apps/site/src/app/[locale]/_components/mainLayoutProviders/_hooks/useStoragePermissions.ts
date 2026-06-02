@@ -83,13 +83,6 @@ export const useStoragePermissions = (): {
       const name = error instanceof Error ? error.name : 'Unknown'
       const message = error instanceof Error ? error.message : String(error)
 
-      // eslint-disable-next-line no-console
-      console.error('[NGC Safari Fix] askForPermission failed', {
-        name,
-        message,
-        error,
-      })
-
       // Post to parent window so it's visible without opening iframe devtools
       try {
         window.parent.postMessage(
