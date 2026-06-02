@@ -68,9 +68,18 @@ export const useStoragePermissions = (): {
   const askForPermission = useCallback(async () => {
     try {
       setStorageAccessError(null)
+
+      // Write the reloaded key BEFORE calling requestStorageAccess() so that
+      // if Safari reloads the iframe immediately after granting storage access,
+      // the key survives the reload and the overlay is not shown again.
+      sessionStorage.setItem(RELOADED_KEY, 'true')
+
       await requestStorageAccess()
       await checkPermission()
     } catch (error) {
+      // If the permission request failed, remove the key so the overlay
+      // can be shown again on the next attempt.
+      sessionStorage.removeItem(RELOADED_KEY)
       const name = error instanceof Error ? error.name : 'Unknown'
       const message = error instanceof Error ? error.message : String(error)
 
