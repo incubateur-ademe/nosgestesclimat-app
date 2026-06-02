@@ -15,11 +15,10 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
-import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
-import { getAction } from '@/services/actions/get-action'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
+import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
 import { getPersonalizedActionDetails } from '@nosgestesclimat/core/features/actions/services/get-personalized-action-details.service'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -67,11 +66,10 @@ export default async function ActionPage({ params }: Props) {
 
   if (!flag) notFound()
 
-  const actionEntity = await getPersonalizedActionDetails(slug, user.id)
+  const action = await getPersonalizedActionDetails(slug, user.id)
 
-  if (!actionEntity) notFound()
+  if (!action) notFound()
 
-  const action = toPersonalizedActionDto(actionEntity)
   const impact = action.assessment?.impact
     ? formatFootprint(action.assessment.impact, {
         locale,

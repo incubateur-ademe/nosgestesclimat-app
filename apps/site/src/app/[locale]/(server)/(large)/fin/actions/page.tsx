@@ -4,7 +4,6 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
@@ -26,12 +25,10 @@ export default async function ResultatsActionsPage({
     getThemes(),
   ])
 
-  const actionsDto = actionsCatalogue.actions.map(toPersonalizedActionDto)
-
   return (
     <ActionsPage
-      topActions={actionsDto.slice(0, 3)}
-      actions={actionsDto}
+      topActions={actionsCatalogue.actions.slice(0, 3)}
+      actions={actionsCatalogue.actions}
       themes={themes}
       locale={locale}
       assessmentStatus={actionsCatalogue.assessmentStatus}

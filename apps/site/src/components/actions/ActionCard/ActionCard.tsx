@@ -1,7 +1,7 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
-import type { PersonalizedAction } from '@/types/actions'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@/types/themes'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import Link from 'next/link'

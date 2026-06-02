@@ -7,7 +7,6 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
-import { toPersonalizedActionDto } from '@/services/actions/actions.dto'
 import { getThemes } from '@/services/actions/get-themes'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
@@ -25,12 +24,6 @@ export default async function MonEspaceActionsPage({
     ? await Promise.all([getPersonalizedActionsCatalogue(user.id), getThemes()])
     : [undefined, undefined]
 
-  const actionsDto = maybePersonalizedActionsCatalogue
-    ? maybePersonalizedActionsCatalogue.actions.map((action) =>
-        toPersonalizedActionDto(action)
-      )
-    : undefined
-
   return (
     <div className="flex flex-col">
       <h1 className="sr-only mb-6 text-2xl font-bold">
@@ -41,10 +34,10 @@ export default async function MonEspaceActionsPage({
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
-      {flag && themes && actionsDto ? (
+      {flag && maybePersonalizedActionsCatalogue ? (
         <ActionsPage
-          topActions={actionsDto.slice(0, 3)}
-          actions={actionsDto}
+          topActions={maybePersonalizedActionsCatalogue.actions.slice(0, 3)}
+          actions={maybePersonalizedActionsCatalogue.actions}
           themes={themes}
           locale={locale}
           assessmentStatus={maybePersonalizedActionsCatalogue.assessmentStatus}
