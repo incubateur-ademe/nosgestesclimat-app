@@ -73,7 +73,7 @@ export const IframeOptionsProvider = ({
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
-  const { needsOverlay, handleAskPermission } = useSafariStorageAccess(isIframe)
+  const { needsOverlay, handleAskPermission } = useSafariStorageAccess()
 
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
     if (!isIframe) return false
