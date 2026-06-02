@@ -15,7 +15,7 @@
     "jobs:recoverNewsletterStats": "node --experimental-strip-types ./src/jobs/recover-newsletter-stats.ts",
     "jobs:syncBrevoContacts": "node --experimental-strip-types ./src/jobs/sync-brevo-contacts.ts",
     "jobs:syncNotionActions": "node --experimental-strip-types --env-file-if-exists=.env ./src/jobs/sync-notion-actions.ts",
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
+    "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/index.ts",
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/worker.ts",

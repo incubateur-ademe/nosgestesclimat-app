@@ -26,7 +26,7 @@
     "build:analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
     "start": "node .next/standalone/apps/site/server.js",
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
+    "lint": "eslint",
     "typegen": "next typegen",
     "generate": "pnpm typegen",
     "typecheck": "tsc --noEmit",
