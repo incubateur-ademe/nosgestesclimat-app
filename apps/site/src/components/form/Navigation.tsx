@@ -325,6 +325,7 @@ export default function Navigation({
       gotoPrevQuestion,
       navigateToPrevEmbeddedQuestion,
       resetNotification,
+      router,
     ]
   )
 
