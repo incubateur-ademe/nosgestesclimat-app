@@ -1,9 +1,8 @@
 export function isSafari(): boolean {
   if (typeof navigator === 'undefined') return false
   const userAgent = navigator.userAgent.toLowerCase()
-  return (
-    userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1
-  )
+  // Chrome includes safari in its user-agent so we need to filter it
+  return userAgent.includes('safari') && !userAgent.includes('chrome')
 }
 
 export function supportStorageAccessApi(): boolean {
@@ -25,6 +24,10 @@ export async function requestStorageAccess(): Promise<void> {
   await document.requestStorageAccess()
 }
 
-export function requiresStoragePermissions(): boolean {
+export function isStorageAccessApiSupported(): boolean {
   return isSafari() && supportStorageAccessApi()
+}
+
+export async function requiresStoragePermissions(): Promise<boolean> {
+  return isStorageAccessApiSupported() && !(await hasStorageAccess())
 }
