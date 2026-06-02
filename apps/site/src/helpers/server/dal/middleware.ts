@@ -11,7 +11,7 @@ import {
   anonSessionOptions,
   getAnonSession,
 } from './anonSession'
-import { ANON_USER_ID_HEADER, CLIENT_USER_ID_HEADER } from './constants'
+import { ANON_USER_ID_HEADER } from './constants'
 
 /**
  * Middleware that ensures an encrypted anonymous session cookie exists for
@@ -43,12 +43,7 @@ export async function userMiddleware(
     return next(request)
   }
 
-  // When cookies are blocked (Safari iframe / WKWebView), the client
-  // persists the userId via window.name and sends it as a header on
-  // fetch requests (RSC navigations, server actions).
-  const clientUserId = request.headers.get(CLIENT_USER_ID_HEADER)
-
-  const userId = clientUserId ?? randomUUID()
+  const userId = randomUUID()
 
   // We cannot set a session in the request object directly (like we would have done in any normal framework)
   // In that case, we need to pass this information thought the header.
@@ -56,8 +51,7 @@ export async function userMiddleware(
   // So the priority for getting the userId in the app is :
   // 1. Server session cookie (API)
   // 2. Anon session cookie
-  // 3. x-ngc-user-id header (window.name fallback when cookies are blocked)
-  // 4. x-anon-user-id header (fresh UUID on first visit)
+  // 3. x-anon-user-id header, when no cookie is set (first visit)
   // This logic is mirrored in ./user.ts
   request.headers.set(ANON_USER_ID_HEADER, userId)
 
