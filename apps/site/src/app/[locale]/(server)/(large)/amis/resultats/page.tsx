@@ -6,12 +6,9 @@ import {
 } from '@/constants/urls/paths'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getLinkToGroupInvitation } from '@/helpers/navigation/groupPages'
-import { getUser } from '@/helpers/server/dal/user'
-import { getGroup } from '@/helpers/server/model/groups'
 import type { DefaultPageProps } from '@/types'
-import { notFound, redirect } from 'next/navigation'
 import GroupPage from './_components/GroupPage'
+import { groupResultsGuard } from './guard'
 
 export default async function GroupResultsPage({
   params,
@@ -19,32 +16,10 @@ export default async function GroupResultsPage({
 }: DefaultPageProps<{ searchParams: Promise<{ groupId: string }> }>) {
   const locale = (await params).locale
 
-  const searchParamsObject = await searchParams
-
-  if (!searchParamsObject) {
-    notFound()
-  }
-
-  const { groupId } = searchParamsObject
-
-  if (!groupId) {
-    notFound()
-  }
-
-  const user = await getUser()
-
-  const [rules, group] = await Promise.all([
+  const [{ user, userSimulation }, rules] = await Promise.all([
+    groupResultsGuard(searchParams),
     getCachedRules({ locale }),
-    getGroup({ groupId, user }),
   ])
-
-  const userSimulation = group.participants.find(
-    (participant) => participant.userId === user.id
-  )?.simulation
-
-  if (!userSimulation) {
-    redirect(getLinkToGroupInvitation({ group }))
-  }
 
   return (
     <div className="pb-8">
