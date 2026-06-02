@@ -1,6 +1,6 @@
 import { FF_PARAM_PREFIX } from './constants'
-import { FLAGS } from './flags'
 import type { FlagDefinition } from './flags'
+import { FLAGS } from './flags'
 
 /**
  * Extracts feature flag overrides from URL search parameters.
