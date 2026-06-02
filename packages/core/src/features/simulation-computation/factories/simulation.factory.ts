@@ -12,7 +12,9 @@ import type {
 
 interface SimulationFixture {
   id: string
+  userId: string | null
   progression: number
+  createdAt: Date
   model: Model
 }
 
@@ -40,16 +42,34 @@ class SimulationFactory extends Factory<
   withModelLocale(lang: ModelLocale) {
     return this.transient({ modelLocale: lang })
   }
-  withPendingComputation() {
+
+  started() {
+    return this.params({ progression: 0.1 })
+  }
+
+  completed() {
+    return this.params({ progression: 1 })
+  }
+
+  withComputationStatus(
+    status: 'completed' | 'pending' | 'processing' | 'failed'
+  ) {
     return this.afterCreate(async (data) => {
+      const startedAt =
+        status !== 'pending' ? faker.date.recent({ days: 1 }) : undefined
+      const completedAt =
+        (status === 'completed' || status === 'failed') && startedAt
+          ? faker.date.between({ from: startedAt, to: new Date() })
+          : undefined
       await prisma.simulationComputation.create({
-        data: {
-          simulationId: data.id,
-          status: 'pending',
-        },
+        data: { simulationId: data.id, status, startedAt, completedAt },
       })
       return data
     })
+  }
+
+  withPendingComputation() {
+    return this.withComputationStatus('pending')
   }
 
   withStaleProcessingComputation() {
@@ -63,6 +83,14 @@ class SimulationFactory extends Factory<
       })
       return data
     })
+  }
+
+  withCompletedComputation() {
+    return this.withComputationStatus('completed')
+  }
+
+  withFailedComputation() {
+    return this.withComputationStatus('failed')
   }
 }
 
@@ -78,6 +106,8 @@ export const simulationFactory = SimulationFactory.define(
           computedResults: {},
           situation: {},
           actionChoices: {},
+          userId: data.userId,
+          createdAt: data.createdAt,
         },
       })
       return data
@@ -85,7 +115,9 @@ export const simulationFactory = SimulationFactory.define(
 
     return {
       id: faker.string.uuid(),
+      userId: null,
       progression: faker.number.float({ min: 0, max: 1 }),
+      createdAt: new Date(),
       model: {
         region:
           transientParams.modelRegion ??

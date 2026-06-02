@@ -38,7 +38,7 @@ describe('compute action assessments service', () => {
   let simulation: Awaited<ReturnType<typeof simulationFactory.create>>
 
   beforeEach(async () => {
-    simulation = await simulationFactory.withProgression(1).create()
+    simulation = await simulationFactory.completed().create()
   })
 
   afterEach(async () => {

@@ -36,23 +36,21 @@ describe('programSimulationComputation', () => {
         'when model version is outdated',
         () =>
           simulationFactory
-            .withProgression(1)
+            .completed()
             .withModelVersion({ publishedTag: '0.9.0' }),
       ],
       [
         'when model version is a PR version',
         () =>
-          simulationFactory
-            .withProgression(1)
-            .withModelVersion({ PRNumber: '42' }),
+          simulationFactory.completed().withModelVersion({ PRNumber: '42' }),
       ],
       [
         'when model is unsupported region',
-        () => simulationFactory.withProgression(1).withModelRegion('UK'),
+        () => simulationFactory.completed().withModelRegion('UK'),
       ],
       [
         'when model is unsupported language',
-        () => simulationFactory.withProgression(1).withModelLocale('en'),
+        () => simulationFactory.completed().withModelLocale('en'),
       ],
     ])('%s', async (_, setup) => {
       const { id } = await setup().create()
@@ -67,7 +65,7 @@ describe('programSimulationComputation', () => {
 
   it('creates a pending computation when simulation is finished and model matches current version', async () => {
     const { id } = await simulationFactory
-      .withProgression(1)
+      .completed()
       .withModelRegion('FR')
       .create()
 

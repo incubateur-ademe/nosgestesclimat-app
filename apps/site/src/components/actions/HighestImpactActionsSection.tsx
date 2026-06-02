@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@/types/actions'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
@@ -7,14 +8,16 @@ import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
-  actions: Action[]
+  actions: PersonalizedAction[]
   locale: Locale
+  assessmentStatus?: SimulationComputationStatus | null
 }
 
 export default function HighestImpactActionsSection({
   actions,
   locale,
   className,
+  assessmentStatus,
   ...props
 }: HighestImpactActionsSectionProps) {
   const carouselLabelId = useId()
@@ -58,7 +61,12 @@ export default function HighestImpactActionsSection({
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) => (
-          <ActionCard key={action.id} action={action} locale={locale} />
+          <ActionCard
+            key={action.id}
+            action={action}
+            locale={locale}
+            assessmentStatus={assessmentStatus}
+          />
         ))}
       </ActionsCarousel>
     </section>

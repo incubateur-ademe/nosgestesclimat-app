@@ -45,7 +45,7 @@ describe('processNextPendingComputation', () => {
 
   it('reclaims stale processing jobs past the timeout', async () => {
     const simulation = await simulationFactory
-      .withProgression(1)
+      .completed()
       .withStaleProcessingComputation()
       .create()
 
@@ -60,7 +60,7 @@ describe('processNextPendingComputation', () => {
 
   it('marks the computation as failed and throws SimulationComputationFailedException when an error occurs', async () => {
     const simulation = await simulationFactory
-      .withProgression(1)
+      .completed()
       .withPendingComputation()
       .create()
 
