@@ -11,5 +11,5 @@ export async function getUserAgeRange(): Promise<AgeRange | null> {
     user.isAuth ? { userId: user.id, email: user.email } : { userId: user.id }
   )
 
-  return (fullUser?.ageRange ?? null) as AgeRange | null
+  return fullUser?.ageRange ?? null
 }
