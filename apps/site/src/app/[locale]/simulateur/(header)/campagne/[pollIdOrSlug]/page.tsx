@@ -46,7 +46,8 @@ export default async function CampagnePage({
     redirect(SIMULATOR_PATH)
   }
 
-  const shouldRedirectToAgeQuestion = featureFlagValue === 'test'
+  const pathToRedirectTo =
+    featureFlagValue === 'test' ? AGE_PAGE_PATH : SIMULATOR_PATH
 
   async function createNewSimulation() {
     'use server'
@@ -60,7 +61,7 @@ export default async function CampagnePage({
         mode: poll.mode,
       }),
     })
-    redirect(shouldRedirectToAgeQuestion ? AGE_PAGE_PATH : SIMULATOR_PATH)
+    redirect(pathToRedirectTo)
   }
 
   async function reuseSimulation() {
@@ -71,7 +72,7 @@ export default async function CampagnePage({
       simulation: lastCompletedSimulation,
       locale,
     })
-    redirect(shouldRedirectToAgeQuestion ? AGE_PAGE_PATH : SIMULATOR_PATH)
+    redirect(pathToRedirectTo)
   }
 
   const allowToReuseExistingSimulation =
