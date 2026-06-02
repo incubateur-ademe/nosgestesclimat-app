@@ -8,7 +8,6 @@ import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
 import { getUserAgeRange } from '@/services/users/get-user-age-range'
-import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import AgeForm from './_components/AgeForm'
 
 export const generateMetadata = getCommonMetadata({
@@ -29,11 +28,11 @@ export const generateMetadata = getCommonMetadata({
 export default async function AgePage({
   params,
 }: PageProps<'/[locale]/simulateur/age'>) {
-  const { locale } = await params
-
-  const user = await getUser()
-  // Added | null to avoid linting warning "Unsafe assignment of an error typed value."
-  const ageRange: AgeRange | null = await getUserAgeRange()
+  const [{ locale }, user, ageRange] = await Promise.all([
+    params,
+    getUser(),
+    getUserAgeRange(),
+  ])
 
   return (
     <>
