@@ -1998,6 +1998,10 @@ entries:
   simulator.age.metadata.title.lock: Pour mieux vous connaitre - Nos Gestes Climat
   simulator.age.title: Let's start with you. How old are you?
   simulator.age.title.lock: On commence par vous, quel est votre âge ?
+  actions.components.actionCard.impactTag: Up to {{formattedValue}} {{unit}} CO<5>2</5>e/ year
+  actions.components.actionCard.impactTag.lock: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
+  simulator.transition.housing.graph.arrowText: This graph gives you a better understanding of the carbon impact of different heating methods
+  simulator.transition.housing.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   simulator.transition.divers.graph.arrowText: This graph shows the carbon footprint of all your digital devices
   simulator.transition.divers.graph.arrowText.lock: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   simulator.age.metadata.description: A first question before calculating your climate footprint.
@@ -2006,8 +2010,6 @@ entries:
   simulator.age.subtitle.lock: Nous cherchons à mieux connaître nos participants au test à des fins statistiques.
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
   actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
-  simulator.transition.housing.graph.arrowText: This graph gives you a better understanding of the carbon impact of different heating methods
-  simulator.transition.housing.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   actions.listPage.description: The following actions are recommended based on your answers to the test.<1></1>Choose the ones that seem achievable - the most important thing is to get moving!
   actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
@@ -2015,3 +2017,11 @@ entries:
   results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
+  actions.components.actionCard.noImpactTag: Non-quantifiable impact
+  actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
+  actions.detailPage.impact.title: Potential gains for your footprint
+  actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
+  actions.detailPage.impact.value.lock: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
+  actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
+  actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul

@@ -53,7 +53,7 @@ export interface NewAction {
 
 export type UpdatedAction = Partial<NewAction>
 
-interface ActionChoice {
+export interface ActionChoice {
   id: string
   userId: string
   actionId: string
@@ -83,11 +83,12 @@ export type NewActionAssessment = {
     }
 )
 
-export type ActionAssessment = NewActionAssessment & { id: string }
+export type ActionAssessment = NewActionAssessment & {
+  id: string
+  createdAt: Date
+}
 
-export interface PersonalizedAction {
-  userId: string
-  action: Action
+export interface PersonalizedAction extends Action {
   choice: ActionChoice | null
-  assessment: ActionAssessment
+  assessment: ActionAssessment | null
 }
