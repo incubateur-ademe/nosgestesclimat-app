@@ -15,7 +15,7 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
 import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
@@ -62,7 +62,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function ActionPage({ params }: Props) {
   const { locale, slug } = await params
   const user = await getUser()
-  const flag = await getFeatureFlag('actions-v2', user.id)
+  const flag = await hasActionV2Rollout(user.id)
 
   if (!flag) notFound()
 
