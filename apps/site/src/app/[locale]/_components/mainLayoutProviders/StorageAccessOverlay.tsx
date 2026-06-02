@@ -14,18 +14,16 @@ interface Props {
   error?: StorageAccessError | null
 }
 
-export default function StorageAccessOverlay({
-  onAskPermission,
-  error,
-}: Props) {
+export default function StorageAccessOverlay({ onAskPermission }: Props) {
   return (
     <div className="fixed inset-0 z-1000 overflow-auto bg-black/50">
       <Card className="absolute top-4 left-1/2 z-1000 w-[calc(100%-16px)] -translate-x-1/2 bg-white sm:max-w-lg">
         <h2 className="text-lg md:text-2xl">
           <Trans i18nKey="iframe.safari.title">
-            Autorisation des cookies requise
+            Autorisation requise pour afficher le calculateur d'empreinte
           </Trans>
         </h2>
+
         <div className="text-sm md:text-base">
           <p>
             <Trans i18nKey="iframe.safari.step1">
@@ -33,17 +31,14 @@ export default function StorageAccessOverlay({
               d'accéder aux cookies de Nos Gestes Climat.
             </Trans>
           </p>
+
           <p>
             <Trans i18nKey="iframe.safari.step2">
-              Cliquez sur le bouton ci-dessous puis sur "Autoriser" dans la
-              fenêtre qui s'affichera.
+              Dans certains cas, une fenêtre s'ouvrira pour confirmer l'action ;
+              veuillez cliquer sur "Autoriser" dans celle-ci.
             </Trans>
           </p>
-          {error && (
-            <p className="mt-2 rounded border border-red-300 bg-red-50 p-2 text-red-700">
-              Erreur : {error.name} — {error.message}
-            </p>
-          )}
+
           <div className="mt-4">
             <Button onClick={onAskPermission}>
               <Trans i18nKey="iframe.safari.askPermission">Autoriser</Trans>

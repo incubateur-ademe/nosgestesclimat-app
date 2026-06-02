@@ -12,6 +12,26 @@ interface StorageAccessError {
   message: string
 }
 
+/**
+ * When the page reloads after a successful storage access grant, this key
+ * is present in sessionStorage, meaning permission is already granted.
+ * Must match the key in useSafariStorageAccess.
+ */
+const RELOADED_KEY = 'ngc-safari-storage-reloaded'
+
+function getInitialNeedPermission(): boolean {
+  if (!requiresStoragePermissions()) return false
+  // After a reload that followed a successful storage access grant,
+  // permission was already obtained — no need to show the overlay again.
+  if (
+    typeof sessionStorage !== 'undefined' &&
+    sessionStorage.getItem(RELOADED_KEY)
+  ) {
+    return false
+  }
+  return true
+}
+
 export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
@@ -19,10 +39,10 @@ export const useStoragePermissions = (): {
   storageAccessError: StorageAccessError | null
 } => {
   const [needPermission, setNeedPermission] = useState(
-    requiresStoragePermissions()
+    getInitialNeedPermission()
   )
   const [haveCheckedPermission, setHaveCheckedPermission] = useState(
-    !requiresStoragePermissions()
+    !getInitialNeedPermission()
   )
   const [storageAccessError, setStorageAccessError] =
     useState<StorageAccessError | null>(null)
