@@ -1905,8 +1905,8 @@ entries:
   actions.mTaTerre.title.lock: Tu veux comprendre ET agir pour la planète ?
   actions.mTaTerre.text: 'Climate, biodiversity, energy, food.<2>..</2><1></1><2></2> M<2>ta Terre</2> is the website for you: <5>articles</5>, <7>videos</7>, <10>podcasts</10> and <12>practical tips</12> to take action on a daily basis.'
   actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
-  simulator.age.options.moinsDe18Ans: Under 18
-  simulator.age.options.moinsDe18Ans.lock: Moins de 18 ans
+  simulator.age.options.under18: Under 18
+  simulator.age.options.under18.lock: Moins de 18 ans
   simulator.age.options.18-24: 18 - 24 years
   simulator.age.options.18-24.lock: 18 - 24 ans
   simulator.age.options.25-34: 25 - 34 years
@@ -1915,10 +1915,10 @@ entries:
   simulator.age.options.35-49.lock: 35 - 49 ans
   simulator.age.options.50-64: 50 - 64 years
   simulator.age.options.50-64.lock: 50 - 64 ans
-  simulator.age.options.65EtPlus: 65 years and over
-  simulator.age.options.65EtPlus.lock: 65 ans et +
-  simulator.age.options.nonPrecise: I prefer not to say ❌
-  simulator.age.options.nonPrecise.lock: Je préfère ne pas le préciser ❌
+  simulator.age.options.65AndMore: 65 years and over
+  simulator.age.options.65AndMore.lock: 65 ans et +
+  simulator.age.options.undisclosed: I prefer not to say
+  simulator.age.options.undisclosed.lock: Je préfère ne pas le préciser
   common.skip: Skip
   common.skip.lock: Passer
   tutorial.email.title.youth: Your e-mail address

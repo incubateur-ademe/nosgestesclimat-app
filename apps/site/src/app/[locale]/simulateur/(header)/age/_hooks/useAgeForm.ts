@@ -19,7 +19,7 @@ const AGE_RANGE_LABEL_CONFIG: Record<
   { tKey: string; defaultLabel: string }
 > = {
   under_18: {
-    tKey: 'simulator.age.options.moinsDe18Ans',
+    tKey: 'simulator.age.options.under18',
     defaultLabel: 'Moins de 18 ans',
   },
   age_18_24: {
@@ -39,11 +39,11 @@ const AGE_RANGE_LABEL_CONFIG: Record<
     defaultLabel: '50 - 64 ans',
   },
   over_65: {
-    tKey: 'simulator.age.options.65EtPlus',
+    tKey: 'simulator.age.options.65AndMore',
     defaultLabel: '65 ans et plus',
   },
   undisclosed: {
-    tKey: 'simulator.age.options.nonPrecise',
+    tKey: 'simulator.age.options.undisclosed',
     defaultLabel: 'Je préfère ne pas le préciser',
   },
 }
