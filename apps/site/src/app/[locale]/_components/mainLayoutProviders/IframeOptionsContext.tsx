@@ -5,6 +5,8 @@ import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
 import { getIsIframe } from '@/utils/getIsIframe'
 import * as Sentry from '@sentry/nextjs'
 import { createContext, useEffect, useState } from 'react'
+import StorageAccessOverlay from './StorageAccessOverlay'
+import { useSafariStorageAccess } from './_hooks/useSafariStorageAccess'
 
 const STORAGE_KEYS = {
   IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
@@ -70,6 +72,14 @@ export const IframeOptionsProvider = ({
 
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
+
+  const { needsOverlay, handleAskPermission, storageAccessError } =
+    useSafariStorageAccess(isIframe)
+
+  console.log('[NGC Safari Fix] IframeOptionsProvider', {
+    isIframe,
+    needsOverlay,
+  })
 
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
     if (!isIframe) return false
@@ -151,7 +161,14 @@ export const IframeOptionsProvider = ({
         iframeLang,
         isFrenchRegion,
       }}>
-      {children}
+      {isIframe && needsOverlay ? (
+        <StorageAccessOverlay
+          onAskPermission={handleAskPermission}
+          error={storageAccessError}
+        />
+      ) : (
+        children
+      )}
     </IframeOptionsContext.Provider>
   )
 }
