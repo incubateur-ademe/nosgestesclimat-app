@@ -875,9 +875,14 @@ entries:
   actions.detailPage.sections.act: J'agis
   actions.detailPage.sections.incentives: J'y gagne
   actions.detailPage.sections.furtherReading: À découvrir aussi
+  actions.detailPage.impact.title: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.components.actionCard.link: Voir l'action "{action.title}"
+  actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
+  actions.components.actionCard.noImpactTag: Impact non quantifiable
+  actions.components.actionCard.impactAssessmentInProgress: En cours de calcul
   C'est quoi mon empreinte carbone ?: C'est quoi mon empreinte carbone ?
   Cliquez pour ouvrir la liste des régions disponibles: Cliquez pour ouvrir la liste des régions disponibles
   Comment on la mesure ?: Comment on la mesure ?
@@ -1069,7 +1074,6 @@ entries:
   Nom du groupe: Nom du groupe
   Un compte avec cette adresse e-mail existe déjà: Un compte avec cette adresse e-mail existe déjà
   Veuillez entrer votre nom.: Veuillez entrer votre nom.
-  <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Comparez vos résultats avec votre famille ou un groupe d'amis.
   newsletterManagement.alimentationNewsletter.description: 4 infolettres (sur 4 semaines), pour découvrir l'empreinte de notre alimentation, et comprendre comment aligner son assiette avec les enjeux planétaires.
   newsletterManagement.alimentationNewsletter.title: Nos Gestes Alimentation
@@ -1381,9 +1385,11 @@ entries:
   components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Diapo
   components.carousel.roleDescription: Carrousel
-  actions.components.themeSection.description: '{actions.length} actions recommandées'
+  actions.components.themeSection.description: '{{count}} actions recommandées'
   common.byDay: / jour
   simulator.transition.alimentation.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   simulator.transition.divers.graph.arrowText: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   simulator.transition.housing.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).
+  results.actions.afterLink.label: Découvrir mes actions personnalisées
+  homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
