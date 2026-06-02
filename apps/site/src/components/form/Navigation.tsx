@@ -32,6 +32,7 @@ import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
+import { useRouter } from 'next/navigation'
 
 type SubmitButtonKind = 'loading' | 'finish' | 'next'
 
@@ -90,6 +91,8 @@ export default function Navigation({
   isPending?: boolean
 }) {
   const { t } = useClientTranslation()
+
+  const router = useRouter()
 
   const { isIframe } = useIframe()
 
@@ -297,7 +300,10 @@ export default function Navigation({
     (e: KeyboardEvent | MouseEvent) => {
       e.preventDefault()
 
-      if (hasNoPreviousQuestion) return
+      if (hasNoPreviousQuestion) {
+        router.back()
+        return
+      }
 
       trackPrevNavigation(Date.now() - startTime)
 
@@ -367,7 +373,7 @@ export default function Navigation({
         <Button
           size="md"
           onClick={handleGoToPrevQuestion}
-          disabled={hasNoPreviousQuestion || isPending}
+          disabled={isPending}
           color="text"
           className="px-3"
           title={t(

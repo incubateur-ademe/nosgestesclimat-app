@@ -46,13 +46,6 @@ export default function AgeForm({ ageRange }: Props) {
       </fieldset>
 
       <div className="mt-8 flex w-full flex-col items-stretch gap-2 pb-8 sm:flex-row md:items-stretch md:gap-4">
-        <ButtonLink
-          color="secondary"
-          href={SIMULATOR_PATH}
-          data-testid="skip-age-button">
-          <Trans>Passer</Trans>
-        </ButtonLink>
-
         <Button
           type="submit"
           disabled={!selectedAge || isPending}
@@ -62,6 +55,13 @@ export default function AgeForm({ ageRange }: Props) {
             →
           </span>
         </Button>
+
+        <ButtonLink
+          color="secondary"
+          href={SIMULATOR_PATH}
+          data-testid="skip-age-button">
+          <Trans>Passer</Trans>
+        </ButtonLink>
       </div>
     </form>
   )
