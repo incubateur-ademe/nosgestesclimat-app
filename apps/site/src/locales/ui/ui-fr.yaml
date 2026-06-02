@@ -1380,7 +1380,7 @@ entries:
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.title.default: Votre adresse électronique
   tutorial.email.title.youth: Ton adresse électronique
-  actions.components.themeSection.description: '{actions.length} actions recommandées'
+  actions.components.themeSection.description: '{count} actions recommandées'
   components.carousel.prevSlideMessage: Diapo précédente
   components.carousel.nextSlideMessage: Diapo suivante
   components.carousel.firstSlideMessage: Ceci est la première diapo

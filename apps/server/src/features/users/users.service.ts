@@ -1,4 +1,3 @@
-import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range.ts'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Request } from 'express'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
@@ -29,18 +28,6 @@ import {
   transferSimulationsFromUser,
 } from './users.repository.ts'
 import type { UserParams, UserUpdateDto } from './users.validator.ts'
-
-interface UserDto {
-  id: string
-  name: string | null
-  email: string | null
-  ageRange?: AgeRange | null
-  createdAt: Date
-  updatedAt: Date
-  contact?: BrevoContact
-}
-
-const userToDto = (user: UserDto) => user
 
 export const reconcileSimulationsAfterLogin = ({
   user,
@@ -201,31 +188,17 @@ export const updateUserAndContact = async ({
 
       let user
       if (isVerifiedUser) {
-        const { ageRange, ...verifiedUserUpdate } = update
-
         user = (
           await createOrUpdateVerifiedUser(
             {
               id: params,
-              user: verifiedUserUpdate,
+              user: update,
               select: defaultVerifiedUserSelection,
             },
             { session }
           )
         ).user
         token = createToken(user)
-
-        // ageRange lives on the User model, not VerifiedUser
-        if (ageRange !== undefined) {
-          await createOrUpdateUser(
-            {
-              id: params.userId,
-              user: { ageRange },
-              select: { id: true },
-            },
-            { session }
-          )
-        }
       } else {
         user = (
           await createOrUpdateUser(
@@ -264,7 +237,7 @@ export const updateUserAndContact = async ({
   return {
     token,
     verified,
-    user: userToDto({
+    user: {
       ...user,
       ...(user.email
         ? {
@@ -273,6 +246,6 @@ export const updateUserAndContact = async ({
               : previousContact || contact,
           }
         : {}),
-    }),
+    },
   }
 }

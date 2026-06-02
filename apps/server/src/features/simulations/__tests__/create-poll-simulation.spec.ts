@@ -257,6 +257,7 @@ describe('Given a NGC user', () => {
               id: userId,
               email: null,
               name: null,
+              ageRange: null,
             },
           })
         })
@@ -533,6 +534,7 @@ describe('Given a NGC user', () => {
                 id: userId,
                 email: null,
                 name: null,
+                ageRange: null,
               },
             })
           })

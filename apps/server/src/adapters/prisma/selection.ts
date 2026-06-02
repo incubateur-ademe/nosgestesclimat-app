@@ -184,6 +184,7 @@ export const simulationSelectionWithUsers = {
       id: true,
       name: true,
       email: true,
+      ageRange: true,
     },
   },
   verifiedUser: {

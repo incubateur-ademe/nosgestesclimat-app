@@ -1957,8 +1957,8 @@ entries:
   common.byDay.lock: / jour
   common.facultatif.uppercase: Optional
   common.facultatif.uppercase.lock: Facultatif
-  actions.components.themeSection.description: '{{count}} recommended actions'
-  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
+  actions.components.themeSection.description: '{count} recommended actions'
+  actions.components.themeSection.description.lock: '{count} actions recommandées'
   actions.detailPage.404.title: Action not found
   actions.detailPage.404.title.lock: Action non trouvée
   actions.detailPage.tabs.act: Taking action
