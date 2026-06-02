@@ -1,7 +1,6 @@
 import { ClientLayout } from '@/components/layout/ClientLayout'
 import LocalisationBanner from '@/components/translation/LocalisationBanner'
 import { END_PAGE_PATH, START_SIMULATION_PATH } from '@/constants/urls/paths'
-import { handleSafariIframeSimulator } from '@/helpers/iframe/handleSafariIframeFallback'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import { getUser } from '@/helpers/server/dal/user'
 
@@ -22,20 +21,12 @@ export default async function SimulationLayout({
 
   const user = await getUser()
 
-  let currentSimulation = await getCurrentSimulation({ user })
-
+  const currentSimulation = await getCurrentSimulation({ user })
+  const serverSimulations = currentSimulation ? [currentSimulation] : []
   if (!currentSimulation) {
-    currentSimulation = await handleSafariIframeSimulator(
-      user,
-      locale as Locale
-    )
-    if (!currentSimulation) {
-      captureException(new NotFoundError(), { level: 'warning' })
-      redirect(START_SIMULATION_PATH)
-    }
+    captureException(new NotFoundError(), { level: 'warning' })
+    redirect(START_SIMULATION_PATH)
   }
-  const serverSimulations = [currentSimulation]
-
   if (currentSimulation.progression === 1) {
     redirect(END_PAGE_PATH)
   }
