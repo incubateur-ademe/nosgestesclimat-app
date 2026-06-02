@@ -3,6 +3,7 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
@@ -25,6 +26,7 @@ interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   action: PersonalizedAction
   locale: Locale
   withThemeBadge?: boolean
+  assessmentStatus?: SimulationComputationStatus | null
 }
 
 export default function ActionCard({
@@ -32,6 +34,7 @@ export default function ActionCard({
   className,
   locale,
   withThemeBadge = true,
+  assessmentStatus,
   ...props
 }: ActionCardProps) {
   return (
@@ -51,7 +54,11 @@ export default function ActionCard({
       <div className="grow">
         <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
         {action.assessment ? (
-          <ImpactTag impact={action.assessment.impact} locale={locale} />
+          <ImpactTag
+            impact={action.assessment.impact}
+            locale={locale}
+            assessmentStatus={assessmentStatus}
+          />
         ) : null}
       </div>
       <Link
@@ -81,13 +88,28 @@ export default function ActionCard({
 
 interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
   impact?: number
+  assessmentStatus?: SimulationComputationStatus | null
   locale: Locale
 }
 
-function ImpactTag({ impact, locale, className, ...rest }: ImpactTagProps) {
+function ImpactTag({
+  impact,
+  locale,
+  className,
+  assessmentStatus,
+  ...rest
+}: ImpactTagProps) {
   let text
 
-  if (typeof impact === 'number') {
+  if (assessmentStatus && assessmentStatus !== 'completed') {
+    text = (
+      <Trans
+        locale={locale}
+        i18nKey="actions.components.actionCard.impactAssessmentInProgress">
+        En cours de calcul
+      </Trans>
+    )
+  } else if (typeof impact === 'number') {
     const { formattedValue, unit } = formatFootprint(impact, {
       locale,
       shouldUseAbbreviation: true,
@@ -105,7 +127,7 @@ function ImpactTag({ impact, locale, className, ...rest }: ImpactTagProps) {
       <Trans
         locale={locale}
         i18nKey="actions.components.actionCard.noImpactTag">
-        Impact réel, non quantifiable
+        Impact non quantifiable
       </Trans>
     )
   }

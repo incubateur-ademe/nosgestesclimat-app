@@ -34,6 +34,7 @@ export default async function ResultatsActionsPage({
       actions={actionsDto}
       themes={themes}
       locale={locale}
+      assessmentStatus={actionsCatalogue.assessmentStatus}
     />
   )
 }

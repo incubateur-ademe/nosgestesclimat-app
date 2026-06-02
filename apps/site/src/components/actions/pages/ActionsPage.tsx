@@ -3,6 +3,7 @@ import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import { twMerge } from 'tailwind-merge'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
@@ -12,6 +13,7 @@ interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
   themes: Theme[]
   actions: PersonalizedAction[]
   locale: Locale
+  assessmentStatus?: SimulationComputationStatus | null
 }
 
 export default function ActionsPage({
@@ -20,6 +22,7 @@ export default function ActionsPage({
   themes,
   locale,
   className,
+  assessmentStatus,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -49,6 +52,7 @@ export default function ActionsPage({
             actions={topActions}
             className="mb-10"
             locale={locale}
+            assessmentStatus={assessmentStatus}
           />
           <Separator variant="full" className="my-10 hidden md:block" />
         </>
@@ -66,6 +70,7 @@ export default function ActionsPage({
                 key={theme.id}
                 theme={theme}
                 locale={locale}
+                assessmentStatus={assessmentStatus}
                 actions={actionsByTheme[theme.key] ?? []}
               />
             )

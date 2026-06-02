@@ -1,6 +1,7 @@
 import type { Locale } from '@/i18nConfig'
 import type { PersonalizedAction } from '@/types/actions'
 import type { Theme } from '@/types/themes'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
@@ -38,10 +39,12 @@ export default function ThemeSection({
   theme,
   actions,
   locale,
+  assessmentStatus,
 }: {
   theme: Theme
   actions: PersonalizedAction[]
   locale: Locale
+  assessmentStatus?: SimulationComputationStatus | null
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -81,6 +84,7 @@ export default function ThemeSection({
             action={action}
             locale={locale}
             withThemeBadge={false}
+            assessmentStatus={assessmentStatus}
           />
         ))}
       </ActionsCarousel>

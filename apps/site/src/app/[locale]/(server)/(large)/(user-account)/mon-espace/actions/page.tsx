@@ -21,12 +21,12 @@ export default async function MonEspaceActionsPage({
   const user = await throwNextError(getAuthUser)
   const flag = await getFeatureFlag('actions-v2', user.id)
 
-  const [maybePersonalizedActionsResult, themes] = flag
+  const [maybePersonalizedActionsCatalogue, themes] = flag
     ? await Promise.all([getPersonalizedActionsCatalogue(user.id), getThemes()])
     : [undefined, undefined]
 
-  const actionsDto = maybePersonalizedActionsResult
-    ? maybePersonalizedActionsResult.actions.map((action) =>
+  const actionsDto = maybePersonalizedActionsCatalogue
+    ? maybePersonalizedActionsCatalogue.actions.map((action) =>
         toPersonalizedActionDto(action)
       )
     : undefined
@@ -47,6 +47,7 @@ export default async function MonEspaceActionsPage({
           actions={actionsDto}
           themes={themes}
           locale={locale}
+          assessmentStatus={maybePersonalizedActionsCatalogue.assessmentStatus}
         />
       ) : (
         <LegacyMonEspaceActionsPage user={user} locale={locale} />

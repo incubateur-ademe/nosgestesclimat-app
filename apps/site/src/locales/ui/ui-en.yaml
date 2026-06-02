@@ -1988,9 +1988,11 @@ entries:
   results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
-  actions.components.actionCard.noImpactTag: Real impact, unquantifiable
-  actions.components.actionCard.noImpactTag.lock: Impact réel, non quantifiable
+  actions.components.actionCard.noImpactTag: Non-quantifiable impact
+  actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
   actions.detailPage.impact.title: Potential gains for your footprint
   actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
   actions.detailPage.impact.value: -<0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
   actions.detailPage.impact.value.lock: <0>-{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
+  actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
+  actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
