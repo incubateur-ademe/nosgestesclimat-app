@@ -5,109 +5,45 @@ import {
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'
-import { useCallback, useState } from 'react'
-
-interface StorageAccessError {
-  name: string
-  message: string
-}
-
-/**
- * When the page reloads after a successful storage access grant, this key
- * is present in sessionStorage, meaning permission is already granted.
- * Must match the key in useSafariStorageAccess.
- */
-const RELOADED_KEY = 'ngc-safari-storage-reloaded'
-
-function getInitialNeedPermission(): boolean {
-  if (!requiresStoragePermissions()) return false
-  // After a reload that followed a successful storage access grant,
-  // permission was already obtained — no need to show the overlay again.
-  if (
-    typeof sessionStorage !== 'undefined' &&
-    sessionStorage.getItem(RELOADED_KEY)
-  ) {
-    return false
-  }
-  return true
-}
+import { useCallback, useEffect, useState } from 'react'
 
 export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
-  haveCheckedPermission: boolean
-  storageAccessError: StorageAccessError | null
 } => {
-  const [needPermission, setNeedPermission] = useState(
-    getInitialNeedPermission()
-  )
-  const [haveCheckedPermission, setHaveCheckedPermission] = useState(
-    !getInitialNeedPermission()
-  )
-  const [storageAccessError, setStorageAccessError] =
-    useState<StorageAccessError | null>(null)
+  const [needPermission, setNeedPermission] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return requiresStoragePermissions()
+  })
 
-  const isHavingPermissionFn = useCallback(async () => {
-    try {
-      return await hasStorageAccess()
-    } catch {
-      return false
-    }
+  // On mount, check if storage access is already granted (e.g. after a
+  // Safari auto-reload following a successful requestStorageAccess grant).
+  useEffect(() => {
+    if (!requiresStoragePermissions()) return
+
+    hasStorageAccess()
+      .then((hasAccess) => {
+        setNeedPermission(!hasAccess)
+      })
+      .catch(() => {
+        // If hasStorageAccess() fails, keep the conservative default (true)
+      })
   }, [])
-
-  const checkPermission = useCallback(async () => {
-    try {
-      const isHavingPerm = await isHavingPermissionFn()
-      setNeedPermission(!isHavingPerm)
-      setHaveCheckedPermission(true)
-    } catch {
-      setHaveCheckedPermission(true)
-    }
-  }, [isHavingPermissionFn])
 
   const askForPermission = useCallback(async () => {
     try {
-      setStorageAccessError(null)
-
-      // Write the reloaded key BEFORE calling requestStorageAccess() so that
-      // if Safari reloads the iframe immediately after granting storage access,
-      // the key survives the reload and the overlay is not shown again.
-      sessionStorage.setItem(RELOADED_KEY, 'true')
-
       await requestStorageAccess()
-      await checkPermission()
-    } catch (error) {
-      // If the permission request failed, remove the key so the overlay
-      // can be shown again on the next attempt.
-      sessionStorage.removeItem(RELOADED_KEY)
-      const name = error instanceof Error ? error.name : 'Unknown'
-      const message = error instanceof Error ? error.message : String(error)
-
-      // Post to parent window so it's visible without opening iframe devtools
-      try {
-        window.parent.postMessage(
-          {
-            type: 'NGC_STORAGE_ACCESS_ERROR',
-            name,
-            message,
-          },
-          '*'
-        )
-      } catch {
-        // cross-origin postMessage may fail
-      }
-
-      setStorageAccessError({ name, message })
-      setHaveCheckedPermission(true)
+      const hasAccess = await hasStorageAccess()
+      setNeedPermission(!hasAccess)
+    } catch {
+      // Do nothing
     }
-  }, [checkPermission])
+  }, [])
 
   return {
     needPermission,
     askForPermission: requiresStoragePermissions()
       ? askForPermission
       : () => undefined,
-    haveCheckedPermission,
-    storageAccessError,
   }
 }
