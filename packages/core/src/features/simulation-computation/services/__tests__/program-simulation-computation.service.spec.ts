@@ -30,32 +30,35 @@ describe('programSimulationComputation', () => {
     )
   })
 
-  it('logs UnsupportedModel and does not create a computation when model is a PR version', async () => {
-    const { id } = await simulationFactory
-      .withModelVersion({ PRNumber: '42' })
-      .create()
-
-    await programSimulationComputation(id)
-
-    expect(mockLog).toHaveBeenCalledWith(expect.any(UnsupportedModel))
-    const computation = await findSimulationComputation(id)
-    expect(computation).toBeNull()
-  })
-
-  it('logs UnsupportedModel and does not create a computation when model version is outdated', async () => {
-    const { id } = await simulationFactory
-      .withModelVersion({ publishedTag: '0.9.0' })
-      .create()
-
-    await programSimulationComputation(id)
-
-    expect(mockLog).toHaveBeenCalledWith(expect.any(UnsupportedModel))
-    const computation = await findSimulationComputation(id)
-    expect(computation).toBeNull()
+  describe('logs UnsupportedModel and does not create a computation', () => {
+    it.each([
+      [
+        'when model version is outdated',
+        () => simulationFactory.withModelVersion({ publishedTag: '0.9.0' }),
+      ],
+      [
+        'when model version is a PR version',
+        () => simulationFactory.withModelVersion({ PRNumber: '42' }),
+      ],
+      [
+        'when model is unsupported region',
+        () => simulationFactory.withModelRegion('UK'),
+      ],
+      [
+        'when model is unsupported language',
+        () => simulationFactory.withModelLocale('en'),
+      ],
+    ])('%s', async (_, setup) => {
+      const { id } = await setup().create()
+      await programSimulationComputation(id)
+      expect(mockLog).toHaveBeenCalledWith(expect.any(UnsupportedModel))
+      const computation = await findSimulationComputation(id)
+      expect(computation).toBeNull()
+    })
   })
 
   it('creates a pending computation when simulation is finished and model matches current version', async () => {
-    const { id } = await simulationFactory.create()
+    const { id } = await simulationFactory.withModelRegion('FR').create()
 
     await programSimulationComputation(id)
 

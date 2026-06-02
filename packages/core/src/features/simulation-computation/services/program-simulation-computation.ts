@@ -10,6 +10,7 @@ export const programSimulationComputation = async (
   simulationId: string
 ): Promise<void> => {
   const simulation = await getSimulationById(simulationId)
+
   if (simulation.progression !== 1) {
     throw new SimulationNotFinished({
       simulationId: simulation.id,
@@ -17,8 +18,13 @@ export const programSimulationComputation = async (
     })
   }
 
-  const version = simulation.model.version
-  if ('PRNumber' in version || version.publishedTag !== pkg.version) {
+  const model = simulation.model
+  if (
+    model.locale !== 'fr' ||
+    model.region !== 'FR' ||
+    'PRNumber' in model.version ||
+    model.version.publishedTag !== pkg.version
+  ) {
     log(new UnsupportedModel({ model: simulation.model }))
     return
   }

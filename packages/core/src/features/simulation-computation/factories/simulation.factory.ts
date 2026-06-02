@@ -18,6 +18,8 @@ interface SimulationFixture {
 
 interface SimulationTransientParams {
   modelVersion?: Model['version']
+  modelRegion?: ModelRegion
+  modelLocale?: ModelLocale
 }
 
 class SimulationFactory extends Factory<
@@ -28,7 +30,12 @@ class SimulationFactory extends Factory<
   withModelVersion(version: Model['version']) {
     return this.transient({ modelVersion: version })
   }
-
+  withModelRegion(region: ModelRegion) {
+    return this.transient({ modelRegion: region })
+  }
+  withModelLocale(lang: ModelLocale) {
+    return this.transient({ modelLocale: lang })
+  }
   withPendingComputation() {
     return this.afterCreate(async (data) => {
       await prisma.simulationComputation.create({
@@ -76,10 +83,12 @@ export const simulationFactory = SimulationFactory.define(
       id: faker.string.uuid(),
       progression: 1,
       model: {
-        region: faker.helpers.arrayElement(
-          Object.keys(supportedRegions)
-        ) as ModelRegion,
-        locale: 'fr' as ModelLocale,
+        region:
+          transientParams.modelRegion ??
+          (faker.helpers.arrayElement(
+            Object.keys(supportedRegions)
+          ) as ModelRegion),
+        locale: transientParams.modelLocale ?? ('fr' as const),
         version: transientParams.modelVersion ?? {
           publishedTag: pkg.version,
         },
