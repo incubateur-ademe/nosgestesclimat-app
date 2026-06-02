@@ -426,7 +426,6 @@ entries:
   Et la vôtre ?: Et la vôtre ?
   Impressionnant, non ?: Impressionnant, non ?
   L'empreinte carbone: L'empreinte carbone
-  L'empreinte carbone moyenne d'un français est de <2>9,1 tonnes de CO2e par an</2>.: L'empreinte carbone moyenne d'un français est de <2>9,1 tonnes de CO2e par an</2>.
   L'empreinte eau: L'empreinte eau
   L'empreinte eau moyenne d'un français se compte <2>milliers de litres par jour</2>.: L'empreinte eau moyenne d'un français se compte <2>milliers de litres par jour</2>.
   La production d'un jean nécessite près de <2>30 000 litres d'eau</2>.: La production d'un jean nécessite près de <2>30 000 litres d'eau</2>.
@@ -1070,7 +1069,6 @@ entries:
   Nom du groupe: Nom du groupe
   Un compte avec cette adresse e-mail existe déjà: Un compte avec cette adresse e-mail existe déjà
   Veuillez entrer votre nom.: Veuillez entrer votre nom.
-  <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Comparez vos résultats avec votre famille ou un groupe d'amis.
   newsletterManagement.alimentationNewsletter.description: 4 infolettres (sur 4 semaines), pour découvrir l'empreinte de notre alimentation, et comprendre comment aligner son assiette avec les enjeux planétaires.
   newsletterManagement.alimentationNewsletter.title: Nos Gestes Alimentation
@@ -1383,15 +1381,15 @@ entries:
   tutorial.email.title.default: Votre adresse électronique
   tutorial.email.title.youth: Ton adresse électronique
   actions.components.themeSection.description: '{actions.length} actions recommandées'
+  components.carousel.prevSlideMessage: Diapo précédente
+  components.carousel.nextSlideMessage: Diapo suivante
+  components.carousel.firstSlideMessage: Ceci est la première diapo
+  components.carousel.lastSlideMessage: Ceci est la dernière diapo
+  components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
+  components.carousel.itemRoleDescriptionMessage: Diapo
+  components.carousel.roleDescription: Carrousel
   common.byDay: / jour
   common.facultatif.uppercase: Facultatif
-  components.carousel.firstSlideMessage: Ceci est la première diapo
-  components.carousel.itemRoleDescriptionMessage: Diapo
-  components.carousel.lastSlideMessage: Ceci est la dernière diapo
-  components.carousel.nextSlideMessage: Diapo suivante
-  components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
-  components.carousel.prevSlideMessage: Diapo précédente
-  components.carousel.roleDescription: Carrousel
   Passer: Passer
   simulator.age.inputLabel: Dans quelle tranche d'âge vous situez-vous ?
   simulator.age.metadata.description: Une première question avant de calculer votre empreinte sur le climat.
@@ -1402,3 +1400,6 @@ entries:
   simulator.transition.divers.graph.arrowText: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   simulator.transition.housing.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   simulator.tutorial.letsGoButton.label: C'est parti !
+  L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).
+  results.actions.afterLink.label: Découvrir mes actions personnalisées
+  homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>

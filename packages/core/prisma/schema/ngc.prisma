@@ -331,6 +331,7 @@ model Simulation {
   createdAt                  DateTime                             @default(now())
   updatedAt                  DateTime                             @updatedAt
   actionAssessments          ActionAssessment[]
+  computations               SimulationComputation[]
 
   @@index([userId])
   @@index([userEmail])

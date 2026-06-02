@@ -1,4 +1,13 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('../flags', () => ({
+  FLAGS: {
+    'actions-v2': { kind: 'boolean' },
+    'mode-scolaire': { kind: 'boolean' },
+    variant: { kind: 'variant', variants: ['control', 'test'] },
+  },
+}))
+
 import {
   parseFeatureFlagCookie,
   parseFeatureFlagParams,
@@ -12,19 +21,37 @@ describe('parseFeatureFlagParams', () => {
 
   it('parses a single truthy flag', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_my-flag=true'))
-    ).toEqual({ 'my-flag': true })
+      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=true'))
+    ).toEqual({ 'actions-v2': true })
   })
 
   it('parses a single falsy flag', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_my-flag=false'))
-    ).toEqual({ 'my-flag': false })
+      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=false'))
+    ).toEqual({ 'actions-v2': false })
   })
 
-  it('ignores values other than true/false', () => {
+  it('parses a known variant value', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_flag=yes'))
+      parseFeatureFlagParams(new URLSearchParams('?ff_variant=test'))
+    ).toEqual({ variant: 'test' })
+  })
+
+  it('ignores unknown variant value', () => {
+    expect(
+      parseFeatureFlagParams(new URLSearchParams('?ff_variant=wrong'))
+    ).toBeNull()
+  })
+
+  it('ignores non-boolean values on boolean flags', () => {
+    expect(
+      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=test'))
+    ).toBeNull()
+  })
+
+  it('ignores flags not in FLAGS', () => {
+    expect(
+      parseFeatureFlagParams(new URLSearchParams('?ff_unknown=true'))
     ).toBeNull()
   })
 })
@@ -44,6 +71,12 @@ describe('parseFeatureFlagCookie', () => {
     expect(parseFeatureFlagCookie('{"actions-v2":true}')).toEqual({
       'actions-v2': true,
     })
+  })
+
+  it('parses a variant override', () => {
+    expect(
+      parseFeatureFlagCookie('{"variant":"test"}')
+    ).toEqual({ variant: 'test' })
   })
 
   it('returns empty object for undefined, empty, or malformed input', () => {

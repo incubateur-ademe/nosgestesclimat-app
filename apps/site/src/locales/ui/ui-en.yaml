@@ -452,7 +452,6 @@ entries:
   Découvrir la documentation: Discover the documentation
   Connaissez-vous votre empreinte écologique ?: Do you know your ecological footprint?
   Décryptez les défis environnementaux: Decode environmental challenges
-  L'empreinte carbone moyenne d'un français est de <2>9,1 tonnes de CO2e par an</2>.: The average carbon footprint of a French person is <2>9.1 tonnes of CO2e per year</2>.
   L'empreinte eau: Water footprint
   L'empreinte carbone: Carbon footprint
   L'empreinte eau moyenne d'un français se compte <2>milliers de litres par jour</2>.: The average French person's water footprint is <2>thousands of litres a day</2>.
@@ -1380,7 +1379,6 @@ entries:
   Illustration du groupe: Illustration of the group
   Veuillez entrer votre nom.: Please enter your name.
   Un compte avec cette adresse e-mail existe déjà: An account with this e-mail address already exists
-  <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <2>Already used by</2> <0>2.7 million people</0>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Compare your results with your family or a group of friends.
   newsletterManagement.logementNewsletter.title: Our Housing Gestures
   newsletterManagement.logementNewsletter.title.lock: Nos Gestes Logement
@@ -1959,11 +1957,13 @@ entries:
   common.byDay.lock: / jour
   common.facultatif.uppercase: Optional
   common.facultatif.uppercase.lock: Facultatif
+  actions.components.themeSection.description: '{{count}} recommended actions'
+  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
+  actions.detailPage.404.title: Action not found
+  actions.detailPage.404.title.lock: Action non trouvée
   actions.detailPage.tabs.act: Taking action
   actions.detailPage.tabs.act.lock: J'agis
   Passer: Go to
-  actions.detailPage.404.title: Action not found
-  actions.detailPage.404.title.lock: Action non trouvée
   components.carousel.paginationBulletMessage: Go to slide {{index}}
   components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
   actions.detailPage.sections.furtherReading: Also worth discovering
@@ -1980,8 +1980,6 @@ entries:
   actions.listPage.title.lock: Construire mon plan d’action
   components.carousel.prevSlideMessage: Previous slide
   components.carousel.prevSlideMessage.lock: Diapo précédente
-  actions.components.themeSection.description: '{actions.length} recommended actions'
-  actions.components.themeSection.description.lock: '{actions.length} actions recommandées'
   actions.detailPage.tabs.incentives: What's in it for me?
   actions.detailPage.tabs.incentives.lock: J'y gagne
   components.carousel.lastSlideMessage: This is the last slide
@@ -2012,3 +2010,8 @@ entries:
   simulator.transition.housing.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   actions.listPage.description: The following actions are recommended based on your answers to the test.<1></1>Choose the ones that seem achievable - the most important thing is to get moving!
   actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
+  results.actions.afterLink.label: Discover my custom actions
+  results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
+  homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
+  homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>

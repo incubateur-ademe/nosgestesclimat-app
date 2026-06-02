@@ -1,20 +1,20 @@
 import { test as base, type Page } from '@playwright/test'
 
-import { AGE_RANGE_KEY } from '@/constants/ab-test'
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
+import type { DefaultFlagValues } from '@/services/feature-flags/flags'
 
 const DOMAIN = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
 
 const DEFAULT_FLAGS = {
   'actions-v2': false,
   'mode-scolaire': true,
-  [AGE_RANGE_KEY]: false,
-} satisfies Record<string, boolean>
+  'ab-test-question-tranche-dage': 'control',
+} satisfies DefaultFlagValues
 
 export class FeatureFlags {
   constructor(private page: Page) {}
 
-  async set(flags: Record<string, boolean>) {
+  async set(flags: Record<string, string | boolean>) {
     await this.page.context().addCookies([
       {
         name: FF_COOKIE_NAME,
@@ -34,7 +34,7 @@ export class FeatureFlags {
     await this.set({ ...(await this.#read()), [flag]: false })
   }
 
-  async #read(): Promise<Record<string, boolean>> {
+  async #read(): Promise<Record<string, string | boolean>> {
     const cookies = await this.page.context().cookies()
     const ffCookie = cookies.find((c) => c.name === FF_COOKIE_NAME)
     if (!ffCookie) return {}

@@ -45,6 +45,7 @@ export default function ThemeSection({
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
+  const count = actions.length
   return (
     <section
       className={twMerge(
@@ -62,8 +63,8 @@ export default function ThemeSection({
               <Trans
                 locale={locale}
                 i18nKey="actions.components.themeSection.description"
-                values={{ count: actions.length }}>
-                {actions.length} actions recommandées
+                values={{ count }}>
+                {count} actions recommandées
               </Trans>
             </p>
           </div>

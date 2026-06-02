@@ -12,5 +12,10 @@ export default defineConfig({
     },
     globalSetup: 'vitest.env.ts',
     setupFiles: 'vitest.setup.ts',
+    server: {
+      deps: {
+        inline: ['@nosgestesclimat/core'],
+      },
+    },
   },
 })
