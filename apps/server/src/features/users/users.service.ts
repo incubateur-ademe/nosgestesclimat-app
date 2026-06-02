@@ -1,3 +1,4 @@
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range.ts'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { Request } from 'express'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
@@ -33,7 +34,7 @@ interface UserDto {
   id: string
   name: string | null
   email: string | null
-  ageRange?: string | null
+  ageRange?: AgeRange | null
   createdAt: Date
   updatedAt: Date
   contact?: BrevoContact
@@ -200,17 +201,31 @@ export const updateUserAndContact = async ({
 
       let user
       if (isVerifiedUser) {
+        const { ageRange, ...verifiedUserUpdate } = update
+
         user = (
           await createOrUpdateVerifiedUser(
             {
               id: params,
-              user: update,
+              user: verifiedUserUpdate,
               select: defaultVerifiedUserSelection,
             },
             { session }
           )
         ).user
         token = createToken(user)
+
+        // ageRange lives on the User model, not VerifiedUser
+        if (ageRange !== undefined) {
+          await createOrUpdateUser(
+            {
+              id: params.userId,
+              user: { ageRange },
+              select: { id: true },
+            },
+            { session }
+          )
+        }
       } else {
         user = (
           await createOrUpdateUser(

@@ -407,12 +407,24 @@ model User {
   id            String               @id @db.Uuid
   name          String?
   email         String?
-  ageRange      String?
+  ageRange      AgeRange?
   administrator GroupAdministrator[]
   member        GroupParticipant[]
   simulations   Simulation[]
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
+
+  @@schema("ngc")
+}
+
+enum AgeRange {
+  under_18
+  age_18_24
+  age_25_34
+  age_35_49
+  age_50_64
+  over_65
+  undisclosed
 
   @@schema("ngc")
 }

@@ -18,10 +18,18 @@ export const defaultVerifiedUserSelection = {
   updatedAt: true,
 }
 
+export const defaultUserSelectionWithoutAgeRange = {
+  id: true,
+  name: true,
+  email: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export const defaultGroupParticipantSelection = {
   id: true,
   user: {
-    select: defaultUserSelection,
+    select: defaultUserSelectionWithoutAgeRange,
   },
   simulationId: true,
   createdAt: true,

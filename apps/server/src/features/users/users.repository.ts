@@ -371,7 +371,6 @@ type VerifiedUserPayload = {
   position?: string | null | undefined
   telephone?: string | null | undefined
   optedInForCommunications?: boolean | undefined
-  ageRange?: string | null | undefined
 }
 
 export const createOrUpdateVerifiedUser = async <
@@ -385,7 +384,6 @@ export const createOrUpdateVerifiedUser = async <
       position,
       telephone,
       optedInForCommunications,
-      ageRange,
     },
     select = { email: true } as Select,
   }: {
@@ -424,7 +422,6 @@ export const createOrUpdateVerifiedUser = async <
         id: userId,
         user: {
           email: newEmail || email,
-          ageRange,
           name: userData.name,
         },
       },

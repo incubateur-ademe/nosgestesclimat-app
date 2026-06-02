@@ -154,7 +154,6 @@ describe('Given a NGC user', () => {
         expect(response.body).toEqual({
           id: expect.any(String),
           ...payload,
-          ageRange: null,
           simulation: {
             ...payload.simulation,
             date: expect.any(String),
@@ -207,7 +206,6 @@ describe('Given a NGC user', () => {
           user: {
             id: payload.userId,
             name: payload.name,
-            ageRange: null,
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
             email: null,
@@ -444,7 +442,6 @@ describe('Given a NGC user', () => {
       expect(response.body).toEqual({
         id: expect.any(String),
         ...payload,
-        ageRange: null,
         simulation: {
           ...payload.simulation,
           date: expect.any(String),
@@ -510,7 +507,6 @@ describe('Given a NGC user', () => {
       expect(response.body).toEqual({
         id: expect.any(String),
         ...payload,
-        ageRange: null,
         simulation: {
           ...payload.simulation,
           date: expect.any(String),

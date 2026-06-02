@@ -1,8 +1,5 @@
-import type { User, VerifiedUser } from '../../../prisma/generated/client.ts'
 import { findUser, findVerifiedUser } from '../repositories/users.repository.ts'
-
-type MergedUser = User &
-  Pick<VerifiedUser, 'telephone' | 'position' | 'optedInForCommunications'>
+import type { FullUser } from '../types/user.ts'
 
 export const getFullUser = async ({
   userId,
@@ -10,7 +7,7 @@ export const getFullUser = async ({
 }: {
   userId: string
   email?: string
-}): Promise<MergedUser | null> => {
+}): Promise<FullUser | null> => {
   const [user, verifiedUser] = await Promise.all([
     findUser(userId),
     email ? findVerifiedUser(email) : Promise.resolve(null),

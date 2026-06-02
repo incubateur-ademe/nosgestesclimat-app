@@ -33,18 +33,16 @@ export default function AgeForm({ ageRange }: Props) {
           )}
         </legend>
 
-        {options.map((option) => {
-          return (
-            <ChoiceInput
-              key={option.value}
-              label={option.label}
-              labelText={option.label}
-              active={selectedAge === option.value}
-              onClick={() => setSelectedAge(option.value)}
-              data-testid={`age-choice-${option.value}`}
-            />
-          )
-        })}
+        {options.map((option) => (
+          <ChoiceInput
+            key={option.value}
+            label={option.label}
+            labelText={option.label}
+            active={selectedAge === option.value}
+            onClick={() => setSelectedAge(option.value)}
+            data-testid={`age-choice-${option.value}`}
+          />
+        ))}
       </fieldset>
 
       <div className="mt-8 flex w-full flex-col items-stretch gap-2 pb-8 sm:flex-row md:items-stretch md:gap-4">
