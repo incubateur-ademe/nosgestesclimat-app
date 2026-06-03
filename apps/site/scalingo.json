@@ -21,6 +21,9 @@
     "NEXT_PUBLIC_MATOMO_DOMAIN": {
       "value": "*.osc-fr1.scalingo.io",
       "description": "Matomo domain for Scalingo review apps"
+    },
+    "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": {
+      "description": "Base64-encoded AES key (16, 24, or 32 bytes) for Server Actions encryption. Required for multi-instance deployments. Generate with: openssl rand -base64 32"
     }
   }
 }
