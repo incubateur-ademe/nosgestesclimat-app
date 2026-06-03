@@ -1,7 +1,7 @@
 import type { Locale } from '@/i18nConfig'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@/types/themes'
-import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'

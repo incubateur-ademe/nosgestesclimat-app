@@ -17,14 +17,16 @@
     "test:watch": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
-    "dev": "next dev",
+    "dev:next": "next dev",
+    "dev:worker": "node --experimental-strip-types --watch ./worker/worker.ts",
+    "dev": "pnpm run '/dev:(worker|next)/'",
     "dev:webpack": "next dev --webpack",
-    "build": "next build && pnpm run build:copy-static-assets",
-    "build:copy-static-assets": "cp -r public .next/standalone/apps/site && cp -r .next/static .next/standalone/apps/site/.next/",
+    "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
-    "start": "node .next/standalone/apps/site/server.js",
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
+    "start": "next start",
+    "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./worker/worker.ts",
+    "lint": "eslint",
     "typegen": "next typegen",
     "generate": "pnpm typegen",
     "typecheck": "tsc --noEmit",
@@ -44,7 +46,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@incubateur-ademe/nosgestesclimat": "4.12.4",
+    "@incubateur-ademe/nosgestesclimat": "https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@2762",
     "@next/mdx": "^16.2.2",
     "@nosgestesclimat/core": "workspace:*",
     "@publicodes/react-ui": "^1.10.0",
@@ -86,6 +88,7 @@
     "swiper": "^12.1.4",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
+    "typescript": "5.9.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

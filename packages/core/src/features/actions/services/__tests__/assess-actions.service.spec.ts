@@ -1,10 +1,13 @@
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { createTestEngine } from '../../../publicodes-computation/factories/engine.factory.ts'
-import { simulationFactory } from '../../../publicodes-computation/factories/simulation.factory.ts'
+import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
+import { ActionAssessmentPublicodesException } from '../../exceptions/action-assessment.exception.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { assessActions } from '../assess-actions.service.ts'
+
+vi.mock('../../../logger/index.ts', () => ({ log: vi.fn() }))
 
 const APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000001'
 const NOT_APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000002'
@@ -35,7 +38,7 @@ describe('compute action assessments service', () => {
   let simulation: Awaited<ReturnType<typeof simulationFactory.create>>
 
   beforeEach(async () => {
-    simulation = await simulationFactory.create()
+    simulation = await simulationFactory.completed().create()
   })
 
   afterEach(async () => {
@@ -91,15 +94,6 @@ describe('compute action assessments service', () => {
     expect(assessments).toHaveLength(0)
   })
 
-  it('does not crash when there are no visible actions', async () => {
-    await assessActions(engine, simulation.id, null)
-
-    const assessments = await prisma.actionAssessment.findMany({
-      where: { simulationId: simulation.id },
-    })
-    expect(assessments).toHaveLength(0)
-  })
-
   it('skips actions whose rule evaluation throws', async () => {
     await actionFactory
       .params({ ruleId: APPLICABLE_RULE_ID })
@@ -127,5 +121,28 @@ describe('compute action assessments service', () => {
       where: { simulationId: simulation.id },
     })
     expect(assessments).toHaveLength(0)
+  })
+
+  describe('throws ActionAssessmentPublicodesException', () => {
+    it('when there are no actions in database', async () => {
+      await expect(
+        assessActions(engine, simulation.id, simulation.userId)
+      ).rejects.toThrow(ActionAssessmentPublicodesException)
+    })
+
+    it('when no publicodes rules have meta.id', async () => {
+      const engineWithoutMeta = createTestEngine({
+        'test . no-meta': { valeur: 42 },
+      })
+
+      await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+
+      await expect(
+        assessActions(engineWithoutMeta, simulation.id, null)
+      ).rejects.toThrow(ActionAssessmentPublicodesException)
+    })
   })
 })
