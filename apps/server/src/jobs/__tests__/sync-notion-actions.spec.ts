@@ -108,6 +108,67 @@ describe('syncNotionActions', () => {
     ])
   })
 
+  it('supports removing previously set optional fields', async () => {
+    const existing = await actionFactory.create({
+      slug: 'my-slug',
+      tips: 'existing tips',
+      financialIncentives: 'existing incentives',
+      furtherExplore: 'existing further explore',
+      media: {
+        type: 'impact_co2',
+        title: 'existing media title',
+        data: {
+          type: 'transport',
+          options: { km: '5' },
+        },
+      },
+      metadata: {
+        title: 'existing seo title',
+        description: 'existing seo description',
+        jsonLd: { '@context': 'https://schema.org', '@graph': [] },
+      },
+      publishedAt: new Date('2025-01-01'),
+    })
+    const row = buildNotionRow({
+      slug: 'my-slug',
+      tips_fr: '',
+      financial_incentives_fr: '',
+      further_explore_fr: '',
+      seo_title_fr: '',
+      seo_description_fr: '',
+      seo_json_ld: '',
+      published_at: '',
+      media_fr: '',
+      media_title_fr: '',
+    })
+    const fetchAllPages = vi.fn().mockResolvedValue([row])
+
+    await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+    const actions = await findAllActions()
+    expect(actions).toEqual([
+      {
+        ...existing,
+        slug: 'my-slug',
+        trackingId: row.tracking_id,
+        theme: validTheme,
+        ruleId: row.rule_id,
+        title: row.front_title_fr,
+        longDescription: row.long_description_fr,
+        media: undefined,
+        tips: undefined,
+        financialIncentives: undefined,
+        furtherExplore: undefined,
+        metadata: {
+          title: undefined,
+          description: undefined,
+          jsonLd: undefined,
+        },
+        publishedAt: null,
+      } satisfies Action,
+    ])
+  })
+
   it('soft-deletes actions absent from Notion', async () => {
     const toBeDeleted = await actionFactory.create()
     const controlRow = buildNotionRow() // different slug

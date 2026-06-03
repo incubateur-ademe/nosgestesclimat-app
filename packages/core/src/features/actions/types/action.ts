@@ -42,11 +42,11 @@ export interface NewAction {
   longDescription: string
   ruleId: string
   themeId: string
-  media?: ActionMedia
-  tips?: string
-  financialIncentives?: string
-  furtherExplore?: string
-  metadata?: SeoMetadata
+  media?: ActionMedia | null
+  tips?: string | null
+  financialIncentives?: string | null
+  furtherExplore?: string | null
+  metadata?: SeoMetadata | null
   publishedAt?: Date | null
   deletedAt?: Date | null
 }
