@@ -1952,7 +1952,6 @@ entries:
   components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Slide
   components.carousel.itemRoleDescriptionMessage.lock: Diapo
-
   actions.detailPage.nav: Page navigation
   actions.detailPage.nav.lock: Navigation de la page
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
@@ -1987,6 +1986,8 @@ entries:
   actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
+  actions.components.themeSection.description: '{{count}} recommended actions'
+  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
   actions.components.themeSection.description_other: '{{count}} recommended actions'
   actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
   actions.components.themeSection.description_one: '{{count}} recommended action'
