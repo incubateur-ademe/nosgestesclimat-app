@@ -10,10 +10,12 @@ export const FLAGS = {
 export type FeatureFlagName = keyof typeof FLAGS
 
 type FlagValueMap = {
-  [K in FeatureFlagName]:
-    (typeof FLAGS)[K] extends { kind: 'variant'; variants: readonly (infer V)[] }
-      ? V
-      : boolean
+  [K in FeatureFlagName]: (typeof FLAGS)[K] extends {
+    kind: 'variant'
+    variants: readonly (infer V)[]
+  }
+    ? V
+    : boolean
 }
 
 export type FeatureFlagValue<K extends FeatureFlagName> = FlagValueMap[K]
