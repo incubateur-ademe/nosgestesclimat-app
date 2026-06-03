@@ -145,11 +145,7 @@ export default async function ActionPage({ params }: Props) {
 
   return (
     <div>
-      <ActionConsultedTracker
-        actionTrackingId={action.trackingId}
-        actionThemeTrackingId={action.theme.trackingId}
-        co2PotentialInKg={action.assessment?.impact}
-      />
+      <ActionConsultedTracker action={action} />
       <GoBackLink
         href={user.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
         className="mb-10"

@@ -2,26 +2,23 @@
 
 import { captureActionConsulted } from '@/constants/tracking/posthogTrackers'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { useEffect } from 'react'
 
 export default function ActionConsultedTracker({
-  actionTrackingId,
-  actionThemeTrackingId,
-  co2PotentialInKg,
+  action,
 }: {
-  actionTrackingId: string
-  actionThemeTrackingId: string
-  co2PotentialInKg?: number
+  action: PersonalizedAction
 }) {
   useEffect(() => {
     trackPosthogEvent(
       captureActionConsulted({
-        actionTrackingId,
-        actionThemeTrackingId,
-        co2PotentialInKg,
+        actionTrackingId: action.trackingId,
+        actionThemeTrackingId: action.theme.trackingId,
+        co2PotentialInKg: action.assessment?.impact,
       })
     )
-  }, [actionTrackingId, actionThemeTrackingId, co2PotentialInKg])
+  }, [action.trackingId, action.theme.trackingId, action.assessment?.impact])
 
   return null
 }
