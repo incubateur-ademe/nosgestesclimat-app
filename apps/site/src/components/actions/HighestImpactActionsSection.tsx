@@ -66,6 +66,7 @@ export default function HighestImpactActionsSection({
             action={action}
             locale={locale}
             assessmentStatus={assessmentStatus}
+            className="h-full"
           />
         ))}
       </ActionsCarousel>

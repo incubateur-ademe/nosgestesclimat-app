@@ -85,6 +85,7 @@ export default function ThemeSection({
             locale={locale}
             withThemeBadge={false}
             assessmentStatus={assessmentStatus}
+            className="h-full"
           />
         ))}
       </ActionsCarousel>
