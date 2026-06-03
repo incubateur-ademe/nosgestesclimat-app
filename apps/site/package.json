@@ -19,11 +19,11 @@
     "test:ui": "vitest --ui",
     "dev": "next dev",
     "dev:webpack": "next dev --webpack",
-    "build": "next build && pnpm run build:copy-static-assets",
-    "build:copy-static-assets": "cp -r public .next/standalone/apps/site && cp -r .next/static .next/standalone/apps/site/.next/",
+    "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
-    "start": "node .next/standalone/apps/site/server.js",
+    "start": "next start -p ${PORT:-3000}",
+    "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./worker/worker.ts",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
     "typegen": "next typegen",
     "generate": "pnpm typegen",
@@ -87,6 +87,7 @@
     "swiper": "^12.1.4",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
+    "typescript": "5.9.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
