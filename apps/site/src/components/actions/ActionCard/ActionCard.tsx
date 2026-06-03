@@ -116,6 +116,8 @@ function ImpactTag({
     const { formattedValue, unit } = formatFootprint(-1 * impact, {
       locale,
       shouldUseAbbreviation: true,
+      metric: 'carbone',
+      unit: 't',
     })
     text = (
       <Trans
@@ -138,7 +140,7 @@ function ImpactTag({
   return (
     <span
       className={twMerge(
-        `inline-flex justify-center rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
+        `rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
         className
       )}
       {...rest}>

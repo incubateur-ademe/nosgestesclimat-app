@@ -74,6 +74,8 @@ export default async function ActionPage({ params }: Props) {
   const impact = action.assessment?.impact
     ? formatFootprint(-1 * action.assessment.impact, {
         locale,
+        metric: 'carbone',
+        unit: 't',
       })
     : null
 
