@@ -1,5 +1,6 @@
 import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
 import { useUser } from '@/publicodes-state'
+import { revalidateAgePage } from '@/services/users/revalidate-age-page'
 import {
   AgeRangeSchema,
   type AgeRange,
@@ -71,10 +72,11 @@ export function useAgeForm({ t, defaultValue }: Props) {
       ageRange: selectedAge,
     })
 
+    await revalidateAgePage()
+
     router.push(
       currentSimulation.progression === 1 ? END_PAGE_PATH : SIMULATOR_PATH
     )
-    router.refresh()
   }
 
   return {
