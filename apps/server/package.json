@@ -21,7 +21,7 @@
     "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/worker.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "postdeploy": "npm run db:migrate && npm run db:post-migrate && bash scripts/push-database-url-to-site.sh"
+    "postdeploy": "npm run db:migrate && npm run db:post-migrate && bash scripts/review-app-postdeploy.sh"
   },
   "author": "",
   "license": "MIT",
