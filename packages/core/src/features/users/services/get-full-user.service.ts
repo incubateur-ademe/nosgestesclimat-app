@@ -10,7 +10,7 @@ export const getFullUser = async ({
 }): Promise<FullUser | null> => {
   const [user, verifiedUser] = await Promise.all([
     findUser(userId),
-    email ? findVerifiedUser(email) : Promise.resolve(null),
+    findVerifiedUser(userId),
   ])
 
   if (!user) return null

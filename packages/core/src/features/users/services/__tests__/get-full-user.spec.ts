@@ -33,15 +33,14 @@ describe('getFullUser', () => {
   })
 
   it('returns user data merged with verifiedUser fields when email matches', async () => {
-    const email = 'user@example.com'
-    const user = await userFactory.create({ email })
+    const id = '00000000-0000-0000-0000-000000000000'
+    const user = await userFactory.create({ id })
 
     const verifiedUser = await verifiedUserFactory.create({
       id: user.id,
-      email,
     })
 
-    const result = await getFullUser({ userId: user.id, email })
+    const result = await getFullUser({ userId: user.id })
 
     expect(result).toEqual({
       ...user,
