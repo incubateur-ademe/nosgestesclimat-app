@@ -140,7 +140,7 @@ function ImpactTag({
   return (
     <span
       className={twMerge(
-        `rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
+        `inline-block rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
         className
       )}
       {...rest}>
