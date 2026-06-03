@@ -46,11 +46,11 @@ export const misc: Theme = {
 }
 
 export const themes: Theme[] = [
+  housing,
   food,
   transport,
-  societalServices,
-  housing,
   misc,
+  societalServices,
 ]
 
 export const themesById = Object.fromEntries(
