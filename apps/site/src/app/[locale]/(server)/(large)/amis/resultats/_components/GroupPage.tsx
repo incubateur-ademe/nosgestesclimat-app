@@ -5,7 +5,6 @@ import GroupLoader from '@/components/groups/GroupLoader'
 import GroupNotFound from '@/components/groups/GroupNotFound'
 import { useFetchGroup } from '@/hooks/groups/useFetchGroup'
 import { useGroupIdInQueryParams } from '@/hooks/groups/useGroupIdInQueryParams'
-import { useGroupPagesGuard } from '@/hooks/navigation/useGroupPagesGuard'
 import type { ReactNode } from 'react'
 import EditableGroupTitle from './EditableGroupTitle'
 import GroupResults from './GroupResults'
@@ -16,11 +15,6 @@ export default function GroupPage({
 }: {
   categoriesAccordion?: ReactNode
 }) {
-  // Guarding the route and redirecting if necessary
-  const { isGuardRedirecting } = useGroupPagesGuard({
-    isDashboard: true,
-  })
-
   const { groupIdInQueryParams } = useGroupIdInQueryParams()
   const {
     data: group,
@@ -28,8 +22,7 @@ export default function GroupPage({
     isError,
     refetch: refetchGroup,
   } = useFetchGroup(groupIdInQueryParams)
-  // If we are still fetching the group (or we are redirecting the user), we display a loader
-  if (isGuardRedirecting || isLoading) {
+  if (isLoading) {
     return <GroupLoader />
   }
 
