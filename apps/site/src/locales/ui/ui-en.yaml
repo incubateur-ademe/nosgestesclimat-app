@@ -1939,67 +1939,77 @@ entries:
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.default.lock: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
-  components.carousel.firstSlideMessage: This is the first slide
-  components.carousel.firstSlideMessage.lock: Ceci est la première diapo
-  actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
-  actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
   simulator.transition.alimentation.graph.arrowText: This graph gives you a better idea of the carbon impact of everything you eat
   simulator.transition.alimentation.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
+
+  components.carousel.firstSlideMessage: This is the first slide
+  components.carousel.firstSlideMessage.lock: Ceci est la première diapo
   components.carousel.nextSlideMessage: Next slide
   components.carousel.nextSlideMessage.lock: Diapo suivante
-  actions.detailPage.nav: Page navigation
-  actions.detailPage.nav.lock: Navigation de la page
-  components.carousel.roleDescription: Carousel
-  components.carousel.roleDescription.lock: Carrousel
-  actions.detailPage.sections.act: Taking action
-  actions.detailPage.sections.act.lock: J'agis
-  common.byDay: / day
-  common.byDay.lock: / jour
-  common.facultatif.uppercase: Optional
-  common.facultatif.uppercase.lock: Facultatif
-  actions.components.themeSection.description: '{count} recommended actions'
-  actions.components.themeSection.description.lock: '{count} actions recommandées'
-  actions.detailPage.404.title: Action not found
-  actions.detailPage.404.title.lock: Action non trouvée
-  actions.detailPage.tabs.act: Taking action
-  actions.detailPage.tabs.act.lock: J'agis
-  Passer: Go to
-  components.carousel.paginationBulletMessage: Go to slide {{index}}
-  components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
-  actions.detailPage.sections.furtherReading: Also worth discovering
-  actions.detailPage.sections.furtherReading.lock: À découvrir aussi
-  simulator.tutorial.letsGoButton.label: We're off!
-  simulator.tutorial.letsGoButton.label.lock: C'est parti !
-  actions.detailPage.tabs.furtherReading: Also worth discovering
-  actions.detailPage.tabs.furtherReading.lock: À découvrir aussi
-  components.carousel.itemRoleDescriptionMessage: Slide
-  components.carousel.itemRoleDescriptionMessage.lock: Diapo
-  actions.detailPage.tabs.understand: I understand
-  actions.detailPage.tabs.understand.lock: Je comprends
-  actions.listPage.title: Building my action plan
-  actions.listPage.title.lock: Construire mon plan d’action
   components.carousel.prevSlideMessage: Previous slide
   components.carousel.prevSlideMessage.lock: Diapo précédente
-  actions.detailPage.tabs.incentives: What's in it for me?
-  actions.detailPage.tabs.incentives.lock: J'y gagne
-  components.carousel.lastSlideMessage: This is the last slide
-  components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
-  simulator.age.inputLabel: What age bracket do you fall into?
-  simulator.age.inputLabel.lock: Dans quelle tranche d'âge vous situez-vous ?
-  actions.components.highestImpactActionsSection.title: The winning trio
-  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
+  components.carousel.paginationBulletMessage: Go to slide {{index}}
+  components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
+  components.carousel.itemRoleDescriptionMessage: Slide
+  components.carousel.itemRoleDescriptionMessage.lock: Diapo
+
+  actions.detailPage.nav: Page navigation
+  actions.detailPage.nav.lock: Navigation de la page
+  actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
+  actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
+  actions.detailPage.impact.title: Potential gains for your footprint
+  actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
+  actions.detailPage.impact.value.lock: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
+  actions.detailPage.sections.act: Taking action
+  actions.detailPage.sections.act.lock: J'agis
+  actions.detailPage.404.title: Action not found
+  actions.detailPage.404.title.lock: Action non trouvée
+  actions.detailPage.sections.furtherReading: Also worth discovering
+  actions.detailPage.sections.furtherReading.lock: À découvrir aussi
   actions.detailPage.sections.understand: I understand what's at stake
   actions.detailPage.sections.understand.lock: Je comprends l'enjeu
   actions.detailPage.sections.incentives: What's in it for me?
   actions.detailPage.sections.incentives.lock: J'y gagne
+  actions.listPage.title: Your personalised actions to reduce your footprint
+  actions.listPage.title.lock: Vos actions personnalisées pour diminuer votre empreinte
+  actions.listPage.description: These actions are personalised according to your answers to the test. Choose the ones you think are achievable and get started!
+  actions.listPage.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.components.actionCard.impactTag: Up to {{formattedValue}} {{unit}} CO<5>2</5>e/ year
+  actions.components.actionCard.impactTag.lock: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
+  actions.components.actionCard.noImpactTag: Non-quantifiable impact
+  actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
+  actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
+  actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
   actions.components.actionCard.link: View the "{action.title}" action
   actions.components.actionCard.link.lock: Voir l'action "{action.title}"
+  actions.components.highestImpactActionsSection.title: The winning trio
+  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
+  actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
+  actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
+  actions.components.themeSection.description_other: '{{count}} recommended actions'
+  actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
+  actions.components.themeSection.description_one: '{{count}} recommended action'
+  actions.components.themeSection.description_one.lock: '{{count}} action recommandée'
+  actions.components.themeSection.description_zero: No action recommended
+  actions.components.themeSection.description_zero.lock: Aucune action recommandée
+  components.carousel.roleDescription: Carousel
+  components.carousel.roleDescription.lock: Carrousel
+  common.byDay: / day
+  common.byDay.lock: / jour
+  common.facultatif.uppercase: Optional
+  common.facultatif.uppercase.lock: Facultatif
+  Passer: Go to
+  simulator.tutorial.letsGoButton.label: We're off!
+  simulator.tutorial.letsGoButton.label.lock: C'est parti !
+  components.carousel.lastSlideMessage: This is the last slide
+  components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
+  simulator.age.inputLabel: What age bracket do you fall into?
+  simulator.age.inputLabel.lock: Dans quelle tranche d'âge vous situez-vous ?
   simulator.age.metadata.title: Getting to know you better - Nos Gestes Climat
   simulator.age.metadata.title.lock: Pour mieux vous connaitre - Nos Gestes Climat
   simulator.age.title: Let's start with you. How old are you?
   simulator.age.title.lock: On commence par vous, quel est votre âge ?
-  actions.components.actionCard.impactTag: Up to {{formattedValue}} {{unit}} CO<5>2</5>e/ year
-  actions.components.actionCard.impactTag.lock: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   simulator.transition.housing.graph.arrowText: This graph gives you a better understanding of the carbon impact of different heating methods
   simulator.transition.housing.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   simulator.transition.divers.graph.arrowText: This graph shows the carbon footprint of all your digital devices
@@ -2008,20 +2018,8 @@ entries:
   simulator.age.metadata.description.lock: Une première question avant de calculer votre empreinte sur le climat.
   simulator.age.subtitle: We want to get to know our test participants better for statistical purposes.
   simulator.age.subtitle.lock: Nous cherchons à mieux connaître nos participants au test à des fins statistiques.
-  actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
-  actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
-  actions.listPage.description: The following actions are recommended based on your answers to the test.<1></1>Choose the ones that seem achievable - the most important thing is to get moving!
-  actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
   results.actions.afterLink.label: Discover my custom actions
   results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
-  actions.components.actionCard.noImpactTag: Non-quantifiable impact
-  actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
-  actions.detailPage.impact.title: Potential gains for your footprint
-  actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
-  actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
-  actions.detailPage.impact.value.lock: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
-  actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
-  actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
