@@ -1,22 +1,13 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { AGE_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { useFeatureFlag } from '@/hooks/useFeatureFlag'
 
-interface Props {
-  hasSelectedAgeRange?: boolean
-}
-
-export default function ButtonNext({ hasSelectedAgeRange }: Props) {
-  const redirectToAgePage =
-    useFeatureFlag('ab-test-question-tranche-dage') === 'test' &&
-    !hasSelectedAgeRange
-
+export default function ButtonNext() {
   return (
     <ButtonLink
-      href={redirectToAgePage ? AGE_PAGE_PATH : SIMULATOR_PATH}
+      href={SIMULATOR_PATH}
       data-testid="skip-tutorial-button"
       className="min-w-42!">
       <Trans i18nKey="simulator.tutorial.letsGoButton.label">

@@ -5,7 +5,6 @@ import {
   getCompletedSimulations,
   getCurrentSimulation,
 } from '@/helpers/server/model/simulations'
-import { getUserAgeRange } from '@/services/users/get-user-age-range'
 import { redirect } from 'next/navigation'
 import Tutorial from '../_components/Tutorial'
 import ButtonNext from './_components/ButtonNext'
@@ -16,13 +15,10 @@ export default async function TutorielPage({
   const { locale } = await params
   const user = await getUser()
 
-  const [currentSimulation, completedSimulations, ageRange] = await Promise.all(
-    [
-      getCurrentSimulation({ user }),
-      getCompletedSimulations({ user }, { pageSize: 1 }),
-      getUserAgeRange(),
-    ]
-  )
+  const [currentSimulation, completedSimulations] = await Promise.all([
+    getCurrentSimulation({ user }),
+    getCompletedSimulations({ user }, { pageSize: 1 }),
+  ])
 
   if (!currentSimulation) {
     redirect('/')
@@ -35,10 +31,7 @@ export default async function TutorielPage({
     <>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
 
-      <Tutorial
-        locale={locale}
-        buttonNext={<ButtonNext hasSelectedAgeRange={!!ageRange} />}
-      />
+      <Tutorial locale={locale} buttonNext={<ButtonNext />} />
     </>
   )
 }
