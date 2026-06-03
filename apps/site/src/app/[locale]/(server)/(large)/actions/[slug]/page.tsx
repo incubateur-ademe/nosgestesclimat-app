@@ -148,7 +148,9 @@ export default async function ActionPage({ params }: Props) {
                 Je comprends l'enjeu
               </Trans>
             </SectionTitle>
-            <Markdown>{action.longDescription}</Markdown>
+            <Markdown forceTargetBlankOnExternalLinks>
+              {action.longDescription}
+            </Markdown>
           </div>
           {action.media ? (
             <ActionMedia
@@ -165,7 +167,7 @@ export default async function ActionPage({ params }: Props) {
                 J'agis
               </Trans>
             </SectionTitle>
-            <Markdown>{action.tips}</Markdown>
+            <Markdown forceTargetBlankOnExternalLinks>{action.tips}</Markdown>
           </Section>
         ) : null}
         {action.financialIncentives ? (
@@ -177,7 +179,9 @@ export default async function ActionPage({ params }: Props) {
                 J'y gagne
               </Trans>
             </SectionTitle>
-            <Markdown>{action.financialIncentives}</Markdown>
+            <Markdown forceTargetBlankOnExternalLinks>
+              {action.financialIncentives}
+            </Markdown>
           </Section>
         ) : null}
         {action.furtherExplore ? (
@@ -189,7 +193,9 @@ export default async function ActionPage({ params }: Props) {
                 À découvrir aussi
               </Trans>
             </SectionTitle>
-            <Markdown>{action.furtherExplore}</Markdown>
+            <Markdown forceTargetBlankOnExternalLinks>
+              {action.furtherExplore}
+            </Markdown>
           </Section>
         ) : null}
       </div>

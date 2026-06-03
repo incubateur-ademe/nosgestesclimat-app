@@ -8,7 +8,9 @@ import type {
 } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-interface Props {
+export interface LinkProps extends PropsWithChildren<
+  HTMLAttributes<HTMLAnchorElement>
+> {
   href: string
   className?: string
   onClick?: MouseEventHandler<HTMLAnchorElement>
@@ -24,7 +26,7 @@ export default function Link({
   title,
   target,
   ...props
-}: PropsWithChildren<HTMLAttributes<HTMLAnchorElement> & Props>) {
+}: LinkProps) {
   return (
     <NextLink
       href={href}
