@@ -2,7 +2,6 @@ import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json'
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
 import type { NGCTest } from '../fixtures/ngc-test'
-import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
 
 test.setTimeout(250_000)
 for (const persona of Object.values(personas)) {
@@ -47,6 +46,10 @@ test.describe('It should be possible to deselect an answer', () => {
 
 /**
  * Helper function to test deselection behavior for any question type
+ *
+ * Radio inputs follow standard HTML behavior: clicking an already-selected
+ * option does NOT deselect it. The only way to skip a question is via
+ * the "Je ne sais pas" button.
  */
 async function testDeselectAnswer(
   ngcTest: NGCTest,
@@ -60,30 +63,20 @@ async function testDeselectAnswer(
     await ngcTest.skipButton().click()
   }
 
-  //  2. Récupérer la valeur du bilan
-  await page.waitForTimeout(1000)
-  const carbonFootprintValueBeforeChange =
-    await getCarbonFootprintElem(page).innerText()
-
-  //  3. Selectionner une réponse
+  //  2. Selectionner une réponse
   const answerInput = getAnswerInput()
   await answerInput.click()
 
-  //  4. Vérifier que le bouton suivant est affiché
+  //  3. Vérifier que le bouton suivant est affiché
   await expect(ngcTest.page.getByTestId('next-question-button')).toBeVisible()
-  //  5. Recliquer sur l'element (input) en question
+
+  //  4. Recliquer sur le même élément : ne doit PAS désélectionner
+  //     (comportement standard des radios HTML)
   await answerInput.click()
 
-  //  6. Vérifier que la valeur du bilan est identique au 2.
-  await page.waitForTimeout(2000)
-  const carbonFootprintValueAfterChange = getCarbonFootprintElem(page)
-
-  await expect(carbonFootprintValueAfterChange).toHaveText(
-    carbonFootprintValueBeforeChange
-  )
-
-  //  7. Vérifier que le bouton « je ne sais pas » est affiché
-  await expect(ngcTest.page.getByTestId('skip-question-button')).toBeVisible()
+  //  5. Vérifier que le bouton suivant est toujours affiché
+  //     (la réponse est toujours sélectionnée)
+  await expect(ngcTest.page.getByTestId('next-question-button')).toBeVisible()
 }
 
 test.describe('It should be possible to click "Je ne sais pas" after answering (NGC-3320)', () => {

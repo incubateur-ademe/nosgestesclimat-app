@@ -78,13 +78,8 @@ export default function ChoicesInput(props: Props) {
             choice={choice}
             active={currentValue === choice}
             setValue={(choice: string | number) => {
-              if (currentValue === choice) {
-                setCurrentValue(undefined)
-                requestIdleCallback(() => setValue(undefined))
-              } else {
-                setCurrentValue(choice)
-                requestIdleCallback(() => setValue(String(choice)))
-              }
+              setCurrentValue(choice)
+              requestIdleCallback(() => setValue(String(choice)))
             }}
             isWithinGrid={isGrid}
             {...otherProps}

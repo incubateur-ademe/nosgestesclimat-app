@@ -31,13 +31,8 @@ export default function BooleanInput({
         labelText={t('Oui')}
         active={currentValue === true}
         onClick={() => {
-          if (currentValue === true) {
-            setCurrentValue(undefined)
-            requestIdleCallback(() => setValue(undefined))
-          } else {
-            setCurrentValue(true)
-            requestIdleCallback(() => setValue('oui'))
-          }
+          setCurrentValue(true)
+          requestIdleCallback(() => setValue('oui'))
         }}
         {...props}
         data-testid={`${props['data-testid']}-oui`}
@@ -49,13 +44,8 @@ export default function BooleanInput({
         labelText={t('Non')}
         active={currentValue === false}
         onClick={() => {
-          if (currentValue === false) {
-            setCurrentValue(undefined)
-            requestIdleCallback(() => setValue(undefined))
-          } else {
-            setCurrentValue(false)
-            requestIdleCallback(() => setValue('non'))
-          }
+          setCurrentValue(false)
+          requestIdleCallback(() => setValue('non'))
         }}
         {...props}
         data-testid={`${props['data-testid']}-non`}
