@@ -7,12 +7,9 @@ import {
   MON_ESPACE_ACTIONS_PATH,
 } from '@/constants/urls/paths'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
-import type { TabItem } from '@/design-system/layout/Tabs'
-import Tabs from '@/design-system/layout/Tabs'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
@@ -79,71 +76,7 @@ export default async function ActionPage({ params }: Props) {
       })
     : null
 
-  const { t } = await getServerTranslation({ locale })
-
   const themeClasses = classNames[action.theme.key]
-
-  const tabsItems: TabItem[] = [
-    {
-      id: 'understand',
-      label: (
-        <span>
-          <Emoji className="mr-1 hidden md:inline">💡</Emoji>
-          <Trans locale={locale} i18nKey="actions.detailPage.tabs.understand">
-            Je comprends
-          </Trans>
-        </span>
-      ),
-      href: `#${SECTION_ID_I_UNDERSTAND}`,
-    },
-  ]
-
-  if (action.tips) {
-    tabsItems.push({
-      id: 'act',
-      label: (
-        <span>
-          <Emoji className="mr-1 hidden md:inline">▶️</Emoji>
-          <Trans locale={locale} i18nKey="actions.detailPage.tabs.act">
-            J'agis
-          </Trans>
-        </span>
-      ),
-      href: `#${SECTION_ID_I_ACT}`,
-    })
-  }
-
-  if (action.financialIncentives) {
-    tabsItems.push({
-      id: 'incentives',
-      label: (
-        <span>
-          <Emoji className="mr-1 hidden md:inline">💰</Emoji>
-          <Trans locale={locale} i18nKey="actions.detailPage.tabs.incentives">
-            J'y gagne
-          </Trans>
-        </span>
-      ),
-      href: `#${SECTION_ID_I_BENEFIT}`,
-    })
-  }
-
-  if (action.furtherExplore) {
-    tabsItems.push({
-      id: 'further-reading',
-      label: (
-        <span>
-          <Emoji className="mr-1 hidden md:inline">📖</Emoji>
-          <Trans
-            locale={locale}
-            i18nKey="actions.detailPage.tabs.furtherReading">
-            À découvrir aussi
-          </Trans>
-        </span>
-      ),
-      href: `#${SECTION_ID_FURTHER_READING}`,
-    })
-  }
 
   return (
     <div className="pt-2">
@@ -201,14 +134,6 @@ export default async function ActionPage({ params }: Props) {
           </div>
         ) : null}
       </header>
-
-      <div className="flex items-start overflow-scroll md:overflow-auto">
-        <Tabs
-          items={tabsItems}
-          className="mb-10 whitespace-nowrap"
-          ariaLabel={t('actions.detailPage.nav', 'Navigation de la page')}
-        />
-      </div>
 
       <div className="mb-10 grid gap-10 md:grid-cols-2 [&>*:last-child:nth-child(even)]:col-span-full">
         <Section

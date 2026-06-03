@@ -866,10 +866,6 @@ entries:
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
-  actions.detailPage.tabs.understand: Je comprends
-  actions.detailPage.tabs.act: J'agis
-  actions.detailPage.tabs.incentives: J'y gagne
-  actions.detailPage.tabs.furtherReading: À découvrir aussi
   actions.detailPage.nav: Navigation de la page
   actions.detailPage.sections.understand: Je comprends l'enjeu
   actions.detailPage.sections.act: J'agis
