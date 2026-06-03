@@ -11,7 +11,6 @@ import { useIsGroupOwner } from '@/hooks/groups/useIsGroupOwner'
 import { useUser } from '@/publicodes-state'
 import type { Group, Results } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
-import type { QueryObserverResult } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import InviteBlock from './groupResults/InviteBlock'
@@ -22,11 +21,9 @@ import Ranking from './groupResults/Ranking'
 
 export default function GroupResults({
   group,
-  refetchGroup,
   categoriesAccordion,
 }: {
   group: Group
-  refetchGroup: () => Promise<QueryObserverResult<Group, Error>>
   categoriesAccordion?: ReactNode
 }) {
   const { user } = useUser()
@@ -56,11 +53,7 @@ export default function GroupResults({
         />
       </div>
 
-      <Ranking
-        group={group}
-        refetchGroup={refetchGroup}
-        metric={footprintSelected}
-      />
+      <Ranking group={group} metric={footprintSelected} />
 
       <InviteBlock group={group} />
 

@@ -14,8 +14,8 @@ import { useUser } from '@/publicodes-state'
 import type { Group, Participant } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import { captureException } from '@sentry/nextjs'
-import type { QueryObserverResult } from '@tanstack/react-query'
 import isMobile from 'is-mobile'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -39,7 +39,6 @@ export default function RankingMember({
   isCurrentMember,
   group,
   numberOfParticipants,
-  refetchGroup,
   textColor,
   metric,
 }: {
@@ -48,7 +47,6 @@ export default function RankingMember({
   isCurrentMember?: boolean
   group: Group
   numberOfParticipants?: number
-  refetchGroup: () => Promise<QueryObserverResult<Group, Error>>
   textColor?: string
   participant: Participant
   metric: Metrics
@@ -61,6 +59,8 @@ export default function RankingMember({
   const { t } = useClientTranslation()
 
   const shouldUseAbbreviation = isMobile()
+
+  const router = useRouter()
 
   const { isGroupOwner } = useIsGroupOwner({ group })
 
@@ -102,7 +102,7 @@ export default function RankingMember({
         userId,
       })
 
-      await refetchGroup()
+      router.refresh()
 
       setIsConfirmationModalOpen(false)
     } catch (error) {

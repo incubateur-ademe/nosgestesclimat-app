@@ -16,6 +16,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function EditableGroupTitle({ group }: { group: Group }) {
@@ -26,20 +27,24 @@ export default function EditableGroupTitle({ group }: { group: Group }) {
 
   const { t } = useClientTranslation()
 
-  const { mutate: updateGroup } = useUpdateGroup()
+  const { mutateAsync: updateGroup } = useUpdateGroup()
+
+  const router = useRouter()
 
   const { isGroupOwner } = useIsGroupOwner({ group })
 
-  const handleSubmit = (groupNameUpdated: string) => {
+  const handleSubmit = async (groupNameUpdated: string) => {
     setIsSubmitting(true)
     try {
-      updateGroup({
+      await updateGroup({
         groupId: formattedGroupId,
         name: groupNameUpdated,
       })
 
       setIsSubmitting(false)
       setIsEditingTitle(false)
+
+      router.refresh()
     } catch (e) {
       captureException(e)
     }

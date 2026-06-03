@@ -16,7 +16,7 @@ export default async function GroupResultsPage({
 }: DefaultPageProps<{ searchParams: Promise<{ groupId: string }> }>) {
   const locale = (await params).locale
 
-  const [{ user, userSimulation }, rules] = await Promise.all([
+  const [{ user, userSimulation, group }, rules] = await Promise.all([
     groupResultsGuard(searchParams),
     getCachedRules({ locale }),
   ])
@@ -28,6 +28,7 @@ export default async function GroupResultsPage({
         href={user.isAuth ? MON_ESPACE_GROUPS_PATH : END_PAGE_GROUPS_PATH}
       />
       <GroupPage
+        group={group}
         categoriesAccordion={
           <CategoriesAccordion
             locale={locale}

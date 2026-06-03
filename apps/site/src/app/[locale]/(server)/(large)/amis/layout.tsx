@@ -1,15 +1,19 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import { getUser } from '@/helpers/server/dal/user'
+import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { UserProvider } from '@/publicodes-state'
 
 export default async function Layout({
   children,
 }: LayoutProps<'/[locale]/amis'>) {
-  const { id: initialUserId } = await getUser()
+  const user = await getUser()
+  const simulations = await getCompletedSimulations({ user })
 
   return (
     <QueryClientProviderWrapper>
-      <UserProvider serverUserId={initialUserId}>{children}</UserProvider>
+      <UserProvider serverSimulations={simulations} serverUserId={user.id}>
+        {children}
+      </UserProvider>
     </QueryClientProviderWrapper>
   )
 }
