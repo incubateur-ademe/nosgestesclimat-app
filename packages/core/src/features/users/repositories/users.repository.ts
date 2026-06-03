@@ -7,8 +7,9 @@ export const findUser = async (userId: string): Promise<User | null> =>
   })
 
 export const findVerifiedUser = async (
-  email: string
+  userId: string
 ): Promise<VerifiedUser | null> =>
-  prisma.verifiedUser.findUnique({
-    where: { email },
+  // id is not @unique, can't be used with findUnique
+  prisma.verifiedUser.findFirst({
+    where: { id: userId },
   })

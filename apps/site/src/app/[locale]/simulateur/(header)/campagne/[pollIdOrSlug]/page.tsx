@@ -8,7 +8,7 @@ import {
   getCurrentSimulation,
 } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { posthogClient } from '@/services/tracking/posthogServer'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import { getNewSimulationModelService } from '../../../_service/getNewSimulationModelService'
@@ -34,7 +34,7 @@ export default async function CampagnePage({
         getUserPoll({ user, pollIdOrSlug }),
         getCompletedSimulations({ user }, { pageSize: 1 }),
         getCurrentSimulation({ user }),
-        posthogClient.getFeatureFlag('ab-test-question-tranche-dage', user.id),
+        getFeatureFlag('ab-test-question-tranche-dage', user.id),
       ])
     )
 
