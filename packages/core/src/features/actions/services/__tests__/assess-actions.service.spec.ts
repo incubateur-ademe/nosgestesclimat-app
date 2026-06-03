@@ -54,7 +54,7 @@ describe('compute action assessments service', () => {
         .create(),
     ])
 
-    await assessActions(engine, simulation.id)
+    await assessActions(engine, simulation.id, null)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -82,7 +82,7 @@ describe('compute action assessments service', () => {
       .published()
       .create()
 
-    await assessActions(engine, simulation.id)
+    await assessActions(engine, simulation.id, null)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -92,7 +92,7 @@ describe('compute action assessments service', () => {
   })
 
   it('does not crash when there are no visible actions', async () => {
-    await assessActions(engine, simulation.id)
+    await assessActions(engine, simulation.id, null)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -110,7 +110,7 @@ describe('compute action assessments service', () => {
       throw new Error('Engine evaluation failed')
     })
 
-    await assessActions(engine, simulation.id)
+    await assessActions(engine, simulation.id, null)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -121,7 +121,7 @@ describe('compute action assessments service', () => {
   it('skips actions whose nodeValue is an unexpected type', async () => {
     await actionFactory.params({ ruleId: BOOLEAN_RULE_ID }).published().create()
 
-    await assessActions(engine, simulation.id)
+    await assessActions(engine, simulation.id, null)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },

@@ -23,6 +23,7 @@ import { getPersonalizedActionDetails } from '@nosgestesclimat/core/features/act
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
+import ActionConsultedTracker from './_components/ActionConsultedTracker'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
 
@@ -144,6 +145,11 @@ export default async function ActionPage({ params }: Props) {
 
   return (
     <div>
+      <ActionConsultedTracker
+        actionTrackingId={action.trackingId}
+        actionThemeTrackingId={action.theme.trackingId}
+        co2PotentialInKg={action.assessment?.impact}
+      />
       <GoBackLink
         href={user.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
         className="mb-10"

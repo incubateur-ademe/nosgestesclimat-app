@@ -1,12 +1,13 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { Theme } from '@/types/themes'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/publicodes-computation/types/computation'
 import { twMerge } from 'tailwind-merge'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
+import ActionsPageTracker from './ActionsPageTracker'
 
 interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
   topActions?: PersonalizedAction[]
@@ -29,6 +30,7 @@ export default function ActionsPage({
 
   return (
     <div {...props} className={twMerge('pb-24', className)}>
+      <ActionsPageTracker actions={actions} topActions={topActions} />
       <div className="mb-10">
         <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
           <Trans locale={locale} i18nKey="actions.listPage.title">

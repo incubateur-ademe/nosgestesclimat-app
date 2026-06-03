@@ -7,7 +7,8 @@ export async function register() {
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     await import('../sentry.server.config')
-    const { posthogClient } = await import('./services/tracking/posthogServer')
+    const { posthogClient } =
+      await import('@nosgestesclimat/core/features/tracking/client')
 
     async function shutdown() {
       try {

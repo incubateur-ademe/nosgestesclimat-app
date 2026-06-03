@@ -318,3 +318,43 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
     googleTagCookie: cookieState?.googleTag,
   },
 })
+
+// Actions v2
+
+export const capturePersonalizedActionListViewed = ({
+  actionCountByThemeTrackingId,
+  topActionTrackingIds,
+}: {
+  actionCountByThemeTrackingId: Record<string, number>
+  topActionTrackingIds: (string | undefined)[]
+}) => ({
+  eventName: 'personalized action list viewed',
+  properties: {
+    ...Object.fromEntries(
+      Object.entries(actionCountByThemeTrackingId).map(([theme, count]) => [
+        `actions_${theme}_count`,
+        count,
+      ])
+    ),
+    action_top_1: topActionTrackingIds[0],
+    action_top_2: topActionTrackingIds[1],
+    action_top_3: topActionTrackingIds[2],
+  },
+})
+
+export const captureActionConsulted = ({
+  actionTrackingId,
+  actionThemeTrackingId,
+  co2PotentialInKg,
+}: {
+  actionTrackingId: string
+  actionThemeTrackingId: string
+  co2PotentialInKg?: number
+}) => ({
+  eventName: 'action consulted',
+  properties: {
+    action_name: actionTrackingId,
+    action_theme: actionThemeTrackingId,
+    co2_potential_kg: co2PotentialInKg,
+  },
+})

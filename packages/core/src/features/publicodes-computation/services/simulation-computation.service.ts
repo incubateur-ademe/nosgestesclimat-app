@@ -18,5 +18,5 @@ export const computeDerivedSimulationData = async (
     simulation.situation as Parameters<typeof engine.setSituation>[0]
   )
 
-  await assessActions(engine, simulationId)
+  await assessActions(engine, simulationId, simulation.userId)
 }
