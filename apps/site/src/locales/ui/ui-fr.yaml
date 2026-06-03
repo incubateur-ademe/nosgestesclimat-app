@@ -875,7 +875,7 @@ entries:
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.components.actionCard.link: Voir l'action "{action.title}"
+  actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.noImpactTag: Impact non quantifiable
   actions.components.actionCard.impactAssessmentInProgress: En cours de calcul

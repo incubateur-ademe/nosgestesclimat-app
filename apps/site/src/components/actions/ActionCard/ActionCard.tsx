@@ -72,7 +72,7 @@ export default function ActionCard({
             locale={locale}
             i18nKey="actions.components.actionCard.link"
             values={{ actionTitle: action.title }}>
-            Voir l'action "{action.title}"
+            Voir l'action "{'{{actionTitle}}'}"
           </Trans>
         </span>
       </Link>

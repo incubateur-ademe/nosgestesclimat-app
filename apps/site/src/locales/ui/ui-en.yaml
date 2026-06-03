@@ -1981,8 +1981,8 @@ entries:
   actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
   actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
   actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
-  actions.components.actionCard.link: View the "{action.title}" action
-  actions.components.actionCard.link.lock: Voir l'action "{action.title}"
+  actions.components.actionCard.link: View the "{{actionTitle}}" action
+  actions.components.actionCard.link.lock: Voir l'action "{{actionTitle}}"
   actions.components.highestImpactActionsSection.title: The winning trio
   actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
