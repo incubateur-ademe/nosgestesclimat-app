@@ -1,6 +1,5 @@
 import type Engine from 'publicodes'
 import { log } from '../../logger/index.ts'
-import { posthogClient } from '../../tracking/client.ts'
 import { ActionAssessmentPublicodesException } from '../exceptions/action-assessment.exception.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
 import { findAllActions } from '../repositories/actions.repository.ts'
@@ -21,8 +20,7 @@ const buildRuleIdToDottedName = (engine: Engine): Map<string, string> => {
 
 export const assessActions = async (
   engine: Engine,
-  simulationId: string,
-  userId: string | null
+  simulationId: string
 ): Promise<void> => {
   const actions = await findAllActions()
 
@@ -66,7 +64,7 @@ export const assessActions = async (
           return {
             ...assessment,
             applicable: true as const,
-            impact: nodeValue || undefined, // 0 encodes for impact not evaluable, hence the `||`
+            impact: nodeValue || undefined,
           }
         } else if (nodeValue === null || nodeValue === false) {
           return {
@@ -100,21 +98,5 @@ export const assessActions = async (
 
   if (assessments.length > 0) {
     await createActionAssessments(assessments)
-  }
-
-  if (userId) {
-    for (const assessment of assessments) {
-      if (!assessment.applicable) continue
-      const action = actions.find((a) => a.id === assessment.actionId)
-      if (!action) continue
-      posthogClient.track(userId, {
-        name: 'action recommended',
-        properties: {
-          action_name: action.trackingId,
-          action_theme: action.theme.trackingId,
-          co2_potential_kg: assessment.impact,
-        },
-      })
-    }
   }
 }

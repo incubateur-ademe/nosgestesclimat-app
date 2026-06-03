@@ -57,7 +57,7 @@ describe('compute action assessments service', () => {
         .create(),
     ])
 
-    await assessActions(engine, simulation.id, null)
+    await assessActions(engine, simulation.id)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -85,7 +85,7 @@ describe('compute action assessments service', () => {
       .published()
       .create()
 
-    await assessActions(engine, simulation.id, null)
+    await assessActions(engine, simulation.id)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -104,7 +104,7 @@ describe('compute action assessments service', () => {
       throw new Error('Engine evaluation failed')
     })
 
-    await assessActions(engine, simulation.id, null)
+    await assessActions(engine, simulation.id)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -115,7 +115,7 @@ describe('compute action assessments service', () => {
   it('skips actions whose nodeValue is an unexpected type', async () => {
     await actionFactory.params({ ruleId: BOOLEAN_RULE_ID }).published().create()
 
-    await assessActions(engine, simulation.id, null)
+    await assessActions(engine, simulation.id)
 
     const assessments = await prisma.actionAssessment.findMany({
       where: { simulationId: simulation.id },
@@ -125,9 +125,9 @@ describe('compute action assessments service', () => {
 
   describe('throws ActionAssessmentPublicodesException', () => {
     it('when there are no actions in database', async () => {
-      await expect(
-        assessActions(engine, simulation.id, simulation.userId)
-      ).rejects.toThrow(ActionAssessmentPublicodesException)
+      await expect(assessActions(engine, simulation.id)).rejects.toThrow(
+        ActionAssessmentPublicodesException
+      )
     })
 
     it('when no publicodes rules have meta.id', async () => {
@@ -141,7 +141,7 @@ describe('compute action assessments service', () => {
         .create()
 
       await expect(
-        assessActions(engineWithoutMeta, simulation.id, null)
+        assessActions(engineWithoutMeta, simulation.id)
       ).rejects.toThrow(ActionAssessmentPublicodesException)
     })
   })

@@ -1,6 +1,8 @@
+'use client'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
-
+import posthog from 'posthog-js'
+import { v5 as uuidv5 } from 'uuid'
 interface PosthogProps {
   question?: DottedName | null
   action?: DottedName
@@ -321,40 +323,31 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
 
 // Actions v2
 
-export const capturePersonalizedActionListViewed = ({
-  actionCountByThemeTrackingId,
-  topActionTrackingIds,
-}: {
-  actionCountByThemeTrackingId: Record<string, number>
-  topActionTrackingIds: (string | undefined)[]
-}) => ({
-  eventName: 'personalized action list viewed',
-  properties: {
-    ...Object.fromEntries(
-      Object.entries(actionCountByThemeTrackingId).map(([theme, count]) => [
-        `actions_${theme}_count`,
-        count,
-      ])
-    ),
-    action_top_1: topActionTrackingIds[0],
-    action_top_2: topActionTrackingIds[1],
-    action_top_3: topActionTrackingIds[2],
-  },
-})
-
-export const captureActionConsulted = ({
+export const captureAction = ({
   actionTrackingId,
   actionThemeTrackingId,
   co2PotentialInKg,
+  eventName,
 }: {
   actionTrackingId: string
   actionThemeTrackingId: string
   co2PotentialInKg?: number
-}) => ({
-  eventName: 'action consulted',
-  properties: {
-    action_name: actionTrackingId,
-    action_theme: actionThemeTrackingId,
-    co2_potential_kg: co2PotentialInKg,
-  },
-})
+  eventName: 'action displayed' | 'action consulted'
+}) => {
+  let uuid: string | undefined
+  if (eventName === 'action displayed') {
+    // We deduplicate the event, once per session
+    const sessionId = posthog.get_session_id()
+    uuid = uuidv5(`${eventName}:${actionTrackingId}:${sessionId}`, uuidv5.DNS)
+  }
+
+  posthog.capture(
+    eventName,
+    {
+      action_name: actionTrackingId,
+      action_theme: actionThemeTrackingId,
+      co2_potential_kg: co2PotentialInKg,
+    },
+    { uuid }
+  )
+}

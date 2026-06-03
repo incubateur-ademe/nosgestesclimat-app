@@ -1,11 +1,8 @@
 import { PostHog } from 'posthog-node'
-import type { TrackingEvent } from './types/event.ts'
 
 type FeatureFlagValue = string | boolean
 
-// TODO: Split tracking and feature flag
-// TODO: Abstract Posthog behind interfaces
-class PosthogClient {
+class PosthogServer {
   private readonly client: PostHog
 
   constructor(key: string, host: string, personalApiKey?: string) {
@@ -15,14 +12,6 @@ class PosthogClient {
       personalApiKey,
       flushAt: 1,
       flushInterval: 0,
-    })
-  }
-
-  track(distinctId: string, event: TrackingEvent) {
-    this.client.capture({
-      distinctId,
-      event: event.name,
-      properties: event.properties,
     })
   }
 
@@ -38,23 +27,24 @@ class PosthogClient {
   }
 }
 
-class PosthogClientNoop {
+class PosthogServerNoop {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   track() {}
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async getFeatureFlag(): Promise<FeatureFlagValue | undefined> {
     return true
-    // return undefined
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async shutdown(): Promise<void> {}
 }
 
 export const posthogClient =
   process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST
-    ? new PosthogClient(
+    ? new PosthogServer(
         process.env.NEXT_PUBLIC_POSTHOG_KEY,
         process.env.NEXT_PUBLIC_POSTHOG_HOST,
         process.env.POSTHOG_PERSONAL_API_KEY ?? undefined
       )
-    : new PosthogClientNoop()
+    : new PosthogServerNoop()

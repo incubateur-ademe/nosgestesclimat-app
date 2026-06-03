@@ -1,4 +1,4 @@
-import { posthogClient } from '@nosgestesclimat/core/features/tracking/client'
+import { posthogClient } from '@/services/tracking/posthogServer'
 import { cookies } from 'next/headers'
 import { FF_COOKIE_NAME } from './constants'
 import type { FeatureFlagName, FeatureFlagValue } from './flags'

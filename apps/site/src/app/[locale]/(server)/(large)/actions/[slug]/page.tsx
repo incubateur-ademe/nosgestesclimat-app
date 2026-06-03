@@ -1,3 +1,4 @@
+import ActionTracker from '@/components/actions/ActionTracker'
 import BetaBanner from '@/components/actions/BetaBanner'
 import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
@@ -24,7 +25,6 @@ import { getPersonalizedActionDetails } from '@nosgestesclimat/core/features/act
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
-import ActionConsultedTracker from './_components/ActionConsultedTracker'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
 
@@ -147,7 +147,7 @@ export default async function ActionPage({ params }: Props) {
   return (
     <div className="pt-2">
       <BetaBanner locale={locale} />
-      <ActionConsultedTracker action={action} />
+      <ActionTracker eventName="consulted" action={action} />
       <GoBackLink
         href={user.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
         className="mb-10"
