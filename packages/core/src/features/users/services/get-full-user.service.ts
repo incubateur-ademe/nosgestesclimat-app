@@ -3,10 +3,8 @@ import type { FullUser } from '../types/user.ts'
 
 export const getFullUser = async ({
   userId,
-  email,
 }: {
   userId: string
-  email?: string
 }): Promise<FullUser | null> => {
   const [user, verifiedUser] = await Promise.all([
     findUser(userId),

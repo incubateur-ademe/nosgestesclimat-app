@@ -7,9 +7,7 @@ import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-ra
 export async function getUserAgeRange(): Promise<AgeRange | null> {
   const user = await getUser()
 
-  const fullUser = await getFullUser(
-    user.isAuth ? { userId: user.id, email: user.email } : { userId: user.id }
-  )
+  const fullUser = await getFullUser({ userId: user.id })
 
   return fullUser?.ageRange ?? null
 }

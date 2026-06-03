@@ -19,7 +19,7 @@ describe('getFullUser', () => {
     expect(result).toBeNull()
   })
 
-  it('returns user data when userId exists and no email is provided', async () => {
+  it('returns user data when only a user exists', async () => {
     const user = await userFactory.create()
 
     const result = await getFullUser({ userId: user.id })
@@ -32,7 +32,7 @@ describe('getFullUser', () => {
     })
   })
 
-  it('returns user data merged with verifiedUser fields when email matches', async () => {
+  it('returns user data merged with verifiedUser fields when a verified user with the same userId exists', async () => {
     const id = '00000000-0000-0000-0000-000000000000'
     const user = await userFactory.create({ id })
 
@@ -47,22 +47,6 @@ describe('getFullUser', () => {
       telephone: verifiedUser.telephone,
       position: verifiedUser.position,
       optedInForCommunications: verifiedUser.optedInForCommunications,
-    })
-  })
-
-  it('returns user data with null/false defaults when email is provided but no verifiedUser exists', async () => {
-    const user = await userFactory.create()
-
-    const result = await getFullUser({
-      userId: user.id,
-      email: 'non-existent@example.com',
-    })
-
-    expect(result).toEqual({
-      ...user,
-      telephone: null,
-      position: null,
-      optedInForCommunications: false,
     })
   })
 })
