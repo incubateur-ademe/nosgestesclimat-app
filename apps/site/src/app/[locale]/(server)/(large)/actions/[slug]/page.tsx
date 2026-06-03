@@ -1,3 +1,4 @@
+import BetaBanner from '@/components/actions/BetaBanner'
 import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import {
@@ -143,7 +144,8 @@ export default async function ActionPage({ params }: Props) {
   }
 
   return (
-    <div>
+    <div className="pt-2">
+      <BetaBanner locale={locale} />
       <GoBackLink
         href={user.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
         className="mb-10"
