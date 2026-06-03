@@ -1,5 +1,6 @@
 import { carboneMetric, eauMetric } from '@/constants/model/metric'
 import type { ComputedResults } from '@/publicodes-state/types'
+import { postMessageToReactNative } from './postMessageToReactNative'
 
 export function shareDataWithIntegrator(computedResults: ComputedResults) {
   const sharedData = {
@@ -14,8 +15,12 @@ export function shareDataWithIntegrator(computedResults: ComputedResults) {
     },
   }
 
-  window.parent.postMessage(
-    { messageType: 'ngc-iframe-share', data: sharedData },
-    '*'
-  )
+  const message = {
+    messageType: 'ngc-iframe-share',
+    data: sharedData,
+  }
+
+  window.parent.postMessage(message, '*')
+
+  postMessageToReactNative(message)
 }

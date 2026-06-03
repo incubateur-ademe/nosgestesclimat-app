@@ -152,6 +152,25 @@ describe('IframeDataShareModal', () => {
         ).not.toBeInTheDocument()
         expect(document.body.style.overflow).toBe('auto')
       })
+
+      it('sends the error message to React Native WebView when rejecting and ReactNativeWebView is present', () => {
+        const mockRnPostMessage = vi.fn()
+        window.parent.postMessage = vi.fn()
+        ;(window as any).ReactNativeWebView = { postMessage: mockRnPostMessage }
+
+        fireEvent.click(screen.getByTestId('iframe-datashare-refuser'))
+
+        expect(mockRnPostMessage).toHaveBeenCalledTimes(1)
+        expect(mockRnPostMessage).toHaveBeenCalledWith(
+          JSON.stringify({
+            messageType: 'ngc-iframe-share',
+            error: 'The user refused to share his result.',
+          })
+        )
+
+        // Clean up the global we added
+        delete (window as any).ReactNativeWebView
+      })
     })
   })
 
