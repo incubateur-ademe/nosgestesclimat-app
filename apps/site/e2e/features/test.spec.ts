@@ -64,17 +64,14 @@ async function testSkipAfterAnswer(
   const questionLabel = page.getByTestId('question-label')
 
   while (!(await isQuestionType())) {
-    const previousText = await questionLabel.textContent()
+    const previousText = (await questionLabel.textContent()) ?? ''
     await ngcTest.skipButton().click()
     // Guard: fail cleanly instead of looping if we hit the last question
-    await expect(async () => {
-      const newText = await questionLabel.textContent()
-      expect(newText).not.toBe(previousText)
-    }).toPass({ timeout: 5_000 })
+    await expect(questionLabel).not.toHaveText(previousText, { timeout: 5_000 })
   }
 
   // 2. Capture current question text to verify it changes later
-  const initialQuestionText = await questionLabel.textContent()
+  const initialQuestionText = (await questionLabel.textContent()) ?? ''
 
   // 3. Verify skip button is visible and enabled (always active)
   await expect(ngcTest.skipButton()).toBeVisible()
@@ -91,10 +88,9 @@ async function testSkipAfterAnswer(
   await ngcTest.skipButton().click()
 
   // 7. Verify navigation happened: question text changed
-  await expect(async () => {
-    const currentText = await questionLabel.textContent()
-    expect(currentText).not.toBe(initialQuestionText)
-  }).toPass({ timeout: 10_000 })
+  await expect(questionLabel).not.toHaveText(initialQuestionText, {
+    timeout: 10_000,
+  })
 
   // 8. Verify continued navigation works
   await ngcTest.skipButton().click()
