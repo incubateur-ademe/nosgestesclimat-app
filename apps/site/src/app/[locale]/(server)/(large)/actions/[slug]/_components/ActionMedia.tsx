@@ -25,6 +25,7 @@ export function ActionMedia({
                 <ImpactCO2Widget
                   type={media.data.type}
                   language={locale}
+                  hideButtons
                   options={media.data.options}
                 />
               </div>
