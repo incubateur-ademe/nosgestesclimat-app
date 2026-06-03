@@ -156,6 +156,7 @@ describe('IframeDataShareModal', () => {
       it('sends the error message to React Native WebView when rejecting and ReactNativeWebView is present', () => {
         const mockRnPostMessage = vi.fn()
         window.parent.postMessage = vi.fn()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ;(window as any).ReactNativeWebView = { postMessage: mockRnPostMessage }
 
         fireEvent.click(screen.getByTestId('iframe-datashare-refuser'))
@@ -169,6 +170,7 @@ describe('IframeDataShareModal', () => {
         )
 
         // Clean up the global we added
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         delete (window as any).ReactNativeWebView
       })
     })

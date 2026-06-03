@@ -15,9 +15,9 @@ export function postMessageToReactNative(message: unknown) {
     return
   }
 
-  const rnWebView = (window as any).ReactNativeWebView as
-    | { postMessage: (msg: string) => void }
-    | undefined
+  const rnWebView = (
+    window as { ReactNativeWebView?: { postMessage: (msg: string) => void } }
+  ).ReactNativeWebView
 
   if (rnWebView?.postMessage) {
     rnWebView.postMessage(JSON.stringify(message))
