@@ -2,6 +2,7 @@ import ImpactCO2Widget from '@/components/ImpactCO2Widget'
 import type { Locale } from '@/i18nConfig'
 import { type ActionMedia as ActionMediaType } from '@nosgestesclimat/core/features/actions/types/action-media'
 import Image from 'next/image'
+import { twMerge } from 'tailwind-merge'
 
 interface MediaProps extends React.ComponentPropsWithoutRef<'figure'> {
   media: ActionMediaType
@@ -15,7 +16,12 @@ export function ActionMedia({
   ...props
 }: MediaProps) {
   return (
-    <figure className={className} {...props}>
+    <figure
+      className={twMerge(
+        'flex flex-col md:flex-col-reverse md:gap-2',
+        className
+      )}
+      {...props}>
       {(() => {
         switch (media.type) {
           case 'impact_co2':
@@ -47,7 +53,7 @@ export function ActionMedia({
             return null
         }
       })()}
-      <figcaption className="text-right text-sm/normal text-slate-600">
+      <figcaption className="text-center text-sm/normal text-slate-600">
         {media.title}
       </figcaption>
     </figure>
