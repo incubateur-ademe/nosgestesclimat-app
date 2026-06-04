@@ -1144,8 +1144,8 @@ entries:
   mon-espace.instructions.list.item1.part2.lock: vos résultats d'empreinte
   mon-espace.welcome.description.part1: Here you can <1>track your results</1>, take <4>action</4> and <7>get other people on board</7>.
   mon-espace.welcome.description.part1.lock: Ici, vous pourrez <1>suivre vos résultats</1>, passer à <4>l’action</4>, et <7>embarquer d’autres personnes</7> avec vous.
-  mon-espace.tabs.actions: Actions
-  mon-espace.tabs.actions.lock: Actions
+  mon-espace.tabs.actions: Take action
+  mon-espace.tabs.actions.lock: J'agis
   mon-espace.tabs.groups: Groups
   mon-espace.tabs.groups.lock: Groupes
   mon-espace.instructions.link.text: Taking the test
@@ -1204,8 +1204,8 @@ entries:
   mon-espace.evolutionGraph.yAxis.lock: Empreinte en tonnes
   mon-espace.evolutionGraph.chartLabel: Carbon footprint evolution graph showing {{simulationsCount}} résultats de test. {{simulationsData}}
   mon-espace.evolutionGraph.chartLabel.lock: Graphique d'évolution de l'empreinte carbone montrant {{simulationsCount}} résultats de test. {{simulationsData}}
-  mon-espace.tabs.myActions: My actions
-  mon-espace.tabs.myActions.lock: Mes actions
+  mon-espace.tabs.myActions: Take action
+  mon-espace.tabs.myActions.lock: J'agis
   mon-espace.tabs.myGroups: Group tests
   mon-espace.tabs.myGroups.lock: Tests collectifs
   mon-espace.resultsList.result.viewDetail: See details

@@ -958,14 +958,14 @@ entries:
   mon-espace.noResults.description: Passez le test pour débloquer le contenu ici
   mon-espace.noResults.link.text: Je calcule mon empreinte
   mon-espace.settings.title: Paramètres
-  mon-espace.tabs.actions: Actions
+  mon-espace.tabs.actions: J'agis
   mon-espace.tabs.groups: Groupes
   mon-espace.tabs.results: Résultats
   mon-espace.tabs.settings: Paramètres
   mon-espace.welcome.close-banner: Fermer la bannière de bienvenue
   mon-espace.welcome.description.part1: Ici, vous pourrez <1>suivre vos résultats</1>, passer à <4>l’action</4>, et <7>embarquer d’autres personnes</7> avec vous.
   mon-espace.welcome.title: Bienvenue dans votre espace Nos Gestes climat !
-  mon-espace.tabs.myActions: Mes actions
+  mon-espace.tabs.myActions: J'agis
   mon-espace.tabs.myGroups: Tests collectifs
   mon-espace.tabs.myResults: Mes résultats
   mon-espace.evolutionGraph.title: Evolution de mes résultats d'empreinte
