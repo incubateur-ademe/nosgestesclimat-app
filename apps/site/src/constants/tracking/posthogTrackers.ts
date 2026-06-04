@@ -1,4 +1,3 @@
-'use client'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
 import posthog from 'posthog-js'
