@@ -1,3 +1,4 @@
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import type { Request } from 'express'
@@ -6,7 +7,6 @@ import {
   fetchContact,
   fetchContactOrThrow,
 } from '../../adapters/brevo/client.ts'
-import type { User } from '../../adapters/prisma/generated.ts'
 import {
   defaultUserSelection,
   defaultVerifiedUserSelection,
@@ -30,11 +30,17 @@ import {
 } from './users.repository.ts'
 import type { UserParams, UserUpdateDto } from './users.validator.ts'
 
-const userToDto = (
-  user: User & {
-    contact?: BrevoContact
-  }
-) => user
+interface UserDto {
+  id: string
+  name: string | null
+  email: string | null
+  ageRange?: AgeRange | null
+  createdAt: Date
+  updatedAt: Date
+  contact?: BrevoContact
+}
+
+const userToDto = (user: UserDto) => user
 
 export const reconcileSimulationsAfterLogin = ({
   user,
@@ -197,7 +203,11 @@ export const updateUserAndContact = async ({
       if (isVerifiedUser) {
         user = (
           await createOrUpdateVerifiedUser(
-            { id: params, user: update, select: defaultVerifiedUserSelection },
+            {
+              id: params,
+              user: update,
+              select: defaultVerifiedUserSelection,
+            },
             { session }
           )
         ).user

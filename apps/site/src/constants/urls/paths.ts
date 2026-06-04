@@ -10,6 +10,7 @@ export const END_PAGE_ACTIONS_PATH = '/fin/actions'
 export const END_PAGE_GROUPS_PATH = '/fin/groupes'
 
 export const EMAIL_PAGE_PATH = '/simulateur/email'
+export const AGE_PAGE_PATH = '/simulateur/age'
 export const DOCUMENTATION_PATH = '/documentation'
 export const CONNEXION_PATH = '/connexion'
 export const INSCRIPTION_PATH = '/inscription'
