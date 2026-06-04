@@ -27,6 +27,7 @@ interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   locale: Locale
   withThemeBadge?: boolean
   assessmentStatus?: SimulationComputationStatus | null
+  rank?: number
 }
 
 export default function ActionCard({
@@ -35,8 +36,10 @@ export default function ActionCard({
   locale,
   withThemeBadge = true,
   assessmentStatus,
+  rank,
   ...props
 }: ActionCardProps) {
+  const rankEmoji = rankToEmoji(rank)
   return (
     <article
       {...props}
@@ -48,8 +51,11 @@ export default function ActionCard({
         classesByTheme[action.theme.key],
         className
       )}>
-      {withThemeBadge ? (
-        <ThemeBadge theme={action.theme} className="self-start" />
+      {rankEmoji || withThemeBadge ? (
+        <div className="flex items-center">
+          {rankEmoji ? <span className="">{rankEmoji}</span> : null}
+          {withThemeBadge ? <ThemeBadge theme={action.theme} /> : null}
+        </div>
       ) : null}
       <div className="grow">
         <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
@@ -162,5 +168,18 @@ function shouldDisplayComputationInProgressText(
     default:
       status satisfies never
       return true
+  }
+}
+
+function rankToEmoji(rank?: number) {
+  switch (rank) {
+    case 1:
+      return '🥇'
+    case 2:
+      return '🥈'
+    case 3:
+      return '🥉'
+    default:
+      return null
   }
 }

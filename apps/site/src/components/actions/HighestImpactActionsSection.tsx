@@ -60,13 +60,14 @@ export default function HighestImpactActionsSection({
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
-        {actions.map((action) => (
+        {actions.map((action, index) => (
           <ActionCard
             key={action.id}
             action={action}
             locale={locale}
             assessmentStatus={assessmentStatus}
             className="h-full"
+            rank={index + 1}
           />
         ))}
       </ActionsCarousel>
