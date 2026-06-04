@@ -1941,7 +1941,6 @@ entries:
   tutorial.email.subtitle.default.lock: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
   simulator.transition.alimentation.graph.arrowText: This graph gives you a better idea of the carbon impact of everything you eat
   simulator.transition.alimentation.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
-
   components.carousel.firstSlideMessage: This is the first slide
   components.carousel.firstSlideMessage.lock: Ceci est la première diapo
   components.carousel.nextSlideMessage: Next slide
