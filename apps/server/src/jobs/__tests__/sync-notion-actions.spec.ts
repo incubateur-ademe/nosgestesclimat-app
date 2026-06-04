@@ -13,7 +13,8 @@ const actionDatabaseId = faker.string.uuid()
 
 beforeAll(async () => {
   const themes = await findThemes()
-  const { id, key, slug, trackingId, title, emoji } = themes[0]
+  const theme = themes.find((t) => t.key === 'food')!
+  const { id, key, slug, trackingId, title, emoji } = theme
   validTheme = { id, key, slug, trackingId, title, emoji }
 })
 
