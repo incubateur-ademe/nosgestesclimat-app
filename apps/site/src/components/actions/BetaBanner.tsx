@@ -12,17 +12,17 @@ export default async function BetaBanner({ locale }: { locale: string }) {
         banner={{
           text: (
             <Trans i18nKey={'actions.beta-banner.content'} locale={locale}>
-              <strong>Ceci est une version beta</strong> - vos avis sont
-              précieux afin de l'améliorer, si vous avez des retours :{' '}
+              Cette <strong>version bêta</strong> est en cours d'amélioration.
+              Aidez-nous à l’améliorer en{' '}
               <a
                 href="https://tally.so/r/rjvbvR"
                 target="_blank"
                 className="font-bold underline"
                 aria-label={t(
                   'actions.beta-banner.link.aria-label',
-                  'Ouvrir le formulaire de contact, nouvelle fenêtre'
+                  'Laisser votre avis, nouvelle fenêtre'
                 )}>
-                contactez-nous
+                laissant votre avis.
               </a>
             </Trans>
           ),
