@@ -7,6 +7,7 @@ services:
       - '3001:3001'
     volumes:
       - ../:/workspaces/nosgestesclimat:cached,z
+      - ngc-node-modules:/workspaces/nosgestesclimat/node_modules
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ngc
       REDIS_URL: redis://redis:6379
@@ -35,5 +36,6 @@ services:
       - redis-data:/data
 
 volumes:
+  ngc-node-modules:
   postgres-data:
   redis-data:

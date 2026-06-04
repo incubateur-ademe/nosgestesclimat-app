@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 #
-# push-database-url-to-site.sh
+# review-app-postdeploy.sh
 #
-# Run during server postdeploy. Pushes DATABASE_URL to the corresponding site
-# review app so that Next.js Server Components can access the database directly.
+# Run during server postdeploy. Performs tasks specific to review apps
+# (syncing Notion actions, pushing DATABASE_URL to the site review app).
 #
-# On production/preprod, this is a no-op (DATABASE_URL is set manually on the
-# parent site app).
+# On production/preprod, this is a no-op.
 #
-# Required environment variables:
+# Required environment variables (for the DB URL push step):
 #   APP                               - Set by Scalingo (e.g. "nosgestesclimat-preprod-pr42")
 #   FGP_PUSH_DB_URL_TO_SITE_TOKEN     - FGP API token
 #   FGP_PUSH_DB_URL_TO_SITE_URL       - URL to the FGP
@@ -21,6 +20,19 @@ if [[ ! "${APP:-}" =~ -pr[0-9]+$ ]]; then
   exit 0
 fi
 
+echo "── Review app postdeploy ─────────────────────────────────"
+echo "  App: $APP"
+echo "──────────────────────────────────────────────────────────"
+
+# 1. Sync Notion actions to the review app database
+if [[ -n "${NOTION_API_KEY:-}" && -n "${NOTION_ACTION_DATABASE_ID:-}" ]]; then
+  echo "── Syncing Notion actions ───────────────────────────────"
+  node --experimental-strip-types ./src/jobs/sync-notion-actions.ts
+else
+  echo "Notion credentials not configured. Skipping actions sync."
+fi
+
+# 2. Push DATABASE_URL to the corresponding site review app
 : "${FGP_PUSH_DB_URL_TO_SITE_TOKEN:?FGP_PUSH_DB_URL_TO_SITE_TOKEN is required}"
 : "${FGP_PUSH_DB_URL_TO_SITE_URL:?FGP_PUSH_DB_URL_TO_SITE_URL is required}"
 : "${DATABASE_URL:?DATABASE_URL is required}"

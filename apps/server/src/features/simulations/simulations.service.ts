@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 import type { Request } from 'express'
 import type Engine from 'publicodes'
 import * as v from 'valibot'
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
@@ -27,7 +28,6 @@ import {
   defaultVerifiedUserSelection,
   simulationSelection,
 } from '../../adapters/prisma/selection.ts'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.ts'
 import { findOrganisationPublicPollBySlugOrId } from '../organisations/organisations.repository.ts'
 import type {

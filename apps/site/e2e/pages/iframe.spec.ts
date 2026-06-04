@@ -1,5 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
-import { NGCTest } from '../fixtures/ngc-test'
+import { expect, type Page } from '@playwright/test'
+import { NGCTest, test } from '../fixtures/ngc-test'
 
 test.describe('/demo-iframe-datashare.html', () => {
   test.beforeEach(async ({ page }) => {

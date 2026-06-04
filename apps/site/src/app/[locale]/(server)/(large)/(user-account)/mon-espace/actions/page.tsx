@@ -7,10 +7,10 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
+import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
-import { getPersonalizedActionsCatalogue } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import ProfileTab from '../_components/ProfileTabs'
 
 export default async function MonEspaceActionsPage({
@@ -18,7 +18,7 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
-  const flag = await getFeatureFlag('actions-v2', user.id)
+  const flag = await hasActionV2Rollout(user.id)
 
   const [maybePersonalizedActionsCatalogue, themes] = flag
     ? await Promise.all([getPersonalizedActionsCatalogue(user.id), getThemes()])

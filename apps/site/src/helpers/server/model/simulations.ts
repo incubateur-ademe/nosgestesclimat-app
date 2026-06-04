@@ -10,12 +10,7 @@ import type {
 } from '../../../publicodes-state/types'
 import { type AppUser } from '../dal/user'
 import { fetchServer } from '../fetchServer'
-import {
-  migrateSimulationIfNeeded,
-  stringifyModel,
-  type Model,
-  type ModelString,
-} from './models'
+import { migrateSimulationIfNeeded, stringifyModel, type Model } from './models'
 import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'
 
 export type SimulationMode = 'scolaire' | 'standard'
@@ -30,7 +25,7 @@ export interface Simulation {
   persona?: string
   computedResults: ComputedResults
   progression: number
-  model: ModelString
+  model: string
   user?: { id: string; name?: string }
   polls?: { id: string; slug: string }[]
   groups?: { id: string }[]
