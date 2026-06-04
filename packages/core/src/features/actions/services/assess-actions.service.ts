@@ -64,7 +64,7 @@ export const assessActions = async (
           return {
             ...assessment,
             applicable: true as const,
-            impact: nodeValue || undefined,
+            impact: nodeValue || undefined, // 0 encodes for impact not evaluable, hence the `||`
           }
         } else if (nodeValue === null || nodeValue === false) {
           return {
