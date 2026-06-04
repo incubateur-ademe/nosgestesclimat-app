@@ -16,16 +16,25 @@ type MarkdownProps = ComponentProps<typeof MarkdownToJsx> & {
   components?: MarkdownToJSX.Overrides
   renderers?: Record<string, unknown>
   forceTargetBlankOnExternalLinks?: boolean
+  omitMarginTopOnFirstElement?: boolean
 }
 
 export default function Markdown({
   children,
   components = {},
   forceTargetBlankOnExternalLinks = false,
+  omitMarginTopOnFirstElement = false,
   ...otherProps
 }: MarkdownProps) {
   return (
-    <div className="markdown" data-testid="markdown">
+    <div
+      className={twMerge(
+        'markdown',
+        omitMarginTopOnFirstElement
+          ? 'markdown--omit-first-element-margin-top'
+          : ''
+      )}
+      data-testid="markdown">
       <MarkdownToJsx
         {...otherProps}
         options={{

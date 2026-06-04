@@ -138,17 +138,18 @@ export default async function ActionPage({ params }: Props) {
       <div className="mb-10 grid gap-10 md:grid-cols-2 [&>*:last-child:nth-child(even)]:col-span-full">
         <Section
           id={SECTION_ID_I_UNDERSTAND}
-          variant="highlighted"
           className="flex scroll-mt-24 flex-col gap-5 md:col-span-full md:flex-row">
           <div className={action.media ? 'flex-1/2' : ''}>
-            <SectionTitle emoji="💡">
+            <SectionTitle color="primary">
               <Trans
                 locale={locale}
                 i18nKey="actions.detailPage.sections.understand">
                 Je comprends l'enjeu
               </Trans>
             </SectionTitle>
-            <Markdown forceTargetBlankOnExternalLinks>
+            <Markdown
+              forceTargetBlankOnExternalLinks
+              omitMarginTopOnFirstElement>
               {action.longDescription}
             </Markdown>
           </div>
@@ -162,38 +163,46 @@ export default async function ActionPage({ params }: Props) {
         </Section>
         {action.tips ? (
           <Section id={SECTION_ID_I_ACT} className="scroll-mt-24">
-            <SectionTitle emoji="🚀">
+            <SectionTitle color="yellow">
               <Trans locale={locale} i18nKey="actions.detailPage.sections.act">
                 J'agis
               </Trans>
             </SectionTitle>
-            <Markdown forceTargetBlankOnExternalLinks>{action.tips}</Markdown>
+            <Markdown
+              forceTargetBlankOnExternalLinks
+              omitMarginTopOnFirstElement>
+              {action.tips}
+            </Markdown>
           </Section>
         ) : null}
         {action.financialIncentives ? (
           <Section id={SECTION_ID_I_BENEFIT} className="scroll-mt-24">
-            <SectionTitle emoji="💡">
+            <SectionTitle color="green">
               <Trans
                 locale={locale}
                 i18nKey="actions.detailPage.sections.incentives">
                 J'y gagne
               </Trans>
             </SectionTitle>
-            <Markdown forceTargetBlankOnExternalLinks>
+            <Markdown
+              forceTargetBlankOnExternalLinks
+              omitMarginTopOnFirstElement>
               {action.financialIncentives}
             </Markdown>
           </Section>
         ) : null}
         {action.furtherExplore ? (
           <Section id={SECTION_ID_FURTHER_READING} className="scroll-mt-24">
-            <SectionTitle emoji="🔗">
+            <SectionTitle color="blue">
               <Trans
                 locale={locale}
                 i18nKey="actions.detailPage.sections.furtherReading">
                 À découvrir aussi
               </Trans>
             </SectionTitle>
-            <Markdown forceTargetBlankOnExternalLinks>
+            <Markdown
+              forceTargetBlankOnExternalLinks
+              omitMarginTopOnFirstElement>
               {action.furtherExplore}
             </Markdown>
           </Section>

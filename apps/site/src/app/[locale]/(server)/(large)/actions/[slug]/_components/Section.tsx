@@ -1,23 +1,14 @@
-import { EmojiBadge } from '@/components/actions/EmojiBadge'
+import type { BadgeColor } from '@/design-system/layout/Badge'
+import Badge from '@/design-system/layout/Badge'
 import { twMerge } from 'tailwind-merge'
 
-type SectionVariant = 'default' | 'highlighted'
+type SectionProps = React.ComponentPropsWithoutRef<'section'>
 
-interface SectionProps extends React.ComponentPropsWithoutRef<'section'> {
-  variant?: SectionVariant
-}
-
-export function Section({
-  variant = 'default',
-  className,
-  children,
-  ...props
-}: SectionProps) {
+export function Section({ className, children, ...props }: SectionProps) {
   return (
     <section
       className={twMerge(
-        'rounded-2xl border border-slate-200 p-5 md:p-10',
-        sectionClassNamesByVariant[variant],
+        'rounded-2xl border border-slate-200 bg-white p-5 md:p-10',
         className
       )}
       {...props}>
@@ -26,30 +17,24 @@ export function Section({
   )
 }
 
-const sectionClassNamesByVariant: Record<SectionVariant, string> = {
-  default: 'bg-white',
-  highlighted: 'bg-slate-50',
-}
-
 interface SectionTitleProps extends React.ComponentPropsWithoutRef<'h2'> {
-  emoji: string
+  color: BadgeColor
 }
 
 export function SectionTitle({
   className,
   children,
-  emoji,
+  color,
   ...props
 }: SectionTitleProps) {
   return (
-    <h2
-      className={twMerge(
-        'mb-5 flex items-center gap-1 text-lg/normal font-bold',
-        className
-      )}
+    <Badge
+      tag="h2"
+      color={color}
+      border={false}
+      className={twMerge('mb-5', className)}
       {...props}>
-      <EmojiBadge>{emoji}</EmojiBadge>
       {children}
-    </h2>
+    </Badge>
   )
 }
