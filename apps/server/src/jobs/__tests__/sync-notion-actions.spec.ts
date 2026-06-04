@@ -13,8 +13,8 @@ const actionDatabaseId = faker.string.uuid()
 
 beforeAll(async () => {
   const themes = await findThemes()
-  const { id, key, trackingId, title, emoji } = themes[0]
-  validTheme = { id, key, trackingId, title, emoji }
+  const { id, key, slug, trackingId, title, emoji } = themes[0]
+  validTheme = { id, key, slug, trackingId, title, emoji }
 })
 
 describe('syncNotionActions', () => {
