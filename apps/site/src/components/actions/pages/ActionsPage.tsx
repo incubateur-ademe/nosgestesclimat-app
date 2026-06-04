@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
+import ActionsPageTracker from './ActionsPageTracker'
 
 interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
   topActions?: PersonalizedAction[]
@@ -32,6 +33,7 @@ export default function ActionsPage({
       <BetaBanner locale={locale} />
 
       <div {...props} className={twMerge('pb-24', className)}>
+        <ActionsPageTracker actions={actions} topActions={topActions} />
         <div className="mb-10">
           <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
             <Trans locale={locale} i18nKey="actions.listPage.title">
