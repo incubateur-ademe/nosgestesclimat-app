@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/nextjs'
-import type { ReactElement } from 'react'
+import type { ReactNode } from 'react'
 
 const isProduction = process.env.NEXT_PUBLIC_ENV === 'production'
 
@@ -174,7 +174,7 @@ export type ArticleItemType = Pick<
 >
 
 export type BannerType = {
-  text: ReactElement
+  text: ReactNode
   link?: {
     URL: string
     label: string
