@@ -862,14 +862,10 @@ entries:
   actions.negativeIcon.ariaLabel: Les actions se trouvent en dessous
   actions.thresholdDescription: Actions avec un impact de {{label}} ou plus
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
-  actions.listPage.title: Construire mon plan d’action
-  actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
+  actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
-  actions.detailPage.tabs.understand: Je comprends
-  actions.detailPage.tabs.act: J'agis
-  actions.detailPage.tabs.incentives: J'y gagne
-  actions.detailPage.tabs.furtherReading: À découvrir aussi
   actions.detailPage.nav: Navigation de la page
   actions.detailPage.sections.understand: Je comprends l'enjeu
   actions.detailPage.sections.act: J'agis
@@ -879,7 +875,7 @@ entries:
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.components.actionCard.link: Voir l'action "{action.title}"
+  actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.noImpactTag: Impact non quantifiable
   actions.components.actionCard.impactAssessmentInProgress: En cours de calcul
@@ -1385,7 +1381,11 @@ entries:
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.title.default: Votre adresse électronique
   tutorial.email.title.youth: Ton adresse électronique
-  actions.components.themeSection.description: '{count} actions recommandées'
+  actions.components.themeSection.description: '{{count}} actions recommandées'
+  actions.components.themeSection.description_zero: Aucune action recommandée
+  actions.components.themeSection.description_one: '{{count}} action recommandée'
+  actions.components.themeSection.description_other: '{{count}} actions recommandées'
+  components.markdown.linkTargetBlankAriaLabel: (ouvrir dans une nouvelle fenêtre)
   components.carousel.prevSlideMessage: Diapo précédente
   components.carousel.nextSlideMessage: Diapo suivante
   components.carousel.firstSlideMessage: Ceci est la première diapo

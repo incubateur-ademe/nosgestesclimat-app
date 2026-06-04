@@ -35,16 +35,13 @@ export default function ActionsPage({
         <div className="mb-10">
           <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
             <Trans locale={locale} i18nKey="actions.listPage.title">
-              Construire mon plan d’action
+              Vos actions personnalisées pour diminuer votre empreinte
             </Trans>
           </h1>
           <p className="text-base/normal text-slate-500 md:text-lg/normal">
             <Trans locale={locale} i18nKey="actions.listPage.description">
-              Les actions suivantes vous sont recommandées d’après vos réponses
-              au test.
-              <br />
-              Choisissez-celles qui vous semblent atteignables, l’essentiel,
-              c’est de se mettre en mouvement !
+              Ces actions sont personnalisées selon vos réponses au test.
+              Choisissez celles qui vous semblent atteignables et lancez-vous !
             </Trans>
           </p>
         </div>
@@ -65,7 +62,11 @@ export default function ActionsPage({
           {themes
             .filter((theme) => {
               const actions = actionsByTheme[theme.key]
-              return actions && actions.length > 0
+              return (
+                theme.key !== 'societal_services' &&
+                actions &&
+                actions.length > 0
+              )
             })
             .map((theme) => {
               return (

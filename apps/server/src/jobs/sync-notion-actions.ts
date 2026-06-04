@@ -32,6 +32,27 @@ import { convertNotionRichTextToMd } from './helpers/convert-notion-rich-text-to
 const trimmedString = v.pipe(v.string(), v.trim())
 const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
 
+const nullishTrimmedString = v.pipe(
+  v.nullish(trimmedString),
+  v.transform((s) => {
+    if (s === '') return null
+    return s
+  })
+)
+
+const nullishString = <
+  TOutput,
+  TSchema extends v.GenericSchema<string, TOutput>,
+>(
+  inner: TSchema
+) => {
+  return v.pipe(
+    v.nullish(trimmedString),
+    v.transform((s) => (s === '' ? null : s)),
+    v.nullish(inner)
+  )
+}
+
 const themeNotionOptionSchema = v.picklist([
   'Alimentation',
   'Transport',
@@ -58,19 +79,17 @@ export const NotionActionRowSchema = v.pipe(
       v.transform((value) => themeIdByNotionOption[value]),
       v.uuid()
     ),
-    published_at: v.optional(v.pipe(v.string(), v.toDate())),
+    published_at: nullishString(v.pipe(v.string(), v.toDate())),
     rule_id: v.pipe(trimmedLowercaseString, v.uuid()),
     slug: v.pipe(trimmedLowercaseString, v.slug()),
     tracking_id: v.pipe(trimmedLowercaseString, trackingIdSchema),
     front_title_fr: trimmedString,
     long_description_fr: trimmedString,
-    media_fr: v.optional(
+    media_fr: nullishString(
       v.pipe(
-        trimmedString,
+        v.string(),
         v.rawTransform((ctx) => {
-          const rawMedia = ctx.dataset.value
-          if (!rawMedia) return undefined
-          const result = parseMedia(rawMedia)
+          const result = parseMedia(ctx.dataset.value)
           if (!result.success) {
             ctx.addIssue({
               message: `Invalid media: ${result.error}`,
@@ -81,13 +100,13 @@ export const NotionActionRowSchema = v.pipe(
         })
       )
     ),
-    media_title_fr: v.optional(trimmedString),
-    tips_fr: v.optional(trimmedString),
-    financial_incentives_fr: v.optional(trimmedString),
-    further_explore_fr: v.optional(trimmedString),
-    seo_title_fr: v.optional(trimmedString),
-    seo_description_fr: v.optional(trimmedString),
-    seo_json_ld: v.optional(v.pipe(v.string(), v.parseJson())),
+    media_title_fr: nullishTrimmedString,
+    tips_fr: nullishTrimmedString,
+    financial_incentives_fr: nullishTrimmedString,
+    further_explore_fr: nullishTrimmedString,
+    seo_title_fr: nullishTrimmedString,
+    seo_description_fr: nullishTrimmedString,
+    seo_json_ld: nullishString(v.pipe(v.string(), v.parseJson())),
   })
 )
 
@@ -95,21 +114,21 @@ type NotionActionRow = InferOutput<typeof NotionActionRowSchema>
 
 export interface NotionRawRow {
   ID?: string | number
-  theme?: string
-  published_at?: string
-  rule_id?: string
-  slug?: string
-  tracking_id?: string
-  front_title_fr?: string
-  long_description_fr?: string
-  media_fr?: string
-  media_title_fr?: string
-  tips_fr?: string
-  financial_incentives_fr?: string
-  further_explore_fr?: string
-  seo_title_fr?: string
-  seo_description_fr?: string
-  seo_json_ld?: string
+  theme?: string | null
+  published_at?: string | null
+  rule_id?: string | null
+  slug?: string | null
+  tracking_id?: string | null
+  front_title_fr?: string | null
+  long_description_fr?: string | null
+  media_fr?: string | null
+  media_title_fr?: string | null
+  tips_fr?: string | null
+  financial_incentives_fr?: string | null
+  further_explore_fr?: string | null
+  seo_title_fr?: string | null
+  seo_description_fr?: string | null
+  seo_json_ld?: string | null
   [key: string]: unknown
 }
 
@@ -317,7 +336,7 @@ type NotionProperty = PageObjectResponse['properties'][string]
 
 function getPropertyValue(
   property: NotionProperty
-): string | boolean | number | undefined {
+): string | boolean | number | undefined | null {
   const propertyType = property.type
   switch (propertyType) {
     case 'rich_text':
@@ -325,23 +344,23 @@ function getPropertyValue(
     case 'title':
       return convertNotionRichTextToMd(property.title)
     case 'url':
-      return property.url ?? undefined
+      return property.url ?? null
     case 'date':
-      return property.date?.start
+      return property.date?.start ?? null
     case 'relation':
       return property.relation?.[0]?.id
     case 'select':
-      return property.select?.name
+      return property.select?.name ?? null
     case 'number':
-      return property.number ?? undefined
+      return property.number ?? null
     case 'email':
-      return property.email ?? undefined
+      return property.email ?? null
     case 'phone_number':
-      return property.phone_number ?? undefined
+      return property.phone_number ?? null
     case 'checkbox':
       return property.checkbox
     case 'unique_id':
-      return property.unique_id?.number ?? undefined
+      return property.unique_id?.number ?? null
     case 'multi_select':
     case 'status':
     case 'files':

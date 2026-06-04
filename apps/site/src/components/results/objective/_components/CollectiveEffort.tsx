@@ -24,7 +24,7 @@ export default function CollectiveEfforts({ locale, className }: Props) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <article>
             <h3 className="mb-5">
-              <Badge color="purple" className="border-none">
+              <Badge color="purple" border={false}>
                 <Trans
                   locale={locale}
                   i18nKey="results.objective.collectiveEffort.state">
@@ -46,7 +46,7 @@ export default function CollectiveEfforts({ locale, className }: Props) {
 
           <article>
             <h3 className="mb-5">
-              <Badge color="yellow" className="border-none">
+              <Badge color="yellow" border={false}>
                 <Trans
                   locale={locale}
                   i18nKey="results.objective.collectiveEffort.collectivities">
@@ -68,7 +68,7 @@ export default function CollectiveEfforts({ locale, className }: Props) {
 
           <article>
             <h3 className="mb-5">
-              <Badge color="red" className="border-none">
+              <Badge color="red" border={false}>
                 <Trans
                   locale={locale}
                   i18nKey="results.objective.collectiveEffort.companies">
