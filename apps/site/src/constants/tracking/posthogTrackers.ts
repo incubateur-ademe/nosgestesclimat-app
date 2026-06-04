@@ -323,27 +323,6 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
 
 // Actions v2
 
-export const capturePersonalizedActionListViewed = ({
-  actionCountByThemeTrackingId,
-  topActionTrackingIds,
-}: {
-  actionCountByThemeTrackingId: Record<string, number>
-  topActionTrackingIds: (string | undefined)[]
-}) => ({
-  eventName: 'personalized action list viewed',
-  properties: {
-    ...Object.fromEntries(
-      Object.entries(actionCountByThemeTrackingId).map(([theme, count]) => [
-        `actions_${theme}_count`,
-        count,
-      ])
-    ),
-    action_top_1: topActionTrackingIds[0],
-    action_top_2: topActionTrackingIds[1],
-    action_top_3: topActionTrackingIds[2],
-  },
-})
-
 export const captureAction = ({
   actionTrackingId,
   actionThemeTrackingId,
