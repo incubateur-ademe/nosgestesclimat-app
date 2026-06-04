@@ -1973,10 +1973,12 @@ entries:
   actions.listPage.title.lock: Vos actions personnalisées pour diminuer votre empreinte
   actions.listPage.description: These actions are personalised according to your answers to the test. Choose the ones you think are achievable and get started!
   actions.listPage.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
-  actions.components.actionCard.impactTag: Up to {{formattedValue}} {{unit}} CO<5>2</5>e/ year
+  actions.components.actionCard.impactTag: Up to {{formattedValue}} {{unit}} CO<5>2</5>e / year
   actions.components.actionCard.impactTag.lock: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.noImpactTag: Non-quantifiable impact
   actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
+  actions.components.actionCard.lowImpactTag: Less than {{formattedValue}} {{unit}} CO<5>2</5>e / year
+  actions.components.actionCard.lowImpactTag.lock: Moins de {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
   actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
   actions.components.actionCard.link: View the "{{actionTitle}}" action
@@ -2025,3 +2027,7 @@ entries:
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   components.markdown.linkTargetBlankAriaLabel: (open in a new window)
   components.markdown.linkTargetBlankAriaLabel.lock: (ouvrir dans une nouvelle fenêtre)
+  actions.beta-banner.link.aria-label: Leave your opinion, new window
+  actions.beta-banner.link.aria-label.lock: Laisser votre avis, nouvelle fenêtre
+  actions.beta-banner.content: This <1>beta version</1> is currently being improved. Help us improve it by <4>leaving your feedback.</4>
+  actions.beta-banner.content.lock: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>

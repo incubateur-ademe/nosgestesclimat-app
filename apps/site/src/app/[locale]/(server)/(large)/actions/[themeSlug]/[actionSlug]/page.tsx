@@ -13,6 +13,7 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
+import type { Locale } from '@/i18nConfig'
 import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
@@ -70,14 +71,6 @@ export default async function ActionPage({ params }: Props) {
 
   if (action?.theme.slug !== themeSlug) notFound()
 
-  const impact = action.assessment?.impact
-    ? formatFootprint(-1 * action.assessment.impact, {
-        locale,
-        metric: 'carbone',
-        unit: 't',
-      })
-    : null
-
   const themeClasses = classNames[action.theme.key]
 
   return (
@@ -105,7 +98,7 @@ export default async function ActionPage({ params }: Props) {
         <h1 className="mb-0 text-3xl leading-11 md:text-4xl md:leading-14">
           {action.title}
         </h1>
-        {impact ? (
+        {action.assessment?.impact ? (
           <div className="mt-4 flex items-start">
             <div
               className={`rounded-xl border px-5 py-2 ${themeClasses.impactBorder}`}>
@@ -118,19 +111,11 @@ export default async function ActionPage({ params }: Props) {
                 </Trans>
               </p>
               <p className="text-sm/normal font-bold text-slate-600">
-                <Trans
+                <Impact
+                  impact={action.assessment.impact}
                   locale={locale}
-                  i18nKey="actions.detailPage.impact.value"
-                  values={{
-                    formattedValue: impact.formattedValue,
-                    unit: impact.unit,
-                  }}>
-                  <span
-                    className={`mr-1 text-[40px]/normal font-extrabold ${themeClasses.impactColor}`}>
-                    {'{{formattedValue}}'}
-                  </span>{' '}
-                  {'{{unit}}'} CO<sub>2</sub>e / an
-                </Trans>
+                  themeKey={action.theme.key}
+                />
               </p>
             </div>
           </div>
@@ -248,4 +233,51 @@ const classNames: Record<
     impactBorder: 'border-divers-300',
     impactColor: 'text-divers-800',
   },
+}
+
+function Impact({
+  impact,
+  locale,
+  themeKey,
+}: {
+  impact: number
+  locale: Locale
+  themeKey: Theme['key']
+}) {
+  const { formattedValue, unit } = formatFootprint(-1 * Math.max(impact, 100), {
+    locale,
+    metric: 'carbone',
+    unit: 't',
+  })
+
+  const text = (
+    <Trans
+      locale={locale}
+      i18nKey="actions.detailPage.impact.value"
+      values={{
+        formattedValue,
+        unit,
+      }}>
+      <span
+        className={`mr-1 text-[40px]/normal font-extrabold ${classNames[themeKey].impactColor}`}>
+        {'{{formattedValue}}'}
+      </span>{' '}
+      {'{{unit}}'} CO<sub>2</sub>e / an
+    </Trans>
+  )
+
+  if (impact < 100) {
+    // Need to have "<" outside otherwise i18next keeps escaping it
+    return (
+      <>
+        <span
+          className={`text-[40px]/normal font-extrabold ${classNames[themeKey].impactColor}`}>
+          {'< '}
+        </span>
+        {text}
+      </>
+    )
+  }
+
+  return text
 }
