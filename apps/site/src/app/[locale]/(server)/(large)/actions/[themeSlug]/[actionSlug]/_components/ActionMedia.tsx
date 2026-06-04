@@ -16,12 +16,7 @@ export function ActionMedia({
   ...props
 }: MediaProps) {
   return (
-    <figure
-      className={twMerge(
-        'flex flex-col md:flex-col-reverse md:gap-2',
-        className
-      )}
-      {...props}>
+    <figure className={twMerge('flex flex-col md:gap-2', className)} {...props}>
       {(() => {
         switch (media.type) {
           case 'impact_co2':
@@ -55,7 +50,7 @@ export function ActionMedia({
             return null
         }
       })()}
-      <figcaption className="text-center text-sm/normal text-slate-600">
+      <figcaption className="text-center text-sm/normal text-slate-600 md:-order-1">
         {media.title}
       </figcaption>
     </figure>
