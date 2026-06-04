@@ -30,6 +30,7 @@ export const mapAction = (
   theme: {
     id: theme.id,
     key: theme.key,
+    slug: theme.slug,
     trackingId: theme.trackingId,
     title: theme.title,
     emoji: theme.emoji,

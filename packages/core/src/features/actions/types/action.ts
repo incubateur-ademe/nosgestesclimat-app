@@ -14,7 +14,7 @@ export interface Action {
    * Explanation of the action and its impact (Markdown)
    */
   longDescription: string
-  theme: Pick<Theme, 'id' | 'key' | 'trackingId' | 'title' | 'emoji'>
+  theme: Pick<Theme, 'id' | 'key' | 'slug' | 'trackingId' | 'title' | 'emoji'>
   /** Publicodes rule. Using an id is more stable than the rule name */
   ruleId: string
   /** Visual content that illustrates the action such as ImpactCO2 widgets */

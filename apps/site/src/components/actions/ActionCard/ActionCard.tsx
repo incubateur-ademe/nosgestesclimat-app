@@ -68,7 +68,7 @@ export default function ActionCard({
         ) : null}
       </div>
       <Link
-        href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
+        href={ACTION_DETAIL_PATH(action.theme.slug, action.slug)}
         className={twMerge(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink

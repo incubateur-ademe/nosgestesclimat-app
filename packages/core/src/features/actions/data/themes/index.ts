@@ -3,6 +3,7 @@ import type { Theme } from '../../types/theme.ts'
 export const food: Theme = {
   id: 'a3782c21-2da3-4697-809a-22ecfb88de6e',
   key: 'food',
+  slug: 'alimentation',
   trackingId: 'alimentation',
   language: 'fr',
   title: 'Alimentation',
@@ -12,6 +13,7 @@ export const food: Theme = {
 export const transport: Theme = {
   id: '4ce3c30a-4312-4162-b990-31211cb83e75',
   key: 'transport',
+  slug: 'transport',
   trackingId: 'transport',
   language: 'fr',
   title: 'Transport',
@@ -21,6 +23,7 @@ export const transport: Theme = {
 export const societalServices: Theme = {
   id: 'c7a6e80b-7cdc-49f4-b748-f2c637e9360e',
   key: 'societal_services',
+  slug: 'services-societaux',
   trackingId: 'services-societaux',
   language: 'fr',
   title: 'Services sociétaux',
@@ -30,6 +33,7 @@ export const societalServices: Theme = {
 export const housing: Theme = {
   id: '3e288fd3-5d41-4eac-aac1-4a14c63dda28',
   key: 'housing',
+  slug: 'logement',
   trackingId: 'logement',
   language: 'fr',
   title: 'Logement',
@@ -39,6 +43,7 @@ export const housing: Theme = {
 export const misc: Theme = {
   id: '352a6d89-3232-4386-a731-eb747bd0d3ee',
   key: 'misc',
+  slug: 'consommation',
   trackingId: 'consommation',
   language: 'fr',
   title: 'Consommation',

@@ -29,13 +29,15 @@ const SECTION_ID_I_ACT = 'j-agis'
 const SECTION_ID_I_BENEFIT = 'j-y-gagne'
 const SECTION_ID_FURTHER_READING = 'a-decouvrir-aussi'
 
-type Props = DefaultPageProps<{ params: { slug: string } }>
+type Props = DefaultPageProps<{
+  params: { themeSlug: string; actionSlug: string }
+}>
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { params } = props
-  const { locale, slug } = await params
+  const { locale, actionSlug } = await params
 
-  const action = await getAction(slug)
+  const action = await getAction(actionSlug)
 
   if (!action) {
     return getMetadataObject({
@@ -52,19 +54,19 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     title: action.title,
     description: action.longDescription,
     alternates: {
-      canonical: ACTION_DETAIL_PATH.replace(':actionSlug', slug),
+      canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
     },
   })
 }
 
 export default async function ActionPage({ params }: Props) {
-  const { locale, slug } = await params
+  const { locale, actionSlug } = await params
   const user = await getUser()
   const flag = await hasActionV2Rollout(user.id)
 
   if (!flag) notFound()
 
-  const action = await getPersonalizedActionDetails(slug, user.id)
+  const action = await getPersonalizedActionDetails(actionSlug, user.id)
 
   if (!action) notFound()
 
