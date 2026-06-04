@@ -1,7 +1,7 @@
 import type { Model, ModelLocale, ModelRegion } from '../types/model.ts'
 
 const MODEL_STRING_RE = /^([A-Z]+)-(fr|en)-(.+)$/
-const PUBLISHED_TAG_RE = /^\d+\.\d+\.\d+$/
+const PUBLISHED_TAG_RE = /^\d+\.\d+\.\d+(-[\w.]+)?$/
 const PR_VERSION_RE = /^pr-(.+)$/
 
 export const parseModelString = (modelString: string): Model | null => {

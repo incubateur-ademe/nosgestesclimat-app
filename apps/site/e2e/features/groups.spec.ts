@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
+import { DEFAULT_FLAGS, FeatureFlags } from '../fixtures/feature-flags'
 import { Group } from '../fixtures/groups'
 import { NGCTest } from '../fixtures/ngc-test'
 import { TutorialPage } from '../fixtures/tutorial'
@@ -140,6 +141,7 @@ test.describe('A user with a completed test that joined a group', () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage()
+    new FeatureFlags(page).set(DEFAULT_FLAGS)
     await new NGCTest(page).skipAll()
     await expect(page).toHaveURL('/fin')
 
