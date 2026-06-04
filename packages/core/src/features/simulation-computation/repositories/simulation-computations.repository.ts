@@ -38,11 +38,14 @@ export const findSimulationComputation = async (simulationId: string) =>
     where: { simulationId },
   })
 
-export const findLastSimulationComputationByUserId = async (userId: string) =>
-  prisma.simulationComputation.findFirst({
-    where: { simulation: { userId } },
-    orderBy: { simulation: { createdAt: 'desc' } },
+export const findLastSimulationComputationByUserId = async (userId: string) => {
+  const simulation = await prisma.simulation.findFirst({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    include: { computations: true },
   })
+  return simulation?.computations[0]
+}
 
 export const claimNextPendingSimulationComputation = async () =>
   prisma.$transaction(async (tx) => {
