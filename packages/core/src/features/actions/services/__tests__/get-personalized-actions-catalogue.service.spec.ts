@@ -111,7 +111,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const result = await getPersonalizedActionsCatalogue(user.id)
       expect(result).toEqual({
-        assessmentStatus: 'pending',
+        assessmentStatus: null,
         actions: expect.arrayContaining([
           expect.objectContaining({ id: applicable.id, assessment: null }),
           expect.objectContaining({ id: inapplicable.id, assessment: null }),
