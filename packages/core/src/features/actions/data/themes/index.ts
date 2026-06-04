@@ -39,9 +39,9 @@ export const housing: Theme = {
 export const misc: Theme = {
   id: '352a6d89-3232-4386-a731-eb747bd0d3ee',
   key: 'misc',
-  trackingId: 'divers',
+  trackingId: 'consommation',
   language: 'fr',
-  title: 'Divers',
+  title: 'Consommation',
   emoji: '🛒',
 }
 
