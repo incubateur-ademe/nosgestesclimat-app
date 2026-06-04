@@ -60,7 +60,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function ActionPage({ params }: Props) {
-  const { locale, actionSlug } = await params
+  const { locale, themeSlug, actionSlug } = await params
   const user = await getUser()
   const flag = await hasActionV2Rollout(user.id)
 
@@ -68,7 +68,7 @@ export default async function ActionPage({ params }: Props) {
 
   const action = await getPersonalizedActionDetails(actionSlug, user.id)
 
-  if (!action) notFound()
+  if (action?.theme.slug !== themeSlug) notFound()
 
   const impact = action.assessment?.impact
     ? formatFootprint(-1 * action.assessment.impact, {
