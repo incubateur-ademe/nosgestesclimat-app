@@ -62,7 +62,11 @@ export default function ActionsPage({
           {themes
             .filter((theme) => {
               const actions = actionsByTheme[theme.key]
-              return actions && actions.length > 0
+              return (
+                theme.key !== 'societal_services' &&
+                actions &&
+                actions.length > 0
+              )
             })
             .map((theme) => {
               return (
