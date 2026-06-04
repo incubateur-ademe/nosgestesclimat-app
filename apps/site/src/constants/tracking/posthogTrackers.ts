@@ -355,12 +355,12 @@ export const captureAction = ({
   co2PotentialInKg?: number
   eventName: 'action displayed' | 'action consulted'
 }) => {
-  let uuid: string | undefined
-  if (eventName === 'action displayed') {
-    // We deduplicate the event, once per session
-    const sessionId = posthog.get_session_id()
-    uuid = uuidv5(`${eventName}:${actionTrackingId}:${sessionId}`, uuidv5.DNS)
-  }
+  // We deduplicate all action events, only one is processed per session
+  const sessionId = posthog.get_session_id()
+  const uuid = uuidv5(
+    `${eventName}:${actionTrackingId}:${sessionId}`,
+    uuidv5.DNS
+  )
 
   posthog.capture(
     eventName,
