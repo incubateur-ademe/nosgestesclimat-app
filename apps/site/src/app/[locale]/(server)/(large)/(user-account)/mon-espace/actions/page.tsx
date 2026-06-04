@@ -26,7 +26,7 @@ export default async function MonEspaceActionsPage({
 
   return (
     <div className="flex flex-col">
-      <h1 className="sr-only mb-6 text-2xl font-bold">
+      <h1 className="sr-only text-2xl font-bold">
         <Trans i18nKey="mon-espace.actions.title" locale={locale}>
           Mes actions
         </Trans>
@@ -35,13 +35,17 @@ export default async function MonEspaceActionsPage({
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
       {flag && maybePersonalizedActionsCatalogue ? (
-        <ActionsPage
-          topActions={maybePersonalizedActionsCatalogue.topActions}
-          actions={maybePersonalizedActionsCatalogue.actions}
-          assessmentStatus={maybePersonalizedActionsCatalogue.assessmentStatus}
-          themes={themes}
-          locale={locale}
-        />
+        <div className="pt-4">
+          <ActionsPage
+            topActions={maybePersonalizedActionsCatalogue.topActions}
+            actions={maybePersonalizedActionsCatalogue.actions}
+            assessmentStatus={
+              maybePersonalizedActionsCatalogue.assessmentStatus
+            }
+            themes={themes}
+            locale={locale}
+          />
+        </div>
       ) : (
         <LegacyMonEspaceActionsPage user={user} locale={locale} />
       )}
