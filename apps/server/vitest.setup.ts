@@ -84,11 +84,8 @@ beforeAll(async () => {
       print.error()
     },
   })
-  
-  await Promise.all([
-    import('./src/worker.js'),
-    db.migrate(prismaMigrationDir)
-  ])
+
+  await Promise.all([import('./src/worker.js'), db.migrate(prismaMigrationDir)])
 })
 
 afterAll(async () => {

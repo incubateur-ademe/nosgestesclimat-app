@@ -13,5 +13,6 @@ export default function MainHooks() {
   useUserInfosParams()
   useInitSimulationParam()
   useRedirectIfInAppBrowser()
+
   return null
 }

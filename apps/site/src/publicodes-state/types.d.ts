@@ -6,6 +6,7 @@ import type {
   NodeValue,
   SuggestionValue,
 } from '@incubateur-ademe/nosgestesclimat'
+import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import type PublicodesEngine from 'publicodes'
 import type {
   EvaluatedNode,
@@ -37,6 +38,7 @@ export interface User {
   userId: string
   name?: string
   email?: string
+  ageRange?: AgeRange
   northStarRatings?: Record<string, unknown> // TODO: should be NorthStartType or something
   loginExpirationDate?: Date
   pendingVerification?: { expirationDate: Date; email: string }
