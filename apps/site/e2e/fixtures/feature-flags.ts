@@ -5,7 +5,7 @@ import type { DefaultFlagValues } from '@/services/feature-flags/flags'
 
 const DOMAIN = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
 
-const DEFAULT_FLAGS = {
+export const DEFAULT_FLAGS = {
   'actions-v2': false,
   'mode-scolaire': true,
   'ab-test-question-tranche-dage': 'control',
