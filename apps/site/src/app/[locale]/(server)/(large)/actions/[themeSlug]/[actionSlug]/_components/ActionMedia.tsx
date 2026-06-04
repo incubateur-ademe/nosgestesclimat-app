@@ -1,4 +1,4 @@
-import ImpactCO2Widget from '@/components/ImpactCO2Widget'
+import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
 import type { Locale } from '@/i18nConfig'
 import { type ActionMedia as ActionMediaType } from '@nosgestesclimat/core/features/actions/types/action-media'
 import Image from 'next/image'
@@ -28,11 +28,13 @@ export function ActionMedia({
             return (
               // Compensate widget's inner iframe margins
               <div className="[&_iframe]:-my-4! md:[&_iframe]:-my-8!">
-                <ImpactCO2Widget
+                <ImpactCO2Iframe
                   type={media.data.type}
-                  language={locale}
+                  locale={locale}
+                  title={media.title}
                   hideButtons
                   options={media.data.options}
+                  className="min-h-144"
                 />
               </div>
             )

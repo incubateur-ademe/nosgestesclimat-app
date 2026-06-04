@@ -1,22 +1,57 @@
 'use client'
 
+import type { ImpactCO2Language } from '@nosgestesclimat/core/features/actions/types/action-media'
 import { useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
-interface Props {
+interface ImpactCO2IframeProps extends React.ComponentPropsWithoutRef<'div'> {
+  /**
+   * ImpactCO2 type e.g.
+   * @example "chauffage"
+   */
+  type: string
+  /** Iframe title attribute */
   title: string
-  locale: string
-  type?: string
-  additionalSearchParams?: string
+  locale?: ImpactCO2Language
+  hideButtons?: boolean
+  /** Additional ImpactCO2 iframe search params */
+  options?: Record<string, string>
 }
 
+/*
+  Workaround
+  - default impact co2 embed script carries the data attrs and relies on its presence in the DOM to load the iframe in the same place
+  - non async scripts (defer or without) cause hydration issues
+  - React 19 moves <script async>
+
+  Placing data attrs on a div allows to load the script asynchronously without hydration issues
+*/
 export default function ImpactCO2Iframe({
   title,
   locale,
-  type = 'chauffage',
-  additionalSearchParams,
-}: Props) {
+  type,
+  hideButtons = true,
+  options,
+  className,
+  ...rest
+}: ImpactCO2IframeProps) {
   const [isLoading, setIsLoading] = useState(true)
   const wrapperRef = useRef<HTMLDivElement>(null)
+
+  const searchParams = new URLSearchParams({
+    theme: 'default',
+    hideButtons: String(hideButtons),
+  })
+
+  if (options) {
+    Object.entries(options).forEach(([key, value]) => {
+      searchParams.set(key, value)
+    })
+  }
+
+  if (locale) {
+    searchParams.set('language', locale)
+  }
 
   // Handles injecting and removing the script on page change
   useEffect(() => {
@@ -60,11 +95,11 @@ export default function ImpactCO2Iframe({
     <div
       key={type}
       ref={wrapperRef}
-      className="relative"
-      style={{ minHeight: '1320px' }}>
+      className={twMerge('relative', className)}
+      {...rest}>
       {/* Skeleton loader */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 mt-8 flex h-full flex-col gap-4 rounded-xl bg-white p-6 opacity-80">
+        <div className="absolute inset-0 z-10 flex h-full flex-col gap-4 rounded-xl bg-white p-6 opacity-80">
           <div className="bg-primary-200 h-4 w-3/4 animate-pulse rounded-md" />
           <div className="bg-primary-200 h-4 w-1/2 animate-pulse rounded-md" />
           <div className="mt-2 flex flex-1 animate-pulse flex-col items-start gap-2">
@@ -79,10 +114,10 @@ export default function ImpactCO2Iframe({
 
       {/* Iframe container */}
       <div
-        id="impact-co2"
         title={title}
+        data-name="impact-co2"
         data-type={type}
-        data-search={`?language=${locale}&hideButtons=true&theme=default${additionalSearchParams ? `&${additionalSearchParams}` : ''}`}
+        data-search={`?${searchParams.toString()}`}
         className={`transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
       />
     </div>
