@@ -79,6 +79,7 @@ describe('Given a NGC user', () => {
       let simulationUser2: ReturnType<typeof getSimulationPayload>
       let participant1Group2Id: string
       let participant2Group2Id: string
+      let participantAdmin: Record<string, unknown>
 
       beforeEach(async () => {
         // User 1 group
@@ -138,6 +139,9 @@ describe('Given a NGC user', () => {
             simulation: simulationUser1,
           },
         }))
+
+        const { ageRange: _a, ...rest } = group1.administrator
+        participantAdmin = rest
       }, 10000)
 
       test(`Then it returns a ${StatusCodes.OK} response with a list containing the groups`, async () => {
@@ -156,7 +160,7 @@ describe('Given a NGC user', () => {
             },
             participants: [
               {
-                ...group1.administrator,
+                ...participantAdmin,
                 id: participant1Group1Id,
                 userId: group1.administrator.id,
                 simulation: {
@@ -213,7 +217,7 @@ describe('Given a NGC user', () => {
                 },
               },
               {
-                ...group1.administrator,
+                ...participantAdmin,
                 id: participant1Group2Id,
                 userId: group1.administrator.id,
                 simulation: {
@@ -256,7 +260,7 @@ describe('Given a NGC user', () => {
               },
               participants: [
                 {
-                  ...group1.administrator,
+                  ...participantAdmin,
                   id: participant1Group1Id,
                   userId: group1.administrator.id,
                   simulation: {

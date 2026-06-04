@@ -257,6 +257,7 @@ describe('Given a NGC user', () => {
               id: userId,
               email: null,
               name: null,
+              ageRange: null,
             },
           })
         })
@@ -533,6 +534,7 @@ describe('Given a NGC user', () => {
                 id: userId,
                 email: null,
                 name: null,
+                ageRange: null,
               },
             })
           })
@@ -849,7 +851,7 @@ describe('Given a NGC user', () => {
                 user,
                 ...payload
               } = simulation
-              const { id: _4, name: _5, ...userPayload } = user
+              const { id: _4, name: _5, ageRange: _6, ...userPayload } = user
 
               mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
 
@@ -877,7 +879,7 @@ describe('Given a NGC user', () => {
                   user,
                   ...payload
                 } = simulation
-                const { id: _4, name: _5, ...userPayload } = user
+                const { id: _4, name: _5, ageRange: _6, ...userPayload } = user
 
                 mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
 

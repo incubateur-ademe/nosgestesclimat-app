@@ -1,7 +1,5 @@
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
-import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getUser } from '@/helpers/server/dal/user'
 import {
   getCompletedSimulations,
@@ -9,6 +7,7 @@ import {
 } from '@/helpers/server/model/simulations'
 import { redirect } from 'next/navigation'
 import Tutorial from '../_components/Tutorial'
+import ButtonNext from './_components/ButtonNext'
 
 export default async function TutorielPage({
   params,
@@ -31,18 +30,8 @@ export default async function TutorielPage({
   return (
     <>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
-      <Tutorial
-        locale={locale}
-        buttonNext={
-          <ButtonLink
-            href={SIMULATOR_PATH}
-            data-testid="skip-tutorial-button"
-            className="min-w-42!">
-            <Trans locale={locale}>C'est parti !</Trans>{' '}
-            <span aria-hidden="true">→</span>
-          </ButtonLink>
-        }
-      />
+
+      <Tutorial locale={locale} buttonNext={<ButtonNext />} />
     </>
   )
 }

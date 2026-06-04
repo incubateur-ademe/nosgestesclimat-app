@@ -4,6 +4,7 @@ export const defaultUserSelection = {
   email: true,
   createdAt: true,
   updatedAt: true,
+  ageRange: true,
 }
 
 export const defaultVerifiedUserSelection = {
@@ -17,10 +18,18 @@ export const defaultVerifiedUserSelection = {
   updatedAt: true,
 }
 
+export const defaultUserSelectionWithoutAgeRange = {
+  id: true,
+  name: true,
+  email: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 export const defaultGroupParticipantSelection = {
   id: true,
   user: {
-    select: defaultUserSelection,
+    select: defaultUserSelectionWithoutAgeRange,
   },
   simulationId: true,
   createdAt: true,
@@ -175,6 +184,7 @@ export const simulationSelectionWithUsers = {
       id: true,
       name: true,
       email: true,
+      ageRange: true,
     },
   },
   verifiedUser: {

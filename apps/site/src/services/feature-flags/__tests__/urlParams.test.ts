@@ -74,9 +74,9 @@ describe('parseFeatureFlagCookie', () => {
   })
 
   it('parses a variant override', () => {
-    expect(
-      parseFeatureFlagCookie('{"variant":"test"}')
-    ).toEqual({ variant: 'test' })
+    expect(parseFeatureFlagCookie('{"variant":"test"}')).toEqual({
+      variant: 'test',
+    })
   })
 
   it('returns empty object for undefined, empty, or malformed input', () => {
