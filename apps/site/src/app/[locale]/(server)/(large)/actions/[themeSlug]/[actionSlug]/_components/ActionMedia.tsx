@@ -1,4 +1,4 @@
-import ImpactCO2Widget from '@/components/ImpactCO2Widget'
+import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
 import type { Locale } from '@/i18nConfig'
 import { type ActionMedia as ActionMediaType } from '@nosgestesclimat/core/features/actions/types/action-media'
 import Image from 'next/image'
@@ -16,23 +16,20 @@ export function ActionMedia({
   ...props
 }: MediaProps) {
   return (
-    <figure
-      className={twMerge(
-        'flex flex-col md:flex-col-reverse md:gap-2',
-        className
-      )}
-      {...props}>
+    <figure className={twMerge('flex flex-col md:gap-2', className)} {...props}>
       {(() => {
         switch (media.type) {
           case 'impact_co2':
             return (
               // Compensate widget's inner iframe margins
               <div className="[&_iframe]:-my-4! md:[&_iframe]:-my-8!">
-                <ImpactCO2Widget
+                <ImpactCO2Iframe
                   type={media.data.type}
-                  language={locale}
+                  locale={locale}
+                  title={media.title}
                   hideButtons
                   options={media.data.options}
+                  className="min-h-144"
                 />
               </div>
             )
@@ -53,7 +50,7 @@ export function ActionMedia({
             return null
         }
       })()}
-      <figcaption className="text-center text-sm/normal text-slate-600">
+      <figcaption className="text-center text-sm/normal text-slate-600 md:-order-1">
         {media.title}
       </figcaption>
     </figure>

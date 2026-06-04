@@ -878,6 +878,7 @@ entries:
   actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.noImpactTag: Impact non quantifiable
+  actions.components.actionCard.lowImpactTag: Moins de {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.impactAssessmentInProgress: En cours de calcul
   C'est quoi mon empreinte carbone ?: C'est quoi mon empreinte carbone ?
   Cliquez pour ouvrir la liste des régions disponibles: Cliquez pour ouvrir la liste des régions disponibles
@@ -958,14 +959,14 @@ entries:
   mon-espace.noResults.description: Passez le test pour débloquer le contenu ici
   mon-espace.noResults.link.text: Je calcule mon empreinte
   mon-espace.settings.title: Paramètres
-  mon-espace.tabs.actions: Actions
+  mon-espace.tabs.actions: J'agis
   mon-espace.tabs.groups: Groupes
   mon-espace.tabs.results: Résultats
   mon-espace.tabs.settings: Paramètres
   mon-espace.welcome.close-banner: Fermer la bannière de bienvenue
   mon-espace.welcome.description.part1: Ici, vous pourrez <1>suivre vos résultats</1>, passer à <4>l’action</4>, et <7>embarquer d’autres personnes</7> avec vous.
   mon-espace.welcome.title: Bienvenue dans votre espace Nos Gestes climat !
-  mon-espace.tabs.myActions: Mes actions
+  mon-espace.tabs.myActions: J'agis
   mon-espace.tabs.myGroups: Tests collectifs
   mon-espace.tabs.myResults: Mes résultats
   mon-espace.evolutionGraph.title: Evolution de mes résultats d'empreinte
@@ -1408,3 +1409,5 @@ entries:
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).
   results.actions.afterLink.label: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
+  actions.beta-banner.content: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
+  actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre

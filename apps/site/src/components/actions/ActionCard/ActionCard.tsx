@@ -118,6 +118,21 @@ function ImpactTag({
         En cours de calcul
       </Trans>
     )
+  } else if (typeof impact === 'number' && impact < 100) {
+    const { formattedValue, unit } = formatFootprint(-100, {
+      locale,
+      shouldUseAbbreviation: true,
+      metric: 'carbone',
+      unit: 't',
+    })
+    text = (
+      <Trans
+        locale={locale}
+        i18nKey="actions.components.actionCard.lowImpactTag"
+        values={{ formattedValue, unit }}>
+        Moins de {'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
+      </Trans>
+    )
   } else if (typeof impact === 'number') {
     const { formattedValue, unit } = formatFootprint(-1 * impact, {
       locale,

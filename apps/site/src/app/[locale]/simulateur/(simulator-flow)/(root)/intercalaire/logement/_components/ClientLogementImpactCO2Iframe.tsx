@@ -21,7 +21,9 @@ export default function ClientLogementImpactCO2Iframe({ locale }: Props) {
         "Comparateur d'impact CO₂ du chauffage"
       )}
       locale={locale}
-      additionalSearchParams={`m2=${value ?? '63'}`}
+      type="chauffage"
+      options={{ m2: String(value ?? '63') }}
+      className="min-h-330"
     />
   )
 }
