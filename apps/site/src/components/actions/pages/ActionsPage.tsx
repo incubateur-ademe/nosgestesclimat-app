@@ -17,7 +17,7 @@ interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
   assessmentStatus?: SimulationComputationStatus | null
 }
 
-export default async function ActionsPage({
+export default function ActionsPage({
   topActions,
   actions,
   themes,
