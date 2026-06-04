@@ -3,6 +3,7 @@ import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
+import TrophyIcon from '../icons/TrophyIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
@@ -34,9 +35,9 @@ export default function HighestImpactActionsSection({
       }}>
       <div className="mb-4 flex gap-2">
         <span
-          className="relative flex size-12 shrink-0 items-center justify-center rounded-lg bg-yellow-500 text-xl shadow-[0px_2px_4px_rgba(240,177,0,.25)]"
+          className="relative flex size-12 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-xl text-indigo-800"
           aria-hidden="true">
-          🏆
+          <TrophyIcon />
         </span>
         <div className="text-white">
           <h2 id={carouselLabelId} className="mb-0 text-lg/normal font-bold">
