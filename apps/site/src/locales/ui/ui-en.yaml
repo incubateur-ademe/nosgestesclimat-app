@@ -1993,18 +1993,12 @@ entries:
   actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.components.themeSection.description: '{{count}} recommended actions'
-  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
   actions.components.themeSection.description_other: '{{count}} recommended actions'
   actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
   actions.components.themeSection.description_one: '{{count}} recommended action'
   actions.components.themeSection.description_one.lock: '{{count}} action recommandée'
   actions.components.themeSection.description_zero: No action recommended
   actions.components.themeSection.description_zero.lock: Aucune action recommandée
-  components.carousel.roleDescription: Carousel
-  components.carousel.roleDescription.lock: Carrousel
-  common.byDay: / day
-  common.byDay.lock: / jour
   common.facultatif.uppercase: Optional
   common.facultatif.uppercase.lock: Facultatif
   Passer: Go to
