@@ -25,4 +25,10 @@ test('should redirect to simulator when clicking Passer on the age page', async 
 
   // The "skip question" button only appears when a question is displayed
   await expect(page.getByTestId('skip-question-button')).toBeVisible()
+
+  // Disable the A/B test flag after the test
+  await featureFlags.set({
+    ...DEFAULT_FLAGS,
+    'ab-test-question-tranche-dage': 'control',
+  })
 })
