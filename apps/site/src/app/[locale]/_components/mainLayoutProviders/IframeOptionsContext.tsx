@@ -60,6 +60,7 @@ export const IframeOptionsProvider = ({
     return sessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
   })
 
+  // Read iframe parameters from URL and persist to sessionStorage
   useEffect(() => {
     if (!isIframe) return
 
