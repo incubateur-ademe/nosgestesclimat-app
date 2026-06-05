@@ -1,5 +1,11 @@
 import type { Prisma } from '../../../prisma/generated/client.ts'
-import type { Action, NewAction, UpdatedAction } from '../types/action.ts'
+import type {
+  Action,
+  ActionAssessment,
+  NewAction,
+  PersonalizedAction,
+  UpdatedAction,
+} from '../types/action.ts'
 import type { Theme } from '../types/theme.ts'
 import {
   mapSeoMetadata,
@@ -7,7 +13,7 @@ import {
   mapSeoMetadataToPrismaUpsert,
 } from './seo-metadata.mapper.ts'
 
-export interface DbActionWithRelations extends Prisma.ActionModel {
+interface DbActionWithRelations extends Prisma.ActionModel {
   seoMetadata: Prisma.SeoMetadataModel | null
 }
 
@@ -24,6 +30,7 @@ export const mapAction = (
   theme: {
     id: theme.id,
     key: theme.key,
+    slug: theme.slug,
     trackingId: theme.trackingId,
     title: theme.title,
     emoji: theme.emoji,
@@ -77,3 +84,35 @@ export const mapUpdatedActionToPrisma = (
     ? mapSeoMetadataToPrismaUpsert(data.metadata)
     : undefined,
 })
+
+export const mapPersonalizedAction = (
+  action: Action,
+  assessment: Prisma.ActionAssessmentModel | null
+): PersonalizedAction => ({
+  ...action,
+  assessment: assessment ? mapAssessment(assessment) : null,
+  choice: null, // TODO: map choice when the feature will be implemented
+})
+
+const mapAssessment = (
+  dbAssessment: Prisma.ActionAssessmentModel
+): ActionAssessment => {
+  const base = {
+    id: dbAssessment.id,
+    simulationId: dbAssessment.simulationId,
+    actionId: dbAssessment.actionId,
+    createdAt: dbAssessment.createdAt,
+  }
+  if (dbAssessment.applicable === true) {
+    return {
+      ...base,
+      applicable: true,
+      impact: dbAssessment.impact ?? undefined,
+    }
+  }
+  return {
+    ...base,
+    applicable: dbAssessment.applicable ?? undefined,
+    impact: undefined,
+  }
+}

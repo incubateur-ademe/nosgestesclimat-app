@@ -1,10 +1,15 @@
 import { prisma } from '../../../prisma/client.ts'
 import { themesById } from '../data/themes/index.ts'
-import type { Action, NewAction, UpdatedAction } from '../types/action.ts'
-import type { DbActionWithRelations } from './action.mapper.ts'
+import type {
+  Action,
+  NewAction,
+  PersonalizedAction,
+  UpdatedAction,
+} from '../types/action.ts'
 import {
   mapAction,
   mapNewActionToPrisma,
+  mapPersonalizedAction,
   mapUpdatedActionToPrisma,
 } from './action.mapper.ts'
 
@@ -46,7 +51,7 @@ export const findVisibleActions = async (): Promise<Action[]> => {
     },
   })
 
-  return dbActions.map((dbAction: DbActionWithRelations) => {
+  return dbActions.map((dbAction) => {
     const theme = themesById[dbAction.themeId]
     return mapAction(dbAction, theme)
   })
@@ -104,4 +109,66 @@ export const deleteManyActions = async (ids: string[]): Promise<number> => {
   })
 
   return result.count
+}
+
+export const findVisiblePersonalizedActionBySlug = async (
+  slug: string,
+  userId: string
+): Promise<PersonalizedAction | null> => {
+  const [action, simulation] = await Promise.all([
+    findVisibleActionBySlug(slug),
+    findLastCompletedSimulationByUserId(userId),
+  ])
+
+  if (!action) return null
+  if (!simulation) return mapPersonalizedAction(action, null)
+
+  const assessment = await prisma.actionAssessment.findUnique({
+    where: {
+      simulationId_actionId: {
+        actionId: action.id,
+        simulationId: simulation.id,
+      },
+    },
+  })
+
+  return mapPersonalizedAction(action, assessment)
+}
+
+export const findAllVisiblePersonalizedActions = async (
+  userId: string
+): Promise<PersonalizedAction[]> => {
+  const [actions, simulation] = await Promise.all([
+    findVisibleActions(),
+    findLastCompletedSimulationByUserId(userId),
+  ])
+
+  if (actions.length === 0) return []
+  if (!simulation)
+    return actions.map((action) => mapPersonalizedAction(action, null))
+
+  const assessments = await prisma.actionAssessment.findMany({
+    where: {
+      actionId: { in: actions.map((a) => a.id) },
+      simulationId: simulation.id,
+    },
+  })
+
+  const latestByActionId = new Map(assessments.map((a) => [a.actionId, a]))
+
+  return actions.map((action) =>
+    mapPersonalizedAction(action, latestByActionId.get(action.id) ?? null)
+  )
+}
+
+// TODO: move to a separate repository file
+const findLastCompletedSimulationByUserId = async (userId: string) => {
+  return prisma.simulation.findFirst({
+    select: { id: true },
+    where: {
+      userId,
+      progression: 1,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
 }

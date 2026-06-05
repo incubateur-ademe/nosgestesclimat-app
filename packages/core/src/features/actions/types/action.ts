@@ -14,7 +14,7 @@ export interface Action {
    * Explanation of the action and its impact (Markdown)
    */
   longDescription: string
-  theme: Pick<Theme, 'id' | 'key' | 'trackingId' | 'title' | 'emoji'>
+  theme: Pick<Theme, 'id' | 'key' | 'slug' | 'trackingId' | 'title' | 'emoji'>
   /** Publicodes rule. Using an id is more stable than the rule name */
   ruleId: string
   /** Visual content that illustrates the action such as ImpactCO2 widgets */
@@ -42,18 +42,18 @@ export interface NewAction {
   longDescription: string
   ruleId: string
   themeId: string
-  media?: ActionMedia
-  tips?: string
-  financialIncentives?: string
-  furtherExplore?: string
-  metadata?: SeoMetadata
+  media?: ActionMedia | null
+  tips?: string | null
+  financialIncentives?: string | null
+  furtherExplore?: string | null
+  metadata?: SeoMetadata | null
   publishedAt?: Date | null
   deletedAt?: Date | null
 }
 
 export type UpdatedAction = Partial<NewAction>
 
-interface ActionChoice {
+export interface ActionChoice {
   id: string
   userId: string
   actionId: string
@@ -83,11 +83,12 @@ export type NewActionAssessment = {
     }
 )
 
-export type ActionAssessment = NewActionAssessment & { id: string }
+export type ActionAssessment = NewActionAssessment & {
+  id: string
+  createdAt: Date
+}
 
-export interface PersonalizedAction {
-  userId: string
-  action: Action
+export interface PersonalizedAction extends Action {
   choice: ActionChoice | null
-  assessment: ActionAssessment
+  assessment: ActionAssessment | null
 }

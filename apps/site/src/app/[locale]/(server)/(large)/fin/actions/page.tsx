@@ -4,9 +4,9 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { getActions } from '@/services/actions/get-actions'
+import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
 
 export default async function ResultatsActionsPage({
@@ -14,18 +14,22 @@ export default async function ResultatsActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUser()
-  const flag = await getFeatureFlag('actions-v2', user.id)
+  const flag = await hasActionV2Rollout(user.id)
 
   if (!flag) {
     return <LegacyResultatsActionsPage user={user} locale={locale} />
   }
 
-  const [actions, themes] = await Promise.all([getActions(), getThemes()])
+  const [actionsCatalogue, themes] = await Promise.all([
+    getPersonalizedActionsCatalogue(user.id),
+    getThemes(),
+  ])
 
   return (
     <ActionsPage
-      // topActions={topActions}
-      actions={actions}
+      topActions={actionsCatalogue.topActions}
+      actions={actionsCatalogue.actions}
+      assessmentStatus={actionsCatalogue.assessmentStatus}
       themes={themes}
       locale={locale}
     />

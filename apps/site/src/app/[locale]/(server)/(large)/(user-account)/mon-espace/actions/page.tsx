@@ -7,9 +7,9 @@ import { throwNextError } from '@/helpers/server/error'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
-import { getActions } from '@/services/actions/get-actions'
+import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
 
@@ -18,15 +18,15 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await throwNextError(getAuthUser)
-  const flag = await getFeatureFlag('actions-v2', user.id)
+  const flag = await hasActionV2Rollout(user.id)
 
-  const [actions, themes] = flag
-    ? await Promise.all([getActions(), getThemes()])
+  const [maybePersonalizedActionsCatalogue, themes] = flag
+    ? await Promise.all([getPersonalizedActionsCatalogue(user.id), getThemes()])
     : [undefined, undefined]
 
   return (
     <div className="flex flex-col">
-      <h1 className="sr-only mb-6 text-2xl font-bold">
+      <h1 className="sr-only text-2xl font-bold">
         <Trans i18nKey="mon-espace.actions.title" locale={locale}>
           Mes actions
         </Trans>
@@ -34,13 +34,18 @@ export default async function MonEspaceActionsPage({
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
-      {flag && actions ? (
-        <ActionsPage
-          // topActions={topActions}
-          actions={actions}
-          themes={themes}
-          locale={locale}
-        />
+      {flag && maybePersonalizedActionsCatalogue ? (
+        <div className="pt-4">
+          <ActionsPage
+            topActions={maybePersonalizedActionsCatalogue.topActions}
+            actions={maybePersonalizedActionsCatalogue.actions}
+            assessmentStatus={
+              maybePersonalizedActionsCatalogue.assessmentStatus
+            }
+            themes={themes}
+            locale={locale}
+          />
+        </div>
       ) : (
         <LegacyMonEspaceActionsPage user={user} locale={locale} />
       )}

@@ -60,10 +60,10 @@ export default function FinTabs() {
             )}
           />
           <span className="hidden md:block">
-            <Trans i18nKey="mon-espace.tabs.myActions">Mes actions</Trans>
+            <Trans i18nKey="mon-espace.tabs.myActions">J'agis</Trans>
           </span>
           <span className="block text-center text-sm md:hidden">
-            <Trans i18nKey="mon-espace.tabs.actions">Actions</Trans>
+            <Trans i18nKey="mon-espace.tabs.actions">J'agis</Trans>
           </span>
         </span>
       ),

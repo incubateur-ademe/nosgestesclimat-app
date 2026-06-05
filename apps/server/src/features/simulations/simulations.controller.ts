@@ -15,6 +15,7 @@ import {
   getCookieOptions,
 } from '../authentication/authentication.service.ts'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
+import { programComputation } from './handlers/program-computation.ts'
 import { publishRedisEvent } from './handlers/publish-redis-event.ts'
 import { sendSimulationUpserted } from './handlers/send-simulation-upserted.ts'
 import { updateBrevoContact } from './handlers/update-brevo-contact.ts'
@@ -39,6 +40,7 @@ const router = express.Router()
 EventBus.on(SimulationUpsertedEvent, updateBrevoContact)
 EventBus.on(SimulationUpsertedEvent, sendSimulationUpserted)
 EventBus.on(SimulationUpsertedEvent, publishRedisEvent)
+EventBus.on(SimulationUpsertedEvent, programComputation)
 
 /**
  * Upserts a simulation

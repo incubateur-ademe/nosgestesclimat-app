@@ -10,6 +10,7 @@ export type ThemeKey =
 export interface Theme {
   id: string
   key: ThemeKey
+  slug: string
   /** Human readable id for tracking purposes */
   trackingId: string
   title: string

@@ -36,8 +36,8 @@ export const mapSeoMetadataToPrismaUpsert = (
   upsert: {
     ...mapSeoMetadataToPrismaCreate(metadata),
     update: {
-      title: metadata?.title ?? undefined,
-      description: metadata?.description ?? undefined,
+      title: metadata?.title,
+      description: metadata?.description,
       jsonLd: metadata?.jsonLd as unknown as Prisma.InputJsonValue | undefined,
     },
   },

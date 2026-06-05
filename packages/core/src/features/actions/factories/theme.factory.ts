@@ -8,6 +8,7 @@ export const themeFactory = Factory.define<Theme>(() => {
   return {
     id: theme.id,
     key: theme.key,
+    slug: theme.slug,
     trackingId: theme.trackingId,
     title: theme.title,
     language: theme.language,
