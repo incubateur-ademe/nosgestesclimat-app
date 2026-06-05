@@ -18,7 +18,7 @@
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "dev:next": "next dev",
-    "dev:worker": "node --experimental-strip-types --watch ./worker/worker.ts",
+    "dev:worker": "node --experimental-strip-types --env-file=.env --watch ./worker/worker.ts",
     "dev": "pnpm run '/dev:(worker|next)/'",
     "dev:webpack": "next dev --webpack",
     "build": "next build",

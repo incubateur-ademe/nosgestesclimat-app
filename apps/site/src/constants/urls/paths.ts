@@ -25,4 +25,5 @@ export const ORGANISATION_CREATE_PATH = '/organisations/creer'
 export const ORGANISATION_SIGN_IN_PATH = '/organisations/connexion'
 export const ORGANISATION_SIGN_UP_PATH = '/organisations/inscription'
 
-export const ACTION_DETAIL_PATH = '/actions/:actionSlug'
+export const ACTION_DETAIL_PATH = (themeSlug: string, actionSlug: string) =>
+  `/actions/${themeSlug}/${actionSlug}`

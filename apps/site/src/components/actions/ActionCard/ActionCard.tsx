@@ -28,6 +28,7 @@ interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   locale: Locale
   withThemeBadge?: boolean
   assessmentStatus?: SimulationComputationStatus | null
+  rank?: number
 }
 
 export default function ActionCard({
@@ -36,8 +37,10 @@ export default function ActionCard({
   locale,
   withThemeBadge = true,
   assessmentStatus,
+  rank,
   ...props
 }: ActionCardProps) {
+  const rankEmoji = rankToEmoji(rank)
   return (
     <article
       {...props}
@@ -50,9 +53,11 @@ export default function ActionCard({
         className
       )}>
       <ActionTracker eventName="displayed" action={action} />
-
-      {withThemeBadge ? (
-        <ThemeBadge theme={action.theme} className="self-start" />
+      {rankEmoji || withThemeBadge ? (
+        <div className="flex items-center">
+          {rankEmoji ? <span className="">{rankEmoji}</span> : null}
+          {withThemeBadge ? <ThemeBadge theme={action.theme} /> : null}
+        </div>
       ) : null}
       <div className="grow">
         <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
@@ -65,7 +70,7 @@ export default function ActionCard({
         ) : null}
       </div>
       <Link
-        href={ACTION_DETAIL_PATH.replace(':actionSlug', action.slug)}
+        href={ACTION_DETAIL_PATH(action.theme.slug, action.slug)}
         className={twMerge(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink
@@ -75,7 +80,7 @@ export default function ActionCard({
             locale={locale}
             i18nKey="actions.components.actionCard.link"
             values={{ actionTitle: action.title }}>
-            Voir l'action "{action.title}"
+            Voir l'action "{'{{actionTitle}}'}"
           </Trans>
         </span>
       </Link>
@@ -115,10 +120,27 @@ function ImpactTag({
         En cours de calcul
       </Trans>
     )
+  } else if (typeof impact === 'number' && impact < 100) {
+    const { formattedValue, unit } = formatFootprint(-100, {
+      locale,
+      shouldUseAbbreviation: true,
+      metric: 'carbone',
+      unit: 't',
+    })
+    text = (
+      <Trans
+        locale={locale}
+        i18nKey="actions.components.actionCard.lowImpactTag"
+        values={{ formattedValue, unit }}>
+        Moins de {'{{formattedValue}}'} {'{{unit}}'} CO<sub>2</sub>e / an
+      </Trans>
+    )
   } else if (typeof impact === 'number') {
     const { formattedValue, unit } = formatFootprint(-1 * impact, {
       locale,
       shouldUseAbbreviation: true,
+      metric: 'carbone',
+      unit: 't',
     })
     text = (
       <Trans
@@ -141,7 +163,7 @@ function ImpactTag({
   return (
     <span
       className={twMerge(
-        `inline-flex justify-center rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
+        `inline-block rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
         className
       )}
       {...rest}>
@@ -163,5 +185,18 @@ function shouldDisplayComputationInProgressText(
     default:
       status satisfies never
       return true
+  }
+}
+
+function rankToEmoji(rank?: number) {
+  switch (rank) {
+    case 1:
+      return '🥇'
+    case 2:
+      return '🥈'
+    case 3:
+      return '🥉'
+    default:
+      return null
   }
 }
