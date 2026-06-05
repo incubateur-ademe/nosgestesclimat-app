@@ -15,6 +15,11 @@ minimumReleaseAge: 10080 # 7 days
 
 minimumReleaseAgeExclude:
   - '@incubateur-ademe/nosgestesclimat'
+  # We explicitely need a new feature introduced in 1.379.0. Those 3 lines can be remove safely on 10/06/2026
+  # @TODO
+  - 'posthog-js'
+  - '@posthog/core'
+  - '@posthog/types'
 
 onlyBuiltDependencies:
   - '@incubateur-ademe/nosgestesclimat'

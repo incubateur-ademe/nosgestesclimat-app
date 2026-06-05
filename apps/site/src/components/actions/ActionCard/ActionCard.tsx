@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import { ThemeBadge } from '../ThemeBadge'
 
+import ActionTracker from '../ActionTracker'
 import styles from './ActionCard.module.css'
 
 const classesByTheme: Record<Theme['key'], string> = {
@@ -51,6 +52,7 @@ export default function ActionCard({
         classesByTheme[action.theme.key],
         className
       )}>
+      <ActionTracker eventName="displayed" action={action} />
       {rankEmoji || withThemeBadge ? (
         <div className="flex items-center">
           {rankEmoji ? <span className="">{rankEmoji}</span> : null}

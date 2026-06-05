@@ -8,7 +8,6 @@ import { twMerge } from 'tailwind-merge'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
-
 interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
   topActions?: PersonalizedAction[]
   themes: Theme[]
