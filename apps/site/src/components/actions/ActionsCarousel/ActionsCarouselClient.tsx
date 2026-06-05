@@ -84,7 +84,7 @@ export default function ActionsCarouselClient({
             <SwiperSlide
               className={twMerge(
                 !isInitialized && 'mr-2', // Same value as `spaceBetween` to prevent layout shift before initialization
-                'w-3/4 max-w-55 sm:w-62 sm:max-w-none'
+                'h-auto w-3/4 max-w-55 sm:w-62 sm:max-w-none'
               )}>
               {child}
             </SwiperSlide>

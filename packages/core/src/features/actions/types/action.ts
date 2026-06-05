@@ -14,7 +14,7 @@ export interface Action {
    * Explanation of the action and its impact (Markdown)
    */
   longDescription: string
-  theme: Pick<Theme, 'id' | 'key' | 'trackingId' | 'title' | 'emoji'>
+  theme: Pick<Theme, 'id' | 'key' | 'slug' | 'trackingId' | 'title' | 'emoji'>
   /** Publicodes rule. Using an id is more stable than the rule name */
   ruleId: string
   /** Visual content that illustrates the action such as ImpactCO2 widgets */
@@ -35,12 +35,25 @@ export interface Action {
   deletedAt: Date | null
 }
 
-/** Type for the raw data persisted in code files */
-export type ActionFile = Omit<Action, 'theme'> & {
+export interface NewAction {
+  title: string
+  slug: string
+  trackingId: string
+  longDescription: string
+  ruleId: string
   themeId: string
+  media?: ActionMedia | null
+  tips?: string | null
+  financialIncentives?: string | null
+  furtherExplore?: string | null
+  metadata?: SeoMetadata | null
+  publishedAt?: Date | null
+  deletedAt?: Date | null
 }
 
-interface ActionChoice {
+export type UpdatedAction = Partial<NewAction>
+
+export interface ActionChoice {
   id: string
   userId: string
   actionId: string
@@ -49,26 +62,33 @@ interface ActionChoice {
   chosenAt: Date
 }
 
-type ActionAssessment = {
-  id: string
+export type NewActionAssessment = {
   simulationId: string
   actionId: string
 } & (
-  | {
-      /** The impact of the action for the user, in kgCO2e */
-      impact: number
-      /** Whether the action is applicable for the user or not */
+  | // Case 1. The action is applicable and the impact is either a number or not evaluable
+  {
       applicable: true
+      impact: number | undefined
     }
+  // Case 2. The action is not applicable
   | {
+      applicable: false
       impact: undefined
-      applicable: false | undefined
+    }
+  // Case 3. Missing data to assess the action
+  | {
+      applicable: undefined
+      impact: undefined
     }
 )
 
-export interface PersonalizedAction {
-  userId: string
-  action: Action
+export type ActionAssessment = NewActionAssessment & {
+  id: string
+  createdAt: Date
+}
+
+export interface PersonalizedAction extends Action {
   choice: ActionChoice | null
-  assessment: ActionAssessment
+  assessment: ActionAssessment | null
 }

@@ -40,9 +40,6 @@ const nextConfig = withMDX({
     return redirects
   },
   productionBrowserSourceMaps: true,
-  outputFileTracingExcludes: {
-    '*': ['.next/cache/webpack', '.git/**/*', 'cypress/**/*'],
-  },
   turbopack: {
     root: new URL('../../', import.meta.url).pathname,
     rules: {
@@ -60,7 +57,6 @@ const nextConfig = withMDX({
       },
     },
   },
-  output: 'standalone',
   experimental: {
     optimizePackageImports: ['@incubateur-ademe/nosgestesclimat'],
     webpackBuildWorker: true,

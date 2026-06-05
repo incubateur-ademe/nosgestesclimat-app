@@ -1,15 +1,34 @@
 import { carboneMetric, eauMetric } from '@/constants/model/metric'
 import type { Metric } from '@/publicodes-state/types'
 
-interface Options {
+type Options = {
   localize?: boolean
   locale?: string
   maximumFractionDigits?: number
   shouldUseAbbreviation?: boolean
   t?: (key: string) => string
-  metric?: Metric
   shouldDivideBy365?: boolean
-}
+} & (
+  | {
+      metric: Metric
+      unit?: 'auto'
+    }
+  | {
+      metric?: undefined
+      unit?: CarbonUnit | 'auto'
+    }
+  | {
+      metric: 'carbone'
+      unit?: CarbonUnit | 'auto'
+    }
+  | {
+      metric: 'eau'
+      unit?: WaterUnit | 'auto'
+    }
+)
+
+type CarbonUnit = 'g' | 'kg' | 't'
+type WaterUnit = 'l'
 
 export function formatFootprint(
   value: string | number,
@@ -21,6 +40,7 @@ export function formatFootprint(
     t = (key) => key,
     metric = carboneMetric,
     shouldDivideBy365 = true,
+    unit = 'auto',
   }: Options
 ): {
   formattedValue: string
@@ -36,6 +56,7 @@ export function formatFootprint(
         shouldUseAbbreviation,
         t,
         shouldDivideBy365,
+        unit: unit as WaterUnit | 'auto',
       })
     case carboneMetric:
     default:
@@ -45,6 +66,7 @@ export function formatFootprint(
         maximumFractionDigits: maximumFractionDigits ?? 1,
         shouldUseAbbreviation,
         t,
+        unit: unit as CarbonUnit | 'auto',
       })
   }
 }
@@ -61,54 +83,65 @@ function formatCarbon(
     maximumFractionDigits,
     shouldUseAbbreviation,
     t,
+    unit: unitOption,
   }: {
     localize: boolean
     locale: string
     maximumFractionDigits: number
     shouldUseAbbreviation: boolean
     t: (key: string) => string
+    unit: CarbonUnit | 'auto'
   }
 ): { formattedValue: string; unit: string | null; negative: boolean } {
   const numberValue = Number(value)
 
-  const negative = numberValue < 0
-  const absNumberValue = Math.abs(numberValue)
+  const converted = convertToUnit(numberValue, unitOption)
+  let amount = converted.amount
+  let unitText: string = converted.unit
 
-  let tempValue = 0
-  let unit: string | null = null
-
-  if (absNumberValue > 0 && absNumberValue < 1) {
-    tempValue = absNumberValue * 1000
-    unit = 'g'
-  }
-
-  if (absNumberValue >= 1 && absNumberValue < 1000) {
-    tempValue = Math.round(absNumberValue)
-    unit = 'kg'
-  }
-
-  if (absNumberValue >= 1000) {
-    tempValue = absNumberValue / 1000
-    unit = shouldUseAbbreviation
+  if (converted.unit === 'kg') {
+    amount = Math.round(amount)
+  } else if (converted.unit === 't') {
+    unitText = shouldUseAbbreviation
       ? 't'
       : // Doesn't work perfectly. For example 1.950.toFixed(1) = 1.9 but 1.950.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) = 2
-        Number(tempValue.toFixed(maximumFractionDigits)) < 2
+        Number(amount.toFixed(maximumFractionDigits)) < 2
         ? t('tonne')
         : t('tonnes')
   }
 
-  if (negative) {
-    tempValue = -tempValue
-  }
-
   return {
     formattedValue: localize
-      ? tempValue.toLocaleString(locale, {
+      ? amount.toLocaleString(locale, {
           maximumFractionDigits,
         })
-      : tempValue.toFixed(maximumFractionDigits),
-    unit,
-    negative,
+      : amount.toFixed(maximumFractionDigits),
+    unit: unitText,
+    negative: amount < 0,
+  }
+}
+
+function convertToUnit(
+  amountInKg: number,
+  unit: CarbonUnit | 'auto'
+): { amount: number; unit: CarbonUnit } {
+  switch (unit) {
+    case 'auto': {
+      const abs = Math.abs(amountInKg)
+      if (abs > 0 && abs < 1) return convertToUnit(amountInKg, 'g')
+      if (abs >= 1 && abs < 1000) return convertToUnit(amountInKg, 'kg')
+      return convertToUnit(amountInKg, 't')
+    }
+    case 'g':
+      return { amount: amountInKg * 1000, unit: 'g' }
+    case 'kg':
+      return { amount: amountInKg, unit: 'kg' }
+    case 't':
+      return { amount: amountInKg / 1000, unit: 't' }
+    default:
+      unit satisfies never
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      throw new Error(`Unsupported unit: ${unit}`)
   }
 }
 
@@ -132,6 +165,7 @@ function formatWater(
     shouldUseAbbreviation: boolean
     t: (key: string) => string
     shouldDivideBy365: boolean
+    unit?: WaterUnit | 'auto'
   }
 ): { formattedValue: string; unit: string | null; negative: boolean } {
   const numberValue = shouldDivideBy365 ? Number(value) / 365 : Number(value)

@@ -513,6 +513,10 @@ html[data-useragent*='Trident'] #js {
   @apply mb-2;
 }
 
+.markdown--omit-first-element-margin-top div :first-child {
+  margin-top: 0;
+}
+
 @keyframes rainbow {
   0% {
     background-position: 100% 50%;

@@ -1,8 +1,8 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import { transaction } from '../../../../adapters/prisma/transaction.ts'
 import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../../../core/errors/ForbiddenException.ts'
-import { isPrismaErrorNotFound } from '../../../../core/typeguards/isPrismaError.ts'
 import type {
   EmailWhitelistCreateDto,
   EmailWhitelistParams,

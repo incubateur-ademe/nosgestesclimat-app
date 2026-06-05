@@ -1144,8 +1144,8 @@ entries:
   mon-espace.instructions.list.item1.part2.lock: vos résultats d'empreinte
   mon-espace.welcome.description.part1: Here you can <1>track your results</1>, take <4>action</4> and <7>get other people on board</7>.
   mon-espace.welcome.description.part1.lock: Ici, vous pourrez <1>suivre vos résultats</1>, passer à <4>l’action</4>, et <7>embarquer d’autres personnes</7> avec vous.
-  mon-espace.tabs.actions: Actions
-  mon-espace.tabs.actions.lock: Actions
+  mon-espace.tabs.actions: Take action
+  mon-espace.tabs.actions.lock: J'agis
   mon-espace.tabs.groups: Groups
   mon-espace.tabs.groups.lock: Groupes
   mon-espace.instructions.link.text: Taking the test
@@ -1204,8 +1204,8 @@ entries:
   mon-espace.evolutionGraph.yAxis.lock: Empreinte en tonnes
   mon-espace.evolutionGraph.chartLabel: Carbon footprint evolution graph showing {{simulationsCount}} résultats de test. {{simulationsData}}
   mon-espace.evolutionGraph.chartLabel.lock: Graphique d'évolution de l'empreinte carbone montrant {{simulationsCount}} résultats de test. {{simulationsData}}
-  mon-espace.tabs.myActions: My actions
-  mon-espace.tabs.myActions.lock: Mes actions
+  mon-espace.tabs.myActions: Take action
+  mon-espace.tabs.myActions.lock: J'agis
   mon-espace.tabs.myGroups: Group tests
   mon-espace.tabs.myGroups.lock: Tests collectifs
   mon-espace.resultsList.result.viewDetail: See details
@@ -1379,7 +1379,6 @@ entries:
   Illustration du groupe: Illustration of the group
   Veuillez entrer votre nom.: Please enter your name.
   Un compte avec cette adresse e-mail existe déjà: An account with this e-mail address already exists
-  <0>2,7 millions de personnes</0> <2>ont déjà calculé leur empreinte</2>: <2>Already used by</2> <0>2.7 million people</0>
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Compare your results with your family or a group of friends.
   newsletterManagement.logementNewsletter.title: Our Housing Gestures
   newsletterManagement.logementNewsletter.title.lock: Nos Gestes Logement
@@ -1906,6 +1905,20 @@ entries:
   actions.mTaTerre.title.lock: Tu veux comprendre ET agir pour la planète ?
   actions.mTaTerre.text: 'Climate, biodiversity, energy, food.<2>..</2><1></1><2></2> M<2>ta Terre</2> is the website for you: <5>articles</5>, <7>videos</7>, <10>podcasts</10> and <12>practical tips</12> to take action on a daily basis.'
   actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
+  simulator.age.options.under18: Under 18
+  simulator.age.options.under18.lock: Moins de 18 ans
+  simulator.age.options.18-24: 18 - 24 years
+  simulator.age.options.18-24.lock: 18 - 24 ans
+  simulator.age.options.25-34: 25 - 34 years
+  simulator.age.options.25-34.lock: 25 - 34 ans
+  simulator.age.options.35-49: 35 - 49 years
+  simulator.age.options.35-49.lock: 35 - 49 ans
+  simulator.age.options.50-64: 50 - 64 years
+  simulator.age.options.50-64.lock: 50 - 64 ans
+  simulator.age.options.65AndMore: 65 years and over
+  simulator.age.options.65AndMore.lock: 65 ans et +
+  simulator.age.options.undisclosed: I prefer not to say
+  simulator.age.options.undisclosed.lock: Je préfère ne pas le préciser
   common.skip: Skip
   common.skip.lock: Passer
   tutorial.email.title.youth: Your e-mail address
@@ -1926,62 +1939,87 @@ entries:
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.default.lock: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
-  components.carousel.nextSlideMessage: Next slide
-  components.carousel.nextSlideMessage.lock: Diapo suivante
-  actions.listPage.title: Building my action plan
-  actions.listPage.title.lock: Construire mon plan d’action
-  components.carousel.paginationBulletMessage: Go to slide {{index}}
-  components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
-  components.carousel.prevSlideMessage: Previous slide
-  components.carousel.prevSlideMessage.lock: Diapo précédente
+  simulator.transition.alimentation.graph.arrowText: This graph gives you a better idea of the carbon impact of everything you eat
+  simulator.transition.alimentation.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   components.carousel.firstSlideMessage: This is the first slide
   components.carousel.firstSlideMessage.lock: Ceci est la première diapo
-  actions.components.highestImpactActionsSection.title: The winning trio
-  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
-  components.carousel.lastSlideMessage: This is the last slide
-  components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
-  actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
-  actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.listPage.description: The following actions are recommended based on your answers to the test.<1></1>Choose the ones that seem achievable - the most important thing is to get moving!
-  actions.listPage.description.lock: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  components.carousel.nextSlideMessage: Next slide
+  components.carousel.nextSlideMessage.lock: Diapo suivante
+  components.carousel.prevSlideMessage: Previous slide
+  components.carousel.prevSlideMessage.lock: Diapo précédente
+  components.carousel.paginationBulletMessage: Go to slide {{index}}
+  components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Slide
   components.carousel.itemRoleDescriptionMessage.lock: Diapo
-  components.carousel.roleDescription: Carousel
-  components.carousel.roleDescription.lock: Carrousel
-  common.byDay: / day
-  common.byDay.lock: / jour
-  actions.components.themeSection.description: '{actions.length} recommended actions'
-  actions.components.themeSection.description.lock: '{actions.length} actions recommandées'
+  actions.detailPage.nav: Page navigation
+  actions.detailPage.nav.lock: Navigation de la page
+  actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
+  actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
+  actions.detailPage.impact.title: Potential gains for your footprint
+  actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
+  actions.detailPage.impact.value.lock: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
+  actions.detailPage.sections.act: Taking action
+  actions.detailPage.sections.act.lock: J'agis
   actions.detailPage.404.title: Action not found
   actions.detailPage.404.title.lock: Action non trouvée
-  actions.detailPage.tabs.act: Taking action
-  actions.detailPage.tabs.act.lock: J'agis
   actions.detailPage.sections.furtherReading: Also worth discovering
   actions.detailPage.sections.furtherReading.lock: À découvrir aussi
-  actions.detailPage.tabs.furtherReading: Also worth discovering
-  actions.detailPage.tabs.furtherReading.lock: À découvrir aussi
-  actions.detailPage.tabs.understand: I understand
-  actions.detailPage.tabs.understand.lock: Je comprends
   actions.detailPage.sections.understand: I understand what's at stake
   actions.detailPage.sections.understand.lock: Je comprends l'enjeu
   actions.detailPage.sections.incentives: What's in it for me?
   actions.detailPage.sections.incentives.lock: J'y gagne
-  actions.detailPage.tabs.incentives: What's in it for me?
-  actions.detailPage.tabs.incentives.lock: J'y gagne
-  actions.detailPage.nav: Page navigation
-  actions.detailPage.nav.lock: Navigation de la page
-  actions.detailPage.sections.act: Taking action
-  actions.detailPage.sections.act.lock: J'agis
-  actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
-  actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
-  actions.components.actionCard.link: View the "{action.title}" action
-  actions.components.actionCard.link.lock: Voir l'action "{action.title}"
+  actions.listPage.title: Your personalised actions to reduce your footprint
+  actions.listPage.title.lock: Vos actions personnalisées pour diminuer votre empreinte
+  actions.listPage.description: These actions are personalised according to your answers to the test. Choose the ones you think are achievable and get started!
+  actions.listPage.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.components.actionCard.impactTag: Up to {{formattedValue}} {{unit}} CO<5>2</5>e / year
+  actions.components.actionCard.impactTag.lock: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
+  actions.components.actionCard.noImpactTag: Non-quantifiable impact
+  actions.components.actionCard.noImpactTag.lock: Impact non quantifiable
+  actions.components.actionCard.lowImpactTag: Less than {{formattedValue}} {{unit}} CO<5>2</5>e / year
+  actions.components.actionCard.lowImpactTag.lock: Moins de {{formattedValue}} {{unit}} CO<5>2</5>e / an
+  actions.components.actionCard.impactAssessmentInProgress: Currently being calculated
+  actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
+  actions.components.actionCard.link: View the "{{actionTitle}}" action
+  actions.components.actionCard.link.lock: Voir l'action "{{actionTitle}}"
+  actions.components.highestImpactActionsSection.title: The winning trio
+  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
+  actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
+  actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
+  actions.components.themeSection.description: '{{count}} recommended actions'
+  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
+  actions.components.themeSection.description_other: '{{count}} recommended actions'
+  actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
+  actions.components.themeSection.description_one: '{{count}} recommended action'
+  actions.components.themeSection.description_one.lock: '{{count}} action recommandée'
+  actions.components.themeSection.description_zero: No action recommended
+  actions.components.themeSection.description_zero.lock: Aucune action recommandée
+  components.carousel.roleDescription: Carousel
+  components.carousel.roleDescription.lock: Carrousel
+  common.byDay: / day
+  common.byDay.lock: / jour
+  common.facultatif.uppercase: Optional
+  common.facultatif.uppercase.lock: Facultatif
+  Passer: Go to
+  simulator.tutorial.letsGoButton.label: We're off!
+  simulator.tutorial.letsGoButton.label.lock: C'est parti !
+  components.carousel.lastSlideMessage: This is the last slide
+  components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
+  simulator.age.inputLabel: What age bracket do you fall into?
+  simulator.age.inputLabel.lock: Dans quelle tranche d'âge vous situez-vous ?
+  simulator.age.metadata.title: Getting to know you better - Nos Gestes Climat
+  simulator.age.metadata.title.lock: Pour mieux vous connaitre - Nos Gestes Climat
+  simulator.age.title: Let's start with you. How old are you?
+  simulator.age.title.lock: On commence par vous, quel est votre âge ?
   simulator.transition.housing.graph.arrowText: This graph gives you a better understanding of the carbon impact of different heating methods
   simulator.transition.housing.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
-  simulator.transition.alimentation.graph.arrowText: This graph gives you a better idea of the carbon impact of everything you eat
-  simulator.transition.alimentation.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   simulator.transition.divers.graph.arrowText: This graph shows the carbon footprint of all your digital devices
   simulator.transition.divers.graph.arrowText.lock: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
+  simulator.age.metadata.description: A first question before calculating your climate footprint.
+  simulator.age.metadata.description.lock: Une première question avant de calculer votre empreinte sur le climat.
+  simulator.age.subtitle: We want to get to know our test participants better for statistical purposes.
+  simulator.age.subtitle.lock: Nous cherchons à mieux connaître nos participants au test à des fins statistiques.
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
   iframe.safari.askPermission: Authorise
   iframe.safari.askPermission.lock: Autoriser
@@ -1993,3 +2031,11 @@ entries:
   iframe.safari.step2.lock: Cliquez sur le bouton ci-dessous puis sur "Autoriser" dans la fenêtre qui s'affichera.
   iframe.safari.step1: For the calculator to work, your browser needs to access Nos Gestes Climat cookies.
   iframe.safari.step1.lock: Pour que le calculateur fonctionne, votre navigateur a besoin d'accéder aux cookies de Nos Gestes Climat.
+  homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
+  homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
+  components.markdown.linkTargetBlankAriaLabel: (open in a new window)
+  components.markdown.linkTargetBlankAriaLabel.lock: (ouvrir dans une nouvelle fenêtre)
+  actions.beta-banner.link.aria-label: Leave your opinion, new window
+  actions.beta-banner.link.aria-label.lock: Laisser votre avis, nouvelle fenêtre
+  actions.beta-banner.content: This <1>beta version</1> is currently being improved. Help us improve it by <4>leaving your feedback.</4>
+  actions.beta-banner.content.lock: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>

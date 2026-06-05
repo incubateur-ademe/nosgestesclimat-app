@@ -1,20 +1,24 @@
 import type { Locale } from '@/i18nConfig'
-import type { Action } from '@/types/actions'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
+import TrophyIcon from '../icons/TrophyIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard/ActionCard'
 import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
-  actions: Action[]
+  actions: PersonalizedAction[]
   locale: Locale
+  assessmentStatus?: SimulationComputationStatus | null
 }
 
 export default function HighestImpactActionsSection({
   actions,
   locale,
   className,
+  assessmentStatus,
   ...props
 }: HighestImpactActionsSectionProps) {
   const carouselLabelId = useId()
@@ -31,9 +35,9 @@ export default function HighestImpactActionsSection({
       }}>
       <div className="mb-4 flex gap-2">
         <span
-          className="relative flex size-12 shrink-0 items-center justify-center rounded-lg bg-yellow-500 text-xl shadow-[0px_2px_4px_rgba(240,177,0,.25)]"
+          className="relative flex size-12 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-xl text-indigo-800"
           aria-hidden="true">
-          🏆
+          <TrophyIcon />
         </span>
         <div className="text-white">
           <h2 id={carouselLabelId} className="mb-0 text-lg/normal font-bold">
@@ -57,8 +61,15 @@ export default function HighestImpactActionsSection({
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
-        {actions.map((action) => (
-          <ActionCard key={action.id} action={action} locale={locale} />
+        {actions.map((action, index) => (
+          <ActionCard
+            key={action.id}
+            action={action}
+            locale={locale}
+            assessmentStatus={assessmentStatus}
+            className="h-full"
+            rank={index + 1}
+          />
         ))}
       </ActionsCarousel>
     </section>

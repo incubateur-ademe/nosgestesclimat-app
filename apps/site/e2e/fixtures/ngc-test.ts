@@ -101,6 +101,9 @@ export class NGCTest {
         continue
       }
     }
+    // Use Promise-based timeout instead of page.waitForTimeout
+    // to support both Page and Locator contexts (e.g. iframe tests)
+    await new Promise((resolve) => setTimeout(resolve, 100))
     await this.endButton().click()
   }
 

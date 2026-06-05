@@ -16,11 +16,15 @@ const colorClassNames = {
   orange: 'border-orange-300 text-orange-800 bg-orange-50',
   light: 'border-0 bg-primary-100 text-primary-800',
 }
+
 const sizeClassNames = {
   xs: 'text-xs py-0.5',
   sm: 'text-sm py-0.5',
   md: 'text-base py-1 ',
 }
+
+export type BadgeColor = keyof typeof colorClassNames
+
 export default function Badge({
   children,
   color = 'primary',
@@ -28,12 +32,14 @@ export default function Badge({
   className,
   category,
   tag = 'div',
+  border = true,
 }: PropsWithChildren<{
-  color?: keyof typeof colorClassNames
+  color?: BadgeColor
   size?: 'xs' | 'sm' | 'md'
   className?: string
   category?: string
-  tag?: 'div' | 'span' | 'p'
+  tag?: 'div' | 'span' | 'p' | 'h2' | 'h3' | 'h4'
+  border?: boolean
 }>) {
   const Tag = tag
   return (
@@ -44,6 +50,7 @@ export default function Badge({
         category
           ? `${getBorderColor(category)} ${getTextDarkColor(category)}`
           : colorClassNames[color],
+        border ? '' : 'border-none',
         className
       )}>
       {children}{' '}

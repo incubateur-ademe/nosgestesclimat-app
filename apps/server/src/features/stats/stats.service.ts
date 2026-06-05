@@ -1,4 +1,5 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { isPrismaErrorUniqueConstraintFailed } from '@nosgestesclimat/core/prisma/utils'
 import { isAxiosError } from 'axios'
 import dayjs from 'dayjs'
 import { fetchNewsletter } from '../../adapters/brevo/client.ts'
@@ -10,7 +11,6 @@ import {
   MatomoStatsSource,
   StatsKind,
 } from '../../adapters/prisma/generated.ts'
-import { isPrismaErrorUniqueConstraintFailed } from '../../core/typeguards/isPrismaError.ts'
 import logger from '../../logger.ts'
 import {
   createNewsLetterStats,

@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
+import { test } from '../fixtures/index'
 import { NGCTest } from '../fixtures/ngc-test'
 
 test.describe('/demo-iframe-datashare.html', () => {

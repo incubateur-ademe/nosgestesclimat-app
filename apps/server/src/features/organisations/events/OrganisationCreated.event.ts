@@ -7,7 +7,9 @@ import type { Locales } from '../../../core/i18n/constant.ts'
 import { sanitizeOrganisationAdministratorName } from './event.mapper.ts'
 
 export type OrganisationCreatedEventAttributes = {
-  organisation: Organisation & { administrators: Array<{ user: VerifiedUser }> }
+  organisation: Organisation & {
+    administrators: Array<{ user: VerifiedUser }>
+  }
   administrator: VerifiedUser
   locale: Locales
   origin: string
