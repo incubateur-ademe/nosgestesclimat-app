@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
+import { createPage } from '../fixtures/feature-flags'
 import { NGCTest } from '../fixtures/ngc-test'
 import { Organisation } from '../fixtures/organisations'
 import { Poll } from '../fixtures/polls'
@@ -121,7 +122,8 @@ test.describe('A user with a completed test that joined a poll', () => {
   let page: Page
 
   test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage()
+    page = await createPage(browser)
+
     const adminContext = await browser.newContext({
       storageState: ORGANISATION_ADMIN_STATE,
     })

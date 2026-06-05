@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
-import { DEFAULT_FLAGS, FeatureFlags } from '../fixtures/feature-flags'
+import { createPage } from '../fixtures/feature-flags'
 import { NGCTest } from '../fixtures/ngc-test'
 import { Organisation } from '../fixtures/organisations'
 import { Poll } from '../fixtures/polls'
@@ -25,11 +25,7 @@ test.describe('When a user completes the test via the scolaire poll invite link'
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(60_000)
 
-    page = await browser.newPage()
-
-    // Set feature flags on this page since auto-fixtures don't run in beforeAll
-    const ff = new FeatureFlags(page)
-    await ff.set({ ...DEFAULT_FLAGS })
+    page = await createPage(browser)
 
     const adminContext = await browser.newContext({
       storageState: ORGANISATION_ADMIN_STATE,
