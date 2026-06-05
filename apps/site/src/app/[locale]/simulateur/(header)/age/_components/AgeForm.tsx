@@ -3,9 +3,7 @@
 import { useAgeForm } from '@/app/[locale]/simulateur/(header)/age/_hooks/useAgeForm'
 import ChoiceInput from '@/components/misc/ChoiceInput'
 import Trans from '@/components/translation/trans/TransClient'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 
@@ -21,6 +19,7 @@ export default function AgeForm({ ageRange }: Props) {
 
   return (
     <form
+      noValidate
       onSubmit={(e) => {
         e.preventDefault()
         void handleSubmit()
@@ -57,12 +56,12 @@ export default function AgeForm({ ageRange }: Props) {
           </span>
         </Button>
 
-        <ButtonLink
+        <Button
           color="secondary"
-          href={SIMULATOR_PATH}
+          onClick={() => void handleSubmit()}
           data-testid="skip-age-button">
           <Trans>Passer</Trans>
-        </ButtonLink>
+        </Button>
       </div>
     </form>
   )

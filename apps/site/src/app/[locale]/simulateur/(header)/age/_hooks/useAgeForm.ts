@@ -65,11 +65,11 @@ export function useAgeForm({ t, defaultValue }: Props) {
   const [selectedAge, setSelectedAge] = useState<AgeRange | null>(defaultValue)
 
   const handleSubmit = async () => {
-    if (!selectedAge || isPending) return
+    if (isPending) return
 
     await updateUser({
       userId: user.userId,
-      ageRange: selectedAge,
+      ageRange: selectedAge ?? 'undisclosed',
     })
 
     await revalidateAgePage()
