@@ -47,9 +47,6 @@ export default function IframeDataShareModal({ computedResults }: Props) {
       error: 'The user refused to share his result.',
     }
     window.parent.postMessage(message, '*')
-    if (window.top && window.top !== window) {
-      window.top.postMessage(message, '*')
-    }
 
     postMessageToReactNative(message)
 
