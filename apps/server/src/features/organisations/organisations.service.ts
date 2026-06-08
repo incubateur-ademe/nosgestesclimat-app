@@ -5,6 +5,10 @@ import {
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import {
+  isPrismaErrorNotFound,
+  isPrismaErrorUniqueConstraintFailed,
+} from '@nosgestesclimat/core/prisma/utils'
 import type { Request } from 'express'
 import * as v from 'valibot'
 import { utils, write } from 'xlsx'
@@ -19,10 +23,6 @@ import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
-import {
-  isPrismaErrorNotFound,
-  isPrismaErrorUniqueConstraintFailed,
-} from '../../core/typeguards/isPrismaError.ts'
 import logger from '../../logger.ts'
 import { createToken } from '../authentication/authentication.service.ts'
 import type { JobParams } from '../jobs/jobs.repository.ts'

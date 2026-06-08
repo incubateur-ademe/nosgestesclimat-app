@@ -3,6 +3,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
+import type { Locale } from '@/i18nConfig'
 import TransitionInfoCard from '../_components/TransitionInfoCard'
 import TiltedBadge from '../_components/transitionInfoCard/funFactCard/TiltedBadge'
 
@@ -29,7 +30,7 @@ export async function generateMetadata({
 export default async function Page({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/divers'>) {
-  const { locale } = await params
+  const { locale } = (await params) as { locale: Locale }
   const { t } = await getServerTranslation({ locale })
 
   return (
@@ -86,6 +87,7 @@ export default async function Page({
             )}
             locale={locale}
             type="numerique"
+            className="min-h-330"
           />
         }
         arrowText={

@@ -38,8 +38,8 @@ export default function SimulateurLayout({
   return (
     <div
       className={twMerge(
-        'flex h-screen flex-1 flex-col overflow-scroll',
-        isIframe && 'h-auto md:h-screen'
+        'flex min-h-screen flex-1 flex-col',
+        isIframe && 'h-auto md:min-h-screen'
       )}>
       <TopBar toggleQuestionList={toggleQuestionList} />
 

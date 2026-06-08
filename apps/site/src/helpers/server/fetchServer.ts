@@ -1,17 +1,10 @@
 'use server'
 
 import { SERVER_URL } from '@/constants/urls/main'
+import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
 import { cookies, headers as getHeaders } from 'next/headers'
 import { SERVER_AUTH_COOKIE_NAME } from './dal/authCookie'
-import {
-  ForbiddenError,
-  InternalServerError,
-  InvalidInputError,
-  NotFoundError,
-  TooManyRequestsError,
-  UnauthorizedError,
-  UnknownError,
-} from './error'
+import { InternalServerError } from './error'
 
 export async function fetchServer<T = unknown>(
   url: string,
@@ -49,26 +42,6 @@ export async function fetchServer<T = unknown>(
     credentials: 'include',
     next,
   })
-  if (!response.ok) {
-    switch (response.status) {
-      case 404:
-        throw new NotFoundError()
-      case 401:
-        throw new UnauthorizedError()
-      case 403:
-        throw new ForbiddenError()
-      case 429:
-        throw new TooManyRequestsError()
-      case 400: {
-        const error = (await response.json()) as unknown
-        throw new InvalidInputError(error)
-      }
-      case 500:
-        throw new InternalServerError()
-      default:
-        throw new UnknownError(response.status, await response.text())
-    }
-  }
 
-  return response.json() as T
+  return handleApiResponse<T>(response)
 }

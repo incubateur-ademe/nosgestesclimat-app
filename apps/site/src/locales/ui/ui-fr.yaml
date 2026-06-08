@@ -862,14 +862,10 @@ entries:
   actions.negativeIcon.ariaLabel: Les actions se trouvent en dessous
   actions.thresholdDescription: Actions avec un impact de {{label}} ou plus
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
-  actions.listPage.title: Construire mon plan d’action
-  actions.listPage.description: Les actions suivantes vous sont recommandées d’après vos réponses au test.<1></1>Choisissez-celles qui vous semblent atteignables, l’essentiel, c’est de se mettre en mouvement !
+  actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
+  actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
-  actions.detailPage.tabs.understand: Je comprends
-  actions.detailPage.tabs.act: J'agis
-  actions.detailPage.tabs.incentives: J'y gagne
-  actions.detailPage.tabs.furtherReading: À découvrir aussi
   actions.detailPage.nav: Navigation de la page
   actions.detailPage.sections.understand: Je comprends l'enjeu
   actions.detailPage.sections.act: J'agis
@@ -879,9 +875,10 @@ entries:
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.components.actionCard.link: Voir l'action "{action.title}"
+  actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.noImpactTag: Impact non quantifiable
+  actions.components.actionCard.lowImpactTag: Moins de {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.impactAssessmentInProgress: En cours de calcul
   C'est quoi mon empreinte carbone ?: C'est quoi mon empreinte carbone ?
   Cliquez pour ouvrir la liste des régions disponibles: Cliquez pour ouvrir la liste des régions disponibles
@@ -962,14 +959,14 @@ entries:
   mon-espace.noResults.description: Passez le test pour débloquer le contenu ici
   mon-espace.noResults.link.text: Je calcule mon empreinte
   mon-espace.settings.title: Paramètres
-  mon-espace.tabs.actions: Actions
+  mon-espace.tabs.actions: J'agis
   mon-espace.tabs.groups: Groupes
   mon-espace.tabs.results: Résultats
   mon-espace.tabs.settings: Paramètres
   mon-espace.welcome.close-banner: Fermer la bannière de bienvenue
   mon-espace.welcome.description.part1: Ici, vous pourrez <1>suivre vos résultats</1>, passer à <4>l’action</4>, et <7>embarquer d’autres personnes</7> avec vous.
   mon-espace.welcome.title: Bienvenue dans votre espace Nos Gestes climat !
-  mon-espace.tabs.myActions: Mes actions
+  mon-espace.tabs.myActions: J'agis
   mon-espace.tabs.myGroups: Tests collectifs
   mon-espace.tabs.myResults: Mes résultats
   mon-espace.evolutionGraph.title: Evolution de mes résultats d'empreinte
@@ -1368,6 +1365,13 @@ entries:
   actions.mTaTerre.button: Explorer M ta Terre
   actions.mTaTerre.text: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
   actions.mTaTerre.title: Tu veux comprendre ET agir pour la planète ?
+  simulator.age.options.under18: Moins de 18 ans
+  simulator.age.options.18-24: 18 - 24 ans
+  simulator.age.options.25-34: 25 - 34 ans
+  simulator.age.options.35-49: 35 - 49 ans
+  simulator.age.options.50-64: 50 - 64 ans
+  simulator.age.options.65AndMore: 65 ans et +
+  simulator.age.options.undisclosed: Je préfère ne pas le préciser
   common.authentication.verifyEmail: Vérifier mon adresse électronique
   common.optional: facultatif
   common.skip: Passer
@@ -1378,6 +1382,11 @@ entries:
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.title.default: Votre adresse électronique
   tutorial.email.title.youth: Ton adresse électronique
+  actions.components.themeSection.description: '{{count}} actions recommandées'
+  actions.components.themeSection.description_zero: Aucune action recommandée
+  actions.components.themeSection.description_one: '{{count}} action recommandée'
+  actions.components.themeSection.description_other: '{{count}} actions recommandées'
+  components.markdown.linkTargetBlankAriaLabel: (ouvrir dans une nouvelle fenêtre)
   components.carousel.prevSlideMessage: Diapo précédente
   components.carousel.nextSlideMessage: Diapo suivante
   components.carousel.firstSlideMessage: Ceci est la première diapo
@@ -1385,11 +1394,20 @@ entries:
   components.carousel.paginationBulletMessage: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Diapo
   components.carousel.roleDescription: Carrousel
-  actions.components.themeSection.description: '{{count}} actions recommandées'
   common.byDay: / jour
+  common.facultatif.uppercase: Facultatif
+  Passer: Passer
+  simulator.age.inputLabel: Dans quelle tranche d'âge vous situez-vous ?
+  simulator.age.metadata.description: Une première question avant de calculer votre empreinte sur le climat.
+  simulator.age.metadata.title: Pour mieux vous connaitre - Nos Gestes Climat
+  simulator.age.subtitle: Nous cherchons à mieux connaître nos participants au test à des fins statistiques.
+  simulator.age.title: On commence par vous, quel est votre âge ?
   simulator.transition.alimentation.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone de tout ce que tu manges
   simulator.transition.divers.graph.arrowText: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
   simulator.transition.housing.graph.arrowText: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
+  simulator.tutorial.letsGoButton.label: C'est parti !
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).
   results.actions.afterLink.label: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
+  actions.beta-banner.content: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
+  actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre

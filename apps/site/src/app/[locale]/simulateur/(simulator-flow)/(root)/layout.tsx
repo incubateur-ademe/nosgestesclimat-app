@@ -1,6 +1,10 @@
 import { ClientLayout } from '@/components/layout/ClientLayout'
 import LocalisationBanner from '@/components/translation/LocalisationBanner'
-import { END_PAGE_PATH, START_SIMULATION_PATH } from '@/constants/urls/paths'
+import {
+  AGE_PAGE_PATH,
+  END_PAGE_PATH,
+  START_SIMULATION_PATH,
+} from '@/constants/urls/paths'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import { getUser } from '@/helpers/server/dal/user'
 
@@ -10,6 +14,8 @@ import { parseModelString } from '@/helpers/server/model/models'
 import { getCurrentSimulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { EngineProvider, FormProvider } from '@/publicodes-state'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { getUserAgeRange } from '@/services/users/get-user-age-range'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
@@ -30,10 +36,20 @@ export default async function SimulationLayout({
   if (currentSimulation.progression === 1) {
     redirect(END_PAGE_PATH)
   }
+
+  if (
+    currentSimulation.progression === 0 &&
+    (await getFeatureFlag('ab-test-question-tranche-dage', user.id)) ===
+      'test' &&
+    !(await getUserAgeRange())
+  ) {
+    redirect(AGE_PAGE_PATH)
+  }
   const rules = await getCachedRules({
     modelStr: currentSimulation.model,
     locale: locale as Locale,
   })
+  const model = parseModelString(currentSimulation.model)
   return (
     <ClientLayout
       serverSimulations={serverSimulations}
@@ -42,7 +58,7 @@ export default async function SimulationLayout({
       serverUserId={user.id}>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
       <EngineProvider rules={rules} root="bilan">
-        <LocalisationBanner model={parseModelString(currentSimulation.model)} />
+        {model && <LocalisationBanner model={model} />}
         <FormProvider root="bilan">{children}</FormProvider>
       </EngineProvider>
     </ClientLayout>

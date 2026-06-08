@@ -1,4 +1,5 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import type { CookieOptions } from 'express'
 import jwt from 'jsonwebtoken'
 import {
@@ -14,7 +15,6 @@ import { EntityNotFoundException } from '../../core/errors/EntityNotFoundExcepti
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import {
   createOrUpdateVerifiedUser,
   fetchVerifiedUser,

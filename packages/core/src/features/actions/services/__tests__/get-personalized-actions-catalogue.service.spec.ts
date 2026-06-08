@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { simulationFactory } from '../../../publicodes-computation/factories/simulation.factory.ts'
+import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
@@ -111,7 +111,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const result = await getPersonalizedActionsCatalogue(user.id)
       expect(result).toEqual({
-        assessmentStatus: 'pending',
+        assessmentStatus: null,
         actions: expect.arrayContaining([
           expect.objectContaining({ id: applicable.id, assessment: null }),
           expect.objectContaining({ id: inapplicable.id, assessment: null }),
