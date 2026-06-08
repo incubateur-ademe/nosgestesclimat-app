@@ -76,12 +76,12 @@ export default async function ProfileTab({
           />
           <span className="hidden md:block">
             <Trans locale={locale} i18nKey="mon-espace.tabs.myActions">
-              Mes actions
+              J'agis
             </Trans>
           </span>
           <span className="block text-center text-sm md:hidden">
             <Trans locale={locale} i18nKey="mon-espace.tabs.actions">
-              Actions
+              J'agis
             </Trans>
           </span>
         </span>

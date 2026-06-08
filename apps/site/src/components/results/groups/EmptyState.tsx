@@ -7,7 +7,7 @@ import CreateOrganisation from './emptyState/CreateOrganisation'
 export default function EmptyState() {
   return (
     <>
-      <div className="mt-6 mb-20 flex gap-8">
+      <div className="mt-6 flex gap-8">
         <section>
           <Title
             tag="h2"

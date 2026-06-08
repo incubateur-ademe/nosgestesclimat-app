@@ -1,5 +1,5 @@
-import { expect, test, type Page } from '@playwright/test'
-import { NGCTest } from '../fixtures/ngc-test'
+import { expect } from '@playwright/test'
+import { test } from '../fixtures/index'
 
 test.describe('/demo-iframe-datashare.html', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,21 +9,73 @@ test.describe('/demo-iframe-datashare.html', () => {
   test('displays the data-share modal when simulation is complete', async ({
     page,
   }) => {
+    // Wait for iframe to load
+    await page.waitForTimeout(3000)
+
     const iframe = page.frameLocator('iframe').first()
 
+    // Click skip-tutorial-button inside the iframe
     await iframe.getByTestId('skip-tutorial-button').click()
-    const ngcTest = new NGCTest(iframe.locator('body') as unknown as Page)
-    await ngcTest.skipAllQuestions()
+
+    // Wait for navigation to complete
+    await page.waitForTimeout(3000)
+
+    // In production builds, a full page navigation inside the iframe destroys
+    // the underlying Frame object and creates a new one. Storing a reference to
+    // `iframe.locator('body')` (as NGCTest does) keeps a handle on the old,
+    // now-invalid Frame, causing "Target page, context or browser has been closed"
+    // errors on subsequents calls to `isVisible()` or `click()`.
+    //
+    // To avoid this, we re-acquire the FrameLocator on every iteration via
+    // `page.frameLocator('iframe').first()`. Each call returns a fresh reference
+    // to the current (live) Frame — even after navigation.
+    //
+    // We also use `.catch()` around `isVisible` / `click` to guard against
+    // transient frame-disconnect errors that can occur while the iframe is still
+    // settling after a navigation.
+    for (let i = 0; i < 100; i++) {
+      const endButton = page
+        .frameLocator('iframe')
+        .first()
+        .getByTestId('end-test-button')
+      if (
+        (await endButton.isVisible().catch(() => false)) &&
+        (await endButton.isEnabled().catch(() => false))
+      ) {
+        await endButton.click()
+        break
+      }
+      const skipButton = page
+        .frameLocator('iframe')
+        .first()
+        .getByTestId('skip-question-button')
+      await skipButton.click({ timeout: 3000 }).catch(() => {})
+    }
 
     await expect(
-      iframe.locator('[data-testid="iframe-datashare-modal"]')
+      page
+        .frameLocator('iframe')
+        .first()
+        .locator('[data-testid="iframe-datashare-modal"]')
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 15000,
     })
 
-    await expect(iframe.getByTestId('iframe-datashare-title')).toBeVisible()
-    await expect(iframe.getByTestId('iframe-datashare-accepter')).toBeVisible()
-    await expect(iframe.getByTestId('iframe-datashare-refuser')).toBeVisible()
+    await expect(
+      page.frameLocator('iframe').first().getByTestId('iframe-datashare-title')
+    ).toBeVisible()
+    await expect(
+      page
+        .frameLocator('iframe')
+        .first()
+        .getByTestId('iframe-datashare-accepter')
+    ).toBeVisible()
+    await expect(
+      page
+        .frameLocator('iframe')
+        .first()
+        .getByTestId('iframe-datashare-refuser')
+    ).toBeVisible()
   })
 })
 

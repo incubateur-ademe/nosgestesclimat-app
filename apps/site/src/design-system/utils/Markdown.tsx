@@ -1,10 +1,13 @@
 'use client'
 
+import type { LinkProps } from '@/components/Link'
 import Link from '@/components/Link'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { MarkdownToJSX } from 'markdown-to-jsx'
 import MarkdownToJsx from 'markdown-to-jsx'
 import Image from 'next/image'
 import type { ComponentProps } from 'react'
+import React from 'react'
 import { twMerge } from 'tailwind-merge'
 import ButtonLink from '../buttons/ButtonLink'
 
@@ -12,15 +15,26 @@ type MarkdownProps = ComponentProps<typeof MarkdownToJsx> & {
   className?: string
   components?: MarkdownToJSX.Overrides
   renderers?: Record<string, unknown>
+  forceTargetBlankOnExternalLinks?: boolean
+  omitMarginTopOnFirstElement?: boolean
 }
 
 export default function Markdown({
   children,
   components = {},
+  forceTargetBlankOnExternalLinks = false,
+  omitMarginTopOnFirstElement = false,
   ...otherProps
 }: MarkdownProps) {
   return (
-    <div className="markdown" data-testid="markdown">
+    <div
+      className={twMerge(
+        'markdown',
+        omitMarginTopOnFirstElement
+          ? 'markdown--omit-first-element-margin-top'
+          : ''
+      )}
+      data-testid="markdown">
       <MarkdownToJsx
         {...otherProps}
         options={{
@@ -32,7 +46,7 @@ export default function Markdown({
                 <p {...props} className={twMerge(props.className, 'mb-2!')} />
               ),
             },
-            a: Link,
+            a: forceTargetBlankOnExternalLinks ? TargetBlankExternalLink : Link,
             img: {
               component: ({
                 ...props
@@ -76,4 +90,48 @@ export default function Markdown({
       </MarkdownToJsx>
     </div>
   )
+}
+
+const TargetBlankExternalLink = ({ href, ...props }: LinkProps) => {
+  const { t } = useClientTranslation()
+  const target = isExternalLink(href, process.env.NEXT_PUBLIC_SITE_URL!)
+    ? '_blank'
+    : undefined
+
+  const targetBlankProps: Partial<LinkProps> = {
+    target,
+  }
+
+  if (target === '_blank') {
+    targetBlankProps.rel = 'noopener noreferrer'
+    if (props.children) {
+      targetBlankProps['aria-label'] =
+        `${nodeToText(props.children)} ${t('components.markdown.linkTargetBlankAriaLabel', '(ouvrir dans une nouvelle fenêtre)')}`
+    }
+  }
+
+  return <Link href={href} {...props} {...targetBlankProps} />
+}
+
+function isExternalLink(href: string, siteUrl: string): boolean {
+  try {
+    const url = new URL(href)
+    const site = new URL(siteUrl)
+    return url.origin !== site.origin
+  } catch {
+    return false
+  }
+}
+
+function nodeToText(node: React.ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node)
+  }
+  if (Array.isArray(node)) {
+    return node.map(nodeToText).join('')
+  }
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    return nodeToText(node.props.children)
+  }
+  return ''
 }

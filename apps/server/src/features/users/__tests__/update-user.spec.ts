@@ -108,6 +108,7 @@ describe('Given a NGC user', () => {
             id: userId,
             email: null,
             name: null,
+            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           })
@@ -127,6 +128,7 @@ describe('Given a NGC user', () => {
               id: userId,
               email: null,
               name,
+              ageRange: null,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             })
@@ -155,6 +157,7 @@ describe('Given a NGC user', () => {
             id: userId,
             email: null,
             name: null,
+            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           })
@@ -173,6 +176,7 @@ describe('Given a NGC user', () => {
               id: userId,
               email: null,
               name,
+              ageRange: null,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             })
@@ -212,6 +216,7 @@ describe('Given a NGC user', () => {
             id: userId,
             email,
             name: null,
+            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           })
@@ -248,6 +253,7 @@ describe('Given a NGC user', () => {
               id: userId,
               email,
               name,
+              ageRange: null,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             })
@@ -295,6 +301,7 @@ describe('Given a NGC user', () => {
               id: userId,
               email,
               name: null,
+              ageRange: null,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             })
@@ -330,6 +337,7 @@ describe('Given a NGC user', () => {
                 id: userId,
                 email,
                 name,
+                ageRange: null,
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
               })
@@ -376,6 +384,7 @@ describe('Given a NGC user', () => {
                 id: userId,
                 email,
                 name,
+                ageRange: null,
                 contact: {
                   email: contact!.email,
                   id: contact!.id,
@@ -426,6 +435,7 @@ describe('Given a NGC user', () => {
                 id: userId,
                 email, // Email stays the same (old email)
                 name: null,
+                ageRange: null,
                 contact: {
                   email: contact!.email,
                   id: contact!.id,

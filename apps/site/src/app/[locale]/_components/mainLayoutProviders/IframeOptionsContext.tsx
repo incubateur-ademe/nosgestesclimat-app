@@ -1,10 +1,11 @@
 'use client'
 
-import { verifyIfIntegratorBypassRights } from '@/helpers/iframe/verifyIntegratorBypassRights'
 import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
 import { getIsIframe } from '@/utils/getIsIframe'
-import * as Sentry from '@sentry/nextjs'
 import { createContext, useEffect, useState } from 'react'
+import StorageAccessOverlay from './StorageAccessOverlay'
+import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
+import { useStoragePermissions } from './_hooks/useStoragePermissions'
 
 const STORAGE_KEYS = {
   IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
@@ -14,40 +15,6 @@ const STORAGE_KEYS = {
 } as const
 
 export const BODY_ID = 'ngc-body'
-
-const getIsAllowedToBypassConsentDataShare = () => {
-  if (typeof window === 'undefined') return false
-  // https://stackoverflow.com/questions/6531534/document-location-parent-location-can-they-be-blocked
-
-  const windowLocation = window.location
-  const windowParentLocation = window.parent.location
-
-  if (!windowLocation) {
-    // eslint-disable-next-line no-console
-    console.error('Iframe Nos Gestes Climat: window.location is undefined')
-    Sentry.captureMessage(
-      `Iframe Nos Gestes Climat: window.location is undefined`
-    )
-  }
-
-  if (!windowParentLocation) {
-    // eslint-disable-next-line no-console
-    console.error(
-      'Iframe Nos Gestes Climat: window.parent.location is undefined'
-    )
-    Sentry.captureMessage(
-      `Iframe Nos Gestes Climat: window.parent.location is undefined`
-    )
-  }
-
-  const integratorUrl = new URL(
-    window.location != window.parent.location
-      ? (document.referrer ?? 'about:blank')
-      : (document.location.href ?? 'about:blank')
-  ).origin
-
-  return verifyIfIntegratorBypassRights(integratorUrl)
-}
 
 export const IframeOptionsContext = createContext<{
   isIframe?: boolean
@@ -70,6 +37,9 @@ export const IframeOptionsProvider = ({
 
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
+
+  // Special case : Safari doesn't handle cookies in iframes
+  const { needPermission, askForPermission } = useStoragePermissions()
 
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
     if (!isIframe) return false
@@ -117,8 +87,7 @@ export const IframeOptionsProvider = ({
       setIframeLang(urlLang)
       sessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIframe])
+  }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const isAllowedToBypassConsentDataShare =
     getIsAllowedToBypassConsentDataShare()
@@ -153,7 +122,11 @@ export const IframeOptionsProvider = ({
         iframeLang,
         isFrenchRegion,
       }}>
-      {children}
+      {isIframe && needPermission ? (
+        <StorageAccessOverlay onAskPermission={askForPermission} />
+      ) : (
+        children
+      )}
     </IframeOptionsContext.Provider>
   )
 }

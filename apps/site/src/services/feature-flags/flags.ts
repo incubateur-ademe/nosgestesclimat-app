@@ -5,6 +5,10 @@ export type FlagDefinition =
 export const FLAGS = {
   'actions-v2': { kind: 'boolean' },
   'mode-scolaire': { kind: 'boolean' },
+  'ab-test-question-tranche-dage': {
+    kind: 'variant',
+    variants: ['control', 'test'],
+  },
 } as const satisfies Record<string, FlagDefinition>
 
 export type FeatureFlagName = keyof typeof FLAGS

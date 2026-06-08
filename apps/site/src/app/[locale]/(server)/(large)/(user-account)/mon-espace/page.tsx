@@ -23,7 +23,9 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
 
   return (
     <div>
-      {showWelcomeBanner && <WelcomeBanner locale={locale} />}
+      {showWelcomeBanner && simulations.length > 0 && (
+        <WelcomeBanner locale={locale} />
+      )}
 
       <ResultsView
         onSimulationDelete={async (simulationId) => {

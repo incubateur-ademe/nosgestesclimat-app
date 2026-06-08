@@ -28,7 +28,6 @@ const router = express.Router()
  */
 router
   .route('/v1/me/contact')
-
   .get(
     authentificationMiddleware(),
     validateRequest(FetchUserContactValidator),
@@ -58,11 +57,9 @@ router
     authentificationMiddleware(),
     validateRequest(FetchMeValidator),
     (req, res) => {
-      const user = req.user!
-
       return res.status(StatusCodes.OK).json({
-        id: user.userId,
-        email: user.email,
+        id: req.user!.userId,
+        email: req.user!.email,
       })
     }
   )
