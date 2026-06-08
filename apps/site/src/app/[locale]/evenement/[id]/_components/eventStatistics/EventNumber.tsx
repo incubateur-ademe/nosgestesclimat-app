@@ -1,13 +1,56 @@
+'use client'
+
+import type { Locale } from '@/i18nConfig'
+import { useEffect, useRef, useState } from 'react'
+
 interface Props {
-  value: string
+  value: number
   text: React.ReactNode
+  locale: Locale
 }
 
-export default function EventNumber({ value, text }: Props) {
+export default function EventNumber({ value, text, locale }: Props) {
+  const [animatedValue, setAnimatedValue] = useState(0)
+  const [hasAnimated, setHasAnimated] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const numberFormatter = useRef(new Intl.NumberFormat(locale))
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element || hasAnimated) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasAnimated(true)
+
+          const duration = 1000
+          const startTime = performance.now()
+
+          function animate(now: number) {
+            const elapsed = now - startTime
+            const progress = Math.min(elapsed / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setAnimatedValue(Math.round(eased * value))
+            if (progress < 1) {
+              requestAnimationFrame(animate)
+            }
+          }
+
+          requestAnimationFrame(animate)
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [hasAnimated, value])
+
   return (
-    <div className="flex-1 text-center text-white">
+    <div ref={ref} className="flex-1 text-center text-white">
       <span className="block text-5xl font-bold tracking-tight md:text-6xl">
-        {value}
+        {numberFormatter.current.format(animatedValue)}
       </span>
 
       <span className="block text-center text-sm font-medium uppercase">

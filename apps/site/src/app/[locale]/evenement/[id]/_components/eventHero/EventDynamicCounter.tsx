@@ -30,7 +30,7 @@ export default function EventDynamicCounter({ locale }: Props) {
 
       <div className="mb-6 flex gap-4 md:gap-6">
         <div className="max-w-full min-w-16 md:min-w-36">
-          <CircularProgressbar value={46} text="46%" />
+          <CircularProgressbar value={46} />
         </div>
 
         <div>

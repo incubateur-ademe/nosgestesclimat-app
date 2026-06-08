@@ -17,7 +17,8 @@ export default async function EventStatistics({ locale }: Props) {
     <div className="bg-primary-700 py-12">
       <div className="mx-auto flex w-5xl max-w-full flex-col gap-4 px-4 md:flex-row md:gap-10 md:p-0">
         <EventNumber
-          value={numberFormatter.format(18540)}
+          value={18540}
+          locale={locale}
           text={t(
             'event.statistics.first',
             "calculs d'empreinte carbone déjà réalisés"
@@ -25,7 +26,8 @@ export default async function EventStatistics({ locale }: Props) {
         />
 
         <EventNumber
-          value={numberFormatter.format(56)}
+          value={56}
+          locale={locale}
           text={t(
             'event.statistics.first',
             'actions disponibles pour réduire son empreinte'
@@ -33,7 +35,8 @@ export default async function EventStatistics({ locale }: Props) {
         />
 
         <EventNumber
-          value={numberFormatter.format(352)}
+          value={352}
+          locale={locale}
           text={
             <>
               <span>
