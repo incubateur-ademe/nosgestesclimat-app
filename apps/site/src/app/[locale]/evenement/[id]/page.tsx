@@ -4,10 +4,12 @@ import Main from '@/design-system/layout/Main'
 import type { Locale } from '@/i18nConfig'
 import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
+import EventPodium from './_components/EventPodium'
 import EventStatistics from './_components/EventStatistics'
 
 export default async function EvenementPage({
   params,
+  searchParams,
 }: PageProps<'/[locale]/evenement/[id]'>) {
   const { locale: localeParam } = await params
 
@@ -23,7 +25,10 @@ export default async function EvenementPage({
           <EventHero locale={locale} />
         </div>
         <EventStatistics locale={locale} />
-        {/*<EventPodium />
+        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+          <EventPodium locale={locale} searchParams={searchParams} />
+        </div>
+        {/*
         <EventFunFacts />
         <EventTestimonies />
         <EventTutorial />
