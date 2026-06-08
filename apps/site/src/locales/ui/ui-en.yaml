@@ -1951,6 +1951,12 @@ entries:
   components.carousel.paginationBulletMessage.lock: Aller à la diapo {{index}}
   components.carousel.itemRoleDescriptionMessage: Slide
   components.carousel.itemRoleDescriptionMessage.lock: Diapo
+  components.carousel.roleDescription: Carousel
+  components.carousel.roleDescription.lock: Carrousel
+  common.byDay: / day
+  common.byDay.lock: / jour
+  actions.components.themeSection.description: '{count} recommended actions'
+  actions.components.themeSection.description.lock: '{count} actions recommandées'
   actions.detailPage.nav: Page navigation
   actions.detailPage.nav.lock: Navigation de la page
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
@@ -1987,18 +1993,12 @@ entries:
   actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.components.themeSection.description: '{{count}} recommended actions'
-  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
   actions.components.themeSection.description_other: '{{count}} recommended actions'
   actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
   actions.components.themeSection.description_one: '{{count}} recommended action'
   actions.components.themeSection.description_one.lock: '{{count}} action recommandée'
   actions.components.themeSection.description_zero: No action recommended
   actions.components.themeSection.description_zero.lock: Aucune action recommandée
-  components.carousel.roleDescription: Carousel
-  components.carousel.roleDescription.lock: Carrousel
-  common.byDay: / day
-  common.byDay.lock: / jour
   common.facultatif.uppercase: Optional
   common.facultatif.uppercase.lock: Facultatif
   Passer: Go to
@@ -2021,8 +2021,16 @@ entries:
   simulator.age.subtitle: We want to get to know our test participants better for statistical purposes.
   simulator.age.subtitle.lock: Nous cherchons à mieux connaître nos participants au test à des fins statistiques.
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
-  results.actions.afterLink.label: Discover my custom actions
+  iframe.safari.askPermission: Authorise
+  iframe.safari.askPermission.lock: Autoriser
+  iframe.safari.title: Authorisation required to display the footprint calculator
+  iframe.safari.title.lock: Autorisation requise pour afficher le calculateur d'empreinte
+  results.actions.afterLink.label: Discover my personalised actions
   results.actions.afterLink.label.lock: Découvrir mes actions personnalisées
+  iframe.safari.step2: In some cases, a window will open to confirm the action; please click on "Authorise" in this window.
+  iframe.safari.step2.lock: Dans certains cas, une fenêtre s'ouvrira pour confirmer l'action ; veuillez cliquer sur "Autoriser" dans celle-ci.
+  iframe.safari.step1: For the calculator to work, your browser needs to access Nos Gestes Climat cookies.
+  iframe.safari.step1.lock: Pour que le calculateur fonctionne, votre navigateur a besoin d'accéder aux cookies de Nos Gestes Climat.
   homepage.dynamicCounter.text: <0>3 million</0> <2>carbon footprint simulations already completed</2>
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   components.markdown.linkTargetBlankAriaLabel: (open in a new window)
