@@ -11,11 +11,13 @@ interface Props {
 export default async function EventStatistics({ locale }: Props) {
   const { t } = await getServerTranslation({ locale })
 
+  const numberFormatter = new Intl.NumberFormat(locale)
+
   return (
-    <div className="bg-primary-700">
-      <div className="flex flex-col gap-4 md:flex-row md:gap-10">
+    <div className="bg-primary-700 py-12">
+      <div className="mx-auto flex w-5xl max-w-full flex-col gap-4 px-4 md:flex-row md:gap-10 md:p-0">
         <EventNumber
-          value="18 540"
+          value={numberFormatter.format(18540)}
           text={t(
             'event.statistics.first',
             "calculs d'empreinte carbone déjà réalisés"
@@ -23,15 +25,7 @@ export default async function EventStatistics({ locale }: Props) {
         />
 
         <EventNumber
-          value="18 540"
-          text={t(
-            'event.statistics.first',
-            "calculs d'empreinte carbone déjà réalisés"
-          )}
-        />
-
-        <EventNumber
-          value="56"
+          value={numberFormatter.format(56)}
           text={t(
             'event.statistics.first',
             'actions disponibles pour réduire son empreinte'
@@ -39,7 +33,7 @@ export default async function EventStatistics({ locale }: Props) {
         />
 
         <EventNumber
-          value="352"
+          value={numberFormatter.format(352)}
           text={
             <>
               <span>
@@ -47,7 +41,11 @@ export default async function EventStatistics({ locale }: Props) {
                   Organisations déjà mobilisées
                 </Trans>
 
-                <Link href="/">
+                <br />
+
+                <Link
+                  href="/"
+                  className="hover:text-secondary-100 text-white transition-colors">
                   <Trans i18nKey="event.statistics.third.link" locale={locale}>
                     Rejoignez-les !
                   </Trans>

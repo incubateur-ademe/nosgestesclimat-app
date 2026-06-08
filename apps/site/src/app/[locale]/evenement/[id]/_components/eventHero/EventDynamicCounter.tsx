@@ -12,8 +12,6 @@ const targetValue = 50000
 
 export default function EventDynamicCounter({ locale }: Props) {
   const numberFormatter = new Intl.NumberFormat(locale)
-  const formattedCurrent = numberFormatter.format(currentValue)
-  const formattedTarget = numberFormatter.format(targetValue)
 
   return (
     <div className="flex-1 rounded-t-3xl rounded-b-lg border border-slate-200 p-6 shadow-sm md:rounded-3xl md:p-8">
@@ -44,14 +42,14 @@ export default function EventDynamicCounter({ locale }: Props) {
           <p>
             <span className="mb-1 flex flex-wrap items-baseline gap-1 leading-none! md:flex-nowrap">
               <span className="text-5xl leading-14! font-bold tracking-tight md:text-6xl md:leading-12!">
-                {formattedCurrent}
+                {numberFormatter.format(currentValue)}
               </span>
               <span className="text-2xl leading-none! font-medium tracking-tight text-slate-600 md:text-3xl">
-                /{formattedTarget}
+                /{numberFormatter.format(targetValue)}
               </span>
             </span>
 
-            <span className="inline-block text-sm">
+            <span className="inline-block text-sm md:text-base">
               <Trans i18nKey="event.dynamicCounter.target.text" locale={locale}>
                 calculs d'empreinte carbone
               </Trans>
@@ -61,13 +59,20 @@ export default function EventDynamicCounter({ locale }: Props) {
       </div>
 
       <div className="mb-4">
-        <ButtonLink className="mb-3 w-full" size="lg" href="/">
+        <ButtonLink
+          className="mb-3 w-full text-base md:text-xl"
+          size="xl"
+          href="/">
           <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
             J'engage mon organisation
           </Trans>
         </ButtonLink>
 
-        <ButtonLink className="w-full" href="/" size="lg" color="secondary">
+        <ButtonLink
+          className="w-full text-base md:text-xl"
+          href="/"
+          size="xl"
+          color="secondary">
           <Trans i18nKey="event.dynamicCounter.secondaryCta" locale={locale}>
             Je participe individuellement
           </Trans>
