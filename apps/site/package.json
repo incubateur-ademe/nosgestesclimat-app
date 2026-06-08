@@ -72,6 +72,7 @@
     "posthog-node": "^5.30.6",
     "publicodes": "^1.10.1",
     "react": "19.2.4",
+    "react-circular-progressbar": "^2.2.0",
     "react-dom": "19.2.4",
     "react-easy-emoji": "^1.8.1",
     "react-hook-form": "^7.72.0",

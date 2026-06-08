@@ -1,6 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
+import EventDynamicCounter from './eventHero/EventDynamicCounter'
 
 interface Props {
   locale: Locale
@@ -32,7 +33,8 @@ export default function EventHero({ locale }: Props) {
             </Trans>
           </div>
         </div>
-        <div></div>
+
+        <EventDynamicCounter locale={locale} />
       </div>
     </div>
   )
