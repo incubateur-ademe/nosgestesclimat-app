@@ -1,8 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import type { Locale } from '@/i18nConfig'
-import { CircularProgressbar } from 'react-circular-progressbar'
-import 'react-circular-progressbar/dist/styles.css'
+import CircularProgressbar from './CircularProgressbar'
 
 interface Props {
   locale: Locale
@@ -38,8 +37,8 @@ export default function EventDynamicCounter({ locale }: Props) {
       </div>
 
       <div>
-        <div>
-          <CircularProgressbar value={46} />
+        <div className="w-36 max-w-full">
+          <CircularProgressbar value={46} text="46%" />
         </div>
 
         <div>

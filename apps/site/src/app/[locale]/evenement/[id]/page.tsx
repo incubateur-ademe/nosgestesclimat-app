@@ -1,3 +1,4 @@
+import Footer from '@/components/layout/Footer'
 import HeaderServer from '@/components/layout/HeaderServer'
 import Main from '@/design-system/layout/Main'
 import type { Locale } from '@/i18nConfig'
@@ -26,6 +27,8 @@ export default async function EvenementPage({
         <EventTutorial />
         <EventCTASection />*/}
       </Main>
+
+      <Footer locale={locale} />
     </>
   )
 }
