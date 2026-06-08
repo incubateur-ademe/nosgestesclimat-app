@@ -10,8 +10,8 @@ interface Props {
 export default async function EventDetail({ locale }: Props) {
   const { t } = await getServerTranslation({ locale })
   return (
-    <div>
-      <div>
+    <div className="mt-6 mb-6 flex flex-row items-center gap-5">
+      <div className="w-40 min-w-28">
         <Image
           src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/journee_de_la_terre_2026_8ead81e894.svg"
           width="160"
@@ -24,13 +24,13 @@ export default async function EventDetail({ locale }: Props) {
       </div>
 
       <div>
-        <p className="text-secondary-700 uppercase">
+        <p className="text-secondary-700 mb-0 font-bold uppercase">
           <Trans locale={locale} i18nKey="event.detail.dates">
             Du 18 septembre au 8 octobre 2026
           </Trans>
         </p>
 
-        <p>
+        <p className="text-lg font-medium">
           <Trans locale={locale} i18nKey="event.detail.title">
             La Semaine du
             <br />

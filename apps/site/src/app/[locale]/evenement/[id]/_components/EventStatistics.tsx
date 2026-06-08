@@ -12,7 +12,7 @@ export default async function EventStatistics({ locale }: Props) {
   const { t } = await getServerTranslation({ locale })
 
   return (
-    <div>
+    <div className="bg-primary-700">
       <div className="flex flex-col gap-4 md:flex-row md:gap-10">
         <EventNumber
           value="18 540"

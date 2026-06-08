@@ -18,8 +18,10 @@ export default async function EvenementPage({
       <HeaderServer locale={locale} />
 
       <Main>
-        <EventDetail locale={locale} />
-        <EventHero locale={locale} />
+        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+          <EventDetail locale={locale} />
+          <EventHero locale={locale} />
+        </div>
         <EventStatistics locale={locale} />
         {/*<EventPodium />
         <EventFunFacts />

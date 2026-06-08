@@ -76,7 +76,7 @@ export default function CircularProgressbar({
       <path
         className="CircularProgressbar-trail"
         style={{
-          stroke: '#d6d6d6',
+          stroke: '#fde6f7',
           strokeLinecap: 'round',
           ...getDashStyle(pathRadius, circleRatio, counterClockwise),
         }}
@@ -106,6 +106,7 @@ export default function CircularProgressbar({
           style={{
             fill: '#1a1a1a',
             fontSize: '16px',
+            fontWeight: '500',
             dominantBaseline: 'middle',
             textAnchor: 'middle',
           }}
