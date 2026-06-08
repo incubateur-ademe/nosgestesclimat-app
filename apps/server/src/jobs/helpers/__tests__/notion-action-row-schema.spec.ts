@@ -122,6 +122,20 @@ describe('NotionActionRowSchema', () => {
       const result = v.safeParse(NotionActionRowSchema, row)
       expect(result.success).toBe(false)
     })
+
+    it('should accept null for published_at', () => {
+      const row = generateValidRow({ published_at: null })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.published_at).toBeNull()
+    })
+
+    it('should convert empty string published_at to null', () => {
+      const row = generateValidRow({ published_at: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.published_at).toBeNull()
+    })
   })
 
   describe('rule_id field', () => {
@@ -294,41 +308,159 @@ describe('NotionActionRowSchema', () => {
     })
   })
 
-  it('should handle tips, financial_incentives, and further_explore fields', () => {
-    const row = generateValidRow({
-      tips_fr: 'Test tips',
-      financial_incentives_fr: 'Test incentives',
-      further_explore_fr: 'Test further explore',
+  describe('tips_fr field', () => {
+    it('should handle tips_fr', () => {
+      const row = generateValidRow({ tips_fr: 'Test tips' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.tips_fr).toBe('Test tips')
     })
-    const result = v.safeParse(NotionActionRowSchema, row)
-    expect.assert(result.success)
-    expect(result.output.tips_fr).toBe('Test tips')
-    expect(result.output.financial_incentives_fr).toBe('Test incentives')
-    expect(result.output.further_explore_fr).toBe('Test further explore')
+
+    it('should accept null for tips_fr', () => {
+      const row = generateValidRow({ tips_fr: null })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.tips_fr).toBeNull()
+    })
+
+    it('should convert empty string tips_fr to null', () => {
+      const row = generateValidRow({ tips_fr: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.tips_fr).toBeNull()
+    })
   })
 
-  describe('seo metadata fields', () => {
-    it('should handle seo fields', () => {
+  describe('financial_incentives_fr field', () => {
+    it('should handle financial_incentives_fr', () => {
       const row = generateValidRow({
-        seo_title_fr: 'SEO Title',
-        seo_description_fr: 'SEO Description',
-        seo_json_ld: '{"@context": "https://schema.org"}',
+        financial_incentives_fr: 'Test incentives',
       })
       const result = v.safeParse(NotionActionRowSchema, row)
       expect.assert(result.success)
-      expect(result.output.seo_title_fr).toBe('SEO Title')
-      expect(result.output.seo_description_fr).toBe('SEO Description')
-      expect(result.output.seo_json_ld).toEqual({
-        '@context': 'https://schema.org',
+      expect(result.output.financial_incentives_fr).toBe('Test incentives')
+    })
+
+    it('should accept null for financial_incentives_fr', () => {
+      const row = generateValidRow({ financial_incentives_fr: null })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.financial_incentives_fr).toBeNull()
+    })
+
+    it('should convert empty string financial_incentives_fr to null', () => {
+      const row = generateValidRow({ financial_incentives_fr: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.financial_incentives_fr).toBeNull()
+    })
+  })
+
+  describe('further_explore_fr field', () => {
+    it('should handle further_explore_fr', () => {
+      const row = generateValidRow({
+        further_explore_fr: 'Test further explore',
+      })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.further_explore_fr).toBe('Test further explore')
+    })
+
+    it('should accept null for further_explore_fr', () => {
+      const row = generateValidRow({ further_explore_fr: null })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.further_explore_fr).toBeNull()
+    })
+
+    it('should convert empty string further_explore_fr to null', () => {
+      const row = generateValidRow({ further_explore_fr: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.further_explore_fr).toBeNull()
+    })
+  })
+
+  describe('seo metadata fields', () => {
+    describe('seo_title_fr field', () => {
+      it('should handle seo_title_fr', () => {
+        const row = generateValidRow({ seo_title_fr: 'SEO Title' })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_title_fr).toBe('SEO Title')
+      })
+
+      it('should accept null for seo_title_fr', () => {
+        const row = generateValidRow({ seo_title_fr: null })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_title_fr).toBeNull()
+      })
+
+      it('should convert empty string seo_title_fr to null', () => {
+        const row = generateValidRow({ seo_title_fr: '' })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_title_fr).toBeNull()
       })
     })
 
-    it('should fail if seo_json_ld is not valid JSON', () => {
-      const row = generateValidRow({
-        seo_json_ld: 'not valid json',
+    describe('seo_description_fr field', () => {
+      it('should handle seo_description_fr', () => {
+        const row = generateValidRow({ seo_description_fr: 'SEO Description' })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_description_fr).toBe('SEO Description')
       })
-      const result = v.safeParse(NotionActionRowSchema, row)
-      expect(result.success).toBe(false)
+
+      it('should accept null for seo_description_fr', () => {
+        const row = generateValidRow({ seo_description_fr: null })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_description_fr).toBeNull()
+      })
+
+      it('should convert empty string seo_description_fr to null', () => {
+        const row = generateValidRow({ seo_description_fr: '' })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_description_fr).toBeNull()
+      })
+    })
+
+    describe('seo_json_ld field', () => {
+      it('should handle seo_json_ld', () => {
+        const row = generateValidRow({
+          seo_json_ld: '{"@context": "https://schema.org"}',
+        })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_json_ld).toEqual({
+          '@context': 'https://schema.org',
+        })
+      })
+
+      it('should fail if seo_json_ld is not valid JSON', () => {
+        const row = generateValidRow({
+          seo_json_ld: 'not valid json',
+        })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect(result.success).toBe(false)
+      })
+
+      it('should accept null for seo_json_ld', () => {
+        const row = generateValidRow({ seo_json_ld: null })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_json_ld).toBeNull()
+      })
+
+      it('should convert empty string seo_json_ld to null', () => {
+        const row = generateValidRow({ seo_json_ld: '' })
+        const result = v.safeParse(NotionActionRowSchema, row)
+        expect.assert(result.success)
+        expect(result.output.seo_json_ld).toBeNull()
+      })
     })
   })
 
@@ -375,6 +507,41 @@ describe('NotionActionRowSchema', () => {
       const result = v.safeParse(NotionActionRowSchema, row)
       expect.assert(result.success)
       expect(result.output.media_fr).toBeUndefined()
+    })
+
+    it('should accept null media_fr', () => {
+      const row = generateValidRow({ media_fr: null })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_fr).toBeNull()
+    })
+
+    it('should convert empty string media_fr to null', () => {
+      const row = generateValidRow({ media_fr: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_fr).toBeNull()
+    })
+
+    it('should convert whitespace-only media_fr to null', () => {
+      const row = generateValidRow({ media_fr: '   ' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_fr).toBeNull()
+    })
+
+    it('should accept null media_title_fr', () => {
+      const row = generateValidRow({ media_title_fr: null })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_title_fr).toBeNull()
+    })
+
+    it('should convert empty string media_title_fr to null', () => {
+      const row = generateValidRow({ media_title_fr: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_title_fr).toBeNull()
     })
   })
 })

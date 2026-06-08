@@ -1,6 +1,6 @@
 import { actionAssessmentFactory } from '../src/features/actions/factories/action-assessment.factory.ts'
 import { actionFactory } from '../src/features/actions/factories/action.factory.ts'
-import { simulationFactory } from '../src/features/publicodes-computation/factories/simulation.factory.ts'
+import { simulationFactory } from '../src/features/simulation-computation/factories/simulation.factory.ts'
 import { userFactory } from '../src/features/users/factories/user.factory.ts'
 import { prisma } from '../src/prisma/client.ts'
 

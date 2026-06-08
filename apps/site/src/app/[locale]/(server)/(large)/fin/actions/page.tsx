@@ -4,17 +4,17 @@ import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
-import { getPersonalizedActionsCatalogue } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 
 export default async function ResultatsActionsPage({
   params,
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUser()
-  const flag = await getFeatureFlag('actions-v2', user.id)
+  const flag = await hasActionV2Rollout(user.id)
 
   if (!flag) {
     return <LegacyResultatsActionsPage user={user} locale={locale} />

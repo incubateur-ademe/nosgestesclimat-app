@@ -70,7 +70,9 @@ export default function PollTutorialButton({
       data-testid="skip-tutorial-button"
       className="min-w-42!">
       <Trans locale={locale}>C'est parti !</Trans>{' '}
-      <span aria-hidden="true">→</span>
+      <span aria-hidden="true" className="ml-1">
+        →
+      </span>
     </Button>
   )
 }
