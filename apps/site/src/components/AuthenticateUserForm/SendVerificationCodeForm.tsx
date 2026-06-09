@@ -46,11 +46,14 @@ export default function SendVerificationCodeForm({
   isVerticalLayout = true,
 }: Props) {
   const { t } = useClientTranslation()
-  const { createVerificationCodeError, createVerificationCode } =
-    useCreateVerificationCode({
-      onComplete: onCodeSent,
-      mode,
-    })
+  const {
+    createVerificationCodeError,
+    createVerificationCode,
+    createVerificationCodePending,
+  } = useCreateVerificationCode({
+    onComplete: onCodeSent,
+    mode,
+  })
 
   const user = useUser().user
 
@@ -73,7 +76,8 @@ export default function SendVerificationCodeForm({
       buttonLabel={buttonLabel ?? t('Accéder à mon espace')}
       buttonColor={buttonColor}
       additionnalButton={additionnalButton}
-      isVerticalLayout={isVerticalLayout}>
+      isVerticalLayout={isVerticalLayout}
+      disabled={createVerificationCodePending}>
       <EmailInput
         data-testid="verification-code-email-input"
         containerClassName={isVerticalLayout ? 'w-full' : 'max-w-full w-96'}
@@ -98,7 +102,7 @@ export default function SendVerificationCodeForm({
         CREATE_VERIFICATION_CODE_ERROR.SIGNIN_USER_DOES_NOT_EXIST ? (
         <Alert
           type="error"
-          className="mt-4 max-w-[30rem]"
+          className="mt-4 max-w-120"
           description={
             <Trans i18nKey="signIn.email.error.userDoesNotExist">
               Nous n’avons pas d’e-mail enregistré à cette adresse. Veuillez
@@ -110,7 +114,7 @@ export default function SendVerificationCodeForm({
         CREATE_VERIFICATION_CODE_ERROR.SIGNUP_USER_ALREADY_EXISTS ? (
         <Alert
           type="error"
-          className="mt-4 max-w-[30rem]"
+          className="mt-4 max-w-120"
           description={
             <Trans i18nKey="signIn.email.error.userAlreadyExists">
               Vous avez déjà un compte avec cet e-mail. Merci de vous connecter
@@ -119,7 +123,7 @@ export default function SendVerificationCodeForm({
           }
         />
       ) : (
-        <DefaultSubmitErrorMessage className="mt-4 max-w-[30rem]" />
+        <DefaultSubmitErrorMessage className="mt-4 max-w-120" />
       )}
     </Form>
   )

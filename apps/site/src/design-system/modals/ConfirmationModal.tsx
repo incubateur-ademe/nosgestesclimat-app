@@ -13,6 +13,7 @@ interface Props {
   children: ReactNode
   ariaLabel?: string
   ariaLabelledBy?: string
+  disabled?: boolean
 }
 
 export default function ConfirmationModal({
@@ -22,6 +23,7 @@ export default function ConfirmationModal({
   isLoading,
   ariaLabel,
   ariaLabelledBy,
+  disabled,
 }: Props) {
   return (
     <Modal
@@ -33,12 +35,16 @@ export default function ConfirmationModal({
       <div>{children}</div>
 
       <div className="mt-12 flex flex-wrap justify-center gap-4 md:justify-normal">
-        <Button color="secondary" onClick={!isLoading ? closeModal : () => {}}>
+        <Button
+          disabled={disabled}
+          color="secondary"
+          onClick={!isLoading ? closeModal : () => {}}>
           <Trans>Annuler</Trans>
         </Button>
 
         <Button
           color="primary"
+          disabled={disabled}
           className="xs:order-2 -order-1 w-[140px]"
           onClick={!isLoading ? onConfirm : () => {}}>
           {isLoading ? <Loader /> : <Trans>Confirmer</Trans>}

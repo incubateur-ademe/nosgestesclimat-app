@@ -15,7 +15,7 @@ import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 
 interface Props {
   group: Group
@@ -27,6 +27,8 @@ export default function OwnerAdminSection({ group }: Props) {
   const { mutateAsync: deleteUserOrGroupIfOwner, isSuccess } = useDeleteGroup({
     shouldInvalidateQueries: false,
   })
+
+  const [isPending, startTransition] = useTransition()
 
   const { user } = useUser()
 
@@ -40,23 +42,26 @@ export default function OwnerAdminSection({ group }: Props) {
     }
   }, [])
 
-  async function handleDelete() {
+  function handleDelete() {
     trackMatomoEvent__deprecated(amisDashboardOpenDeleteGroup)
     if (!group) return
 
-    try {
-      await deleteUserOrGroupIfOwner({
-        groupId: group.id,
-        userId: user.userId,
-      })
-      router.refresh()
+    // Use startTransition instead of isPending prop to handle the timeout
+    startTransition(async () => {
+      try {
+        await deleteUserOrGroupIfOwner({
+          groupId: group.id,
+          userId: user.userId,
+        })
+        router.refresh()
 
-      timeoutRef.current = setTimeout(() => {
-        router.push(MON_ESPACE_GROUPS_PATH)
-      }, 2000)
-    } catch (error) {
-      captureException(error)
-    }
+        timeoutRef.current = setTimeout(() => {
+          router.push(MON_ESPACE_GROUPS_PATH)
+        }, 2000)
+      } catch (error) {
+        captureException(error)
+      }
+    })
   }
 
   return (
@@ -87,11 +92,13 @@ export default function OwnerAdminSection({ group }: Props) {
                 setIsConfirming(false)
               }}
               size="sm"
+              disabled={isPending}
               color="secondary">
               <Trans>Annuler</Trans>
             </Button>
 
             <Button
+              disabled={isPending}
               onClick={handleDelete}
               size="sm"
               color="primary"

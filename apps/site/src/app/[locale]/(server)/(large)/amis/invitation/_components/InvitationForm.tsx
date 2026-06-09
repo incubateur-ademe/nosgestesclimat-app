@@ -11,6 +11,7 @@ import { useUser } from '@/publicodes-state'
 import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
 import type { Group } from '@/types/groups'
 import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
 
 import { useForm as useReactHookForm } from 'react-hook-form'
 
@@ -25,6 +26,8 @@ export default function InvitationForm({
   group: Group
   currentSimulation: Simulation
 }) {
+  const [isPending, startTransition] = useTransition()
+
   const { t } = useClientTranslation()
 
   const { user, updateName } = useUser()
@@ -39,21 +42,23 @@ export default function InvitationForm({
 
   const router = useRouter()
 
-  async function onSubmit({ guestName }: Inputs) {
-    updateName(guestName)
+  function onSubmit({ guestName }: Inputs) {
+    startTransition(async () => {
+      updateName(guestName)
 
-    await updateGroupParticipant({
-      groupId: group.id,
-      simulation: currentSimulation,
-      userId: user.userId,
-      name: guestName,
+      await updateGroupParticipant({
+        groupId: group.id,
+        simulation: currentSimulation,
+        userId: user.userId,
+        name: guestName,
+      })
+
+      if (hasCompletedTest) {
+        router.push(getLinkToGroupDashboard({ groupId: group.id }))
+      } else {
+        router.push(TUTORIAL_PATH)
+      }
     })
-
-    if (hasCompletedTest) {
-      router.push(getLinkToGroupDashboard({ groupId: group.id }))
-    } else {
-      router.push(TUTORIAL_PATH)
-    }
   }
 
   return (
@@ -73,7 +78,11 @@ export default function InvitationForm({
         </p>
       )}
 
-      <Button type="submit" data-testid="button-join-group" className="mt-4">
+      <Button
+        disabled={isPending}
+        type="submit"
+        data-testid="button-join-group"
+        className="mt-4">
         {hasCompletedTest ? (
           <Trans>Rejoindre</Trans>
         ) : (

@@ -19,7 +19,7 @@ export default function DeletePollButton() {
 
   const router = useRouter()
 
-  const { mutateAsync: deletePoll, error } = useDeletePoll()
+  const { mutateAsync: deletePoll, isPending, error } = useDeletePoll()
 
   async function handleDeletePoll() {
     try {
@@ -50,6 +50,7 @@ export default function DeletePollButton() {
             'organisations.polls.settings.confirmDeletion',
             'Fenêtre modale de confirmation de suppression du test collectif'
           )}
+          disabled={isPending}
           ariaLabelledBy="delete-poll-title"
           closeModal={() => setIsOpen(false)}
           onConfirm={handleDeletePoll}>

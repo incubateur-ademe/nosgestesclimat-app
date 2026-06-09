@@ -44,8 +44,11 @@ export default function CreationForm() {
     }
   )
 
-  const { mutateAsync: createOrganisation, isError: isErrorUpdateOrga } =
-    useCreateOrganisation()
+  const {
+    mutateAsync: createOrganisation,
+    isPending,
+    isError: isErrorUpdateOrga,
+  } = useCreateOrganisation()
 
   async function onSubmit({
     name,
@@ -207,7 +210,10 @@ export default function CreationForm() {
       {isErrorUpdateOrga && <DefaultSubmitErrorMessage className="mt-4" />}
 
       <div className="mt-8">
-        <Button type="submit" data-testid="create-organisation-button">
+        <Button
+          disabled={isPending}
+          type="submit"
+          data-testid="create-organisation-button">
           <Trans>Créer mon premier test collectif</Trans>
         </Button>
       </div>

@@ -7,6 +7,7 @@ import type { PollToUpdate } from '@/hooks/organisations/polls/useUpdatePoll'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { OrganisationPoll } from '@/types/organisations'
 import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'
+import { useTransition } from 'react'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
 interface Props {
@@ -24,6 +25,8 @@ export default function NameForm({
   expectedNumberOfParticipants,
   updatePoll,
 }: Props) {
+  const [isPending, startTransition] = useTransition()
+
   const {
     register,
     handleSubmit,
@@ -44,21 +47,23 @@ export default function NameForm({
     name: string
     expectedNumberOfParticipants?: number
   }) {
-    try {
-      updatePoll({
-        name,
-        expectedNumberOfParticipants:
-          newExpectedNumberOfParticipants !== undefined
-            ? newExpectedNumberOfParticipants
-            : // If the expectedNumberOfParticipants is empty, we set it to undefined
-              // otherwise reset its value to null
-              expectedNumberOfParticipants
-              ? null
-              : undefined,
-      })
-    } catch {
-      // Error is caught in the parent component
-    }
+    startTransition(() => {
+      try {
+        updatePoll({
+          name,
+          expectedNumberOfParticipants:
+            newExpectedNumberOfParticipants !== undefined
+              ? newExpectedNumberOfParticipants
+              : // If the expectedNumberOfParticipants is empty, we set it to undefined
+                // otherwise reset its value to null
+                expectedNumberOfParticipants
+                ? null
+                : undefined,
+        })
+      } catch {
+        // Error is caught in the parent component
+      }
+    })
   }
 
   return (
@@ -107,7 +112,7 @@ export default function NameForm({
       </div>
 
       <div>
-        <Button type="submit" aria-disabled={!isDirty}>
+        <Button disabled={isPending} type="submit" aria-disabled={!isDirty}>
           Enregistrer
         </Button>
       </div>

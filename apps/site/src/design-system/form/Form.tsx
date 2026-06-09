@@ -14,6 +14,7 @@ interface Props {
   className?: string
   additionnalButton?: React.ReactNode
   isVerticalLayout?: boolean
+  disabled?: boolean
 }
 
 export default function Form({
@@ -24,6 +25,7 @@ export default function Form({
   error,
   className,
   isVerticalLayout = true,
+  disabled,
   ...props
 }: Props) {
   const errorId = 'form-error'
@@ -58,6 +60,7 @@ export default function Form({
             className={twMerge(!isVerticalLayout && 'lg:mt-8 lg:h-14')}
             type="submit"
             data-testid="button-submit"
+            disabled={disabled}
             color={buttonColor}>
             {buttonLabel ?? <Trans>Enregistrer</Trans>}
           </Button>

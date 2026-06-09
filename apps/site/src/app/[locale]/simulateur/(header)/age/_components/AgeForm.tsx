@@ -58,6 +58,7 @@ export default function AgeForm({ ageRange }: Props) {
 
         <Button
           color="secondary"
+          disabled={isPending}
           onClick={() => void handleSubmit()}
           data-testid="skip-age-button">
           <Trans>Passer</Trans>
