@@ -6,7 +6,7 @@ const redirects = [
   },
   {
     source: '/modele',
-    destination: '/doc',
+    destination: '/documentation',
     permanent: true,
   },
   {
@@ -26,7 +26,7 @@ const redirects = [
   },
   {
     source: '/documentation/modele',
-    destination: '/modele',
+    destination: '/documentation',
     permanent: true,
   },
   // Compte U
@@ -108,7 +108,7 @@ const redirects = [
   },
   {
     source: '/mod%C3%A8le',
-    destination: '/modele',
+    destination: '/documentation',
     permanent: true,
   },
   {
