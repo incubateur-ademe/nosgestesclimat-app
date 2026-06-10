@@ -1,5 +1,6 @@
 import ActionsPage from '@/components/actions/pages/ActionsPage'
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
+import Trans from '@/components/translation/trans/TransServer'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import type { AppUser } from '@/helpers/server/dal/user'
@@ -36,6 +37,17 @@ export default async function ResultatsActionsPage({
 
   return (
     <ActionsPage
+      title={
+        <Trans locale={locale} i18nKey="actions.listPage.title">
+          Vos actions personnalisées pour diminuer votre empreinte
+        </Trans>
+      }
+      description={
+        <Trans locale={locale} i18nKey="actions.listPage.description">
+          Ces actions sont personnalisées selon vos réponses au test. Choisissez
+          celles qui vous semblent atteignables et lancez-vous !
+        </Trans>
+      }
       topActions={actionsCatalogue.topActions}
       actions={actionsCatalogue.actions}
       assessmentStatus={actionsCatalogue.assessmentStatus}
