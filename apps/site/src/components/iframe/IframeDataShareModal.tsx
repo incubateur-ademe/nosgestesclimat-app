@@ -26,6 +26,11 @@ export default function IframeDataShareModal({ computedResults }: Props) {
 
   // Directly share data if allowed to bypass the consent data share
   useEffect(() => {
+    console.log('isIframeShareData', isIframeShareData)
+    console.log(
+      'isIntegratorAllowedToBypassConsentDataShare',
+      isIntegratorAllowedToBypassConsentDataShare
+    )
     if (!isIframeShareData || !isIntegratorAllowedToBypassConsentDataShare)
       return
 
