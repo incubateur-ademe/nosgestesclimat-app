@@ -17,6 +17,17 @@ interface TutorielProps {
  * Prefix path with the current locale unless it is the default locale
  */
 export function getLocalizedPath(path: string, locale: string) {
+  // Avoid prefixing non-local paths
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('mailto:') ||
+    path.startsWith('tel:') ||
+    path.startsWith('#')
+  ) {
+    return path
+  }
+
   if (locale && locale !== i18nConfig.defaultLocale) {
     const cleanPath = path.startsWith('/') ? path : `/${path}`
     return cleanPath === '/' ? `/${locale}` : `/${locale}${cleanPath}`

@@ -18,7 +18,17 @@ const getLanguage = () => {
     return pathLocale
   }
 
-  // 2. Try to get locale from NEXT_LOCALE cookie
+  // 2. Try to get locale from sessionStorage (useful in iframes where cookies are blocked)
+  try {
+    const iframeLang = window.sessionStorage.getItem('ngc-iframe-lang')
+    if (iframeLang && languages.includes(iframeLang)) {
+      return iframeLang
+    }
+  } catch (error) {
+    // Ignore sessionStorage access errors
+  }
+
+  // 3. Try to get locale from NEXT_LOCALE cookie
   const cookie = document.cookie
   const match = /NEXT_LOCALE=([^;]+)/.exec(cookie)
   const cookieLocale = match ? match[1] : null

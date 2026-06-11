@@ -1,5 +1,7 @@
 'use client'
 
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
+import { useLocale } from '@/hooks/useLocale'
 import NextLink from 'next/link'
 import type {
   HTMLAttributes,
@@ -27,9 +29,12 @@ export default function Link({
   target,
   ...props
 }: LinkProps) {
+  const locale = useLocale()
+  const localizedHref = getLocalizedPath(href, locale)
+
   return (
     <NextLink
-      href={href}
+      href={localizedHref}
       className={twMerge(
         'text-primary-700 hover:text-primary-800 break-words underline transition-colors',
         className
