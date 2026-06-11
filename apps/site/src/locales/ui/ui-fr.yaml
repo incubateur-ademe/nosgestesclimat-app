@@ -866,9 +866,9 @@ entries:
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
   actions.publicListPage.title: J'agis pour le climat, pas à pas
-  actions.publicListPage.description: Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.description: Choisissez les actions qui vous semblent atteignables et lancez-vous !
   actions.publicListPage.metaTitle: J'agis pour le climat, pas à pas
-  actions.publicListPage.metaDescription: Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.metaDescription: Choisissez les actions qui vous semblent atteignables et lancez-vous !
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.detailPage.nav: Navigation de la page

@@ -2045,10 +2045,10 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
-  actions.publicListPage.description: Choose the ones that seem achievable to you and get started!
-  actions.publicListPage.description.lock: Choisissez celles qui vous semblent atteignables et lancez-vous !
-  actions.publicListPage.metaDescription: Choose the ones that seem achievable to you and get started!
-  actions.publicListPage.metaDescription.lock: Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.description: Choose actions that seem achievable to you and get started!
+  actions.publicListPage.description.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.metaDescription: Choose actions that seem achievable to you and get started!
+  actions.publicListPage.metaDescription.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
   actions.publicListPage.title: I’m taking action on climate change, one step at a time
   actions.publicListPage.title.lock: J'agis pour le climat, pas à pas
   actions.publicListPage.metaTitle: I’m taking action on climate change, one step at a time
