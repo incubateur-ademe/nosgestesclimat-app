@@ -1,5 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
 import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
@@ -15,7 +16,6 @@ import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
 import Tutorial from '../../_components/Tutorial'
 import YouthTutorial from '../../_components/YouthTutorial'
-import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export default async function CampagnePage({
   params,

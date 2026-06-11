@@ -1,5 +1,6 @@
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 import { getUser } from '@/helpers/server/dal/user'
 import {
   getCompletedSimulations,
@@ -8,7 +9,6 @@ import {
 import { redirect } from 'next/navigation'
 import Tutorial from '../_components/Tutorial'
 import ButtonNext from './_components/ButtonNext'
-import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export default async function TutorielPage({
   params,

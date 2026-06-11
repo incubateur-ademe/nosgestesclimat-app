@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  isStorageAccessApiSupported,
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'

@@ -1,4 +1,5 @@
 import { SIMULATOR_PATH, TUTORIAL_PATH } from '@/constants/urls/paths'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 import { getUser } from '@/helpers/server/dal/user'
 import { stringifyModel } from '@/helpers/server/model/models'
 import {
@@ -8,7 +9,6 @@ import {
 import type { Locale } from '@/i18nConfig'
 import { redirect } from 'next/navigation'
 import { getNewSimulationModelService } from '../_service/getNewSimulationModelService'
-import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export default async function Commencer({
   searchParams,

@@ -1,11 +1,10 @@
 'use client'
 
+import { languages } from '@/constants/localisation/translation'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { getOptions } from './settings'
 import { translations } from './translation'
-
-import { languages } from '@/constants/localisation/translation'
 
 const getLanguage = () => {
   if (typeof window === 'undefined') return 'fr'
@@ -24,7 +23,7 @@ const getLanguage = () => {
     if (iframeLang && languages.includes(iframeLang)) {
       return iframeLang
     }
-  } catch (error) {
+  } catch {
     // Ignore sessionStorage access errors
   }
 
