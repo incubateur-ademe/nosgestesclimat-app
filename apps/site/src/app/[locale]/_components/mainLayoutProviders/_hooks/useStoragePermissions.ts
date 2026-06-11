@@ -29,6 +29,7 @@ export const useStoragePermissions = (): {
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
     } catch (error) {
+      // eslint-disable-next-line
       console.log(error)
       captureException(error)
       // Do nothing
