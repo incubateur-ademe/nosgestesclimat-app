@@ -6,7 +6,7 @@ import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getUser } from '@/helpers/server/dal/user'
 import { getPublicActionsCatalogue } from '@/services/actions/get-public-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
-import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import { notFound } from 'next/navigation'
 
@@ -23,7 +23,7 @@ export default async function PublicActionsCatalogue({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUser()
-  const flag = await hasActionV2Rollout(user.id)
+  const flag = await getFeatureFlag('actions-v2', user.id)
 
   if (!flag) {
     notFound()
