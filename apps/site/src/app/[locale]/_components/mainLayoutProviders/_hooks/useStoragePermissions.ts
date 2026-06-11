@@ -19,50 +19,38 @@ export const useStoragePermissions = (): {
     requiresStoragePermissions()
       .then(setNeedPermission)
       .catch(() => {
-        // Keep the conservative default (true)
+        // Keep the conservative default (false)
       })
   }, [])
 
   const askForPermission = useCallback(async () => {
-    // Step 1: request storage access
     try {
-      // eslint-disable-next-line
-      console.log('[StorageAccess] Calling requestStorageAccess…')
       await requestStorageAccess()
-      // eslint-disable-next-line
-      console.log('[StorageAccess] requestStorageAccess succeeded')
     } catch (error) {
-      // eslint-disable-next-line
-      console.warn('[StorageAccess] requestStorageAccess failed:', {
-        error,
-        type: typeof error,
-        constructor: error?.constructor?.name,
-        // @ts-expect-error eojef
-        message: error?.message,
-      })
+      // Safari 18+ may reject requestStorageAccess() without a prompt
+      // (e.g. cross-origin iframe without prior user interaction).
+      // The rejection reason can be undefined, a DOMException, or a
+      // timeout error. In all cases, fall back to showing the content
+      // rather than leaving the user stuck behind an undismissable overlay.
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[StorageAccess] Could not obtain storage access, proceeding anyway:',
+        error
+      )
       captureException(error)
+      setNeedPermission(false)
       return
     }
 
-    // Step 2: re-check permissions
+    // Storage access was granted — re-check to confirm
     try {
       const needsPermission = await requiresStoragePermissions()
-      // eslint-disable-next-line
-      console.log(
-        '[StorageAccess] requiresStoragePermissions result:',
-        needsPermission
-      )
       setNeedPermission(needsPermission)
     } catch (error) {
-      // eslint-disable-next-line
-      console.warn('[StorageAccess] requiresStoragePermissions failed:', {
-        error,
-        type: typeof error,
-        constructor: error?.constructor?.name,
-        // @ts-expect-error eojef
-        message: error?.message,
-      })
+      // eslint-disable-next-line no-console
+      console.warn('[StorageAccess] requiresStoragePermissions failed:', error)
       captureException(error)
+      setNeedPermission(false)
     }
   }, [])
 
