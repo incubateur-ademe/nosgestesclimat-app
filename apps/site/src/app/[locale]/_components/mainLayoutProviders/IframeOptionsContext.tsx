@@ -1,6 +1,7 @@
 'use client'
 
 import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
+import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { getIsIframe } from '@/utils/getIsIframe'
 import { createContext, useEffect, useState } from 'react'
 import StorageAccessOverlay from './StorageAccessOverlay'
@@ -43,49 +44,49 @@ export const IframeOptionsProvider = ({
 
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
     if (!isIframe) return false
-    return sessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
+    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
   })
   const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(() => {
     if (!isIframe) return false
     return (
-      sessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
+      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
     )
   })
   const [iframeLang, setIframeLang] = useState<string | null>(() => {
     if (!isIframe) return null
-    return sessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
+    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
   })
   const [iframeRegion, setIframeRegion] = useState<string | null>(() => {
     if (!isIframe) return null
-    return sessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
+    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
   })
 
-  // Read iframe parameters from URL and persist to sessionStorage
+  // Read iframe parameters from URL and persist to safeSessionStorage
   useEffect(() => {
     if (!isIframe) return
 
     const urlShareData = Boolean(searchParams.get('shareData'))
     if (urlShareData) {
       setIsIframeShareData(true)
-      sessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
+      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
     }
 
     const urlOnlySimulation = Boolean(searchParams.get('onlySimulation'))
     if (urlOnlySimulation) {
       setIsIframeOnlySimulation(true)
-      sessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
+      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
     }
 
     const urlRegion = searchParams.get('region')
     if (urlRegion) {
       setIframeRegion(urlRegion)
-      sessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, urlRegion)
+      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, urlRegion)
     }
 
     const urlLang = searchParams.get('lang')
     if (urlLang) {
       setIframeLang(urlLang)
-      sessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
+      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
     }
   }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
 

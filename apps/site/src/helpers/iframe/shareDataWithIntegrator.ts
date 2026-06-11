@@ -3,24 +3,32 @@ import type { ComputedResults } from '@/publicodes-state/types'
 import { postMessageToReactNative } from './postMessageToReactNative'
 
 export function shareDataWithIntegrator(computedResults: ComputedResults) {
-  const sharedData = {
-    t: computedResults[carboneMetric].categories.transport,
-    a: computedResults[carboneMetric].categories.alimentation,
-    l: computedResults[carboneMetric].categories.logement,
-    d: computedResults[carboneMetric].categories.divers,
-    s: computedResults[carboneMetric].categories['services sociétaux'],
-    footprints: {
-      carbon: computedResults[carboneMetric],
-      water: computedResults[eauMetric],
-    },
+  try {
+    const sharedData = {
+      t: computedResults[carboneMetric].categories.transport,
+      a: computedResults[carboneMetric].categories.alimentation,
+      l: computedResults[carboneMetric].categories.logement,
+      d: computedResults[carboneMetric].categories.divers,
+      s: computedResults[carboneMetric].categories['services sociétaux'],
+      footprints: {
+        carbon: computedResults[carboneMetric],
+        water: computedResults[eauMetric],
+      },
+    }
+
+    const message = {
+      messageType: 'ngc-iframe-share',
+      data: sharedData,
+    }
+
+    window.parent.postMessage(message, '*')
+
+    postMessageToReactNative(message)
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log(
+      'NGC - shareDataWithIntegrator - Error when posting message to React Native',
+      error
+    )
   }
-
-  const message = {
-    messageType: 'ngc-iframe-share',
-    data: sharedData,
-  }
-
-  window.parent.postMessage(message, '*')
-
-  postMessageToReactNative(message)
 }

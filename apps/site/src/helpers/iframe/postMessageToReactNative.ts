@@ -20,6 +20,14 @@ export function postMessageToReactNative(message: unknown) {
   ).ReactNativeWebView
 
   if (rnWebView?.postMessage) {
-    rnWebView.postMessage(JSON.stringify(message))
+    try {
+      rnWebView.postMessage(JSON.stringify(message))
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log(
+        'NGC - postMessageToReactNative - Error when posting message to React Native',
+        error
+      )
+    }
   }
 }

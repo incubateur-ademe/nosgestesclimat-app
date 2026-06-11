@@ -23,12 +23,16 @@ export default function IframeDataShareModal({ computedResults }: Props) {
 
   const { isIframeShareData, isIntegratorAllowedToBypassConsentDataShare } =
     useIframe()
+  // eslint-disable-next-line
+  console.log('NGC - IframeDataShareModal rendered')
 
   // Directly share data if allowed to bypass the consent data share
   useEffect(() => {
-    console.log('isIframeShareData', isIframeShareData)
+    // eslint-disable-next-line
+    console.log('NGC - useEffect - isIframeShareData', isIframeShareData)
+    // eslint-disable-next-line
     console.log(
-      'isIntegratorAllowedToBypassConsentDataShare',
+      'NGC - useEffect - isIntegratorAllowedToBypassConsentDataShare',
       isIntegratorAllowedToBypassConsentDataShare
     )
     if (!isIframeShareData || !isIntegratorAllowedToBypassConsentDataShare)
