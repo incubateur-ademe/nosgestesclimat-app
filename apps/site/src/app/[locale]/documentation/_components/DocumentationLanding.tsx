@@ -60,7 +60,7 @@ export default async function DocumentationLanding({
           </p>
 
           <div>
-            <Link href="/modele" className="flex items-center">
+            <Link href="/documentation" className="flex items-center">
               <LightBulbIcon className="fill-primary-700 mr-1 h-4 w-4" />
               <Trans> En savoir plus sur notre modèle</Trans>
             </Link>
