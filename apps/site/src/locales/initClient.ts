@@ -9,7 +9,14 @@ import { translations } from './translation'
 const getLanguage = () => {
   if (typeof window === 'undefined') return 'fr'
 
-  // 1. Try to get locale from URL pathname prefix
+  // 1. Try to get locale from URL search param (most explicit, used by iframe integrators)
+  const searchParams = new URLSearchParams(window.location.search)
+  const urlParamLocale = searchParams.get('lang')
+  if (urlParamLocale && languages.includes(urlParamLocale)) {
+    return urlParamLocale
+  }
+
+  // 2. Try to get locale from URL pathname prefix
   const pathname = window.location.pathname
   const pathParts = pathname.split('/')
   const pathLocale = pathParts[1]
@@ -17,7 +24,7 @@ const getLanguage = () => {
     return pathLocale
   }
 
-  // 2. Try to get locale from sessionStorage (useful in iframes where cookies are blocked)
+  // 3. Try to get locale from sessionStorage (useful in iframes where cookies are blocked)
   try {
     const iframeLang = window.sessionStorage.getItem('ngc-iframe-lang')
     if (iframeLang && languages.includes(iframeLang)) {
@@ -27,7 +34,7 @@ const getLanguage = () => {
     // Ignore sessionStorage access errors
   }
 
-  // 3. Try to get locale from NEXT_LOCALE cookie
+  // 4. Try to get locale from NEXT_LOCALE cookie
   const cookie = document.cookie
   const match = /NEXT_LOCALE=([^;]+)/.exec(cookie)
   const cookieLocale = match ? match[1] : null
