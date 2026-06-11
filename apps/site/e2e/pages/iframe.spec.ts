@@ -101,14 +101,42 @@ test.describe('/demo-iframeSimulation.html', () => {
   })
 })
 
+test.describe('/demos/demo-iframeSimulation-fr.html', () => {
+  test.use({ locale: 'en-US' })
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/demos/demo-iframeSimulation-fr.html')
+  })
+
+  test('displays the French version even when the browser is in English', async ({
+    page,
+  }) => {
+    const iframe = page.frameLocator('iframe').first()
+    await expect(iframe.getByTestId('skip-tutorial-button')).toBeVisible({
+      timeout: 10000,
+    })
+    await expect(iframe.getByTestId('skip-tutorial-button')).toContainText(
+      "C'est parti !"
+    )
+  })
+})
+
 test.describe('/demos/demo-iframeSimulation-en.html', () => {
+  test.use({ locale: 'fr-FR' })
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/demos/demo-iframeSimulation-en.html')
   })
 
-  test('displays the English version of the iframe correctly', async ({ page }) => {
+  test('displays the English version even when the browser is in French', async ({
+    page,
+  }) => {
     const iframe = page.frameLocator('iframe').first()
-    await expect(iframe.getByTestId('skip-tutorial-button')).toBeVisible({ timeout: 10000 })
-    await expect(iframe.getByTestId('skip-tutorial-button')).toContainText("Start now!")
+    await expect(iframe.getByTestId('skip-tutorial-button')).toBeVisible({
+      timeout: 10000,
+    })
+    await expect(iframe.getByTestId('skip-tutorial-button')).toContainText(
+      'Start now!'
+    )
   })
 })

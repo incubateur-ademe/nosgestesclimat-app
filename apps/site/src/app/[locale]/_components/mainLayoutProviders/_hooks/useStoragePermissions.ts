@@ -4,6 +4,7 @@ import {
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'
+import { captureException } from '@sentry/nextjs'
 import { useCallback, useEffect, useState } from 'react'
 
 export const useStoragePermissions = (): {
@@ -27,7 +28,9 @@ export const useStoragePermissions = (): {
       await requestStorageAccess()
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
-    } catch {
+    } catch (error) {
+      console.log(error)
+      captureException(error)
       // Do nothing
     }
   }, [])
