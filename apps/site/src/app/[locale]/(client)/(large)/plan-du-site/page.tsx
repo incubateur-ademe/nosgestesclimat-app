@@ -111,10 +111,6 @@ export default async function PlanDuSitePage({ params }: DefaultPageProps) {
       },
     },
     Documentations: {
-      modele: {
-        title: t('Le modèle Nos Gestes Climat'),
-        href: '/modele',
-      },
       documentation: {
         title: t('Documentation'),
         href: '/documentation',
