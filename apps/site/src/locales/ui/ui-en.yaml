@@ -2002,7 +2002,7 @@ entries:
   common.facultatif.uppercase: Optional
   common.facultatif.uppercase.lock: Facultatif
   Passer: Go to
-  simulator.tutorial.letsGoButton.label: We're off!
+  simulator.tutorial.letsGoButton.label: Start now!
   simulator.tutorial.letsGoButton.label.lock: C'est parti !
   components.carousel.lastSlideMessage: This is the last slide
   components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo

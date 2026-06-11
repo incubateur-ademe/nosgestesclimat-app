@@ -11,9 +11,7 @@ export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
 } => {
-  const [needPermission, setNeedPermission] = useState(() =>
-    isStorageAccessApiSupported()
-  )
+  const [needPermission, setNeedPermission] = useState(false)
 
   // On mount, check if storage access is already granted (e.g. after a
   // Safari auto-reload following a successful requestStorageAccess grant).

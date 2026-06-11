@@ -100,3 +100,15 @@ test.describe('/demo-iframeSimulation.html', () => {
     expect(iframe.getByTestId('skip-tutorial-button')).toBeDefined()
   })
 })
+
+test.describe('/demos/demo-iframeSimulation-en.html', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/demos/demo-iframeSimulation-en.html')
+  })
+
+  test('displays the English version of the iframe correctly', async ({ page }) => {
+    const iframe = page.frameLocator('iframe').first()
+    await expect(iframe.getByTestId('skip-tutorial-button')).toBeVisible({ timeout: 10000 })
+    await expect(iframe.getByTestId('skip-tutorial-button')).toContainText("Start now!")
+  })
+})
