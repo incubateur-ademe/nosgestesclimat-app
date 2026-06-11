@@ -2191,10 +2191,10 @@ entries:
   poll.shareSection.sendByEmail.lock: Envoyer par e-mail
   poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
   poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
-  actions.publicListPage.description: Choose the ones that seem achievable to you and get started!
-  actions.publicListPage.description.lock: Choisissez celles qui vous semblent atteignables et lancez-vous !
-  actions.publicListPage.metaDescription: Choose the ones that seem achievable to you and get started!
-  actions.publicListPage.metaDescription.lock: Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.description: Choose actions that seem achievable to you and get started!
+  actions.publicListPage.description.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.metaDescription: Choose actions that seem achievable to you and get started!
+  actions.publicListPage.metaDescription.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
   actions.publicListPage.title: I’m taking action on climate change, one step at a time
   actions.publicListPage.title.lock: J'agis pour le climat, pas à pas
   actions.publicListPage.metaTitle: I’m taking action on climate change, one step at a time

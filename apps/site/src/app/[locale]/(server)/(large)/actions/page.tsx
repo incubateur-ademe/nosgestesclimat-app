@@ -43,7 +43,7 @@ export default async function PublicActionsCatalogue({
       }
       description={
         <Trans locale={locale} i18nKey="actions.publicListPage.description">
-          Choisissez celles qui vous semblent atteignables et lancez-vous !
+          Choisissez les actions qui vous semblent atteignables et lancez-vous !
         </Trans>
       }
       cta={<CTAButtons locale={locale} withRestart />}
