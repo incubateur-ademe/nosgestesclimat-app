@@ -15,6 +15,7 @@ import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
 import Tutorial from '../../_components/Tutorial'
 import YouthTutorial from '../../_components/YouthTutorial'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export default async function CampagnePage({
   params,
@@ -41,7 +42,7 @@ export default async function CampagnePage({
     currentSimulation.progression < 1 &&
     currentSimulation.polls?.some((p) => p.id === poll.id)
   ) {
-    redirect(SIMULATOR_PATH)
+    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
   }
 
   async function createNewSimulation() {
@@ -56,7 +57,7 @@ export default async function CampagnePage({
         mode: poll.mode,
       }),
     })
-    redirect(SIMULATOR_PATH)
+    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
   }
 
   async function reuseSimulation() {
@@ -67,7 +68,7 @@ export default async function CampagnePage({
       simulation: lastCompletedSimulation,
       locale,
     })
-    redirect(SIMULATOR_PATH)
+    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
   }
 
   const allowToReuseExistingSimulation =

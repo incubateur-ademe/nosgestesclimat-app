@@ -8,6 +8,7 @@ import {
 import { redirect } from 'next/navigation'
 import Tutorial from '../_components/Tutorial'
 import ButtonNext from './_components/ButtonNext'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export default async function TutorielPage({
   params,
@@ -21,11 +22,11 @@ export default async function TutorielPage({
   ])
 
   if (!currentSimulation) {
-    redirect('/')
+    redirect(getLocalizedPath('/', locale))
   }
 
   if (currentSimulation.progression > 0 || completedSimulations.length) {
-    redirect(SIMULATOR_PATH)
+    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
   }
   return (
     <>

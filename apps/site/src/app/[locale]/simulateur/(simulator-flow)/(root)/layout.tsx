@@ -7,6 +7,7 @@ import {
 } from '@/constants/urls/paths'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import { getUser } from '@/helpers/server/dal/user'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { NotFoundError } from '@/helpers/server/error'
@@ -31,10 +32,10 @@ export default async function SimulationLayout({
   const serverSimulations = currentSimulation ? [currentSimulation] : []
   if (!currentSimulation) {
     captureException(new NotFoundError(), { level: 'warning' })
-    redirect(START_SIMULATION_PATH)
+    redirect(getLocalizedPath(START_SIMULATION_PATH, locale))
   }
   if (currentSimulation.progression === 1) {
-    redirect(END_PAGE_PATH)
+    redirect(getLocalizedPath(END_PAGE_PATH, locale))
   }
 
   if (
@@ -43,7 +44,7 @@ export default async function SimulationLayout({
       'test' &&
     !(await getUserAgeRange())
   ) {
-    redirect(AGE_PAGE_PATH)
+    redirect(getLocalizedPath(AGE_PAGE_PATH, locale))
   }
   const rules = await getCachedRules({
     modelStr: currentSimulation.model,

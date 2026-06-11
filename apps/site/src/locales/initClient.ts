@@ -5,16 +5,33 @@ import { initReactI18next } from 'react-i18next'
 import { getOptions } from './settings'
 import { translations } from './translation'
 
-const getLanguageFromCookie = () => {
-  if (typeof document === 'undefined') return 'fr'
+import { languages } from '@/constants/localisation/translation'
+
+const getLanguage = () => {
+  if (typeof window === 'undefined') return 'fr'
+
+  // 1. Try to get locale from URL pathname prefix
+  const pathname = window.location.pathname
+  const pathParts = pathname.split('/')
+  const pathLocale = pathParts[1]
+  if (pathLocale && languages.includes(pathLocale)) {
+    return pathLocale
+  }
+
+  // 2. Try to get locale from NEXT_LOCALE cookie
   const cookie = document.cookie
   const match = /NEXT_LOCALE=([^;]+)/.exec(cookie)
-  return match ? match[1] : 'fr'
+  const cookieLocale = match ? match[1] : null
+  if (cookieLocale && languages.includes(cookieLocale)) {
+    return cookieLocale
+  }
+
+  return 'fr'
 }
 
 void i18next.use(initReactI18next).init({
   ...getOptions(),
-  lng: getLanguageFromCookie(),
+  lng: getLanguage(),
   resources: {
     en: {
       translation: translations.en,

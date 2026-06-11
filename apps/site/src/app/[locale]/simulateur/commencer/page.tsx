@@ -8,6 +8,7 @@ import {
 import type { Locale } from '@/i18nConfig'
 import { redirect } from 'next/navigation'
 import { getNewSimulationModelService } from '../_service/getNewSimulationModelService'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export default async function Commencer({
   searchParams,
@@ -30,8 +31,11 @@ export default async function Commencer({
     })
   }
   redirect(
-    currentSimulation && currentSimulation.progression > 0
-      ? SIMULATOR_PATH
-      : TUTORIAL_PATH
+    getLocalizedPath(
+      currentSimulation && currentSimulation.progression > 0
+        ? SIMULATOR_PATH
+        : TUTORIAL_PATH,
+      locale
+    )
   )
 }

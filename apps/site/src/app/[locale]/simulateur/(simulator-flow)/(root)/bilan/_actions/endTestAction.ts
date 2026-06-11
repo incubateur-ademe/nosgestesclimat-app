@@ -7,6 +7,7 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { saveSimulation } from '@/helpers/simulation/saveSimulation'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
 
 export async function endTestAction(simulation: Simulation, userName?: string) {
   revalidatePath(END_PAGE_PATH, 'layout')
@@ -22,7 +23,7 @@ export async function endTestAction(simulation: Simulation, userName?: string) {
     locale,
   })
   if (!user.isAuth && (simulation.polls?.length || simulation.groups?.length)) {
-    redirect(EMAIL_PAGE_PATH)
+    redirect(getLocalizedPath(EMAIL_PAGE_PATH, locale))
   }
-  redirect(END_PAGE_PATH)
+  redirect(getLocalizedPath(END_PAGE_PATH, locale))
 }
