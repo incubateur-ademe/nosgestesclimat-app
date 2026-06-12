@@ -36,21 +36,10 @@ export async function hasStorageAccess(): Promise<boolean> {
   }
 }
 
-const REQUEST_TIMEOUT_MS = 5000
-
 export async function requestStorageAccess(): Promise<void> {
   if (typeof document === 'undefined') return
 
-  // Wrap with a timeout so we never block the UI indefinitely.
-  await Promise.race([
-    document.requestStorageAccess(),
-    new Promise<never>((_, reject) =>
-      setTimeout(
-        () => reject(new Error('requestStorageAccess timed out')),
-        REQUEST_TIMEOUT_MS
-      )
-    ),
-  ])
+  await document.requestStorageAccess()
 }
 
 /**
