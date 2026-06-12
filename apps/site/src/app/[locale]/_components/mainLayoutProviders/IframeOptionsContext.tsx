@@ -3,6 +3,7 @@
 import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { getIsIframe } from '@/utils/getIsIframe'
+import { useSyncLocaleCookie } from '@/hooks/useSyncLocaleCookie'
 import { createContext, useEffect, useState } from 'react'
 import StorageAccessOverlay from './StorageAccessOverlay'
 import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
@@ -32,6 +33,8 @@ export const IframeOptionsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  useSyncLocaleCookie()
+
   const searchParams = new URLSearchParams(
     typeof window !== 'undefined' ? window.location.search : ''
   )
