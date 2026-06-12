@@ -13,8 +13,8 @@ export const getIsAllowedToBypassConsentDataShare = () => {
 
   const integratorUrl = new URL(
     window.location != windowParentLocation
-      ? (document.referrer ?? 'about:blank')
-      : (document.location.href ?? 'about:blank')
+      ? (document.referrer || 'about:blank')
+      : (document.location.href || 'about:blank')
   ).origin
 
   return verifyIfIntegratorBypassRights(integratorUrl)

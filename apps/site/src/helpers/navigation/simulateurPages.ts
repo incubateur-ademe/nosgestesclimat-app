@@ -30,6 +30,9 @@ export function getLocalizedPath(path: string, locale: string) {
 
   if (locale && locale !== i18nConfig.defaultLocale) {
     const cleanPath = path.startsWith('/') ? path : `/${path}`
+    if (cleanPath.startsWith(`/${locale}/`) || cleanPath === `/${locale}`) {
+      return path
+    }
     return cleanPath === '/' ? `/${locale}` : `/${locale}${cleanPath}`
   }
   return path

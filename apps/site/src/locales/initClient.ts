@@ -6,6 +6,8 @@ import { initReactI18next } from 'react-i18next'
 import { getOptions } from './settings'
 import { translations } from './translation'
 
+import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
+
 const getLanguage = () => {
   if (typeof window === 'undefined') return 'fr'
 
@@ -25,13 +27,9 @@ const getLanguage = () => {
   }
 
   // 3. Try to get locale from sessionStorage (useful in iframes where cookies are blocked)
-  try {
-    const iframeLang = window.sessionStorage.getItem('ngc-iframe-lang')
-    if (iframeLang && languages.includes(iframeLang)) {
-      return iframeLang
-    }
-  } catch {
-    // Ignore sessionStorage access errors
+  const iframeLang = safeSessionStorage.getItem('ngc-iframe-lang')
+  if (iframeLang && languages.includes(iframeLang)) {
+    return iframeLang
   }
 
   // 4. Try to get locale from NEXT_LOCALE cookie

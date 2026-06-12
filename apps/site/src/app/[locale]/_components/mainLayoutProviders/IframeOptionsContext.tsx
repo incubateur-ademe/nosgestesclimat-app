@@ -66,13 +66,13 @@ export const IframeOptionsProvider = ({
   useEffect(() => {
     if (!isIframe) return
 
-    const urlShareData = Boolean(searchParams.get('shareData'))
+    const urlShareData = searchParams.get('shareData') === 'true'
     if (urlShareData) {
       setIsIframeShareData(true)
       safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
     }
 
-    const urlOnlySimulation = Boolean(searchParams.get('onlySimulation'))
+    const urlOnlySimulation = searchParams.get('onlySimulation') === 'true'
     if (urlOnlySimulation) {
       setIsIframeOnlySimulation(true)
       safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')

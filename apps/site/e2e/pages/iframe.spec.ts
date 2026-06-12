@@ -84,9 +84,9 @@ test.describe('/demo-iframe.html', () => {
     await page.goto('/demo-iframe.html')
   })
 
-  test('displays the iframe correctly', ({ page }) => {
+  test('displays the iframe correctly', async ({ page }) => {
     const iframe = page.frameLocator('iframe').first()
-    expect(iframe.getByTestId('main-cta')).toBeDefined()
+    await expect(iframe.getByTestId('main-cta')).toBeVisible()
   })
 })
 
@@ -95,9 +95,9 @@ test.describe('/demo-iframeSimulation.html', () => {
     await page.goto('/demo-iframeSimulation.html')
   })
 
-  test('displays the iframe correctly', ({ page }) => {
+  test('displays the iframe correctly', async ({ page }) => {
     const iframe = page.frameLocator('iframe').first()
-    expect(iframe.getByTestId('skip-tutorial-button')).toBeDefined()
+    await expect(iframe.getByTestId('skip-tutorial-button')).toBeVisible()
   })
 })
 
