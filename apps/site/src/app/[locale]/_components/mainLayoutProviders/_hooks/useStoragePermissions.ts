@@ -27,16 +27,6 @@ export const useStoragePermissions = (): {
     try {
       await requestStorageAccess()
     } catch (error) {
-      // Safari 18+ may reject requestStorageAccess() without a prompt
-      // (e.g. cross-origin iframe without prior user interaction).
-      // The rejection reason can be undefined, a DOMException, or a
-      // timeout error. In all cases, fall back to showing the content
-      // rather than leaving the user stuck behind an undismissable overlay.
-      // eslint-disable-next-line no-console
-      console.warn(
-        '[StorageAccess] Could not obtain storage access, proceeding anyway:',
-        error
-      )
       captureException(error)
       setNeedPermission(false)
       return
@@ -47,8 +37,6 @@ export const useStoragePermissions = (): {
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.warn('[StorageAccess] requiresStoragePermissions failed:', error)
       captureException(error)
       setNeedPermission(false)
     }
