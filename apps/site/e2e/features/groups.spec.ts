@@ -39,6 +39,7 @@ test.describe('A group admin', () => {
 
     test.afterEach(async ({ page }) => {
       await newGroup.delete()
+      await page.waitForTimeout(2200)
       await expect(page).toHaveURL('/mon-espace/groupes')
       await expect(page.getByText(newGroup.name)).toBeHidden()
     })
