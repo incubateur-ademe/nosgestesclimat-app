@@ -5,21 +5,13 @@ export function isSafari(): boolean {
   return userAgent.includes('safari') && !userAgent.includes('chrome')
 }
 
-export function isSafariMajorVersion(): number | null {
-  if (typeof navigator === 'undefined') return null
+export function isSafariVersionBeforeOrEgalTo18(): boolean {
+  if (typeof navigator === 'undefined') return false
   const match = /Version\/(\d+)\.(\d+)/i.exec(navigator.userAgent)
-  if (!match) return null
-  return parseInt(match[1], 10)
-}
+  if (!match) return false
+  const major = parseInt(match[1], 10)
 
-/**
- * Safari ≤ 16 blocks third-party cookies and requires requestStorageAccess().
- * Safari 17+ supports partitioned cookies (CHIPS) so the overlay is unnecessary.
- */
-function requiresStorageAccessPrompt(): boolean {
-  if (!isSafari()) return false
-  const major = isSafariMajorVersion()
-  return major !== null && major <= 16
+  return isSafari() && major <= 18
 }
 
 export function isStorageAccessApiSupported(): boolean {
@@ -38,19 +30,13 @@ export async function hasStorageAccess(): Promise<boolean> {
 
 export async function requestStorageAccess(): Promise<void> {
   if (typeof document === 'undefined') return
-
   await document.requestStorageAccess()
 }
 
-/**
- * Returns true when the browser needs the Storage Access API prompt.
- *
- * Only Safari ≤ 16 requires this — Safari 17+ supports partitioned cookies
- * (CHIPS) and the app sets cookies with `partitioned: true`.
- */
+// Only Safari <= v18 needs this
 export async function requiresStoragePermissions(): Promise<boolean> {
   return (
-    requiresStorageAccessPrompt() &&
+    isSafariVersionBeforeOrEgalTo18() &&
     isStorageAccessApiSupported() &&
     !(await hasStorageAccess())
   )
