@@ -6,7 +6,6 @@ type PodiumItem = {
   rank: number
   label: string
   score: string
-  locale: Locale
 }
 
 interface Props {
@@ -43,7 +42,12 @@ const orderClasses = {
   3: 'order-3',
 } as const
 
-function PodiumBlock({ rank, label, score, locale }: PodiumItem) {
+function PodiumBlock({
+  rank,
+  label,
+  score,
+  locale,
+}: PodiumItem & { locale: Locale }) {
   const isFirst = rank == 1
 
   return (
@@ -78,7 +82,12 @@ function PodiumBlock({ rank, label, score, locale }: PodiumItem) {
   )
 }
 
-function ListItem({ rank, label, score, locale }: PodiumItem) {
+function ListItem({
+  rank,
+  label,
+  score,
+  locale,
+}: PodiumItem & { locale: Locale }) {
   return (
     <li className="border-primary-600 flex items-center gap-3 border-b px-6 py-4 last:border-b-0">
       <span className="w-10 text-slate-600">
@@ -118,7 +127,7 @@ export default function PodiumVisual({ items, className, locale }: Props) {
                   'w-full md:flex-1',
                   orderClasses[item.rank as 1 | 2 | 3]
                 )}>
-                <PodiumBlock {...item} />
+                <PodiumBlock locale={locale} {...item} />
               </li>
             )
         )}
@@ -133,7 +142,7 @@ export default function PodiumVisual({ items, className, locale }: Props) {
             className
           )}>
           {remainingItems.map((item) => (
-            <ListItem key={item.rank} {...item} />
+            <ListItem locale={locale} key={item.rank} {...item} />
           ))}
         </ol>
       )}
