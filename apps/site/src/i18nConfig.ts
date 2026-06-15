@@ -18,12 +18,6 @@ const i18nConfig: Config & { locales: Locale[]; defaultLocale: Locale } = {
     secure: true, // Required when using SameSite=None
   },
   localeDetector: (request: NextRequest, config: Config): string => {
-    // Check search params first (useful for iframe entry points)
-    const urlLocale = request.nextUrl.searchParams.get('lang')
-    if (urlLocale && config.locales.includes(urlLocale)) {
-      return urlLocale
-    }
-
     // Check for NEXT_LOCALE cookie
     const nextLocale = request.cookies.get(NEXT_LOCALE_COOKIE_NAME)?.value
     if (nextLocale && config.locales.includes(nextLocale)) {
