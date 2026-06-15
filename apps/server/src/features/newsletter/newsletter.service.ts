@@ -1,3 +1,4 @@
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
 import {
   addOrUpdateContact,
@@ -7,7 +8,6 @@ import {
 } from '../../adapters/brevo/client.ts'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import { verifyCode } from '../authentication/authentication.service.ts'
 import { generateVerificationCode } from '../authentication/verification-codes.service.ts'
 import {

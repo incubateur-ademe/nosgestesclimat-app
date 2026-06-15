@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { END_PAGE_PATH, SIMULATOR_PATH } from '@/constants/urls/paths'
+import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
 import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
@@ -26,6 +26,7 @@ export default async function CampagnePage({
   }
 
   const user = await getUser()
+
   const [poll, [lastCompletedSimulation], currentSimulation] =
     await throwNextError(() =>
       Promise.all([
@@ -34,6 +35,7 @@ export default async function CampagnePage({
         getCurrentSimulation({ user }),
       ])
     )
+
   if (
     currentSimulation &&
     currentSimulation.progression < 1 &&
@@ -65,7 +67,7 @@ export default async function CampagnePage({
       simulation: lastCompletedSimulation,
       locale,
     })
-    redirect(END_PAGE_PATH)
+    redirect(SIMULATOR_PATH)
   }
 
   const allowToReuseExistingSimulation =

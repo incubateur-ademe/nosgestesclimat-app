@@ -1,5 +1,5 @@
-import { findLastSimulationComputationByUserId } from '../../publicodes-computation/repositories/simulation-computations.repository.ts'
-import type { SimulationComputationStatus } from '../../publicodes-computation/types/computation.ts'
+import { findLastSimulationComputationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
+import type { SimulationComputationStatus } from '../../simulation-computation/types/computation.ts'
 import { findAllVisiblePersonalizedActions } from '../repositories/actions.repository.ts'
 import type { PersonalizedAction } from '../types/action.ts'
 

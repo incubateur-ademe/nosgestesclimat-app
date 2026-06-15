@@ -6,6 +6,7 @@ import type {
 import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
 import type { Request } from 'express'
 import type Engine from 'publicodes'
@@ -27,7 +28,6 @@ import {
   defaultVerifiedUserSelection,
   simulationSelection,
 } from '../../adapters/prisma/selection.ts'
-import { isPrismaErrorNotFound } from '../../core/typeguards/isPrismaError.ts'
 import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.ts'
 import { findOrganisationPublicPollBySlugOrId } from '../organisations/organisations.repository.ts'
 import type {

@@ -1,4 +1,5 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import * as v from 'valibot'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -6,7 +7,6 @@ import { deleteContact, fetchContact } from '../src/adapters/brevo/client.ts'
 import { defaultVerifiedUserSelection } from '../src/adapters/prisma/selection.ts'
 import { Locales } from '../src/core/i18n/constant.ts'
 import { PaginationQuery } from '../src/core/pagination.ts'
-import { isPrismaErrorNotFound } from '../src/core/typeguards/isPrismaError.ts'
 import {
   deleteGroup,
   fetchGroups,
@@ -196,6 +196,13 @@ if (deleteUser) {
         }
 
         if (!dry) {
+          await prisma.actionAssessment.deleteMany({
+            where: {
+              simulation: {
+                userId,
+              },
+            },
+          })
           await prisma.simulation.deleteMany({
             where: {
               userId,

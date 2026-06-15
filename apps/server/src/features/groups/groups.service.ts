@@ -1,14 +1,14 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import {
+  isPrismaErrorForeignKeyConstraintFailed,
+  isPrismaErrorNotFound,
+} from '@nosgestesclimat/core/prisma/utils'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { Locales } from '../../core/i18n/constant.ts'
-import {
-  isPrismaErrorForeignKeyConstraintFailed,
-  isPrismaErrorNotFound,
-} from '../../core/typeguards/isPrismaError.ts'
 import { SimulationUpsertedEvent } from '../simulations/events/SimulationUpserted.event.ts'
 import type { UserParams } from '../users/users.validator.ts'
 import { GroupCreatedEvent } from './events/GroupCreated.event.ts'

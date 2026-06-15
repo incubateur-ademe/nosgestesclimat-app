@@ -1,4 +1,6 @@
+import { AgeRangeSchema } from '@nosgestesclimat/core/features/users/types/age-range'
 import * as v from 'valibot'
+
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
@@ -28,6 +30,7 @@ const UserUpdateDto = v.partial(
       v.transform((email: string) => email.toLocaleLowerCase())
     ),
     name: v.string(),
+    ageRange: AgeRangeSchema,
     contact: v.strictObject({
       listIds: v.array(v.enum(ListIds)),
     }),
