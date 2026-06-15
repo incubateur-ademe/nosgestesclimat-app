@@ -8,18 +8,15 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getTopThreeAndRestMembers } from '@/helpers/groups/getTopThreeAndRestMembers'
 import { useUser } from '@/publicodes-state'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
-import type { QueryObserverResult } from '@tanstack/react-query'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import RankingMember from './ranking/RankingMember'
 
 export default function Ranking({
   group,
-  refetchGroup,
   metric,
 }: {
   group: Group
-  refetchGroup: () => Promise<QueryObserverResult<Group, Error>>
   metric: Metrics
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -67,7 +64,6 @@ export default function Ranking({
               isCurrentMember={participant.userId === userId}
               group={group}
               numberOfParticipants={group.participants.length}
-              refetchGroup={refetchGroup}
               textColor={
                 metric === eauMetric || hasOneParticipant
                   ? 'text-primary-950'
@@ -94,7 +90,6 @@ export default function Ranking({
                     group={group}
                     // Add 3 to the index to account for the top three members
                     index={index + 3}
-                    refetchGroup={refetchGroup}
                     metric={metric}
                     participant={participant}
                   />

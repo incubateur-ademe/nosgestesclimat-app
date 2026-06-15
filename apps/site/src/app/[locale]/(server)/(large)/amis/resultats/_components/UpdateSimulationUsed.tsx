@@ -8,18 +8,18 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
 import type { Group } from '@/types/groups'
 import { captureException } from '@sentry/nextjs'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
+import { updateGroupParticipantAction } from '../_actions'
 
 interface Props {
   group: Group
-  refetchGroup: () => void
 }
 
-export default function UpdateSimulationUsed({ group, refetchGroup }: Props) {
+export default function UpdateSimulationUsed({ group }: Props) {
   const [isPending, startTransition] = useTransition()
   const [isError, setIsError] = useState(false)
   const [isUpdated, setIsUpdated] = useState(false)
@@ -32,13 +32,14 @@ export default function UpdateSimulationUsed({ group, refetchGroup }: Props) {
     simulations,
   } = useUser()
 
+  const router = useRouter()
+
   const { t } = useClientTranslation()
 
   // The user hasn't got newer simulation than the one used in the group
   const groupSimulation = group.participants.find(
     (p) => p.userId === userId
   )?.simulation
-
   useEffect(() => {
     if (latestSimulation) return
 
@@ -61,7 +62,7 @@ export default function UpdateSimulationUsed({ group, refetchGroup }: Props) {
   const handleUpdateSimulation = () => {
     startTransition(async () => {
       try {
-        await updateGroupParticipant({
+        await updateGroupParticipantAction({
           groupId: group.id,
           email,
           simulation: latestSimulation,
@@ -71,7 +72,7 @@ export default function UpdateSimulationUsed({ group, refetchGroup }: Props) {
 
         setIsUpdated(true)
 
-        refetchGroup()
+        router.refresh()
       } catch (error) {
         captureException(error)
         setIsError(true)

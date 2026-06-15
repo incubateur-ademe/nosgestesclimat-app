@@ -1,7 +1,10 @@
+'use client'
+
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { FocusEvent } from 'react'
 import { useRef, useState } from 'react'
 import Button from '../buttons/Button'
+import Loader from '../layout/Loader'
 
 interface Props {
   name: string
@@ -10,7 +13,7 @@ interface Props {
   defaultValue?: string
   label: string
   onClose: () => void
-  onSubmit: (value: string) => void
+  onSubmit: (value: string) => Promise<void>
   isLoading?: boolean
 }
 
@@ -31,7 +34,7 @@ export default function InlineTextInput({
 
   const { t } = useClientTranslation()
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const inputValue = inputRef.current?.value
 
     if (!inputValue) {
@@ -39,7 +42,7 @@ export default function InlineTextInput({
       return
     }
 
-    onSubmit(inputValue)
+    await onSubmit(inputValue)
 
     onClose()
   }
@@ -52,7 +55,6 @@ export default function InlineTextInput({
         if (event?.relatedTarget?.id === 'inline-input-button') {
           return
         }
-        // onClose()
       }}>
       <label htmlFor={name} className="mb-2">
         <span
@@ -69,7 +71,7 @@ export default function InlineTextInput({
           type={type}
           autoComplete="off"
           placeholder={placeholder}
-          className={`focus:ring-primary-700 max-w-[30rem] flex-1 rounded-s-md border-2 border-solid border-gray-200 bg-gray-100 !p-4 text-base transition-colors focus:ring-2 focus:ring-offset-3 focus:outline-hidden ${
+          className={`focus-visible:ring-primary-700 max-w-120 flex-1 rounded-s-md border-2 border-solid border-gray-200 bg-gray-100 p-4 text-base transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-3 ${
             error ? 'border-red-200! bg-red-50! ring-2 ring-red-700!' : ''
           }`}
           aria-describedby={`error-${name}`}
@@ -89,6 +91,9 @@ export default function InlineTextInput({
           aria-label={t('Ok, sauvegarder la modification')}
           disabled={isLoading}
           data-testid="button-inline-input">
+          {isLoading ? (
+            <Loader size="sm" color="dark" className="mr-2" />
+          ) : null}
           Ok
         </Button>
       </div>
