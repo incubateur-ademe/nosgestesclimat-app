@@ -15,7 +15,7 @@ import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 interface Props {
   group: Group
@@ -32,14 +32,6 @@ export default function OwnerAdminSection({ group }: Props) {
 
   const router = useRouter()
 
-  const timeoutRef = useRef<NodeJS.Timeout>(undefined)
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(timeoutRef.current)
-    }
-  }, [])
-
   async function handleDelete() {
     trackMatomoEvent__deprecated(amisDashboardOpenDeleteGroup)
     if (!group) return
@@ -49,11 +41,8 @@ export default function OwnerAdminSection({ group }: Props) {
         groupId: group.id,
         userId: user.userId,
       })
-      router.refresh()
 
-      timeoutRef.current = setTimeout(() => {
-        router.push(MON_ESPACE_GROUPS_PATH)
-      }, 2000)
+      router.push(MON_ESPACE_GROUPS_PATH)
     } catch (error) {
       captureException(error)
     }
