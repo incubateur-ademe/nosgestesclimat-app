@@ -9,16 +9,13 @@ test.describe('/demo-iframe-datashare.html', () => {
   test('displays the data-share modal when simulation is complete', async ({
     page,
   }) => {
-    // Wait for iframe to load
-    await page.waitForTimeout(3000)
-
     const iframe = page.frameLocator('iframe').first()
 
     // Click skip-tutorial-button inside the iframe
     await iframe.getByTestId('skip-tutorial-button').click()
 
-    // Wait for navigation to complete
-    await page.waitForTimeout(3000)
+    // // Wait for navigation to complete
+    await expect(iframe.getByTestId('skip-question-button')).toBeVisible()
 
     // In production builds, a full page navigation inside the iframe destroys
     // the underlying Frame object and creates a new one. Storing a reference to
@@ -34,48 +31,31 @@ test.describe('/demo-iframe-datashare.html', () => {
     // transient frame-disconnect errors that can occur while the iframe is still
     // settling after a navigation.
     for (let i = 0; i < 100; i++) {
-      const endButton = page
-        .frameLocator('iframe')
-        .first()
-        .getByTestId('end-test-button')
+      const endButton = iframe.getByTestId('end-test-button')
+      // eslint-disable-next-line playwright/no-conditional-in-test
       if (
+        // eslint-disable-next-line playwright/no-conditional-in-test
         (await endButton.isVisible().catch(() => false)) &&
         (await endButton.isEnabled().catch(() => false))
       ) {
         await endButton.click()
         break
       }
-      const skipButton = page
-        .frameLocator('iframe')
-        .first()
-        .getByTestId('skip-question-button')
-      await skipButton.click({ timeout: 3000 }).catch(() => {})
+      const skipButton = iframe.getByTestId('skip-question-button')
+      await skipButton.click({ timeout: 3000 }).catch(() => {
+        // Do nothing
+      })
     }
 
     await expect(
-      page
-        .frameLocator('iframe')
-        .first()
-        .locator('[data-testid="iframe-datashare-modal"]')
+      iframe.locator('[data-testid="iframe-datashare-modal"]')
     ).toBeVisible({
       timeout: 15000,
     })
 
-    await expect(
-      page.frameLocator('iframe').first().getByTestId('iframe-datashare-title')
-    ).toBeVisible()
-    await expect(
-      page
-        .frameLocator('iframe')
-        .first()
-        .getByTestId('iframe-datashare-accepter')
-    ).toBeVisible()
-    await expect(
-      page
-        .frameLocator('iframe')
-        .first()
-        .getByTestId('iframe-datashare-refuser')
-    ).toBeVisible()
+    await expect(iframe.getByTestId('iframe-datashare-title')).toBeVisible()
+    await expect(iframe.getByTestId('iframe-datashare-accepter')).toBeVisible()
+    await expect(iframe.getByTestId('iframe-datashare-refuser')).toBeVisible()
   })
 })
 
@@ -86,7 +66,8 @@ test.describe('/demo-iframe.html', () => {
 
   test('displays the iframe correctly', async ({ page }) => {
     const iframe = page.frameLocator('iframe').first()
-    await expect(iframe.getByTestId('main-cta')).toBeVisible()
+
+    await expect(iframe.getByTestId('main-cta').first()).toBeVisible()
   })
 })
 
