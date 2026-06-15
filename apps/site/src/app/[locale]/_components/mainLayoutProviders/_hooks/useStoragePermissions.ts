@@ -1,19 +1,17 @@
 'use client'
 
 import {
-  isStorageAccessApiSupported,
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'
+import { captureException } from '@sentry/nextjs'
 import { useCallback, useEffect, useState } from 'react'
 
 export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
 } => {
-  const [needPermission, setNeedPermission] = useState(() =>
-    isStorageAccessApiSupported()
-  )
+  const [needPermission, setNeedPermission] = useState(false)
 
   // On mount, check if storage access is already granted (e.g. after a
   // Safari auto-reload following a successful requestStorageAccess grant).
@@ -21,7 +19,7 @@ export const useStoragePermissions = (): {
     requiresStoragePermissions()
       .then(setNeedPermission)
       .catch(() => {
-        // Keep the conservative default (true)
+        // Keep the conservative default (false)
       })
   }, [])
 
@@ -30,8 +28,9 @@ export const useStoragePermissions = (): {
       await requestStorageAccess()
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
-    } catch {
-      // Do nothing
+    } catch (error) {
+      captureException(error)
+      setNeedPermission(false)
     }
   }, [])
 

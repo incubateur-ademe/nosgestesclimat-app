@@ -38,7 +38,8 @@ export const IframeOptionsProvider = ({
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
-  // Special case : Safari doesn't handle cookies in iframes
+  // Special case : Safari ≤ 16 doesn't handle cookies in iframes.
+  // Safari 17+ supports partitioned cookies (CHIPS) so this is a no-op.
   const { needPermission, askForPermission } = useStoragePermissions()
 
   const [isIframeShareData, setIsIframeShareData] = useState(() => {
