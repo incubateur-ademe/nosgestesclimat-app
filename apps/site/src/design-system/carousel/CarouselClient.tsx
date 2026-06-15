@@ -21,12 +21,14 @@ export interface CarouselTranslations {
 interface CarouselClientProps {
   children: React.ReactNode
   className?: string
+  slideClassName?: string
   translations: CarouselTranslations
 }
 
 export default function CarouselClient({
   children,
   className,
+  slideClassName,
   translations,
 }: CarouselClientProps) {
   const [isInitialized, setIsInitialized] = useState(false)
@@ -84,7 +86,8 @@ export default function CarouselClient({
             <SwiperSlide
               className={twMerge(
                 !isInitialized && 'mr-2', // Same value as `spaceBetween` to prevent layout shift before initialization
-                'h-auto w-3/4 max-w-55 sm:w-62 sm:max-w-none'
+                'h-auto w-3/4 max-w-55 sm:w-62 sm:max-w-none',
+                slideClassName
               )}>
               {child}
             </SwiperSlide>
