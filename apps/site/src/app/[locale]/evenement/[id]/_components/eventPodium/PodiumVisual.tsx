@@ -1,30 +1,30 @@
+import Trans from '@/components/translation/trans/TransServer'
+import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
 
 type PodiumItem = {
   rank: number
   label: string
-  score?: string
+  score: string
+  locale: Locale
 }
 
 interface Props {
   items: PodiumItem[]
   className?: string
+  locale: Locale
 }
 
-function RankBadge({
-  rank,
-  variant,
-}: {
-  rank: number
-  variant: 'gold' | 'silver' | 'bronze'
-}) {
-  const isFirst = variant === 'gold'
+function RankBadge({ rank }: { rank: number }) {
+  const isFirst = rank === 1
 
   return (
     <div
       className={twMerge(
-        'mx-auto mb-3 flex size-10 items-center justify-center rounded-full text-lg font-extrabold',
-        isFirst ? 'bg-secondary-700 text-white' : 'bg-white text-gray-800'
+        'mx-auto mb-4 flex size-16 items-center justify-center rounded-full text-xl font-medium',
+        isFirst
+          ? 'bg-secondary-700 text-2xl text-white'
+          : 'bg-white text-gray-800'
       )}>
       {rank}
     </div>
@@ -32,88 +32,111 @@ function RankBadge({
 }
 
 const heightClasses = {
-  gold: 'h-40 md:h-52',
-  silver: 'h-32 md:h-40',
-  bronze: 'h-28 md:h-36',
+  1: 'md:h-80',
+  2: 'md:h-64',
+  3: 'md:h-52',
 } as const
 
 const orderClasses = {
-  gold: 'order-1 md:order-2',
-  silver: 'order-2 md:order-1',
-  bronze: 'order-3',
+  1: 'order-1 md:order-2',
+  2: 'order-2 md:order-1',
+  3: 'order-3',
 } as const
 
-function PodiumBlock({
-  rank,
-  label,
-  score,
-  variant,
-}: PodiumItem & { variant: 'gold' | 'silver' | 'bronze' }) {
-  const isFirst = variant === 'gold'
+function PodiumBlock({ rank, label, score, locale }: PodiumItem) {
+  const isFirst = rank == 1
 
   return (
     <div
       className={twMerge(
-        'flex flex-col items-center justify-start px-4 pt-5',
-        'rounded-xl md:rounded-t-xl md:rounded-b-none',
-        'w-full md:flex-1',
-        heightClasses[variant],
-        orderClasses[variant],
-        isFirst ? 'bg-primary-700 text-white' : 'bg-primary-100 text-gray-800'
+        'flex flex-col items-center justify-start px-4',
+        'rounded-3xl md:rounded-t-3xl md:rounded-b-none',
+        heightClasses[rank as 1 | 2 | 3],
+        isFirst
+          ? 'bg-primary-700 py-8 text-white'
+          : 'bg-primary-100 py-6 text-gray-800'
       )}>
-      <RankBadge rank={rank} variant={variant} />
-      <span className="text-center text-sm leading-tight font-bold">
+      <RankBadge rank={rank} />
+      <span
+        className={twMerge(
+          'text-center text-base leading-tight font-bold',
+          isFirst && 'text-xl'
+        )}>
         {label}
       </span>
-      {score && <span className="mt-1 text-xs opacity-70">{score}</span>}
+      <span
+        className={twMerge(
+          'mt-auto text-lg font-bold',
+          !isFirst && 'text-primary-600 text-base'
+        )}>
+        {score}{' '}
+        <Trans locale={locale} i18nKey="event.podium.block.score.text">
+          calculs d'empreinte
+        </Trans>
+      </span>
     </div>
   )
 }
 
-function ListItem({ rank, label, score }: PodiumItem) {
+function ListItem({ rank, label, score, locale }: PodiumItem) {
   return (
-    <li className="border-primary-700 flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
-      <span className="bg-primary-100 flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-gray-800">
+    <li className="border-primary-600 flex items-center gap-3 border-b px-6 py-4 last:border-b-0">
+      <span className="w-10 text-slate-600">
+        <span aria-hidden>#</span>
         {rank}
       </span>
-      <span className="flex-1 text-sm font-bold text-gray-800">{label}</span>
-      {score && <span className="text-xs text-gray-500">{score}</span>}
+      <span className="flex-1 pl-4 font-bold">{label}</span>
+
+      <span>
+        {score}{' '}
+        <Trans locale={locale} i18nKey="event.podium.list.item.score">
+          tests
+        </Trans>
+      </span>
     </li>
   )
 }
 
-export default function PodiumVisual({ items, className }: Props) {
+export default function PodiumVisual({ items, className, locale }: Props) {
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 10)
 
-  const variants = ['gold', 'silver', 'bronze'] as const
-
   return (
-    <ol className={twMerge('mt-6 list-none', className)}>
+    <>
       {/* Podium */}
-      <li className="mb-3 md:mb-0">
-        <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0">
-          {podiumItems.map(
-            (item, i) =>
-              item && (
-                <PodiumBlock key={item.rank} {...item} variant={variants[i]} />
-              )
-          )}
-        </div>
-      </li>
+      <ol
+        className={twMerge(
+          'mt-8 mb-12 flex list-none flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0',
+          className
+        )}>
+        {podiumItems.map(
+          (item, i) =>
+            item && (
+              <li
+                key={item.rank}
+                className={twMerge(
+                  'w-full md:flex-1',
+                  orderClasses[item.rank as 1 | 2 | 3]
+                )}>
+                <PodiumBlock {...item} />
+              </li>
+            )
+        )}
+      </ol>
 
       {/* Remaining rankings */}
       {remainingItems.length > 0 && (
-        <li>
-          <div className="border-primary-700 overflow-hidden rounded-xl border">
-            <ol start={4} className="list-none">
-              {remainingItems.map((item) => (
-                <ListItem key={item.rank} {...item} />
-              ))}
-            </ol>
-          </div>
-        </li>
+        <ol
+          start={4}
+          className={twMerge(
+            'border-primary-600 mt-6 list-none overflow-hidden rounded-xl border',
+            className
+          )}>
+          {remainingItems.map((item) => (
+            <ListItem key={item.rank} {...item} />
+          ))}
+        </ol>
       )}
-    </ol>
+    </>
   )
 }
