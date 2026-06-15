@@ -1,21 +1,22 @@
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
-import ActionsCarouselClient from './ActionsCarouselClient'
+import CarouselClient from './CarouselClient'
 
-interface ActionsCarouselProps extends React.ComponentPropsWithoutRef<'div'> {
+export interface CarouselProps
+  extends React.ComponentPropsWithoutRef<'div'> {
   locale: Locale
   /** className applied to the inner carousel that has `overflow: hidden` for padding tricks */
   innerClassName?: string
 }
 
-export default async function ActionsCarousel({
+export default async function Carousel({
   className,
   innerClassName,
   children,
   locale,
   ...rest
-}: ActionsCarouselProps) {
+}: CarouselProps) {
   const { t } = await getServerTranslation({ locale })
 
   const translations = {
@@ -53,11 +54,9 @@ export default async function ActionsCarousel({
       className={twMerge('relative', className)}
       role="region"
       aria-roledescription={roleDescription}>
-      <ActionsCarouselClient
-        translations={translations}
-        className={innerClassName}>
+      <CarouselClient translations={translations} className={innerClassName}>
         {children}
-      </ActionsCarouselClient>
+      </CarouselClient>
     </div>
   )
 }

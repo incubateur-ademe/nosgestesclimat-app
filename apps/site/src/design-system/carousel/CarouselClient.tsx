@@ -7,9 +7,9 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
 import { twMerge } from 'tailwind-merge'
-import './ActionsCarousel.css'
+import './Carousel.css'
 
-export interface ActionsCarouselTranslations {
+export interface CarouselTranslations {
   prevSlideMessage: string
   nextSlideMessage: string
   firstSlideMessage: string
@@ -18,17 +18,17 @@ export interface ActionsCarouselTranslations {
   itemRoleDescriptionMessage: string
 }
 
-interface ActionsCarouselClientProps {
+interface CarouselClientProps {
   children: React.ReactNode
   className?: string
-  translations: ActionsCarouselTranslations
+  translations: CarouselTranslations
 }
 
-export default function ActionsCarouselClient({
+export default function CarouselClient({
   children,
   className,
   translations,
-}: ActionsCarouselClientProps) {
+}: CarouselClientProps) {
   const [isInitialized, setIsInitialized] = useState(false)
   const prevButton = useRef(null)
   const nextButton = useRef(null)

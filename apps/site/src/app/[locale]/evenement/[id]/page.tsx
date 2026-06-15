@@ -6,6 +6,7 @@ import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
 import EventPodium from './_components/EventPodium'
 import EventStatistics from './_components/EventStatistics'
+import EventTestimonies from './_components/EventTestimonies'
 
 export default async function EvenementPage({
   params,
@@ -27,9 +28,9 @@ export default async function EvenementPage({
         <EventStatistics locale={locale} />
         <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
           <EventPodium locale={locale} searchParams={searchParams} />
+          <EventTestimonies locale={locale} />
         </div>
         {/*
-        <EventTestimonies />
         <EventTutorial />
         <EventCTASection />*/}
       </Main>
