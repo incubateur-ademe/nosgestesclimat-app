@@ -2,6 +2,7 @@ import Footer from '@/components/layout/Footer'
 import HeaderServer from '@/components/layout/HeaderServer'
 import Main from '@/design-system/layout/Main'
 import type { Locale } from '@/i18nConfig'
+import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
 import EventPodium from './_components/EventPodium'
@@ -31,10 +32,8 @@ export default async function EvenementPage({
           <EventPodium locale={locale} searchParams={searchParams} />
           <EventTestimonies locale={locale} />
           <EventTutorial />
+          <EventCTAs />
         </div>
-        {/*
-        <EventTutorial />
-        <EventCTASection />*/}
       </Main>
 
       <Footer locale={locale} />
