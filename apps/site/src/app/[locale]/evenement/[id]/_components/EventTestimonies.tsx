@@ -1,10 +1,11 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Carousel from '@/design-system/carousel/Carousel'
 import Title from '@/design-system/layout/Title'
+import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
 import type { Locale } from '@/i18nConfig'
 import Image from 'next/image'
 
-type Testimony = {
+interface Testimony {
   text: string
   author: {
     name: string
@@ -80,7 +81,7 @@ interface Props {
   locale: Locale
 }
 
-export default async function EventTestimonies({ locale }: Props) {
+export default function EventTestimonies({ locale }: Props) {
   const testimonies = MOCK_TESTIMONIES
 
   return (
@@ -99,15 +100,17 @@ export default async function EventTestimonies({ locale }: Props) {
         </Trans>
       </p>
 
-      <Carousel
-        locale={locale}
-        className="-mx-4 md:-mx-3"
-        innerClassName="py-4 px-4 md:px-3"
-        slideClassName="w-full max-w-none sm:w-full md:w-1/2">
-        {testimonies.map((testimony, index) => (
-          <TestimonyCard key={index} testimony={testimony} />
-        ))}
-      </Carousel>
+      <ScrollReveal>
+        <Carousel
+          locale={locale}
+          className="-mx-4 md:-mx-3"
+          innerClassName="py-4 px-4 md:px-3"
+          slideClassName="w-full max-w-none sm:w-full md:w-1/2">
+          {testimonies.map((testimony, index) => (
+            <TestimonyCard key={index} testimony={testimony} />
+          ))}
+        </Carousel>
+      </ScrollReveal>
     </section>
   )
 }

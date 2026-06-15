@@ -9,7 +9,7 @@ interface Props {
 
 export default function EventHero({ locale }: Props) {
   return (
-    <div className="flex flex-col gap-6 md:mb-16 md:flex-row md:gap-8">
+    <div className="flex flex-col gap-6 md:mb-16 md:flex-row md:gap-16">
       <div className="flex-1">
         <Title
           hasSeparator={false}

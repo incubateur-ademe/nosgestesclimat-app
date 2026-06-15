@@ -2,10 +2,10 @@ import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
 
-type PodiumItem = {
+interface PodiumItem {
   rank: number
   label: string
-  score: string
+  score: number
 }
 
 interface Props {
@@ -118,19 +118,16 @@ export default function PodiumVisual({ items, className, locale }: Props) {
           'mt-8 mb-12 flex list-none flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0',
           className
         )}>
-        {podiumItems.map(
-          (item, i) =>
-            item && (
-              <li
-                key={item.rank}
-                className={twMerge(
-                  'w-full md:flex-1',
-                  orderClasses[item.rank as 1 | 2 | 3]
-                )}>
-                <PodiumBlock locale={locale} {...item} />
-              </li>
-            )
-        )}
+        {podiumItems.map((item) => (
+          <li
+            key={item.rank}
+            className={twMerge(
+              'w-full md:flex-1',
+              orderClasses[item.rank as 1 | 2 | 3]
+            )}>
+            <PodiumBlock locale={locale} {...item} />
+          </li>
+        ))}
       </ol>
 
       {/* Remaining rankings */}

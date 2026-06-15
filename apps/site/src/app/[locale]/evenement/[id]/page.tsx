@@ -31,7 +31,13 @@ export default async function EvenementPage({
         <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
           <EventPodium locale={locale} searchParams={searchParams} />
           <EventTestimonies locale={locale} />
-          <EventTutorial />
+        </div>
+        <div className="bg-primary-100">
+          <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+            <EventTutorial />
+          </div>
+        </div>
+        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
           <EventCTAs />
         </div>
       </Main>
