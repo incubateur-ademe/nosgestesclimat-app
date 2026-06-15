@@ -29,7 +29,6 @@ export default async function EvenementPage({
           <EventPodium locale={locale} searchParams={searchParams} />
         </div>
         {/*
-        <EventFunFacts />
         <EventTestimonies />
         <EventTutorial />
         <EventCTASection />*/}
