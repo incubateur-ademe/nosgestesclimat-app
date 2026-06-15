@@ -871,7 +871,7 @@ entries:
   actions.detailPage.sections.act: J'agis
   actions.detailPage.sections.incentives: J'y gagne
   actions.detailPage.sections.furtherReading: À découvrir aussi
-  actions.detailPage.impact.title: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.title: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte

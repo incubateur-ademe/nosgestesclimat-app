@@ -109,7 +109,7 @@ export default async function ActionPage({ params }: Props) {
                 <Trans
                   locale={locale}
                   i18nKey="actions.detailPage.impact.title">
-                  Gain potentiel pour votre empreinte
+                  Réduction max sur votre empreinte
                 </Trans>
               </p>
               <p className="text-sm/normal font-bold text-slate-600">
