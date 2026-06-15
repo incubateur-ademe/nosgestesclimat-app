@@ -1,5 +1,5 @@
 import { SIMULATOR_PATH, TUTORIAL_PATH } from '@/constants/urls/paths'
-import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
+
 import { getUser } from '@/helpers/server/dal/user'
 import { stringifyModel } from '@/helpers/server/model/models'
 import {
@@ -31,11 +31,8 @@ export default async function Commencer({
     })
   }
   redirect(
-    getLocalizedPath(
-      currentSimulation && currentSimulation.progression > 0
-        ? SIMULATOR_PATH
-        : TUTORIAL_PATH,
-      locale
-    )
+    currentSimulation && currentSimulation.progression > 0
+      ? SIMULATOR_PATH
+      : TUTORIAL_PATH
   )
 }

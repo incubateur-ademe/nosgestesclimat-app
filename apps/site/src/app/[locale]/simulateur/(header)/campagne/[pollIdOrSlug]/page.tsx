@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import { getLocalizedPath } from '@/helpers/navigation/simulateurPages'
+
 import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
 import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
@@ -42,7 +42,7 @@ export default async function CampagnePage({
     currentSimulation.progression < 1 &&
     currentSimulation.polls?.some((p) => p.id === poll.id)
   ) {
-    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
+    redirect(SIMULATOR_PATH)
   }
 
   async function createNewSimulation() {
@@ -57,7 +57,7 @@ export default async function CampagnePage({
         mode: poll.mode,
       }),
     })
-    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
+    redirect(SIMULATOR_PATH)
   }
 
   async function reuseSimulation() {
@@ -68,7 +68,7 @@ export default async function CampagnePage({
       simulation: lastCompletedSimulation,
       locale,
     })
-    redirect(getLocalizedPath(SIMULATOR_PATH, locale))
+    redirect(SIMULATOR_PATH)
   }
 
   const allowToReuseExistingSimulation =

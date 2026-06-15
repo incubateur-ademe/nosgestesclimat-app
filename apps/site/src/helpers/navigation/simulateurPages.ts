@@ -1,5 +1,4 @@
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import i18nConfig from '@/i18nConfig'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 interface Props {
@@ -11,31 +10,6 @@ interface Props {
 interface TutorielProps {
   locale?: string
   searchParams?: URLSearchParams
-}
-
-/**
- * Prefix path with the current locale unless it is the default locale
- */
-export function getLocalizedPath(path: string, locale: string) {
-  // Avoid prefixing non-local paths
-  if (
-    path.startsWith('http://') ||
-    path.startsWith('https://') ||
-    path.startsWith('mailto:') ||
-    path.startsWith('tel:') ||
-    path.startsWith('#')
-  ) {
-    return path
-  }
-
-  if (locale && locale !== i18nConfig.defaultLocale) {
-    const cleanPath = path.startsWith('/') ? path : `/${path}`
-    if (cleanPath.startsWith(`/${locale}/`) || cleanPath === `/${locale}`) {
-      return path
-    }
-    return cleanPath === '/' ? `/${locale}` : `/${locale}${cleanPath}`
-  }
-  return path
 }
 
 /**
