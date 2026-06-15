@@ -1,34 +1,24 @@
+import { continents, countries } from 'countries-list'
 import { redis } from '../../adapters/redis/client.ts'
 import { KEYS } from '../../adapters/redis/constant.ts'
 import logger from '../../logger.ts'
 
 type RedisStoredIp = { ipStartNum: number; countryCode: string }
 
-type RedisStoredCountry = { code: string; name: string; region: string }
-
 let store:
   | {
       sortedIps?: RedisStoredIp[]
-      countries?: Record<string, RedisStoredCountry>
     }
   | undefined
 
 export const initGeolocationStore = async (): Promise<void> => {
-  const [countries, sortedIps] = await Promise.all([
-    redis.get(KEYS.geolocationCountries),
-    redis.get(KEYS.geolocationSortedIps),
-  ])
-
-  if (!countries) {
-    logger.warn('Could not load geolocation countries redis store')
-  }
+  const sortedIps = await redis.get(KEYS.geolocationSortedIps)
 
   if (!sortedIps) {
     logger.warn('Could not load geolocation ip adresses redis store')
   }
 
   store = {
-    ...(countries ? { countries: JSON.parse(countries) } : {}),
     ...(sortedIps ? { sortedIps: JSON.parse(sortedIps) } : {}),
   }
 }
@@ -64,7 +54,14 @@ const findIpCountryCode = (ip: string) => {
 export const findCountry = (ip: string) => {
   const countryCode = findIpCountryCode(ip)
 
-  if (countryCode) {
-    return store?.countries?.[countryCode]
+  if (!countryCode || !(countryCode in countries)) {
+    return
+  }
+
+  const countryData = countries[countryCode as keyof typeof countries]
+
+  return {
+    code: countryCode,
+    region: continents[countryData.continent],
   }
 }
