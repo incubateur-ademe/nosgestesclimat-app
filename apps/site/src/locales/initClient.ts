@@ -1,12 +1,11 @@
 'use client'
 
 import { languages } from '@/constants/localisation/translation'
+import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { getOptions } from './settings'
 import { translations } from './translation'
-
-import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 
 const getLanguage = () => {
   if (typeof window === 'undefined') return 'fr'
