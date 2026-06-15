@@ -1,13 +1,12 @@
 'use client'
 
 import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
-import { useSyncLocaleCookie } from '@/hooks/useSyncLocaleCookie'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { getIsIframe } from '@/utils/getIsIframe'
 import { createContext, useEffect, useState } from 'react'
-import StorageAccessOverlay from './StorageAccessOverlay'
 import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
 import { useStoragePermissions } from './_hooks/useStoragePermissions'
+import StorageAccessOverlay from './iframeOptionsContext/StorageAccessOverlay'
 
 const STORAGE_KEYS = {
   IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
@@ -33,9 +32,6 @@ export const IframeOptionsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  // Keep in sync current locale and NEXT_LOCALE cookie
-  useSyncLocaleCookie()
-
   const searchParams = new URLSearchParams(
     typeof window !== 'undefined' ? window.location.search : ''
   )

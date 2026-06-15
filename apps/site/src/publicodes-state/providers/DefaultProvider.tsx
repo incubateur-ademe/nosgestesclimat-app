@@ -1,5 +1,6 @@
 'use client'
 import { IframeOptionsProvider } from '@/app/[locale]/_components/mainLayoutProviders/IframeOptionsContext'
+import SyncLocaleProvider from '@/app/[locale]/_components/mainLayoutProviders/SyncLocalProvider'
 import CookieConsent from '@/components/cookies/CookieConsent'
 import { CookieConsentProvider } from '@/components/cookies/useCookieManagement'
 
@@ -9,12 +10,14 @@ export default function DefaultProvider({
   children: React.ReactNode
 }) {
   return (
-    <IframeOptionsProvider>
-      <CookieConsentProvider>
-        <CookieConsent />
+    <SyncLocaleProvider>
+      <IframeOptionsProvider>
+        <CookieConsentProvider>
+          <CookieConsent />
 
-        {children}
-      </CookieConsentProvider>
-    </IframeOptionsProvider>
+          {children}
+        </CookieConsentProvider>
+      </IframeOptionsProvider>
+    </SyncLocaleProvider>
   )
 }

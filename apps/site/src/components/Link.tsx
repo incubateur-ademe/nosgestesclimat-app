@@ -1,7 +1,5 @@
 'use client'
 
-import { useLocale } from '@/hooks/useLocale'
-import i18nConfig from '@/i18nConfig'
 import NextLink from 'next/link'
 import type {
   HTMLAttributes,
@@ -29,17 +27,9 @@ export default function Link({
   target,
   ...props
 }: LinkProps) {
-  const locale = useLocale()
-  const localizedHref =
-    href.startsWith('/') && locale !== i18nConfig.defaultLocale
-      ? href === '/'
-        ? `/${locale}`
-        : `/${locale}${href}`
-      : href
-
   return (
     <NextLink
-      href={localizedHref}
+      href={href}
       className={twMerge(
         'text-primary-700 hover:text-primary-800 break-words underline transition-colors',
         className

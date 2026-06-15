@@ -26,14 +26,6 @@ export const useStoragePermissions = (): {
   const askForPermission = useCallback(async () => {
     try {
       await requestStorageAccess()
-    } catch (error) {
-      captureException(error)
-      setNeedPermission(false)
-      return
-    }
-
-    // Storage access was granted — re-check to confirm
-    try {
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
     } catch (error) {
