@@ -26,9 +26,7 @@ const TwoTonsResponseSchema = v.strictObject({
 })
 
 const twoTonsAllowedFallbackRedirects = [
-  // Allow any path on the same origins as the main app
-  ...allowedRedirectUrls.map((u) => u.replace(/\/$/, '/*')),
-  // 2tonnes-specific
+  ...allowedRedirectUrls,
   'https://app.preprod.2tonnes.tech/*',
   'https://api.preprod.2tonnes.tech/*',
   'https://app.2tonnes.org/*',

@@ -246,16 +246,17 @@ export const config = v.parse(ConfigSchema, {
   },
 })
 
-export const allowedRedirectUrls: string[] =
+export const allowedOrigins: string[] =
   config.app.env === 'development'
-    ? ['http://localhost:3000/', 'https://localhost:3000/']
+    ? ['http://localhost:3000', 'https://localhost:3000']
     : [
-        'http://localhost:3000/',
-        'https://localhost:3000/',
-        'https://nosgestesclimat.fr/',
-        'https://preprod.nosgestesclimat.fr/',
-        'https://*.osc-fr1.scalingo.io/',
-        'https://*.vercel.app/',
+        'http://localhost:3000',
+        'https://localhost:3000',
+        'https://nosgestesclimat.fr',
+        'https://preprod.nosgestesclimat.fr',
+        'https://nosgestesclimat-*.osc-fr1.scalingo.io',
       ]
 
-export const origin = wildcardUrlsToCorsOrigins(allowedRedirectUrls)
+export const origin = wildcardUrlsToCorsOrigins(allowedOrigins)
+
+export const allowedRedirectUrls = allowedOrigins.map((o) => `${o}/*`)
