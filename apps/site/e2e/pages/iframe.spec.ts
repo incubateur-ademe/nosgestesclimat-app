@@ -9,9 +9,8 @@ test.describe('/demo-iframe-datashare.html', () => {
   test('displays the data-share modal when simulation is complete', async ({
     page,
   }) => {
-    const iframe = page.frameLocator('iframe').first()
-
     await page.waitForTimeout(3000)
+    const iframe = page.frameLocator('iframe').first()
 
     // Click skip-tutorial-button inside the iframe
     await iframe.getByTestId('skip-tutorial-button').click()
