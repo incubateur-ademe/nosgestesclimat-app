@@ -2193,9 +2193,9 @@ entries:
   poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
   actions.publicListPage.description: Choose actions that seem achievable to you and get started!
   actions.publicListPage.description.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
-  actions.publicListPage.metaDescription: Choose actions that seem achievable to you and get started!
-  actions.publicListPage.metaDescription.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.metaDescription: 'Discover practical steps you can take to reduce your carbon footprint: transport, food, energy efficiency, sustainable consumption, housing… Solutions for a sustainable future!'
+  actions.publicListPage.metaDescription.lock: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
   actions.publicListPage.title: I’m taking action on climate change, one step at a time
   actions.publicListPage.title.lock: J'agis pour le climat, pas à pas
-  actions.publicListPage.metaTitle: I’m taking action on climate change, one step at a time
-  actions.publicListPage.metaTitle.lock: J'agis pour le climat, pas à pas
+  actions.publicListPage.metaTitle: What I’m doing to reduce my carbon footprint - Nos Gestes Climat
+  actions.publicListPage.metaTitle.lock: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat
