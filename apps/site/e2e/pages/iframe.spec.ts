@@ -11,7 +11,7 @@ test.describe('/demo-iframe-datashare.html', () => {
   }) => {
     const iframe = page.frameLocator('iframe').first()
 
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(3000)
 
     // Click skip-tutorial-button inside the iframe
     await iframe.getByTestId('skip-tutorial-button').click()
