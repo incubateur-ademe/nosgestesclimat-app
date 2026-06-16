@@ -10,13 +10,6 @@ const RANK_DELAY: Record<number, number> = {
   3: 0.24,
 }
 
-/** Transition douce et progressive */
-const DESKTOP_TRANSITION = {
-  duration: 1,
-  ease: [0.25, 0.1, 0.25, 1] as const,
-  delay: 0,
-}
-
 const MOBILE_TRANSITION = {
   duration: 0.5,
   ease: 'easeOut' as const,
@@ -33,7 +26,6 @@ export default function AnimatedPodiumBlock({
   const { ref, inView } = useScrollReveal<HTMLDivElement>()
   const [isDesktop, setIsDesktop] = useState<boolean | null>(null)
 
-  // Détection du breakpoint côté client uniquement
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
     setIsDesktop(mq.matches)
@@ -45,8 +37,6 @@ export default function AnimatedPodiumBlock({
 
   const delay = RANK_DELAY[rank] ?? 0
 
-  // Pendant le SSR / premier rendu, on ne fait aucune animation
-  // (évite un flash dû au décalage serveur/client)
   if (isDesktop === null) {
     return (
       <div ref={ref}>
@@ -61,7 +51,11 @@ export default function AnimatedPodiumBlock({
         <motion.div
           initial={{ height: 0 }}
           animate={inView ? { height: 'auto' } : { height: 0 }}
-          transition={{ ...DESKTOP_TRANSITION, delay }}
+          transition={{
+            duration: 1,
+            ease: [0.25, 0.1, 0.25, 1] as const,
+            delay,
+          }}
           className="overflow-hidden">
           {children}
         </motion.div>

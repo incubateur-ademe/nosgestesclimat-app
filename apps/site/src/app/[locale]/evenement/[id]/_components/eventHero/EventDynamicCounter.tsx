@@ -1,6 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import type { Locale } from '@/i18nConfig'
+import { COUNTER_BLOCK_ANIMATION_TOTAL } from './AnimatedCounterBlock'
 import CircularProgressbar from './CircularProgressbar'
 
 interface Props {
@@ -39,7 +40,10 @@ export default function EventDynamicCounter({
 
       <div className="mb-6 flex gap-4 md:gap-6">
         <div className="max-w-full min-w-16 md:min-w-36">
-          <CircularProgressbar value={progressPercentage} startDelay={2000} />
+          <CircularProgressbar
+            value={progressPercentage}
+            startDelay={COUNTER_BLOCK_ANIMATION_TOTAL}
+          />
         </div>
 
         <div>

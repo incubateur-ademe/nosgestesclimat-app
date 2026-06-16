@@ -1,5 +1,3 @@
-/* Types partagés pour les données de la page événement */
-
 export interface PodiumItem {
   rank: number
   label: string
@@ -49,9 +47,7 @@ export interface EventPageData {
   ctaCards: CtaCard[]
 }
 
-/** Centralise toutes les données métier de la page événement.
- *  Quand le CMS sera en place, cette fonction ira chercher les données
- *  via l'API au lieu de renvoyer des valeurs en dur. */
+/** Event page data — centralized mock content before CMS integration. */
 export function getEventPageData(): EventPageData {
   return {
     detailImageSrc:

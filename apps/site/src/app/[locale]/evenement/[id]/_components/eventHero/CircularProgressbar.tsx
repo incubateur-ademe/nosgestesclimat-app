@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const VIEWBOX_WIDTH = 100
 const VIEWBOX_HEIGHT = 100
@@ -56,29 +56,30 @@ export default function CircularProgressbar({
   const pathRatio = (boundedValue - minValue) / (maxValue - minValue)
 
   const [animationProgress, setAnimationProgress] = useState(0)
+  const rafRef = useRef<number>(0)
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       const duration = 800
       const startTime = performance.now()
-      let rafId: number
 
       function animate(now: number) {
         const elapsed = now - startTime
         const progress = Math.min(elapsed / duration, 1)
-        // ease-out cubic : ralentit progressivement vers la fin
         const eased = 1 - Math.pow(1 - progress, 3)
         setAnimationProgress(eased)
         if (progress < 1) {
-          rafId = requestAnimationFrame(animate)
+          rafRef.current = requestAnimationFrame(animate)
         }
       }
 
-      rafId = requestAnimationFrame(animate)
-      return () => cancelAnimationFrame(rafId)
+      rafRef.current = requestAnimationFrame(animate)
     }, startDelay)
 
-    return () => clearTimeout(timeoutId)
+    return () => {
+      clearTimeout(timeoutId)
+      cancelAnimationFrame(rafRef.current)
+    }
   }, [startDelay])
 
   return (

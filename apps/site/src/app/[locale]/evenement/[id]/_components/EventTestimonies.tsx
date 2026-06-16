@@ -23,7 +23,7 @@ export default function EventTestimonies({ locale, testimonies }: Props) {
       </Title>
 
       <p className="text-center text-5xl leading-12 font-bold">
-        <Trans i18nKey="event.testimonies.title" locale={locale}>
+        <Trans i18nKey="event.testimonies.subtitle" locale={locale}>
           Ils ont franchi le pas
         </Trans>
       </p>

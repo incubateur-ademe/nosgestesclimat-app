@@ -22,7 +22,6 @@ export default function PodiumVisual({ items, className, locale }: Props) {
 
   return (
     <>
-      {/* Podium */}
       <ol
         className={twMerge(
           'mt-8 mb-12 flex min-h-80 list-none flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0',
@@ -40,7 +39,6 @@ export default function PodiumVisual({ items, className, locale }: Props) {
         ))}
       </ol>
 
-      {/* Remaining rankings */}
       {remainingItems.length > 0 && (
         <ol
           start={4}
