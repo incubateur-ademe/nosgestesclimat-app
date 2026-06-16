@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '../eventPageData'
+import type { PodiumItem } from '../../_helpers/eventPageData'
 
 interface Props extends PodiumItem {
   locale: Locale

@@ -1,7 +1,7 @@
 import StaggeredCards from '@/components/animations/StaggeredCards'
 import Image from 'next/image'
+import type { CtaCard } from '../_helpers/eventPageData'
 import ActionCard from './eventCTAs/ActionCard'
-import type { CtaCard } from './eventPageData'
 
 interface Props {
   imageSrc: string

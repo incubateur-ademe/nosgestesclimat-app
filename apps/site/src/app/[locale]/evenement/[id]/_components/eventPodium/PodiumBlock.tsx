@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
-import type { PodiumItem } from '../eventPageData'
+import type { PodiumItem } from '../../_helpers/eventPageData'
 import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 import RankBadge from './RankBadge'
 

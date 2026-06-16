@@ -1,8 +1,8 @@
-import type { TutorialStep } from '../eventPageData'
+import type { TutorialStep } from '../../_helpers/eventPageData'
 
 export default function StepCard({ step }: { step: TutorialStep }) {
   return (
-    <div className="flex h-full flex-col rounded-2xl bg-white p-6 shadow-sm">
+    <div className="flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm">
       <span className="bg-secondary-700 mb-4 flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white">
         {step.number}
       </span>

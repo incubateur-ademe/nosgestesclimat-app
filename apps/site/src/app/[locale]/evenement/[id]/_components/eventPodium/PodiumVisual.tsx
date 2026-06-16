@@ -1,6 +1,6 @@
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
-import type { PodiumItem } from '../eventPageData'
+import type { PodiumItem } from '../../_helpers/eventPageData'
 import ListItem from './ListItem'
 import PodiumBlock from './PodiumBlock'
 
@@ -24,7 +24,7 @@ export default function PodiumVisual({ items, className, locale }: Props) {
     <>
       <ol
         className={twMerge(
-          'mt-8 mb-12 flex min-h-80 list-none flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0',
+          'mt-8 mb-12 flex list-none flex-col items-stretch gap-3 md:min-h-80 md:flex-row md:items-end md:justify-center md:gap-0',
           className
         )}>
         {podiumItems.map((item) => (

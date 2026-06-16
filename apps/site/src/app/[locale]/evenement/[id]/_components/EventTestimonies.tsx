@@ -3,7 +3,7 @@ import Carousel from '@/design-system/carousel/Carousel'
 import Title from '@/design-system/layout/Title'
 import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
 import type { Locale } from '@/i18nConfig'
-import type { Testimony } from './eventPageData'
+import type { Testimony } from '../_helpers/eventPageData'
 import TestimonyCard from './eventTestimonies/TestimonyCard'
 
 interface Props {
@@ -22,7 +22,7 @@ export default function EventTestimonies({ locale, testimonies }: Props) {
         </Trans>
       </Title>
 
-      <p className="text-center text-5xl leading-12 font-bold">
+      <p className="text-center text-3xl leading-14 font-bold md:text-5xl md:leading-12">
         <Trans i18nKey="event.testimonies.subtitle" locale={locale}>
           Ils ont franchi le pas
         </Trans>

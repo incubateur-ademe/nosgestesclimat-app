@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import type { Testimony } from '../eventPageData'
+import type { Testimony } from '../../_helpers/eventPageData'
 
 export default function TestimonyCard({ testimony }: { testimony: Testimony }) {
   return (

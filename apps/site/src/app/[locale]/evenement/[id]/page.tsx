@@ -1,15 +1,17 @@
 import Footer from '@/components/layout/Footer'
 import HeaderServer from '@/components/layout/HeaderServer'
 import Main from '@/design-system/layout/Main'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
+import { EventFunFacts } from './_components/EventFunFacts'
 import EventHero from './_components/EventHero'
-import { getEventPageData } from './_components/eventPageData'
 import EventPodium from './_components/EventPodium'
 import EventStatistics from './_components/EventStatistics'
 import EventTestimonies from './_components/EventTestimonies'
 import EventTutorial from './_components/EventTutorial'
+import { getEventPageData } from './_helpers/eventPageData'
 
 export default async function EvenementPage({
   params,
@@ -18,6 +20,8 @@ export default async function EvenementPage({
   const { locale: localeParam } = await params
 
   const locale = localeParam as Locale
+
+  const { t } = await getServerTranslation({ locale })
 
   const {
     detailImageSrc,
@@ -30,7 +34,7 @@ export default async function EvenementPage({
     ctaHeading,
     ctaDescription,
     ctaCards,
-  } = getEventPageData()
+  } = getEventPageData(t)
 
   return (
     <>
@@ -55,6 +59,13 @@ export default async function EvenementPage({
             searchParams={searchParams}
             items={podiumItems}
           />
+        </div>
+        <div className="bg-primary-100">
+          <div className="mx-auto w-5xl max-w-full px-4 py-12 md:p-0 md:py-16">
+            <EventFunFacts locale={locale} />
+          </div>
+        </div>
+        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
           <EventTestimonies locale={locale} testimonies={testimonies} />
         </div>
         <div className="bg-primary-100">

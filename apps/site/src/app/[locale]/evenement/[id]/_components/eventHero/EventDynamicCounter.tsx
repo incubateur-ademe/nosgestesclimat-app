@@ -62,7 +62,7 @@ export default function EventDynamicCounter({
               </span>
             </span>
 
-            <span className="inline-block text-sm md:text-base">
+            <span className="inline-block text-sm text-slate-600 md:text-base">
               <Trans i18nKey="event.dynamicCounter.target.text" locale={locale}>
                 calculs d'empreinte carbone
               </Trans>

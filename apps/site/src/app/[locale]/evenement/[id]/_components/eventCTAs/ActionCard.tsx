@@ -1,7 +1,7 @@
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Emoji from '@/design-system/utils/Emoji'
 import { twMerge } from 'tailwind-merge'
-import type { CtaCard } from '../eventPageData'
+import type { CtaCard } from '../../_helpers/eventPageData'
 
 interface Props extends CtaCard {
   className?: string
@@ -20,7 +20,7 @@ export default function ActionCard({
   return (
     <div
       className={twMerge(
-        'flex min-w-0 flex-1 flex-col items-start rounded-2xl bg-white px-4 py-6 shadow-sm',
+        'flex min-w-0 flex-1 flex-col items-start rounded-3xl bg-white px-4 py-6 shadow-sm',
         index === 0 ? 'bg-primary-100' : 'border-primary-600 border bg-white',
         className
       )}>
@@ -29,9 +29,7 @@ export default function ActionCard({
       </div>
 
       <h3 className="mb-2 text-lg font-bold text-gray-900">{title}</h3>
-      <p className="mb-6 flex-1 text-sm leading-relaxed text-gray-600">
-        {description}
-      </p>
+      <p className="mb-6 flex-1 text-sm leading-relaxed">{description}</p>
 
       <ButtonLink
         href={buttonHref}

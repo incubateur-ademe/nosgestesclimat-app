@@ -63,7 +63,10 @@ export default async function EventTabs({ filter, locale }: Props) {
 
   return (
     <div className="flex justify-center">
-      <Tabs className="border-transparent" items={items} />
+      <Tabs
+        className="border-transparent [&_a]:px-3 [&_button]:px-3 [&_li]:flex-none [&_span]:px-3 [&_ul]:flex-wrap [&_ul]:justify-center"
+        items={items}
+      />
     </div>
   )
 }

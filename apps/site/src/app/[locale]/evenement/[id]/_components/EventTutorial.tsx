@@ -6,7 +6,7 @@ import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
-import type { TutorialStep } from './eventPageData'
+import type { TutorialStep } from '../_helpers/eventPageData'
 import StepCard from './eventTutorial/StepCard'
 import Toggle, { type Mode } from './eventTutorial/Toggle'
 
@@ -56,11 +56,11 @@ export default function EventTutorial({ stepsByMode }: Props) {
       ),
       firstSlideMessage: t(
         'event.tutorial.carousel.firstSlide',
-        'Ceci est la première Diapositive'
+        'Ceci est la première diapositive'
       ),
       lastSlideMessage: t(
         'event.tutorial.carousel.lastSlide',
-        'Ceci est la dernière Diapositive'
+        'Ceci est la dernière diapositive'
       ),
       paginationBulletMessage: t(
         'event.tutorial.carousel.paginationBullet',
@@ -81,7 +81,7 @@ export default function EventTutorial({ stepsByMode }: Props) {
       {(inView) => (
         <section className="my-12 md:my-16">
           <h2 className="mb-8 text-center text-5xl leading-12 font-bold text-gray-900">
-            <Trans i18nKey="event.tutorial.title">Comment participer ?</Trans>
+            <Trans i18nKey="event.tutorial.title">Comment participer ?</Trans>
           </h2>
 
           <div className="mb-8 text-center">
