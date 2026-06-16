@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
-import { DEFAULT_FLAGS, FeatureFlags } from '../fixtures/feature-flags'
+import { createPage } from '../fixtures/feature-flags'
 import { Group } from '../fixtures/groups'
 import { NGCTest } from '../fixtures/ngc-test'
 import { TutorialPage } from '../fixtures/tutorial'
@@ -39,6 +39,7 @@ test.describe('A group admin', () => {
 
     test.afterEach(async ({ page }) => {
       await newGroup.delete()
+      await page.waitForTimeout(2200)
       await expect(page).toHaveURL('/mon-espace/groupes')
       await expect(page.getByText(newGroup.name)).toBeHidden()
     })
@@ -140,8 +141,7 @@ test.describe('A user with a completed test that joined a group', () => {
   let page: Page
 
   test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage()
-    new FeatureFlags(page).set(DEFAULT_FLAGS)
+    page = await createPage(browser)
     await new NGCTest(page).skipAll()
     await expect(page).toHaveURL('/fin')
 

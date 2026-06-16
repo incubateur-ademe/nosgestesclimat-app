@@ -1,45 +1,43 @@
-'use client'
-
-import GroupLoader from '@/components/groups/GroupLoader'
-
-import GroupNotFound from '@/components/groups/GroupNotFound'
-import { useFetchGroup } from '@/hooks/groups/useFetchGroup'
-import { useGroupIdInQueryParams } from '@/hooks/groups/useGroupIdInQueryParams'
-import { useGroupPagesGuard } from '@/hooks/navigation/useGroupPagesGuard'
+import CategoriesAccordion from '@/components/results/CategoriesAccordion'
+import { carboneMetric } from '@/constants/model/metric'
+import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
+import type { Simulation } from '@/helpers/server/model/simulations'
+import type { Locale } from '@/i18nConfig'
+import type { Group } from '@/types/groups'
 import EditableGroupTitle from './EditableGroupTitle'
 import GroupResults from './GroupResults'
 import UpdateSimulationUsed from './UpdateSimulationUsed'
 
-export default function GroupPage() {
-  // Guarding the route and redirecting if necessary
-  const { isGuardRedirecting } = useGroupPagesGuard({
-    isDashboard: true,
-  })
+interface Props {
+  group: Group
+  locale: Locale
+  userSimulation: Simulation
+}
 
-  const { groupIdInQueryParams } = useGroupIdInQueryParams()
-  const {
-    data: group,
-    isLoading,
-    isError,
-    refetch: refetchGroup,
-  } = useFetchGroup(groupIdInQueryParams)
-  // If we are still fetching the group (or we are redirecting the user), we display a loader
-  if (isGuardRedirecting || isLoading) {
-    return <GroupLoader />
-  }
-
-  // If the group doesn't exist, we display a 404 page
-  if (!group || isError) {
-    return <GroupNotFound />
-  }
+export default async function GroupPage({
+  group,
+  locale,
+  userSimulation,
+}: Props) {
+  const rules = await getCachedRules({ locale })
 
   return (
     <>
       <EditableGroupTitle group={group} />
 
-      <UpdateSimulationUsed group={group} refetchGroup={refetchGroup} />
+      <UpdateSimulationUsed group={group} />
 
-      <GroupResults group={group} refetchGroup={refetchGroup} />
+      <GroupResults
+        group={group}
+        categoriesAccordion={
+          <CategoriesAccordion
+            locale={locale}
+            rules={rules}
+            computedResults={userSimulation.computedResults}
+            metric={carboneMetric}
+          />
+        }
+      />
     </>
   )
 }

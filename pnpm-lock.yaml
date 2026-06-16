@@ -122,6 +122,9 @@ importers:
       cors:
         specifier: ^2.8.6
         version: 2.8.6
+      countries-list:
+        specifier: ^3.3.0
+        version: 3.3.0
       dayjs:
         specifier: ^1.11.20
         version: 1.11.20
@@ -5279,6 +5282,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  countries-list@3.3.0:
+    resolution: {integrity: sha512-XRUjS+dcZuNh/fg3+mka3bXgcg4TbQZ1gaK5IJqO6qulerBANl1bmrd20P2dgmPkBpP+5FnejiSF1gd7bgAg+g==}
 
   crc-32@1.2.2:
     resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
@@ -15433,6 +15439,8 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.9.3
+
+  countries-list@3.3.0: {}
 
   crc-32@1.2.2: {}
 

@@ -108,6 +108,6 @@ export const WithCustomCallbacks: Story = {
     label: 'Nom du groupe',
     placeholder: 'Entrez le nom du groupe',
     onClose: () => console.log('Input closed'),
-    onSubmit: (value) => console.log('Submitted:', value),
+    onSubmit: async (value) => console.log('Submitted:', value),
   },
 }

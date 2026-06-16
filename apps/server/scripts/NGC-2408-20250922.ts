@@ -196,6 +196,13 @@ if (deleteUser) {
         }
 
         if (!dry) {
+          await prisma.actionAssessment.deleteMany({
+            where: {
+              simulation: {
+                userId,
+              },
+            },
+          })
           await prisma.simulation.deleteMany({
             where: {
               userId,

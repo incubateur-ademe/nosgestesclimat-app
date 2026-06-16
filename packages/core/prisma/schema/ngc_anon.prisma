@@ -16,9 +16,22 @@ view AnonSimulation {
   @@schema("ngc_anon")
 }
 
+view AnonUser {
+  id            String             @unique @db.Uuid
+  name          String?
+  ageRange      AgeRange?
+  createdAt     DateTime
+  updatedAt     DateTime
+  verifiedUsers AnonVerifiedUser[]
+
+  @@map("User")
+  @@schema("ngc_anon")
+}
+
 view AnonVerifiedUser {
   id                       String   @unique
   user_id                  String   @db.Uuid
+  user                     AnonUser @relation(fields: [user_id], references: [id])
   name                     String?
   telephone                String?
   position                 String?
@@ -31,13 +44,14 @@ view AnonVerifiedUser {
 }
 
 view AnonOrganisation {
-  id                    String   @unique
+  id                    String           @unique
   name                  String
   slug                  String
   type                  OrganisationType
   numberOfCollaborators Int?
   createdAt             DateTime
   updatedAt             DateTime
+  anonPolls             AnonPoll[]
 
   @@map("Organisation")
   @@schema("ngc_anon")
@@ -55,17 +69,19 @@ view AnonOrganisationAdministrator {
 }
 
 view AnonPoll {
-  id                           String   @unique
+  id                           String           @unique
   name                         String
-  slug                         String   @unique
+  slug                         String           @unique
   funFacts                     Json?
   computedResults              Json?
   expectedNumberOfParticipants Int?
   customAdditionalQuestions    Json
   computeRealTimeStats         Boolean
   organisationId               String
+  organisation                 AnonOrganisation @relation(fields: [organisationId], references: [id])
   createdAt                    DateTime
   updatedAt                    DateTime
+  pollMode                     PollMode
 
   @@map("Poll")
   @@schema("ngc_anon")
