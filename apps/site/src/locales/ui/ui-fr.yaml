@@ -1415,3 +1415,5 @@ entries:
   homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   actions.beta-banner.content: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
+  contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
+  contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site

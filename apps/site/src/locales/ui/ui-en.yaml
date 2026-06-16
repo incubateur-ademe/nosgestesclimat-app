@@ -2039,3 +2039,7 @@ entries:
   actions.beta-banner.link.aria-label.lock: Laisser votre avis, nouvelle fenêtre
   actions.beta-banner.content: This <1>beta version</1> is currently being improved. Help us improve it by <4>leaving your feedback.</4>
   actions.beta-banner.content.lock: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
+  contact.iframe.title.fr: Form – please send us your feedback on the website
+  contact.iframe.title.fr.lock: Formulaire - nous faire part de vos remarques sur le site
+  contact.iframe.title.en: Form – provide feedback on Nos Gestes Climat
+  contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
