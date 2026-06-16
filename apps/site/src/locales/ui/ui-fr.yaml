@@ -1474,3 +1474,5 @@ entries:
   event.tutorial.title: Comment participer ?
   event.podium.title: Classement des organisations en direct
   event.funFacts.title: Vous êtes déjà <1>0</1><2></2>à avoir participé.
+  event.meta.description: "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
+  event.meta.title: Événement collectif d'empreinte carbone - Nos Gestes Climat

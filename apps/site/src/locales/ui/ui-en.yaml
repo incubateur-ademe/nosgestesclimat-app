@@ -2157,3 +2157,7 @@ entries:
   event.podium.title.lock: Classement des organisations en direct
   event.funFacts.title: <2></2><1>s</1> have already taken part.
   event.funFacts.title.lock: Vous êtes déjà <1>0</1><2></2>à avoir participé.
+  event.meta.title: Community carbon footprint event – Nos Gestes Climat
+  event.meta.title.lock: Événement collectif d'empreinte carbone - Nos Gestes Climat
+  event.meta.description: 'Take up the challenge with your organisation: measure your carbon footprint and take action to reduce it collectively.'
+  event.meta.description.lock: "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
