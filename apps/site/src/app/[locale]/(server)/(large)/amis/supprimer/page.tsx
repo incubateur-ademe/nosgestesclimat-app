@@ -92,7 +92,8 @@ export default function SupprimerGroupePage({
       {isError && <DefaultSubmitErrorMessage className="mt-4" />}
 
       <Button
-        disabled={!!isError || !group || isSuccess || isPending}
+        disabled={!!isError || !group || isSuccess}
+        loading={isPending}
         onClick={handleDelete}>
         <Trans>Supprimer mes données</Trans>
       </Button>

@@ -6,6 +6,8 @@ import type {
   RefObject,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
+import type { LoaderSizes } from '../layout/Loader'
+import Loader from '../layout/Loader'
 
 export type ButtonColor =
   | 'primary'
@@ -23,6 +25,7 @@ export type ButtonProps = {
   color?: ButtonColor
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
+  loading?: boolean
   id?: string
   title?: string
   form?: string
@@ -51,6 +54,24 @@ export const sizeClassNames = {
   xl: 'px-9 py-4 text-xl',
 }
 
+const loaderSizeMap: Record<ButtonSize, LoaderSizes> = {
+  xs: 'sm',
+  sm: 'sm',
+  md: 'md',
+  lg: 'lg',
+  xl: 'lg',
+}
+
+const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
+  primary: 'light',
+  secondary: 'dark',
+  success: 'light',
+  text: 'dark',
+  link: 'dark',
+  borderless: 'dark',
+  red: 'light',
+}
+
 export const baseClassNames =
   'inline-flex items-center opacity-100! justify-center whitespace-nowrap rounded-full font-bold no-underline transition-colors aria-disabled:opacity-50 leading-none!'
 
@@ -62,16 +83,19 @@ export default function Button({
   color = 'primary',
   type,
   disabled,
+  loading,
   id,
   title,
   form,
   ref,
   ...props
 }: PropsWithChildren<ButtonProps & HtmlHTMLAttributes<HTMLButtonElement>>) {
+  const isDisabled = disabled || loading
+
   return (
     <button
       onClick={
-        disabled
+        isDisabled
           ? (e) => {
               e.preventDefault()
             }
@@ -79,7 +103,7 @@ export default function Button({
       }
       ref={ref}
       type={type}
-      aria-disabled={disabled}
+      aria-disabled={isDisabled}
       title={title}
       form={form}
       id={id}
@@ -87,10 +111,17 @@ export default function Button({
         baseClassNames,
         sizeClassNames[size],
         colorClassNames[color],
-        disabled && 'cursor-not-allowed opacity-50!',
+        isDisabled && 'cursor-not-allowed opacity-50!',
         className
       )}
       {...props}>
+      {loading && (
+        <Loader
+          size={loaderSizeMap[size]}
+          color={loaderColorMap[color]}
+          className="mr-2"
+        />
+      )}
       {children}
     </button>
   )

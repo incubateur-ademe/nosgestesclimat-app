@@ -24,6 +24,10 @@ const meta: Meta<typeof Button> = {
       control: 'boolean',
       description: 'Whether the button is disabled',
     },
+    loading: {
+      control: 'boolean',
+      description: 'Whether the button is in a loading state (shows a spinner and auto-disables)',
+    },
     onClick: {
       action: 'clicked',
       description: 'Optional click handler',
@@ -92,5 +96,20 @@ export const Disabled: Story = {
   args: {
     children: 'Disabled Button',
     disabled: true,
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    children: 'Loading Button',
+    loading: true,
+  },
+}
+
+export const LoadingSecondary: Story = {
+  args: {
+    children: 'Loading Secondary',
+    color: 'secondary',
+    loading: true,
   },
 }

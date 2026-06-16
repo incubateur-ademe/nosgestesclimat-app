@@ -13,7 +13,7 @@ export default function ReuseButton({ reuseSimulation }: Props) {
 
   return (
     <Button
-      disabled={isPending}
+      loading={isPending}
       onClick={() => startTransition(reuseSimulation)}>
       <Trans>Utiliser mes données existantes</Trans>
     </Button>

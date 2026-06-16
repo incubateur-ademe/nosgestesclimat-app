@@ -211,7 +211,7 @@ export default function CreationForm() {
 
       <div className="mt-8">
         <Button
-          disabled={isPending}
+          loading={isPending}
           type="submit"
           data-testid="create-organisation-button">
           <Trans>Créer mon premier test collectif</Trans>

@@ -79,7 +79,7 @@ export default function InvitationForm({
       )}
 
       <Button
-        disabled={isPending}
+        loading={isPending}
         type="submit"
         data-testid="button-join-group"
         className="mt-4">

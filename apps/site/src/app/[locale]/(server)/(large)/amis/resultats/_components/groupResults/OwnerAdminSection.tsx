@@ -88,17 +88,17 @@ export default function OwnerAdminSection({ group }: Props) {
           </p>
           <div className="flex gap-4">
             <Button
+              disabled={isPending}
+              color="secondary"
               onClick={() => {
                 setIsConfirming(false)
               }}
-              size="sm"
-              disabled={isPending}
-              color="secondary">
+              size="sm">
               <Trans>Annuler</Trans>
             </Button>
 
             <Button
-              disabled={isPending}
+              loading={isPending}
               onClick={handleDelete}
               size="sm"
               color="primary"

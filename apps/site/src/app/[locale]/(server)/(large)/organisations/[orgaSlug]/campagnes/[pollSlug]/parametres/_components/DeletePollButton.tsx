@@ -50,7 +50,7 @@ export default function DeletePollButton() {
             'organisations.polls.settings.confirmDeletion',
             'Fenêtre modale de confirmation de suppression du test collectif'
           )}
-          disabled={isPending}
+          loading={isPending}
           ariaLabelledBy="delete-poll-title"
           closeModal={() => setIsOpen(false)}
           onConfirm={handleDeletePoll}>

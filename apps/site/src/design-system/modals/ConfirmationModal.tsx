@@ -3,13 +3,12 @@
 import Trans from '@/components/translation/trans/TransClient'
 import type { ReactNode } from 'react'
 import Button from '../buttons/Button'
-import Loader from '../layout/Loader'
 import Modal from './Modal'
 
 interface Props {
   onConfirm: () => void
   closeModal: () => void
-  isLoading?: boolean
+  loading?: boolean
   children: ReactNode
   ariaLabel?: string
   ariaLabelledBy?: string
@@ -20,7 +19,7 @@ export default function ConfirmationModal({
   onConfirm,
   closeModal,
   children,
-  isLoading,
+  loading,
   ariaLabel,
   ariaLabelledBy,
   disabled,
@@ -38,16 +37,17 @@ export default function ConfirmationModal({
         <Button
           disabled={disabled}
           color="secondary"
-          onClick={!isLoading ? closeModal : () => {}}>
+          onClick={!loading ? closeModal : () => {}}>
           <Trans>Annuler</Trans>
         </Button>
 
         <Button
           color="primary"
           disabled={disabled}
+          loading={loading}
           className="xs:order-2 -order-1 w-[140px]"
-          onClick={!isLoading ? onConfirm : () => {}}>
-          {isLoading ? <Loader /> : <Trans>Confirmer</Trans>}
+          onClick={!loading ? onConfirm : () => {}}>
+          <Trans>Confirmer</Trans>
         </Button>
       </div>
     </Modal>

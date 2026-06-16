@@ -85,18 +85,18 @@ export default function ParticipantAdminSection({ group }: Props) {
 
           <div className="flex gap-4">
             <Button
-              onClick={() => setIsConfirming(false)}
-              size="sm"
               disabled={isPending}
-              color="secondary">
+              color="secondary"
+              onClick={() => setIsConfirming(false)}
+              size="sm">
               Annuler
             </Button>
 
             <Button
+              loading={isPending}
               onClick={handleDelete}
               size="sm"
               color="primary"
-              disabled={isPending}
               data-testid="button-confirm-leave-group">
               Quitter le groupe
             </Button>

@@ -112,7 +112,7 @@ export default function NameForm({
       </div>
 
       <div>
-        <Button disabled={isPending} type="submit" aria-disabled={!isDirty}>
+        <Button loading={isPending} type="submit" aria-disabled={!isDirty}>
           Enregistrer
         </Button>
       </div>

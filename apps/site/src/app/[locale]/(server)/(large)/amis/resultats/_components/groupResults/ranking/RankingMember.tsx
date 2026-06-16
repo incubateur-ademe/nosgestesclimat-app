@@ -170,7 +170,7 @@ export default function RankingMember({
             {isConfirmationModalOpen && (
               <ConfirmationModal
                 onConfirm={handleDelete}
-                disabled={isPending}
+                loading={isPending}
                 ariaLabel={t(
                   'group.results.rankingMember.delete.modal.ariaLabel',
                   'Fenêtre modale de confirmation de suppression du membre du groupe'

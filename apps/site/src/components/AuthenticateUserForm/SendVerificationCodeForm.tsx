@@ -77,7 +77,7 @@ export default function SendVerificationCodeForm({
       buttonColor={buttonColor}
       additionnalButton={additionnalButton}
       isVerticalLayout={isVerticalLayout}
-      disabled={createVerificationCodePending}>
+      loading={createVerificationCodePending}>
       <EmailInput
         data-testid="verification-code-email-input"
         containerClassName={isVerticalLayout ? 'w-full' : 'max-w-full w-96'}

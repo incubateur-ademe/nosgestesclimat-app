@@ -48,7 +48,8 @@ export default function AgeForm({ ageRange }: Props) {
         <Button
           type="submit"
           className="md:order-1"
-          disabled={!selectedAge || isPending}
+          disabled={!selectedAge}
+          loading={isPending}
           data-testid="submit-age-button">
           <Trans i18nKey="common.suivant">Suivant</Trans>
           <span aria-hidden className="ml-2 inline-block">
