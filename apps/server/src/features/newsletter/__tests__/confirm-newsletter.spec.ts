@@ -132,14 +132,14 @@ describe('Given a NGC user', () => {
       })
     })
 
-    describe('And invalid origin (not a base URL)', () => {
+    describe('And invalid origin (untrusted domain)', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: faker.internet.email(),
-            origin: 'https://nosgestesclimat.fr/some-path',
+            origin: 'https://evil.com/some-path',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
           .expect(StatusCodes.BAD_REQUEST)
