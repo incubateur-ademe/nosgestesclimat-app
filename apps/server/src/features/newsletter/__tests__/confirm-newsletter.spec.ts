@@ -146,6 +146,82 @@ describe('Given a NGC user', () => {
       })
     })
 
+    describe('And invalid origin (not in allowed origins list)', () => {
+      test('Then it returns a 400 error for malicious domain', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://malicious-site.com',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+
+      test('Then it returns a 400 error for subdomain attack', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://attacker.nosgestesclimat.fr',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+
+      test('Then it returns a 400 error for similar domain', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://nosgestesclimat.com',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+    })
+
+    describe('And valid origin (in allowed origins list)', () => {
+      test('Then it accepts localhost in development', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://localhost:3000',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+      })
+
+      test('Then it accepts nosgestesclimat.fr', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://nosgestesclimat.fr',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+      })
+
+      test('Then it accepts preprod.nosgestesclimat.fr', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://preprod.nosgestesclimat.fr',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+      })
+    })
+
     describe('And invalid listIds (not in allowed newsletters)', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
