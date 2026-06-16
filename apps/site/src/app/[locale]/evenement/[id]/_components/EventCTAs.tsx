@@ -1,11 +1,12 @@
-import ExternalLinkIcon from '@/components/icons/ExternalLinkIcon'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
+import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
 import Emoji from '@/design-system/utils/Emoji'
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
 
 const CARDS = [
   {
-    emoji: '🧑',
+    emoji: '👤',
     alt: 'Individuel',
     title: 'En individuel',
     description:
@@ -32,15 +33,15 @@ function ActionCard({
   buttonHref,
   className,
   index,
-}: (typeof CARDS)[number] & { className?: string; index?: 0 | 1 }) {
+}: (typeof CARDS)[number] & { className?: string; index?: number }) {
   return (
     <div
       className={twMerge(
-        'flex flex-col items-start rounded-2xl bg-white p-6 shadow-sm',
+        'flex min-w-0 flex-1 flex-col items-start rounded-2xl bg-white px-4 py-6 shadow-sm',
         index === 0 ? 'bg-primary-100' : 'border-primary-600 border bg-white',
         className
       )}>
-      <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-[#F3E8FF]">
+      <div className="bg-primary-50 mb-4 flex size-12 items-center justify-center rounded-full">
         <Emoji className="text-2xl">{emoji}</Emoji>
       </div>
 
@@ -49,12 +50,16 @@ function ActionCard({
         {description}
       </p>
 
-      <a
+      <ButtonLink
         href={buttonHref}
-        className="border-primary-700 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-bold transition-colors">
+        color="secondary"
+        size="sm"
+        className="w-full whitespace-nowrap">
         {buttonLabel}
-        <ExternalLinkIcon className="text-primary-700" />
-      </a>
+        <span aria-hidden="true" className="ml-1.5">
+          →
+        </span>
+      </ButtonLink>
     </div>
   )
 }
@@ -62,8 +67,8 @@ function ActionCard({
 export default function EventCTAs() {
   return (
     <section className="my-16">
-      <div className="mb-10 flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-16">
-        <div className="flex-1">
+      <div className="mb-10 flex flex-col items-center gap-6 md:flex-row md:items-center md:gap-16">
+        <div className="w-96 max-w-full">
           <Image
             src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/people_raising_arms_v2_dd1c17393a.svg"
             alt=""
@@ -74,8 +79,8 @@ export default function EventCTAs() {
           />
         </div>
 
-        <div className="flex-1 text-center md:text-left">
-          <h2 className="text-4xl leading-tight font-extrabold text-gray-900 md:text-5xl">
+        <div className="flex-1 text-left">
+          <h2 className="mb-0 text-3xl leading-11 font-bold md:text-5xl md:leading-16">
             Prêt·e à rejoindre
             <br />
             l&apos;aventure&nbsp;?
@@ -84,16 +89,13 @@ export default function EventCTAs() {
             Deux façons de participer au challenge.
           </p>
 
-          <div className="flex flex-col gap-6 md:flex-row">
-            {CARDS.map((card, index) => (
-              <ActionCard
-                index={index}
-                key={card.alt}
-                {...card}
-                className="md:flex-1"
-              />
-            ))}
-          </div>
+          <ScrollReveal>
+            <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+              {CARDS.map((card, index) => (
+                <ActionCard index={index} key={card.alt} {...card} />
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

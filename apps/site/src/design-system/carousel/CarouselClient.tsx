@@ -103,17 +103,17 @@ export default function CarouselClient({
         <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
           <button
             onClick={() => swiper?.slidePrev()}
-            className="focus:outline-primary-700 flex h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-all hover:scale-110"
+            className="focus:outline-primary-600 border-primary-700 flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white shadow-sm transition-all hover:scale-110"
             type="button"
             aria-label={translations.prevSlideMessage}>
             <ChevronLeft />
           </button>
           <button
             onClick={() => swiper?.slideNext()}
-            className="focus:outline-primary-700 flex h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-all hover:scale-110"
+            className="focus:outline-primary-600 border-primary-700 flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white shadow-sm transition-all hover:scale-110"
             type="button"
             aria-label={translations.nextSlideMessage}>
-            <ChevronRight />
+            <ChevronLeft className="rotate-180" />
           </button>
         </div>
       )}
