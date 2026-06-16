@@ -2155,7 +2155,7 @@ entries:
   event.testimonies.1.text.lock: "Nous avons proposé à notre communauté de voyageurs d'utiliser Nos Gestes Climat pour calculer leur empreinte écologique. C'était une manière simple et accessible de sensibiliser sans culpabiliser. Résultat : près de 4 700 participations. Un vrai levier pour initier le dialogue sur un tourisme plus responsable."
   event.podium.title: Live rankings of organisations
   event.podium.title.lock: Classement des organisations en direct
-  event.funFacts.title: <2></2><1>s</1> have already taken part.
+  event.funFacts.title: <2>0</2> have already taken part.
   event.funFacts.title.lock: Vous êtes déjà <1>0</1><2></2>à avoir participé.
   event.meta.title: Community carbon footprint event – Nos Gestes Climat
   event.meta.title.lock: Événement collectif d'empreinte carbone - Nos Gestes Climat
