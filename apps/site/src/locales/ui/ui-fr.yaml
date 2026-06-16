@@ -864,6 +864,7 @@ entries:
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
   actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.detailPage.nav: Navigation de la page
