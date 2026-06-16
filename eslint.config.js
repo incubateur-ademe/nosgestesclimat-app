@@ -5,9 +5,10 @@ import nextVanilla from 'eslint-config-next'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import eslintPluginImport from 'eslint-plugin-import'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
-import playwright from 'eslint-plugin-playwright'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import typescriptEslint from 'typescript-eslint'
+
+import e2eConfig from './.eslint-configs/e2e.js'
 
 // Avoid duplicate import plugin setup which fails
 const { import: _import, ...nextPlugins } = nextVanilla[0].plugins
@@ -15,6 +16,7 @@ const { import: _import, ...nextPlugins } = nextVanilla[0].plugins
 export default defineConfig([
   globalIgnores([
     'eslint.config.js',
+    '.eslint-configs/',
     '**/prisma.config.js',
     '**/coverage/**',
     '**/dist/**',
@@ -186,10 +188,7 @@ export default defineConfig([
       ],
     },
   },
-  {
-    files: ['apps/site/e2e/**/*.ts'],
-    extends: [playwright.configs['flat/recommended']],
-  },
+  e2eConfig,
   // Must be last to ensure compatibility with Prettier
   eslintConfigPrettier,
 ])
