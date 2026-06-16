@@ -1,7 +1,8 @@
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
 import * as v from 'valibot'
-import { config } from '../../config.ts'
+import { allowedRedirectUrls, config } from '../../config.ts'
+import { isSafeRedirectUrl } from '../../core/allowed-urls.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.ts'
 import type { SituationSchema } from '../../features/simulations/simulations.validator.ts'
@@ -22,6 +23,23 @@ axiosRetry(twoTons, {
 
 const TwoTonsResponseSchema = v.strictObject({
   redirect_url: v.string(),
+})
+
+const twoTonsAllowedFallbackRedirects = [
+  // Allow any path on the same origins as the main app
+  ...allowedRedirectUrls.map((u) => u.replace(/\/$/, '/*')),
+  // 2tonnes-specific
+  'https://app.preprod.2tonnes.tech/*',
+  'https://api.preprod.2tonnes.tech/*',
+  'https://app.2tonnes.org/*',
+  'https://api.2tonnes.org/*',
+]
+
+const TwoTonsFallbackSchema = v.strictObject({
+  redirect_url: v.pipe(
+    v.string(),
+    v.check((url) => isSafeRedirectUrl(url, twoTonsAllowedFallbackRedirects))
+  ),
 })
 
 export const exportSituation = async (
@@ -56,7 +74,7 @@ export const exportSituation = async (
       }
     }
 
-    const { success, output: data } = v.safeParse(TwoTonsResponseSchema, {
+    const { success, output: data } = v.safeParse(TwoTonsFallbackSchema, {
       redirect_url: params['fallback'],
     })
 
@@ -66,6 +84,17 @@ export const exportSituation = async (
       }
     }
 
+    if (typeof params['fallback'] === 'string') {
+      throw new InvalidFallbackURLError()
+    }
+
     throw e
+  }
+}
+
+export class InvalidFallbackURLError extends Error {
+  constructor() {
+    super('Invalid fallback URL')
+    this.name = 'InvalidFallbackURLError'
   }
 }

@@ -182,7 +182,7 @@ describe('Given a NGC user', () => {
             customResponses: [
               {
                 body: {
-                  redirect_url: 'http://app.2-tonnes.com',
+                  redirect_url: 'https://app.2tonnes.org',
                 },
               },
             ],
@@ -195,7 +195,7 @@ describe('Given a NGC user', () => {
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual({
-          redirectUrl: 'http://app.2-tonnes.com',
+          redirectUrl: 'https://app.2tonnes.org',
         })
       })
 
@@ -206,7 +206,7 @@ describe('Given a NGC user', () => {
             customResponses: [
               {
                 body: {
-                  redirect_url: 'http://app.2-tonnes.com',
+                  redirect_url: 'https://app.2tonnes.org',
                 },
               },
             ],
@@ -234,7 +234,7 @@ describe('Given a NGC user', () => {
               customResponses: [
                 {
                   body: {
-                    redirect_url: 'http://app.2-tonnes.com',
+                    redirect_url: 'https://app.2tonnes.org',
                   },
                 },
               ],
@@ -263,7 +263,7 @@ describe('Given a NGC user', () => {
               customResponses: [
                 {
                   body: {
-                    redirect_url: 'http://app.2-tonnes.com/error',
+                    redirect_url: 'https://app.2tonnes.org/error',
                   },
                   status: StatusCodes.UNAUTHORIZED,
                 },
@@ -277,7 +277,7 @@ describe('Given a NGC user', () => {
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual({
-            redirectUrl: 'http://app.2-tonnes.com/error',
+            redirectUrl: 'https://app.2tonnes.org/error',
           })
         })
 
@@ -372,14 +372,46 @@ describe('Given a NGC user', () => {
             const response = await agent
               .post(url.replace(':externalService', serviceName))
               .query({
-                'partner-fallback': 'http://app.2-tonnes.com/fallback',
+                'partner-fallback': 'https://app.2tonnes.org/fallback',
               })
               .send(situation)
               .expect(StatusCodes.OK)
 
             expect(response.body).toEqual({
-              redirectUrl: 'http://app.2-tonnes.com/fallback',
+              redirectUrl: 'https://app.2tonnes.org/fallback',
             })
+          })
+
+          test('Then it rejects invalid fallback URL with wrong domain', async () => {
+            mswServer.use(
+              twoTonsExportSituation({
+                customResponses: [{ body: {} }],
+              })
+            )
+
+            await agent
+              .post(url.replace(':externalService', serviceName))
+              .query({
+                'partner-fallback': 'https://evil.com/fallback',
+              })
+              .send(situation)
+              .expect(StatusCodes.BAD_REQUEST)
+          })
+
+          test('Then it rejects invalid fallback URL with malformed origin due to unescaped regex', async () => {
+            mswServer.use(
+              twoTonsExportSituation({
+                customResponses: [{ body: {} }],
+              })
+            )
+
+            await agent
+              .post(url.replace(':externalService', serviceName))
+              .query({
+                'partner-fallback': 'https://appX2tonnes.org/fallback',
+              })
+              .send(situation)
+              .expect(StatusCodes.BAD_REQUEST)
           })
         })
       })
@@ -446,14 +478,56 @@ describe('Given a NGC user', () => {
             const response = await agent
               .post(url.replace(':externalService', serviceName))
               .query({
-                'partner-fallback': 'http://app.2-tonnes.com/fallback',
+                'partner-fallback': 'https://app.2tonnes.org/fallback',
               })
               .send(situation)
               .expect(StatusCodes.OK)
 
             expect(response.body).toEqual({
-              redirectUrl: 'http://app.2-tonnes.com/fallback',
+              redirectUrl: 'https://app.2tonnes.org/fallback',
             })
+          })
+
+          test('Then it rejects invalid fallback URL with wrong domain when service is down', async () => {
+            mswServer.use(
+              twoTonsExportSituation({
+                customResponses: [
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                ],
+              })
+            )
+
+            await agent
+              .post(url.replace(':externalService', serviceName))
+              .query({
+                'partner-fallback': 'https://evil.com/fallback',
+              })
+              .send(situation)
+              .expect(StatusCodes.BAD_REQUEST)
+          })
+
+          test('Then it rejects invalid fallback URL with malformed origin when service is down', async () => {
+            mswServer.use(
+              twoTonsExportSituation({
+                customResponses: [
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                  { status: StatusCodes.INTERNAL_SERVER_ERROR },
+                ],
+              })
+            )
+
+            await agent
+              .post(url.replace(':externalService', serviceName))
+              .query({
+                'partner-fallback': 'https://appX2tonnes.org/fallback',
+              })
+              .send(situation)
+              .expect(StatusCodes.BAD_REQUEST)
           })
         })
       })
