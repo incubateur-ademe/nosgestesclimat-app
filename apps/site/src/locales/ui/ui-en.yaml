@@ -2047,9 +2047,9 @@ entries:
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
   actions.publicListPage.description: Choose actions that seem achievable to you and get started!
   actions.publicListPage.description.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
-  actions.publicListPage.metaDescription: Choose actions that seem achievable to you and get started!
-  actions.publicListPage.metaDescription.lock: Choisissez les actions qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.metaDescription: 'Discover practical steps you can take to reduce your carbon footprint: transport, food, energy efficiency, sustainable consumption, housing… Solutions for a sustainable future!'
+  actions.publicListPage.metaDescription.lock: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
   actions.publicListPage.title: I’m taking action on climate change, one step at a time
   actions.publicListPage.title.lock: J'agis pour le climat, pas à pas
-  actions.publicListPage.metaTitle: I’m taking action on climate change, one step at a time
-  actions.publicListPage.metaTitle.lock: J'agis pour le climat, pas à pas
+  actions.publicListPage.metaTitle: What I’m doing to reduce my carbon footprint - Nos Gestes Climat
+  actions.publicListPage.metaTitle.lock: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat

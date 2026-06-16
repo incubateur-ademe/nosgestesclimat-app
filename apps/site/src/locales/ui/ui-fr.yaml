@@ -867,8 +867,8 @@ entries:
   actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
   actions.publicListPage.title: J'agis pour le climat, pas à pas
   actions.publicListPage.description: Choisissez les actions qui vous semblent atteignables et lancez-vous !
-  actions.publicListPage.metaTitle: J'agis pour le climat, pas à pas
-  actions.publicListPage.metaDescription: Choisissez les actions qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.metaTitle: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat
+  actions.publicListPage.metaDescription: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.detailPage.nav: Navigation de la page
