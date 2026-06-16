@@ -43,18 +43,6 @@ view AnonVerifiedUser {
   @@schema("ngc_anon")
 }
 
-enum AgeRange {
-  under_18
-  age_18_24
-  age_25_34
-  age_35_49
-  age_50_64
-  over_65
-  undisclosed
-
-  @@schema("ngc_anon")
-}
-
 view AnonOrganisation {
   id                    String           @unique
   name                  String
