@@ -3,6 +3,7 @@
 import { Children, forwardRef, useRef, useState } from 'react'
 import { A11y, Keyboard, Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import type { Swiper as SwiperInstance } from 'swiper/types'
 
 import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
@@ -23,6 +24,7 @@ interface CarouselClientProps {
   className?: string
   slideClassName?: string
   translations: CarouselTranslations
+  showMobileNav?: boolean
 }
 
 export default function CarouselClient({
@@ -30,8 +32,10 @@ export default function CarouselClient({
   className,
   slideClassName,
   translations,
+  showMobileNav = false,
 }: CarouselClientProps) {
   const [isInitialized, setIsInitialized] = useState(false)
+  const [swiper, setSwiper] = useState<SwiperInstance | null>(null)
   const prevButton = useRef(null)
   const nextButton = useRef(null)
 
@@ -71,6 +75,7 @@ export default function CarouselClient({
         onInit={() => {
           setIsInitialized(true)
         }}
+        onSwiper={setSwiper}
         onBeforeInit={(swiper) => {
           // Assign refs before Swiper initializes
           const navigation =
@@ -94,6 +99,24 @@ export default function CarouselClient({
           )
         })}
       </Swiper>
+      {showMobileNav && (
+        <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
+          <button
+            onClick={() => swiper?.slidePrev()}
+            className="focus:outline-primary-700 flex h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-all hover:scale-110"
+            type="button"
+            aria-label={translations.prevSlideMessage}>
+            <ChevronLeft />
+          </button>
+          <button
+            onClick={() => swiper?.slideNext()}
+            className="focus:outline-primary-700 flex h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-all hover:scale-110"
+            type="button"
+            aria-label={translations.nextSlideMessage}>
+            <ChevronRight />
+          </button>
+        </div>
+      )}
     </>
   )
 }

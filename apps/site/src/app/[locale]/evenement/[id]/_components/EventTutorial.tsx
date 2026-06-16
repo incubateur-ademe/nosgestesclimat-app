@@ -178,7 +178,8 @@ export default function EventTutorial() {
                 <CarouselClient
                   translations={CAROUSEL_TRANSLATIONS}
                   className="px-4 py-1"
-                  slideClassName="w-full max-w-none sm:w-full">
+                  slideClassName="w-full max-w-none sm:w-full"
+                  showMobileNav>
                   {steps.map((step) => (
                     <StepCard key={step.number} step={step} />
                   ))}
