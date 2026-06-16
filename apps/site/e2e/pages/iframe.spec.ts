@@ -11,11 +11,15 @@ test.describe('/demo-iframe-datashare.html', () => {
   }) => {
     const iframe = page.frameLocator('iframe').first()
 
+    await page.waitForTimeout(1000)
+
     // Click skip-tutorial-button inside the iframe
     await iframe.getByTestId('skip-tutorial-button').click()
 
-    // // Wait for navigation to complete
-    await expect(iframe.getByTestId('skip-question-button')).toBeVisible()
+    // // Wait for navigation to complete / need to get the iframe after page change
+    await expect(
+      page.frameLocator('iframe').first().getByTestId('skip-question-button')
+    ).toBeVisible()
 
     // In production builds, a full page navigation inside the iframe destroys
     // the underlying Frame object and creates a new one. Storing a reference to
