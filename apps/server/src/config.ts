@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 import * as v from 'valibot'
+import { wildcardUrlsToCorsOrigins } from './core/allowed-urls.ts'
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ quiet: true })
@@ -245,14 +246,16 @@ export const config = v.parse(ConfigSchema, {
   },
 })
 
-export const origin =
+export const allowedRedirectUrls: string[] =
   config.app.env === 'development'
-    ? ['http://localhost:3000', 'https://localhost:3000']
+    ? ['http://localhost:3000/', 'https://localhost:3000/']
     : [
-        'http://localhost:3000',
-        'https://localhost:3000',
-        'https://nosgestesclimat.fr',
-        'https://preprod.nosgestesclimat.fr',
-        /\.osc-fr1\.scalingo\.io$/,
-        /\.vercel\.app$/,
+        'http://localhost:3000/',
+        'https://localhost:3000/',
+        'https://nosgestesclimat.fr/',
+        'https://preprod.nosgestesclimat.fr/',
+        'https://*.osc-fr1.scalingo.io/',
+        'https://*.vercel.app/',
       ]
+
+export const origin = wildcardUrlsToCorsOrigins(allowedRedirectUrls)
