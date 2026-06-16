@@ -1,6 +1,8 @@
 import * as v from 'valibot'
 import { ListIds } from '../../adapters/brevo/constant.ts'
+import { origin as allowedOrigins } from '../../config.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
+import { isSafeRedirectUrl } from '../../core/is-safe-redirect-url.ts'
 
 export const REACHABLE_NEWSLETTER_LIST_IDS = [
   ListIds.MAIN_NEWSLETTER,
@@ -49,13 +51,7 @@ const NewsletterConfirmationQuery = v.strictObject({
   code: v.pipe(v.string(), v.regex(/^\d{6}$/)),
   origin: v.pipe(
     v.string(),
-    v.check((url: string) => {
-      try {
-        return new URL(url).origin === url
-      } catch {
-        return false
-      }
-    })
+    v.check((url: string) => isSafeRedirectUrl(url, allowedOrigins))
   ),
   email: v.pipe(
     v.string(),
