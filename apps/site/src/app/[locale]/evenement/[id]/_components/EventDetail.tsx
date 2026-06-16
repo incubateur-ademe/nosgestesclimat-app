@@ -5,15 +5,16 @@ import Image from 'next/image'
 
 interface Props {
   locale: Locale
+  imageSrc: string
 }
 
-export default async function EventDetail({ locale }: Props) {
+export default async function EventDetail({ locale, imageSrc }: Props) {
   const { t } = await getServerTranslation({ locale })
   return (
     <div className="mt-6 mb-6 flex flex-row items-center gap-5">
       <div className="w-40 min-w-28">
         <Image
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/journee_de_la_terre_2026_8ead81e894.svg"
+          src={imageSrc}
           width="160"
           height="160"
           alt={t(

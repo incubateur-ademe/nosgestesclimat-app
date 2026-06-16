@@ -1,10 +1,14 @@
 'use client'
 
+import Trans from '@/components/translation/trans/TransClient'
 import CarouselClient from '@/design-system/carousel/CarouselClient'
 import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { useMemo, useState } from 'react'
+import type { TutorialStep } from './eventPageData'
+import StepCard from './eventTutorial/StepCard'
+import Toggle, { type Mode } from './eventTutorial/Toggle'
 
 const CARD_VARIANTS = {
   hidden: { opacity: 0, y: 20 },
@@ -32,124 +36,58 @@ const CONTAINER_VARIANTS = {
   },
 }
 
-type Mode = 'organisation' | 'individu'
-
-interface Step {
-  number: number
-  title: string
-  description: string
+interface Props {
+  stepsByMode: Record<string, TutorialStep[]>
 }
 
-const STEPS_DATA: Record<Mode, Step[]> = {
-  organisation: [
-    {
-      number: 1,
-      title: 'Créez un test collectif',
-      description:
-        'Configurez votre campagne en quelques clics et définissez vos objectifs.',
-    },
-    {
-      number: 2,
-      title: 'Partagez le lien',
-      description:
-        'Diffusez un lien unique par email, réseau social ou QR code auprès de vos collaborateurs.',
-    },
-    {
-      number: 3,
-      title: 'Suivez les résultats',
-      description:
-        'Visualisez en temps réel les participations et l’empreinte carbone collective.',
-    },
-  ],
-  individu: [
-    {
-      number: 1,
-      title: 'Répondez aux questions',
-      description:
-        'Parcourez les thématiques (alimentation, transport, logement…) en quelques minutes.',
-    },
-    {
-      number: 2,
-      title: 'Résultat instantané',
-      description:
-        'Découvrez votre empreinte carbone personnelle détaillée par catégorie.',
-    },
-    {
-      number: 3,
-      title: 'Passez à l’action',
-      description:
-        'Recevez des actions personnalisées pour réduire votre impact au quotidien.',
-    },
-  ],
-}
-
-const CAROUSEL_TRANSLATIONS = {
-  prevSlideMessage: 'Étape précédente',
-  nextSlideMessage: 'Étape suivante',
-  firstSlideMessage: 'Ceci est la première étape',
-  lastSlideMessage: 'Ceci est la dernière étape',
-  paginationBulletMessage: 'Aller à l’étape {{index}}',
-  itemRoleDescriptionMessage: 'Étape',
-}
-
-function StepCard({ step }: { step: Step }) {
-  return (
-    <div className="flex h-full flex-col rounded-2xl bg-white p-6 shadow-sm">
-      <span className="bg-secondary-700 mb-4 flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white">
-        {step.number}
-      </span>
-      <h3 className="mb-2 text-lg font-bold text-gray-800">{step.title}</h3>
-      <p className="text-sm leading-relaxed text-gray-600">
-        {step.description}
-      </p>
-    </div>
-  )
-}
-
-function Toggle({
-  mode,
-  onChange,
-}: {
-  mode: Mode
-  onChange: (mode: Mode) => void
-}) {
-  return (
-    <div className="mx-auto inline-flex rounded-full bg-gray-100 p-1">
-      {(['organisation', 'individu'] as const).map((value) => (
-        <button
-          key={value}
-          onClick={() => onChange(value)}
-          className={twMerge(
-            'rounded-full px-6 py-3 text-sm font-medium transition-colors',
-            mode === value
-              ? 'bg-primary-700 text-white shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
-          )}>
-          {value === 'organisation' ? 'Organisation' : 'Individu'}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-export default function EventTutorial() {
+export default function EventTutorial({ stepsByMode }: Props) {
   const [mode, setMode] = useState<Mode>('organisation')
+  const { t } = useClientTranslation()
 
-  const steps = STEPS_DATA[mode]
+  const carouselTranslations = useMemo(
+    () => ({
+      prevSlideMessage: t(
+        'event.tutorial.carousel.prevSlide',
+        'Diapositive précédente'
+      ),
+      nextSlideMessage: t(
+        'event.tutorial.carousel.nextSlide',
+        'Diapositive suivante'
+      ),
+      firstSlideMessage: t(
+        'event.tutorial.carousel.firstSlide',
+        'Ceci est la première Diapositive'
+      ),
+      lastSlideMessage: t(
+        'event.tutorial.carousel.lastSlide',
+        'Ceci est la dernière Diapositive'
+      ),
+      paginationBulletMessage: t(
+        'event.tutorial.carousel.paginationBullet',
+        'Aller à la diapositive {{index}}'
+      ),
+      itemRoleDescriptionMessage: t(
+        'event.tutorial.carousel.itemRole',
+        'Diapositive'
+      ),
+    }),
+    [t]
+  )
+
+  const steps = stepsByMode[mode]
 
   return (
     <ScrollReveal>
       {(inView) => (
         <section className="my-12 md:my-16">
           <h2 className="mb-8 text-center text-5xl leading-12 font-bold text-gray-900">
-            Comment participer ?
+            <Trans i18nKey="event.tutorial.title">Comment participer ?</Trans>
           </h2>
 
           <div className="mb-8 text-center">
             <Toggle mode={mode} onChange={setMode} />
           </div>
 
-          {/* ---- Desktop: side-by-side cards ---- */}
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
@@ -166,7 +104,6 @@ export default function EventTutorial() {
             </motion.div>
           </AnimatePresence>
 
-          {/* ---- Mobile: carousel ---- */}
           <div className="md:hidden">
             <AnimatePresence mode="wait">
               <motion.div
@@ -176,7 +113,7 @@ export default function EventTutorial() {
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.25 }}>
                 <CarouselClient
-                  translations={CAROUSEL_TRANSLATIONS}
+                  translations={carouselTranslations}
                   className="px-4 py-1"
                   slideClassName="w-full max-w-none sm:w-full"
                   showMobileNav>

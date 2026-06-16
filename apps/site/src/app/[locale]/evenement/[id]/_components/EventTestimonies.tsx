@@ -3,87 +3,15 @@ import Carousel from '@/design-system/carousel/Carousel'
 import Title from '@/design-system/layout/Title'
 import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
 import type { Locale } from '@/i18nConfig'
-import Image from 'next/image'
-
-interface Testimony {
-  text: string
-  author: {
-    name: string
-    job: string
-    avatarSrc: string
-  }
-}
-
-const MOCK_TESTIMONIES: Testimony[] = [
-  {
-    text: 'Nous avons proposé à notre communauté de voyageurs d’utiliser Nos Gestes Climat pour calculer leur empreinte écologique. C’était une manière simple et accessible de sensibiliser sans culpabiliser. Résultat : près de 4 700 participations. Un vrai levier pour initier le dialogue sur un tourisme plus responsable.',
-    author: {
-      name: 'Elisa Papin',
-      job: 'Impact Officer chez HomeExchang',
-      avatarSrc:
-        'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
-    },
-  },
-  {
-    text: "La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d’initier des discussions importantes.",
-    author: {
-      name: 'Théo Gasquet',
-      job: 'Responsable des relations avec les publics du Pass Culture',
-      avatarSrc:
-        'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
-    },
-  },
-  {
-    text: "La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d’initier des discussions importantes.",
-    author: {
-      name: 'Théo Gasquet',
-      job: 'Responsable des relations avec les publics du Pass Culture',
-      avatarSrc:
-        'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
-    },
-  },
-]
-
-function TestimonyCard({ testimony }: { testimony: Testimony }) {
-  return (
-    <div className="relative flex h-full flex-col rounded-xl bg-white p-10 shadow-sm">
-      <span
-        aria-hidden
-        className="bg-primary-600 absolute -top-4 left-6 flex h-10 w-10 items-center justify-center rounded-full text-white">
-        &rdquo;
-      </span>
-
-      <blockquote className="mb-6 flex-1 bg-white p-0 text-sm leading-relaxed text-slate-600 md:text-base">
-        {testimony.text}
-      </blockquote>
-
-      <div className="flex items-center gap-3">
-        <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
-          <Image
-            src={testimony.author.avatarSrc}
-            alt={testimony.author.name}
-            fill
-            className="object-cover"
-          />
-        </div>
-        <div>
-          <p className="mb-0 font-bold text-gray-800">
-            {testimony.author.name}
-          </p>
-          <p className="text-sm">{testimony.author.job}</p>
-        </div>
-      </div>
-    </div>
-  )
-}
+import type { Testimony } from './eventPageData'
+import TestimonyCard from './eventTestimonies/TestimonyCard'
 
 interface Props {
   locale: Locale
+  testimonies: Testimony[]
 }
 
-export default function EventTestimonies({ locale }: Props) {
-  const testimonies = MOCK_TESTIMONIES
-
+export default function EventTestimonies({ locale, testimonies }: Props) {
   return (
     <section className="my-16 flex flex-col">
       <Title

@@ -5,12 +5,21 @@ import CircularProgressbar from './CircularProgressbar'
 
 interface Props {
   locale: Locale
+  currentValue: number
+  targetValue: number
+  progressPercentage: number
+  primaryCtaHref: string
+  secondaryCtaHref: string
 }
 
-const currentValue = 18501
-const targetValue = 50000
-
-export default function EventDynamicCounter({ locale }: Props) {
+export default function EventDynamicCounter({
+  locale,
+  currentValue,
+  targetValue,
+  progressPercentage,
+  primaryCtaHref,
+  secondaryCtaHref,
+}: Props) {
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
@@ -30,7 +39,7 @@ export default function EventDynamicCounter({ locale }: Props) {
 
       <div className="mb-6 flex gap-4 md:gap-6">
         <div className="max-w-full min-w-16 md:min-w-36">
-          <CircularProgressbar value={46} />
+          <CircularProgressbar value={progressPercentage} startDelay={2000} />
         </div>
 
         <div>
@@ -62,7 +71,7 @@ export default function EventDynamicCounter({ locale }: Props) {
         <ButtonLink
           className="mb-3 w-full text-base md:text-xl"
           size="xl"
-          href="/">
+          href={primaryCtaHref}>
           <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
             J'engage mon organisation
           </Trans>
@@ -70,7 +79,7 @@ export default function EventDynamicCounter({ locale }: Props) {
 
         <ButtonLink
           className="w-full text-base md:text-xl"
-          href="/"
+          href={secondaryCtaHref}
           size="xl"
           color="secondary">
           <Trans i18nKey="event.dynamicCounter.secondaryCta" locale={locale}>

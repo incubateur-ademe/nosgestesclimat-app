@@ -36,6 +36,7 @@ interface Props {
   backgroundPadding?: number
   circleRatio?: number
   className?: string
+  startDelay?: number
 }
 
 export default function CircularProgressbar({
@@ -47,6 +48,7 @@ export default function CircularProgressbar({
   backgroundPadding = 0,
   circleRatio = 1,
   className = '',
+  startDelay = 0,
 }: Props) {
   const pathRadius = VIEWBOX_HEIGHT_HALF - strokeWidth / 2 - backgroundPadding
 
@@ -56,24 +58,28 @@ export default function CircularProgressbar({
   const [animationProgress, setAnimationProgress] = useState(0)
 
   useEffect(() => {
-    const duration = 800
-    const startTime = performance.now()
-    let rafId: number
+    const timeoutId = setTimeout(() => {
+      const duration = 800
+      const startTime = performance.now()
+      let rafId: number
 
-    function animate(now: number) {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      // ease-out cubic : ralentit progressivement vers la fin
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setAnimationProgress(eased)
-      if (progress < 1) {
-        rafId = requestAnimationFrame(animate)
+      function animate(now: number) {
+        const elapsed = now - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        // ease-out cubic : ralentit progressivement vers la fin
+        const eased = 1 - Math.pow(1 - progress, 3)
+        setAnimationProgress(eased)
+        if (progress < 1) {
+          rafId = requestAnimationFrame(animate)
+        }
       }
-    }
 
-    rafId = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(rafId)
-  }, [])
+      rafId = requestAnimationFrame(animate)
+      return () => cancelAnimationFrame(rafId)
+    }, startDelay)
+
+    return () => clearTimeout(timeoutId)
+  }, [startDelay])
 
   return (
     <svg

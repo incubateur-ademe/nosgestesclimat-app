@@ -5,6 +5,7 @@ import type { Locale } from '@/i18nConfig'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
+import { getEventPageData } from './_components/eventPageData'
 import EventPodium from './_components/EventPodium'
 import EventStatistics from './_components/EventStatistics'
 import EventTestimonies from './_components/EventTestimonies'
@@ -18,27 +19,56 @@ export default async function EvenementPage({
 
   const locale = localeParam as Locale
 
+  const {
+    detailImageSrc,
+    dynamicCounter,
+    statisticsValues,
+    podiumItems,
+    testimonies,
+    tutorialStepsByMode,
+    ctaImageSrc,
+    ctaHeading,
+    ctaDescription,
+    ctaCards,
+  } = getEventPageData()
+
   return (
     <>
       <HeaderServer locale={locale} />
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
-          <EventDetail locale={locale} />
-          <EventHero locale={locale} />
+          <EventDetail locale={locale} imageSrc={detailImageSrc} />
+          <EventHero
+            locale={locale}
+            currentValue={dynamicCounter.currentValue}
+            targetValue={dynamicCounter.targetValue}
+            progressPercentage={dynamicCounter.progressPercentage}
+            primaryCtaHref={dynamicCounter.primaryCtaHref}
+            secondaryCtaHref={dynamicCounter.secondaryCtaHref}
+          />
         </div>
-        <EventStatistics locale={locale} />
+        <EventStatistics locale={locale} values={statisticsValues} />
         <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
-          <EventPodium locale={locale} searchParams={searchParams} />
-          <EventTestimonies locale={locale} />
+          <EventPodium
+            locale={locale}
+            searchParams={searchParams}
+            items={podiumItems}
+          />
+          <EventTestimonies locale={locale} testimonies={testimonies} />
         </div>
         <div className="bg-primary-100">
           <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
-            <EventTutorial />
+            <EventTutorial stepsByMode={tutorialStepsByMode} />
           </div>
         </div>
         <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
-          <EventCTAs />
+          <EventCTAs
+            imageSrc={ctaImageSrc}
+            heading={ctaHeading}
+            description={ctaDescription}
+            cards={ctaCards}
+          />
         </div>
       </Main>
 

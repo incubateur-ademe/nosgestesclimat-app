@@ -1,13 +1,26 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
+import AnimatedCounterBlock from './eventHero/AnimatedCounterBlock'
 import EventDynamicCounter from './eventHero/EventDynamicCounter'
 
 interface Props {
   locale: Locale
+  currentValue: number
+  targetValue: number
+  progressPercentage: number
+  primaryCtaHref: string
+  secondaryCtaHref: string
 }
 
-export default function EventHero({ locale }: Props) {
+export default function EventHero({
+  locale,
+  currentValue,
+  targetValue,
+  progressPercentage,
+  primaryCtaHref,
+  secondaryCtaHref,
+}: Props) {
   return (
     <div className="flex flex-col gap-6 md:mb-16 md:flex-row md:gap-16">
       <div className="flex-1">
@@ -36,7 +49,16 @@ export default function EventHero({ locale }: Props) {
         </p>
       </div>
 
-      <EventDynamicCounter locale={locale} />
+      <AnimatedCounterBlock>
+        <EventDynamicCounter
+          locale={locale}
+          currentValue={currentValue}
+          targetValue={targetValue}
+          progressPercentage={progressPercentage}
+          primaryCtaHref={primaryCtaHref}
+          secondaryCtaHref={secondaryCtaHref}
+        />
+      </AnimatedCounterBlock>
     </div>
   )
 }
