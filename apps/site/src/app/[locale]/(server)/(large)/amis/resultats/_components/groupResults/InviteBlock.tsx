@@ -52,7 +52,10 @@ export default function InviteBlock({ group }: { group: Group }) {
     navigator.share !== undefined &&
     window.innerWidth <= 768
 
-  const sharedURL = `${window.location.origin}/amis/invitation?groupId=${group.id}&${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
+  const sharedURL =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/amis/invitation?groupId=${group.id}&${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
+      : ''
 
   const handleShare = async () => {
     if (shouldUseShareAPI) {
