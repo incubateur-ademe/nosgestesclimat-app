@@ -24,7 +24,11 @@ interface Props {
 export default function OwnerAdminSection({ group }: Props) {
   const [isConfirming, setIsConfirming] = useState(false)
 
-  const { mutateAsync: deleteUserOrGroupIfOwner, isSuccess } = useDeleteGroup({
+  const {
+    mutateAsync: deleteUserOrGroupIfOwner,
+    isSuccess,
+    isPending,
+  } = useDeleteGroup({
     shouldInvalidateQueries: false,
   })
 
@@ -53,9 +57,9 @@ export default function OwnerAdminSection({ group }: Props) {
           groupId: group.id,
           userId: user.userId,
         })
-        router.refresh()
 
         timeoutRef.current = setTimeout(() => {
+          router.refresh()
           router.push(MON_ESPACE_GROUPS_PATH)
         }, 2000)
       } catch (error) {

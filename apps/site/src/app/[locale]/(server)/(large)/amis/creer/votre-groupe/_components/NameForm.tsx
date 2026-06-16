@@ -14,6 +14,7 @@ import type { AuthUser } from '@/helpers/server/model/user'
 import { useCreateGroup } from '@/hooks/groups/useCreateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
+import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -50,7 +51,7 @@ export default function NameForm({
 
   const router = useRouter()
 
-  const { updateName } = useUser()
+  const { updateName, updateCurrentSimulation, currentSimulation } = useUser()
 
   async function onSubmit({ name, emoji, administratorName }: Inputs) {
     try {
@@ -75,6 +76,18 @@ export default function NameForm({
         router.push(`/amis/resultats?groupId=${group.id}`)
       } else {
         updateName(administratorName)
+
+        updateCurrentSimulation({ groupToAdd: group.id })
+
+        // Save simulation and create the participant server-side
+        // so the link between the group and the simulation is persistant between User contexts
+        await updateGroupParticipant({
+          groupId: group.id,
+          simulation: currentSimulation,
+          userId: user.id,
+          name: administratorName,
+        })
+
         router.push(TUTORIAL_PATH)
       }
     } catch (e) {

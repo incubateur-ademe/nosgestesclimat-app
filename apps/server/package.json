@@ -42,6 +42,7 @@
     "axios-retry": "^4.5.0",
     "change-case": "^5.4.4",
     "cors": "^2.8.6",
+    "countries-list": "^3.3.0",
     "dayjs": "^1.11.20",
     "dotenv": "^17.4.0",
     "express": "^4.22.1",
