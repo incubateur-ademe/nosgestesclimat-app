@@ -1,6 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
+import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 
 interface PodiumItem {
   rank: number
@@ -51,34 +52,36 @@ function PodiumBlock({
   const isFirst = rank == 1
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col items-center justify-start px-4',
-        'rounded-3xl md:rounded-t-3xl md:rounded-b-none',
-        heightClasses[rank as 1 | 2 | 3],
-        isFirst
-          ? 'bg-primary-700 py-8 text-white'
-          : 'bg-primary-100 py-6 text-gray-800'
-      )}>
-      <RankBadge rank={rank} />
-      <span
+    <AnimatedPodiumBlock rank={rank}>
+      <div
         className={twMerge(
-          'text-center text-base leading-tight font-bold',
-          isFirst && 'text-xl'
+          'flex flex-col items-center justify-start px-4',
+          'rounded-3xl md:rounded-t-3xl md:rounded-b-none',
+          heightClasses[rank as 1 | 2 | 3],
+          isFirst
+            ? 'bg-primary-700 py-8 text-white'
+            : 'bg-primary-100 py-6 text-gray-800'
         )}>
-        {label}
-      </span>
-      <span
-        className={twMerge(
-          'mt-auto text-lg font-bold',
-          !isFirst && 'text-primary-600 text-base'
-        )}>
-        {score}{' '}
-        <Trans locale={locale} i18nKey="event.podium.block.score.text">
-          calculs d'empreinte
-        </Trans>
-      </span>
-    </div>
+        <RankBadge rank={rank} />
+        <span
+          className={twMerge(
+            'text-center text-base leading-tight font-bold',
+            isFirst && 'text-xl'
+          )}>
+          {label}
+        </span>
+        <span
+          className={twMerge(
+            'mt-auto text-lg font-bold',
+            !isFirst && 'text-primary-600 text-base'
+          )}>
+          {score}{' '}
+          <Trans locale={locale} i18nKey="event.podium.block.score.text">
+            calculs d'empreinte
+          </Trans>
+        </span>
+      </div>
+    </AnimatedPodiumBlock>
   )
 }
 
@@ -115,7 +118,7 @@ export default function PodiumVisual({ items, className, locale }: Props) {
       {/* Podium */}
       <ol
         className={twMerge(
-          'mt-8 mb-12 flex list-none flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0',
+          'mt-8 mb-12 flex min-h-80 list-none flex-col items-stretch gap-3 md:flex-row md:items-end md:justify-center md:gap-0',
           className
         )}>
         {podiumItems.map((item) => (

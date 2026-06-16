@@ -1,8 +1,8 @@
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import ScrollReveal from '@/design-system/scroll-reveal/ScrollReveal'
 import Emoji from '@/design-system/utils/Emoji'
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
+import StaggeredCards from './StaggeredCards'
 
 const CARDS = [
   {
@@ -89,13 +89,11 @@ export default function EventCTAs() {
             Deux façons de participer au challenge.
           </p>
 
-          <ScrollReveal>
-            <div className="flex flex-col gap-4 md:flex-row md:gap-6">
-              {CARDS.map((card, index) => (
-                <ActionCard index={index} key={card.alt} {...card} />
-              ))}
-            </div>
-          </ScrollReveal>
+          <StaggeredCards>
+            {CARDS.map((card, index) => (
+              <ActionCard index={index} key={card.alt} {...card} />
+            ))}
+          </StaggeredCards>
         </div>
       </div>
     </section>
