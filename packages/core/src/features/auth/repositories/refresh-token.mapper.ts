@@ -1,17 +1,5 @@
 import type { Prisma } from '../../../prisma/generated/client.ts'
-
-export type CreateRefreshTokenData = {
-  userId: string
-  token: string
-  expiresAt: Date
-  id?: string
-  createdAt?: Date
-}
-
-export type DeletedToken = {
-  id: string
-  userId: string
-}
+import type { CreateRefreshTokenData } from '../types/refresh-token.ts'
 
 export function mapCreateRefreshTokenInput(
   data: CreateRefreshTokenData
@@ -23,8 +11,4 @@ export function mapCreateRefreshTokenInput(
     expiresAt: data.expiresAt,
     createdAt: data.createdAt,
   }
-}
-
-export function mapDeletedToken(row: DeletedToken): DeletedToken {
-  return row
 }

@@ -1,10 +1,6 @@
 import { prisma } from '../../../prisma/client.ts'
-import {
-  type CreateRefreshTokenData,
-  type DeletedToken,
-  mapCreateRefreshTokenInput,
-  mapDeletedToken,
-} from './refresh-token.mapper.ts'
+import type { CreateRefreshTokenData, DeletedToken } from '../types/refresh-token.ts'
+import { mapCreateRefreshTokenInput } from './refresh-token.mapper.ts'
 
 export async function createRefreshToken(
   data: CreateRefreshTokenData
@@ -14,7 +10,7 @@ export async function createRefreshToken(
   })
 }
 
-export function deleteAndReturn(
+export async function deleteAndReturn(
   hashedToken: string
 ): Promise<DeletedToken[]> {
   return prisma.$queryRaw<DeletedToken[]>`
