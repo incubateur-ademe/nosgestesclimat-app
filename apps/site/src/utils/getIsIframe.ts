@@ -1,4 +1,7 @@
-export function getIsIframe(localIsIframeState: boolean): boolean {
+import { STORAGE_KEYS } from '@/app/[locale]/_components/mainLayoutProviders/iframeOptionsContext/storageKeys'
+import { safeSessionStorage } from './browser/safeSessionStorage'
+
+export function getIsIframe(): boolean {
   if (typeof window === 'undefined') return false
 
   try {
@@ -9,5 +12,8 @@ export function getIsIframe(localIsIframeState: boolean): boolean {
 
   // Fallback for environments where window.top === window.self
   // but the page is embedded (e.g. native WebViews)
-  return localIsIframeState
+  return (
+    (new URLSearchParams(window.location.search).get('iframe') ||
+      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME)) === 'true'
+  )
 }

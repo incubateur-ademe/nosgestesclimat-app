@@ -7,14 +7,7 @@ import { createContext, useEffect, useState } from 'react'
 import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
 import { useStoragePermissions } from './_hooks/useStoragePermissions'
 import StorageAccessOverlay from './iframeOptionsContext/StorageAccessOverlay'
-
-const STORAGE_KEYS = {
-  IFRAME: 'ngc-iframe',
-  IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
-  IFRAME_ONLY_SIMULATION: 'ngc-iframe-only-simulation',
-  IFRAME_REGION: 'ngc-iframe-region',
-  IFRAME_LANG: 'ngc-iframe-lang',
-} as const
+import { STORAGE_KEYS } from './iframeOptionsContext/storageKeys'
 
 export const BODY_ID = 'ngc-body'
 
@@ -38,10 +31,7 @@ export const IframeOptionsProvider = ({
   )
 
   // Detect iframe mode using window check
-  const isIframe = getIsIframe(
-    (searchParams.get('iframe') ||
-      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME)) === 'true'
-  )
+  const isIframe = getIsIframe()
 
   // Special case : Safari doesn't handle cookies in iframes
   const { needPermission, askForPermission } = useStoragePermissions()
