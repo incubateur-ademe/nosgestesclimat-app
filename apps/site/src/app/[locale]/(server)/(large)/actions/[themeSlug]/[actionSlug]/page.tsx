@@ -15,7 +15,7 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
-import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
+import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
 import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
@@ -52,9 +52,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   return getMetadataObject({
     locale,
-    // TODO: awaiting @fanny's SEO optimized texts
-    title: action.title,
-    description: action.longDescription,
+    title: action.metadata.title ?? action.title,
+    description: action.metadata.description ?? action.longDescription,
     alternates: {
       canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
     },
@@ -64,7 +63,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function ActionPage({ params }: Props) {
   const { locale, themeSlug, actionSlug } = await params
   const user = await getUser()
-  const flag = await hasActionV2Rollout(user.id)
+  const flag = await getFeatureFlag('actions-v2', user.id)
 
   if (!flag) notFound()
 
@@ -109,7 +108,7 @@ export default async function ActionPage({ params }: Props) {
                 <Trans
                   locale={locale}
                   i18nKey="actions.detailPage.impact.title">
-                  Gain potentiel pour votre empreinte
+                  Réduction max sur votre empreinte
                 </Trans>
               </p>
               <p className="text-sm/normal font-bold text-slate-600">
