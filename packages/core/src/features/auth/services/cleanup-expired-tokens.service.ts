@@ -1,7 +1,5 @@
-import { prisma } from '../../../prisma/client.ts'
+import { deleteAllExpired } from '../repositories/refresh-token.repository.ts'
 
-export async function cleanupExpiredTokens(): Promise<number> {
-  return prisma.$executeRaw`
-    DELETE FROM ngc."RefreshToken" WHERE "expiresAt" < NOW()
-  `
+export async function cleanupExpiredTokens(): Promise<void> {
+  await deleteAllExpired()
 }

@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { randomBytes } from 'node:crypto'
-import { prisma } from '../../../prisma/client.ts'
 import { hashToken } from '../helpers/hash-token.ts'
+import { createRefreshToken } from '../repositories/refresh-token.repository.ts'
 
 class RefreshTokenFactory extends Factory<{
   id: string
@@ -21,14 +21,12 @@ class RefreshTokenFactory extends Factory<{
 export const refreshTokenFactory = RefreshTokenFactory.define(
   ({ onCreate }) => {
     onCreate(async (data) => {
-      await prisma.refreshToken.create({
-        data: {
-          id: data.id,
-          userId: data.userId,
-          token: hashToken(data.token),
-          expiresAt: data.expiresAt,
-          createdAt: data.createdAt,
-        },
+      await createRefreshToken({
+        id: data.id,
+        userId: data.userId,
+        token: hashToken(data.token),
+        expiresAt: data.expiresAt,
+        createdAt: data.createdAt,
       })
       return data
     })
@@ -44,4 +42,3 @@ export const refreshTokenFactory = RefreshTokenFactory.define(
     }
   }
 )
-

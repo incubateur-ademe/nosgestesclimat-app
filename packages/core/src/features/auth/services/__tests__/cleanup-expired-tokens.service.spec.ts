@@ -19,19 +19,20 @@ describe('cleanupExpiredTokens', () => {
     await refreshTokenFactory.expired().create({ userId: USER_ID })
     const valid = await refreshTokenFactory.create({ userId: USER_ID })
 
-    const count = await cleanupExpiredTokens()
+    await cleanupExpiredTokens()
 
-    expect(count).toBe(1)
     const remaining = await prisma.refreshToken.findMany()
     expect(remaining).toHaveLength(1)
     expect(remaining[0].id).toBe(valid.id)
   })
 
-  it('returns 0 when there are no expired tokens', async () => {
-    await refreshTokenFactory.create({ userId: USER_ID })
+  it('keeps valid tokens when there are no expired ones', async () => {
+    const valid = await refreshTokenFactory.create({ userId: USER_ID })
 
-    const count = await cleanupExpiredTokens()
+    await cleanupExpiredTokens()
 
-    expect(count).toBe(0)
+    const remaining = await prisma.refreshToken.findMany()
+    expect(remaining).toHaveLength(1)
+    expect(remaining[0].id).toBe(valid.id)
   })
 })

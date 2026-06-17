@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto'
-import { prisma } from '../../../prisma/client.ts'
 import { hashToken } from '../helpers/hash-token.ts'
 import { encryptSession } from '../helpers/encrypt-session.ts'
+import { createRefreshToken } from '../repositories/refresh-token.repository.ts'
 import type { SessionTokens } from '../types/session.ts'
 
 const SESSION_TTL = 15 * 60
@@ -21,12 +21,10 @@ export async function createSession(
     Date.now() + REFRESH_TTL_DAYS * 24 * 60 * 60 * 1000
   )
 
-  await prisma.refreshToken.create({
-    data: {
-      userId,
-      token: hashToken(refreshToken),
-      expiresAt,
-    },
+  await createRefreshToken({
+    userId,
+    token: hashToken(refreshToken),
+    expiresAt,
   })
 
   return { accessToken, refreshToken }

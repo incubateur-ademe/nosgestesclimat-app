@@ -3,8 +3,8 @@ import logger from '../logger.ts'
 
 const main = async () => {
   try {
-    const count = await cleanupExpiredTokens()
-    logger.info(`Cleaned up ${count} expired refresh token(s)`)
+    await cleanupExpiredTokens()
+    logger.info('Cleaned up expired refresh tokens')
     process.exit(0)
   } catch (e) {
     logger.error(e)
