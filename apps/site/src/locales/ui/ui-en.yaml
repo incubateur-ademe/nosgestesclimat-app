@@ -1510,8 +1510,8 @@ entries:
   results.objective.under4.description.body: With the work of the government and society as a whole over the coming years, your footprint should naturally fall to around 2 tonnes.
   results.objective.under4.description.body.lock: Avec le travail de l’État et toute la société dans les années à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des 2 tonnes.
   Part de la sous-catégorie {{percentage}}: Share of sub-category {{percentage}}
-  results.categories.services.text: Services (health, education, telecoms, etc.) account for around <2>1.5 tonnes of your footprint</2>. This share is <5>the same for everyone</5> and is <8>gradually decreasing</8> with the ecological transition.
-  results.categories.services.text.lock: Les services (santé, éducation, télécoms…) représentent environ <2>1,5 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
+  results.categories.services.text: Services (healthcare, education, telecoms, etc.) account for around <2>1.4 tonnes of your carbon footprint</2>. This proportion is <5>the same for everyone</5> and <8>gradually decreases</8> as the green transition progresses.
+  results.categories.services.text.lock: Les services (santé, éducation, télécoms…) représentent environ <2>1,4 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
   error.contactSupport: If the problem persists, please <2>contact support.</2>
   error.contactSupport.lock: Si le problème persiste, merci de <2>contacter le support.</2>
   results.groups.createFirstGroup: <0>Create your first group</0> and invite your friends and family to compare your results. It only takes <4>1 minute</4>!
@@ -1955,8 +1955,8 @@ entries:
   components.carousel.roleDescription.lock: Carrousel
   common.byDay: / day
   common.byDay.lock: / jour
-  actions.components.themeSection.description: '{count} recommended actions'
-  actions.components.themeSection.description.lock: '{count} actions recommandées'
+  actions.components.themeSection.description: '{{count}} recommended actions'
+  actions.components.themeSection.description.lock: '{{count}} actions recommandées'
   actions.detailPage.nav: Page navigation
   actions.detailPage.nav.lock: Navigation de la page
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
@@ -2002,7 +2002,7 @@ entries:
   common.facultatif.uppercase: Optional
   common.facultatif.uppercase.lock: Facultatif
   Passer: Go to
-  simulator.tutorial.letsGoButton.label: We're off!
+  simulator.tutorial.letsGoButton.label: Start now!
   simulator.tutorial.letsGoButton.label.lock: C'est parti !
   components.carousel.lastSlideMessage: This is the last slide
   components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
@@ -2039,3 +2039,7 @@ entries:
   actions.beta-banner.link.aria-label.lock: Laisser votre avis, nouvelle fenêtre
   actions.beta-banner.content: This <1>beta version</1> is currently being improved. Help us improve it by <4>leaving your feedback.</4>
   actions.beta-banner.content.lock: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
+  contact.iframe.title.fr: Form – please send us your feedback on the website
+  contact.iframe.title.fr.lock: Formulaire - nous faire part de vos remarques sur le site
+  contact.iframe.title.en: Form – provide feedback on Nos Gestes Climat
+  contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
