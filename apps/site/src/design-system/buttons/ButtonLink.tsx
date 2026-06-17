@@ -4,7 +4,6 @@ import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import {
-  useState,
   type HtmlHTMLAttributes,
   type KeyboardEvent,
   type MouseEvent,
@@ -20,6 +19,7 @@ import {
   loaderSizeMap,
   sizeClassNames,
 } from './Button'
+import { useButtonState } from './useButtonState'
 
 interface Props {
   href: string
@@ -52,9 +52,11 @@ export default function ButtonLink({
   isClickableOnce = false,
   ...props
 }: PropsWithChildren<Props & HtmlHTMLAttributes<HTMLAnchorElement>>) {
-  const [isClicked, setIsClicked] = useState(false)
-
-  const isDisabled = disabled || loading || (isClickableOnce && isClicked)
+  const { isDisabled, showLoader, clickOnce } = useButtonState({
+    disabled,
+    loading,
+    isClickableOnce,
+  })
 
   return (
     <Link
@@ -66,7 +68,7 @@ export default function ButtonLink({
         }
 
         // Auto-disable link after click
-        if (isClickableOnce) setIsClicked(true)
+        if (isClickableOnce) clickOnce()
 
         if (onClick) {
           onClick(e)
@@ -96,7 +98,7 @@ export default function ButtonLink({
       )}
       target={target}
       {...props}>
-      {(loading || (isClickableOnce && isClicked)) && (
+      {showLoader && (
         <Loader
           size={loaderSizeMap[size]}
           color={loaderColorMap[color]}

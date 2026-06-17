@@ -1,6 +1,5 @@
 import type { ButtonSize } from '@/types/values'
 import {
-  useState,
   type HtmlHTMLAttributes,
   type MouseEventHandler,
   type PropsWithChildren,
@@ -9,6 +8,7 @@ import {
 import { twMerge } from 'tailwind-merge'
 import type { LoaderSizes } from '../layout/Loader'
 import Loader from '../layout/Loader'
+import { useButtonState } from './useButtonState'
 
 export type ButtonColor =
   | 'primary'
@@ -93,9 +93,11 @@ export default function Button({
   isClickableOnce,
   ...props
 }: PropsWithChildren<ButtonProps & HtmlHTMLAttributes<HTMLButtonElement>>) {
-  const [isClicked, setIsClicked] = useState(false)
-
-  const isDisabled = disabled || loading || (isClickableOnce && isClicked)
+  const { isDisabled, showLoader, clickOnce } = useButtonState({
+    disabled,
+    loading,
+    isClickableOnce,
+  })
 
   return (
     <button
@@ -105,7 +107,7 @@ export default function Button({
               e.preventDefault()
             }
           : (e) => {
-              setIsClicked(true)
+              clickOnce()
               onClick?.(e)
             }
       }
@@ -123,7 +125,7 @@ export default function Button({
         className
       )}
       {...props}>
-      {(loading || (isClickableOnce && isClicked)) && (
+      {showLoader && (
         <Loader
           size={loaderSizeMap[size]}
           color={loaderColorMap[color]}
