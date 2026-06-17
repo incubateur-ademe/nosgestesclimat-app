@@ -2,12 +2,13 @@ import Trans from '@/components/translation/trans/TransServer'
 import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Emoji from '@/design-system/utils/Emoji'
+import type { Locale } from '@/i18nConfig'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 
 interface Props {
   poll: PublicOrganisationPoll
-  locale: string
   createSimulation: () => void
+  locale: Locale
 }
 
 export default function PollTutorialButton({
@@ -22,10 +23,16 @@ export default function PollTutorialButton({
           className="mb-4 text-sm text-gray-500"
           data-testid="youth-tutorial-already-participated">
           {poll.mode === 'scolaire' ? (
-            <Trans locale={locale}>Tu as déja participé à ce test.</Trans>
+            <Trans
+              locale={locale}
+              i18nKey="poll.tutorial.alreadyTookTest.youth">
+              Tu as déja participé à ce test.
+            </Trans>
           ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           poll.mode === 'standard' ? (
-            <Trans locale={locale}>
+            <Trans
+              locale={locale}
+              i18nKey="poll.tutorial.alreadyTookTest.default">
               Vous avez déjà participé à ce sondage.
             </Trans>
           ) : (
@@ -34,8 +41,11 @@ export default function PollTutorialButton({
         </p>
 
         <ButtonLink
+          isClickableOnce
           href={`/organisations/${poll.organisation.slug}/campagnes/${poll.slug}`}>
-          <Trans locale={locale}>Voir les résultats</Trans>
+          <Trans locale={locale} i18nKey="common.seeResults">
+            Voir les résultats
+          </Trans>
         </ButtonLink>
       </div>
     )
@@ -45,6 +55,7 @@ export default function PollTutorialButton({
     return (
       <>
         <Button
+          isClickableOnce
           size="lg"
           aria-describedby="subtitle-cta"
           data-testid="youth-tutorial-start-button"
@@ -66,10 +77,13 @@ export default function PollTutorialButton({
 
   return (
     <Button
+      isClickableOnce
       onClick={createSimulation}
       data-testid="skip-tutorial-button"
       className="min-w-42!">
-      <Trans locale={locale}>C'est parti !</Trans>{' '}
+      <Trans locale={locale} i18nKey="common.letsGo">
+        C'est parti !
+      </Trans>{' '}
       <span aria-hidden="true" className="ml-1">
         →
       </span>

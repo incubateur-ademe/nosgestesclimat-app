@@ -57,6 +57,7 @@ export default function TransitionButtons() {
           'common.previousExtended',
           'Précédent, revenir à la page précédente'
         )}
+        disabled={isPending}
         href={SIMULATOR_PATH}
         className="h-full w-14 md:w-auto"
         color="secondary">
@@ -72,7 +73,7 @@ export default function TransitionButtons() {
         data-testid={
           !nextQuestionCategory ? 'end-test-button' : 'skip-question-button'
         }
-        disabled={isPending}
+        loading={isPending}
         onClick={handleGoToNextQuestion}>
         {!nextQuestionCategory ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">

@@ -32,6 +32,11 @@ const meta: Meta<typeof Button> = {
       action: 'clicked',
       description: 'Optional click handler',
     },
+    isClickableOnce: {
+      control: 'boolean',
+      description:
+        'Auto-disables the button after the first click to prevent double submission',
+    },
   },
 }
 
@@ -111,5 +116,20 @@ export const LoadingSecondary: Story = {
     children: 'Loading Secondary',
     color: 'secondary',
     loading: true,
+  },
+}
+
+export const ClickOnce: Story = {
+  args: {
+    children: 'Click me once',
+    isClickableOnce: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'After the first click, the button auto-disables itself to prevent duplicate submissions.',
+      },
+    },
   },
 }

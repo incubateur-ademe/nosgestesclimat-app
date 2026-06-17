@@ -114,6 +114,7 @@ export default async function Email({
             additionnalButton={
               <ButtonLink
                 color="secondary"
+                isClickableOnce
                 href={END_PAGE_PATH}
                 data-testid="skip-email-button">
                 <Trans i18nKey="common.skip" locale={locale}>

@@ -73,11 +73,11 @@ export default function CreationForm() {
 
       updateUserOrganisation({
         name,
-        slug: organisationUpdated?.slug,
+        slug: organisationUpdated.slug,
       })
 
       router.push(
-        `/organisations/${organisationUpdated?.slug}/creer-campagne/informations`
+        `/organisations/${organisationUpdated.slug}/creer-campagne/informations`
       )
     } catch (error: unknown) {
       captureException(error)
@@ -86,14 +86,14 @@ export default function CreationForm() {
 
   // Redirect to organisation page if user has already an organisation
   useEffect(() => {
-    if (user?.organisation?.slug) {
-      router.push(`/organisations/${user?.organisation?.slug}`)
+    if (user.organisation?.slug) {
+      router.push(`/organisations/${user.organisation.slug}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mb-12">
+    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mb-12">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <TextInput
           className="col-span-1"

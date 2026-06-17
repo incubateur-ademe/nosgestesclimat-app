@@ -1,9 +1,10 @@
 import type { ButtonSize } from '@/types/values'
-import type {
-  HtmlHTMLAttributes,
-  MouseEventHandler,
-  PropsWithChildren,
-  RefObject,
+import {
+  useState,
+  type HtmlHTMLAttributes,
+  type MouseEventHandler,
+  type PropsWithChildren,
+  type RefObject,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { LoaderSizes } from '../layout/Loader'
@@ -30,6 +31,7 @@ export type ButtonProps = {
   title?: string
   form?: string
   ref?: RefObject<HTMLButtonElement | null>
+  isClickableOnce?: boolean
 } & PropsWithChildren
 
 export const colorClassNames = {
@@ -54,7 +56,7 @@ export const sizeClassNames = {
   xl: 'px-9 py-4 text-xl',
 }
 
-const loaderSizeMap: Record<ButtonSize, LoaderSizes> = {
+export const loaderSizeMap: Record<ButtonSize, LoaderSizes> = {
   xs: 'sm',
   sm: 'sm',
   md: 'md',
@@ -62,7 +64,7 @@ const loaderSizeMap: Record<ButtonSize, LoaderSizes> = {
   xl: 'lg',
 }
 
-const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
+export const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
   primary: 'light',
   secondary: 'dark',
   success: 'light',
@@ -88,9 +90,12 @@ export default function Button({
   title,
   form,
   ref,
+  isClickableOnce,
   ...props
 }: PropsWithChildren<ButtonProps & HtmlHTMLAttributes<HTMLButtonElement>>) {
-  const isDisabled = disabled || loading
+  const [isClicked, setIsClicked] = useState(false)
+
+  const isDisabled = disabled || loading || (isClickableOnce && isClicked)
 
   return (
     <button
@@ -99,7 +104,10 @@ export default function Button({
           ? (e) => {
               e.preventDefault()
             }
-          : onClick
+          : (e) => {
+              setIsClicked(true)
+              onClick?.(e)
+            }
       }
       ref={ref}
       type={type}

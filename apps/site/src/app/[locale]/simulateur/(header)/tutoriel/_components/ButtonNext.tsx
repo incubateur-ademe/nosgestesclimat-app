@@ -7,6 +7,7 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 export default function ButtonNext() {
   return (
     <ButtonLink
+      isClickableOnce
       href={SIMULATOR_PATH}
       data-testid="skip-tutorial-button"
       className="min-w-42!">
