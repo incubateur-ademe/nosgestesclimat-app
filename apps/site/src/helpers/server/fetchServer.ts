@@ -33,11 +33,7 @@ export async function fetchServer<T = unknown>(
 
   const sessionHeader = nextHeaders.get('x-session')
   if (sessionHeader) {
-    const { userId, email } = JSON.parse(sessionHeader)
-    reqHeaders['x-user-id'] = userId
-    if (email) {
-      reqHeaders['x-user-email'] = email
-    }
+    reqHeaders['x-session'] = sessionHeader
   }
 
   const response = await fetch(url, {
