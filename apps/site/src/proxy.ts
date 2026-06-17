@@ -34,6 +34,23 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico / favicon.png (favicon files)
+     * - images (public images directory)
+     * - manifest.webmanifest (PWA manifest)
+     * - scripts (public scripts directory)
+     * - demos (public demos directory)
+     * - misc (public misc directory)
+     * - videos (public videos directory)
+     * - robots.txt (robots file)
+     * - datashare (iframe datashare modal)
+     *
+     * Note: /api/server is intentionally NOT excluded — the proxy
+     * handles auth and region cookies for those routes.
+     */
     {
       source:
         '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|datashare).*)',
