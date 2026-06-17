@@ -131,5 +131,5 @@ export async function createNewSimulation({
 }
 
 export function getSimulationMode(simulation: Simulation): SimulationMode {
-  return simulation.model.startsWith('ED') ? 'scolaire' : 'standard'
+  return simulation.model?.startsWith('ED') ? 'scolaire' : 'standard'
 }
