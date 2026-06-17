@@ -3,6 +3,8 @@ import { prisma } from '../../../../prisma/client.ts'
 import { refreshTokenFactory } from '../../factories/refresh-token.factory.ts'
 import { createSession } from '../create-session.service.ts'
 import { rotateSession } from '../rotate-session.service.ts'
+import { TokenExpiredException } from '../../exceptions/token-expired.exception.ts'
+import { TokenConsumedException } from '../../exceptions/token-consumed.exception.ts'
 
 const USER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -20,25 +22,29 @@ describe('rotateSession', () => {
     const { refreshToken } = await createSession(USER_ID, 'user@test.com')
 
     const result = await rotateSession(refreshToken, 'user@test.com')
-    expect.assert(result)
     expect(result.accessToken).toBeTruthy()
   })
 
-  it('returns null when token is already used (replay)', async () => {
+  it('throws TokenConsumedException when token is already used (replay)', async () => {
     const { refreshToken } = await createSession(USER_ID)
     await rotateSession(refreshToken)
-    const replay = await rotateSession(refreshToken)
-    expect(replay).toBeNull()
+    await expect(rotateSession(refreshToken)).rejects.toThrow(
+      TokenConsumedException
+    )
   })
 
-  it('returns null for invalid refresh token', async () => {
-    const result = await rotateSession('invalid-token')
-    expect(result).toBeNull()
+  it('throws TokenConsumedException for an invalid refresh token', async () => {
+    await expect(rotateSession('invalid-token')).rejects.toThrow(
+      TokenConsumedException
+    )
   })
 
-  it('returns null for an expired refresh token', async () => {
-    const { token } = await refreshTokenFactory.expired().create({ userId: USER_ID })
-    const result = await rotateSession(token)
-    expect(result).toBeNull()
+  it('throws TokenExpiredException for an expired refresh token', async () => {
+    const { token } = await refreshTokenFactory
+      .expired()
+      .create({ userId: USER_ID })
+    await expect(rotateSession(token)).rejects.toThrow(
+      TokenExpiredException
+    )
   })
 })

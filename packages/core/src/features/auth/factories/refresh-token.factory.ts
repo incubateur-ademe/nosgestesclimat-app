@@ -30,7 +30,7 @@ export const refreshTokenFactory = RefreshTokenFactory.define(
           createdAt: data.createdAt,
         },
       })
-      return { ...data, token: hashToken(data.token) }
+      return data
     })
 
     const token = randomBytes(32).toString('base64url')

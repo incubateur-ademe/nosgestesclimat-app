@@ -3,6 +3,8 @@ import { captureException } from '@sentry/nextjs'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
 import { rotateSession } from '@nosgestesclimat/core/features/auth/services/rotate-session.service'
+import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
+import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import type { SessionPayload } from '@nosgestesclimat/core/features/auth/types/session'
 import {
   SESSION_COOKIE,
@@ -67,36 +69,44 @@ export async function middlewareAuth(
     return { redirect: null, cookies: [] }
   }
 
-  const tokens = await rotateSession(refreshCookie.value, payload.email)
-
-  // ── Rotation failed (still pending) ──
-
-  if (!tokens) {
-    //
-    // Replay-protection loop:  `_rt` tracks how many times we've retried.
-    // The rotation call may fail transiently (e.g. concurrent requests all
-    // trying to rotate at the same time).  We allow up to 2 redirects
-    // before giving up — this gives the eventual winner enough time to
-    // commit the new tokens to the DB.
-    //
-    const url = request.nextUrl.clone()
-    const rtCount = parseInt(url.searchParams.get('_rt') ?? '0', 10) + 1
-
-    if (rtCount <= 2) {
-      // Case E — Rotation still pending.  Redirect with incremented `_rt`
-      // so the next request retries.
-      url.searchParams.set('_rt', String(rtCount))
-      return { redirect: NextResponse.redirect(url), cookies: [] }
+  let tokens: Awaited<ReturnType<typeof rotateSession>>
+  try {
+    tokens = await rotateSession(refreshCookie.value, payload.email)
+  } catch (err) {
+    if (err instanceof TokenExpiredException) {
+      // Case D2 — Token exists but is past its expiration date.
+      // Silent failure: the user must log in again.
+      return { redirect: null, cookies: [] }
     }
 
-    // Case F — Replay limit exceeded.  The rotation never completed;
-    // log the error and continue anonymously.
-    captureException(
-      new Error(
-        `Session rotation replay limit exceeded after ${rtCount} attempts`
-      ),
-      { level: 'error' }
-    )
+    if (err instanceof TokenConsumedException) {
+      //
+      // Case E — Token already consumed (concurrent-request race).
+      // Replay-protection loop:  `_rt` tracks how many times we've
+      // retried.  We allow up to 2 redirects before giving up — this
+      // gives the eventual winner time to commit its new tokens.
+      //
+      const url = request.nextUrl.clone()
+      const rtCount = parseInt(url.searchParams.get('_rt') ?? '0', 10) + 1
+
+      if (rtCount <= 2) {
+        url.searchParams.set('_rt', String(rtCount))
+        return { redirect: NextResponse.redirect(url), cookies: [] }
+      }
+
+      // Case F — Replay limit exceeded.  The rotation never completed;
+      // log the error and continue anonymously.
+      captureException(
+        new Error(
+          `Session rotation replay limit exceeded after ${rtCount} attempts`
+        ),
+        { level: 'error' }
+      )
+      return { redirect: null, cookies: [] }
+    }
+
+    // Unknown error during rotation — log and continue anonymously.
+    captureException(err, { level: 'error' })
     return { redirect: null, cookies: [] }
   }
 
