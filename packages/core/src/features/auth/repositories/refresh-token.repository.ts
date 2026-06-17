@@ -1,21 +1,23 @@
 import { prisma } from '../../../prisma/client.ts'
+import {
+  type CreateRefreshTokenData,
+  type DeletedToken,
+  mapCreateRefreshTokenInput,
+  mapDeletedToken,
+} from './refresh-token.mapper.ts'
 
-type CreateInput = {
-  id?: string
-  userId: string
-  token: string
-  expiresAt: Date
-  createdAt?: Date
-}
-
-export async function createRefreshToken(data: CreateInput): Promise<void> {
-  await prisma.refreshToken.create({ data })
+export async function createRefreshToken(
+  data: CreateRefreshTokenData
+): Promise<void> {
+  await prisma.refreshToken.create({
+    data: mapCreateRefreshTokenInput(data),
+  })
 }
 
 export function deleteAndReturn(
   hashedToken: string
-): Promise<Array<{ id: string; userId: string }>> {
-  return prisma.$queryRaw`
+): Promise<DeletedToken[]> {
+  return prisma.$queryRaw<DeletedToken[]>`
     DELETE FROM ngc."RefreshToken"
     WHERE token = ${hashedToken} AND "expiresAt" > NOW()
     RETURNING id, "userId"
