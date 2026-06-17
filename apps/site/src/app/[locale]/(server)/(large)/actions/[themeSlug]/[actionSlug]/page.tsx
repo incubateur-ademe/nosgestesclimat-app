@@ -52,9 +52,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   return getMetadataObject({
     locale,
-    // TODO: awaiting @fanny's SEO optimized texts
-    title: action.title,
-    description: action.longDescription,
+    title: action.metadata.title ?? action.title,
+    description: action.metadata.description ?? action.longDescription,
     alternates: {
       canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
     },
