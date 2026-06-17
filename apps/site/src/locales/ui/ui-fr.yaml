@@ -864,6 +864,7 @@ entries:
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
   actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.detailPage.nav: Navigation de la page
@@ -871,7 +872,7 @@ entries:
   actions.detailPage.sections.act: J'agis
   actions.detailPage.sections.incentives: J'y gagne
   actions.detailPage.sections.furtherReading: À découvrir aussi
-  actions.detailPage.impact.title: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.title: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte

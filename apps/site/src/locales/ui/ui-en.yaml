@@ -1961,8 +1961,8 @@ entries:
   actions.detailPage.nav.lock: Navigation de la page
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
   actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
-  actions.detailPage.impact.title: Potential gains for your footprint
-  actions.detailPage.impact.title.lock: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.title: Max reduction on your footprint
+  actions.detailPage.impact.title.lock: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} <4>CO2e</4>/ year
   actions.detailPage.impact.value.lock: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.detailPage.sections.act: Taking action
@@ -2043,3 +2043,5 @@ entries:
   contact.iframe.title.fr.lock: Formulaire - nous faire part de vos remarques sur le site
   contact.iframe.title.en: Form – provide feedback on Nos Gestes Climat
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
+  actions.listPage.metaTitle: My actions – Nos Gestes Climat
+  actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
