@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { createSession } from '../create-session.service.ts'
 import { decryptSession } from '../decrypt-session.service'
@@ -6,8 +6,13 @@ import { decryptSession } from '../decrypt-session.service'
 const USER_ID = '00000000-0000-0000-0000-000000000001'
 
 describe('createSession', () => {
+  beforeEach(async () => {
+    await prisma.user.create({ data: { id: USER_ID } })
+  })
+
   afterEach(async () => {
     await prisma.refreshToken.deleteMany()
+    await prisma.user.deleteMany()
   })
 
   it('creates a RefreshToken in DB and returns valid tokens', async () => {

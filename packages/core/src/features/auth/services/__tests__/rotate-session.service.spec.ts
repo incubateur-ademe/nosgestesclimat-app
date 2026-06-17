@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { refreshTokenFactory } from '../../factories/refresh-token.factory.ts'
 import { createSession } from '../create-session.service.ts'
@@ -7,8 +7,13 @@ import { rotateSession } from '../rotate-session.service.ts'
 const USER_ID = '00000000-0000-0000-0000-000000000001'
 
 describe('rotateSession', () => {
+  beforeEach(async () => {
+    await prisma.user.create({ data: { id: USER_ID } })
+  })
+
   afterEach(async () => {
     await prisma.refreshToken.deleteMany()
+    await prisma.user.deleteMany()
   })
 
   it('returns new tokens and preserves email on rotation', async () => {
