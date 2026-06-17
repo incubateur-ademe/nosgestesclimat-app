@@ -4,6 +4,9 @@
   "description": "The server part of the website nosgestesclimat.fr",
   "main": "./dist/index.js",
   "type": "module",
+  "engines": {
+    "node": "24.16"
+  },
   "scripts": {
     "db:post-migrate": "node --experimental-strip-types ./prisma/index.ts",
     "db:migrate": "ngc-core-db-migrate",
