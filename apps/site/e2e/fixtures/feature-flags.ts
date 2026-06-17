@@ -1,4 +1,4 @@
-import { test as base, type Page } from '@playwright/test'
+import { test as base, type Browser, type Page } from '@playwright/test'
 
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
 import type { DefaultFlagValues } from '@/services/feature-flags/flags'
@@ -44,6 +44,13 @@ export class FeatureFlags {
       return {}
     }
   }
+}
+
+export async function createPage(browser: Browser): Promise<Page> {
+  const page = await browser.newPage()
+  const ff = new FeatureFlags(page)
+  await ff.set({ ...DEFAULT_FLAGS })
+  return page
 }
 
 interface FeatureFlagFixtures {

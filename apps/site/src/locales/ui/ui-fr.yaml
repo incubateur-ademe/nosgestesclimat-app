@@ -1144,7 +1144,7 @@ entries:
   results.objective.under4.description.title: Vous êtes déjà sous les {{secondObjectiveNumber}} tonnes, bravo !
   Vous aujourd'hui: Vous aujourd'hui
   Part de la sous-catégorie {{percentage}}: Part de la sous-catégorie {{percentage}}
-  results.categories.services.text: Les services (santé, éducation, télécoms…) représentent environ <2>1,5 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
+  results.categories.services.text: Les services (santé, éducation, télécoms…) représentent environ <2>1,4 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
   error.contactSupport: Si le problème persiste, merci de <2>contacter le support.</2>
   results.groups.createFirstGroup: <0>Créez votre premier groupe</0> et invitez vos proches pour comparer vos résultats. Cela prend <4>1 minute</4> !
   results.groups.ranking.laconic: Qui de <2>{{name}}</2> et vous aura la plus faible empreinte ?
@@ -1415,3 +1415,5 @@ entries:
   homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   actions.beta-banner.content: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
+  contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
+  contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
