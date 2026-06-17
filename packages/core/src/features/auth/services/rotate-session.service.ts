@@ -1,7 +1,6 @@
 import { hashToken } from '../helpers/hash-token.ts'
 import { createSession } from './create-session.service.ts'
 import {
-  createRefreshToken,
   deleteAndReturn,
   findByToken,
 } from '../repositories/refresh-token.repository.ts'
@@ -17,7 +16,7 @@ export async function rotateSession(
 
   const deleted = await deleteAndReturn(hashed)
 
-  if (deleted.length === 0) {
+  if (!deleted) {
     const existing = await findByToken(hashed)
 
     if (existing) {
@@ -27,6 +26,5 @@ export async function rotateSession(
     throw new TokenConsumedException({})
   }
 
-  const { userId } = deleted[0]
-  return createSession(userId, email)
+  return createSession(deleted.userId, email)
 }

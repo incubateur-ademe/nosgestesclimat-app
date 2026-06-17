@@ -12,12 +12,13 @@ export async function createRefreshToken(
 
 export async function deleteAndReturn(
   hashedToken: string
-): Promise<DeletedToken[]> {
-  return prisma.$queryRaw<DeletedToken[]>`
+): Promise<DeletedToken | null> {
+  const rows = await prisma.$queryRaw<DeletedToken[]>`
     DELETE FROM ngc."RefreshToken"
     WHERE token = ${hashedToken} AND "expiresAt" > NOW()
     RETURNING id, "userId"
   `
+  return rows[0] ?? null
 }
 
 export function findByToken(
