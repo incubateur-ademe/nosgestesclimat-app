@@ -52,7 +52,7 @@ export class UnknownError extends Error {
 
 export class InvalidInputError extends Error {
   constructor(public errorObject: unknown) {
-    super('Invalid Input')
+    super(`Invalid Input Error: ${JSON.stringify(errorObject)}`)
     this.name = 'InvalidInputError'
   }
 }
