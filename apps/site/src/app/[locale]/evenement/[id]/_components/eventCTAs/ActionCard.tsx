@@ -20,7 +20,7 @@ export default function ActionCard({
   return (
     <div
       className={twMerge(
-        'flex min-w-0 flex-1 flex-col items-start rounded-3xl bg-white px-4 py-6 shadow-sm',
+        'flex flex-1 flex-col items-start rounded-3xl bg-white px-4 py-6 shadow-sm',
         index === 0 ? 'bg-primary-100' : 'border-primary-600 border bg-white',
         className
       )}>
@@ -35,7 +35,7 @@ export default function ActionCard({
         href={buttonHref}
         color="secondary"
         size="sm"
-        className="w-full whitespace-nowrap">
+        className="w-full whitespace-normal">
         {buttonLabel}
         <span aria-hidden="true" className="ml-1.5">
           →

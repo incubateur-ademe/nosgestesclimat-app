@@ -24,7 +24,7 @@ export default function EventDynamicCounter({
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
-    <div className="flex-1 rounded-t-3xl rounded-b-lg border border-slate-200 p-6 shadow-sm md:rounded-3xl md:p-8">
+    <div className="flex-1 rounded-t-3xl rounded-b-lg border border-slate-200 p-6 shadow-sm md:rounded-3xl lg:p-8">
       <span className="mb-4 flex items-center text-green-700">
         <span
           aria-hidden
@@ -39,7 +39,7 @@ export default function EventDynamicCounter({
       </span>
 
       <div className="mb-6 flex gap-4 md:gap-6">
-        <div className="max-w-full min-w-16 md:min-w-36">
+        <div className="max-w-full min-w-16 md:min-w-28 lg:min-w-36">
           <CircularProgressbar
             value={progressPercentage}
             startDelay={COUNTER_BLOCK_ANIMATION_TOTAL}
@@ -53,7 +53,7 @@ export default function EventDynamicCounter({
             </Trans>
           </p>
           <p>
-            <span className="mb-1 flex flex-wrap items-baseline gap-1 leading-none! md:flex-nowrap">
+            <span className="mb-1 flex flex-wrap items-baseline gap-1 leading-none! lg:flex-nowrap">
               <span className="text-5xl leading-14! font-bold tracking-tight md:text-6xl md:leading-12!">
                 {numberFormatter.format(currentValue)}
               </span>
@@ -73,7 +73,7 @@ export default function EventDynamicCounter({
 
       <div className="mb-4">
         <ButtonLink
-          className="mb-3 w-full text-base md:text-xl"
+          className="mb-3 w-full text-base lg:text-xl"
           size="xl"
           href={primaryCtaHref}>
           <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
@@ -82,7 +82,7 @@ export default function EventDynamicCounter({
         </ButtonLink>
 
         <ButtonLink
-          className="w-full text-base md:text-xl"
+          className="w-full text-base lg:text-xl"
           href={secondaryCtaHref}
           size="xl"
           color="secondary">

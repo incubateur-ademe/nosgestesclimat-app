@@ -33,7 +33,7 @@ export default async function EventDetail({ locale, imageSrc }: Props) {
 
         <p className="text-lg font-medium">
           <Trans locale={locale} i18nKey="event.detail.title">
-            La Semaine du
+            La Semaine Européenne du
             <br />
             Développement
             <br />

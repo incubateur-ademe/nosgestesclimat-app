@@ -32,7 +32,7 @@ export default function PodiumBlock({ rank, label, score, locale }: Props) {
         <RankBadge rank={rank} />
         <span
           className={twMerge(
-            'text-center text-base leading-tight font-bold',
+            'mb-6 text-center text-base leading-tight font-bold',
             isFirst && 'text-xl'
           )}>
           {label}

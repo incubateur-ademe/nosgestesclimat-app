@@ -25,6 +25,8 @@ interface CarouselClientProps {
   slideClassName?: string
   translations: CarouselTranslations
   showMobileNav?: boolean
+  slidesPerGroup?: number
+  slidesPerGroupDesktop?: number
 }
 
 export default function CarouselClient({
@@ -33,6 +35,8 @@ export default function CarouselClient({
   slideClassName,
   translations,
   showMobileNav = false,
+  slidesPerGroup,
+  slidesPerGroupDesktop,
 }: CarouselClientProps) {
   const [isInitialized, setIsInitialized] = useState(false)
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null)
@@ -68,10 +72,21 @@ export default function CarouselClient({
         }}
         a11y={translations}
         spaceBetween={8}
-        // Use width of slides to determine how many slides are visible
         slidesPerView="auto"
-        // Skip all fully visible slides when navigating
-        slidesPerGroupAuto
+        slidesPerGroupAuto={
+          slidesPerGroup == null && slidesPerGroupDesktop == null
+        }
+        slidesPerGroup={slidesPerGroup ?? 1}
+        breakpoints={
+          slidesPerGroupDesktop != null
+            ? {
+                768: {
+                  slidesPerGroup: slidesPerGroupDesktop,
+                  slidesPerGroupAuto: false,
+                },
+              }
+            : undefined
+        }
         onInit={() => {
           setIsInitialized(true)
         }}
@@ -130,7 +145,7 @@ const NavigationButton = forwardRef(function NavigationButtonWithRef(
       {...props}
       className={twMerge(
         'absolute top-1/2 z-10 hidden -translate-y-1/2 md:flex',
-        'h-11 w-11 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-all',
+        'border-primary-700 h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-blue-500 transition-all',
         'focus:outline-primary-700 hover:scale-110 disabled:opacity-0',
         className
       )}

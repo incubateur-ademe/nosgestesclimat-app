@@ -1427,7 +1427,7 @@ entries:
   event.ctas.heading: Prêt·e à rejoindre l'aventure ?
   event.detail.alt: 22 avril, Jour de la terre avec Nos Gestes Climat
   event.detail.dates: Du 18 septembre au 8 octobre 2026
-  event.detail.title: La Semaine du<1></1>Développement<3></3>Durable
+  event.detail.title: La Semaine Européenne du<1></1>Développement<3></3>Durable
   event.dynamicCounter.primaryCta: J'engage mon organisation
   event.dynamicCounter.promise: Résultats en 10 minutes — 100% gratuit
   event.dynamicCounter.secondaryCta: Je participe individuellement
@@ -1442,7 +1442,7 @@ entries:
   event.podium.list.item.score: tests
   event.podium.subtitle: Le podium de la mobilisation
   event.podium.yourOrg: Votre organisation ?
-  event.statistics.first: actions disponibles pour réduire son empreinte
+  event.statistics.first: calculs d'empreinte carbone déjà réalisés
   event.statistics.third.link: Rejoignez-les !
   event.statistics.third.text: Organisations déjà mobilisées
   event.testimonies.1.author.job: Impact Officer chez HomeExchange
@@ -1476,3 +1476,4 @@ entries:
   event.funFacts.title: Vous êtes déjà <1>0</1><2></2>à avoir participé.
   event.meta.description: "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
   event.meta.title: Événement collectif d'empreinte carbone - Nos Gestes Climat
+  event.statistics.second: actions disponibles pour réduire son empreinte

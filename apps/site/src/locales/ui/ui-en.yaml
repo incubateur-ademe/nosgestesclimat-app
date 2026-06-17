@@ -2107,10 +2107,10 @@ entries:
   event.testimonies.1.author.job.lock: Impact Officer chez HomeExchange
   event.podium.competitor: Rival organisation
   event.podium.competitor.lock: Organisation concurrente
-  event.statistics.first: ways to reduce your carbon footprint
-  event.statistics.first.lock: actions disponibles pour réduire son empreinte
-  event.detail.title: The Sustainable<1></1>Development Week
-  event.detail.title.lock: La Semaine du<1></1>Développement<3></3>Durable
+  event.statistics.first: carbon footprint calculations already carried out
+  event.statistics.first.lock: calculs d'empreinte carbone déjà réalisés
+  event.detail.title: European Week for<1></1>Sustainable Development<3></3>
+  event.detail.title.lock: La Semaine Européenne du<1></1>Développement<3></3>Durable
   event.statistics.third.link: Join them!
   event.statistics.third.link.lock: Rejoignez-les !
   event.ctas.card1.buttonLabel: I'm taking part
@@ -2161,3 +2161,5 @@ entries:
   event.meta.title.lock: Événement collectif d'empreinte carbone - Nos Gestes Climat
   event.meta.description: 'Take up the challenge with your organisation: measure your carbon footprint and take action to reduce it collectively.'
   event.meta.description.lock: "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
+  event.statistics.second: actions you can take to reduce your carbon footprint
+  event.statistics.second.lock: actions disponibles pour réduire son empreinte

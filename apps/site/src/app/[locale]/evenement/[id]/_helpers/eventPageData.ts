@@ -1,5 +1,10 @@
 /** Event page data — centralized mock content before CMS integration. */
 
+import {
+  ORGANISATION_SIGN_IN_PATH,
+  SIMULATOR_PATH,
+} from '@/constants/urls/paths'
+
 export interface PodiumItem {
   rank: number
   label: string
@@ -59,7 +64,7 @@ export function getEventPageData(
       currentValue: 18501,
       targetValue: 50000,
       progressPercentage: 46,
-      primaryCtaHref: '/',
+      primaryCtaHref: ORGANISATION_SIGN_IN_PATH,
       secondaryCtaHref: '/',
     },
     statisticsValues: [18540, 56, 352],
@@ -109,14 +114,11 @@ export function getEventPageData(
       {
         text: t(
           'event.testimonies.3.text',
-          "La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d'initier des discussions importantes."
+          'À titre privé nous avons fait organiser un petit concours interne avec mes enfants. À titre professionnel, dans le cadre de l’amélioration de notre bilan carbone, nous avons utilisé cet outil afin de sensibiliser nos collaborateurs sur l’impact de leur quotidien.'
         ),
         author: {
-          name: 'Théo Gasquet',
-          job: t(
-            'event.testimonies.3.author.job',
-            'Responsable des relations avec les publics du Pass Culture'
-          ),
+          name: 'Jean-Noël Dronneau',
+          job: t('event.testimonies.3.author.job', 'Epsii'),
           avatarSrc:
             'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
         },
@@ -196,7 +198,7 @@ export function getEventPageData(
           "Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés."
         ),
         buttonLabel: t('event.ctas.card1.buttonLabel', 'Je participe'),
-        buttonHref: '#',
+        buttonHref: SIMULATOR_PATH,
       },
       {
         emoji: '🏛️',
@@ -210,7 +212,7 @@ export function getEventPageData(
           'event.ctas.card2.buttonLabel',
           'Je crée un test collectif'
         ),
-        buttonHref: '#',
+        buttonHref: ORGANISATION_SIGN_IN_PATH,
       },
     ],
   }

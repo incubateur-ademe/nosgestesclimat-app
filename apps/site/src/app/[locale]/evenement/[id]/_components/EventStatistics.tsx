@@ -14,7 +14,7 @@ export default async function EventStatistics({ locale, values }: Props) {
 
   return (
     <div className="bg-primary-700 py-12">
-      <div className="mx-auto flex w-5xl max-w-full flex-col gap-4 px-4 md:flex-row md:gap-10 md:p-0">
+      <div className="mx-auto flex w-5xl max-w-full flex-col gap-4 px-4 md:flex-row md:gap-10 lg:p-0">
         <EventNumber
           value={values[0]}
           locale={locale}
@@ -28,7 +28,7 @@ export default async function EventStatistics({ locale, values }: Props) {
           value={values[1]}
           locale={locale}
           text={t(
-            'event.statistics.first',
+            'event.statistics.second',
             'actions disponibles pour réduire son empreinte'
           )}
         />

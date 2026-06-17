@@ -23,6 +23,7 @@ interface Props {
   onKeyDown?: (e: KeyboardEvent<HTMLAnchorElement>) => void
   trackingEvent?: (string | null)[]
   target?: string
+  scroll?: boolean
 }
 
 export default function ButtonLink({
@@ -36,10 +37,12 @@ export default function ButtonLink({
   onKeyDown,
   trackingEvent,
   target = '_self',
+  scroll = true,
   ...props
 }: PropsWithChildren<Props & HtmlHTMLAttributes<HTMLAnchorElement>>) {
   return (
     <Link
+      scroll={scroll}
       href={href}
       onClick={(e) => {
         if (onClick) {

@@ -31,7 +31,7 @@ export default function StaggeredCards({
             transition: { staggerChildren: 0.15, delayChildren: 0.05 },
           },
         }}
-        className="flex flex-col gap-4 md:flex-row md:gap-6">
+        className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
         {React.Children.map(children, (child) => (
           <motion.div variants={itemVariants}>{child}</motion.div>
         ))}

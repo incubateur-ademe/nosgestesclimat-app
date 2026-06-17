@@ -7,7 +7,6 @@ import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
-import { EventFunFacts } from './_components/EventFunFacts'
 import EventHero from './_components/EventHero'
 import EventPodium from './_components/EventPodium'
 import EventStatistics from './_components/EventStatistics'
@@ -64,8 +63,9 @@ export default async function EvenementPage({
       <HeaderServer locale={locale} />
 
       <Main>
-        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+        <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
           <EventDetail locale={locale} imageSrc={detailImageSrc} />
+
           <EventHero
             locale={locale}
             currentValue={dynamicCounter.currentValue}
@@ -75,28 +75,28 @@ export default async function EvenementPage({
             secondaryCtaHref={dynamicCounter.secondaryCtaHref}
           />
         </div>
+
         <EventStatistics locale={locale} values={statisticsValues} />
-        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+
+        <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
           <EventPodium
             locale={locale}
             searchParams={searchParams}
             items={podiumItems}
           />
         </div>
-        <div className="bg-primary-100">
-          <div className="mx-auto w-5xl max-w-full px-4 py-12 md:p-0 md:py-16">
-            <EventFunFacts locale={locale} />
-          </div>
-        </div>
-        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+
+        <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
           <EventTestimonies locale={locale} testimonies={testimonies} />
         </div>
+
         <div className="bg-primary-100">
-          <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+          <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
             <EventTutorial stepsByMode={tutorialStepsByMode} />
           </div>
         </div>
-        <div className="mx-auto w-5xl max-w-full px-4 md:p-0">
+
+        <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
           <EventCTAs
             imageSrc={ctaImageSrc}
             heading={ctaHeading}
