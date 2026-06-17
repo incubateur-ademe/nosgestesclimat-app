@@ -8,10 +8,8 @@ type CreateInput = {
   createdAt?: Date
 }
 
-export function createRefreshToken(data: CreateInput): Promise<void> {
-  return prisma.refreshToken
-    .create({ data })
-    .then(() => undefined)
+export async function createRefreshToken(data: CreateInput): Promise<void> {
+  await prisma.refreshToken.create({ data })
 }
 
 export function deleteAndReturn(
@@ -33,14 +31,12 @@ export function findByToken(
   })
 }
 
-export function deleteAllForUserId(userId: string): Promise<void> {
-  return prisma.refreshToken
-    .deleteMany({ where: { userId } })
-    .then(() => undefined)
+export async function deleteAllForUserId(userId: string): Promise<void> {
+  await prisma.refreshToken.deleteMany({ where: { userId } })
 }
 
-export function deleteAllExpired(): Promise<void> {
-  return prisma.refreshToken
-    .deleteMany({ where: { expiresAt: { lt: new Date() } } })
-    .then(() => undefined)
+export async function deleteAllExpired(): Promise<void> {
+  await prisma.refreshToken.deleteMany({
+    where: { expiresAt: { lt: new Date() } },
+  })
 }
