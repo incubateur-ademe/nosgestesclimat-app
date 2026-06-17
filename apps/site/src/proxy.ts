@@ -5,8 +5,6 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { i18nRouter } from 'next-i18n-router'
 import i18nConfig from '@/i18nConfig'
 
-const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? ''
-
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const isApiRoute = request.nextUrl.pathname.startsWith('/api/server')
 
@@ -22,9 +20,6 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const region = middlewareRegion(request)
 
   // Phase 2 — Routing
-  if (isApiRoute) {
-    request.headers.set('x-internal-key', INTERNAL_API_KEY)
-  }
   const response = isApiRoute
     ? NextResponse.next()
     : i18nRouter(request, i18nConfig)
