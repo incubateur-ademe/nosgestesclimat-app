@@ -1,5 +1,7 @@
 import ActionsPage from '@/components/actions/pages/ActionsPage'
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
+import { t } from '@/helpers/metadata/fakeMetadataT'
+import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import type { AppUser } from '@/helpers/server/dal/user'
 import { getUser } from '@/helpers/server/dal/user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
@@ -8,6 +10,13 @@ import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personal
 import { getThemes } from '@/services/actions/get-themes'
 import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import type { DefaultPageProps } from '@/types'
+
+export const generateMetadata = getCommonMetadata({
+  title: t('actions.listPage.metaTitle'),
+  alternates: {
+    canonical: '/fin/actions',
+  },
+})
 
 export default async function ResultatsActionsPage({
   params,
