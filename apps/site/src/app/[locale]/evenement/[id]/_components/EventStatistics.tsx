@@ -6,7 +6,11 @@ import EventNumber from './eventStatistics/EventNumber'
 
 interface Props {
   locale: Locale
-  values: readonly [number, number, number]
+  values: {
+    simulations: number
+    actions: number
+    organisations: number
+  }
 }
 
 export default async function EventStatistics({ locale, values }: Props) {
@@ -16,7 +20,7 @@ export default async function EventStatistics({ locale, values }: Props) {
     <div className="bg-primary-700 py-12">
       <div className="mx-auto flex w-5xl max-w-full flex-col gap-4 px-4 md:flex-row md:gap-10 lg:p-0">
         <EventNumber
-          value={values[0]}
+          value={values.simulations}
           locale={locale}
           text={t(
             'event.statistics.first',
@@ -25,7 +29,7 @@ export default async function EventStatistics({ locale, values }: Props) {
         />
 
         <EventNumber
-          value={values[1]}
+          value={values.actions}
           locale={locale}
           text={t(
             'event.statistics.second',
@@ -34,7 +38,7 @@ export default async function EventStatistics({ locale, values }: Props) {
         />
 
         <EventNumber
-          value={values[2]}
+          value={values.organisations}
           locale={locale}
           text={
             <>

@@ -24,11 +24,13 @@ export default function AnimatedPodiumBlock({
   rank: number
 }) {
   const { ref, inView } = useScrollReveal<HTMLDivElement>()
-  const [isDesktop, setIsDesktop] = useState<boolean | null>(null)
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)')
     setIsDesktop(mq.matches)
+    setHydrated(true)
 
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
     mq.addEventListener('change', handler)
@@ -37,7 +39,8 @@ export default function AnimatedPodiumBlock({
 
   const delay = RANK_DELAY[rank] ?? 0
 
-  if (isDesktop === null) {
+  // Avoid hydration mismatch: render static content on first render
+  if (!hydrated) {
     return (
       <div ref={ref}>
         <div>{children}</div>

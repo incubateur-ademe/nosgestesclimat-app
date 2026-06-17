@@ -7,6 +7,7 @@ import type { Swiper as SwiperInstance } from 'swiper/types'
 
 import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
+import Button from '@/design-system/buttons/Button'
 import { twMerge } from 'tailwind-merge'
 import './Carousel.css'
 
@@ -116,20 +117,20 @@ export default function CarouselClient({
       </Swiper>
       {showMobileNav && (
         <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
-          <button
+          <Button
             onClick={() => swiper?.slidePrev()}
-            className="focus:outline-primary-600 border-primary-700 flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white shadow-sm transition-all hover:scale-110"
-            type="button"
+            color="secondary"
+            className="h-11 w-11 p-0!"
             aria-label={translations.prevSlideMessage}>
             <ChevronLeft />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => swiper?.slideNext()}
-            className="focus:outline-primary-600 border-primary-700 flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white shadow-sm transition-all hover:scale-110"
-            type="button"
+            color="secondary"
+            className="h-11 w-11 p-0!"
             aria-label={translations.nextSlideMessage}>
             <ChevronLeft className="rotate-180" />
-          </button>
+          </Button>
         </div>
       )}
     </>

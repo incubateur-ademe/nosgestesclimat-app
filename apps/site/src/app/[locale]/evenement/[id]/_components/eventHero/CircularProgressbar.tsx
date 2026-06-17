@@ -47,10 +47,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
   const offset = (1 - (progress * value) / 100) * DIAMETER
 
   return (
-    <svg
-      className="CircularProgressbar"
-      viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
-      data-test-id="CircularProgressbar">
+    <svg className="CircularProgressbar" viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
       <path
         d={PATH_D}
         stroke="#fde6f7"

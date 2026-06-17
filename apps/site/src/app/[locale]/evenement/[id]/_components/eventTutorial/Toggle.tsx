@@ -1,8 +1,14 @@
 'use client'
 
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { twMerge } from 'tailwind-merge'
 
 export type Mode = 'organisation' | 'individu'
+
+const MODE_LABELS: Record<Mode, string> = {
+  organisation: 'Organisation',
+  individu: 'Individu',
+}
 
 interface Props {
   mode: Mode
@@ -10,6 +16,8 @@ interface Props {
 }
 
 export default function Toggle({ mode, onChange }: Props) {
+  const { t } = useClientTranslation()
+
   return (
     <div className="mx-auto inline-flex rounded-full bg-gray-100 p-1">
       {(['organisation', 'individu'] as const).map((value) => (
@@ -22,7 +30,7 @@ export default function Toggle({ mode, onChange }: Props) {
               ? 'bg-primary-700 text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           )}>
-          {value === 'organisation' ? 'Organisation' : 'Individu'}
+          {t(`event.tutorial.toggle.${value}`, MODE_LABELS[value])}
         </button>
       ))}
     </div>

@@ -1,15 +1,31 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
-import type { SearchParams } from 'next/dist/server/request/search-params'
 import type { PodiumItem } from '../_helpers/eventPageData'
 import type { FilterValue } from './eventPodium/EventTabs'
 import EventTabs, { FILTER_KEY, FILTER_VALUES } from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
 
+function buildFilterHref(
+  existing: Record<string, string | string[] | undefined>,
+  filterValue: string
+) {
+  const next = new URLSearchParams()
+  for (const [key, value] of Object.entries(existing)) {
+    if (key === FILTER_KEY) continue
+    if (Array.isArray(value)) {
+      value.forEach((v) => next.append(key, v))
+    } else if (value != null) {
+      next.set(key, value)
+    }
+  }
+  next.set(FILTER_KEY, filterValue)
+  return `?${next.toString()}`
+}
+
 interface Props {
   locale: Locale
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
   items: PodiumItem[]
 }
 
@@ -18,7 +34,8 @@ export default async function EventPodium({
   searchParams,
   items,
 }: Props) {
-  const { [FILTER_KEY]: filter } = await searchParams
+  const params = await searchParams
+  const filter = params[FILTER_KEY]
 
   const rawFilter = Array.isArray(filter) ? filter[0] : filter
   const activeFilter: FilterValue =
@@ -33,8 +50,9 @@ export default async function EventPodium({
     activeIndex < FILTER_VALUES.length - 1
       ? FILTER_VALUES[activeIndex + 1]
       : undefined
-  const prevHref = prevFilter ? `?${FILTER_KEY}=${prevFilter}` : undefined
-  const nextHref = nextFilter ? `?${FILTER_KEY}=${nextFilter}` : undefined
+
+  const prevHref = prevFilter ? buildFilterHref(params, prevFilter) : undefined
+  const nextHref = nextFilter ? buildFilterHref(params, nextFilter) : undefined
 
   return (
     <div className="mb-16">

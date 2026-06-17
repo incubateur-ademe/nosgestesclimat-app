@@ -44,7 +44,11 @@ export interface EventPageData {
     primaryCtaHref: string
     secondaryCtaHref: string
   }
-  statisticsValues: [number, number, number]
+  statisticsValues: {
+    simulations: number
+    actions: number
+    organisations: number
+  }
   podiumItems: PodiumItem[]
   testimonies: Testimony[]
   tutorialStepsByMode: Record<string, TutorialStep[]>
@@ -67,7 +71,11 @@ export function getEventPageData(
       primaryCtaHref: ORGANISATION_SIGN_IN_PATH,
       secondaryCtaHref: '/',
     },
-    statisticsValues: [18540, 56, 352],
+    statisticsValues: {
+      simulations: 18540,
+      actions: 56,
+      organisations: 352,
+    },
     podiumItems: [
       {
         rank: 1,
@@ -118,7 +126,7 @@ export function getEventPageData(
         ),
         author: {
           name: 'Jean-Noël Dronneau',
-          job: t('event.testimonies.3.author.job', 'Epsii'),
+          job: 'Epsii',
           avatarSrc:
             'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
         },

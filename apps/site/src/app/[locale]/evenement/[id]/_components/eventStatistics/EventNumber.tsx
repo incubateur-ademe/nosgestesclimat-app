@@ -14,6 +14,7 @@ export default function EventNumber({ value, text, locale }: Props) {
   const [hasAnimated, setHasAnimated] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const numberFormatter = useRef(new Intl.NumberFormat(locale))
+  const rafRef = useRef<number>(0)
 
   useEffect(() => {
     const element = ref.current
@@ -33,18 +34,21 @@ export default function EventNumber({ value, text, locale }: Props) {
             const eased = 1 - Math.pow(1 - progress, 3)
             setAnimatedValue(Math.round(eased * value))
             if (progress < 1) {
-              requestAnimationFrame(animate)
+              rafRef.current = requestAnimationFrame(animate)
             }
           }
 
-          requestAnimationFrame(animate)
+          rafRef.current = requestAnimationFrame(animate)
         }
       },
       { threshold: 0.3 }
     )
 
     observer.observe(element)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(rafRef.current)
+    }
   }, [hasAnimated, value])
 
   return (
