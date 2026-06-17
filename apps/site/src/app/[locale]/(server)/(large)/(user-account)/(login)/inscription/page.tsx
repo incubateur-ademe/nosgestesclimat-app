@@ -11,8 +11,8 @@ import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
+import { getUserSession } from '@/services/users/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
 
@@ -28,7 +28,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
 
   const { t } = await getServerTranslation({ locale })
 
-  const { id: initialUserId } = await getUser()
+  const { id: initialUserId } = await getUserSession()
 
   return (
     <div className="flex justify-center pb-32 lg:justify-start">

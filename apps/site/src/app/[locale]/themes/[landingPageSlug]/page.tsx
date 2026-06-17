@@ -15,11 +15,11 @@ import JSONLD from '@/components/seo/JSONLD'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import { fetchThematicLandingPage } from '@/services/cms/fetchThematicLandingPage'
 import { fetchThematicLandingPageMetadata } from '@/services/cms/fetchThematicLandingPageMetadata'
+import { getUserSession } from '@/services/users/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import { getArticleHref } from '@/utils/cms/getArticleHref'
 import Image from 'next/image'
@@ -60,7 +60,7 @@ export default async function ThematicLandingPage({
   params: Promise<{ landingPageSlug: string; locale: Locale }>
 }>) {
   const { landingPageSlug, locale } = await params
-  const { id: serverUserId } = await getUser()
+  const { id: serverUserId } = await getUserSession()
   const { thematicLandingPage } =
     (await fetchThematicLandingPage({
       landingPageSlug,

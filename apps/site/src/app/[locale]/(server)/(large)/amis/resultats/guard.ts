@@ -1,13 +1,13 @@
 import { getLinkToGroupInvitation } from '@/helpers/navigation/groupPages'
-import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
 import { getGroup } from '@/helpers/server/model/groups'
+import { getUserSession } from '@/services/users/get-user-session'
 import type { Group } from '@/types/groups'
 import { notFound, redirect } from 'next/navigation'
 
 interface GroupResultsGuardReturn {
   group: Group
-  user: Awaited<ReturnType<typeof getUser>>
+  user: Awaited<ReturnType<typeof getUserSession>>
   userSimulation: NonNullable<Group['participants'][number]['simulation']>
   groupId: string
 }
@@ -34,7 +34,7 @@ export async function groupResultsGuard(
     notFound()
   }
 
-  const user = await getUser()
+  const user = await getUserSession()
   const group = await throwNextError(() => getGroup({ groupId, user }))
 
   const userSimulation = group.participants.find(

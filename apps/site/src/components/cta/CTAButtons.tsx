@@ -4,12 +4,12 @@ import {
 } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getUser } from '@/helpers/server/dal/user'
 import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
 import {
   getCompletedSimulations,
   getCurrentSimulation,
 } from '@/helpers/server/model/simulations'
+import { getUserSession } from '@/services/users/get-user-session'
 import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 import RotatingArrowIcon from '../icons/RotatingArrowIcon'
@@ -37,7 +37,7 @@ async function ServerCTAButtons({
   className = '',
   locale,
 }: Props) {
-  const user = await getUser()
+  const user = await getUserSession()
   const [currentSimulation, completedSimulations] = await Promise.all([
     getCurrentSimulation({ user }),
     getCompletedSimulations({ user }, { pageSize: 1 }),

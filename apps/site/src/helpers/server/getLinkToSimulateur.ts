@@ -6,8 +6,8 @@ import {
   TUTORIAL_PATH,
 } from '@/constants/urls/paths'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import type { AppUser } from '@/services/users/get-user-session'
 import type { TFunction } from 'i18next'
-import type { AppUser } from './dal/user'
 export function getMainCTA({
   currentSimulation,
   completedSimulations,

@@ -8,8 +8,6 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
-import { getUser } from '@/helpers/server/dal/user'
 import {
   NoSessionFoundError,
   NotFoundError,
@@ -22,6 +20,7 @@ import {
   type Tendency,
 } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
+import { getUserSession } from '@/services/users/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
@@ -57,7 +56,7 @@ export default async function FinPage({
     )
   }
 
-  const user = await getUser()
+  const user = await getUserSession()
   let simulations
   try {
     simulations = await getCompletedSimulations(
@@ -71,10 +70,9 @@ export default async function FinPage({
 
   const [simulation, previousSimulation] = simulations
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!simulation) {
-    const session = await getAnonSession()
-    if (!session.userId) {
+    // @tofix: user can be null once getUser() returns null for anonymous visitors without session (refonte auth)
+    if (!user?.id) {
       captureException(new NoSessionFoundError())
     } else {
       captureException(new NotFoundError(), { level: 'warning' })

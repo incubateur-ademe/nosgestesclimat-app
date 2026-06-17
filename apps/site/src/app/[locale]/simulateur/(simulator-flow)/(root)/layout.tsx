@@ -6,7 +6,7 @@ import {
   START_SIMULATION_PATH,
 } from '@/constants/urls/paths'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUserSession } from '@/services/users/get-user-session'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { NotFoundError } from '@/helpers/server/error'
@@ -25,7 +25,7 @@ export default async function SimulationLayout({
 }: LayoutProps<'/[locale]/simulateur'>) {
   const { locale } = await params
 
-  const user = await getUser()
+  const user = await getUserSession()
 
   const currentSimulation = await getCurrentSimulation({ user })
   const serverSimulations = currentSimulation ? [currentSimulation] : []
