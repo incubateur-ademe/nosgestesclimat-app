@@ -1,3 +1,4 @@
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import { useCreatePoll } from '@/hooks/organisations/polls/useCreatePoll'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -14,7 +15,7 @@ interface UseCreatePollStep2Props {
 }
 
 interface Step2Inputs {
-  mode: 'standard' | 'scolaire'
+  mode: SimulationMode
 }
 
 /**

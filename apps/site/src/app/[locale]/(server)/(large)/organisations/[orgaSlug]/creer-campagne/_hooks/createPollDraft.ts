@@ -1,3 +1,4 @@
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { POLL_DATA_KEY } from '../_constants/sessionStorage'
 
@@ -7,7 +8,7 @@ export interface PollDraft {
 }
 
 export interface CreatePollPayload extends PollDraft {
-  mode: 'standard' | 'scolaire'
+  mode: SimulationMode
 }
 
 /**
@@ -82,7 +83,7 @@ export function clearDraft(): void {
  */
 export function buildCreatePollPayload(
   draft: PollDraft,
-  mode: 'standard' | 'scolaire'
+  mode: SimulationMode
 ): CreatePollPayload {
   return {
     name: draft.name,
