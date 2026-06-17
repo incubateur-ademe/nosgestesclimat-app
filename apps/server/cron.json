@@ -19,6 +19,10 @@
     {
       "command": "0 3 * * * pnpm jobs:syncNotionActions",
       "size": "M"
+    },
+    {
+      "command": "0 4 * * * pnpm jobs:cleanupExpiredTokens",
+      "size": "M"
     }
   ]
 }

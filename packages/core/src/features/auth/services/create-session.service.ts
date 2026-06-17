@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import { prisma } from '../../../prisma/client.ts'
 import { hashToken } from '../helpers/hash-token.ts'
-import { encryptSession } from '../helpers/encrypt-session'
+import { encryptSession } from '../helpers/encrypt-session.ts'
 import type { SessionTokens } from '../types/session.ts'
 
 const SESSION_TTL = 15 * 60

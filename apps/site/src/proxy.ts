@@ -17,7 +17,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const auth = await middlewareAuth(request)
   if (auth.redirect && !isApiRoute) return auth.redirect
 
-  const region = middlewareRegion(request)
+  const region = await middlewareRegion(request)
 
   // Phase 2 — Routing
   const response = isApiRoute
