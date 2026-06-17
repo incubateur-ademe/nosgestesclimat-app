@@ -864,6 +864,7 @@ entries:
   actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
   actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
+  actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
   actions.detailPage.404.title: Action non trouvée
   actions.detailPage.404.description: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.detailPage.nav: Navigation de la page
@@ -871,7 +872,7 @@ entries:
   actions.detailPage.sections.act: J'agis
   actions.detailPage.sections.incentives: J'y gagne
   actions.detailPage.sections.furtherReading: À découvrir aussi
-  actions.detailPage.impact.title: Gain potentiel pour votre empreinte
+  actions.detailPage.impact.title: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
@@ -1144,7 +1145,7 @@ entries:
   results.objective.under4.description.title: Vous êtes déjà sous les {{secondObjectiveNumber}} tonnes, bravo !
   Vous aujourd'hui: Vous aujourd'hui
   Part de la sous-catégorie {{percentage}}: Part de la sous-catégorie {{percentage}}
-  results.categories.services.text: Les services (santé, éducation, télécoms…) représentent environ <2>1,5 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
+  results.categories.services.text: Les services (santé, éducation, télécoms…) représentent environ <2>1,4 t de votre empreinte</2>. Cette part est <5>la même pour tous</5> et <8>diminue progressivement</8> avec la transition écologique.
   error.contactSupport: Si le problème persiste, merci de <2>contacter le support.</2>
   results.groups.createFirstGroup: <0>Créez votre premier groupe</0> et invitez vos proches pour comparer vos résultats. Cela prend <4>1 minute</4> !
   results.groups.ranking.laconic: Qui de <2>{{name}}</2> et vous aura la plus faible empreinte ?
@@ -1415,3 +1416,5 @@ entries:
   homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   actions.beta-banner.content: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
+  contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
+  contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { continents, countries } from 'countries-list'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { beforeEach, describe, expect, test } from 'vitest'
@@ -55,32 +56,9 @@ describe('Given redis store', () => {
       countryCode: 'FR',
     },
   ]
-  const countries = {
-    FR: {
-      code: 'FR',
-      name: 'France',
-      region: 'Europe',
-    },
-    BE: {
-      code: 'BE',
-      name: 'Belgique',
-      region: 'Europe',
-    },
-  }
 
   beforeEach(async () => {
-    await Promise.all([
-      new Promise<void>((resolve) =>
-        redis.set(KEYS.geolocationSortedIps, JSON.stringify(sortedIps), () =>
-          resolve()
-        )
-      ),
-      new Promise<void>((resolve) =>
-        redis.set(KEYS.geolocationCountries, JSON.stringify(countries), () =>
-          resolve()
-        )
-      ),
-    ])
+    await redis.set(KEYS.geolocationSortedIps, JSON.stringify(sortedIps))
 
     initGeolocationStore()
   })
@@ -94,11 +72,14 @@ describe('Given redis store', () => {
         .set('x-client-ip', clientIp)
         .expect(StatusCodes.OK)
 
-      expect(body).toEqual(
-        countries[
-          convertIpToNumber(frIP) > convertIpToNumber(clientIp) ? 'BE' : 'FR'
-        ]
-      )
+      const expectedCountryCode =
+        convertIpToNumber(frIP) > convertIpToNumber(clientIp) ? 'BE' : 'FR'
+      const countryData =
+        countries[expectedCountryCode as keyof typeof countries]
+      expect(body).toEqual({
+        code: expectedCountryCode,
+        region: continents[countryData.continent],
+      })
     })
   })
 

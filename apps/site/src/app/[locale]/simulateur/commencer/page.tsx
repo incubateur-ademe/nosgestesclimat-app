@@ -1,4 +1,5 @@
 import { SIMULATOR_PATH, TUTORIAL_PATH } from '@/constants/urls/paths'
+
 import { getUser } from '@/helpers/server/dal/user'
 import { stringifyModel } from '@/helpers/server/model/models'
 import {
