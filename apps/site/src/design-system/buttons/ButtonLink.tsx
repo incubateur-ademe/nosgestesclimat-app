@@ -96,7 +96,7 @@ export default function ButtonLink({
       )}
       target={target}
       {...props}>
-      {loading && (
+      {(loading || (isClickableOnce && isClicked)) && (
         <Loader
           size={loaderSizeMap[size]}
           color={loaderColorMap[color]}

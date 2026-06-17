@@ -35,19 +35,19 @@ export default function ConfirmationModal({
 
       <div className="mt-12 flex flex-wrap justify-center gap-4 md:justify-normal">
         <Button
-          disabled={disabled}
+          disabled={disabled || loading}
           color="secondary"
-          onClick={!loading ? closeModal : () => {}}>
-          <Trans>Annuler</Trans>
+          onClick={closeModal}>
+          <Trans i18nKey="common.cancel">Annuler</Trans>
         </Button>
 
         <Button
           color="primary"
           disabled={disabled}
           loading={loading}
-          className="xs:order-2 -order-1 w-[140px]"
-          onClick={!loading ? onConfirm : () => {}}>
-          <Trans>Confirmer</Trans>
+          className="xs:order-2 -order-1 w-35"
+          onClick={onConfirm}>
+          <Trans i18nKey="common.confirm">Confirmer</Trans>
         </Button>
       </div>
     </Modal>

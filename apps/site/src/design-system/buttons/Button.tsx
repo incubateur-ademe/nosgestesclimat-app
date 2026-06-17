@@ -123,7 +123,7 @@ export default function Button({
         className
       )}
       {...props}>
-      {loading && (
+      {(loading || (isClickableOnce && isClicked)) && (
         <Loader
           size={loaderSizeMap[size]}
           color={loaderColorMap[color]}
