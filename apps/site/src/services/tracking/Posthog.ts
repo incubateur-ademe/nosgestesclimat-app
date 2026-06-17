@@ -89,7 +89,7 @@ export class PostHog {
       capture_pageleave: true,
       autocapture: {
         capture_copied_text: false,
-        url_ignorelist: ['/simulateur'],
+        url_ignorelist: ['/simulateur/bilan'],
       },
       rageclick: false,
 
