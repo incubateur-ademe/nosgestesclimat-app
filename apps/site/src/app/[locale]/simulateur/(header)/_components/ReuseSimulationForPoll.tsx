@@ -2,8 +2,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
-import NewTestButton from './reuseSimulationForPoll/NewTestButton'
-import ReuseButton from './reuseSimulationForPoll/ReuseButton'
+import ReuseButtons from './reuseSimulationForPoll/ReuseButtons'
 
 interface ReuseSimulationForPollProps {
   reuseSimulation: () => void
@@ -38,11 +37,11 @@ export default function ReuseSimulationForPoll({
         </Trans>
       </p>
 
-      <div className="flex flex-col items-start gap-6" data-track>
-        <ReuseButton reuseSimulation={reuseSimulation} />
+      <ReuseButtons
+        reuseSimulation={reuseSimulation}
+        createNewSimulation={createNewSimulation}
+      />
 
-        <NewTestButton createNewSimulation={createNewSimulation} />
-      </div>
       <div className="mt-8">{disclaimer}</div>
     </Card>
   )
