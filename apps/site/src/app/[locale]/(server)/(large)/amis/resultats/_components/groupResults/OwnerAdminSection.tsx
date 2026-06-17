@@ -24,11 +24,7 @@ interface Props {
 export default function OwnerAdminSection({ group }: Props) {
   const [isConfirming, setIsConfirming] = useState(false)
 
-  const {
-    mutateAsync: deleteUserOrGroupIfOwner,
-    isSuccess,
-    isPending,
-  } = useDeleteGroup({
+  const { mutateAsync: deleteUserOrGroupIfOwner, isSuccess } = useDeleteGroup({
     shouldInvalidateQueries: false,
   })
 
