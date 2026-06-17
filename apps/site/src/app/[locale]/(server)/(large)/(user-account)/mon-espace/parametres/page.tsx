@@ -2,7 +2,6 @@ import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutPro
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import { throwNextError } from '@/helpers/server/error'
 import type { UserRegion } from '@/helpers/server/model/models'
 import {
@@ -10,6 +9,7 @@ import {
   getNewsletterSubscriptions,
 } from '@/helpers/server/model/newsletter'
 import { getAuthUser } from '@/helpers/server/model/user'
+import { getRegion, setRegion } from '@/services/users/region'
 import { UserProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
@@ -19,19 +19,17 @@ import UserEmail from './_components/UserEmail'
 
 export async function updateRegion(region: UserRegion) {
   'use server'
-  const session = await getAnonSession()
-  session.region = region
-  await session.save()
+  await setRegion(region)
 }
 
 export default async function SettingsPage({ params }: DefaultPageProps) {
   const { locale } = await params
-  const [session, subscriptions, newsletters, user] = await throwNextError(() =>
+  const [subscriptions, newsletters, user, regionData] = await throwNextError(() =>
     Promise.all([
-      getAnonSession(),
       getNewsletterSubscriptions(),
       getNewsletters({ locale }),
       getAuthUser(),
+      getRegion(),
     ])
   )
 
@@ -75,11 +73,11 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
         </div>
       </section>
       <section className="mt-2">
-        {session.initialRegion && session.region ? (
+        {regionData?.initial && regionData?.current ? (
           <Localisation
             updateRegionAction={updateRegion}
-            initialRegion={session.initialRegion}
-            region={session.region}
+            initialRegion={regionData.initial}
+            region={regionData.current}
           />
         ) : null}
       </section>

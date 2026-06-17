@@ -6,7 +6,7 @@ import {
   START_SIMULATION_PATH,
 } from '@/constants/urls/paths'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { NotFoundError } from '@/helpers/server/error'

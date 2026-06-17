@@ -1,4 +1,4 @@
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
+import { getUserRegion } from '@/services/users/region'
 import {
   getCurrentModel,
   getGeolocation,
@@ -31,7 +31,7 @@ export async function getNewSimulationModelService({
   ) {
     userRegion = regionParam as UserRegion
   } else {
-    userRegion = (await getAnonSession()).region ?? (await getGeolocation())
+    userRegion = (await getUserRegion()) ?? (await getGeolocation())
   }
 
   if (PRNumberParam && typeof PRNumberParam === 'string') {

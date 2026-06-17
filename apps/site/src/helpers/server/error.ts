@@ -56,6 +56,14 @@ export class InvalidInputError extends Error {
     this.name = 'InvalidInputError'
   }
 }
+
+export class NotImplementedError extends Error {
+  constructor() {
+    super('Not Implemented')
+    this.name = 'NotImplementedError'
+  }
+}
+
 export async function throwNextError<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn()

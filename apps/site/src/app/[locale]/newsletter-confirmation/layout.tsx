@@ -1,4 +1,4 @@
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import type { DefaultPageProps } from '@/types'
 import type { PropsWithChildren } from 'react'
 import { ClientLayout } from '../../../components/layout/ClientLayout'

@@ -1,7 +1,7 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { UserProvider } from '@/publicodes-state'
 import type { PropsWithChildren } from 'react'
 

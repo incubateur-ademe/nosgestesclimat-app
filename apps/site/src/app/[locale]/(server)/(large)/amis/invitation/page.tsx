@@ -1,5 +1,5 @@
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
+import { getUserRegion } from '@/services/users/region'
 import {
   getCurrentModel,
   getGeolocation,
@@ -15,7 +15,7 @@ export default async function RejoindreGroupePage({
 }: PageProps<'/[locale]/amis/invitation'>) {
   const user = await getUser()
   const locale = (await params).locale as Locale
-  const userRegion = (await getAnonSession()).region ?? (await getGeolocation())
+  const userRegion = (await getUserRegion()) ?? (await getGeolocation())
 
   const currentSimulation =
     (await getCurrentSimulation({ user })) ??

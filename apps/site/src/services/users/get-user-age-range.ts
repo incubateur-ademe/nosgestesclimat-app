@@ -1,6 +1,6 @@
 'use server'
 
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { getFullUser } from '@nosgestesclimat/core/features/users/services/get-full-user.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 

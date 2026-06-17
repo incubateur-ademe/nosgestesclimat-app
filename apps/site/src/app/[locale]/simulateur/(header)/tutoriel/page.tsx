@@ -1,7 +1,7 @@
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import {
   getCompletedSimulations,
   getCurrentSimulation,

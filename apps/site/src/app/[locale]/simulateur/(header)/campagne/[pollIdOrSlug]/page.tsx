@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { throwNextError } from '@/helpers/server/error'
 import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
 import {

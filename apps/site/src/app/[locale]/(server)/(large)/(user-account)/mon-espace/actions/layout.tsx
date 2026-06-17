@@ -1,6 +1,6 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { EngineProvider, UserProvider } from '@/publicodes-state'

@@ -1,7 +1,7 @@
 import EmptyState from '@/components/results/groups/EmptyState'
 import Groups from '@/components/results/groups/Groups'
 import Organisation from '@/components/results/groups/Organisation'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { getGroups } from '@/helpers/server/model/groups'
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
 

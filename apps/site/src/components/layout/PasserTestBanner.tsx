@@ -1,7 +1,7 @@
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
 import {
   getCompletedSimulations,

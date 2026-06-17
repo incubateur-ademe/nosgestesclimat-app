@@ -6,16 +6,12 @@ import {
 } from '@/services/feature-flags/urlParams'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { getCookieOptions } from '@/helpers/server/proxy/cookies'
+import type { MiddlewareResult } from './types'
 
-const secure =
-  new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname !== 'localhost'
-
-export async function featureFlagMiddleware(
-  request: NextRequest,
-  next: (req: NextRequest) => NextResponse | Promise<NextResponse>
-): Promise<NextResponse> {
+export function middlewareFeatureFlags(request: NextRequest): MiddlewareResult {
   const incoming = parseFeatureFlagParams(request.nextUrl.searchParams)
-  if (!incoming) return next(request)
+  if (!incoming) return { redirect: null, cookies: [] }
 
   const existing = parseFeatureFlagCookie(
     request.cookies.get(FF_COOKIE_NAME)?.value
@@ -26,9 +22,8 @@ export async function featureFlagMiddleware(
     stripFeatureFlagParams(request.nextUrl)
   )
   response.cookies.set(FF_COOKIE_NAME, JSON.stringify(merged), {
-    secure,
+    ...getCookieOptions(),
     sameSite: 'lax',
-    path: '/',
   })
-  return response
+  return { redirect: response, cookies: [] }
 }

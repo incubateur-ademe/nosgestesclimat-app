@@ -8,8 +8,7 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import {
   NoSessionFoundError,
   NotFoundError,
@@ -71,10 +70,9 @@ export default async function FinPage({
 
   const [simulation, previousSimulation] = simulations
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!simulation) {
-    const session = await getAnonSession()
-    if (!session.userId) {
+    // @tofix: user can be null once getUser() returns null for anonymous visitors without session (refonte auth)
+    if (!user?.id) {
       captureException(new NoSessionFoundError())
     } else {
       captureException(new NotFoundError(), { level: 'warning' })

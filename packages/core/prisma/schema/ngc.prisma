@@ -464,6 +464,18 @@ model VerifiedUser {
   @@schema("ngc")
 }
 
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid // No FK: tokens are cleaned by CRON, may outlive their User
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@schema("ngc")
+}
+
 view ComputedResultsView {
   id                  String   @unique @default(uuid()) @db.Uuid
   date                DateTime

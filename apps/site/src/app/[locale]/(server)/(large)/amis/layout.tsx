@@ -1,5 +1,5 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import { UserProvider } from '@/publicodes-state'
 

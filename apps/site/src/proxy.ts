@@ -1,49 +1,47 @@
-import i18nConfig, { NEXT_LOCALE_COOKIE_NAME } from '@/i18nConfig'
-import { cookies } from 'next/headers'
-import type { NextRequest, ProxyConfig } from 'next/server'
-import { userMiddleware } from './helpers/server/dal/middleware'
-import { featureFlagMiddleware } from './middlewares/featureFlagMiddleware'
-import i18nMiddleware from './middlewares/i18nMiddleware'
+import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags'
+import { middlewareAuth } from '@/helpers/server/proxy/auth/process-auth'
+import { middlewareRegion } from '@/helpers/server/proxy/region'
+import { type NextRequest, NextResponse } from 'next/server'
+import { i18nRouter } from 'next-i18n-router'
+import i18nConfig from '@/i18nConfig'
 
-export async function proxy(request: NextRequest) {
-  const response = await featureFlagMiddleware(request, (req) =>
-    userMiddleware(req, i18nMiddleware)
-  )
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? ''
 
-  // Sync NEXT_LOCALE cookie with the URL path locale (e.g. /en → en).
-  // Uses cookies().set() — the same mechanism iron-session uses internally.
-  const pathname = request.nextUrl.pathname
-  const pathLocale = i18nConfig.locales.find(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  )
+export async function proxy(request: NextRequest): Promise<NextResponse> {
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api/server')
 
-  if (pathLocale) {
-    const cookieStore = await cookies()
+  // Phase 1 — Interceptors
+  if (!isApiRoute) {
+    const ff = middlewareFeatureFlags(request)
+    if (ff.redirect) return ff.redirect
+  }
 
-    cookieStore.set(
-      NEXT_LOCALE_COOKIE_NAME,
-      pathLocale,
-      i18nConfig.cookieOptions ?? {}
-    )
+  const auth = await middlewareAuth(request)
+  if (auth.redirect && !isApiRoute) return auth.redirect
+
+  const region = middlewareRegion(request)
+
+  // Phase 2 — Routing
+  if (isApiRoute) {
+    request.headers.set('x-internal-key', INTERNAL_API_KEY)
+  }
+  const response = isApiRoute
+    ? NextResponse.next()
+    : i18nRouter(request, i18nConfig)
+
+  // Phase 3 — Apply cookies
+  for (const cookie of [...auth.cookies, ...region.cookies]) {
+    response.cookies.set(cookie.name, cookie.value, cookie.options)
   }
 
   return response
 }
 
-export const config: ProxyConfig = {
+export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - images (image optimization files)
-     * - favicon.ico (favicon file)
-     * - manifest.webmanifest (manifest file)
-     * - robots.txt (robots file)
-     */
     {
       source:
-        '/((?!api|_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|datashare).*)',
+        '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|datashare).*)',
     },
   ],
 }

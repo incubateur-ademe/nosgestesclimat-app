@@ -1,5 +1,5 @@
 import { getLinkToGroupInvitation } from '@/helpers/navigation/groupPages'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { throwNextError } from '@/helpers/server/error'
 import { getGroup } from '@/helpers/server/model/groups'
 import type { Group } from '@/types/groups'

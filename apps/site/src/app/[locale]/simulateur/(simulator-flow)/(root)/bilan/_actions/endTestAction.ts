@@ -1,6 +1,6 @@
 'use server'
 import { EMAIL_PAGE_PATH, END_PAGE_PATH } from '@/constants/urls/paths'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUser } from '@/services/users/get-user'
 import { InternalServerError } from '@/helpers/server/error'
 import { getLocaleFromHeaders } from '@/helpers/server/getLocaleForNotFoundOrUnautorizedPage'
 import type { Simulation } from '@/helpers/server/model/simulations'

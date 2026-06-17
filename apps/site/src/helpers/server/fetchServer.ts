@@ -2,9 +2,10 @@
 
 import { SERVER_URL } from '@/constants/urls/main'
 import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
-import { cookies, headers as getHeaders } from 'next/headers'
-import { SERVER_AUTH_COOKIE_NAME } from './dal/authCookie'
+import { headers as getHeaders } from 'next/headers'
 import { InternalServerError } from './error'
+
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? ''
 
 export async function fetchServer<T = unknown>(
   url: string,
@@ -21,24 +22,28 @@ export async function fetchServer<T = unknown>(
   if (!url.startsWith(SERVER_URL)) {
     throw new InternalServerError()
   }
-  const [nextHeaders, cookieStore] = await Promise.all([
-    getHeaders(),
-    cookies(),
-  ])
-  const headers: HeadersInit = {
+
+  const nextHeaders = await getHeaders()
+
+  const reqHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
-    // Some server route need IP of the client (for instance geolocation)
     'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
+    'x-internal-key': INTERNAL_API_KEY,
   }
 
-  const ngcCookie = cookieStore.get(SERVER_AUTH_COOKIE_NAME)
-  if (ngcCookie) {
-    headers.cookie = `${ngcCookie.name}=${ngcCookie.value}`
+  const sessionHeader = nextHeaders.get('x-session')
+  if (sessionHeader) {
+    const { userId, email } = JSON.parse(sessionHeader)
+    reqHeaders['x-user-id'] = userId
+    if (email) {
+      reqHeaders['x-user-email'] = email
+    }
   }
+
   const response = await fetch(url, {
     method,
     body: body ? JSON.stringify(body) : undefined,
-    headers,
+    headers: reqHeaders,
     credentials: 'include',
     next,
   })
