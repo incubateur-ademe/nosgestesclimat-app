@@ -13,16 +13,16 @@ function hostToRegex(host: string): string {
 
 function patternToURLPattern(pattern: string): URLPattern {
   // Substitute * with a sentinel so new URL() can parse the pattern string,
-  // then restore wildcards per component:
-  //   hostname → :_wildcard  (named group: one DNS label, no dots — same as [^.]+)
-  //   pathname → *           (any chars including /)
-  // SENTINEL must be all-lowercase; URL normalises hostnames to lowercase.
   const SENTINEL = 'xwildcardx'
   const parsed = new URL(pattern.replaceAll('*', SENTINEL))
+
   return new URLPattern({
+    // Remove `:` from URL protocol
     protocol: parsed.protocol.slice(0, -1),
+    // Ensures `*` in hostname only validates one level of subdomain
     hostname: parsed.hostname.replaceAll(SENTINEL, ':_wildcard'),
     port: parsed.port,
+    // Ensures that pattern without path do not match any path unless `/*` is explicit
     pathname: parsed.pathname.replaceAll(SENTINEL, '*'),
     search: '*',
     hash: '*',
