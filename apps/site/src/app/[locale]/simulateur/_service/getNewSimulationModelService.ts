@@ -19,7 +19,7 @@ export async function getNewSimulationModelService({
   locale: Locale
   mode?: SimulationMode
 }): Promise<Model> {
-  const { region: regionParam, PRNumberParam } = await searchParams
+  const { region: regionParam, PR: PRNumberParam } = await searchParams
 
   let userRegion: UserRegion | undefined
   let PRNumber: string | undefined

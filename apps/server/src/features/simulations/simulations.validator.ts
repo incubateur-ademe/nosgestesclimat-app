@@ -10,7 +10,8 @@ import { LoginDto } from '../authentication/authentication.validator.ts'
 import { PublicPollParams } from '../organisations/organisations.validator.ts'
 import { UserParams } from '../users/users.validator.ts'
 
-const MODEL_REGEX = /^[A-Z]+-[a-z]+-(pr-\d+|\d+\.\d+\.\d+(-[\w.]+)?)$/
+const MODEL_REGEX =
+  /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
 
 const SimulationParams = v.strictObject({
   simulationId: v.pipe(v.string(), v.uuid()),
