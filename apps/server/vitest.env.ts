@@ -1,7 +1,7 @@
 export default () => {
-  process.env.APP_ENV = 'test'
   process.env.AGIR_URL = 'https://api.agir.com'
   process.env.AGIR_API_KEY = 'mySuperTestAgirSecret'
+  process.env.APP_ENV = 'test'
   process.env.BREVO_URL = 'https://api.brevo.com'
   process.env.BREVO_API_KEY = 'mySuperTestBrevoSecret'
   process.env.CONNECT_URL = 'http://connect.fr'
@@ -10,6 +10,7 @@ export default () => {
   process.env.JOB_SECRET = 'mySuperTestJobSecret'
   process.env.JWT_SECRET = 'mySuperTestJwtSecret'
   process.env.MATOMO_BETA_TOKEN = 'mySuperTestMatomoBetaToken'
+  process.env.ORIGIN = 'https://nosgestesclimat.test'
   process.env.TWO_TONS_URL = 'https://api.two-tons.com'
   process.env.TWO_TONS_BEARER_TOKEN = 'mySuperTestTwoTonsSecret'
   process.env.SCALEWAY_SECRET_ACCESS_KEY = 'mySuperTestScalewaySecretAccessKey'
