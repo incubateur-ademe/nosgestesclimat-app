@@ -72,18 +72,18 @@ export const exportSituation = async (
       }
     }
 
-    const { success, output: data } = v.safeParse(TwoTonsFallbackSchema, {
-      redirect_url: params['fallback'],
-    })
+    if (params['fallback']) {
+      const { success, output: data } = v.safeParse(TwoTonsFallbackSchema, {
+        redirect_url: params['fallback'],
+      })
 
-    if (success) {
+      if (!success) {
+        throw new InvalidFallbackURLError()
+      }
+
       return {
         redirectUrl: data.redirect_url,
       }
-    }
-
-    if (typeof params['fallback'] === 'string') {
-      throw new InvalidFallbackURLError()
     }
 
     throw e
