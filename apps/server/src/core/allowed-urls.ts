@@ -11,9 +11,22 @@ function hostToRegex(host: string): string {
   return host.split('*').map(escapeRegex).join('[^.]+')
 }
 
-// * matches any path characters including /
-function pathToRegex(path: string): string {
-  return path.split('*').map(escapeRegex).join('.*')
+function patternToURLPattern(pattern: string): URLPattern {
+  // Substitute * with a sentinel so new URL() can parse the pattern string,
+  // then restore wildcards per component:
+  //   hostname → :_wildcard  (named group: one DNS label, no dots — same as [^.]+)
+  //   pathname → *           (any chars including /)
+  // SENTINEL must be all-lowercase; URL normalises hostnames to lowercase.
+  const SENTINEL = 'xwildcardx'
+  const parsed = new URL(pattern.replaceAll('*', SENTINEL))
+  return new URLPattern({
+    protocol: parsed.protocol.slice(0, -1),
+    hostname: parsed.hostname.replaceAll(SENTINEL, ':_wildcard'),
+    port: parsed.port,
+    pathname: parsed.pathname.replaceAll(SENTINEL, '*'),
+    search: '*',
+    hash: '*',
+  })
 }
 
 /**
@@ -35,23 +48,17 @@ export function wildcardUrlsToCorsOrigins(
   })
 }
 
-function wildcardPatternToRegex(pattern: string): RegExp {
-  const { protocol, host, path } = parseUrlPattern(pattern)
-  return new RegExp(`^${protocol}${hostToRegex(host)}${pathToRegex(path)}$`)
-}
-
 export function isSafeRedirectUrl(url: string, validUrls: string[]): boolean {
   try {
-    const parsedUrl = new URL(url)
-    const normalized = `${parsedUrl.protocol}//${parsedUrl.host}${parsedUrl.pathname}`
-    return validUrls.some((pattern) => {
-      try {
-        return wildcardPatternToRegex(pattern).test(normalized)
-      } catch {
-        return false
-      }
-    })
+    new URL(url)
   } catch {
     return false
   }
+  return validUrls.some((pattern) => {
+    try {
+      return patternToURLPattern(pattern).test(url)
+    } catch {
+      return false
+    }
+  })
 }
