@@ -1,4 +1,5 @@
 export default () => {
+  process.env.APP_ENV = 'test'
   process.env.AGIR_URL = 'https://api.agir.com'
   process.env.AGIR_API_KEY = 'mySuperTestAgirSecret'
   process.env.BREVO_URL = 'https://api.brevo.com'
