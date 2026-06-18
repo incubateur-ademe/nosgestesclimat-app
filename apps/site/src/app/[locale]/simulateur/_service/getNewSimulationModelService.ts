@@ -22,7 +22,7 @@ export async function getNewSimulationModelService({
 }): Promise<Model> {
   const {
     region: regionParam,
-    PRNumberParam,
+    PR: PRNumberParam,
     mode: modeParam,
   } = await searchParams
 
