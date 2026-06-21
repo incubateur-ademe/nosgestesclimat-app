@@ -865,8 +865,8 @@ entries:
   actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
-  actions.publicListPage.title: J'agis pour le climat, pas à pas
-  actions.publicListPage.description: Choisissez les actions qui vous semblent atteignables et lancez-vous !
+  actions.publicListPage.title: J’agis pour le climat
+  actions.publicListPage.description: Retrouvez ci-dessous toutes les actions, individuelles ou collectives, qui comptent pour le climat. Pour le moment, elles sont génériques. Pour personnaliser ces recommandations d’actions (pertinence et calcul d’impact selon votre situation), il suffit de faire le test !
   actions.publicListPage.metaTitle: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat
   actions.publicListPage.metaDescription: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
   actions.detailPage.404.title: Action non trouvée
