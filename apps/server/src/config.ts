@@ -1,6 +1,5 @@
 import dotenv from 'dotenv'
 import * as v from 'valibot'
-import { wildcardUrlsToCorsOrigins } from './core/allowed-urls.ts'
 
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ quiet: true })
@@ -269,7 +268,5 @@ const ALLOWED_ORIGINS_BY_APP_ENV: Record<AppEnv, string[]> = {
 
 export const allowedOrigins: string[] =
   ALLOWED_ORIGINS_BY_APP_ENV[config.app.appEnv] ?? []
-
-export const origin = wildcardUrlsToCorsOrigins(allowedOrigins)
 
 export const allowedRedirectUrls = allowedOrigins.map((o) => `${o}/*`)
