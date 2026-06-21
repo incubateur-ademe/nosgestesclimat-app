@@ -49,7 +49,26 @@ export default async function PublicActionsCatalogue({
           d’impact selon votre situation), il suffit de faire le test !
         </Trans>
       }
-      cta={<CTAButtons locale={locale} withRestart />}
+      cta={
+        <>
+          <h2 className="mb-0 text-2xl/normal font-medium">
+            <Trans locale={locale} i18nKey="actions.publicListPage.cta.title">
+              Connaissez-vous votre empreinte carbone ?
+            </Trans>
+          </h2>
+          <p className="mb-8 text-base/normal">
+            <Trans
+              locale={locale}
+              i18nKey="actions.publicListPage.cta.description">
+              Passez le simulateur en 10 minutes et découvrez les actions
+              personnalisées qui auront le plus d'impact sur votre empreinte.
+            </Trans>
+          </p>
+          <div className="flex items-start">
+            <CTAButtons locale={locale} withRestart />
+          </div>
+        </>
+      }
       topActions={actionsCatalogue.topActions}
       actions={actionsCatalogue.actions}
       themes={themes}
