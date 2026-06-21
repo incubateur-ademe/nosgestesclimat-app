@@ -263,7 +263,7 @@ const ALLOWED_ORIGINS_BY_APP_ENV: Record<AppEnv, string[]> = {
   development: ['http://localhost:3000', 'https://localhost:3000'],
   test: ['https://nosgestesclimat.test'],
   preproduction: ['https://preprod.nosgestesclimat.fr'],
-  review: ['https://nosgestesclimat-*.osc-fr1.scalingo.io'],
+  review: ['https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io'],
   production: ['https://nosgestesclimat.fr'],
 }
 

@@ -181,6 +181,21 @@ describe('isSafeRedirectUrl', () => {
         ])
       ).toBe(false)
     })
+
+    test('prefixed wildcard', () => {
+      expect(
+        isSafeRedirectUrl(
+          'https://nosgestesclimat-site-preprod-pr123.osc-fr1.scalingo.io/',
+          ['https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io/']
+        )
+      ).toBe(true)
+      expect(
+        isSafeRedirectUrl(
+          'https://nosgestesclimat-site-preprod-123.osc-fr1.scalingo.io/',
+          ['https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io/']
+        )
+      ).toBe(false)
+    })
   })
 
   describe('path wildcard (*)', () => {
