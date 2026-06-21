@@ -47,8 +47,6 @@ export default function ActionsPage({
           </p>
         </div>
 
-        {cta && <div className="mb-10">{cta}</div>}
-
         {topActions && topActions.length > 0 && (
           <>
             <HighestImpactActionsSection
@@ -59,6 +57,13 @@ export default function ActionsPage({
             />
             <Separator variant="full" className="my-10 hidden md:block" />
           </>
+        )}
+
+        {cta && (
+          <section>
+            {cta}
+            <Separator variant="full" className="my-10 hidden md:block" />
+          </section>
         )}
 
         <div className="relative flex flex-col gap-5 md:gap-10">

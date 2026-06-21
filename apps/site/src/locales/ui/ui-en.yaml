@@ -2199,3 +2199,7 @@ entries:
   actions.publicListPage.title.lock: J’agis pour le climat
   actions.publicListPage.metaTitle: What I’m doing to reduce my carbon footprint - Nos Gestes Climat
   actions.publicListPage.metaTitle.lock: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat
+  actions.publicListPage.cta.title: Do you know what your carbon footprint is?
+  actions.publicListPage.cta.title.lock: Connaissez-vous votre empreinte carbone ?
+  actions.publicListPage.cta.description: Take the 10-minute simulator and discover the personalised actions that will have the greatest impact on your carbon footprint.
+  actions.publicListPage.cta.description.lock: Passez le simulateur en 10 minutes et découvrez les actions personnalisées qui auront le plus d'impact sur votre empreinte.
