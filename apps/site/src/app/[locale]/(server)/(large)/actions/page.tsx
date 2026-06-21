@@ -38,12 +38,15 @@ export default async function PublicActionsCatalogue({
     <ActionsPage
       title={
         <Trans locale={locale} i18nKey="actions.publicListPage.title">
-          J'agis pour le climat, pas à pas
+          J’agis pour le climat
         </Trans>
       }
       description={
         <Trans locale={locale} i18nKey="actions.publicListPage.description">
-          Choisissez les actions qui vous semblent atteignables et lancez-vous !
+          Retrouvez ci-dessous toutes les actions, individuelles ou collectives,
+          qui comptent pour le climat. Pour le moment, elles sont génériques.
+          Pour personnaliser ces recommandations d’actions (pertinence et calcul
+          d’impact selon votre situation), il suffit de faire le test !
         </Trans>
       }
       cta={<CTAButtons locale={locale} withRestart />}
