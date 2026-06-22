@@ -16,7 +16,7 @@ export interface Testimony {
   author: {
     name: string
     job: string
-    avatarSrc: string
+    avatarSrc?: string
   }
 }
 
@@ -61,20 +61,24 @@ export interface EventPageData {
 export function getEventPageData(
   t: (key: string, defaultValue: string) => string
 ): EventPageData {
+  const currentValue = 0
+  const targetValue = 50000
+
   return {
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/journee_de_la_terre_2026_8ead81e894.svg',
     dynamicCounter: {
-      currentValue: 0,
-      targetValue: 50000,
-      progressPercentage: 0,
+      currentValue,
+      targetValue,
+      progressPercentage:
+        targetValue > 0 ? (currentValue / targetValue) * 100 : 0,
       primaryCtaHref: ORGANISATION_SIGN_IN_PATH,
       secondaryCtaHref: '/',
     },
     statisticsValues: {
-      simulations: 18540,
-      actions: 56,
-      organisations: 352,
+      simulations: 0,
+      actions: 0,
+      organisations: 0,
     },
     podiumItems: [
       {
@@ -101,7 +105,7 @@ export function getEventPageData(
             'Impact Officer chez HomeExchange'
           ),
           avatarSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/elisa_papin_big_a21e5928cf.png',
         },
       },
       {
@@ -116,7 +120,7 @@ export function getEventPageData(
             'Responsable des relations avec les publics du Pass Culture'
           ),
           avatarSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/theo_gasquet_big_780f9fce63.png',
         },
       },
       {
@@ -127,8 +131,26 @@ export function getEventPageData(
         author: {
           name: 'Jean-Noël Dronneau',
           job: 'Epsii',
-          avatarSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+        },
+      },
+      {
+        text: t(
+          'event.testimonies.4.text',
+          "J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect."
+        ),
+        author: {
+          name: 'Anonyme',
+          job: 'test collectif réalisé par l’organisation Pass Culture',
+        },
+      },
+      {
+        text: t(
+          'event.testimonies.5.text',
+          'J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.'
+        ),
+        author: {
+          name: 'Anonyme',
+          job: 'test collectif réalisé par l’organisation Pass Culture',
         },
       },
     ],

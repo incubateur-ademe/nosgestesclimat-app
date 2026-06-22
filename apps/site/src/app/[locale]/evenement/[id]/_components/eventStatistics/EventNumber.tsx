@@ -11,19 +11,19 @@ interface Props {
 
 export default function EventNumber({ value, text, locale }: Props) {
   const [animatedValue, setAnimatedValue] = useState(0)
-  const [hasAnimated, setHasAnimated] = useState(false)
+  const hasAnimatedRef = useRef(false)
   const ref = useRef<HTMLDivElement>(null)
   const numberFormatter = useRef(new Intl.NumberFormat(locale))
   const rafRef = useRef<number>(0)
 
   useEffect(() => {
     const element = ref.current
-    if (!element || hasAnimated) return
+    if (!element || hasAnimatedRef.current) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setHasAnimated(true)
+          hasAnimatedRef.current = true
 
           const duration = 1000
           const startTime = performance.now()
@@ -49,7 +49,7 @@ export default function EventNumber({ value, text, locale }: Props) {
       observer.disconnect()
       cancelAnimationFrame(rafRef.current)
     }
-  }, [hasAnimated, value])
+  }, [value])
 
   return (
     <div ref={ref} className="flex-1 text-center text-white">

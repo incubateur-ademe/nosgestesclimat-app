@@ -17,7 +17,10 @@ export default function TestimonyCard({ testimony }: { testimony: Testimony }) {
       <div className="flex items-center gap-3">
         <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
           <Image
-            src={testimony.author.avatarSrc}
+            src={
+              testimony.author.avatarSrc ??
+              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/user_28130c4ba4.png'
+            }
             alt={testimony.author.name}
             fill
             className="object-cover"
