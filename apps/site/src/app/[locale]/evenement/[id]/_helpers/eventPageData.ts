@@ -65,9 +65,9 @@ export function getEventPageData(
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/journee_de_la_terre_2026_8ead81e894.svg',
     dynamicCounter: {
-      currentValue: 18501,
+      currentValue: 0,
       targetValue: 50000,
-      progressPercentage: 46,
+      progressPercentage: 0,
       primaryCtaHref: ORGANISATION_SIGN_IN_PATH,
       secondaryCtaHref: '/',
     },

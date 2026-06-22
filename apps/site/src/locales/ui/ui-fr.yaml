@@ -1428,8 +1428,8 @@ entries:
   event.ctas.heading: Prêt·e à rejoindre l'aventure ?
   event.detail.alt: 22 avril, Jour de la terre avec Nos Gestes Climat
   event.detail.dates: Du 18 septembre au 8 octobre 2026
-  event.detail.title: La Semaine Européenne du<1></1>Développement<3></3>Durable
-  event.dynamicCounter.primaryCta: J'engage mon organisation
+  event.detail.title: Semaine Européenne du<1></1>Développement<3></3>Durable
+  event.dynamicCounter.primaryCta: Je mobilise mon organisation
   event.dynamicCounter.promise: Résultats en 10 minutes — 100% gratuit
   event.dynamicCounter.secondaryCta: Je participe individuellement
   event.dynamicCounter.target.text: calculs d'empreinte carbone
@@ -1451,7 +1451,7 @@ entries:
   event.testimonies.2.author.job: Responsable des relations avec les publics du Pass Culture
   event.testimonies.2.text: La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d'initier des discussions importantes.
   event.testimonies.3.author.job: Responsable des relations avec les publics du Pass Culture
-  event.testimonies.3.text: La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d'initier des discussions importantes.
+  event.testimonies.3.text: À titre privé nous avons fait organiser un petit concours interne avec mes enfants. À titre professionnel, dans le cadre de l’amélioration de notre bilan carbone, nous avons utilisé cet outil afin de sensibiliser nos collaborateurs sur l’impact de leur quotidien.
   event.testimonies.subtitle: Ils ont franchi le pas
   event.testimonies.title: Témoignages
   event.tutorial.carousel.firstSlide: Ceci est la première diapositive
@@ -1480,3 +1480,5 @@ entries:
   event.statistics.second: actions disponibles pour réduire son empreinte
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
+  event.podium.list.item.score.big: calculs d'empreinte
+  event.podium.list.item.score.small: tests

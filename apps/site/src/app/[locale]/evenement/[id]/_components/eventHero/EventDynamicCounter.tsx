@@ -24,7 +24,7 @@ export default function EventDynamicCounter({
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
-    <div className="flex-1 rounded-t-3xl rounded-b-lg border border-slate-200 p-6 shadow-sm md:rounded-3xl lg:p-8">
+    <div className="flex-1 rounded-3xl border border-slate-200 p-6 shadow-sm lg:p-8">
       <span className="mb-4 flex items-center text-green-700">
         <span
           aria-hidden
@@ -77,7 +77,7 @@ export default function EventDynamicCounter({
           size="xl"
           href={primaryCtaHref}>
           <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
-            J'engage mon organisation
+            Je mobilise mon organisation
           </Trans>
         </ButtonLink>
 

@@ -2110,7 +2110,7 @@ entries:
   event.statistics.first: carbon footprint calculations already carried out
   event.statistics.first.lock: calculs d'empreinte carbone déjà réalisés
   event.detail.title: European Week for<1></1>Sustainable Development<3></3>
-  event.detail.title.lock: La Semaine Européenne du<1></1>Développement<3></3>Durable
+  event.detail.title.lock: Semaine Européenne du<1></1>Développement<3></3>Durable
   event.statistics.third.link: Join them!
   event.statistics.third.link.lock: Rejoignez-les !
   event.ctas.card1.buttonLabel: I'm taking part
@@ -2121,8 +2121,8 @@ entries:
   event.testimonies.3.author.job.lock: Responsable des relations avec les publics du Pass Culture
   event.dynamicCounter.promise: Results in 10 minutes — 100% free
   event.dynamicCounter.promise.lock: Résultats en 10 minutes — 100% gratuit
-  event.dynamicCounter.primaryCta: I commit my organisation
-  event.dynamicCounter.primaryCta.lock: J'engage mon organisation
+  event.dynamicCounter.primaryCta: I am mobilising my organisation
+  event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
   event.detail.dates: From 18 September to 8 October 2026
   event.detail.dates.lock: Du 18 septembre au 8 octobre 2026
   event.tutorial.org.1.description: Set up your campaign in just a few clicks and define your objectives.
@@ -2149,8 +2149,8 @@ entries:
   event.hero.title.description.lock: "A l'occasion de la Semaine européenne du développement durable, relevez le défi avec votre organisation : <2>mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement</2>"
   event.testimonies.2.text: The ‘Nos Gestes Climat’ campaign really helped to bring the topic to life on the Pass Culture app, as well as internally, where nearly a third of the 170 employees took part. The format was really appreciated by everyone and helped to spark important discussions.
   event.testimonies.2.text.lock: La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d'initier des discussions importantes.
-  event.testimonies.3.text: The ‘Nos Gestes Climat’ campaign really helped to bring the topic to life on the Pass Culture app, as well as internally, where nearly a third of the 170 staff members took part. The format was really appreciated by everyone and helped to spark important discussions.
-  event.testimonies.3.text.lock: La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d'initier des discussions importantes.
+  event.testimonies.3.text: On a personal level, we organised a small internal competition with my children. On a professional level, as part of our efforts to improve our carbon footprint, we used this tool to raise awareness amongst our staff about the impact of their daily lives.
+  event.testimonies.3.text.lock: À titre privé nous avons fait organiser un petit concours interne avec mes enfants. À titre professionnel, dans le cadre de l’amélioration de notre bilan carbone, nous avons utilisé cet outil afin de sensibiliser nos collaborateurs sur l’impact de leur quotidien.
   event.testimonies.1.text: 'We invited our community of travellers to use Nos Gestes Climat to calculate their carbon footprint. It was a simple and accessible way to raise awareness without making people feel guilty. The result: nearly 4,700 participants. A real catalyst for sparking a conversation about more responsible tourism.'
   event.testimonies.1.text.lock: "Nous avons proposé à notre communauté de voyageurs d'utiliser Nos Gestes Climat pour calculer leur empreinte écologique. C'était une manière simple et accessible de sensibiliser sans culpabiliser. Résultat : près de 4 700 participations. Un vrai levier pour initier le dialogue sur un tourisme plus responsable."
   event.podium.title: Live rankings of organisations
@@ -2169,3 +2169,7 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
+  event.podium.list.item.score.big: footprint calculations
+  event.podium.list.item.score.big.lock: calculs d'empreinte
+  event.podium.list.item.score.small: tests
+  event.podium.list.item.score.small.lock: tests

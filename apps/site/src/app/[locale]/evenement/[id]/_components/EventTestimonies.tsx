@@ -34,6 +34,7 @@ export default function EventTestimonies({ locale, testimonies }: Props) {
           className="-mx-4 md:-mx-3"
           innerClassName="py-4 px-4 lg:px-3"
           slideClassName="w-full max-w-none sm:w-full md:w-1/2"
+          showMobileNav
           slidesPerGroupDesktop={2}>
           {testimonies.map((testimony, index) => (
             <TestimonyCard key={index} testimony={testimony} />

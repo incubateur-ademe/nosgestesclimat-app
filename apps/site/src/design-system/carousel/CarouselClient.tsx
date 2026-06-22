@@ -58,7 +58,7 @@ export default function CarouselClient({
         ref={nextButton}
         className={twMerge(
           !isInitialized && 'pointer-events-none opacity-0',
-          'right-2 md:-right-2 md:translate-x-1/2 xl:-right-5'
+          'right-2 md:-right-2 md:translate-x-1/2 xl:-right-7'
         )}>
         <ChevronRight />
       </NavigationButton>
