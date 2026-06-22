@@ -7,13 +7,7 @@ import { createContext, useEffect, useState } from 'react'
 import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
 import { useStoragePermissions } from './_hooks/useStoragePermissions'
 import StorageAccessOverlay from './iframeOptionsContext/StorageAccessOverlay'
-
-const STORAGE_KEYS = {
-  IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
-  IFRAME_ONLY_SIMULATION: 'ngc-iframe-only-simulation',
-  IFRAME_REGION: 'ngc-iframe-region',
-  IFRAME_LANG: 'ngc-iframe-lang',
-} as const
+import { STORAGE_KEYS } from './iframeOptionsContext/storageKeys'
 
 export const BODY_ID = 'ngc-body'
 
@@ -42,52 +36,59 @@ export const IframeOptionsProvider = ({
   // Special case : Safari doesn't handle cookies in iframes
   const { needPermission, askForPermission } = useStoragePermissions()
 
-  const [isIframeShareData, setIsIframeShareData] = useState(() => {
-    if (!isIframe) return false
-    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
-  })
-  const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(() => {
-    if (!isIframe) return false
-    return (
-      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
-    )
-  })
-  const [iframeLang, setIframeLang] = useState<string | null>(() => {
-    if (!isIframe) return null
-    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
-  })
-  const [iframeRegion, setIframeRegion] = useState<string | null>(() => {
-    if (!isIframe) return null
-    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
-  })
+  // Initialized to false/null because during SSR getIsIframe() returns false
+  // and the real values are only known after client-side hydration.
+  const [isIframeShareData, setIsIframeShareData] = useState(false)
+  const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(false)
+  const [iframeLang, setIframeLang] = useState<string | null>(null)
+  const [iframeRegion, setIframeRegion] = useState<string | null>(null)
 
-  // Read iframe parameters from URL and persist to sessionStorage
+  // Read iframe parameters from URL params first, then fallback to sessionStorage.
+  // URL params take priority; sessionStorage persists across navigations.
   useEffect(() => {
     if (!isIframe) return
 
     const urlShareData = searchParams.get('shareData') === 'true'
-    if (urlShareData) {
+    const storedShareData =
+      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
+    if (urlShareData || storedShareData) {
       setIsIframeShareData(true)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
+      if (urlShareData) {
+        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
+      }
     }
 
     const urlOnlySimulation = searchParams.get('onlySimulation') === 'true'
-    if (urlOnlySimulation) {
+    const storedOnlySimulation =
+      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
+    if (urlOnlySimulation || storedOnlySimulation) {
       setIsIframeOnlySimulation(true)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
+      if (urlOnlySimulation) {
+        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
+      }
     }
 
-    const urlRegion = searchParams.get('region')
-    if (urlRegion) {
-      setIframeRegion(urlRegion)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, urlRegion)
+    const region = searchParams.get('region')
+    const storedRegion = safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
+    const resolvedRegion = region ?? storedRegion
+    if (resolvedRegion) {
+      setIframeRegion(resolvedRegion)
+      if (region) {
+        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, region)
+      }
     }
 
-    const urlLang = searchParams.get('lang')
-    if (urlLang) {
-      setIframeLang(urlLang)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
+    const lang = searchParams.get('lang')
+    const storedLang = safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
+    const resolvedLang = lang ?? storedLang
+    if (resolvedLang) {
+      setIframeLang(resolvedLang)
+      if (lang) {
+        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, lang)
+      }
     }
+
+    safeSessionStorage.setItem(STORAGE_KEYS.IFRAME, 'true')
   }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const isAllowedToBypassConsentDataShare =
