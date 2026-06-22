@@ -31,7 +31,7 @@ export type ButtonProps = {
   title?: string
   form?: string
   ref?: RefObject<HTMLButtonElement | null>
-  showLoadingOnClick?: boolean
+  showLoadingOnClickWhilePending?: boolean
 } & PropsWithChildren
 
 export const colorClassNames = {
@@ -90,13 +90,13 @@ export default function Button({
   title,
   form,
   ref,
-  showLoadingOnClick,
+  showLoadingOnClickWhilePending,
   ...props
 }: PropsWithChildren<ButtonProps & HtmlHTMLAttributes<HTMLButtonElement>>) {
   const { isDisabled, showLoader, startTransition } = useButtonState({
     disabled,
     loading,
-    showLoadingOnClick,
+    showLoadingOnClick: showLoadingOnClickWhilePending,
   })
 
   return (

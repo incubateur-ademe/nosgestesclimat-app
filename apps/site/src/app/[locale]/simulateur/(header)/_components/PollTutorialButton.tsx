@@ -55,7 +55,7 @@ export default function PollTutorialButton({
     return (
       <>
         <Button
-          showLoadingOnClick
+          showLoadingOnClickWhilePending
           size="lg"
           aria-describedby="subtitle-cta"
           data-testid="youth-tutorial-start-button"
@@ -77,7 +77,7 @@ export default function PollTutorialButton({
 
   return (
     <Button
-      showLoadingOnClick
+      showLoadingOnClickWhilePending
       onClick={createSimulation}
       data-testid="skip-tutorial-button"
       className="min-w-42!">
