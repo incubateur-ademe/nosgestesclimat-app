@@ -11,9 +11,23 @@ runs:
     - name: Setup
       uses: ./.github/actions/setup
 
+    - name: Disk + cache diag
+      shell: bash
+      run: |
+        df -h /
+        df -h "${TMPDIR:-/tmp}"
+        ls -la ~/.cache/ms-playwright 2>/dev/null || echo "no cache dir yet"
+
     - name: Install Playwright
       shell: bash
       working-directory: ./apps/site
       env:
         DEBUG: pw:*
-      run: timeout 1000 pnpm playwright install ${{ inputs.browser }} ${{ inputs.browser == 'webkit' && '--with-deps' || '' }}
+      run: |
+        rm -rf ~/.cache/ms-playwright/__dirlock 2>/dev/null || true
+        for i in 1 2 3; do
+          timeout 300 pnpm playwright install ${{ inputs.browser }} ${{ inputs.browser == 'webkit' && '--with-deps' || '' }} && exit 0
+          echo "attempt $i stalled at extraction, clearing partial + retrying…"
+          rm -rf ~/.cache/ms-playwright
+        done
+        exit 1
