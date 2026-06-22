@@ -1,3 +1,4 @@
+import { SIMULATION_MODES } from '@/constants/model/simulationModes'
 import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import {
   getCurrentModel,
@@ -13,13 +14,17 @@ import type { SearchParams } from 'next/dist/server/request/search-params'
 export async function getNewSimulationModelService({
   searchParams,
   locale,
-  mode = 'standard',
+  simulationMode = 'standard',
 }: {
   searchParams: Promise<SearchParams>
   locale: Locale
-  mode?: SimulationMode
+  simulationMode?: SimulationMode
 }): Promise<Model> {
-  const { region: regionParam, PR: PRNumberParam } = await searchParams
+  const {
+    region: regionParam,
+    PR: PRNumberParam,
+    mode: modeParam,
+  } = await searchParams
 
   let userRegion: UserRegion | undefined
   let PRNumber: string | undefined
@@ -34,13 +39,21 @@ export async function getNewSimulationModelService({
     userRegion = (await getAnonSession()).region ?? (await getGeolocation())
   }
 
+  if (
+    modeParam &&
+    typeof modeParam === 'string' &&
+    SIMULATION_MODES.includes(modeParam)
+  ) {
+    simulationMode = modeParam as SimulationMode
+  }
+
   if (PRNumberParam && typeof PRNumberParam === 'string') {
     PRNumber = PRNumberParam
   }
 
   return getCurrentModel({
     userRegion,
-    mode,
+    mode: simulationMode,
     locale,
     PRNumber,
   })

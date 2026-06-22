@@ -1,5 +1,6 @@
 import type { PollDefaultAdditionalQuestion } from '@/constants/organisations/pollDefaultAdditionalQuestion'
 import { ORGANISATION_URL } from '@/constants/urls/main'
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import type { OrganisationPoll } from '@/types/organisations'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
@@ -10,7 +11,7 @@ interface PollToCreate {
   expectedNumberOfParticipants?: number
   defaultAdditionalQuestions?: PollDefaultAdditionalQuestion[]
   customAdditionalQuestions?: { question: string; isEnabled: boolean }[]
-  mode?: 'standard' | 'scolaire'
+  mode?: SimulationMode
 }
 
 export function useCreatePoll(organisationIdOrSlug: string) {
