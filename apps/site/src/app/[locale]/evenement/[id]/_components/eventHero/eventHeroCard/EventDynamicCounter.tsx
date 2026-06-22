@@ -1,8 +1,8 @@
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import type { Locale } from '@/i18nConfig'
+import CircularProgressbar from '../CircularProgressbar'
 import { COUNTER_BLOCK_ANIMATION_TOTAL } from './AnimatedCounterBlock'
-import CircularProgressbar from './CircularProgressbar'
 
 interface Props {
   locale: Locale

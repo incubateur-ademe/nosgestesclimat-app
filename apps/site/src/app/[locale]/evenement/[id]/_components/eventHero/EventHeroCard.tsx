@@ -1,7 +1,7 @@
 import type { Locale } from '@/i18nConfig'
-import AnimatedCounterBlock from './AnimatedCounterBlock'
-import EventCountdown from './EventCountdown'
-import EventDynamicCounter from './EventDynamicCounter'
+import AnimatedCounterBlock from './eventHeroCard/AnimatedCounterBlock'
+import EventCountdown from './eventHeroCard/EventCountdown'
+import EventDynamicCounter from './eventHeroCard/EventDynamicCounter'
 
 interface Props {
   locale: Locale
