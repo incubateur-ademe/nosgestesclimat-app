@@ -2,6 +2,7 @@
 
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
+import { postMessageToIntegrator } from '@/helpers/iframe/postMessageToIntegrator'
 import { shareDataWithIntegrator } from '@/helpers/iframe/shareDataWithIntegrator'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
@@ -45,10 +46,8 @@ export default function IframeDataShareModal({ computedResults }: Props) {
       messageType: 'ngc-iframe-share',
       error: 'The user refused to share his result.',
     }
-    window.parent.postMessage(message, '*')
-    if (window.top && window.top !== window) {
-      window.top.postMessage(message, '*')
-    }
+    postMessageToIntegrator(message)
+
     setIsOpen(false)
     resetOverflow()
   }
