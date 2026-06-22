@@ -57,7 +57,7 @@ export default function TransitionButtons() {
           'common.previousExtended',
           'Précédent, revenir à la page précédente'
         )}
-        isClickableOnce
+        showLoadingOnClick
         disabled={isPending}
         href={SIMULATOR_PATH}
         className="h-full w-14 md:w-auto"

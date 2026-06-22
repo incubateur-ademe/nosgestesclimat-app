@@ -33,7 +33,7 @@ interface Props {
   target?: string
   loading?: boolean
   disabled?: boolean
-  isClickableOnce?: boolean
+  showLoadingOnClick?: boolean
 }
 
 export default function ButtonLink({
@@ -49,13 +49,13 @@ export default function ButtonLink({
   target = '_self',
   loading,
   disabled,
-  isClickableOnce = false,
+  showLoadingOnClick = false,
   ...props
 }: PropsWithChildren<Props & HtmlHTMLAttributes<HTMLAnchorElement>>) {
   const { isDisabled, showLoader, clickOnce } = useButtonState({
     disabled,
     loading,
-    isClickableOnce,
+    showLoadingOnClick,
   })
 
   return (
@@ -68,7 +68,7 @@ export default function ButtonLink({
         }
 
         // Auto-disable link after click
-        if (isClickableOnce) clickOnce()
+        if (showLoadingOnClick) clickOnce()
 
         if (onClick) {
           onClick(e)

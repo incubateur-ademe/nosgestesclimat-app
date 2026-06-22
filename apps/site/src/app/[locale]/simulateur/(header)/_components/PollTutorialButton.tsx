@@ -41,7 +41,7 @@ export default function PollTutorialButton({
         </p>
 
         <ButtonLink
-          isClickableOnce
+          showLoadingOnClick
           href={`/organisations/${poll.organisation.slug}/campagnes/${poll.slug}`}>
           <Trans locale={locale} i18nKey="common.seeResults">
             Voir les résultats
@@ -55,7 +55,7 @@ export default function PollTutorialButton({
     return (
       <>
         <Button
-          isClickableOnce
+          showLoadingOnClick
           size="lg"
           aria-describedby="subtitle-cta"
           data-testid="youth-tutorial-start-button"
@@ -77,7 +77,7 @@ export default function PollTutorialButton({
 
   return (
     <Button
-      isClickableOnce
+      showLoadingOnClick
       onClick={createSimulation}
       data-testid="skip-tutorial-button"
       className="min-w-42!">

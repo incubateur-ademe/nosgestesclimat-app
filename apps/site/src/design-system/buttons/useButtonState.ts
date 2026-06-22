@@ -1,25 +1,27 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 
 export function useButtonState({
   disabled,
   loading,
-  isClickableOnce,
+  showLoadingOnClick,
 }: {
   disabled?: boolean
   loading?: boolean
-  isClickableOnce?: boolean
+  showLoadingOnClick?: boolean
 }) {
   const [isClicked, setIsClicked] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
-  const isDisabled = disabled || loading || (isClickableOnce && isClicked)
+  const isDisabled =
+    disabled || loading || (showLoadingOnClick && (isPending || isClicked))
 
-  const showLoader = loading || (isClickableOnce && isClicked)
+  const showLoader = loading || (showLoadingOnClick && (isPending || isClicked))
 
   const clickOnce = useCallback(() => {
-    if (isClickableOnce) setIsClicked(true)
-  }, [isClickableOnce])
+    if (showLoadingOnClick) setIsClicked(true)
+  }, [showLoadingOnClick])
 
-  return { isDisabled, showLoader, clickOnce }
+  return { isDisabled, showLoader, clickOnce, isPending, startTransition }
 }

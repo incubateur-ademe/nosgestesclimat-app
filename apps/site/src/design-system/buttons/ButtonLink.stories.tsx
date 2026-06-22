@@ -34,7 +34,7 @@ const meta: Meta<typeof ButtonLink> = {
       description:
         'Whether the link is in a loading state (shows a spinner and auto-disables)',
     },
-    isClickableOnce: {
+    showLoadingOnClick: {
       control: 'boolean',
       description:
         'Auto-disables the link after the first click to prevent double navigation',
@@ -126,7 +126,7 @@ export const ClickOnce: Story = {
   args: {
     children: 'Click me once',
     href: '#',
-    isClickableOnce: true,
+    showLoadingOnClick: true,
   },
   parameters: {
     docs: {
