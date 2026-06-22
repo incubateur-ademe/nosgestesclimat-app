@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import { copyAndReadClipboard } from '../helpers/clipboard'
 import {
   getPlaywrightState,
@@ -45,7 +46,7 @@ export class Poll {
     await this.page.goto(this.url)
   }
 
-  async create(mode: 'standard' | 'scolaire' = 'standard') {
+  async create(mode: SimulationMode = 'standard') {
     // Step 1: Fill poll name and go to step 2
     await expect(this.page).toHaveURL(this.createUrl)
     await this.page.getByTestId('poll-name-input').fill(this.name)
