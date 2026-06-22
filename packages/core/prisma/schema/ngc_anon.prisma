@@ -8,6 +8,7 @@ view AnonSimulation {
   situation       Json
   foldedSteps     Json[]
   userId          String   @db.Uuid
+  user            AnonUser @relation(fields: [userId], references: [id])
   userEmail       String?
   createdAt       DateTime
   updatedAt       DateTime
@@ -18,10 +19,10 @@ view AnonSimulation {
 
 view AnonUser {
   id            String             @unique @db.Uuid
-  name          String?
   ageRange      AgeRange?
   createdAt     DateTime
   updatedAt     DateTime
+  simulations   AnonSimulation[]
   verifiedUsers AnonVerifiedUser[]
 
   @@map("User")
