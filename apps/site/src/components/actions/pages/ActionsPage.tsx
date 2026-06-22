@@ -60,9 +60,9 @@ export default function ActionsPage({
         )}
 
         {cta && (
-          <section>
+          <section className="mb-10">
             {cta}
-            <Separator variant="full" className="my-10 hidden md:block" />
+            <Separator variant="full" className="mt-10 hidden md:block" />
           </section>
         )}
 
