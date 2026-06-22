@@ -24,7 +24,6 @@ export default function EventDynamicCounter({
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
-        />
     <div className="relative flex-1 [&:has(.btn-group:hover)>div:first-child]:opacity-80">
       {/* Rainbow animated shadow */}
       <div
