@@ -83,9 +83,6 @@ describe('Given a NGC user', () => {
         .expect(StatusCodes.CREATED)
 
       expect(response.body).toEqual({
-        id: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
         expirationDate: expect.any(String),
         ...payload,
       })
@@ -209,9 +206,6 @@ describe('Given a NGC user', () => {
             .expect(StatusCodes.CREATED)
 
           expect(response.body).toEqual({
-            id: expect.any(String),
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
             expirationDate: expect.any(String),
             ...payload,
           })
@@ -270,7 +264,26 @@ describe('Given a NGC user', () => {
           })
         })
 
-        test(`Then it returns a ${StatusCodes.CONFLICT} error`, async () => {
+        test(`Then it returns a ${StatusCodes.CREATED} response without leaking that the user exists`, async () => {
+          const payload = {
+            email: user.email,
+          }
+
+          const response = await agent
+            .post(url)
+            .send(payload)
+            .query({
+              mode: VerificationCodeMode.signUp,
+            })
+            .expect(StatusCodes.CREATED)
+
+          expect(response.body).toEqual({
+            expirationDate: expect.any(String),
+            ...payload,
+          })
+        })
+
+        test('Then it does not store a verification code', async () => {
           const payload = {
             email: user.email,
           }
@@ -281,14 +294,35 @@ describe('Given a NGC user', () => {
             .query({
               mode: VerificationCodeMode.signUp,
             })
-            .expect(StatusCodes.CONFLICT)
+            .expect(StatusCodes.CREATED)
+
+          expect(await prisma.verificationCode.findMany()).toEqual([])
         })
       })
     })
 
     describe(`And ${VerificationCodeMode.signIn} mode`, () => {
       describe('And new user', () => {
-        test(`Then it returns a ${StatusCodes.CONFLICT} error`, async () => {
+        test(`Then it returns a ${StatusCodes.CREATED} response without leaking that the user does not exist`, async () => {
+          const payload = {
+            email: faker.internet.email().toLocaleLowerCase(),
+          }
+
+          const response = await agent
+            .post(url)
+            .send(payload)
+            .query({
+              mode: VerificationCodeMode.signIn,
+            })
+            .expect(StatusCodes.CREATED)
+
+          expect(response.body).toEqual({
+            expirationDate: expect.any(String),
+            ...payload,
+          })
+        })
+
+        test('Then it does not store a verification code', async () => {
           const payload = {
             email: faker.internet.email().toLocaleLowerCase(),
           }
@@ -299,7 +333,9 @@ describe('Given a NGC user', () => {
             .query({
               mode: VerificationCodeMode.signIn,
             })
-            .expect(StatusCodes.CONFLICT)
+            .expect(StatusCodes.CREATED)
+
+          expect(await prisma.verificationCode.findMany()).toEqual([])
         })
       })
 
@@ -333,9 +369,6 @@ describe('Given a NGC user', () => {
             .expect(StatusCodes.CREATED)
 
           expect(response.body).toEqual({
-            id: expect.any(String),
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
             expirationDate: expect.any(String),
             ...payload,
           })

@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import { VerificationCodeMode } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
-import { ConflictException } from '../../core/errors/ConflictException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
 import { fetchVerifiedUser } from '../users/users.repository.ts'
@@ -12,22 +11,27 @@ import { VerificationCodeCreatedEvent } from './events/VerificationCodeCreated.e
 import { createUserVerificationCode } from './verification-codes.repository.ts'
 import type { VerificationCodeCreateDto } from './verification-codes.validator.ts'
 
-const checkSignMode = async (
+/**
+ * Tells whether the requested sign mode conflicts with the current user state
+ * (signing up an existing user, or signing in a non-existing one).
+ *
+ * Returns a boolean instead of throwing so callers can fail silently and avoid
+ * revealing whether an email is already registered.
+ */
+const hasSignModeConflict = async (
   { email, mode }: { email: string; mode: VerificationCodeMode },
   { session }: { session: Session }
-) => {
+): Promise<boolean> => {
   try {
     await fetchVerifiedUser({ email }, { session, orThrow: true })
-    if (mode === VerificationCodeMode.signUp) {
-      throw new ConflictException('User already exists')
-    }
+    // User exists: only a conflict when trying to sign up
+    return mode === VerificationCodeMode.signUp
   } catch (e) {
     if (!isPrismaErrorNotFound(e)) {
       throw e
     }
-    if (mode === VerificationCodeMode.signIn) {
-      throw new ConflictException('User does not exist')
-    }
+    // User does not exist: only a conflict when trying to sign in
+    return mode === VerificationCodeMode.signIn
   }
 }
 
@@ -75,17 +79,26 @@ export const createVerificationCode = (
     mode?: VerificationCodeMode
   },
   { session: parentSession }: { session?: Session } = {}
-) => {
+): Promise<{ email: string; expirationDate: Date }> => {
+  const expirationDate = dayjs().add(1, 'hour').toDate()
   return transaction(async (session) => {
-    if (mode) {
-      await checkSignMode(
+    if (
+      mode &&
+      (await hasSignModeConflict(
         { email: verificationCodeDto.email, mode },
         { session }
-      )
+      ))
+    ) {
+      // Silent failure: return a plausible result without creating a code nor
+      // sending an email, so we never reveal whether the email is registered.
+      return {
+        email: verificationCodeDto.email,
+        expirationDate,
+      }
     }
 
     const { verificationCode, code } = await generateVerificationCode(
-      { verificationCodeDto, mode },
+      { verificationCodeDto, mode, expirationDate },
       { session }
     )
 
@@ -102,6 +115,9 @@ export const createVerificationCode = (
 
     await EventBus.once(verificationCodeCreatedEvent)
 
-    return verificationCode
+    return {
+      email: verificationCode.email,
+      expirationDate: verificationCode.expirationDate,
+    }
   }, parentSession)
 }

@@ -3,14 +3,10 @@
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
-import Alert from '@/design-system/alerts/alert/Alert'
 import type { ButtonColor } from '@/design-system/buttons/Button'
 import Form from '@/design-system/form/Form'
 import EmailInput from '@/design-system/inputs/EmailInput'
-import {
-  CREATE_VERIFICATION_CODE_ERROR,
-  useCreateVerificationCode,
-} from '@/hooks/authentication/useCreateVerificationCode'
+import { useCreateVerificationCode } from '@/hooks/authentication/useCreateVerificationCode'
 import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
@@ -97,32 +93,7 @@ export default function SendVerificationCodeForm({
         error={formErrors.email?.message}
       />
 
-      {createVerificationCodeError ===
-      false ? null : createVerificationCodeError ===
-        CREATE_VERIFICATION_CODE_ERROR.SIGNIN_USER_DOES_NOT_EXIST ? (
-        <Alert
-          type="error"
-          className="mt-4 max-w-120"
-          description={
-            <Trans i18nKey="signIn.email.error.userDoesNotExist">
-              Nous n’avons pas d’e-mail enregistré à cette adresse. Veuillez
-              vous inscrire pour accéder à votre espace.
-            </Trans>
-          }
-        />
-      ) : createVerificationCodeError ===
-        CREATE_VERIFICATION_CODE_ERROR.SIGNUP_USER_ALREADY_EXISTS ? (
-        <Alert
-          type="error"
-          className="mt-4 max-w-120"
-          description={
-            <Trans i18nKey="signIn.email.error.userAlreadyExists">
-              Vous avez déjà un compte avec cet e-mail. Merci de vous connecter
-              directement.
-            </Trans>
-          }
-        />
-      ) : (
+      {createVerificationCodeError && (
         <DefaultSubmitErrorMessage className="mt-4 max-w-120" />
       )}
     </Form>

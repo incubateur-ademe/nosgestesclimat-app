@@ -1,7 +1,6 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { config } from '../../config.ts'
-import { ConflictException } from '../../core/errors/ConflictException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import logger from '../../logger.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
@@ -37,12 +36,12 @@ router.route('/v1/').post(
         ...req.query,
       })
 
-      return res.status(StatusCodes.CREATED).json(verificationCode)
+      // Only expose email and expirationDate to avoid leaking internal data
+      return res.status(StatusCodes.CREATED).json({
+        email: verificationCode.email,
+        expirationDate: verificationCode.expirationDate,
+      })
     } catch (err) {
-      if (err instanceof ConflictException) {
-        return res.status(StatusCodes.CONFLICT).send(err.message).end()
-      }
-
       logger.error('VerificationCode creation failed', err)
 
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
