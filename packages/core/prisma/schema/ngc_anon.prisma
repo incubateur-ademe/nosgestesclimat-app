@@ -1,15 +1,16 @@
 view AnonSimulation {
-  id              String   @unique @db.Uuid
+  id              String              @unique @db.Uuid
   date            DateTime
-  progression     Float    @db.Real
+  progression     Float               @db.Real
   model           String
   computedResults Json
   actionChoices   Json
   situation       Json
   foldedSteps     Json[]
-  userId          String   @db.Uuid
-  user            AnonUser @relation(fields: [userId], references: [id])
+  userId          String              @db.Uuid
+  user            AnonUser            @relation(fields: [userId], references: [id])
   userEmail       String?
+  polls           AnonSimulationPoll[]
   createdAt       DateTime
   updatedAt       DateTime
 
@@ -45,7 +46,7 @@ view AnonVerifiedUser {
 }
 
 view AnonOrganisation {
-  id                    String           @unique
+  id                    String                          @unique
   name                  String
   slug                  String
   type                  OrganisationType
@@ -53,15 +54,17 @@ view AnonOrganisation {
   createdAt             DateTime
   updatedAt             DateTime
   anonPolls             AnonPoll[]
+  administrators        AnonOrganisationAdministrator[]
 
   @@map("Organisation")
   @@schema("ngc_anon")
 }
 
 view AnonOrganisationAdministrator {
-  id             String   @unique
+  id             String           @unique
   userEmail      String
   organisationId String
+  organisation   AnonOrganisation @relation(fields: [organisationId], references: [id])
   createdAt      DateTime
   updatedAt      DateTime
 
@@ -70,16 +73,17 @@ view AnonOrganisationAdministrator {
 }
 
 view AnonPoll {
-  id                           String           @unique
+  id                           String              @unique
   name                         String
-  slug                         String           @unique
+  slug                         String              @unique
   funFacts                     Json?
   computedResults              Json?
   expectedNumberOfParticipants Int?
   customAdditionalQuestions    Json
   computeRealTimeStats         Boolean
   organisationId               String
-  organisation                 AnonOrganisation @relation(fields: [organisationId], references: [id])
+  organisation                 AnonOrganisation    @relation(fields: [organisationId], references: [id])
+  simulations                  AnonSimulationPoll[]
   createdAt                    DateTime
   updatedAt                    DateTime
   pollMode                     PollMode
@@ -89,9 +93,11 @@ view AnonPoll {
 }
 
 view AnonSimulationPoll {
-  id           String   @unique @db.Uuid
+  id           String        @unique @db.Uuid
   pollId       String
-  simulationId String   @db.Uuid
+  poll         AnonPoll      @relation(fields: [pollId], references: [id])
+  simulationId String        @db.Uuid
+  simulation   AnonSimulation @relation(fields: [simulationId], references: [id])
   createdAt    DateTime
   updatedAt    DateTime
 
