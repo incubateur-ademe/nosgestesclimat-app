@@ -1,11 +1,11 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
-import AnimatedCounterBlock from './eventHero/AnimatedCounterBlock'
-import EventDynamicCounter from './eventHero/EventDynamicCounter'
+import EventHeroCard from './eventHero/EventHeroCard'
 
 interface Props {
   locale: Locale
+  startDate: string
   currentValue: number
   targetValue: number
   progressPercentage: number
@@ -15,6 +15,7 @@ interface Props {
 
 export default function EventHero({
   locale,
+  startDate,
   currentValue,
   targetValue,
   progressPercentage,
@@ -49,16 +50,15 @@ export default function EventHero({
         </p>
       </div>
 
-      <AnimatedCounterBlock>
-        <EventDynamicCounter
-          locale={locale}
-          currentValue={currentValue}
-          targetValue={targetValue}
-          progressPercentage={progressPercentage}
-          primaryCtaHref={primaryCtaHref}
-          secondaryCtaHref={secondaryCtaHref}
-        />
-      </AnimatedCounterBlock>
+      <EventHeroCard
+        locale={locale}
+        startDate={startDate}
+        currentValue={currentValue}
+        targetValue={targetValue}
+        progressPercentage={progressPercentage}
+        primaryCtaHref={primaryCtaHref}
+        secondaryCtaHref={secondaryCtaHref}
+      />
     </div>
   )
 }

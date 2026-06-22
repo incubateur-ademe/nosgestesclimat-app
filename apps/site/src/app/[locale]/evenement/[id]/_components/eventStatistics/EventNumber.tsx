@@ -54,7 +54,7 @@ export default function EventNumber({ value, text, locale }: Props) {
   return (
     <div ref={ref} className="flex-1 text-center text-white">
       <span className="block text-5xl font-bold tracking-tight md:text-6xl">
-        {numberFormatter.current.format(animatedValue)}
+        {value === 0 ? '—' : numberFormatter.current.format(animatedValue)}
       </span>
 
       <span className="block text-center text-sm font-medium uppercase">

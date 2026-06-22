@@ -47,6 +47,7 @@ export default async function EvenementPage({
 
   const {
     detailImageSrc,
+    startDate,
     dynamicCounter,
     statisticsValues,
     podiumItems,
@@ -68,6 +69,7 @@ export default async function EvenementPage({
 
           <EventHero
             locale={locale}
+            startDate={startDate}
             currentValue={dynamicCounter.currentValue}
             targetValue={dynamicCounter.targetValue}
             progressPercentage={dynamicCounter.progressPercentage}
@@ -76,7 +78,11 @@ export default async function EvenementPage({
           />
         </div>
 
-        <EventStatistics locale={locale} values={statisticsValues} />
+        <EventStatistics
+          locale={locale}
+          startDate={startDate}
+          values={statisticsValues}
+        />
 
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
           <EventPodium

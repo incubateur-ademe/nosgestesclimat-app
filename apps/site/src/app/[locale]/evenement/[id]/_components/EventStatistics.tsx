@@ -6,6 +6,7 @@ import EventNumber from './eventStatistics/EventNumber'
 
 interface Props {
   locale: Locale
+  startDate: string
   values: {
     simulations: number
     actions: number
@@ -13,53 +14,72 @@ interface Props {
   }
 }
 
-export default async function EventStatistics({ locale, values }: Props) {
+export default async function EventStatistics({
+  locale,
+  startDate,
+  values,
+}: Props) {
   const { t } = await getServerTranslation({ locale })
+
+  const hasEventStarted = new Date() >= new Date(startDate)
 
   return (
     <div className="bg-primary-700 py-12">
-      <div className="mx-auto flex w-5xl max-w-full flex-col gap-4 px-4 md:flex-row md:gap-10 lg:p-0">
-        <EventNumber
-          value={values.simulations}
-          locale={locale}
-          text={t(
-            'event.statistics.first',
-            "calculs d'empreinte carbone déjà réalisés"
-          )}
-        />
+      <div className="mx-auto flex w-5xl max-w-full flex-col px-4 lg:p-0">
+        {!hasEventStarted && (
+          <p className="mb-6 text-center text-sm font-bold tracking-wide text-white uppercase">
+            {t(
+              'event.statistics.title',
+              'Les données en direct apparaîtront au lancement'
+            )}
+          </p>
+        )}
 
-        <EventNumber
-          value={values.actions}
-          locale={locale}
-          text={t(
-            'event.statistics.second',
-            'actions disponibles pour réduire son empreinte'
-          )}
-        />
+        <div className="flex flex-col gap-4 md:flex-row md:gap-10">
+          <EventNumber
+            value={values.simulations}
+            locale={locale}
+            text={t(
+              'event.statistics.first',
+              "calculs d'empreinte carbone déjà réalisés"
+            )}
+          />
 
-        <EventNumber
-          value={values.organisations}
-          locale={locale}
-          text={
-            <>
-              <span>
-                <Trans i18nKey="event.statistics.third.text" locale={locale}>
-                  Organisations déjà mobilisées
-                </Trans>
+          <EventNumber
+            value={values.actions}
+            locale={locale}
+            text={t(
+              'event.statistics.second',
+              'actions disponibles pour réduire son empreinte'
+            )}
+          />
 
-                <br />
-
-                <Link
-                  href="/"
-                  className="hover:text-secondary-100 text-white transition-colors">
-                  <Trans i18nKey="event.statistics.third.link" locale={locale}>
-                    Rejoignez-les !
+          <EventNumber
+            value={values.organisations}
+            locale={locale}
+            text={
+              <>
+                <span>
+                  <Trans i18nKey="event.statistics.third.text" locale={locale}>
+                    Organisations déjà mobilisées
                   </Trans>
-                </Link>
-              </span>
-            </>
-          }
-        />
+
+                  <br />
+
+                  <Link
+                    href="/"
+                    className="hover:text-secondary-100 text-white transition-colors">
+                    <Trans
+                      i18nKey="event.statistics.third.link"
+                      locale={locale}>
+                      Rejoignez-les !
+                    </Trans>
+                  </Link>
+                </span>
+              </>
+            }
+          />
+        </div>
       </div>
     </div>
   )

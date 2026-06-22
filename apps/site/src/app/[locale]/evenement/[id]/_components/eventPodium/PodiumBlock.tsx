@@ -42,7 +42,7 @@ export default function PodiumBlock({ rank, label, score, locale }: Props) {
             'mt-auto text-lg font-bold',
             !isFirst && 'text-primary-600 text-base'
           )}>
-          {score}{' '}
+          {score ? score : '—'}{' '}
           <Trans locale={locale} i18nKey="event.podium.block.score.text">
             calculs d'empreinte
           </Trans>

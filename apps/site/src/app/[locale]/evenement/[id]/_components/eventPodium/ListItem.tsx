@@ -16,7 +16,7 @@ export default function ListItem({ rank, label, score, locale }: Props) {
       <span className="flex-1 pl-4 font-bold">{label}</span>
 
       <span>
-        {score}{' '}
+        {score ? score : '—'}{' '}
         <span className="hidden md:inline">
           <Trans locale={locale} i18nKey="event.podium.list.item.score.big">
             calculs d'empreinte

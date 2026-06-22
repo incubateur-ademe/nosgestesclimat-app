@@ -37,6 +37,8 @@ export interface CtaCard {
 
 export interface EventPageData {
   detailImageSrc: string
+  startDate: string
+  endDate: string
   dynamicCounter: {
     currentValue: number
     targetValue: number
@@ -67,6 +69,8 @@ export function getEventPageData(
   return {
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/journee_de_la_terre_2026_8ead81e894.svg',
+    startDate: '2026-09-01T00:00:00+02:00',
+    endDate: '2026-09-30T23:59:59+02:00',
     dynamicCounter: {
       currentValue,
       targetValue,

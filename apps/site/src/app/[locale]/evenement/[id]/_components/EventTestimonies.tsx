@@ -28,7 +28,7 @@ export default function EventTestimonies({ locale, testimonies }: Props) {
         </Trans>
       </p>
 
-      <ScrollReveal className="px-10">
+      <ScrollReveal className="px-0 md:px-10">
         <Carousel
           locale={locale}
           className="-mx-4 md:-mx-3"
