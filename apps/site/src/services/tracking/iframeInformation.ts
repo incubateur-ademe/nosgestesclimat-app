@@ -1,3 +1,5 @@
+import { getIsIframe } from '@/utils/getIsIframe'
+
 export type IframeInformation =
   | {
       iframe: false
@@ -13,17 +15,13 @@ export type IframeInformation =
  * If it is, also extracts the referrer URL and referring domain from available sources.
  */
 export function getIframeInformation(): IframeInformation {
-  const searchParams = new URLSearchParams(location.search)
-  const iframe =
-    // 1. Standard method
-    window.self !== window.top ||
-    // 2. Fallback to iframe=true query param
-    searchParams.get('iframe') === 'true'
+  const iframe = getIsIframe()
 
   if (!iframe) {
     return { iframe: false }
   }
 
+  const searchParams = new URLSearchParams(location.search)
   const referrer =
     searchParams.get('integratorUrl') ??
     document.location.ancestorOrigins?.[0] ??

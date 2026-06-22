@@ -1,6 +1,6 @@
 import { carboneMetric, eauMetric } from '@/constants/model/metric'
 import type { ComputedResults } from '@/publicodes-state/types'
-import { postMessageToReactNative } from './postMessageToReactNative'
+import { postMessageToIntegrator } from './postMessageToIntegrator'
 
 export function shareDataWithIntegrator(computedResults: ComputedResults) {
   try {
@@ -21,9 +21,7 @@ export function shareDataWithIntegrator(computedResults: ComputedResults) {
       data: sharedData,
     }
 
-    window.parent.postMessage(message, '*')
-
-    postMessageToReactNative(message)
+    postMessageToIntegrator(message)
   } catch (error) {
     // eslint-disable-next-line
     console.log(
