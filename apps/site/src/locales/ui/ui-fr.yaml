@@ -1484,3 +1484,7 @@ entries:
   event.podium.list.item.score.small: tests
   event.testimonies.4.text: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.testimonies.5.text: J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.
+  event.countdown.date: Lancement le 1er septembre 2026
+  event.countdown.description: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
+  event.countdown.label: Début dans
+  event.statistics.title: Les données en direct apparaîtront au lancement
