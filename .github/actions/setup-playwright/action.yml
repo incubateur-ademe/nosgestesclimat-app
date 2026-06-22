@@ -14,4 +14,6 @@ runs:
     - name: Install Playwright
       shell: bash
       working-directory: ./apps/site
-      run: pnpm playwright install ${{ inputs.browser }} ${{ inputs.browser == 'webkit' && '--with-deps' || '' }}
+      env:
+        DEBUG: pw:*
+      run: timeout 300 pnpm playwright install ${{ inputs.browser }} ${{ inputs.browser == 'webkit' && '--with-deps' || '' }}
