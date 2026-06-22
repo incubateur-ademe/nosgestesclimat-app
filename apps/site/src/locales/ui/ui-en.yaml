@@ -1697,7 +1697,7 @@ entries:
   Créer mon lien de test: Create my test link
   Communiquez sur le test collectif: Communicate about the collective test
   Mes tests collectifs: My collective tests
-  Créer un test collectif: Create a collective test
+  Créer un test collectif: Start a group test
   Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.: An error has occurred while creating your collective test. Please try again.
   collectiveTest.title: Choose a name for your collective test
   collectiveTest.title.lock: Choisissez un nom pour votre test collectif
@@ -2065,7 +2065,7 @@ entries:
   event.testimonies.subtitle.lock: Ils ont franchi le pas
   event.tutorial.org.2.title: Share the link
   event.tutorial.org.2.title.lock: Partagez le lien
-  event.ctas.card2.buttonLabel: I'm creating a group test
+  event.ctas.card2.buttonLabel: Start a collective test
   event.ctas.card2.buttonLabel.lock: Je crée un test collectif
   event.podium.subtitle: The mobilisation podium
   event.podium.subtitle.lock: Le podium de la mobilisation
@@ -2085,7 +2085,7 @@ entries:
   event.ctas.heading.lock: Prêt·e à rejoindre l'aventure ?
   event.tutorial.carousel.paginationBullet: Go to the slide {{index}}
   event.tutorial.carousel.paginationBullet.lock: Aller à la diapositive {{index}}
-  event.tutorial.org.1.title: Create a group test
+  event.tutorial.org.1.title: Create a collective test
   event.tutorial.org.1.title.lock: Créez un test collectif
   event.ctas.card1.title: On an individual basis
   event.ctas.card1.title.lock: À titre individuel
@@ -2097,11 +2097,11 @@ entries:
   event.statistics.third.text.lock: Organisations déjà mobilisées
   event.tutorial.title: How can I take part?
   event.tutorial.title.lock: Comment participer ?
-  event.dynamicCounter.secondaryCta: I am taking part as an individual
+  event.dynamicCounter.secondaryCta: Participate as an individual
   event.dynamicCounter.secondaryCta.lock: Je participe individuellement
   event.testimonies.2.author.job: Head of Public Relations at Pass Culture
   event.testimonies.2.author.job.lock: Responsable des relations avec les publics du Pass Culture
-  event.ctas.card1.alt: On an individual basis
+  event.ctas.card1.alt: As an individual
   event.ctas.card1.alt.lock: À titre individuel
   event.testimonies.1.author.job: Impact Officer at HomeExchange
   event.testimonies.1.author.job.lock: Impact Officer chez HomeExchange
@@ -2113,7 +2113,7 @@ entries:
   event.detail.title.lock: Semaine Européenne du<1></1>Développement<3></3>Durable
   event.statistics.third.link: Join them!
   event.statistics.third.link.lock: Rejoignez-les !
-  event.ctas.card1.buttonLabel: I'm taking part
+  event.ctas.card1.buttonLabel: Start now
   event.ctas.card1.buttonLabel.lock: Je participe
   event.tutorial.individual.2.description: Find out your personal carbon footprint, broken down by category.
   event.tutorial.individual.2.description.lock: Découvrez votre empreinte carbone personnelle détaillée par catégorie.
@@ -2121,7 +2121,7 @@ entries:
   event.testimonies.3.author.job.lock: Responsable des relations avec les publics du Pass Culture
   event.dynamicCounter.promise: Results in 10 minutes — 100% free
   event.dynamicCounter.promise.lock: Résultats en 10 minutes — 100% gratuit
-  event.dynamicCounter.primaryCta: I am mobilising my organisation
+  event.dynamicCounter.primaryCta: Mobilise my organisation
   event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
   event.detail.dates: From 18 September to 8 October 2026
   event.detail.dates.lock: Du 18 septembre au 8 octobre 2026
@@ -2185,3 +2185,8 @@ entries:
   event.countdown.date.lock: Lancement le 1er septembre 2026
   event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
   event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
+  Éducation: Education
+  Associations: Charities
+  Services publics: Public services
+  Individu: Individual
+  Organisation: Organisation

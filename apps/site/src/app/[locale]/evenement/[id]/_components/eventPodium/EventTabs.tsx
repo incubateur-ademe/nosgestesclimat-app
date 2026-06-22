@@ -1,5 +1,6 @@
 import Tabs from '@/design-system/layout/Tabs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { t } from '@/helpers/metadata/fakeMetadataT'
 import type { Locale } from '@/i18nConfig'
 
 export const FILTER_KEY = 'filter'
@@ -20,19 +21,19 @@ const FILTER_TRANSLATIONS: Record<
   all: { key: 'event.podium.categories.all', defaultLabel: 'Toutes' },
   companies: {
     key: 'event.podium.categories.companies',
-    defaultLabel: 'Entreprises',
+    defaultLabel: t('Entreprises'),
   },
   associations: {
     key: 'event.podium.categories.associations',
-    defaultLabel: 'Associations',
+    defaultLabel: t('Associations'),
   },
   education: {
     key: 'event.podium.categories.education',
-    defaultLabel: 'Éducation',
+    defaultLabel: t('Éducation'),
   },
   'public-services': {
     key: 'event.podium.categories.publicServices',
-    defaultLabel: 'Services publics',
+    defaultLabel: t('Services publics'),
   },
 }
 

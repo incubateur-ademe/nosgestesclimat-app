@@ -1,13 +1,14 @@
 'use client'
 
+import { t } from '@/helpers/metadata/fakeMetadataT'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { twMerge } from 'tailwind-merge'
 
 export type Mode = 'organisation' | 'individu'
 
 const MODE_LABELS: Record<Mode, string> = {
-  organisation: 'Organisation',
-  individu: 'Individu',
+  organisation: t('Organisation'),
+  individu: t('Individu'),
 }
 
 interface Props {
@@ -30,7 +31,7 @@ export default function Toggle({ mode, onChange }: Props) {
               ? 'bg-primary-700 text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           )}>
-          {t(`event.tutorial.toggle.${value}`, MODE_LABELS[value])}
+          {t(MODE_LABELS[value])}
         </button>
       ))}
     </div>

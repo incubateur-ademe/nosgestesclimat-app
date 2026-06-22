@@ -39,7 +39,7 @@ export default function PodiumBlock({ rank, label, score, locale }: Props) {
         </span>
         <span
           className={twMerge(
-            'mt-auto text-lg font-bold',
+            'mt-auto text-center text-lg font-bold',
             !isFirst && 'text-primary-600 text-base'
           )}>
           {score ? score : '—'}{' '}

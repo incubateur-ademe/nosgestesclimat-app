@@ -28,10 +28,9 @@ export default async function EventStatistics({
       <div className="mx-auto flex w-5xl max-w-full flex-col px-4 lg:p-0">
         {!hasEventStarted && (
           <p className="mb-6 text-center text-sm font-bold tracking-wide text-white uppercase">
-            {t(
-              'event.statistics.title',
-              'Les données en direct apparaîtront au lancement'
-            )}
+            <Trans i18nKey="event.statistics.title" locale={locale}>
+              Les données en direct apparaîtront au lancement
+            </Trans>
           </p>
         )}
 

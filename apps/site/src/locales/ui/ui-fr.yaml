@@ -1488,3 +1488,8 @@ entries:
   event.countdown.description: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   event.countdown.label: Début dans
   event.statistics.title: Les données en direct apparaîtront au lancement
+  Associations: Associations
+  Éducation: Éducation
+  Services publics: Services publics
+  Individu: Individu
+  Organisation: Organisation
