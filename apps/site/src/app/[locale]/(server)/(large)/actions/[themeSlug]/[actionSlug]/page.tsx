@@ -15,7 +15,6 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
 import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
@@ -63,10 +62,6 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function ActionPage({ params }: Props) {
   const { locale, themeSlug, actionSlug } = await params
   const user = await getUserSession()
-  const flag = user?.id ? await getFeatureFlag('actions-v2', user.id) : true
-
-  if (!flag) notFound()
-
   const action = await getPersonalizedActionDetails(actionSlug, user?.id)
 
   if (action?.theme.slug !== themeSlug) notFound()
