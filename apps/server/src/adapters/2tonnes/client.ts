@@ -27,10 +27,10 @@ const TwoTonsResponseSchema = v.strictObject({
 
 const twoTonsAllowedFallbackRedirects = [
   ...allowedRedirectUrls,
-  'https://app.preprod.2tonnes.tech/*',
-  'https://api.preprod.2tonnes.tech/*',
-  'https://app.2tonnes.org/*',
-  'https://api.2tonnes.org/*',
+  new URLPattern('https://app.preprod.2tonnes.tech/*'),
+  new URLPattern('https://api.preprod.2tonnes.tech/*'),
+  new URLPattern('https://app.2tonnes.org/*'),
+  new URLPattern('https://api.2tonnes.org/*'),
 ]
 
 const TwoTonsFallbackSchema = v.strictObject({
