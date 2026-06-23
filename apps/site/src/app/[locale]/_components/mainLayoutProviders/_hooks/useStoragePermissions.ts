@@ -46,10 +46,12 @@ export const useStoragePermissions = (): {
       return
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(
-        '[StorageAccess] direct requestStorageAccess() failed:',
-        error
-      )
+      console.log('[StorageAccess] direct requestStorageAccess() failed:', {
+        message: error instanceof Error ? error.message : String(error),
+        name: error instanceof Error ? error.name : typeof error,
+        code: error instanceof DOMException ? error.code : undefined,
+        toString: String(error),
+      })
     }
 
     try {
