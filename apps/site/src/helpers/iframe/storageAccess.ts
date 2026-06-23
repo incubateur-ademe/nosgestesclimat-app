@@ -42,14 +42,28 @@ const PARENT_TIMEOUT_MS = 5_000
  */
 export function requestAccessViaParent(): Promise<boolean> {
   if (typeof window === 'undefined' || window.parent === window.self) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '[StorageAccess] requestAccessViaParent: not in iframe or no window'
+    )
     return Promise.resolve(false)
   }
+
+  // eslint-disable-next-line no-console
+  console.log(
+    '[StorageAccess] requestAccessViaParent: sending postMessage to parent'
+  )
 
   return new Promise((resolve) => {
     const ourOrigin = window.location.origin
 
     const handler = (event: MessageEvent) => {
       if (event.data?.type === 'NGC_STORAGE_ACCESS_RESULT') {
+        // eslint-disable-next-line no-console
+        console.log(
+          '[StorageAccess] Parent response received:',
+          event.data.success
+        )
         window.removeEventListener('message', handler)
         resolve(event.data.success === true)
       }
@@ -63,6 +77,8 @@ export function requestAccessViaParent(): Promise<boolean> {
     )
 
     setTimeout(() => {
+      // eslint-disable-next-line no-console
+      console.log('[StorageAccess] Parent timeout, resolving false')
       window.removeEventListener('message', handler)
       resolve(false)
     }, PARENT_TIMEOUT_MS)

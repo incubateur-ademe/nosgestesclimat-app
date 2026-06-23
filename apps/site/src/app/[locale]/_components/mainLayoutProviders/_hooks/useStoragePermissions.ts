@@ -31,9 +31,34 @@ export const useStoragePermissions = (): {
   }, [])
 
   const askForPermission = useCallback(async () => {
+    // eslint-disable-next-line no-console
+    console.log('[StorageAccess] askForPermission called')
+
     try {
-      // 1. Try via parent (postMessage > requestStorageAccessForOrigin)
+      // 1. Try direct requestStorageAccess() FIRST (user gesture is fresh)
+      // eslint-disable-next-line no-console
+      console.log('[StorageAccess] Trying direct requestStorageAccess()...')
+      await requestStorageAccess()
+      // eslint-disable-next-line no-console
+      console.log('[StorageAccess] direct requestStorageAccess() succeeded')
+      const needsPermission = await requiresStoragePermissions()
+      setNeedPermission(needsPermission)
+      return
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(
+        '[StorageAccess] direct requestStorageAccess() failed:',
+        error
+      )
+    }
+
+    try {
+      // 2. Fallback: try via parent (postMessage > requestStorageAccessForOrigin)
+      // eslint-disable-next-line no-console
+      console.log('[StorageAccess] Trying via parent (postMessage)...')
       const grantedViaParent = await requestAccessViaParent()
+      // eslint-disable-next-line no-console
+      console.log('[StorageAccess] Parent result:', grantedViaParent)
 
       if (grantedViaParent) {
         const needsPermission = await requiresStoragePermissions()
@@ -41,13 +66,11 @@ export const useStoragePermissions = (): {
         return
       }
 
-      // 2. Fallback: direct requestStorageAccess()
-      await requestStorageAccess()
-      const needsPermission = await requiresStoragePermissions()
-      setNeedPermission(needsPermission)
+      // eslint-disable-next-line no-console
+      console.log('[StorageAccess] All attempts failed, overlay stays')
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('[StorageAccess] requestStorageAccess failed:', error)
+      console.error('[StorageAccess] Parent flow failed:', error)
     }
   }, [])
 

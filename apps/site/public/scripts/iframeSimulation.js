@@ -125,8 +125,16 @@
     window.__ngcStorageAccessHandler = async (event) => {
       if (event.data?.type !== 'NGC_REQUEST_STORAGE_ACCESS') return
 
+      console.log(
+        '[NGC StorageAccess] Parent received request from iframe:',
+        event.data.origin
+      )
+
       // Only respond if requestStorageAccessForOrigin is available (Safari 16+)
       if (typeof document.requestStorageAccessForOrigin !== 'function') {
+        console.log(
+          '[NGC StorageAccess] requestStorageAccessForOrigin not available'
+        )
         event.source?.postMessage(
           { type: 'NGC_STORAGE_ACCESS_RESULT', success: false },
           event.origin
@@ -135,14 +143,24 @@
       }
 
       try {
+        console.log(
+          '[NGC StorageAccess] Calling requestStorageAccessForOrigin...'
+        )
         await document.requestStorageAccessForOrigin(
           event.data.origin || 'https://nosgestesclimat.fr'
+        )
+        console.log(
+          '[NGC StorageAccess] requestStorageAccessForOrigin succeeded'
         )
         event.source?.postMessage(
           { type: 'NGC_STORAGE_ACCESS_RESULT', success: true },
           event.origin
         )
-      } catch {
+      } catch (error) {
+        console.log(
+          '[NGC StorageAccess] requestStorageAccessForOrigin failed:',
+          error
+        )
         event.source?.postMessage(
           { type: 'NGC_STORAGE_ACCESS_RESULT', success: false },
           event.origin
