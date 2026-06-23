@@ -3,6 +3,7 @@
 import {
   isSafariVersionBeforeOrEgalTo18,
   isStorageAccessApiSupported,
+  requestAccessViaParent,
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'
@@ -31,6 +32,16 @@ export const useStoragePermissions = (): {
 
   const askForPermission = useCallback(async () => {
     try {
+      // 1. Try via parent (postMessage > requestStorageAccessForOrigin)
+      const grantedViaParent = await requestAccessViaParent()
+
+      if (grantedViaParent) {
+        const needsPermission = await requiresStoragePermissions()
+        setNeedPermission(needsPermission)
+        return
+      }
+
+      // 2. Fallback: direct requestStorageAccess()
       await requestStorageAccess()
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)

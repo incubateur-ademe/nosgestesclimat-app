@@ -33,6 +33,42 @@ export async function requestStorageAccess(): Promise<void> {
   await document.requestStorageAccess()
 }
 
+const PARENT_TIMEOUT_MS = 5_000
+
+/**
+ * Ask the parent document to call requestStorageAccessForOrigin() via postMessage.
+ * The parent must listen for the 'NGC_REQUEST_STORAGE_ACCESS' message.
+ * Falls back gracefully if the parent doesn't respond.
+ */
+export function requestAccessViaParent(): Promise<boolean> {
+  if (typeof window === 'undefined' || window.parent === window.self) {
+    return Promise.resolve(false)
+  }
+
+  return new Promise((resolve) => {
+    const ourOrigin = window.location.origin
+
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'NGC_STORAGE_ACCESS_RESULT') {
+        window.removeEventListener('message', handler)
+        resolve(event.data.success === true)
+      }
+    }
+
+    window.addEventListener('message', handler)
+
+    window.parent.postMessage(
+      { type: 'NGC_REQUEST_STORAGE_ACCESS', origin: ourOrigin },
+      '*'
+    )
+
+    setTimeout(() => {
+      window.removeEventListener('message', handler)
+      resolve(false)
+    }, PARENT_TIMEOUT_MS)
+  })
+}
+
 // Only Safari <= v18 needs this
 export async function requiresStoragePermissions(): Promise<boolean> {
   return (
