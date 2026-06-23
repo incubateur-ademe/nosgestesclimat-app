@@ -1,10 +1,9 @@
+'use server'
 /**
  * Verify if the integrator is allowed to bypass the consent data share
  */
 export const verifyIfIntegratorBypassRights = (
-  integratorUrl: string
-): boolean => {
-  return new Set(
-    process.env.NEXT_PUBLIC_DATASHARE_BYPASS_ORIGINS?.split(',') ?? []
-  ).has(integratorUrl)
+  bypassKey: string
+): Promise<boolean> => {
+  return Promise.resolve(!!bypassKey && process.env.BYPASS_KEY === bypassKey)
 }
