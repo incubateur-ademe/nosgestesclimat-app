@@ -2045,3 +2045,9 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
+  results.footprintBlock.actionsBlock.link: Find out about my activities
+  results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
+  common.co2eAn.title: CO₂e per year
+  common.co2eAn.title.lock: CO₂e / an
+  results.footprintBlock.actionsBlock.title: 'How to reduce your carbon footprint:'
+  results.footprintBlock.actionsBlock.title.lock: 'Comment réduire votre empreinte :'

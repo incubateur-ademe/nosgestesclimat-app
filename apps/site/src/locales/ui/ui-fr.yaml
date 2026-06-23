@@ -1418,3 +1418,6 @@ entries:
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
+  results.footprintBlock.actionsBlock.link: Découvrir mes actions
+  results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
+  common.co2eAn.title: CO₂e / an
