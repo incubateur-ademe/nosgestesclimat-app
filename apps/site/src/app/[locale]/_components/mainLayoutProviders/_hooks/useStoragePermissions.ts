@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from 'react'
 export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
+  hasError: boolean
 } => {
   // Only Safari ≤ 18 needs the storage access permission flow.
   // Use a synchronous Safari check for the initial state to avoid
@@ -19,6 +20,7 @@ export const useStoragePermissions = (): {
   const [needPermission, setNeedPermission] = useState(
     () => isSafariVersionBeforeOrEgalTo18() && isStorageAccessApiSupported()
   )
+  const [hasError, setHasError] = useState(false)
 
   // On mount, check if storage access is already granted (e.g. after a
   // Safari auto-reload following a successful requestStorageAccess grant).
@@ -36,6 +38,19 @@ export const useStoragePermissions = (): {
 
     try {
       // 1. Try direct requestStorageAccess() FIRST (user gesture is fresh)
+      if (typeof document !== 'undefined') {
+        // eslint-disable-next-line no-console
+        console.log(
+          '[StorageAccess] typeof document.requestStorageAccess:',
+          typeof document.requestStorageAccess
+        )
+        // eslint-disable-next-line no-console
+        console.log(
+          '[StorageAccess] "requestStorageAccess" in document:',
+          'requestStorageAccess' in document
+        )
+      }
+
       // eslint-disable-next-line no-console
       console.log('[StorageAccess] Trying direct requestStorageAccess()...')
       await requestStorageAccess()
@@ -70,6 +85,7 @@ export const useStoragePermissions = (): {
 
       // eslint-disable-next-line no-console
       console.log('[StorageAccess] All attempts failed, overlay stays')
+      setHasError(true)
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('[StorageAccess] Parent flow failed:', error)
@@ -79,5 +95,6 @@ export const useStoragePermissions = (): {
   return {
     needPermission,
     askForPermission: () => askForPermission(),
+    hasError,
   }
 }

@@ -34,7 +34,7 @@ export const IframeOptionsProvider = ({
   const isIframe = getIsIframe()
 
   // Special case : Safari doesn't handle cookies in iframes
-  const { needPermission, askForPermission } = useStoragePermissions()
+  const { needPermission, askForPermission, hasError } = useStoragePermissions()
 
   // Initialized to false/null because during SSR getIsIframe() returns false
   // and the real values are only known after client-side hydration.
@@ -125,7 +125,10 @@ export const IframeOptionsProvider = ({
         isFrenchRegion,
       }}>
       {isIframe && needPermission ? (
-        <StorageAccessOverlay onAskPermission={askForPermission} />
+        <StorageAccessOverlay
+          onAskPermission={askForPermission}
+          hasError={hasError}
+        />
       ) : (
         children
       )}

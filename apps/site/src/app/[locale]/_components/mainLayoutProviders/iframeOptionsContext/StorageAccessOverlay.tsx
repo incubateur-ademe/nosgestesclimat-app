@@ -6,9 +6,13 @@ import Card from '@/design-system/layout/Card'
 
 interface Props {
   onAskPermission: () => void
+  hasError?: boolean
 }
 
-export default function StorageAccessOverlay({ onAskPermission }: Props) {
+export default function StorageAccessOverlay({
+  onAskPermission,
+  hasError,
+}: Props) {
   return (
     <div className="fixed inset-0 z-1000 overflow-auto bg-black/50">
       <Card className="absolute top-4 left-1/2 z-1000 w-[calc(100%-16px)] -translate-x-1/2 bg-white sm:max-w-lg">
@@ -33,10 +37,37 @@ export default function StorageAccessOverlay({ onAskPermission }: Props) {
             </Trans>
           </p>
 
-          <div className="mt-4">
-            <Button onClick={onAskPermission}>
-              <Trans i18nKey="iframe.safari.askPermission">Autoriser</Trans>
-            </Button>
+          <div className="mt-4 flex flex-col gap-4">
+            {hasError ? (
+              <>
+                <p className="mb-0 text-sm text-red-600">
+                  <Trans i18nKey="iframe.safari.error">
+                    Votre navigateur ne permet pas l'accès au stockage local
+                    depuis cette page intégrée.
+                  </Trans>
+                </p>
+                <a
+                  href={
+                    typeof window !== 'undefined'
+                      ? window.location.origin
+                      : 'https://nosgestesclimat.fr'
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-700 text-center text-sm underline">
+                  <Trans i18nKey="iframe.safari.openInNewTab">
+                    Ouvrir le calculateur dans un nouvel onglet
+                  </Trans>
+                </a>
+                <Button onClick={onAskPermission} color="secondary" size="sm">
+                  <Trans i18nKey="iframe.safari.retry">Réessayer</Trans>
+                </Button>
+              </>
+            ) : (
+              <Button onClick={onAskPermission}>
+                <Trans i18nKey="iframe.safari.askPermission">Autoriser</Trans>
+              </Button>
+            )}
           </div>
         </div>
       </Card>

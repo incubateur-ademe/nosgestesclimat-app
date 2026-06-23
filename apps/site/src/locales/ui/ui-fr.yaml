@@ -1418,3 +1418,6 @@ entries:
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
+  iframe.safari.error: Votre navigateur ne permet pas l'accès au stockage local depuis cette page intégrée.
+  iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
+  iframe.safari.retry: Réessayer
