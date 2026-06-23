@@ -46,12 +46,6 @@ const SecuritySchema = v.strictObject({
   }),
   job: v.strictObject({ secret: v.string() }),
   jwt: v.strictObject({ secret: v.string() }),
-  // Constant-time response budget for the verification-code endpoint, used to
-  // neutralise user-enumeration through response-time differences.
-  verificationCode: v.strictObject({
-    minResponseTimeMs: v.pipe(v.string(), v.toNumber(), v.number()),
-    responseTimeJitterMs: v.pipe(v.string(), v.toNumber(), v.number()),
-  }),
 })
 
 const AgirSchema = v.strictObject({
@@ -192,8 +186,6 @@ const {
     SERVER_URL,
     TWO_TONS_BEARER_TOKEN,
     TWO_TONS_URL,
-    VERIFICATION_CODE_MIN_RESPONSE_TIME_MS,
-    VERIFICATION_CODE_RESPONSE_TIME_JITTER_MS,
   },
 } = process
 
@@ -219,10 +211,6 @@ export const config = v.parse(ConfigSchema, {
     },
     jwt: {
       secret: JWT_SECRET,
-    },
-    verificationCode: {
-      minResponseTimeMs: VERIFICATION_CODE_MIN_RESPONSE_TIME_MS,
-      responseTimeJitterMs: VERIFICATION_CODE_RESPONSE_TIME_JITTER_MS,
     },
   },
   thirdParty: {

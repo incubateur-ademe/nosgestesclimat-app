@@ -2,7 +2,6 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { config } from '../../config.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import { withMinimumDuration } from '../../core/timing/with-minimum-duration.ts'
 import logger from '../../logger.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
@@ -30,24 +29,15 @@ router.route('/v1/').post(
   }),
   validateRequest(VerificationCodeCreateValidator),
   async (req, res) => {
-    const { minResponseTimeMs, responseTimeJitterMs } =
-      config.security.verificationCode
-
-    // Pad the whole request to a constant-time budget so the existence of a
-    // user cannot be inferred from response-time differences.
     try {
-      const result = await withMinimumDuration(
-        { minMs: minResponseTimeMs, jitterMs: responseTimeJitterMs },
-        async () =>
-          createVerificationCode({
-            verificationCodeDto: req.body,
-            origin: req.get('origin') || config.app.origin,
-            ...req.query,
-          })
-      )
+      const verificationCode = await createVerificationCode({
+        verificationCodeDto: req.body,
+        origin: req.get('origin') || config.app.origin,
+        ...req.query,
+      })
       return res.status(StatusCodes.CREATED).json({
-        email: result.email,
-        expirationDate: result.expirationDate,
+        email: verificationCode.email,
+        expirationDate: verificationCode.expirationDate,
       })
     } catch (err) {
       logger.error('VerificationCode creation failed', err)

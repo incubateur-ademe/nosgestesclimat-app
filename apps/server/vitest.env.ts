@@ -23,7 +23,4 @@ export default () => {
   process.env.SERVER_URL = 'https://server.nosgestesclimat.fr'
   process.env.NOTION_API_KEY = 'mySuperTestNotionApiKey'
   process.env.NOTION_ACTION_DATABASE_ID = 'mySuperTestNotionActionDatabaseId'
-  // Disable the verification-code constant-time padding so the suite stays fast.
-  process.env.VERIFICATION_CODE_MIN_RESPONSE_TIME_MS = '0'
-  process.env.VERIFICATION_CODE_RESPONSE_TIME_JITTER_MS = '0'
 }
