@@ -119,31 +119,37 @@
   // ── Storage Access API (cross-origin Safari < 18) ─────────────────────────
   // Handle postMessage requests from the iframe to call
   // requestStorageAccessForOrigin(), which must run in the parent context.
-  window.addEventListener('message', async (event) => {
-    if (event.data?.type !== 'NGC_REQUEST_STORAGE_ACCESS') return
+  // We store the handler on window so the same reference is reused if the
+  // script is re-evaluated (HMR, multiple loads), preventing listener leaks.
+  if (!window.__ngcStorageAccessHandler) {
+    window.__ngcStorageAccessHandler = async (event) => {
+      if (event.data?.type !== 'NGC_REQUEST_STORAGE_ACCESS') return
 
-    // Only respond if requestStorageAccessForOrigin is available (Safari 16+)
-    if (typeof document.requestStorageAccessForOrigin !== 'function') {
-      event.source?.postMessage(
-        { type: 'NGC_STORAGE_ACCESS_RESULT', success: false },
-        event.origin
-      )
-      return
+      // Only respond if requestStorageAccessForOrigin is available (Safari 16+)
+      if (typeof document.requestStorageAccessForOrigin !== 'function') {
+        event.source?.postMessage(
+          { type: 'NGC_STORAGE_ACCESS_RESULT', success: false },
+          event.origin
+        )
+        return
+      }
+
+      try {
+        await document.requestStorageAccessForOrigin(
+          event.data.origin || 'https://nosgestesclimat.fr'
+        )
+        event.source?.postMessage(
+          { type: 'NGC_STORAGE_ACCESS_RESULT', success: true },
+          event.origin
+        )
+      } catch {
+        event.source?.postMessage(
+          { type: 'NGC_STORAGE_ACCESS_RESULT', success: false },
+          event.origin
+        )
+      }
     }
 
-    try {
-      await document.requestStorageAccessForOrigin(
-        event.data.origin || 'https://nosgestesclimat.fr'
-      )
-      event.source?.postMessage(
-        { type: 'NGC_STORAGE_ACCESS_RESULT', success: true },
-        event.origin
-      )
-    } catch {
-      event.source?.postMessage(
-        { type: 'NGC_STORAGE_ACCESS_RESULT', success: false },
-        event.origin
-      )
-    }
-  })
+    window.addEventListener('message', window.__ngcStorageAccessHandler)
+  }
 })()
