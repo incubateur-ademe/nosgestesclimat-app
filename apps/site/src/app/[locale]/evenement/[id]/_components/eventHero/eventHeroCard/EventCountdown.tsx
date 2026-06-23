@@ -80,77 +80,68 @@ export default function EventCountdown({
   }
 
   return (
-    <div className="relative flex-1 [&:has(.btn-group:hover)>div:first-child]:opacity-80">
-      {/* Rainbow animated shadow */}
-      <div
-        aria-hidden="true"
-        className="bg-rainbow animate-rainbow-shadow-move absolute -inset-2 rounded-3xl opacity-0 blur-2xl transition-opacity duration-500"
-      />
+    <div className="relative rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+      <span className="mb-3 flex items-center text-amber-600 sm:mb-4">
+        <span
+          aria-hidden
+          className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-amber-500 align-baseline motion-reduce:animate-none"
+        />
 
-      {/* Card content */}
-      <div className="relative rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
-        <span className="mb-3 flex items-center text-amber-600 sm:mb-4">
-          <span
-            aria-hidden
-            className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-amber-500 align-baseline motion-reduce:animate-none"
-          />
-
-          <span className="text-[10px] font-bold uppercase sm:text-xs">
-            <Trans i18nKey="event.countdown.label">Début dans</Trans>
-          </span>
+        <span className="text-[10px] font-bold uppercase sm:text-xs">
+          <Trans i18nKey="event.countdown.label">Début dans</Trans>
         </span>
+      </span>
 
-        <div className="mb-4 flex items-center justify-center gap-2 sm:mb-6 sm:gap-3 md:gap-4">
-          <AnimatedNumber value={timeLeft.days} label="Jours" />
-          <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
-            :
-          </span>
-          <AnimatedNumber value={timeLeft.hours} label="Heures" />
-          <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
-            :
-          </span>
-          <AnimatedNumber value={timeLeft.minutes} label="Minutes" />
-          <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
-            :
-          </span>
-          <AnimatedNumber value={timeLeft.seconds} label="Secondes" />
-        </div>
-
-        <p className="mb-4 text-center text-xs leading-snug text-slate-600 sm:text-sm">
-          <Trans i18nKey="event.countdown.description">
-            Le compteur et le classement en direct
-            <br />
-            seront disponibles au lancement de l'évènement.
-          </Trans>
-        </p>
-
-        <div className="btn-group mb-3 sm:mb-4">
-          <ButtonLink
-            className="mb-2 w-full text-sm sm:mb-3 sm:text-base lg:text-xl"
-            size="xl"
-            href={primaryCtaHref}>
-            <Trans i18nKey="event.dynamicCounter.primaryCta">
-              Je mobilise mon organisation
-            </Trans>
-          </ButtonLink>
-
-          <ButtonLink
-            className="w-full text-sm sm:text-base lg:text-xl"
-            href={secondaryCtaHref}
-            size="xl"
-            color="secondary">
-            <Trans i18nKey="event.dynamicCounter.secondaryCta">
-              Je participe individuellement
-            </Trans>
-          </ButtonLink>
-        </div>
-
-        <p className="text-center text-xs text-slate-600">
-          <Trans i18nKey="event.countdown.date">
-            Lancement le 1er septembre 2026
-          </Trans>
-        </p>
+      <div className="mb-4 flex items-center justify-center gap-2 sm:mb-6 sm:gap-3 md:gap-4">
+        <AnimatedNumber value={timeLeft.days} label="Jours" />
+        <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
+          :
+        </span>
+        <AnimatedNumber value={timeLeft.hours} label="Heures" />
+        <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
+          :
+        </span>
+        <AnimatedNumber value={timeLeft.minutes} label="Minutes" />
+        <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
+          :
+        </span>
+        <AnimatedNumber value={timeLeft.seconds} label="Secondes" />
       </div>
+
+      <p className="mb-4 text-center text-xs leading-snug text-slate-600 sm:text-sm">
+        <Trans i18nKey="event.countdown.description">
+          Le compteur et le classement en direct
+          <br />
+          seront disponibles au lancement de l'évènement.
+        </Trans>
+      </p>
+
+      <div className="btn-group mb-3 sm:mb-4">
+        <ButtonLink
+          className="mb-2 w-full text-sm sm:mb-3 sm:text-base lg:text-xl"
+          size="xl"
+          href={primaryCtaHref}>
+          <Trans i18nKey="event.dynamicCounter.primaryCta">
+            Je mobilise mon organisation
+          </Trans>
+        </ButtonLink>
+
+        <ButtonLink
+          className="w-full text-sm sm:text-base lg:text-xl"
+          href={secondaryCtaHref}
+          size="xl"
+          color="secondary">
+          <Trans i18nKey="event.dynamicCounter.secondaryCta">
+            Je participe individuellement
+          </Trans>
+        </ButtonLink>
+      </div>
+
+      <p className="text-center text-xs text-slate-600">
+        <Trans i18nKey="event.countdown.date">
+          Lancement le 1er septembre 2026
+        </Trans>
+      </p>
     </div>
   )
 }

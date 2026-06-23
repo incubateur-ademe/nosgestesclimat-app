@@ -2075,8 +2075,8 @@ entries:
   event.tutorial.individual.1.title.lock: Répondez aux questions
   event.tutorial.org.3.title: Follow the results
   event.tutorial.org.3.title.lock: Suivez les résultats
-  event.podium.yourOrg: Your organisation?
-  event.podium.yourOrg.lock: Votre organisation ?
+  event.podium.yourOrg: Organisation 1
+  event.podium.yourOrg.lock: Organisation 1
   event.hero.title.part2: when it is collective
   event.hero.title.part2.lock: quand il est collectif
   event.dynamicCounter.text: LIVE
@@ -2192,3 +2192,7 @@ entries:
   Organisation: Organisation
   event.podium.nextButton.label: Next organisation
   event.podium.nextButton.label.lock: Organisation suivante
+  event.podium.block.score.text1: footprint calculations
+  event.podium.block.score.text1.lock: calculs d'empreinte
+  event.podium.block.score.text2: Awaiting launch
+  event.podium.block.score.text2.lock: En attente du lancement

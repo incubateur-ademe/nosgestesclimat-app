@@ -94,12 +94,15 @@ export function getEventPageData({
     podiumItems: [
       {
         rank: 1,
-        label: t('event.podium.yourOrg', 'Votre organisation ?'),
+        label: t('event.podium.yourOrg', 'Organisation 1'),
         score: 0,
       },
-      ...Array.from({ length: 9 }, (_, i) => ({
-        rank: i + 2,
-        label: t('event.podium.competitor', 'Organisation concurrente'),
+      ...Array.from({ length: 9 }, (_, index) => ({
+        rank: index + 2,
+        label: t(
+          `event.podium.competitor${index + 2}`,
+          `Organisation ${index + 2}`
+        ),
         score: 0,
       })),
     ],

@@ -1442,7 +1442,7 @@ entries:
   event.podium.competitor: Organisation concurrente
   event.podium.list.item.score: tests
   event.podium.subtitle: Le podium de la mobilisation
-  event.podium.yourOrg: Votre organisation ?
+  event.podium.yourOrg: Organisation 1
   event.statistics.first: calculs d'empreinte carbone déjà réalisés
   event.statistics.third.link: Rejoignez-les !
   event.statistics.third.text: Organisations déjà mobilisées
@@ -1494,3 +1494,5 @@ entries:
   Individu: Individu
   Organisation: Organisation
   event.podium.nextButton.label: Organisation suivante
+  event.podium.block.score.text1: calculs d'empreinte
+  event.podium.block.score.text2: En attente du lancement

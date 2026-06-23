@@ -13,9 +13,16 @@ const heightClasses = {
 
 interface Props extends PodiumItem {
   locale: Locale
+  hasStarted: boolean
 }
 
-export default function PodiumBlock({ rank, label, score, locale }: Props) {
+export default function PodiumBlock({
+  rank,
+  label,
+  score,
+  locale,
+  hasStarted,
+}: Props) {
   const isFirst = rank == 1
 
   return (
@@ -42,11 +49,22 @@ export default function PodiumBlock({ rank, label, score, locale }: Props) {
             'mt-auto text-center text-lg font-bold',
             !isFirst && 'text-primary-600 text-base'
           )}>
-          {score ? score : '—'}{' '}
-          <Trans locale={locale} i18nKey="event.podium.block.score.text">
+          {score}{' '}
+          <Trans locale={locale} i18nKey="event.podium.block.score.text1">
             calculs d'empreinte
           </Trans>
         </span>
+        {!hasStarted && (
+          <span
+            className={twMerge(
+              'mt-1 block text-center text-sm',
+              !isFirst && 'text-primary-600'
+            )}>
+            <Trans locale={locale} i18nKey="event.podium.block.score.text2">
+              En attente du lancement
+            </Trans>
+          </span>
+        )}
       </div>
     </AnimatedPodiumBlock>
   )

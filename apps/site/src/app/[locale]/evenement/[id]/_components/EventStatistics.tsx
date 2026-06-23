@@ -6,7 +6,7 @@ import EventNumber from './eventStatistics/EventNumber'
 
 interface Props {
   locale: Locale
-  startDate: string
+  hasStarted: boolean
   values: {
     simulations: number
     actions: number
@@ -16,17 +16,15 @@ interface Props {
 
 export default async function EventStatistics({
   locale,
-  startDate,
+  hasStarted,
   values,
 }: Props) {
   const { t } = await getServerTranslation({ locale })
 
-  const hasEventStarted = new Date() >= new Date(startDate)
-
   return (
     <div className="bg-primary-700 py-12">
       <div className="mx-auto flex w-5xl max-w-full flex-col px-4 lg:p-0">
-        {!hasEventStarted && (
+        {!hasStarted && (
           <p className="mb-6 text-center text-sm font-bold tracking-wide text-white uppercase">
             <Trans i18nKey="event.statistics.title" locale={locale}>
               Les données en direct apparaîtront au lancement

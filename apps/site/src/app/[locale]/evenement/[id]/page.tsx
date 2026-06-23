@@ -59,6 +59,8 @@ export default async function EvenementPage({
     ctaCards,
   } = getEventPageData({ t, locale })
 
+  const hasStarted = new Date() >= new Date(startDate)
+
   return (
     <>
       <HeaderServer locale={locale} />
@@ -80,8 +82,8 @@ export default async function EvenementPage({
 
         <EventStatistics
           locale={locale}
-          startDate={startDate}
           values={statisticsValues}
+          hasStarted={hasStarted}
         />
 
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
@@ -89,6 +91,7 @@ export default async function EvenementPage({
             locale={locale}
             searchParams={searchParams}
             items={podiumItems}
+            hasStarted={hasStarted}
           />
         </div>
 

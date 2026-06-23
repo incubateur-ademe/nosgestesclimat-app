@@ -13,6 +13,7 @@ interface Props {
   locale: Locale
   prevHref?: string
   nextHref?: string
+  hasStarted: boolean
 }
 
 const orderClasses = {
@@ -27,6 +28,7 @@ export default async function PodiumVisual({
   locale,
   prevHref,
   nextHref,
+  hasStarted,
 }: Props) {
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 10)
@@ -61,7 +63,7 @@ export default async function PodiumVisual({
                 'w-full md:flex-1',
                 orderClasses[item.rank as 1 | 2 | 3]
               )}>
-              <PodiumBlock locale={locale} {...item} />
+              <PodiumBlock hasStarted={hasStarted} locale={locale} {...item} />
             </li>
           ))}
         </ol>

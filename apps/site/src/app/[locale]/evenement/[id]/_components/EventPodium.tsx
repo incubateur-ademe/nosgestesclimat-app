@@ -27,12 +27,14 @@ interface Props {
   locale: Locale
   searchParams: Promise<Record<string, string | string[] | undefined>>
   items: PodiumItem[]
+  hasStarted: boolean
 }
 
 export default async function EventPodium({
   locale,
   searchParams,
   items,
+  hasStarted,
 }: Props) {
   const params = await searchParams
   const filter = params[FILTER_KEY]
@@ -77,6 +79,7 @@ export default async function EventPodium({
         items={items}
         prevHref={prevHref}
         nextHref={nextHref}
+        hasStarted={hasStarted}
       />
     </div>
   )
