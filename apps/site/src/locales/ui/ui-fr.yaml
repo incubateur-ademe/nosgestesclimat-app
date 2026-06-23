@@ -1418,5 +1418,3 @@ entries:
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
-  signIn.verificationForm.hint.signIn: Vous recevrez un e-mail de connexion uniquement si un compte existe avec cette adresse.
-  signIn.verificationForm.hint.signUp: Vous recevrez un e-mail d'inscription uniquement si vous n'avez pas déjà un compte avec cette adresse.

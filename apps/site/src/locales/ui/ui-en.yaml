@@ -2045,7 +2045,3 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
-  signIn.verificationForm.hint.signIn: You will only receive a login email if an account exists for this email address.
-  signIn.verificationForm.hint.signIn.lock: Vous recevrez un e-mail de connexion uniquement si un compte existe avec cette adresse.
-  signIn.verificationForm.hint.signUp: You will only receive a registration email if you do not already have an account linked to this email address.
-  signIn.verificationForm.hint.signUp.lock: Vous recevrez un e-mail d'inscription uniquement si vous n'avez pas déjà un compte avec cette adresse.
