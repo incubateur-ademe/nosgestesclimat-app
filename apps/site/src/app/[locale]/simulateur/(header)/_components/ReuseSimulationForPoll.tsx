@@ -17,7 +17,7 @@ export default function ReuseSimulationForPoll({
   disclaimer,
 }: ReuseSimulationForPollProps) {
   return (
-    <Card className={'items-start border-none bg-gray-100 p-8'}>
+    <Card className={'mt-8 items-start border-none bg-gray-100 p-8'}>
       <Title
         data-testid="commencer-title"
         className="text-lg md:text-xl"

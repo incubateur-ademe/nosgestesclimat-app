@@ -1,10 +1,7 @@
 /** Event page data — centralized mock content before CMS integration. */
 
 import Trans from '@/components/translation/trans/TransServer'
-import {
-  ORGANISATION_SIGN_IN_PATH,
-  SIMULATOR_PATH,
-} from '@/constants/urls/paths'
+import { ORGANISATION_SIGN_IN_PATH } from '@/constants/urls/paths'
 import type { Locale } from '@/i18nConfig'
 import type { ReactNode } from 'react'
 
@@ -84,7 +81,8 @@ export function getEventPageData({
       progressPercentage:
         targetValue > 0 ? (currentValue / targetValue) * 100 : 0,
       primaryCtaHref: ORGANISATION_SIGN_IN_PATH,
-      secondaryCtaHref: '/',
+      secondaryCtaHref:
+        'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
     },
     statisticsValues: {
       simulations: 0,
@@ -157,16 +155,6 @@ export function getEventPageData({
           job: 'test collectif réalisé par l’organisation Pass Culture',
         },
       },
-      {
-        text: t(
-          'event.testimonies.5.text',
-          'J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.'
-        ),
-        author: {
-          name: 'Anonyme',
-          job: 'test collectif réalisé par l’organisation Pass Culture',
-        },
-      },
     ],
     tutorialStepsByMode: {
       organisation: [
@@ -191,7 +179,7 @@ export function getEventPageData({
                 className="text-primary-700 font-medium underline"
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://app.notion.com/p/18-septembre-au-8-octobre-2026-Semaine-europ-enne-du-d-veloppement-durable-Contenu-en-cours-de--2b26523d57d7801fbd4ccdeb887a0a5f?source=copy_link">
+                href="https://accelerateur-transition-ecologique-ademe.notion.site/18-septembre-au-8-octobre-2026-Semaine-europ-enne-du-d-veloppement-durable-Contenu-en-cours-de--2b26523d57d7801fbd4ccdeb887a0a5f">
                 kit de communication !
               </a>
             </Trans>
@@ -253,7 +241,8 @@ export function getEventPageData({
           "Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés."
         ),
         buttonLabel: t('event.ctas.card1.buttonLabel', 'Je participe'),
-        buttonHref: SIMULATOR_PATH,
+        buttonHref:
+          'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
       },
       {
         emoji: '🏛️',
