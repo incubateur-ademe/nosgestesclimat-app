@@ -6,7 +6,7 @@ Application next.js qui gère le site Web de [nosgestesclimat.fr](https://nosges
 
 Pré-requis :
 
-- [Node.js 22.14.0](https://nodejs.org/fr/download)
+- [Node.js 24.16.0](https://nodejs.org/fr/download)
 - [pnpm](https://pnpm.io/installation)
 
 ```bash
