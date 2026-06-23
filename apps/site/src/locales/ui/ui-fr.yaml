@@ -1494,5 +1494,6 @@ entries:
   Individu: Individu
   Organisation: Organisation
   event.podium.nextButton.label: Organisation suivante
+  event.podium.remainingList.ariaLabel: Suite du classement
   event.podium.block.score.text1: calculs d'empreinte
   event.podium.block.score.text2: En attente du lancement

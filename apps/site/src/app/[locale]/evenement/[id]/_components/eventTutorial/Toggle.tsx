@@ -20,10 +20,14 @@ export default function Toggle({ mode, onChange }: Props) {
   const { t } = useClientTranslation()
 
   return (
-    <div className="mx-auto inline-flex rounded-full bg-gray-100 p-1">
+    <div
+      role="tablist"
+      className="mx-auto inline-flex rounded-full bg-gray-100 p-1">
       {(['organisation', 'individu'] as const).map((value) => (
         <button
           key={value}
+          role="tab"
+          aria-selected={mode === value}
           onClick={() => onChange(value)}
           className={twMerge(
             'rounded-full px-6 py-3 text-sm font-medium transition-colors',

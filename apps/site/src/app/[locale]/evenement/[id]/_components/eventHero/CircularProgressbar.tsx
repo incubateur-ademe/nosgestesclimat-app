@@ -20,6 +20,7 @@ interface Props {
 
 export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
   const [progress, setProgress] = useState(0)
+  const displayedValue = Math.round(progress * value)
   const rafRef = useRef<number>(0)
 
   useEffect(() => {
@@ -47,7 +48,11 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
   const offset = (1 - (progress * value) / 100) * DIAMETER
 
   return (
-    <svg className="CircularProgressbar" viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
+    <svg
+      role="img"
+      aria-label={`${displayedValue}%`}
+      className="CircularProgressbar"
+      viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
       <path
         d={PATH_D}
         stroke="#fde6f7"
@@ -74,7 +79,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
         fill="#1a1a1a"
         fontSize="16"
         fontWeight="500">
-        {Math.round(progress * value)}%
+        {displayedValue}%
       </text>
     </svg>
   )

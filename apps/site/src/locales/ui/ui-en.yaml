@@ -2191,6 +2191,7 @@ entries:
   Individu: Individual
   Organisation: Organisation
   event.podium.nextButton.label: Next organisation
+  event.podium.remainingList.ariaLabel: Rest of the rankings
   event.podium.nextButton.label.lock: Organisation suivante
   event.podium.block.score.text1: footprint calculations
   event.podium.block.score.text1.lock: calculs d'empreinte

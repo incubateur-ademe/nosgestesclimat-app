@@ -2,6 +2,7 @@
 import { IframeOptionsProvider } from '@/app/[locale]/_components/mainLayoutProviders/IframeOptionsContext'
 import CookieConsent from '@/components/cookies/CookieConsent'
 import { CookieConsentProvider } from '@/components/cookies/useCookieManagement'
+import { MotionConfig } from 'framer-motion'
 
 export default function DefaultProvider({
   children,
@@ -13,7 +14,7 @@ export default function DefaultProvider({
       <CookieConsentProvider>
         <CookieConsent />
 
-        {children}
+        <MotionConfig reducedMotion="user">{children}</MotionConfig>
       </CookieConsentProvider>
     </IframeOptionsProvider>
   )

@@ -85,6 +85,10 @@ export default async function PodiumVisual({
       {remainingItems.length > 0 && (
         <ol
           start={4}
+          aria-label={t(
+            'event.podium.remainingList.ariaLabel',
+            'Suite du classement'
+          )}
           className={twMerge(
             'border-primary-600 mt-6 list-none overflow-hidden rounded-xl border',
             className
