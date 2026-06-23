@@ -1,9 +1,12 @@
 /** Event page data — centralized mock content before CMS integration. */
 
+import Trans from '@/components/translation/trans/TransServer'
 import {
   ORGANISATION_SIGN_IN_PATH,
   SIMULATOR_PATH,
 } from '@/constants/urls/paths'
+import type { Locale } from '@/i18nConfig'
+import type { ReactNode } from 'react'
 
 export interface PodiumItem {
   rank: number
@@ -23,7 +26,7 @@ export interface Testimony {
 export interface TutorialStep {
   number: number
   title: string
-  description: string
+  description: string | ReactNode
 }
 
 export interface CtaCard {
@@ -60,9 +63,13 @@ export interface EventPageData {
   ctaCards: CtaCard[]
 }
 
-export function getEventPageData(
+export function getEventPageData({
+  t,
+  locale,
+}: {
   t: (key: string, defaultValue: string) => string
-): EventPageData {
+  locale: Locale
+}): EventPageData {
   const currentValue = 0
   const targetValue = 50000
 
@@ -171,9 +178,20 @@ export function getEventPageData(
         {
           number: 2,
           title: t('event.tutorial.org.2.title', 'Partagez le lien'),
-          description: t(
-            'event.tutorial.org.2.description',
-            'Diffusez un lien unique par email, réseau social ou QR code auprès de vos collaborateurs.'
+          description: (
+            <Trans locale={locale} i18nKey="event.tutorial.org.2.description">
+              Diffusez un lien unique par email, réseau social ou QR code auprès
+              de vos collaborateurs.
+              <br />
+              Aidez-vous de notre{' '}
+              <a
+                className="text-primary-700 font-medium underline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://app.notion.com/p/18-septembre-au-8-octobre-2026-Semaine-europ-enne-du-d-veloppement-durable-Contenu-en-cours-de--2b26523d57d7801fbd4ccdeb887a0a5f?source=copy_link">
+                kit de communication !
+              </a>
+            </Trans>
           ),
         },
         {

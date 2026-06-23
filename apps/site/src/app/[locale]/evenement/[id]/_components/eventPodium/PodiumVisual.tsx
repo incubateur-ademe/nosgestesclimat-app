@@ -1,5 +1,6 @@
 import ChevronLeft from '@/components/icons/ChevronLeft'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
 import type { PodiumItem } from '../../_helpers/eventPageData'
@@ -20,7 +21,7 @@ const orderClasses = {
   3: 'order-3',
 } as const
 
-export default function PodiumVisual({
+export default async function PodiumVisual({
   items,
   className,
   locale,
@@ -29,6 +30,8 @@ export default function PodiumVisual({
 }: Props) {
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 10)
+
+  const { t } = await getServerTranslation({ locale })
 
   return (
     <>
@@ -39,7 +42,10 @@ export default function PodiumVisual({
             scroll={false}
             color="secondary"
             className="absolute top-1/2 left-0 z-10 hidden h-11 w-11 -translate-y-1/2 p-0! md:flex"
-            aria-label="Organisation précédente">
+            aria-label={t(
+              'event.podium.nextButton.label',
+              'Organisation précédente'
+            )}>
             <ChevronLeft />
           </ButtonLink>
         ) : null}
@@ -65,7 +71,10 @@ export default function PodiumVisual({
             scroll={false}
             color="secondary"
             className="absolute top-1/2 right-0 z-10 hidden h-11 w-11 -translate-y-1/2 p-0! md:flex"
-            aria-label="Organisation suivante">
+            aria-label={t(
+              'event.podium.nextButton.label',
+              'Organisation suivante'
+            )}>
             <ChevronLeft className="rotate-180" />
           </ButtonLink>
         ) : null}

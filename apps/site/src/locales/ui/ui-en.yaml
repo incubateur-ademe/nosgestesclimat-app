@@ -2133,8 +2133,8 @@ entries:
   event.hero.title.part1.lock: L'impact est plus fort
   event.tutorial.org.3.description: View participation levels and the collective carbon footprint in real time.
   event.tutorial.org.3.description.lock: Visualisez en temps réel les participations et l’empreinte carbone collective.
-  event.tutorial.org.2.description: Share a unique link with your colleagues via email, social media or a QR code.
-  event.tutorial.org.2.description.lock: Diffusez un lien unique par email, réseau social ou QR code auprès de vos collaborateurs.
+  event.tutorial.org.2.description: Share a unique link with your staff via email, social media or a QR code.<1></1>Make use of our <4>communications pack!</4>
+  event.tutorial.org.2.description.lock: Diffusez un lien unique par email, réseau social ou QR code auprès de vos collaborateurs.<1></1>Aidez-vous de notre <4>kit de communication !</4>
   event.ctas.card1.description: Calculate your carbon footprint in 10 minutes and discover your personalised action points.
   event.ctas.card1.description.lock: Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés.
   event.tutorial.individual.3.description: Get personalised tips on how to reduce your environmental impact in your day-to-day life.
@@ -2190,3 +2190,5 @@ entries:
   Services publics: Public services
   Individu: Individual
   Organisation: Organisation
+  event.podium.nextButton.label: Next organisation
+  event.podium.nextButton.label.lock: Organisation suivante

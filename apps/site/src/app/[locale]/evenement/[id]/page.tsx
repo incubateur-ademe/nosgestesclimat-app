@@ -57,7 +57,7 @@ export default async function EvenementPage({
     ctaHeading,
     ctaDescription,
     ctaCards,
-  } = getEventPageData(t)
+  } = getEventPageData({ t, locale })
 
   return (
     <>
