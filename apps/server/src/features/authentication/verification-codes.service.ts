@@ -111,9 +111,9 @@ export const createVerificationCode = (
       origin,
     })
 
+    // Fire-and-forget: do not await the email send so the variable external
+    // delivery latency (and retries) never leaks through the response time.
     EventBus.emit(verificationCodeCreatedEvent)
-
-    await EventBus.once(verificationCodeCreatedEvent)
 
     return {
       email: verificationCode.email,
