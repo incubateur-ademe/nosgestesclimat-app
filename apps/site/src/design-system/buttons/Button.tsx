@@ -99,11 +99,13 @@ export default function Button({
           ? (e) => {
               e.preventDefault()
             }
-          : (e) => {
-              startTransition(() => {
-                onClick?.(e)
-              })
-            }
+          : showLoadingOnClickWhilePending
+            ? (e) => {
+                startTransition(() => {
+                  onClick?.(e)
+                })
+              }
+            : onClick
       }
       ref={ref}
       type={type}
