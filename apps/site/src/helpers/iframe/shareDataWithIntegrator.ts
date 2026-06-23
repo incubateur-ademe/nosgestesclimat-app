@@ -1,5 +1,6 @@
 import { carboneMetric, eauMetric } from '@/constants/model/metric'
 import type { ComputedResults } from '@/publicodes-state/types'
+import { postMessageToIntegrator } from './postMessageToIntegrator'
 
 export function shareDataWithIntegrator(computedResults: ComputedResults) {
   const sharedData = {
@@ -14,8 +15,10 @@ export function shareDataWithIntegrator(computedResults: ComputedResults) {
     },
   }
 
-  window.parent.postMessage(
-    { messageType: 'ngc-iframe-share', data: sharedData },
-    '*'
-  )
+  const message = {
+    messageType: 'ngc-iframe-share',
+    data: sharedData,
+  }
+
+  postMessageToIntegrator(message)
 }

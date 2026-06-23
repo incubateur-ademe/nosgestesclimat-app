@@ -488,7 +488,7 @@ describe('Given a NGC user', () => {
                   ],
                   templateId: 55,
                   params: {
-                    SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
                     LAST_SIMULATION_BILAN_FOOTPRINT: (
                       computedResults.carbone.bilan / 1000
                     ).toLocaleString(Locales.fr, {
@@ -858,7 +858,7 @@ describe('Given a NGC user', () => {
                   ],
                   templateId: 102,
                   params: {
-                    SIMULATION_URL: `https://nosgestesclimat.fr/simulateur/bilan?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=pause-test-en-cours`,
+                    SIMULATION_URL: `https://nosgestesclimat.test/simulateur/bilan?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=pause-test-en-cours`,
                   },
                 },
               }),
@@ -1364,8 +1364,8 @@ describe('Given a NGC user', () => {
                 ],
                 templateId: 138,
                 params: {
-                  SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                  DASHBOARD_URL: 'https://nosgestesclimat.fr/mon-espace',
+                  SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                  DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
                   LAST_SIMULATION_BILAN_FOOTPRINT: (
                     computedResults.carbone.bilan / 1000
                   ).toLocaleString(Locales.fr, {
@@ -1533,8 +1533,8 @@ describe('Given a NGC user', () => {
                   ],
                   templateId: 140,
                   params: {
-                    SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    DASHBOARD_URL: 'https://nosgestesclimat.fr/mon-espace',
+                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                    DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
                     LAST_SIMULATION_BILAN_FOOTPRINT: (
                       computedResults.carbone.bilan / 1000
                     ).toLocaleString(Locales.en, {
@@ -2113,8 +2113,8 @@ describe('Given a NGC user', () => {
                   ],
                   templateId: 138,
                   params: {
-                    SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    DASHBOARD_URL: 'https://nosgestesclimat.fr/mon-espace',
+                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                    DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
                     LAST_SIMULATION_BILAN_FOOTPRINT: (
                       computedResults.carbone.bilan / 1000
                     ).toLocaleString(Locales.fr, {
@@ -2281,8 +2281,8 @@ describe('Given a NGC user', () => {
                     ],
                     templateId: 140,
                     params: {
-                      SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                      DASHBOARD_URL: 'https://nosgestesclimat.fr/mon-espace',
+                      SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                      DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
                       LAST_SIMULATION_BILAN_FOOTPRINT: (
                         computedResults.carbone.bilan / 1000
                       ).toLocaleString(Locales.en, {
