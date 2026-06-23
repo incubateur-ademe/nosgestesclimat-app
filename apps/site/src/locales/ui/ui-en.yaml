@@ -2197,3 +2197,4 @@ entries:
   event.podium.block.score.text1.lock: calculs d'empreinte
   event.podium.block.score.text2: Awaiting launch
   event.podium.block.score.text2.lock: En attente du lancement
+  event.podium.remainingList.ariaLabel.lock: Suite du classement
