@@ -1,7 +1,5 @@
 import Title from '@/design-system/layout/Title'
 
-import Link from '@/components/Link'
-import LightBulbIcon from '@/components/icons/LightBulbIcon'
 import SquareImageContainer from '@/components/images/SquareImageContainer'
 import Trans from '@/components/translation/trans/TransClient'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -23,20 +21,20 @@ export default async function DocumentationLanding({
   // We want to be able to define an order for the cards and their summary here
   const fixedCardSummaries = {
     bilan: t(
-      `Le coeur de Nos Gestes Climat, c'est **le bilan** d'empreinte climat personnelle`
+      "Le coeur de Nos Gestes Climat, c'est **le bilan** d'empreinte climat personnelle"
     ),
     'services sociétaux': t(
-      `Les constantes de **services publics et marchands** calculées à partir des travaux du SDES`
+      'Les constantes de **services publics et marchands** calculées à partir des travaux du SDES'
     ),
     'alimentation . plats': t(
-      `**6 repas** représentatifs de notre consommation`
+      '**6 repas** représentatifs de notre consommation'
     ),
-    'alimentation . déchets': t(`Un modèle inédit d'empreinte des **déchets**`),
+    'alimentation . déchets': t("Un modèle inédit d'empreinte des **déchets**"),
     'logement . chauffage . empreinte par défaut': t(
-      `Un calcul statistique du **chauffage** résidentiel français moyen`
+      'Un calcul statistique du **chauffage** résidentiel français moyen'
     ),
     'transport . voiture': t(
-      `Le premier poste moyen d'empreinte, l'incontournable **voiture individuelle**`
+      "Le premier poste moyen d'empreinte, l'incontournable **voiture individuelle**"
     ),
   } as Record<DottedName, string>
 
@@ -58,13 +56,6 @@ export default async function DocumentationLanding({
               du feu.
             </Trans>
           </p>
-
-          <div>
-            <Link href="/documentation" className="flex items-center">
-              <LightBulbIcon className="fill-primary-700 mr-1 h-4 w-4" />
-              <Trans> En savoir plus sur notre modèle</Trans>
-            </Link>
-          </div>
         </div>
         {/* Displayed on mobile only */}
         <Image

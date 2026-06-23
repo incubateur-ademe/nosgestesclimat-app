@@ -8,7 +8,8 @@ import morgan from 'morgan'
 import path from 'path'
 import requestIp from 'request-ip'
 import swaggerUi from 'swagger-ui-express'
-import { origin } from './config.ts'
+import { allowedOrigins } from './config.ts'
+import { isAllowedOrigin } from './core/allowed-urls.ts'
 import authenticationController from './features/authentication/authentication.controller.ts'
 import verificationCodeController from './features/authentication/verification-codes.controller.ts'
 import groupsController from './features/groups/groups.controller.ts'
@@ -40,7 +41,8 @@ app.use((req, _, next) => {
 
 app.use(
   cors({
-    origin,
+    origin: (origin, callback) =>
+      callback(null, origin ? isAllowedOrigin(origin, allowedOrigins) : false),
     credentials: true,
   })
 )
