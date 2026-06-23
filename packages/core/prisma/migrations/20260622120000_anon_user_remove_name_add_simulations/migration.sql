@@ -1,5 +1,6 @@
 -- RedefineView: remove "name" column from AnonUser view
-CREATE OR REPLACE VIEW "ngc_anon"."User" AS
+DROP VIEW IF EXISTS "ngc_anon"."User";
+CREATE VIEW "ngc_anon"."User" AS
 SELECT
     "id",
     "ageRange",
