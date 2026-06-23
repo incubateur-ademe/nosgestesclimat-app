@@ -35,28 +35,25 @@ router.route('/v1/').post(
 
     // Pad the whole request to a constant-time budget so the existence of a
     // user cannot be inferred from response-time differences.
-    return withMinimumDuration(
-      { minMs: minResponseTimeMs, jitterMs: responseTimeJitterMs },
-      async () => {
-        try {
-          const verificationCode = await createVerificationCode({
+    try {
+      const result = await withMinimumDuration(
+        { minMs: minResponseTimeMs, jitterMs: responseTimeJitterMs },
+        async () =>
+          createVerificationCode({
             verificationCodeDto: req.body,
             origin: req.get('origin') || config.app.origin,
             ...req.query,
           })
+      )
+      return res.status(StatusCodes.CREATED).json({
+        email: result.email,
+        expirationDate: result.expirationDate,
+      })
+    } catch (err) {
+      logger.error('VerificationCode creation failed', err)
 
-          // Only expose email and expirationDate to avoid leaking internal data
-          return res.status(StatusCodes.CREATED).json({
-            email: verificationCode.email,
-            expirationDate: verificationCode.expirationDate,
-          })
-        } catch (err) {
-          logger.error('VerificationCode creation failed', err)
-
-          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-        }
-      }
-    )
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
+    }
   }
 )
 

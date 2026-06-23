@@ -14,10 +14,8 @@ export const enum CREATE_VERIFICATION_CODE_ERROR {
 }
 
 export function useCreateVerificationCode({
-  mode,
   onComplete,
 }: {
-  mode?: AuthenticationMode
   onComplete?: (pendingVerification: PendingVerification) => void
 } = {}) {
   const locale = useLocale()
@@ -28,7 +26,6 @@ export function useCreateVerificationCode({
   } = useMutation({
     mutationFn: ({
       email,
-      mode,
     }: {
       email: string
 
@@ -36,7 +33,7 @@ export function useCreateVerificationCode({
     }) =>
       axios
         .post(
-          `${VERIFICATION_CODE_URL}${mode ? `?mode=${mode}` : ''}`,
+          VERIFICATION_CODE_URL,
           {
             email,
           },
@@ -60,7 +57,6 @@ export function useCreateVerificationCode({
 
         const { expirationDate } = await postVerificationCode({
           email,
-          mode,
         })
 
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
@@ -70,7 +66,7 @@ export function useCreateVerificationCode({
         return
       }
     },
-    [mode, onComplete, postVerificationCode]
+    [onComplete, postVerificationCode]
   )
 
   return {

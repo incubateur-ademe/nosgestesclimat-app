@@ -5,10 +5,6 @@ import type { UseMutationResult } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState, type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
-import type { ButtonColor } from '../../design-system/buttons/Button'
-import Trans from '../translation/trans/TransClient'
-import SendVerificationCodeForm from './SendVerificationCodeForm'
-import VerifyCodeForm from './VerifyCodeForm'
 
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import {
@@ -24,6 +20,10 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
+import type { ButtonColor } from '../../design-system/buttons/Button'
+import Trans from '../translation/trans/TransClient'
+import SendVerificationCodeForm from './SendVerificationCodeForm'
+import VerifyCodeForm from './VerifyCodeForm'
 
 interface Props {
   buttonLabel?: string | ReactNode
@@ -122,22 +122,6 @@ export default function AuthenticateUserForm({
           onVerificationCompleted={completeVerification}
           verificationMutation={verificationMutationToUse}
         />
-        {mode === 'signIn' && (
-          <p className="mt-2 text-sm text-gray-500">
-            <Trans i18nKey="signIn.verificationForm.hint.signIn">
-              Vous recevrez un e-mail de connexion uniquement si un compte
-              existe avec cette adresse.
-            </Trans>
-          </p>
-        )}
-        {mode === 'signUp' && (
-          <p className="mt-2 text-sm text-gray-500">
-            <Trans i18nKey="signIn.verificationForm.hint.signUp">
-              Vous recevrez un e-mail d'inscription uniquement si vous n'avez
-              pas déjà un compte avec cette adresse.
-            </Trans>
-          </p>
-        )}
         <Button
           onClick={() => {
             resetVerification()
@@ -157,7 +141,6 @@ export default function AuthenticateUserForm({
       buttonLabel={buttonLabel}
       additionnalButton={additionnalButton}
       buttonColor={buttonColor}
-      mode={mode}
       onCodeSent={(pendingVerification) => {
         registerVerification(pendingVerification)
         trackMatomoEvent__deprecated(signinTrackEvent(mode))

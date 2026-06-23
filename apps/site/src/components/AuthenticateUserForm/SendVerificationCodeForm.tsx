@@ -10,7 +10,6 @@ import { useCreateVerificationCode } from '@/hooks/authentication/useCreateVerif
 import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import type { AuthenticationMode } from '@/types/authentication'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { isEmailValid } from '@/utils/isEmailValid'
 import { type ReactNode } from 'react'
@@ -19,7 +18,6 @@ import { useForm } from 'react-hook-form'
 interface Props {
   buttonLabel?: string | ReactNode
   buttonColor?: ButtonColor
-  mode?: AuthenticationMode
   onCodeSent: (pendingVerification: PendingVerification) => void
   inputLabel?: ReactNode | string
   required?: boolean
@@ -34,7 +32,6 @@ interface FormData {
 export default function SendVerificationCodeForm({
   buttonLabel,
   buttonColor,
-  mode,
   inputLabel,
   onCodeSent,
   additionnalButton,
@@ -48,7 +45,6 @@ export default function SendVerificationCodeForm({
     createVerificationCodePending,
   } = useCreateVerificationCode({
     onComplete: onCodeSent,
-    mode,
   })
 
   const user = useUser().user
