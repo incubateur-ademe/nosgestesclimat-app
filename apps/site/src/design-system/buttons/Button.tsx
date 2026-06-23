@@ -1,3 +1,5 @@
+'use client'
+
 import type { ButtonSize } from '@/types/values'
 import {
   type HtmlHTMLAttributes,
@@ -6,7 +8,6 @@ import {
   type RefObject,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
-import type { LoaderSizes } from '../layout/Loader'
 import Loader from '../layout/Loader'
 import { useButtonState } from './useButtonState'
 
@@ -54,14 +55,6 @@ export const sizeClassNames = {
   md: 'px-4 sm:px-7 py-3 text-sm sm:text-base',
   lg: 'px-8 py-3.5 text-lg',
   xl: 'px-9 py-4 text-xl',
-}
-
-export const loaderSizeMap: Record<ButtonSize, LoaderSizes> = {
-  xs: 'sm',
-  sm: 'sm',
-  md: 'md',
-  lg: 'lg',
-  xl: 'lg',
 }
 
 export const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
@@ -127,11 +120,7 @@ export default function Button({
       )}
       {...props}>
       {showLoader && (
-        <Loader
-          size={loaderSizeMap[size]}
-          color={loaderColorMap[color]}
-          className="mr-2"
-        />
+        <Loader size="sm" color={loaderColorMap[color]} className="mr-2" />
       )}
       {children}
     </button>

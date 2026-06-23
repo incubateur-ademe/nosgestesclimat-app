@@ -16,7 +16,6 @@ import {
   baseClassNames,
   colorClassNames,
   loaderColorMap,
-  loaderSizeMap,
   sizeClassNames,
 } from './Button'
 import { useButtonState } from './useButtonState'
@@ -99,11 +98,7 @@ export default function ButtonLink({
       target={target}
       {...props}>
       {showLoader && (
-        <Loader
-          size={loaderSizeMap[size]}
-          color={loaderColorMap[color]}
-          className="mr-2"
-        />
+        <Loader size="sm" color={loaderColorMap[color]} className="mr-2" />
       )}
       {children}
     </Link>
