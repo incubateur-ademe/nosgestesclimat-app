@@ -138,7 +138,7 @@ describe('Given a NGC integrations API user', () => {
               ],
               templateId: 116,
               params: {
-                API_TOKEN_URL: `https://nosgestesclimat.fr/integrations-api/v1/tokens?code=${code}&email=${encodeURIComponent(email)}`,
+                API_TOKEN_URL: `https://nosgestesclimat.test/integrations-api/v1/tokens?code=${code}&email=${encodeURIComponent(email)}`,
               },
             },
           })

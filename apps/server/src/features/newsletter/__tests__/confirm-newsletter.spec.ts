@@ -97,7 +97,7 @@ describe('Given a NGC user', () => {
           .query({
             code: 'invalid',
             email: faker.internet.email(),
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
           .expect(StatusCodes.BAD_REQUEST)
@@ -111,7 +111,7 @@ describe('Given a NGC user', () => {
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: 'invalid-email',
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
           .expect(StatusCodes.BAD_REQUEST)
@@ -132,14 +132,38 @@ describe('Given a NGC user', () => {
       })
     })
 
-    describe('And invalid origin (not a base URL)', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+    describe('And invalid origin (not in allowed origins list)', () => {
+      test('Then it returns a 400 error for malicious domain', async () => {
         await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: faker.internet.email(),
-            origin: 'https://nosgestesclimat.fr/some-path',
+            origin: 'https://malicious-site.com',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+
+      test('Then it returns a 400 error for subdomain attack', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://attacker.nosgestesclimat.test',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+
+      test('Then it returns a 400 error for similar domain', async () => {
+        await agent
+          .get(url)
+          .query({
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email: faker.internet.email(),
+            origin: 'https://nosgestesclimat.com', // instead of https://nosgestesclimat.test
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
           .expect(StatusCodes.BAD_REQUEST)
@@ -153,7 +177,7 @@ describe('Given a NGC user', () => {
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: faker.internet.email(),
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
             listIds: [999],
           })
           .expect(StatusCodes.BAD_REQUEST)
@@ -179,13 +203,13 @@ describe('Given a NGC user', () => {
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: faker.internet.email().toLocaleLowerCase(),
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
             'listIds[]': [ListIds.MAIN_NEWSLETTER],
           })
           .expect(StatusCodes.MOVED_TEMPORARILY)
 
         expect(response.get('location')).toBe(
-          'https://nosgestesclimat.fr/newsletter-confirmation?success=false&status=500'
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=500'
         )
       })
 
@@ -195,7 +219,7 @@ describe('Given a NGC user', () => {
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: faker.internet.email().toLocaleLowerCase(),
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
             'listIds[]': [ListIds.MAIN_NEWSLETTER],
           })
           .expect(StatusCodes.MOVED_TEMPORARILY)
@@ -250,53 +274,13 @@ describe('Given a NGC user', () => {
               code,
               email,
               'listIds[]': listIds,
-              origin: 'https://nosgestesclimat.fr',
+              origin: 'https://nosgestesclimat.test',
             })
             .expect(StatusCodes.MOVED_TEMPORARILY)
 
           expect(response.get('location')).toBe(
-            'https://nosgestesclimat.fr/newsletter-confirmation?success=true'
+            'https://nosgestesclimat.test/newsletter-confirmation?success=true'
           )
-        })
-
-        describe('And custom user origin (preprod)', () => {
-          test('Then it redirects to a success page on preprod', async () => {
-            mswServer.use(
-              brevoGetContact(email, {
-                customResponses: [
-                  {
-                    body: {
-                      code: 'document_not_found',
-                      message: 'Contact does not exist',
-                    },
-                    status: StatusCodes.NOT_FOUND,
-                  },
-                ],
-              }),
-              brevoUpdateContact({
-                expectBody: {
-                  email,
-                  listIds: [ListIds.MAIN_NEWSLETTER],
-                  attributes: {},
-                  updateEnabled: true,
-                },
-              })
-            )
-
-            const response = await agent
-              .get(url)
-              .query({
-                code,
-                email,
-                'listIds[]': listIds,
-                origin: 'https://preprod.nosgestesclimat.fr',
-              })
-              .expect(StatusCodes.MOVED_TEMPORARILY)
-
-            expect(response.get('location')).toBe(
-              'https://preprod.nosgestesclimat.fr/newsletter-confirmation?success=true'
-            )
-          })
         })
       })
     })
@@ -347,12 +331,12 @@ describe('Given a NGC user', () => {
               code,
               email,
               'listIds[]': listIds,
-              origin: 'https://nosgestesclimat.fr',
+              origin: 'https://nosgestesclimat.test',
             })
             .expect(StatusCodes.MOVED_TEMPORARILY)
 
           expect(response.get('location')).toBe(
-            'https://nosgestesclimat.fr/newsletter-confirmation?success=true'
+            'https://nosgestesclimat.test/newsletter-confirmation?success=true'
           )
         })
       })
@@ -402,12 +386,12 @@ describe('Given a NGC user', () => {
               code,
               email,
               'listIds[]': listIds,
-              origin: 'https://nosgestesclimat.fr',
+              origin: 'https://nosgestesclimat.test',
             })
             .expect(StatusCodes.MOVED_TEMPORARILY)
 
           expect(response.get('location')).toBe(
-            'https://nosgestesclimat.fr/newsletter-confirmation?success=true'
+            'https://nosgestesclimat.test/newsletter-confirmation?success=true'
           )
         })
       })
@@ -434,12 +418,12 @@ describe('Given a NGC user', () => {
             code,
             email,
             'listIds[]': listIds,
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
           })
           .expect(StatusCodes.MOVED_TEMPORARILY)
 
         expect(response.get('location')).toBe(
-          'https://nosgestesclimat.fr/newsletter-confirmation?success=false&status=404'
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
         )
       })
     })
@@ -454,12 +438,12 @@ describe('Given a NGC user', () => {
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
             email: faker.internet.email().toLocaleLowerCase(),
             'listIds[]': [ListIds.MAIN_NEWSLETTER],
-            origin: 'https://nosgestesclimat.fr',
+            origin: 'https://nosgestesclimat.test',
           })
           .expect(StatusCodes.MOVED_TEMPORARILY)
 
         expect(response.get('location')).toBe(
-          'https://nosgestesclimat.fr/newsletter-confirmation?success=false&status=404'
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
         )
       })
     })

@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  isSafariVersionBeforeOrEgalTo18,
   isStorageAccessApiSupported,
   requestStorageAccess,
   requiresStoragePermissions,
@@ -11,8 +12,11 @@ export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
 } => {
-  const [needPermission, setNeedPermission] = useState(() =>
-    isStorageAccessApiSupported()
+  // Only Safari ≤ 18 needs the storage access permission flow.
+  // Use a synchronous Safari check for the initial state to avoid
+  // flashing the overlay on Firefox / Chrome before the async check resolves.
+  const [needPermission, setNeedPermission] = useState(
+    () => isSafariVersionBeforeOrEgalTo18() && isStorageAccessApiSupported()
   )
 
   // On mount, check if storage access is already granted (e.g. after a
