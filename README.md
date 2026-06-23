@@ -18,7 +18,7 @@ Le code utilise Next.js, TypeScript, React, Tailwind CSS, PostgreSQL, Redis, ent
 
 Pré-requis :
 
-- [Node.js 22.14.0](https://nodejs.org/fr/download)
+- [Node.js 24.16.0](https://nodejs.org/fr/download)
 - [pnpm](https://pnpm.io/installation)
 
 ### Via devcontainers (recommandé)

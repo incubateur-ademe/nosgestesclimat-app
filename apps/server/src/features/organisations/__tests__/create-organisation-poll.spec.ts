@@ -438,9 +438,9 @@ describe('Given a NGC user', () => {
                 templateId: 126,
                 params: {
                   ADMINISTRATOR_NAME: null,
-                  DASHBOARD_URL: `https://nosgestesclimat.fr/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
                   POLL_NAME: payload.name,
-                  POLL_URL: `https://nosgestesclimat.fr/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
+                  POLL_URL: `https://nosgestesclimat.test/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
                 },
               },
             }),
@@ -538,9 +538,9 @@ describe('Given a NGC user', () => {
                   templateId: 127,
                   params: {
                     ADMINISTRATOR_NAME: null,
-                    DASHBOARD_URL: `https://nosgestesclimat.fr/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
+                    DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
                     POLL_NAME: payload.name,
-                    POLL_URL: `https://nosgestesclimat.fr/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
+                    POLL_URL: `https://nosgestesclimat.test/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
                   },
                 },
               }),

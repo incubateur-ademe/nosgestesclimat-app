@@ -1,5 +1,6 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { InvalidFallbackURLError } from '../../adapters/2tonnes/client.ts'
 import logger from '../../logger.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import { exportSituation, getPartnerFeatures } from './integrations.service.ts'
@@ -36,6 +37,10 @@ router
 
       return res.status(StatusCodes.OK).json(externalServiceRedirection)
     } catch (err) {
+      if (err instanceof InvalidFallbackURLError) {
+        return res.status(StatusCodes.BAD_REQUEST).end()
+      }
+
       logger.error('Situation export failed', err)
 
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()

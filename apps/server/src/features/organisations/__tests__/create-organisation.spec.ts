@@ -297,7 +297,7 @@ describe('Given a NGC user', () => {
               params: {
                 ADMINISTRATOR_NAME: administratorPayload.name,
                 ORGANISATION_NAME: payload.name,
-                DASHBOARD_URL: `https://nosgestesclimat.fr/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
               },
             },
           }),
@@ -383,7 +383,7 @@ describe('Given a NGC user', () => {
                 params: {
                   ADMINISTRATOR_NAME: administratorPayload.name,
                   ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://nosgestesclimat.fr/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
                 },
               },
             }),
@@ -431,7 +431,7 @@ describe('Given a NGC user', () => {
                     .split('\n_\n')
                     .join(' '),
                   ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://nosgestesclimat.fr/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
                 },
               },
             }),
