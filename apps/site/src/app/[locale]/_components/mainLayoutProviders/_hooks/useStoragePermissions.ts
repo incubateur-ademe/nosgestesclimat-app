@@ -34,8 +34,9 @@ export const useStoragePermissions = (): {
       await requestStorageAccess()
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
-    } catch {
-      // Do nothing
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[StorageAccess] requestStorageAccess failed:', error)
     }
   }, [])
 
