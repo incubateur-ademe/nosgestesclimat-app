@@ -99,7 +99,7 @@
       allowfullscreen: true,
       webkitallowfullscreen: true,
       mozallowfullscreen: true,
-      allow: 'fullscreen; storage-access',
+      allow: 'fullscreen',
       id: 'iframeNGC',
       style: `border: none; width: 100%; display: block; height: 801px; ${
         script.dataset.maxHeight

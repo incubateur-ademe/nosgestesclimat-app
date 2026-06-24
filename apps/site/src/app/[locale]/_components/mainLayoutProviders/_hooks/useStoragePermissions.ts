@@ -20,7 +20,7 @@ export const useStoragePermissions = (): {
     requiresStoragePermissions()
       .then(setNeedPermission)
       .catch(() => {
-        // Keep the conservative default (true)
+        // Keep the conservative default (false)
       })
   }, [])
 
@@ -36,7 +36,7 @@ export const useStoragePermissions = (): {
 
   return {
     needPermission,
-    askForPermission: () => askForPermission(),
+    askForPermission,
     hasError,
   }
 }

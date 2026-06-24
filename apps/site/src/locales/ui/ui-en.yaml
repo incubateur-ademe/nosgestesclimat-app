@@ -2045,12 +2045,8 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
-  iframe.safari.error: Your browser does not allow access to local storage from this embedded page.
-  iframe.safari.error.lock: Votre navigateur ne permet pas l'accès au stockage local depuis cette page intégrée.
   iframe.safari.openInNewTab: Open the calculator in a new tab
   iframe.safari.openInNewTab.lock: Ouvrir le calculateur dans un nouvel onglet
-  iframe.safari.retry: Try again
-  iframe.safari.retry.lock: Réessayer
   iframe.safari.errorTitle: Incompatible version of Safari
   iframe.safari.errorTitle.lock: Version de Safari incompatible
   iframe.safari.errorDescription: Your version of Safari does not allow our website to function correctly on this embedded page. To use the calculator, please update your Safari browser to the latest version or open the calculator in a new window.
