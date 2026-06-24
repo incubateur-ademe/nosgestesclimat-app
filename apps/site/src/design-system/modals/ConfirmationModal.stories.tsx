@@ -18,7 +18,7 @@ const meta: Meta<typeof ConfirmationModal> = {
       action: 'closed',
       description: 'Handler for closing the modal',
     },
-    isLoading: {
+    loading: {
       control: 'boolean',
       description: 'Whether the modal is in loading state',
     },
@@ -58,7 +58,7 @@ export const WithLongContent: Story = {
 
 export const Loading: Story = {
   args: {
-    isLoading: true,
+    loading: true,
     children: (
       <div>
         <h2 className="mb-4 text-xl font-bold">Traitement en cours</h2>

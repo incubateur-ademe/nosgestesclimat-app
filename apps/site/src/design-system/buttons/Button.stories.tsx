@@ -24,9 +24,18 @@ const meta: Meta<typeof Button> = {
       control: 'boolean',
       description: 'Whether the button is disabled',
     },
+    loading: {
+      control: 'boolean',
+      description: 'Whether the button is in a loading state (shows a spinner and auto-disables)',
+    },
     onClick: {
       action: 'clicked',
       description: 'Optional click handler',
+    },
+    showLoadingOnClickWhilePending: {
+      control: 'boolean',
+      description:
+        'Auto-disables the button after the first click to prevent double submission',
     },
   },
 }
@@ -92,5 +101,35 @@ export const Disabled: Story = {
   args: {
     children: 'Disabled Button',
     disabled: true,
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    children: 'Loading Button',
+    loading: true,
+  },
+}
+
+export const LoadingSecondary: Story = {
+  args: {
+    children: 'Loading Secondary',
+    color: 'secondary',
+    loading: true,
+  },
+}
+
+export const ClickOnce: Story = {
+  args: {
+    children: 'Click me once',
+    showLoadingOnClickWhilePending: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'After the first click, the button auto-disables itself to prevent duplicate submissions.',
+      },
+    },
   },
 }
