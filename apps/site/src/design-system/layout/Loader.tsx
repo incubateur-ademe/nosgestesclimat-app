@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge'
 
-type LoaderSizes = 'sm' | 'md' | 'lg'
+export type LoaderSizes = 'sm' | 'md' | 'lg'
 
 interface Props {
   size?: LoaderSizes

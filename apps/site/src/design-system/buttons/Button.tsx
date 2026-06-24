@@ -1,11 +1,15 @@
+'use client'
+
 import type { ButtonSize } from '@/types/values'
-import type {
-  HtmlHTMLAttributes,
-  MouseEventHandler,
-  PropsWithChildren,
-  RefObject,
+import {
+  type HtmlHTMLAttributes,
+  type MouseEventHandler,
+  type PropsWithChildren,
+  type RefObject,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
+import Loader from '../layout/Loader'
+import { useButtonState } from './useButtonState'
 
 export type ButtonColor =
   | 'primary'
@@ -23,10 +27,12 @@ export type ButtonProps = {
   color?: ButtonColor
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
+  loading?: boolean
   id?: string
   title?: string
   form?: string
   ref?: RefObject<HTMLButtonElement | null>
+  showLoadingOnClickWhilePending?: boolean
 } & PropsWithChildren
 
 export const colorClassNames = {
@@ -51,6 +57,16 @@ export const sizeClassNames = {
   xl: 'px-9 py-4 text-xl',
 }
 
+export const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
+  primary: 'light',
+  secondary: 'dark',
+  success: 'light',
+  text: 'dark',
+  link: 'dark',
+  borderless: 'dark',
+  red: 'light',
+}
+
 export const baseClassNames =
   'inline-flex items-center opacity-100! justify-center whitespace-nowrap rounded-full font-bold no-underline transition-colors aria-disabled:opacity-50 leading-none!'
 
@@ -62,24 +78,38 @@ export default function Button({
   color = 'primary',
   type,
   disabled,
+  loading,
   id,
   title,
   form,
   ref,
+  showLoadingOnClickWhilePending,
   ...props
 }: PropsWithChildren<ButtonProps & HtmlHTMLAttributes<HTMLButtonElement>>) {
+  const { isDisabled, showLoader, startTransition } = useButtonState({
+    disabled,
+    loading,
+    showLoadingOnClick: showLoadingOnClickWhilePending,
+  })
+
   return (
     <button
       onClick={
-        disabled
+        isDisabled
           ? (e) => {
               e.preventDefault()
             }
-          : onClick
+          : showLoadingOnClickWhilePending
+            ? (e) => {
+                startTransition(() => {
+                  onClick?.(e)
+                })
+              }
+            : onClick
       }
       ref={ref}
       type={type}
-      aria-disabled={disabled}
+      aria-disabled={isDisabled}
       title={title}
       form={form}
       id={id}
@@ -87,10 +117,13 @@ export default function Button({
         baseClassNames,
         sizeClassNames[size],
         colorClassNames[color],
-        disabled && 'cursor-not-allowed opacity-50!',
+        isDisabled && 'cursor-not-allowed opacity-50!',
         className
       )}
       {...props}>
+      {showLoader && (
+        <Loader size="sm" color={loaderColorMap[color]} className="mr-2" />
+      )}
       {children}
     </button>
   )

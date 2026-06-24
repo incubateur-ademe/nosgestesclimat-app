@@ -3,15 +3,22 @@
 import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
-import type {
-  HtmlHTMLAttributes,
-  KeyboardEvent,
-  MouseEvent,
-  PropsWithChildren,
+import {
+  type HtmlHTMLAttributes,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PropsWithChildren,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
+import Loader from '../layout/Loader'
 import type { ButtonColor } from './Button'
-import { baseClassNames, colorClassNames, sizeClassNames } from './Button'
+import {
+  baseClassNames,
+  colorClassNames,
+  loaderColorMap,
+  sizeClassNames,
+} from './Button'
+import { useButtonState } from './useButtonState'
 
 interface Props {
   href: string
@@ -23,6 +30,9 @@ interface Props {
   onKeyDown?: (e: KeyboardEvent<HTMLAnchorElement>) => void
   trackingEvent?: (string | null)[]
   target?: string
+  loading?: boolean
+  disabled?: boolean
+  showLoadingOnClick?: boolean
 }
 
 export default function ButtonLink({
@@ -36,12 +46,29 @@ export default function ButtonLink({
   onKeyDown,
   trackingEvent,
   target = '_self',
+  loading,
+  disabled,
+  showLoadingOnClick = false,
   ...props
 }: PropsWithChildren<Props & HtmlHTMLAttributes<HTMLAnchorElement>>) {
+  const { isDisabled, showLoader, clickOnce } = useButtonState({
+    disabled,
+    loading,
+    showLoadingOnClick,
+  })
+
   return (
     <Link
       href={href}
       onClick={(e) => {
+        if (isDisabled) {
+          e.preventDefault()
+          return
+        }
+
+        // Auto-disable link after click
+        if (showLoadingOnClick) clickOnce()
+
         if (onClick) {
           onClick(e)
         }
@@ -50,6 +77,9 @@ export default function ButtonLink({
         }
       }}
       onKeyDown={(e) => {
+        if (isDisabled) {
+          return
+        }
         if (onKeyDown) {
           onKeyDown(e)
         }
@@ -59,12 +89,17 @@ export default function ButtonLink({
         }
       }}
       title={title}
+      aria-disabled={isDisabled}
       className={twMerge(
         `${baseClassNames} ${sizeClassNames[size]} ${colorClassNames[color]}`,
+        isDisabled && 'cursor-not-allowed opacity-50!',
         className
       )}
       target={target}
       {...props}>
+      {showLoader && (
+        <Loader size="sm" color={loaderColorMap[color]} className="mr-2" />
+      )}
       {children}
     </Link>
   )
