@@ -64,7 +64,7 @@ export default function RankingMember({
 
   const { isGroupOwner } = useIsGroupOwner({ group })
 
-  const { mutateAsync: removePartipant } = useRemoveParticipant()
+  const { mutateAsync: removePartipant, isPending } = useRemoveParticipant()
 
   const { formattedValue, unit } = formatFootprint(
     participant.simulation.computedResults?.[metric]?.bilan ?? '',
@@ -170,6 +170,7 @@ export default function RankingMember({
             {isConfirmationModalOpen && (
               <ConfirmationModal
                 onConfirm={handleDelete}
+                loading={isPending}
                 ariaLabel={t(
                   'group.results.rankingMember.delete.modal.ariaLabel',
                   'Fenêtre modale de confirmation de suppression du membre du groupe'

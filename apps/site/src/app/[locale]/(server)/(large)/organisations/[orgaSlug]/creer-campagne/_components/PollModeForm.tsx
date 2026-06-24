@@ -25,7 +25,13 @@ export default function PollModeForm({ organisation }: Props) {
   return (
     <form
       className="mt-2"
-      onSubmit={isPending ? () => {} : onSubmit}
+      onSubmit={(e) => {
+        if (isPending) {
+          e.preventDefault()
+          return
+        }
+        void onSubmit(e)
+      }}
       id="poll-form">
       <fieldset>
         <legend className="sr-only">
@@ -119,7 +125,7 @@ export default function PollModeForm({ organisation }: Props) {
 
       <Button
         type="submit"
-        disabled={isPending}
+        loading={isPending}
         data-testid="poll-form-type-button"
         form="poll-form"
         className="mt-8 w-full sm:w-auto md:self-start">

@@ -21,7 +21,13 @@ export default function PollNameForm({ organisation }: Props) {
     <form
       className="flex flex-col gap-8"
       noValidate
-      onSubmit={isPending ? () => {} : onSubmit}
+      onSubmit={(e) => {
+        if (isPending) {
+          e.preventDefault()
+          return
+        }
+        void onSubmit(e)
+      }}
       id="poll-form">
       <TextInput
         label={
@@ -83,7 +89,7 @@ export default function PollNameForm({ organisation }: Props) {
 
       <Button
         type="submit"
-        disabled={isPending}
+        loading={isPending}
         data-testid="poll-form-name-button"
         form="poll-form"
         className="self-start">
