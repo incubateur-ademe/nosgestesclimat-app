@@ -2,7 +2,7 @@ import type { ButtonSize } from '@/types/values'
 import Link from 'next/link'
 import type { HtmlHTMLAttributes, PropsWithChildren } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { baseClassNames, colorClassNames, sizeClassNames } from './Button'
+import { baseClassNames, colorClassNames, sizeClassNames } from './buttonStyles'
 
 interface Props {
   href: string
