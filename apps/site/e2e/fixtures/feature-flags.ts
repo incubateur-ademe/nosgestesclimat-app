@@ -7,7 +7,7 @@ const DOMAIN = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
 
 export const DEFAULT_FLAGS = {
   'actions-v2': false,
-  'ab-test-question-tranche-dage': 'control',
+  'mode-scolaire': true,
 } satisfies DefaultFlagValues
 
 export class FeatureFlags {
