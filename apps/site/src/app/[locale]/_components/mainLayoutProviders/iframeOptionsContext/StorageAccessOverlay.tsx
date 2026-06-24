@@ -43,7 +43,7 @@ export default function StorageAccessOverlay({
             {hasError ? (
               <Alert
                 type="error"
-                className="mt-4"
+                className="my-4"
                 title={
                   <Trans i18nKey="iframe.safari.errorTitle">
                     Version de Safari incompatible
