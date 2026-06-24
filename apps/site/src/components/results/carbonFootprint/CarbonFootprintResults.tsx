@@ -39,8 +39,8 @@ export default function CarbonFootprintResults({
         }
         metric="carbone"
         unitSuffix={
-          <Trans locale={locale} i18nKey="common.co2eAn">
-            CO₂e / an
+          <Trans locale={locale} i18nKey="common.co2eAn.title">
+            CO₂e / an
           </Trans>
         }
       />
