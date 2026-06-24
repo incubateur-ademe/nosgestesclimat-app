@@ -34,15 +34,10 @@ export default function FootprintBarChart({
     t,
   })
 
-  // Convert to tonnes for consistent display
-  const groupFootprintInTonnes =
-    groupFootprint >= 1000 ? groupFootprint / 1000 : groupFootprint
-  const userFootprintInTonnes =
-    userFootprint && userFootprint >= 1000
-      ? userFootprint / 1000
-      : userFootprint
-  const targetValueInTonnes =
-    targetValue >= 1000 ? targetValue / 1000 : targetValue
+  // Values are in kg CO2e — always convert to tonnes for consistent display
+  const groupFootprintInTonnes = groupFootprint / 1000
+  const userFootprintInTonnes = userFootprint ? userFootprint / 1000 : undefined
+  const targetValueInTonnes = targetValue
 
   const maxValue =
     Math.ceil(
