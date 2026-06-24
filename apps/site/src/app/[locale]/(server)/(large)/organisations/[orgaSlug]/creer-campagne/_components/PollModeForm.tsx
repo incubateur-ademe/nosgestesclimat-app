@@ -3,7 +3,6 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Badge from '@/design-system/layout/Badge'
-import { useFeatureFlag } from '@/hooks/useFeatureFlag'
 import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
@@ -19,8 +18,6 @@ export default function PollModeForm({ organisation }: Props) {
     organisationSlug: organisation.slug,
     revalidatePath: revalidationOrganisationPath,
   })
-
-  const modeScolaireEnabled = useFeatureFlag('mode-scolaire')
 
   return (
     <form
@@ -44,9 +41,6 @@ export default function PollModeForm({ organisation }: Props) {
               key={mode.value}
               className={twMerge(
                 'group relative flex flex-1 cursor-pointer flex-col items-center rounded-xl border px-2 py-4 transition-all has-checked:shadow-lg md:w-60 md:flex-none md:p-6',
-                mode.value === 'scolaire' &&
-                  !modeScolaireEnabled &&
-                  'grayscale',
                 index === 0
                   ? 'border-violet-500 bg-violet-50 hover:border-violet-700 has-checked:border-violet-700'
                   : 'border-slate-500 bg-slate-50 hover:border-slate-700 has-checked:border-slate-700'
@@ -70,7 +64,6 @@ export default function PollModeForm({ organisation }: Props) {
                 type="radio"
                 value={mode.value}
                 className="sr-only"
-                disabled={mode.value === 'scolaire' && !modeScolaireEnabled}
                 defaultChecked={mode.value === 'standard'}
                 {...register('mode')}
               />
@@ -93,22 +86,14 @@ export default function PollModeForm({ organisation }: Props) {
                 className="my-auto mb-6"
               />
 
-              {mode.value === 'scolaire' && !modeScolaireEnabled ? (
-                <p
-                  id={`${mode.value}-soon-available`}
-                  className="border-secondary-200 bg-secondary-50 text-secondary-800 flex items-center justify-center rounded-xl border-2 px-4 py-1.5 text-sm font-medium">
-                  <Trans>Bientôt disponible</Trans>
-                </p>
-              ) : (
-                <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
-                  <Trans>Sélectionner</Trans>
+              <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
+                <Trans>Sélectionner</Trans>
 
-                  {/* Desktop radio dot */}
-                  <span className="group-has-checked:border-primary-700 hidden h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 md:flex">
-                    <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
-                  </span>
+                {/* Desktop radio dot */}
+                <span className="group-has-checked:border-primary-700 hidden h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 md:flex">
+                  <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
                 </span>
-              )}
+              </span>
             </label>
           ))}
         </div>
