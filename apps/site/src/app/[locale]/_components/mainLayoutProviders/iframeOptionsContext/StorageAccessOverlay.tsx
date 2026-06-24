@@ -1,7 +1,9 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
+import Alert from '@/design-system/alerts/alert/Alert'
 import Button from '@/design-system/buttons/Button'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 
 interface Props {
@@ -37,16 +39,31 @@ export default function StorageAccessOverlay({
             </Trans>
           </p>
 
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="mt-4">
             {hasError ? (
-              <>
-                <p className="mb-0 text-sm text-red-600">
-                  <Trans i18nKey="iframe.safari.error">
-                    Votre navigateur ne permet pas l'accès au stockage local
-                    depuis cette page intégrée.
+              <Alert
+                type="error"
+                className="mt-4"
+                title={
+                  <Trans i18nKey="iframe.safari.errorTitle">
+                    Version de Safari incompatible
                   </Trans>
-                </p>
-                <a
+                }
+                description={
+                  <Trans i18nKey="iframe.safari.errorDescription">
+                    Votre version de Safari ne permet pas à notre site de
+                    fonctionner correctement dans cette page intégrée. Pour
+                    utiliser le calculateur, mettez à jour votre navigateur
+                    Safari vers la dernière version ou ouvrez le calculateur
+                    dans une nouvelle fenêtre.
+                  </Trans>
+                }
+              />
+            ) : null}
+
+            <div className="flex flex-col items-center gap-4">
+              {hasError ? (
+                <ButtonLink
                   href={
                     typeof window !== 'undefined'
                       ? window.location.origin
@@ -54,20 +71,18 @@ export default function StorageAccessOverlay({
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-700 text-center text-sm underline">
+                  color="secondary"
+                  className="mt-2">
                   <Trans i18nKey="iframe.safari.openInNewTab">
                     Ouvrir le calculateur dans un nouvel onglet
                   </Trans>
-                </a>
-                <Button onClick={onAskPermission} color="secondary" size="sm">
-                  <Trans i18nKey="iframe.safari.retry">Réessayer</Trans>
+                </ButtonLink>
+              ) : (
+                <Button onClick={onAskPermission}>
+                  <Trans i18nKey="iframe.safari.askPermission">Autoriser</Trans>
                 </Button>
-              </>
-            ) : (
-              <Button onClick={onAskPermission}>
-                <Trans i18nKey="iframe.safari.askPermission">Autoriser</Trans>
-              </Button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </Card>

@@ -2051,3 +2051,7 @@ entries:
   iframe.safari.openInNewTab.lock: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.retry: Try again
   iframe.safari.retry.lock: Réessayer
+  iframe.safari.errorTitle: Incompatible version of Safari
+  iframe.safari.errorTitle.lock: Version de Safari incompatible
+  iframe.safari.errorDescription: Your version of Safari does not allow our website to function correctly on this embedded page. To use the calculator, please update your Safari browser to the latest version or open the calculator in a new window.
+  iframe.safari.errorDescription.lock: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
