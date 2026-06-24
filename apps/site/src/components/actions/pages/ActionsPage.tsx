@@ -1,4 +1,3 @@
-import Trans from '@/components/translation/trans/TransServer'
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
@@ -8,7 +7,14 @@ import { twMerge } from 'tailwind-merge'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
-interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
+
+interface ActionsPageProps extends Omit<
+  React.ComponentPropsWithoutRef<'div'>,
+  'title'
+> {
+  title: React.ReactNode
+  description: React.ReactNode
+  cta?: React.ReactNode
   topActions?: PersonalizedAction[]
   themes: Theme[]
   actions: PersonalizedAction[]
@@ -17,6 +23,9 @@ interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 export default function ActionsPage({
+  title,
+  description,
+  cta,
   topActions,
   actions,
   themes,
@@ -32,16 +41,9 @@ export default function ActionsPage({
 
       <div {...props} className={twMerge('pb-24', className)}>
         <div className="mb-10">
-          <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
-            <Trans locale={locale} i18nKey="actions.listPage.title">
-              Vos actions personnalisées pour diminuer votre empreinte
-            </Trans>
-          </h1>
+          <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">{title}</h1>
           <p className="text-base/normal text-slate-500 md:text-lg/normal">
-            <Trans locale={locale} i18nKey="actions.listPage.description">
-              Ces actions sont personnalisées selon vos réponses au test.
-              Choisissez celles qui vous semblent atteignables et lancez-vous !
-            </Trans>
+            {description}
           </p>
         </div>
 
@@ -55,6 +57,13 @@ export default function ActionsPage({
             />
             <Separator variant="full" className="my-10 hidden md:block" />
           </>
+        )}
+
+        {cta && (
+          <section className="mb-10">
+            {cta}
+            <Separator variant="full" className="mt-10 hidden md:block" />
+          </section>
         )}
 
         <div className="relative flex flex-col gap-5 md:gap-10">

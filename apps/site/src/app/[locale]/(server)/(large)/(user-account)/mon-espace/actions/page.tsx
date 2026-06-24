@@ -46,6 +46,18 @@ export default async function MonEspaceActionsPage({
       {flag && maybePersonalizedActionsCatalogue ? (
         <div className="pt-4">
           <ActionsPage
+            title={
+              <Trans locale={locale} i18nKey="actions.listPage.title">
+                Vos actions personnalisées pour diminuer votre empreinte
+              </Trans>
+            }
+            description={
+              <Trans locale={locale} i18nKey="actions.listPage.description">
+                Ces actions sont personnalisées selon vos réponses au test.
+                Choisissez celles qui vous semblent atteignables et lancez-vous
+                !
+              </Trans>
+            }
             topActions={maybePersonalizedActionsCatalogue.topActions}
             actions={maybePersonalizedActionsCatalogue.actions}
             assessmentStatus={
