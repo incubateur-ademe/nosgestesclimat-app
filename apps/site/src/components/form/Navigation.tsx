@@ -1,6 +1,7 @@
 'use client'
 
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { useRouter } from 'next/navigation'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -15,6 +16,7 @@ import {
   questionClickPrevious,
   questionClickSuivant,
 } from '@/constants/tracking/question'
+import { useCommitting } from '@/contexts/CommitingContext'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
@@ -32,7 +34,6 @@ import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
-import { useRouter } from 'next/navigation'
 
 type SubmitButtonKind = 'loading' | 'finish' | 'next'
 
@@ -98,6 +99,8 @@ export default function Navigation({
 
   const [persistedRemainingQuestions] = useState(remainingQuestions)
 
+  const { isCommitting } = useCommitting()
+
   const {
     gotoPrevQuestion,
     noPrevQuestion,
@@ -141,8 +144,7 @@ export default function Navigation({
     }
   }, [hasActiveNotifications, setNotificationValue])
 
-  const { updateCurrentSimulation } = useCurrentSimulation()
-
+  const { updateCurrentSimulation, progression } = useCurrentSimulation()
   // Check if the numeric value is out of bounds (floor/ceiling)
   const isNextDisabled =
     typeof situationValue === 'number'
@@ -354,7 +356,8 @@ export default function Navigation({
     ),
   }[submitButtonKind]
 
-  const submitButtonIsDisabled = isPending || isNextDisabled || !isFolded
+  const submitButtonIsDisabled =
+    isPending || isCommitting || isNextDisabled || !isFolded
 
   const submitButtonColor = 'primary'
 

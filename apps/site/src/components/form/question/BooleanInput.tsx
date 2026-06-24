@@ -1,6 +1,6 @@
 import ChoiceInput from '@/components/misc/ChoiceInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { requestIdleCallback } from '@/utils/requestIdleCallback'
+import { useCommitValue } from '@/hooks/useCommitValue'
 import type { NodeValue } from '@incubateur-ademe/nosgestesclimat'
 import { useState } from 'react'
 
@@ -22,6 +22,8 @@ export default function BooleanInput({
   const { t } = useClientTranslation()
   const [currentValue, setCurrentValue] = useState(value)
 
+  const commitValue = useCommitValue(setValue)
+
   return (
     <fieldset className="flex flex-col gap-2">
       <legend className="sr-only">{label}</legend>
@@ -33,10 +35,10 @@ export default function BooleanInput({
         onClick={() => {
           if (currentValue === true) {
             setCurrentValue(undefined)
-            requestIdleCallback(() => setValue(undefined))
+            commitValue(undefined)
           } else {
             setCurrentValue(true)
-            requestIdleCallback(() => setValue('oui'))
+            commitValue('oui')
           }
         }}
         {...props}
@@ -51,10 +53,10 @@ export default function BooleanInput({
         onClick={() => {
           if (currentValue === false) {
             setCurrentValue(undefined)
-            requestIdleCallback(() => setValue(undefined))
+            commitValue(undefined)
           } else {
             setCurrentValue(false)
-            requestIdleCallback(() => setValue('non'))
+            commitValue('non')
           }
         }}
         {...props}

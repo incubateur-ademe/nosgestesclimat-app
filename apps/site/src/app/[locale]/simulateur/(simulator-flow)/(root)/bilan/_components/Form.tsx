@@ -8,8 +8,9 @@ import { getBgCategoryColor } from '@/helpers/getCategoryColorClass'
 import { useIframe } from '@/hooks/useIframe'
 
 import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/(root)/bilan/_components/summary/CategoryIllustration'
+import { CommittingContext } from '@/contexts/CommitingContext'
 import { useFormState } from '@/publicodes-state'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { useEndTest } from '../_hooks/useEndPage'
 import FunFact from './form/FunFact'
@@ -28,6 +29,8 @@ export default function Form() {
 
   const { isIframe } = useIframe()
 
+  const [isCommitting, setIsCommitting] = useState(false)
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [currentQuestion])
@@ -39,7 +42,7 @@ export default function Form() {
   const QuestionComponent = questions[currentQuestion] || Question
 
   return (
-    <>
+    <CommittingContext.Provider value={{ isCommitting, setIsCommitting }}>
       <ContentLarge className="px-4 pt-2">
         <ResultsBlockMobile />
 
@@ -87,6 +90,6 @@ export default function Form() {
           isPending={isPending}
         />
       )}
-    </>
+    </CommittingContext.Provider>
   )
 }
