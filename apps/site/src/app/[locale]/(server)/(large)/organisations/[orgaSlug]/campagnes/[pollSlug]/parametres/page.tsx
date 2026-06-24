@@ -38,8 +38,8 @@ export default function ParametresPage() {
     status: updatePollStatus,
     isError: isErrorUpdate,
   } = useUpdatePoll({
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ['organisations', organisation?.slug, 'polls', pollIdOrSlug],
       })
     },
@@ -75,7 +75,7 @@ export default function ParametresPage() {
           title={
             <span>
               <Trans>Paramètres de</Trans>{' '}
-              <span className="text-secondary-700">{poll?.name}</span>
+              <span className="text-secondary-700">{poll.name}</span>
             </span>
           }
         />
@@ -83,9 +83,9 @@ export default function ParametresPage() {
         {isErrorUpdate && <DefaultSubmitErrorMessage />}
 
         <NameForm
-          nameValue={poll?.name ?? ''}
+          nameValue={poll.name}
           expectedNumberOfParticipants={
-            poll?.expectedNumberOfParticipants ?? undefined
+            poll.expectedNumberOfParticipants ?? undefined
           }
           updatePoll={updateAndRefetchPoll}
           updatePollStatus={updatePollStatus}
