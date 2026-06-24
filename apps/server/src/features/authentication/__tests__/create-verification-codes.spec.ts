@@ -12,10 +12,7 @@ import {
   vi,
 } from 'vitest'
 import { brevoSendEmail } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import {
-  VerificationCodeMode,
-  type VerifiedUser,
-} from '../../../adapters/prisma/generated.ts'
+import type { VerifiedUser } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
@@ -83,9 +80,6 @@ describe('Given a NGC user', () => {
         .expect(StatusCodes.CREATED)
 
       expect(response.body).toEqual({
-        id: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
         expirationDate: expect.any(String),
         ...payload,
       })
@@ -191,195 +185,71 @@ describe('Given a NGC user', () => {
       })
     })
 
-    describe(`And ${VerificationCodeMode.signUp} mode`, () => {
-      describe('And new user', () => {
-        test(`Then it returns a ${StatusCodes.CREATED} response with the created verification code`, async () => {
-          const payload = {
-            email: faker.internet.email().toLocaleLowerCase(),
-          }
+    describe('And the user already exists', () => {
+      let user: Pick<VerifiedUser, 'id' | 'email'>
 
-          mswServer.use(brevoSendEmail())
+      beforeEach(async () => {
+        user = {
+          email: faker.internet.email().toLocaleLowerCase(),
+          id: faker.string.uuid(),
+        }
 
-          const response = await agent
-            .post(url)
-            .send(payload)
-            .query({
-              mode: VerificationCodeMode.signUp,
-            })
-            .expect(StatusCodes.CREATED)
-
-          expect(response.body).toEqual({
-            id: expect.any(String),
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-            expirationDate: expect.any(String),
-            ...payload,
-          })
-        })
-
-        test('Then it stores a verification code valid 1 hour in database', async () => {
-          const payload = {
-            email: faker.internet.email().toLocaleLowerCase(),
-          }
-
-          mswServer.use(brevoSendEmail())
-
-          const now = Date.now()
-          const oneHour = 1000 * 60 * 60
-
-          await agent
-            .post(url)
-            .send(payload)
-            .query({
-              mode: VerificationCodeMode.signUp,
-            })
-            .expect(StatusCodes.CREATED)
-
-          const [verificationCode] = await prisma.verificationCode.findMany()
-
-          expect(verificationCode).toMatchObject({
-            ...payload,
-            id: expect.any(String),
-            code,
-            mode: VerificationCodeMode.signUp,
-            expirationDate: expect.any(Date),
-            createdAt: expect.any(Date),
-            updatedAt: expect.any(Date),
-          })
-
-          // Hopefully code gets created under 1 second
-          expect(
-            Math.floor(
-              (verificationCode.expirationDate.getTime() - now - oneHour) / 1000
-            )
-          ).toBe(0)
+        await prisma.verifiedUser.create({
+          data: user,
         })
       })
 
-      describe('And existing user', () => {
-        let user: Pick<VerifiedUser, 'id' | 'email'>
+      test(`Then it returns a ${StatusCodes.CREATED} response with the created verification code`, async () => {
+        const payload = {
+          email: user.email,
+        }
 
-        beforeEach(async () => {
-          user = {
-            email: faker.internet.email().toLocaleLowerCase(),
-            id: faker.string.uuid(),
-          }
+        mswServer.use(brevoSendEmail())
 
-          await prisma.verifiedUser.create({
-            data: user,
-          })
+        const response = await agent
+          .post(url)
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        expect(response.body).toEqual({
+          expirationDate: expect.any(String),
+          ...payload,
+        })
+      })
+
+      test('Then it stores a verification code valid 1 hour in database', async () => {
+        const payload = {
+          email: user.email,
+        }
+
+        mswServer.use(brevoSendEmail())
+
+        const now = Date.now()
+        const oneHour = 1000 * 60 * 60
+
+        await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+
+        const [verificationCode] = await prisma.verificationCode.findMany()
+
+        expect(verificationCode).toMatchObject({
+          ...payload,
+          id: expect.any(String),
+          code,
+          mode: null,
+          expirationDate: expect.any(Date),
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
         })
 
-        test(`Then it returns a ${StatusCodes.CONFLICT} error`, async () => {
-          const payload = {
-            email: user.email,
-          }
-
-          await agent
-            .post(url)
-            .send(payload)
-            .query({
-              mode: VerificationCodeMode.signUp,
-            })
-            .expect(StatusCodes.CONFLICT)
-        })
+        // Hopefully code gets created under 1 second
+        expect(
+          Math.floor(
+            (verificationCode.expirationDate.getTime() - now - oneHour) / 1000
+          )
+        ).toBe(0)
       })
     })
 
-    describe(`And ${VerificationCodeMode.signIn} mode`, () => {
-      describe('And new user', () => {
-        test(`Then it returns a ${StatusCodes.CONFLICT} error`, async () => {
-          const payload = {
-            email: faker.internet.email().toLocaleLowerCase(),
-          }
-
-          await agent
-            .post(url)
-            .send(payload)
-            .query({
-              mode: VerificationCodeMode.signIn,
-            })
-            .expect(StatusCodes.CONFLICT)
-        })
-      })
-
-      describe('And existing user', () => {
-        let user: Pick<VerifiedUser, 'id' | 'email'>
-
-        beforeEach(async () => {
-          user = {
-            id: faker.string.uuid(),
-            email: faker.internet.email().toLocaleLowerCase(),
-          }
-
-          await prisma.verifiedUser.create({
-            data: user,
-          })
-        })
-
-        test(`Then it returns a ${StatusCodes.CREATED} response with the created verification code`, async () => {
-          const payload = {
-            email: user.email,
-          }
-
-          mswServer.use(brevoSendEmail())
-
-          const response = await agent
-            .post(url)
-            .send(payload)
-            .query({
-              mode: VerificationCodeMode.signIn,
-            })
-            .expect(StatusCodes.CREATED)
-
-          expect(response.body).toEqual({
-            id: expect.any(String),
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-            expirationDate: expect.any(String),
-            ...payload,
-          })
-        })
-
-        test('Then it stores a verification code valid 1 hour in database', async () => {
-          const payload = {
-            email: user.email,
-          }
-
-          mswServer.use(brevoSendEmail())
-
-          const now = Date.now()
-          const oneHour = 1000 * 60 * 60
-
-          await agent
-            .post(url)
-            .send(payload)
-            .query({
-              mode: VerificationCodeMode.signIn,
-            })
-            .expect(StatusCodes.CREATED)
-
-          const [verificationCode] = await prisma.verificationCode.findMany()
-
-          expect(verificationCode).toMatchObject({
-            ...payload,
-            id: expect.any(String),
-            code,
-            mode: VerificationCodeMode.signIn,
-            expirationDate: expect.any(Date),
-            createdAt: expect.any(Date),
-            updatedAt: expect.any(Date),
-          })
-
-          // Hopefully code gets created under 1 second
-          expect(
-            Math.floor(
-              (verificationCode.expirationDate.getTime() - now - oneHour) / 1000
-            )
-          ).toBe(0)
-        })
-      })
-    })
     describe('And several times', () => {
       let payload: VerificationCodeCreateDto
       let email: string

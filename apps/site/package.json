@@ -8,9 +8,6 @@
     "type": "git",
     "url": "https://github.com/incubateur-ademe/nosgestesclimat-site-nextjs.git"
   },
-  "engines": {
-    "node": "22.14"
-  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "test": "vitest run",
@@ -99,7 +96,7 @@
     "@incubateur-ademe/nosgestesclimat-scripts": "^0.8.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.61.0",
     "@storybook/addon-docs": "^10.3.3",
     "@storybook/addon-onboarding": "^10.3.3",
     "@storybook/addon-vitest": "^10.3.3",
@@ -128,8 +125,8 @@
     "mailisk": "^2.2.2",
     "msw": "^2.12.14",
     "msw-storybook-addon": "^2.0.5",
-    "playwright": "^1.58.2",
-    "playwright-core": "^1.58.2",
+    "playwright": "^1.61.0",
+    "playwright-core": "^1.61.0",
     "postcss": "8.5.6",
     "ramda": "^0.32.0",
     "storybook": "^10.3.3",

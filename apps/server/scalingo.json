@@ -15,6 +15,9 @@
     }
   },
   "env": {
+    "APP_ENV": {
+      "value": "review"
+    },
     "DATABASE_READONLY_ROLES": {
       "value": ""
     },

@@ -10,6 +10,16 @@ const EnvSchema = v.optional(
   'development'
 )
 
+const AppEnvSchema = v.picklist([
+  'development',
+  'production',
+  'test',
+  'preproduction',
+  'review',
+])
+
+type AppEnv = v.InferOutput<typeof AppEnvSchema>
+
 const ListCommaSeparatedSchema = v.pipe(
   v.fallback(v.string(), ''),
   v.transform((list) => new Set(list.split(',')))
@@ -17,6 +27,7 @@ const ListCommaSeparatedSchema = v.pipe(
 
 const AppSchema = v.strictObject({
   env: EnvSchema,
+  appEnv: AppEnvSchema,
   origin: v.optional(v.pipe(v.string(), v.url()), 'https://nosgestesclimat.fr'),
   organisationIdsWithCustomQuestionsEnabled: v.optional(
     ListCommaSeparatedSchema,
@@ -144,6 +155,7 @@ const {
   env: {
     AGIR_API_KEY,
     AGIR_URL,
+    APP_ENV,
     BREVO_API_KEY,
     BREVO_URL,
     CONNECT_CLIENT_ID,
@@ -180,6 +192,7 @@ const {
 export const config = v.parse(ConfigSchema, {
   app: {
     env: NODE_ENV,
+    appEnv: APP_ENV,
     origin: ORIGIN,
     organisationIdsWithCustomQuestionsEnabled:
       ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
@@ -245,14 +258,30 @@ export const config = v.parse(ConfigSchema, {
   },
 })
 
-export const origin =
-  config.app.env === 'development'
-    ? ['http://localhost:3000', 'https://localhost:3000']
-    : [
-        'http://localhost:3000',
-        'https://localhost:3000',
-        'https://nosgestesclimat.fr',
-        'https://preprod.nosgestesclimat.fr',
-        /\.osc-fr1\.scalingo\.io$/,
-        /\.vercel\.app$/,
-      ]
+const up = (str: string) => new URLPattern(str) // improves readability of config below
+
+const ALLOWED_ORIGINS_BY_APP_ENV: Record<AppEnv, URLPattern[]> = {
+  development: [up('http://localhost:3000'), up('https://localhost:3000')],
+  test: [up('https://nosgestesclimat.test')],
+  preproduction: [up('https://preprod.nosgestesclimat.fr')],
+  review: [up('https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io')],
+  production: [up('https://nosgestesclimat.fr')],
+}
+
+export const allowedOrigins: URLPattern[] =
+  ALLOWED_ORIGINS_BY_APP_ENV[config.app.appEnv] ?? []
+
+// Any path of any allowed origin
+export const allowedRedirectUrls = allowedOrigins.map(
+  (o) =>
+    new URLPattern({
+      protocol: o.protocol,
+      username: o.username,
+      password: o.password,
+      hostname: o.hostname,
+      port: o.port,
+      pathname: '/*',
+      search: o.search,
+      hash: o.hash,
+    })
+)

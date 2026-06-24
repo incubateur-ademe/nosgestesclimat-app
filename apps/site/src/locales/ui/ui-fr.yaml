@@ -1418,3 +1418,9 @@ entries:
   actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
+  results.footprintBlock.actionsBlock.link: Découvrir mes actions
+  results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
+  common.co2eAn.title: CO₂e / an
+  iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
+  iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
+  iframe.safari.errorTitle: Version de Safari incompatible

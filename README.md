@@ -18,7 +18,7 @@ Le code utilise Next.js, TypeScript, React, Tailwind CSS, PostgreSQL, Redis, ent
 
 Pré-requis :
 
-- [Node.js 22.14.0](https://nodejs.org/fr/download)
+- [Node.js 24.16.0](https://nodejs.org/fr/download)
 - [pnpm](https://pnpm.io/installation)
 
 ### Via devcontainers (recommandé)
@@ -81,6 +81,16 @@ Lance toutes les applications en mode production (requiert le build, les service
 ```bash
 pnpm start
 ```
+
+## Gestion des migrations
+
+Si une migration échoue sur un environnement de preproduction, elle empêchera les futures migrations de s'exécuter (même si cette même migration est corrigée). Pour corriger cela, il est possible de "rollback" la migration en question avec la commande suivante:
+
+```bash
+pnpm -F core db:migrate:rollback <migration_name>
+```
+
+Par ailleurs, il est possible de vérifier si une migration a été appliquée ou non en consultant la table `prisma_migrations` du schéma `public` (après s'être connecté à la base de données localement).
 
 ## Réutilisations de ce code
 
