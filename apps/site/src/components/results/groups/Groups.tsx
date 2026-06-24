@@ -5,7 +5,7 @@ import {
   baseClassNames,
   colorClassNames,
   sizeClassNames,
-} from '@/design-system/buttons/Button'
+} from '@/design-system/buttons/buttonStyles'
 import Title from '@/design-system/layout/Title'
 import type { Group } from '@/types/groups'
 import Link from 'next/link'

@@ -7,7 +7,7 @@ import {
   baseClassNames,
   colorClassNames,
   sizeClassNames,
-} from '@/design-system/buttons/Button'
+} from '@/design-system/buttons/buttonStyles'
 import Separator from '@/design-system/layout/Separator'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
