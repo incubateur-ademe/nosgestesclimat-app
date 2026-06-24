@@ -107,7 +107,6 @@ export const MATOMO_KEYWORDS = {
     'fin-retrouver-simulation',
   [TemplateIds[Locales.fr].SIGN_UP_SIMULATION_COMPLETED]:
     'fin-retrouver-simulation',
-  [TemplateIds[Locales.fr].SIMULATION_IN_PROGRESS]: 'pause-test-en-cours',
   [TemplateIds[Locales.fr].GROUP_CREATED]: {
     GROUP_URL: 'groupe-admin-voir-classement',
     SHARE_URL: 'groupe-admin-url-partage',
