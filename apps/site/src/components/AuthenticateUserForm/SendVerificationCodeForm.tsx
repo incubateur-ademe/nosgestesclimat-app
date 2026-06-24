@@ -46,11 +46,14 @@ export default function SendVerificationCodeForm({
   isVerticalLayout = true,
 }: Props) {
   const { t } = useClientTranslation()
-  const { createVerificationCodeError, createVerificationCode } =
-    useCreateVerificationCode({
-      onComplete: onCodeSent,
-      mode,
-    })
+  const {
+    createVerificationCodeError,
+    createVerificationCode,
+    createVerificationCodePending,
+  } = useCreateVerificationCode({
+    onComplete: onCodeSent,
+    mode,
+  })
 
   const user = useUser().user
 
@@ -73,7 +76,8 @@ export default function SendVerificationCodeForm({
       buttonLabel={buttonLabel ?? t('Accéder à mon espace')}
       buttonColor={buttonColor}
       additionnalButton={additionnalButton}
-      isVerticalLayout={isVerticalLayout}>
+      isVerticalLayout={isVerticalLayout}
+      loading={createVerificationCodePending}>
       <EmailInput
         data-testid="verification-code-email-input"
         containerClassName={isVerticalLayout ? 'w-full' : 'max-w-full w-96'}
@@ -119,7 +123,7 @@ export default function SendVerificationCodeForm({
           }
         />
       ) : (
-        <DefaultSubmitErrorMessage className="mt-4 max-w-[30rem]" />
+        <DefaultSubmitErrorMessage className="mt-4 max-w-120" />
       )}
     </Form>
   )

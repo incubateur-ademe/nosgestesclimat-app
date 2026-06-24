@@ -1,13 +1,12 @@
 'use client'
 
 import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
-import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { getIsIframe } from '@/utils/getIsIframe'
-import { createContext, useEffect, useState } from 'react'
-import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
+import { createContext, useEffect } from 'react'
+import { useBypassConsentDataShare } from './_hooks/useBypassConsentDataShare'
+import { useIframeStorageParams } from './_hooks/useIframeStorageParams'
 import { useStoragePermissions } from './_hooks/useStoragePermissions'
 import StorageAccessOverlay from './iframeOptionsContext/StorageAccessOverlay'
-import { STORAGE_KEYS } from './iframeOptionsContext/storageKeys'
 
 export const BODY_ID = 'ngc-body'
 
@@ -26,73 +25,20 @@ export const IframeOptionsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const searchParams = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
-  )
-
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
   // Special case : Safari doesn't handle cookies in iframes
-  const { needPermission, askForPermission } = useStoragePermissions()
+  const { needPermission, askForPermission, hasError } = useStoragePermissions()
 
-  // Initialized to false/null because during SSR getIsIframe() returns false
-  // and the real values are only known after client-side hydration.
-  const [isIframeShareData, setIsIframeShareData] = useState(false)
-  const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(false)
-  const [iframeLang, setIframeLang] = useState<string | null>(null)
-  const [iframeRegion, setIframeRegion] = useState<string | null>(null)
+  const {
+    isIframeShareData,
+    isIframeOnlySimulation,
+    iframeLang,
+    iframeRegion,
+  } = useIframeStorageParams(isIframe)
 
-  // Read iframe parameters from URL params first, then fallback to sessionStorage.
-  // URL params take priority; sessionStorage persists across navigations.
-  useEffect(() => {
-    if (!isIframe) return
-
-    const urlShareData = searchParams.get('shareData') === 'true'
-    const storedShareData =
-      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
-    if (urlShareData || storedShareData) {
-      setIsIframeShareData(true)
-      if (urlShareData) {
-        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
-      }
-    }
-
-    const urlOnlySimulation = searchParams.get('onlySimulation') === 'true'
-    const storedOnlySimulation =
-      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
-    if (urlOnlySimulation || storedOnlySimulation) {
-      setIsIframeOnlySimulation(true)
-      if (urlOnlySimulation) {
-        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
-      }
-    }
-
-    const region = searchParams.get('region')
-    const storedRegion = safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
-    const resolvedRegion = region ?? storedRegion
-    if (resolvedRegion) {
-      setIframeRegion(resolvedRegion)
-      if (region) {
-        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, region)
-      }
-    }
-
-    const lang = searchParams.get('lang')
-    const storedLang = safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
-    const resolvedLang = lang ?? storedLang
-    if (resolvedLang) {
-      setIframeLang(resolvedLang)
-      if (lang) {
-        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, lang)
-      }
-    }
-
-    safeSessionStorage.setItem(STORAGE_KEYS.IFRAME, 'true')
-  }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const isAllowedToBypassConsentDataShare =
-    getIsAllowedToBypassConsentDataShare()
+  const { isAllowedToBypassConsentDataShare } = useBypassConsentDataShare()
 
   // Add body classes for iframe styling
   useEffect(() => {
@@ -125,7 +71,10 @@ export const IframeOptionsProvider = ({
         isFrenchRegion,
       }}>
       {isIframe && needPermission ? (
-        <StorageAccessOverlay onAskPermission={askForPermission} />
+        <StorageAccessOverlay
+          onAskPermission={askForPermission}
+          hasError={hasError}
+        />
       ) : (
         children
       )}

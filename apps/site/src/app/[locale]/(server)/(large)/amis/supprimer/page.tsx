@@ -23,7 +23,11 @@ export default function SupprimerGroupePage({
 
   const { data: group, refetch: refetchGroup, isError } = useFetchGroup(groupId)
 
-  const { mutateAsync: deleteUserOrGroupIfOwner, isSuccess } = useDeleteGroup()
+  const {
+    mutateAsync: deleteUserOrGroupIfOwner,
+    isSuccess,
+    isPending,
+  } = useDeleteGroup()
 
   const { t } = useClientTranslation()
 
@@ -89,6 +93,7 @@ export default function SupprimerGroupePage({
 
       <Button
         disabled={!!isError || !group || isSuccess}
+        loading={isPending}
         onClick={handleDelete}>
         <Trans>Supprimer mes données</Trans>
       </Button>
