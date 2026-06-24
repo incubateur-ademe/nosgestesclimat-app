@@ -45,6 +45,7 @@ export default function OrganisationForm({
   return (
     <>
       <Form
+        loading={updateOrganisation.isPending}
         className="mt-8 mb-4"
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
           void handleSubmit(handleUpdateOrganisation)(e)
