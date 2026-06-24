@@ -25,6 +25,20 @@ const meta: Meta<typeof ButtonLink> = {
       options: ['_self', '_blank'],
       description: 'The target attribute for the link',
     },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the link is disabled',
+    },
+    loading: {
+      control: 'boolean',
+      description:
+        'Whether the link is in a loading state (shows a spinner and auto-disables)',
+    },
+    showLoadingOnClick: {
+      control: 'boolean',
+      description:
+        'Auto-disables the link after the first click to prevent double navigation',
+    },
   },
 }
 
@@ -80,6 +94,47 @@ export const Large: Story = {
     children: 'Large Link',
     href: '#',
     size: 'lg',
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    children: 'Loading Link',
+    href: '#',
+    loading: true,
+  },
+}
+
+export const LoadingSecondary: Story = {
+  args: {
+    children: 'Loading Secondary',
+    href: '#',
+    color: 'secondary',
+    loading: true,
+  },
+}
+
+export const Disabled: Story = {
+  args: {
+    children: 'Disabled Link',
+    href: '#',
+    disabled: true,
+  },
+}
+
+export const ClickOnce: Story = {
+  args: {
+    children: 'Click me once',
+    href: '#',
+    showLoadingOnClick: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'After the first click, the link auto-disables itself to prevent duplicate navigation.',
+      },
+    },
   },
 }
 
