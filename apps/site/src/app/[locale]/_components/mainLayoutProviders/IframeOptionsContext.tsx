@@ -29,7 +29,7 @@ export const IframeOptionsProvider = ({
   const isIframe = getIsIframe()
 
   // Special case : Safari doesn't handle cookies in iframes
-  const { needPermission, askForPermission } = useStoragePermissions()
+  const { needPermission, askForPermission, hasError } = useStoragePermissions()
 
   const {
     isIframeShareData,
@@ -71,7 +71,10 @@ export const IframeOptionsProvider = ({
         isFrenchRegion,
       }}>
       {isIframe && needPermission ? (
-        <StorageAccessOverlay onAskPermission={askForPermission} />
+        <StorageAccessOverlay
+          onAskPermission={askForPermission}
+          hasError={hasError}
+        />
       ) : (
         children
       )}
