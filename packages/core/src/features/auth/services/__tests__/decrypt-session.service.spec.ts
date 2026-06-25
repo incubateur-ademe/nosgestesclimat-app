@@ -1,16 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { SessionCryptoException } from '../../exceptions/session-crypto.exception.ts'
 import { encryptSession } from '../../helpers/encrypt-session.ts'
-import { decryptSession } from '../../services/decrypt-session.service.ts'
 import type { SessionPayload } from '../../types/session.ts'
+import { decryptSession } from '../decrypt-session.service.ts'
 
 describe('decryptSession', () => {
   it('round-trips: encrypt then decrypt returns original payload', async () => {
     const payload: SessionPayload = {
       userId: 'abc',
       email: 'test@example.com',
-      iat: 0,
-      exp: 0,
     }
     const token = await encryptSession(payload, 60)
     const decrypted = await decryptSession(token)
@@ -29,11 +27,7 @@ describe('decryptSession', () => {
   })
 
   it('returns payload even when token is expired', async () => {
-    const payload: SessionPayload = {
-      userId: 'user-1',
-      iat: 0,
-      exp: 0,
-    }
+    const payload: SessionPayload = { userId: 'user-1' }
     const token = await encryptSession(payload, -1)
     const result = await decryptSession(token)
     expect(result.userId).toBe('user-1')

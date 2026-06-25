@@ -1,9 +1,9 @@
 import {
   getCurrentModel,
   getGeolocation,
-  type Model,
   supportedRegions,
-  type UserRegion,
+  type Model,
+  type Region,
 } from '@/helpers/server/model/models'
 import type { SimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
@@ -21,7 +21,7 @@ export async function getNewSimulationModelService({
 }): Promise<Model> {
   const { region: regionParam, PRNumberParam } = await searchParams
 
-  let userRegion: UserRegion | undefined
+  let userRegion: Region | undefined
   let PRNumber: string | undefined
 
   if (
@@ -29,7 +29,7 @@ export async function getNewSimulationModelService({
     typeof regionParam === 'string' &&
     regionParam in supportedRegions
   ) {
-    userRegion = regionParam as UserRegion
+    userRegion = regionParam as Region
   } else {
     userRegion = (await getRegion())?.current ?? (await getGeolocation())
   }

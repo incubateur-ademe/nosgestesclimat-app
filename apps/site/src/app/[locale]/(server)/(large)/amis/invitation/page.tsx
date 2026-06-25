@@ -1,6 +1,5 @@
 import {
   getCurrentModel,
-  getGeolocation,
   stringifyModel,
 } from '@/helpers/server/model/models'
 import { getCurrentSimulation } from '@/helpers/server/model/simulations'
@@ -15,8 +14,8 @@ export default async function RejoindreGroupePage({
 }: PageProps<'/[locale]/amis/invitation'>) {
   const user = await getUserSession()
   const locale = (await params).locale as Locale
-  const regionCookie = await getRegion()
-  const userRegion = regionCookie?.current ?? (await getGeolocation())
+  const regionData = await getRegion()
+  const userRegion = regionData!.current
 
   const currentSimulation =
     (await getCurrentSimulation({ user })) ??

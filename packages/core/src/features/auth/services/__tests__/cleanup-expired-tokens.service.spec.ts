@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { refreshTokenFactory } from '../../factories/refresh-token.factory.ts'
+import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
 import { cleanupExpiredTokens } from '../cleanup-expired-tokens.service.ts'
 
 const USER_ID = '00000000-0000-0000-0000-000000000001'
@@ -21,18 +22,15 @@ describe('cleanupExpiredTokens', () => {
 
     await cleanupExpiredTokens()
 
-    const remaining = await prisma.refreshToken.findMany()
+    const remaining = await findAllByUserId(USER_ID)
     expect(remaining).toHaveLength(1)
     expect(remaining[0].id).toBe(valid.id)
   })
 
-  it('keeps valid tokens when there are no expired ones', async () => {
-    const valid = await refreshTokenFactory.create({ userId: USER_ID })
-
+  it('does nothing when there are no tokens', async () => {
     await cleanupExpiredTokens()
 
-    const remaining = await prisma.refreshToken.findMany()
-    expect(remaining).toHaveLength(1)
-    expect(remaining[0].id).toBe(valid.id)
+    const remaining = await findAllByUserId(USER_ID)
+    expect(remaining).toHaveLength(0)
   })
 })

@@ -11,7 +11,7 @@ import {
   DEFAULT_REGION,
   type Model,
   supportedRegions,
-  type UserRegion,
+  type Region,
 } from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
@@ -29,7 +29,7 @@ export default function LocalisationBanner({ model }: { model: Model }) {
     return null
   }
 
-  const region = model.region as UserRegion
+  const region = model.region as Region
 
   if (iframeRegion) return null
   const regionParams = supportedRegions[region]

@@ -1,5 +1,8 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { CreateRefreshTokenData, DeletedToken } from '../types/refresh-token.ts'
+import type {
+  CreateRefreshTokenData,
+  DeletedToken,
+} from '../types/refresh-token.ts'
 import { mapCreateRefreshTokenInput } from './refresh-token.mapper.ts'
 
 export async function createRefreshToken(
@@ -34,8 +37,19 @@ export async function deleteAllForUserId(userId: string): Promise<void> {
   await prisma.refreshToken.deleteMany({ where: { userId } })
 }
 
-export async function deleteAllExpired(): Promise<void> {
+export async function deleteAllExpired(
+  before: Date = new Date()
+): Promise<void> {
   await prisma.refreshToken.deleteMany({
-    where: { expiresAt: { lt: new Date() } },
+    where: { expiresAt: { lt: before } },
+  })
+}
+
+export function findAllByUserId(
+  userId: string
+): Promise<{ id: string; token: string; expiresAt: Date }[]> {
+  return prisma.refreshToken.findMany({
+    where: { userId },
+    select: { id: true, token: true, expiresAt: true },
   })
 }

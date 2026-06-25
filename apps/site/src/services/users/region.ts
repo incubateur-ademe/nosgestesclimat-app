@@ -1,26 +1,30 @@
-import type { UserRegion } from '@/helpers/server/model/models'
-import { getCookieOptions } from '@/helpers/server/proxy/cookies'
-import { buildRegionCookie, REGION_COOKIE } from '@/helpers/server/proxy/region'
-import { cookies } from 'next/headers'
+import { getCookieOptions } from '@/helpers/server/cookies'
+import type { Region } from '@/helpers/server/model/models'
+import {
+  buildRegionCookie,
+  REGION_COOKIE,
+} from '@/helpers/server/proxy/middleware-region'
+import {
+  RegionDataSchema,
+  type RegionData,
+} from '@nosgestesclimat/core/features/region/region.schema'
+import { cookies, headers } from 'next/headers'
+import { safeParse } from 'valibot'
 
-interface RegionCookie {
-  current: UserRegion
-  initial: UserRegion
-}
-
-export async function getRegion(): Promise<RegionCookie | undefined> {
-  const cookieStore = await cookies()
-  const value = cookieStore.get(REGION_COOKIE)?.value
+export async function getRegion(): Promise<RegionData | undefined> {
+  const headerStore = await headers()
+  const value = headerStore.get('x-region')
   if (!value) return undefined
   try {
-    const parsed = JSON.parse(value)
-    return parsed as RegionCookie
+    const json = JSON.parse(value)
+    const result = safeParse(RegionDataSchema, json)
+    return result.success ? result.output : undefined
   } catch {
     return undefined
   }
 }
 
-export async function setRegion(region: UserRegion): Promise<void> {
+export async function setRegion(region: Region): Promise<void> {
   const cookieStore = await cookies()
   const current = await getRegion()
   cookieStore.set(

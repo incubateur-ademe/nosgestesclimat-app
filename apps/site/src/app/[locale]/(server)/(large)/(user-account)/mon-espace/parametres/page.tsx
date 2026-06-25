@@ -3,7 +3,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { throwNextError } from '@/helpers/server/error'
-import type { UserRegion } from '@/helpers/server/model/models'
+import type { Region } from '@/helpers/server/model/models'
 import {
   getNewsletters,
   getNewsletterSubscriptions,
@@ -17,7 +17,7 @@ import Localisation from './_components/Localisation'
 import NewsletterSettings from './_components/NewsletterSettings'
 import UserEmail from './_components/UserEmail'
 
-export async function updateRegion(region: UserRegion) {
+export async function updateRegion(region: Region) {
   'use server'
   await setRegion(region)
 }

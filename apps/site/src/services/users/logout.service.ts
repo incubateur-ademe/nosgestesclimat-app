@@ -1,10 +1,10 @@
 'use server'
 
+import { getCookieOptions } from '@/helpers/server/cookies'
 import {
   REFRESH_COOKIE,
   SESSION_COOKIE,
-} from '@/helpers/server/proxy/auth/cookies'
-import { getCookieOptions } from '@/helpers/server/proxy/cookies'
+} from '@/helpers/server/proxy/middleware-auth'
 import { cookies } from 'next/headers'
 
 export async function logout(): Promise<void> {

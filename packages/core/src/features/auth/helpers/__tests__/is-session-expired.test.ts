@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import type { Session } from '../../types/session.ts'
 import { isSessionExpired } from '../is-session-expired.ts'
-import type { SessionPayload } from '../../types/session.ts'
 
 describe('isSessionExpired', () => {
   it('returns false when exp is in the future', () => {
-    const payload: SessionPayload = {
+    const payload: Session = {
       userId: 'abc',
       iat: 0,
       exp: Math.floor(Date.now() / 1000) + 60,
@@ -13,7 +13,7 @@ describe('isSessionExpired', () => {
   })
 
   it('returns true when exp is in the past', () => {
-    const payload: SessionPayload = {
+    const payload: Session = {
       userId: 'abc',
       iat: 0,
       exp: Math.floor(Date.now() / 1000) - 60,

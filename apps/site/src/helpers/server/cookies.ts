@@ -5,8 +5,7 @@ export function getCookieOptions() {
   return {
     httpOnly: true,
     secure,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- needed for TypeScript narrowing
-    sameSite: (secure ? 'none' : 'strict') as 'none' | 'strict',
+    sameSite: 'none' as const,
     partitioned: secure,
     path: '/',
     ...(secure ? { domain } : {}),

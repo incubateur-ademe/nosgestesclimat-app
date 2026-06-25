@@ -13,7 +13,7 @@ class RefreshTokenFactory extends Factory<{
 }> {
   expired() {
     return this.params({
-      expiresAt: new Date(Date.now() - 60_000),
+      expiresAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
     })
   }
 }

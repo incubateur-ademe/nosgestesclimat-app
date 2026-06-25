@@ -1,22 +1,23 @@
+import { getCookieOptions } from '@/helpers/server/cookies'
+import {
+  REFRESH_TOKEN_TTL_DAYS,
+  SESSION_TTL_SECONDS,
+} from '@nosgestesclimat/core/features/auth/constants/session'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { rotateSession } from '@nosgestesclimat/core/features/auth/services/rotate-session.service'
 import type {
-  SessionPayload,
+  Session,
   SessionTokens,
 } from '@nosgestesclimat/core/features/auth/types/session'
 import { captureException } from '@sentry/nextjs'
 import { type NextRequest, NextResponse } from 'next/server'
-import { getCookieOptions } from '../cookies'
-import type { MiddlewareResult } from '../types'
-import {
-  REFRESH_COOKIE,
-  REFRESH_MAX_AGE,
-  SESSION_COOKIE,
-  SESSION_MAX_AGE,
-} from './cookies'
+import type { MiddlewareResult } from './types'
+
+export const SESSION_COOKIE = 'ngc_session'
+export const REFRESH_COOKIE = 'ngc_refresh'
 
 /**
  * Auth interceptor middleware.
@@ -35,7 +36,7 @@ export async function middlewareAuth(
     return { redirect: null, cookies: [] }
   }
 
-  let payload: SessionPayload
+  let payload: Session
   try {
     payload = await decryptSession(sessionCookie.value)
   } catch (err) {
@@ -120,12 +121,15 @@ export async function middlewareAuth(
       {
         name: SESSION_COOKIE,
         value: tokens.accessToken,
-        options: { ...getCookieOptions(), maxAge: SESSION_MAX_AGE },
+        options: { ...getCookieOptions(), maxAge: SESSION_TTL_SECONDS },
       },
       {
         name: REFRESH_COOKIE,
         value: tokens.refreshToken,
-        options: { ...getCookieOptions(), maxAge: REFRESH_MAX_AGE },
+        options: {
+          ...getCookieOptions(),
+          maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 3600,
+        },
       },
     ],
   }

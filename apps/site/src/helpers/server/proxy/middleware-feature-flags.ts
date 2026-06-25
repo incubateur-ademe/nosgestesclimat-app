@@ -1,3 +1,4 @@
+import { getCookieOptions } from '@/helpers/server/cookies'
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
 import {
   parseFeatureFlagCookie,
@@ -6,7 +7,6 @@ import {
 } from '@/services/feature-flags/urlParams'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { getCookieOptions } from '@/helpers/server/proxy/cookies'
 import type { MiddlewareResult } from './types'
 
 export function middlewareFeatureFlags(request: NextRequest): MiddlewareResult {

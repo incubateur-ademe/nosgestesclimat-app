@@ -1,9 +1,9 @@
-import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags'
-import { middlewareAuth } from '@/helpers/server/proxy/auth/process-auth'
-import { middlewareRegion } from '@/helpers/server/proxy/region'
-import { type NextRequest, NextResponse } from 'next/server'
-import { i18nRouter } from 'next-i18n-router'
+import { middlewareAuth } from '@/helpers/server/proxy/middleware-auth'
+import { middlewareFeatureFlags } from '@/helpers/server/proxy/middleware-feature-flags'
+import { middlewareRegion } from '@/helpers/server/proxy/middleware-region'
 import i18nConfig from '@/i18nConfig'
+import { i18nRouter } from 'next-i18n-router'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const isApiRoute = request.nextUrl.pathname.startsWith('/api/server')
