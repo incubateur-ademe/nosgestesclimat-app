@@ -7,6 +7,7 @@ import {
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { batchFindMany } from '../../core/batch-find-many.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
 import type { PartialUser } from '../../core/types/user.ts'
 
@@ -51,8 +52,13 @@ export const createParticipantSimulation = async <
     select: {
       id: true,
       progression: true,
+      userId: true,
     },
   })
+
+  if (existingSimulation?.userId && existingSimulation.userId !== userId) {
+    throw new ForbiddenException('Simulation does not belong to the user')
+  }
 
   if (existingSimulation?.progression === 1 && progression !== 1) {
     throw new ImmutableSimulationException()
@@ -183,8 +189,7 @@ export const createPollUserSimulation = async (
   { session }: { session: Session }
 ) => {
   const { id, pollIdOrSlug } = params
-  const email =
-    ('email' in params ? params.email : undefined) ?? simulationDto.user?.email
+  const email = 'email' in params ? params.email : undefined
   const { id: pollId } = await session.poll.findFirstOrThrow({
     where: {
       OR: [{ id: pollIdOrSlug }, { slug: pollIdOrSlug }],

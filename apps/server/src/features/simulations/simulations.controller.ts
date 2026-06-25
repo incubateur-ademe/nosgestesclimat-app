@@ -74,6 +74,10 @@ router.route('/v1').post(
         return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
       }
 
+      if (err instanceof ForbiddenException) {
+        return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
+      }
+
       if (err instanceof EntityNotFoundException) {
         return res.status(StatusCodes.UNAUTHORIZED).end()
       }
