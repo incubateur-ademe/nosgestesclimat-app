@@ -2,19 +2,23 @@
 
 import { carboneMetric } from '@/constants/model/metric'
 import { useEngine } from '@/publicodes-state'
-import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
+import type {
+  DottedName,
+  NGCRuleNode,
+  NodeValue,
+} from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
 import { useMemo } from 'react'
 import type { Metric, PublicodesValue } from '../../types'
 import useCurrentSimulation from '../useCurrentSimulation/useCurrentSimulation'
 import useChoices from './hooks/useChoices'
 import useContent from './hooks/useContent'
+import useDisplayValue from './hooks/useDisplayValue'
 import useMissing from './hooks/useMissing'
 import useNotifications from './hooks/useNotifications'
 import useQuestionsOfMosaic from './hooks/useQuestionsOfMosaic'
 import useSetValue from './hooks/useSetValue'
 import useType from './hooks/useType'
-import useValue from './hooks/useValue'
 
 /**
  * A hook to get and set every information about a specific rule
@@ -29,6 +33,8 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
     engine,
     safeGetRule,
     safeEvaluate,
+    getValue,
+    getNumericValue,
     parsedRules,
     everyNotifications,
     everyMosaicChildrenWithParent,
@@ -108,8 +114,21 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
     foldedSteps,
   })
 
-  const { value, displayValue, numericValue } = useValue({
-    evaluation,
+  const value = useMemo<NodeValue>(
+    () => getValue(dottedName),
+    // evaliuation must be in the dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dottedName, getValue, evaluation]
+  )
+
+  const numericValue = useMemo<number>(() => {
+    return getNumericValue(dottedName, metric)
+    // evaliuation must be in the dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getNumericValue, dottedName, metric, evaluation])
+
+  const { displayValue } = useDisplayValue({
+    value,
     type,
   })
 
