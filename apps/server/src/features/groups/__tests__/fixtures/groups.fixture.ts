@@ -6,6 +6,7 @@ import {
   brevoSendEmail,
   brevoUpdateContact,
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
@@ -21,42 +22,50 @@ type TestAgent = ReturnType<typeof supertest>
 
 export const CREATE_GROUP_ROUTE = '/groups/v1'
 
-export const UPDATE_USER_GROUP_ROUTE = '/groups/v1/:userId/:groupId'
+export const UPDATE_USER_GROUP_ROUTE = '/groups/v1/:groupId'
 
 export const CREATE_PARTICIPANT_ROUTE = '/groups/v1/:groupId/participants'
 
 export const DELETE_PARTICIPANT_ROUTE =
-  '/groups/v1/:userId/:groupId/participants/:participantId'
+  '/groups/v1/:groupId/participants/:participantId'
 
-export const FETCH_USER_GROUPS_ROUTE = '/groups/v1/:userId'
+export const FETCH_USER_GROUPS_ROUTE = '/groups/v1'
 
-export const FETCH_USER_GROUP_ROUTE = '/groups/v1/:userId/:groupId'
+export const FETCH_USER_GROUP_ROUTE = '/groups/v1/:groupId'
 
-export const DELETE_USER_GROUP_ROUTE = '/groups/v1/:userId/:groupId'
+export const DELETE_USER_GROUP_ROUTE = '/groups/v1/:groupId'
 
 export const createGroup = async ({
   agent,
   group: { administrator, participants, emoji, name } = {},
 }: {
   agent: TestAgent
-  group?: Partial<GroupCreateInputDto>
+  group?: {
+    administrator?: { userId?: string; email?: string; name?: string }
+    participants?: GroupCreateInputDto['participants']
+    emoji?: string
+    name?: string
+  }
 }) => {
+  const userId = administrator?.userId || faker.string.uuid()
+  const { email } = administrator || {}
+
   const payload: GroupCreateInputDto = {
     emoji: emoji || faker.internet.emoji(),
     name: name || faker.company.name(),
-    administrator: administrator || {
-      userId: faker.string.uuid(),
-      name: faker.person.fullName(),
+    administrator: {
+      name: administrator?.name || faker.person.fullName(),
     },
     participants,
   }
 
-  if (payload.administrator.email && participants?.length) {
+  if (email && participants?.length) {
     mswServer.use(brevoSendEmail(), brevoUpdateContact())
   }
 
   const response = await agent
     .post(CREATE_GROUP_ROUTE)
+    .set(authHeaders({ userId, email }))
     .send(payload)
     .expect(StatusCodes.CREATED)
 
@@ -73,20 +82,23 @@ export const joinGroup = async ({
   groupId,
 }: {
   agent: TestAgent
-  participant?: Partial<ParticipantInputCreateDto>
+  participant?: Partial<ParticipantInputCreateDto> & {
+    userId?: string
+    email?: string
+  }
   groupId: string
 }) => {
+  const participantUserId = userId || faker.string.uuid()
+
   const payload: ParticipantInputCreateDto = {
-    userId: userId || faker.string.uuid(),
     name: name || faker.person.fullName(),
     simulation: simulation || getSimulationPayload(),
-    email,
   }
 
   const [existingUser, group, existingParticipant] = await Promise.all([
     prisma.user.findFirst({
       where: {
-        id: payload.userId,
+        id: participantUserId,
       },
       select: {
         email: true,
@@ -154,6 +166,7 @@ export const joinGroup = async ({
 
   const response = await agent
     .post(CREATE_PARTICIPANT_ROUTE.replace(':groupId', groupId))
+    .set(authHeaders({ userId: participantUserId, email }))
     .send(payload)
     .expect(StatusCodes.CREATED)
 

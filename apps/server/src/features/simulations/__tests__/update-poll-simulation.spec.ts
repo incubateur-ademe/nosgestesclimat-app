@@ -8,12 +8,12 @@ import {
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
 } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import {
   CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE,
   createOrganisation,
@@ -47,11 +47,17 @@ describe('Given a completed poll simulation (progression = 1)', () => {
   })
 
   beforeEach(async () => {
-    const { cookie } = await login({ agent })
-    const organisation = await createOrganisation({ agent, cookie })
+    const administratorUserId = faker.string.uuid()
+    const administratorEmail = faker.internet.email()
+    const organisation = await createOrganisation({
+      agent,
+      userId: administratorUserId,
+      email: administratorEmail,
+    })
     const poll = await createOrganisationPoll({
       agent,
-      cookie,
+      userId: administratorUserId,
+      email: administratorEmail,
       organisationId: organisation.id,
     })
     pollId = poll.id
@@ -84,6 +90,7 @@ describe('Given a completed poll simulation (progression = 1)', () => {
 
       const response = await agent
         .post(url.replace(':userId', userId).replace(':pollIdOrSlug', pollId))
+        .set(authHeaders({ userId }))
         .send(payload)
         .expect(StatusCodes.BAD_REQUEST)
 
@@ -108,6 +115,7 @@ describe('Given a completed poll simulation (progression = 1)', () => {
 
       await agent
         .post(url.replace(':userId', userId).replace(':pollIdOrSlug', pollId))
+        .set(authHeaders({ userId }))
         .send(payload)
         .expect(StatusCodes.CREATED)
 

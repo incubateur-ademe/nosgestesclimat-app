@@ -5,6 +5,7 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
 import {
   createSimulation,
@@ -24,26 +25,19 @@ describe('Given a NGC user', () => {
   })
 
   describe('When fetching one of his simulations', () => {
-    describe('And invalid userId', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+    describe('And user is not authenticated', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', faker.string.alpha(34))
-          )
-          .expect(StatusCodes.BAD_REQUEST)
+          .get(url.replace(':simulationId', faker.string.uuid()))
+          .expect(StatusCodes.UNAUTHORIZED)
       })
     })
 
     describe('And invalid simulationId', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':simulationId', faker.string.alpha(34))
-              .replace(':userId', faker.string.uuid())
-          )
+          .get(url.replace(':simulationId', faker.string.alpha(34)))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.BAD_REQUEST)
       })
     })
@@ -51,35 +45,43 @@ describe('Given a NGC user', () => {
     describe('And simulation does not exist', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', faker.string.uuid())
-          )
+          .get(url.replace(':simulationId', faker.string.uuid()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.NOT_FOUND)
       })
     })
 
-    describe('And simulation does exist', () => {
+    describe('And simulation belongs to another user', () => {
+      let simulationId: string
+
+      beforeEach(async () => {
+        const simulation = await createSimulation({ agent })
+        simulationId = simulation.id
+      })
+
+      test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
+        await agent
+          .get(url.replace(':simulationId', simulationId))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.NOT_FOUND)
+      })
+    })
+
+    describe('And simulation does exist and belongs to the user', () => {
       let simulation: Awaited<ReturnType<typeof createSimulation>>
-      let simualtionId: string
+      let simulationId: string
       let userId: string
 
       beforeEach(async () => {
-        simulation = await createSimulation({ agent })
-        ;({
-          id: simualtionId,
-          user: { id: userId },
-        } = simulation)
+        userId = faker.string.uuid()
+        simulation = await createSimulation({ agent, userId })
+        simulationId = simulation.id
       })
 
       test(`Then it returns a ${StatusCodes.OK} response with the simulation`, async () => {
         const response = await agent
-          .get(
-            url
-              .replace(':simulationId', simualtionId)
-              .replace(':userId', userId)
-          )
+          .get(url.replace(':simulationId', simulationId))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual(simulation)
@@ -101,21 +103,15 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', faker.string.uuid())
-          )
+          .get(url.replace(':simulationId', faker.string.uuid()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
       test('Then it logs the exception', async () => {
         await agent
-          .get(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', faker.string.uuid())
-          )
+          .get(url.replace(':simulationId', faker.string.uuid()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
         expect(logger.error).toHaveBeenCalledWith(

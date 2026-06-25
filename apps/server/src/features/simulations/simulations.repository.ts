@@ -1,18 +1,17 @@
-import type { Request } from 'express'
 import type { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   defaultOrganisationSelectionWithoutPolls,
   defaultPollSelection,
-  defaultSimulationSelectionWithoutPollAndSituation,
   simulationSelection,
   simulationSelectionWithPolls,
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { batchFindMany } from '../../core/batch-find-many.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
+import type { PartialUser } from '../../core/types/user.ts'
 
 import type { PublicPollParams } from '../organisations/organisations.validator.ts'
-import type { UserParams } from '../users/users.validator.ts'
 import type {
   SimulationCreateDto,
   SimulationParticipantCreateDto,
@@ -53,8 +52,13 @@ export const createParticipantSimulation = async <
     select: {
       id: true,
       progression: true,
+      userId: true,
     },
   })
+
+  if (existingSimulation?.userId && existingSimulation.userId !== userId) {
+    throw new ForbiddenException('Simulation does not belong to the user')
+  }
 
   if (existingSimulation?.progression === 1 && progression !== 1) {
     throw new ImmutableSimulationException()
@@ -137,7 +141,7 @@ export const createParticipantSimulation = async <
 }
 
 export const fetchUserSimulations = async (
-  { userId }: UserParams & Partial<NonNullable<Request['user']>>,
+  { userId }: { userId: string },
   {
     session,
     query: { pageSize, page, completedOnly },
@@ -180,11 +184,12 @@ export const fetchSimulationById = (
 }
 
 export const createPollUserSimulation = async (
-  params: PublicPollParams & Partial<Request['user']>,
+  params: PublicPollParams & PartialUser,
   simulationDto: SimulationCreateDto,
   { session }: { session: Session }
 ) => {
-  const { userId, pollIdOrSlug, email = simulationDto.user?.email } = params
+  const { id, pollIdOrSlug } = params
+  const email = 'email' in params ? params.email : undefined
   const { id: pollId } = await session.poll.findFirstOrThrow({
     where: {
       OR: [{ id: pollIdOrSlug }, { slug: pollIdOrSlug }],
@@ -198,7 +203,7 @@ export const createPollUserSimulation = async (
     where: {
       pollId,
       simulation: {
-        user: email ? { email } : { id: userId },
+        user: email ? { email } : { id },
       },
     },
     select: { id: true },
@@ -210,7 +215,8 @@ export const createPollUserSimulation = async (
     updated: simulationUpdated,
   } = await createParticipantSimulation(
     {
-      ...params,
+      userId: id,
+      email,
       simulation: simulationDto,
       select: simulationSelection,
     },
@@ -250,74 +256,6 @@ export const createPollUserSimulation = async (
     updated: simulationUpdated,
     isNewParticipation: !existingParticipation,
   }
-}
-
-export const countOrganisationPublicPollSimulations = (
-  {
-    id,
-  }: {
-    id: string
-  },
-  { session }: { session: Session }
-) => {
-  return session.simulationPoll.count({
-    where: {
-      pollId: id,
-    },
-  })
-}
-
-export const fetchPollSimulations = <
-  T extends Prisma.SimulationSelect =
-    typeof defaultSimulationSelectionWithoutPollAndSituation,
->(
-  {
-    id,
-    user: _user = {},
-    select = defaultSimulationSelectionWithoutPollAndSituation as T,
-  }: {
-    id: string
-    user?: Partial<(UserParams & { email?: undefined }) | Request['user']>
-    select?: T
-  },
-  { session }: { session: Session }
-) => {
-  // TODO should filter according connectedUser at some point
-  // const { email, userId } = _user
-
-  return session.simulation.findMany({
-    where: {
-      polls: {
-        some: {
-          poll: {
-            id,
-            // ...(email
-            //   ? {
-            //       organisation: {
-            //         administrators: {
-            //           some: {
-            //             user: {
-            //               email,
-            //             },
-            //           },
-            //         },
-            //       },
-            //     }
-            //   : {
-            //       simulations: {
-            //         some: {
-            //           simulation: {
-            //             userId,
-            //           },
-            //         },
-            //       },
-            //     }),
-          },
-        },
-      },
-    },
-    select,
-  })
 }
 
 export const batchPollSimulations = <

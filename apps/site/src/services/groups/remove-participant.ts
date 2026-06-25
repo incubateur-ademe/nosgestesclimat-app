@@ -19,7 +19,7 @@ export const removeParticipant = async ({
   }
 
   return await fetchServer<void>(
-    `${GROUP_URL}/${session.id}/${groupId}/participants/${participantId}`,
+    `${GROUP_URL}/${groupId}/participants/${participantId}`,
     {
       method: 'DELETE',
       session,

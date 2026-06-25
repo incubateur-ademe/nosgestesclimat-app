@@ -8,9 +8,9 @@ import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import { withUserId } from '@/services/auth/with-user-id'
 
 export const createSimulation = async (model: Model) =>
-  await withUserId(async (userId) => {
+  await withUserId(async () => {
     const simulation = generateSimulation({ model: stringifyModel(model) })
-    return await fetchServer<Simulation>(`${SIMULATION_URL}/${userId}`, {
+    return await fetchServer<Simulation>(SIMULATION_URL, {
       method: 'POST',
       body: simulation,
     })

@@ -3,8 +3,6 @@ import type supertest from 'supertest'
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
-import type { JwtPayload } from 'jsonwebtoken'
-import jwt from 'jsonwebtoken'
 import {
   brevoRemoveFromList,
   brevoSendEmail,
@@ -12,12 +10,12 @@ import {
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { connectUpdateContact } from '../../../../adapters/connect/__tests__/fixtures/server.fixture.ts'
 import { OrganisationType } from '../../../../adapters/prisma/generated.ts'
+import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
 } from '../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../core/event-bus/event-bus.ts'
-import { COOKIE_NAME } from '../../../authentication/authentication.service.ts'
 import { getSimulationPayload } from '../../../simulations/__tests__/fixtures/simulations.fixtures.ts'
 import type { SimulationCreateInputDto } from '../../../simulations/simulations.validator.ts'
 import type {
@@ -54,13 +52,10 @@ export const DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT_ROUTE =
   '/organisations/v1/:organisationIdOrSlug/polls/:pollIdOrSlug/simulations/download'
 
 export const FETCH_ORGANISATION_PUBLIC_POLL_ROUTE =
-  '/organisations/v1/:userId/public-polls/:pollIdOrSlug'
+  '/organisations/v1/public-polls/:pollIdOrSlug'
 
 export const CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE =
-  '/organisations/v1/:userId/public-polls/:pollIdOrSlug/simulations'
-
-export const FETCH_ORGANISATION_PUBLIC_POLL_SIMULATIONS_ROUTE =
-  '/organisations/v1/:userId/public-polls/:pollIdOrSlug/simulations'
+  '/organisations/v1/public-polls/:pollIdOrSlug/simulations'
 
 type TestAgent = ReturnType<typeof supertest>
 
@@ -71,11 +66,13 @@ export const randomOrganisationType = () =>
 
 export const createOrganisation = async ({
   agent,
-  cookie,
+  userId = faker.string.uuid(),
+  email = faker.internet.email(),
   organisation: { name, type, administrators, numberOfCollaborators } = {},
 }: {
   agent: TestAgent
-  cookie: string
+  userId?: string
+  email?: string
   organisation?: Partial<OrganisationCreateDto>
 }) => {
   const payload: OrganisationCreateDto = {
@@ -95,7 +92,7 @@ export const createOrganisation = async ({
 
   const response = await agent
     .post(CREATE_ORGANISATION_ROUTE)
-    .set('cookie', cookie)
+    .set(authHeaders({ userId, email }))
     .send(payload)
     .expect(StatusCodes.CREATED)
 
@@ -108,7 +105,8 @@ export const createOrganisation = async ({
 
 export const createOrganisationPoll = async ({
   agent,
-  cookie,
+  userId,
+  email,
   organisationId,
   poll: {
     name,
@@ -118,7 +116,8 @@ export const createOrganisationPoll = async ({
   } = {},
 }: {
   agent: TestAgent
-  cookie: string
+  userId: string
+  email: string
   organisationId: string
   poll?: Partial<OrganisationPollCreateDto>
 }) => {
@@ -162,7 +161,7 @@ export const createOrganisationPoll = async ({
         organisationId
       )
     )
-    .set('cookie', cookie)
+    .set(authHeaders({ userId, email }))
     .send(payload)
     .expect(StatusCodes.CREATED)
 
@@ -175,54 +174,35 @@ export const createOrganisationPoll = async ({
 
 export const createOrganisationPollSimulation = async ({
   agent,
-  userId,
+  userId = faker.string.uuid(),
+  email,
   pollId,
-  cookie,
   simulation = {},
-}:
-  | {
-      agent: TestAgent
-      userId?: string
-      cookie?: undefined
-      pollId: string
-      simulation?: Partial<SimulationCreateInputDto>
-    }
-  | {
-      agent: TestAgent
-      userId?: undefined
-      cookie?: string
-      pollId: string
-      simulation?: Partial<SimulationCreateInputDto>
-    }) => {
-  let email: string | undefined
+}: {
+  agent: TestAgent
+  userId?: string
+  email?: string
+  pollId: string
+  simulation?: Partial<SimulationCreateInputDto>
+}) => {
+  const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
 
-  if (cookie) {
-    ;({ userId, email } = jwt.decode(
-      cookie.split(';').shift()!.replace(`${COOKIE_NAME}=`, '')!
-    ) as JwtPayload)
-  }
-
-  userId = userId ?? faker.string.uuid()
-  const { user } = simulation
-  const payload: SimulationCreateInputDto = {
-    ...getSimulationPayload(simulation),
-    user,
-  }
-
-  email = email ?? payload.user?.email
+  // The user identity (id/email) is resolved from the session by the proxy and
+  // forwarded as headers; it is never part of the request body.
+  const contactEmail = email
 
   mswServer.use(
     brevoUpdateContact(),
     brevoRemoveFromList(27, { invalid: true })
   )
 
-  if (email) {
+  if (contactEmail) {
     const existingParticipation = await prisma.simulationPoll.findFirst({
       where: {
         pollId,
         simulation: {
           user: {
-            email,
+            email: contactEmail,
           },
         },
       },
@@ -234,18 +214,16 @@ export const createOrganisationPollSimulation = async ({
     }
   }
 
-  const request = agent.post(
-    CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE.replace(
-      ':userId',
-      userId
-    ).replace(':pollIdOrSlug', pollId)
-  )
-
-  if (cookie) {
-    request.set('cookie', cookie)
-  }
-
-  const response = await request.send(payload).expect(StatusCodes.CREATED)
+  const response = await agent
+    .post(
+      CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE.replace(
+        ':pollIdOrSlug',
+        pollId
+      )
+    )
+    .set(authHeaders({ userId, email }))
+    .send(payload)
+    .expect(StatusCodes.CREATED)
 
   await EventBus.flush()
 
@@ -256,14 +234,16 @@ export const createOrganisationPollSimulation = async ({
 
 export const downloadOrganisationPollSimulationsResult = async ({
   agent,
-  cookie,
+  userId,
+  email,
   pollId,
   organisationId,
 }: {
   agent: TestAgent
+  userId: string
+  email: string
   pollId: string
   organisationId: string
-  cookie: string
 }) => {
   const response = await agent
     .get(
@@ -272,7 +252,7 @@ export const downloadOrganisationPollSimulationsResult = async ({
         organisationId
       ).replace(':pollIdOrSlug', pollId)
     )
-    .set('cookie', cookie)
+    .set(authHeaders({ userId, email }))
     .expect(StatusCodes.ACCEPTED)
 
   await EventBus.flush()

@@ -13,8 +13,8 @@ export const updateGroup = async ({
   name: string
 }) =>
   await withUserId(
-    async (userId) =>
-      await fetchServer<Group>(`${GROUP_URL}/${userId}/${groupId}`, {
+    async () =>
+      await fetchServer<Group>(`${GROUP_URL}/${groupId}`, {
         method: 'PUT',
         body: { name },
       })

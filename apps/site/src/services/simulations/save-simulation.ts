@@ -36,12 +36,12 @@ export const saveSimulation = async ({
   }
 
   if (polls.length) {
-    return await withUserId(async (userId) => {
+    return await withUserId(async () => {
       const pollId = polls.at(-1)!.id
       const params = locale ? `?locale=${locale}` : ''
 
       return await fetchServer<Simulation>(
-        `${ORGANISATION_URL}/${userId}/public-polls/${pollId}/simulations${params}`,
+        `${ORGANISATION_URL}/public-polls/${pollId}/simulations${params}`,
         {
           method: 'POST',
           body: simulation,
@@ -51,8 +51,8 @@ export const saveSimulation = async ({
   }
 
   return await withUserId(
-    async (userId) =>
-      await fetchServer<Simulation>(`${SIMULATION_URL}/${userId}`, {
+    async () =>
+      await fetchServer<Simulation>(SIMULATION_URL, {
         method: 'POST',
         body: simulation,
       })

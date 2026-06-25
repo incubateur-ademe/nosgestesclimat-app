@@ -1,18 +1,7 @@
 import type { RequestHandler } from 'express'
 import type { ParamsDictionary, Query } from 'express-serve-static-core'
 import { StatusCodes } from 'http-status-codes'
-import type { JwtPayload } from 'jsonwebtoken'
-import jwt from 'jsonwebtoken'
 import { config } from '../config.ts'
-import {
-  COOKIE_NAME,
-  createToken,
-  getCookieOptions,
-} from '../features/authentication/authentication.service.ts'
-const isValidResult = (
-  result?: string | JwtPayload | undefined
-): result is JwtPayload & { email: string; userId: string } =>
-  typeof result === 'object' && 'email' in result && 'userId' in result
 
 export const authentificationMiddleware =
   <
@@ -20,64 +9,30 @@ export const authentificationMiddleware =
     ResBody = unknown,
     ReqBody = unknown,
     ReqQuery = Query,
-  >({ passIfUnauthorized }: { passIfUnauthorized?: true } = {}): RequestHandler<
-    ReqParams,
-    ResBody,
-    ReqBody,
-    ReqQuery
-  > =>
+  >({
+    passIfUnauthorized,
+  }: {
+    /** Should only be used for endpoints that accept both unauthenticated requests but have a different behavior when authenticated (e.g. checks if `req.user` exists) */
+    passIfUnauthorized?: true
+  } = {}): RequestHandler<ReqParams, ResBody, ReqBody, ReqQuery> =>
   (req, res, next) => {
-    const internalApiKey = config.security.internalApiKey
+    const unauthorized = () =>
+      passIfUnauthorized ? next() : res.status(StatusCodes.UNAUTHORIZED).end()
+
     const providedInternalKey = req.headers['x-internal-key']
 
-    if (providedInternalKey === internalApiKey) {
-      const userId = req.headers['x-user-id']
-      const email = req.headers['x-user-email']
-
-      if (typeof userId === 'string' && typeof email === 'string') {
-        req.user = { userId, email }
-        return next()
-      }
-
-      return passIfUnauthorized
-        ? next()
-        : res.status(StatusCodes.UNAUTHORIZED).end()
+    if (providedInternalKey !== config.security.internalApiKey) {
+      return unauthorized()
     }
 
-    const cookiesHeader = req.headers.cookie
+    const id = req.headers['x-user-id']
+    const email = req.headers['x-user-email']
 
-    const token =
-      cookiesHeader &&
-      cookiesHeader
-        .split(';')
-        .map((c) => c.trim())
-        .find((cookie) => cookie.startsWith(COOKIE_NAME))
-        ?.replace(`${COOKIE_NAME}=`, '')
-
-    if (!token) {
-      return passIfUnauthorized
-        ? next()
-        : res.status(StatusCodes.UNAUTHORIZED).end()
+    if (typeof id !== 'string') {
+      return unauthorized()
     }
 
-    jwt.verify(token, config.security.jwt.secret, (err, result) => {
-      if (err || !isValidResult(result)) {
-        return passIfUnauthorized
-          ? next()
-          : res.status(StatusCodes.UNAUTHORIZED).end()
-      }
+    req.user = typeof email === 'string' ? { id, email } : { id }
 
-      const { email, userId } = result
-
-      req.user = {
-        email,
-        userId,
-      }
-
-      const newToken = createToken({ email, id: userId })
-      const origin = req.get('origin') || config.app.origin
-      res.cookie(COOKIE_NAME, newToken, getCookieOptions(origin))
-
-      next()
-    })
+    return next()
   }

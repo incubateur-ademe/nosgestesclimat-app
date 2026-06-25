@@ -9,12 +9,12 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
 import type { AppUser } from '@/services/auth/get-user-session'
+import { updateGroupParticipant } from '@/services/groups/update-group-participant'
 import type { Group } from '@/types/groups'
 import { captureException } from '@sentry/nextjs'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
-import { updateGroupParticipant } from '@/services/groups/update-group-participant'
 
 interface Props {
   group: Group
