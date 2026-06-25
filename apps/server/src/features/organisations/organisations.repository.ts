@@ -1,5 +1,4 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import type { Request } from 'express'
 import slugify from 'slugify'
 import * as v from 'valibot'
 import type { JsonValue } from '../../adapters/prisma/generated.ts'
@@ -12,6 +11,7 @@ import {
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
+import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
 import type { SimulationParams } from '../simulations/simulations.validator.ts'
 import { ComputedResultSchema } from '../simulations/simulations.validator.ts'
 import { createOrUpdateVerifiedUser } from '../users/users.repository.ts'
@@ -68,7 +68,7 @@ const findOrganisationBySlugOrId = <
     select = { id: true } as T,
   }: {
     params: OrganisationParams
-    user: NonNullable<Request['user']>
+    user: PartialVerifiedUser
     select?: T
   },
   { session }: { session: Session }
@@ -95,7 +95,7 @@ export const findOrganisationPollBySlugOrId = <
     select = { id: true } as T,
   }: {
     params: OrganisationPollParams
-    user: NonNullable<Request['user']>
+    user: PartialVerifiedUser
     select?: T
   },
   { session }: { session: Session }
@@ -170,12 +170,12 @@ export const createOrganisationAndAdministrator = async (
     ] = [{}],
     numberOfCollaborators,
   }: OrganisationCreateDto,
-  { userId, email }: NonNullable<Request['user']>,
+  { id, email }: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   const { user: administrator } = await createOrUpdateVerifiedUser(
     {
-      id: { userId, email },
+      id: { id, email },
       user: {
         name: administratorName,
         position,
@@ -221,7 +221,7 @@ export const updateAdministratorOrganisation = async (
     numberOfCollaborators,
     administrators,
   }: OrganisationUpdateDto,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   const { email: userEmail } = user
@@ -255,7 +255,7 @@ export const updateAdministratorOrganisation = async (
 
     const { user: adminUser } = await createOrUpdateVerifiedUser(
       {
-        id: { userId: user.userId, email: userEmail },
+        id: { id: user.id, email: userEmail },
         user: {
           name: administratorName,
           email,
@@ -290,7 +290,7 @@ export const updateAdministratorOrganisation = async (
 }
 
 export const fetchUserOrganisations = async (
-  { email: userEmail }: NonNullable<Request['user']>,
+  { email: userEmail }: PartialVerifiedUser,
   {
     session,
     query: { pageSize, page },
@@ -322,7 +322,7 @@ export const fetchUserOrganisations = async (
 
 export const fetchUserOrganisation = (
   params: OrganisationParams,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   return findOrganisationBySlugOrId(
@@ -354,8 +354,8 @@ type SimulationsInfo = {
 const fetchPollSimulationsInfo = async (
   {
     poll: { id },
-    user: { userId },
-  }: { poll: { id: string }; user: { userId: string } },
+    user: { id: userId },
+  }: { poll: { id: string }; user: PartialUser },
   { session }: { session: Session }
 ): Promise<SimulationsInfo> => {
   const [count, finished, userSimulation] = await Promise.all([
@@ -441,7 +441,7 @@ export const createOrganisationPoll = async (
     customAdditionalQuestions,
     mode,
   }: OrganisationPollCreateDto,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   const slug = await findUniquePollSlug(name, { session })
@@ -508,7 +508,7 @@ export const updateOrganisationPoll = async (
     customAdditionalQuestions: updateCustomAdditionalQuestions,
     mode,
   }: OrganisationPollUpdateDto,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   const {
@@ -594,7 +594,7 @@ export const updateOrganisationPoll = async (
 
 export const deleteOrganisationPoll = async (
   params: OrganisationPollParams,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   return session.poll.delete({
@@ -609,7 +609,7 @@ export const deleteOrganisationPoll = async (
 
 export const fetchOrganisationPolls = async (
   params: OrganisationParams,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   const organisation = await findOrganisationBySlugOrId(
@@ -643,7 +643,7 @@ export const fetchOrganisationPolls = async (
 
 export const fetchOrganisationPoll = async (
   params: OrganisationPollParams,
-  user: NonNullable<Request['user']>,
+  user: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
   const { organisation, ...poll } = await findOrganisationPollBySlugOrId(
@@ -676,11 +676,7 @@ export const fetchOrganisationPoll = async (
 }
 
 export const fetchOrganisationPublicPoll = async (
-  {
-    pollIdOrSlug,
-    userId,
-    user,
-  }: PublicPollParams & { user?: NonNullable<Request['user']> },
+  { pollIdOrSlug, user }: PublicPollParams & { user: PartialUser },
   { session }: { session: Session }
 ) => {
   const { organisation, ...poll } = await session.poll.findFirstOrThrow({
@@ -705,7 +701,7 @@ export const fetchOrganisationPublicPoll = async (
   const simulationsInfos = await fetchPollSimulationsInfo(
     {
       poll,
-      user: user || { userId },
+      user,
     },
     { session }
   )

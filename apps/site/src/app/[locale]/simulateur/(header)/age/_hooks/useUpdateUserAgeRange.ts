@@ -7,13 +7,12 @@ export function useUpdateUserAgeRange() {
   return useMutation({
     mutationKey: ['updateUserAgeRange'],
     mutationFn: async ({
-      userId,
       ageRange,
     }: {
-      userId: string
+      userId?: string
       ageRange: AgeRange
     }) => {
-      const data = await fetchClient<{ id: string }>(`${USER_URL}/${userId}`, {
+      const data = await fetchClient<{ id: string }>(USER_URL, {
         method: 'PUT',
         body: { ageRange },
       })

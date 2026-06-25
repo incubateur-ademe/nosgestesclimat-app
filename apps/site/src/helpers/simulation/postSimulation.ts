@@ -3,11 +3,8 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { captureException } from '@sentry/nextjs'
 import type { SaveSimulationPayload } from './saveSimulation'
 
-export async function postSimulation({
-  simulation,
-  userId,
-}: SaveSimulationPayload) {
-  const url = new URL(`${SIMULATION_URL}/${userId}`)
+export async function postSimulation({ simulation }: SaveSimulationPayload) {
+  const url = new URL(SIMULATION_URL)
 
   const response = await fetch(url.toString(), {
     method: 'POST',

@@ -8,7 +8,6 @@ import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRule
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
-import type { Request } from 'express'
 import type Engine from 'publicodes'
 import * as v from 'valibot'
 import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
@@ -21,7 +20,8 @@ import { EntityNotFoundException } from '../../core/errors/EntityNotFoundExcepti
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
-import { createAccountOrSignin } from '../authentication/authentication.service.ts'
+import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
+import type { PartialUser } from '../../core/types/user.ts'
 
 import {
   defaultUserSelection,
@@ -36,9 +36,9 @@ import type {
 } from '../organisations/organisations.validator.ts'
 import {
   createOrUpdateUser,
+  fetchUser,
   fetchVerifiedUser,
 } from '../users/users.repository.ts'
-import type { UserParams } from '../users/users.validator.ts'
 import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.ts'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { carbonMetric, waterMetric } from './simulation.constant.ts'
@@ -55,8 +55,8 @@ import {
 import type {
   SimulationCreateDto,
   SimulationCreateQuery,
+  SimulationParams,
   SimulationsFetchQuery,
-  UserSimulationParams,
 } from './simulations.validator.ts'
 import {
   ComputedResultSchema,
@@ -89,18 +89,19 @@ const simulationToDto = (
   }: Partial<
     Prisma.SimulationGetPayload<{ select: typeof simulationSelection }>
   >,
-  connectedUser: string
+  connectedUser: PartialUser
 ) => ({
   ...rest,
   groups: groups?.map(({ groupId }) => ({ id: groupId })),
   polls: polls?.map(({ pollId, poll: { slug } }) => ({ id: pollId, slug })),
   ...(user
-    ? { user: user.id === connectedUser ? user : { name: user.name } }
+    ? { user: user.id === connectedUser.id ? user : { name: user.name } }
     : {}),
   ...(verifiedUser
     ? {
         user:
-          verifiedUser.email === connectedUser
+          isVerifiedUser(connectedUser) &&
+          verifiedUser.email === connectedUser.email
             ? verifiedUser
             : { name: verifiedUser.name },
       }
@@ -110,60 +111,24 @@ const simulationToDto = (
 export const createSimulation = async ({
   simulationDto,
   query,
-  params,
   origin,
-  user: requestUser,
+  user,
 }: {
   simulationDto: SimulationCreateDto
   query: SimulationCreateQuery
-  params: UserParams
   origin: string
-  user: Request['user']
+  user: PartialUser
 }) => {
-  let user
-  let token
-  let verifiedUser = requestUser
-
-  // Case 1. The user is authentified
-  if (verifiedUser) {
-    const email = verifiedUser.email
-    user = await transaction((session) =>
-      fetchVerifiedUser(
-        {
-          email,
-          select: defaultVerifiedUserSelection,
-        },
-        { session }
-      )
+  const verifiedUser = isVerifiedUser(user) ? user : undefined
+  const fullUser = await transaction((session) =>
+    fetchUser(
+      {
+        id: user.id,
+        select: defaultUserSelection,
+      },
+      { session }
     )
-  }
-
-  // Case 2. The user is not authentified and a code is provided for signin
-  if (query.code) {
-    const account = await createAccountOrSignin({
-      ...query,
-      userId: params.userId,
-    })
-    user = account.user
-    verifiedUser = { userId: user.id, email: user.email }
-    token = account.token
-  }
-  // Case 3. Not authentified
-  if (!user) {
-    ;({ user } = await transaction((session) =>
-      createOrUpdateUser(
-        {
-          id: params.userId,
-          user: {
-            email: query.email,
-            ...simulationDto.user,
-          },
-          select: defaultUserSelection,
-        },
-        { session }
-      )
-    ))
-  }
+  )
 
   const {
     simulation,
@@ -184,8 +149,12 @@ export const createSimulation = async ({
   const simulationUpsertedEvent = new SimulationUpsertedEvent({
     created: simulationCreated,
     updated: simulationUpdated,
-    user: user,
-    verified: !!verifiedUser,
+    user: fullUser ?? {
+      id: user.id,
+      email: verifiedUser ? verifiedUser.email : null,
+      name: null,
+    },
+    verified: isVerifiedUser(user),
     newsletters: query.newsletters,
     simulation,
     sendEmail: query.sendEmail,
@@ -196,41 +165,42 @@ export const createSimulation = async ({
   EventBus.emit(simulationUpsertedEvent)
   await EventBus.once(simulationUpsertedEvent)
   return {
-    simulation: simulationToDto(simulation, verifiedUser?.email ?? user.id),
-    token,
+    simulation: simulationToDto(simulation, user),
   }
 }
 
 export const fetchSimulations = async ({
-  params,
   query,
   user,
 }: {
-  params: UserParams
   query: SimulationsFetchQuery
-  user?: Request['user']
+  user: PartialUser
 }) => {
   const { simulations, count } = await transaction(
-    (session) => fetchUserSimulations(params, { session, query }),
+    (session) => fetchUserSimulations({ userId: user.id }, { session, query }),
     prisma
   )
 
   return {
-    simulations: simulations.map((s) =>
-      simulationToDto(s, user?.email || params.userId)
-    ),
+    simulations: simulations.map((s) => simulationToDto(s, user)),
     count,
   }
 }
 
-export const fetchSimulation = async (params: UserSimulationParams) => {
+export const fetchSimulation = async ({
+  params,
+  user,
+}: {
+  params: SimulationParams
+  user: PartialUser
+}) => {
   try {
     const simulation = await transaction(
       (session) => fetchSimulationById(params, { session }),
       prisma
     )
 
-    return simulationToDto(simulation, params.userId)
+    return simulationToDto(simulation, user)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Simulation not found')
@@ -243,36 +213,15 @@ export const softDeleteSimulation = async ({
   params,
   user,
 }: {
-  params: UserSimulationParams
-  user: Request['user']
+  params: SimulationParams
+  user: PartialUser
 }) => {
-  if (!user) {
-    throw new ForbiddenException()
-  }
-
-  // If the authenticated user's id doesn't match the userId in the URL params,
-  // we need to distinguish between two cases:
-  // - The simulation exists for the authenticated user but the URL userId is wrong → 403
-  // - The simulation doesn't exist for the authenticated user → 404
-  if (user.userId !== params.userId) {
-    const existingSimulation = await transaction(
-      (session) =>
-        session.simulation.findUnique({
-          where: { id: params.simulationId, userId: user.userId },
-          select: { id: true },
-        }),
-      prisma
-    )
-
-    if (existingSimulation) {
-      throw new ForbiddenException()
-    }
-
-    throw new EntityNotFoundException('Simulation not found')
-  }
-
   const simulation = await transaction(
-    (session) => softDeleteSimulationFunc(params, { session }),
+    (session) =>
+      softDeleteSimulationFunc(
+        { simulationId: params.simulationId, userId: user.id },
+        { session }
+      ),
     prisma
   )
 
@@ -292,11 +241,13 @@ export const createPollSimulation = async ({
   locale: Locales
   params: PublicPollParams
   simulationDto: SimulationCreateDto
-  user?: Request['user']
+  user: PartialUser
 }) => {
   try {
     let user
-    const verifiedUser = requestUser
+    const verifiedUser = isVerifiedUser(requestUser)
+      ? { id: requestUser.id, email: requestUser.email }
+      : undefined
     // Case 1. The user is authentified
     if (verifiedUser) {
       const email = verifiedUser.email
@@ -316,7 +267,7 @@ export const createPollSimulation = async ({
       const unverifiedUser = await transaction((session) =>
         createOrUpdateUser(
           {
-            id: params.userId,
+            id: requestUser.id,
             user: simulationDto.user ?? {},
             select: defaultUserSelection,
           },
@@ -332,7 +283,7 @@ export const createPollSimulation = async ({
     const { poll, simulation, created, updated, isNewParticipation } =
       await transaction((session) =>
         createPollUserSimulation(
-          { ...params, ...verifiedUser },
+          { ...params, id: requestUser.id, ...verifiedUser },
           simulationDto,
           {
             session,
@@ -363,7 +314,7 @@ export const createPollSimulation = async ({
     // @ts-expect-error 2 events different types: TODO fix
     await EventBus.once(simulationUpsertedEvent, pollUpdatedEvent)
 
-    return simulationToDto(simulation, requestUser?.email ?? params.userId)
+    return simulationToDto(simulation, requestUser)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Poll not found')
@@ -377,7 +328,7 @@ export const fetchPublicPollSimulations = async ({
   user,
 }: {
   params: PublicPollParams
-  user?: Request['user']
+  user: PartialUser
 }) => {
   try {
     return await transaction(async (session) => {
@@ -402,7 +353,7 @@ export const fetchPublicPollSimulations = async ({
         }
       )
 
-      return simulations.map((s) => simulationToDto(s, params.userId))
+      return simulations.map((s) => simulationToDto(s, user))
     }, prisma)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {

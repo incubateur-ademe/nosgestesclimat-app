@@ -7,15 +7,14 @@ import {
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { createParticipantSimulation } from '../simulations/simulations.repository.ts'
 import { createOrUpdateUser } from '../users/users.repository.ts'
-import type { UserParams } from '../users/users.validator.ts'
 import type {
   GroupCreateDto,
   GroupParams,
+  GroupParticipantParams,
   GroupsFetchQuery,
   GroupUpdateDto,
   ParticipantCreateDto,
   UserGroupParams,
-  UserGroupParticipantParams,
 } from './groups.validator.ts'
 
 export const createGroupAndUser = async (
@@ -207,7 +206,7 @@ export const createParticipantAndUser = async (
 }
 
 export const findGroupAndParticipantById = (
-  { groupId, participantId }: UserGroupParticipantParams,
+  { groupId, participantId }: GroupParticipantParams,
   { session }: { session: Session }
 ) => {
   return session.groupParticipant.findUniqueOrThrow({
@@ -253,7 +252,7 @@ export const deleteParticipantById = (
 }
 
 export const fetchUserGroups = (
-  { userId }: UserParams,
+  { userId }: { userId: string },
   { groupIds }: GroupsFetchQuery,
   { session }: { session: Session }
 ) => {

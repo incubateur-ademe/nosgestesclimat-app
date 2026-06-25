@@ -7,13 +7,11 @@ export function useUpdateUserSettings() {
   return useMutation({
     mutationKey: ['updateUserSettings'],
     mutationFn: async ({
-      userId,
       email,
       name,
       ageRange,
       code,
     }: {
-      userId: string
       email?: string
       name?: string
       ageRange?: AgeRange
@@ -21,7 +19,7 @@ export function useUpdateUserSettings() {
     }) => {
       return await axios
         .put(
-          `${USER_URL}/${userId}`,
+          USER_URL,
           {
             email,
             name,

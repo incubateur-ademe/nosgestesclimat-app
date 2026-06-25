@@ -27,7 +27,7 @@ export const useFetchPublicPoll = ({
     queryFn: () =>
       axios
         .get<PublicOrganisationPoll>(
-          `${ORGANISATION_URL}/${userId}/public-polls/${localPollIdOrSlug as string}`,
+          `${ORGANISATION_URL}/public-polls/${localPollIdOrSlug as string}`,
           {
             withCredentials: true,
           }

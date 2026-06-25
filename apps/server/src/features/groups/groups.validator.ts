@@ -1,7 +1,6 @@
 import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { SimulationParticipantCreateDto } from '../simulations/simulations.validator.ts'
-import { UserParams } from '../users/users.validator.ts'
 
 const GroupParams = v.strictObject({
   groupId: v.string(),
@@ -11,18 +10,18 @@ export type GroupParams = v.InferOutput<typeof GroupParams>
 
 const UserGroupParams = v.strictObject({
   ...GroupParams.entries,
-  ...UserParams.entries,
+  userId: v.pipe(v.string(), v.uuid()),
 })
 
 export type UserGroupParams = v.InferOutput<typeof UserGroupParams>
 
-const UserGroupParticipantParams = v.strictObject({
-  ...UserGroupParams.entries,
+const GroupParticipantParams = v.strictObject({
+  ...GroupParams.entries,
   participantId: v.pipe(v.string(), v.uuid()),
 })
 
-export type UserGroupParticipantParams = v.InferOutput<
-  typeof UserGroupParticipantParams
+export type GroupParticipantParams = v.InferOutput<
+  typeof GroupParticipantParams
 >
 
 const GroupCreateParticipant = v.strictObject({
@@ -72,7 +71,7 @@ export type GroupUpdateDto = v.InferOutput<typeof GroupUpdateDto>
 
 export const GroupUpdateValidator = {
   body: GroupUpdateDto,
-  params: UserGroupParams,
+  params: GroupParams,
   query: LocaleQuery,
 }
 
@@ -95,7 +94,7 @@ export const ParticipantCreateValidator = {
 
 export const ParticipantDeleteValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserGroupParticipantParams,
+  params: GroupParticipantParams,
   query: LocaleQuery,
 }
 
@@ -108,13 +107,13 @@ export type GroupsFetchQuery = v.InferOutput<typeof GroupsFetchQuery>
 
 export const GroupsFetchValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserParams,
+  params: v.optional(v.strictObject({})),
   query: GroupsFetchQuery,
 }
 
 export const GroupFetchValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserGroupParams,
+  params: GroupParams,
   query: LocaleQuery,
 }
 

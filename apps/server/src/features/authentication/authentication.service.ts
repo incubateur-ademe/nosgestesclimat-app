@@ -140,7 +140,7 @@ export async function createAccountOrSignin(loginDto: LoginDto) {
     // SignUp if user doesn't exist
     const { user: newUser } = await createOrUpdateVerifiedUser(
       {
-        id: loginDto,
+        id: { id: loginDto.userId, email: loginDto.email },
         user: loginDto,
         select: defaultVerifiedUserSelection,
       },

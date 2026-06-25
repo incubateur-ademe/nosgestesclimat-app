@@ -12,14 +12,12 @@ export function useRemoveParticipant() {
     mutationFn: ({
       participantId,
       groupId,
-      userId,
     }: {
       participantId: string
       groupId: string
-      userId: string
     }) =>
       axios.delete<void>(
-        `${GROUP_URL}/${userId}/${groupId}/participants/${participantId}`
+        `${GROUP_URL}/${groupId}/participants/${participantId}`
       ),
     onSuccess: (data, variables) => {
       updateCurrentSimulation({ groupToDelete: variables.groupId })

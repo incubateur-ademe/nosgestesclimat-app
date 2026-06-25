@@ -99,7 +99,6 @@ export default function RankingMember({
       await removePartipant({
         participantId: participant.id,
         groupId: group.id,
-        userId,
       })
 
       router.refresh()

@@ -6,25 +6,16 @@ import {
 } from '../../adapters/prisma/generated.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { PaginationQuery } from '../../core/pagination.ts'
-import { LoginDto } from '../authentication/authentication.validator.ts'
 import { PublicPollParams } from '../organisations/organisations.validator.ts'
-import { UserParams } from '../users/users.validator.ts'
 
 const MODEL_REGEX =
   /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
 
-const SimulationParams = v.strictObject({
+export const SimulationParams = v.strictObject({
   simulationId: v.pipe(v.string(), v.uuid()),
 })
 
 export type SimulationParams = v.InferOutput<typeof SimulationParams>
-
-const UserSimulationParams = v.strictObject({
-  ...SimulationParams.entries,
-  ...UserParams.entries,
-})
-
-export type UserSimulationParams = v.InferOutput<typeof UserSimulationParams>
 
 const ActionChoicesSchema = v.record(v.string(), v.boolean())
 
@@ -210,33 +201,17 @@ const SimulationCreateNewsletterList = v.pipe(
   )
 )
 
-const SimulationCreateBaseQuery = v.strictObject({
+const SimulationCreateQuery = v.strictObject({
   newsletters: v.optional(SimulationCreateNewsletterList, []),
   sendEmail: v.optional(v.pipe(v.string(), v.parseBoolean()), 'false'),
   ...LocaleQuery.entries,
 })
 
-const SimulationCreateLoginQuery = v.strictObject({
-  ...v.omit(LoginDto, ['userId']).entries,
-  ...SimulationCreateBaseQuery.entries,
-})
-
-const SimulationCreateAnonymousQuery = v.strictObject({
-  email: v.optional(v.undefined_()),
-  code: v.optional(v.undefined_()),
-  ...SimulationCreateBaseQuery.entries,
-})
-
-const SimulationCreateQuery = v.union([
-  SimulationCreateLoginQuery,
-  SimulationCreateAnonymousQuery,
-])
-
 export type SimulationCreateQuery = v.InferOutput<typeof SimulationCreateQuery>
 
 export const SimulationCreateValidator = {
   body: SimulationCreateDto,
-  params: UserParams,
+  params: v.optional(v.strictObject({})),
   query: SimulationCreateQuery,
 }
 
@@ -250,13 +225,13 @@ export type SimulationsFetchQuery = v.InferOutput<typeof SimulationsFetchQuery>
 
 export const SimulationsFetchValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserParams,
+  params: v.optional(v.strictObject({})),
   query: SimulationsFetchQuery,
 }
 
 export const SimulationFetchValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserSimulationParams,
+  params: SimulationParams,
   query: LocaleQuery,
 }
 

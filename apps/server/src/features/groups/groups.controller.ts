@@ -69,22 +69,29 @@ EventBus.on(GroupUpdatedEvent, addOrUpdateBrevoParticipantContact)
  * Updates a user group
  */
 router
-  .route('/v1/:userId/:groupId')
-  .put(validateRequest(GroupUpdateValidator), async (req, res) => {
-    try {
-      const group = await updateGroup(req.params, req.body)
+  .route('/v1/:groupId')
+  .put(
+    authentificationMiddleware(),
+    validateRequest(GroupUpdateValidator),
+    async (req, res) => {
+      try {
+        const group = await updateGroup(
+          { groupId: req.params.groupId, user: req.user! },
+          req.body
+        )
 
-      return res.status(StatusCodes.OK).json(group)
-    } catch (err) {
-      if (err instanceof EntityNotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        return res.status(StatusCodes.OK).json(group)
+      } catch (err) {
+        if (err instanceof EntityNotFoundException) {
+          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        }
+
+        logger.error('Group update failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      logger.error('Group update failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 /**
  * Adds a participant to a group (participant joins)
@@ -119,38 +126,46 @@ router
  * Removes a participant from a group (participant leaves)
  */
 router
-  .route('/v1/:userId/:groupId/participants/:participantId')
-  .delete(validateRequest(ParticipantDeleteValidator), async (req, res) => {
-    try {
-      await removeParticipant(req.params)
+  .route('/v1/:groupId/participants/:participantId')
+  .delete(
+    authentificationMiddleware(),
+    validateRequest(ParticipantDeleteValidator),
+    async (req, res) => {
+      try {
+        await removeParticipant({
+          groupId: req.params.groupId,
+          participantId: req.params.participantId,
+          user: req.user!,
+        })
 
-      return res.status(StatusCodes.NO_CONTENT).end()
-    } catch (err) {
-      if (err instanceof EntityNotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        return res.status(StatusCodes.NO_CONTENT).end()
+      } catch (err) {
+        if (err instanceof EntityNotFoundException) {
+          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        }
+
+        if (err instanceof ForbiddenException) {
+          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
+        }
+
+        logger.error('Participant deletion failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      if (err instanceof ForbiddenException) {
-        return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-      }
-
-      logger.error('Participant deletion failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 /**
  * Returns groups for a user
  */
 router
-  .route('/v1/:userId')
+  .route('/v1')
   .get(
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(GroupsFetchValidator),
-    async ({ params, query }, res) => {
+    async ({ query, user }, res) => {
       try {
-        const groups = await fetchGroups(params, query)
+        const groups = await fetchGroups(user!, query)
 
         return res.status(StatusCodes.OK).json(groups)
       } catch (err) {
@@ -165,13 +180,13 @@ router
  * Returns group for a user and an id
  */
 router
-  .route('/v1/:userId/:groupId')
+  .route('/v1/:groupId')
   .get(
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(GroupFetchValidator),
-    async ({ params }, res) => {
+    async ({ params, user }, res) => {
       try {
-        const group = await fetchGroup(params)
+        const group = await fetchGroup({ groupId: params.groupId, user: user! })
 
         return res.status(StatusCodes.OK).json(group)
       } catch (err) {

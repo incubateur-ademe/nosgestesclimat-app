@@ -87,7 +87,6 @@ export default function UserEmailForm({ submitLabel, className }: Props) {
               email={pendingVerification.email}
               onVerificationCompleted={completeVerification}
               verificationMutation={updateUserSettings}
-              mutationPayload={{ userId: user.userId }}
             />
           </Modal>
         )}

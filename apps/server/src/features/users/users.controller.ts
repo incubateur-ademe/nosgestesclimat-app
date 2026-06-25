@@ -58,8 +58,8 @@ router
     validateRequest(FetchMeValidator),
     (req, res) => {
       return res.status(StatusCodes.OK).json({
-        id: req.user!.userId,
-        email: req.user!.email,
+        id: req.user!.id,
+        email: 'email' in req.user! ? req.user.email : undefined,
       })
     }
   )
@@ -71,22 +71,18 @@ EventBus.on(UserUpdatedEvent, removePreviousBrevoContact)
  * Upserts user for given user id
  */
 router
-  .route('/v1/:userId')
+  .route('/v1')
   .put(
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(UpdateUserValidator),
     async (req, res) => {
       try {
-        if (req.user && req.user.userId !== req.params.userId) {
-          throw new ForbiddenException('Different user ids found')
-        }
-
         const origin = req.get('origin') || config.app.origin
 
         const { user, verified, token } = await updateUserAndContact({
-          params: req.user || req.params,
+          user: req.user!,
           code: req.query.code,
-          userDto: req.body,
+          newUserData: req.body,
           origin,
         })
 

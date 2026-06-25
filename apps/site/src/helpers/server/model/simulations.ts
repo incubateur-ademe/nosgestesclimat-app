@@ -39,14 +39,14 @@ interface SimulationFilter {
 
 async function getSimulations(
   {
-    user,
+    user: _user,
   }: {
     user: AppUser
   },
   { completedOnly = false, pageSize = 50 }: SimulationFilter = {}
 ): Promise<Simulation[]> {
   const serverSimulations = await fetchServer<Simulation[]>(
-    `${SIMULATION_URL}/${user.id}?completedOnly=${completedOnly}&pageSize=${pageSize}`
+    `${SIMULATION_URL}?completedOnly=${completedOnly}&pageSize=${pageSize}`
   )
 
   // Map from server format to client format
@@ -87,14 +87,14 @@ export async function getCompletedSimulations(
 }
 
 export async function getSimulation({
-  user,
+  user: _user,
   simulationId,
 }: {
   user: AppUser
   simulationId: string
 }): Promise<Simulation> {
   const simulation = await fetchServer<Simulation>(
-    `${SIMULATION_URL}/${user.id}/${simulationId}`
+    `${SIMULATION_URL}/${simulationId}`
   )
 
   const updatedSimulation = setDefaultExtendedSituation(simulation)
@@ -105,26 +105,26 @@ export async function getSimulation({
 
 // This is a soft delete
 export async function deleteSimulation({
-  user,
+  user: _user,
   simulationId,
 }: {
   user: AppUser
   simulationId: string
 }) {
-  await fetchServer(`${SIMULATION_URL}/${user.id}/${simulationId}`, {
+  await fetchServer(`${SIMULATION_URL}/${simulationId}`, {
     method: 'DELETE',
   })
 }
 
 export async function createNewSimulation({
-  user,
+  user: _user,
   model,
 }: {
   user: AppUser
   model: Model
 }): Promise<void> {
   const simulation = generateSimulation({ model: stringifyModel(model) })
-  await fetchServer<Simulation>(`${SIMULATION_URL}/${user.id}`, {
+  await fetchServer<Simulation>(SIMULATION_URL, {
     method: 'POST',
     body: simulation,
   })
