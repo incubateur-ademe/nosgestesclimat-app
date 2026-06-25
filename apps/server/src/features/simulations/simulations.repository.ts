@@ -2,7 +2,6 @@ import type { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   defaultOrganisationSelectionWithoutPolls,
   defaultPollSelection,
-  defaultSimulationSelectionWithoutPollAndSituation,
   simulationSelection,
   simulationSelectionWithPolls,
 } from '../../adapters/prisma/selection.ts'
@@ -252,73 +251,6 @@ export const createPollUserSimulation = async (
     updated: simulationUpdated,
     isNewParticipation: !existingParticipation,
   }
-}
-
-export const countOrganisationPublicPollSimulations = (
-  {
-    id,
-  }: {
-    id: string
-  },
-  { session }: { session: Session }
-) => {
-  return session.simulationPoll.count({
-    where: {
-      pollId: id,
-    },
-  })
-}
-
-export const fetchPollSimulations = <
-  T extends Prisma.SimulationSelect =
-    typeof defaultSimulationSelectionWithoutPollAndSituation,
->(
-  {
-    id,
-    select = defaultSimulationSelectionWithoutPollAndSituation as T,
-  }: {
-    id: string
-    user?: PartialUser
-    select?: T
-  },
-  { session }: { session: Session }
-) => {
-  // TODO should filter according connectedUser at some point
-  // const { email, userId } = _user
-
-  return session.simulation.findMany({
-    where: {
-      polls: {
-        some: {
-          poll: {
-            id,
-            // ...(email
-            //   ? {
-            //       organisation: {
-            //         administrators: {
-            //           some: {
-            //             user: {
-            //               email,
-            //             },
-            //           },
-            //         },
-            //       },
-            //     }
-            //   : {
-            //       simulations: {
-            //         some: {
-            //           simulation: {
-            //             userId,
-            //           },
-            //         },
-            //       },
-            //     }),
-          },
-        },
-      },
-    },
-    select,
-  })
 }
 
 export const batchPollSimulations = <

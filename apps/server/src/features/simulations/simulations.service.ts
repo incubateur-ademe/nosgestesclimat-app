@@ -17,7 +17,6 @@ import { redis } from '../../adapters/redis/client.ts'
 import { KEYS } from '../../adapters/redis/constant.ts'
 import { deepMergeSum } from '../../core/deep-merge.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
@@ -29,7 +28,6 @@ import {
   simulationSelection,
 } from '../../adapters/prisma/selection.ts'
 import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.ts'
-import { findOrganisationPublicPollBySlugOrId } from '../organisations/organisations.repository.ts'
 import type {
   OrganisationPollCustomAdditionalQuestion,
   PublicPollParams,
@@ -44,10 +42,8 @@ import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { carbonMetric, waterMetric } from './simulation.constant.ts'
 import {
   batchPollSimulations,
-  countOrganisationPublicPollSimulations,
   createParticipantSimulation,
   createPollUserSimulation,
-  fetchPollSimulations,
   fetchSimulationById,
   fetchUserSimulations,
   softDeleteSimulation as softDeleteSimulationFunc,
@@ -315,46 +311,6 @@ export const createPollSimulation = async ({
     await EventBus.once(simulationUpsertedEvent, pollUpdatedEvent)
 
     return simulationToDto(simulation, requestUser)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Poll not found')
-    }
-    throw e
-  }
-}
-
-export const fetchPublicPollSimulations = async ({
-  params,
-  user,
-}: {
-  params: PublicPollParams
-  user: PartialUser
-}) => {
-  try {
-    return await transaction(async (session) => {
-      const { id } = await findOrganisationPublicPollBySlugOrId(
-        { params },
-        { session }
-      )
-
-      const simulationsCount = await countOrganisationPublicPollSimulations(
-        { id },
-        { session }
-      )
-
-      if (simulationsCount > 500) {
-        throw new ForbiddenException('Cannot fetch more than 500 simulations')
-      }
-
-      const simulations = await fetchPollSimulations(
-        { id, user },
-        {
-          session,
-        }
-      )
-
-      return simulations.map((s) => simulationToDto(s, user))
-    }, prisma)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Poll not found')

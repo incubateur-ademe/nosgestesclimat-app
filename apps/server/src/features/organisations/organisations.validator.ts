@@ -211,12 +211,6 @@ export const OrganisationPublicPollFetchValidator = {
   query: LocaleQuery,
 }
 
-export const OrganisationPublicPollSimulationsFetchValidator = {
-  body: v.optional(v.strictObject({})),
-  params: PublicPollParams,
-  query: LocaleQuery,
-}
-
 export const OrganisationPublicPollDashboardValidator = {
   body: v.optional(v.strictObject({})),
   params: PublicPollParams,

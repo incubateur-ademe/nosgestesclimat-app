@@ -11,10 +11,7 @@ import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import {
-  createPollSimulation,
-  fetchPublicPollSimulations,
-} from '../simulations/simulations.service.ts'
+import { createPollSimulation } from '../simulations/simulations.service.ts'
 import { OrganisationPollSimulationCreateValidator } from '../simulations/simulations.validator.ts'
 import { OrganisationCreatedEvent } from './events/OrganisationCreated.event.ts'
 import { OrganisationUpdatedEvent } from './events/OrganisationUpdated.event.ts'
@@ -50,7 +47,6 @@ import {
   OrganisationPollSimulationsDownloadValidator,
   OrganisationPollUpdateValidator,
   OrganisationPublicPollFetchValidator,
-  OrganisationPublicPollSimulationsFetchValidator,
   OrganisationsFetchValidator,
   OrganisationUpdateValidator,
 } from './organisations.validator.ts'
@@ -466,38 +462,6 @@ router
         }
 
         logger.error('Public poll fetch failed', err)
-
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-      }
-    }
-  )
-
-/**
- * Returns poll simulations for public or administrator users following authentication
- */
-router
-  .route('/v1/public-polls/:pollIdOrSlug/simulations')
-  .get(
-    authentificationMiddleware(),
-    validateRequest(OrganisationPublicPollSimulationsFetchValidator),
-    async (req, res) => {
-      try {
-        const simulations = await fetchPublicPollSimulations({
-          params: req.params,
-          user: req.user!,
-        })
-
-        return res.status(StatusCodes.OK).json(simulations)
-      } catch (err) {
-        if (err instanceof EntityNotFoundException) {
-          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-        }
-
-        if (err instanceof ForbiddenException) {
-          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-        }
-
-        logger.error('Public poll simulations fetch failed', err)
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
