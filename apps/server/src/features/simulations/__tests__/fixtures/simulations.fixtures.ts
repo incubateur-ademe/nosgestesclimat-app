@@ -3,6 +3,7 @@ import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
@@ -16,6 +17,7 @@ import {
   brevoRemoveFromList,
   brevoUpdateContact,
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
@@ -32,12 +34,11 @@ import { SituationSchema } from '../../simulations.validator.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 
-export const CREATE_SIMULATION_ROUTE = '/simulations/v1/:userId'
+export const CREATE_SIMULATION_ROUTE = '/simulations/v1'
 
 export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1/:userId'
 
-export const FETCH_USER_SIMULATION_ROUTE =
-  '/simulations/v1/:userId/:simulationId'
+export const FETCH_USER_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
 export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:userId/:simulationId'
 
@@ -246,6 +247,14 @@ export const createSimulation = async ({
     user,
   }
 
+  // The internal API connects the simulation to an existing user (the proxy
+  // creates it from the session). Tests target the API directly, so seed it.
+  await prisma.user.upsert({
+    where: { id: userId },
+    create: { id: userId, name: payload.user?.name },
+    update: {},
+  })
+
   if (payload.user?.email || cookie) {
     mswServer.use(
       brevoUpdateContact(),
@@ -258,11 +267,9 @@ export const createSimulation = async ({
     )
   }
 
-  const request = agent.post(CREATE_SIMULATION_ROUTE.replace(':userId', userId))
-
-  if (cookie) {
-    request.set('cookie', cookie)
-  }
+  const request = agent
+    .post(CREATE_SIMULATION_ROUTE)
+    .set(authHeaders({ userId, email: payload.user?.email }))
 
   const response = await request.send(payload).expect(StatusCodes.CREATED)
 

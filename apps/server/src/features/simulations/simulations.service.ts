@@ -196,6 +196,10 @@ export const fetchSimulation = async ({
       prisma
     )
 
+    if (!simulation.user || simulation.user.id !== user.id) {
+      throw new EntityNotFoundException('Simulation not found')
+    }
+
     return simulationToDto(simulation, user)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
