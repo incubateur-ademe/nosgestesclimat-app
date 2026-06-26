@@ -33,7 +33,7 @@ export const FETCH_USER_GROUPS_ROUTE = '/groups/v1/:userId'
 
 export const FETCH_USER_GROUP_ROUTE = '/groups/v1/:userId/:groupId'
 
-export const DELETE_USER_GROUP_ROUTE = '/groups/v1/:userId/:groupId'
+export const DELETE_USER_GROUP_ROUTE = '/groups/v1/:groupId'
 
 export const createGroup = async ({
   agent,

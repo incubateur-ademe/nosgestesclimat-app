@@ -15,7 +15,6 @@ import type {
   GroupsFetchQuery,
   GroupUpdateDto,
   ParticipantCreateDto,
-  UserGroupParams,
 } from './groups.validator.ts'
 
 export const createGroupAndUser = async (
@@ -109,7 +108,7 @@ export const createGroupAndUser = async (
 }
 
 export const updateUserGroup = (
-  { groupId, userId }: UserGroupParams,
+  { groupId, userId }: { groupId: string; userId: string },
   update: GroupUpdateDto,
   { session }: { session: Session }
 ) => {

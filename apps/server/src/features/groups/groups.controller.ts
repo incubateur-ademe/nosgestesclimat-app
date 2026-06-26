@@ -218,12 +218,13 @@ EventBus.on(GroupDeletedEvent, addOrUpdateBrevoParticipantContact)
  * Deletes group for a user and an id
  */
 router
-  .route('/v1/:userId/:groupId')
+  .route('/v1/:groupId')
   .delete(
+    authentificationMiddleware(),
     validateRequest(GroupDeleteValidator),
-    async ({ params: { userId, groupId } }, res) => {
+    async (req, res) => {
       try {
-        await deleteGroup({ userId, groupId })
+        await deleteGroup({ userId: req.user!.id, groupId: req.params.groupId })
 
         return res.status(StatusCodes.NO_CONTENT).end()
       } catch (err) {

@@ -8,13 +8,6 @@ const GroupParams = v.strictObject({
 
 export type GroupParams = v.InferOutput<typeof GroupParams>
 
-const UserGroupParams = v.strictObject({
-  ...GroupParams.entries,
-  userId: v.pipe(v.string(), v.uuid()),
-})
-
-export type UserGroupParams = v.InferOutput<typeof UserGroupParams>
-
 const GroupParticipantParams = v.strictObject({
   ...GroupParams.entries,
   participantId: v.pipe(v.string(), v.uuid()),
@@ -123,6 +116,6 @@ export const GroupFetchValidator = {
 
 export const GroupDeleteValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserGroupParams,
+  params: GroupParams,
   query: LocaleQuery,
 }
