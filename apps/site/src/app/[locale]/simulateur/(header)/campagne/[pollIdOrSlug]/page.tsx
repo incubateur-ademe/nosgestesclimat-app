@@ -49,7 +49,7 @@ export default async function CampagnePage({
       model: await getNewSimulationModelService({
         searchParams,
         locale,
-        simulationMode: poll.mode,
+        mode: poll.mode,
       }),
     })
     redirect(SIMULATOR_PATH)

@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation'
 type LayoutProps = PropsWithChildren & DefaultPageProps
 
 export default async function Layout({ children }: LayoutProps) {
-  if (!(await getUserSession())?.isAuth) {
+  if ((await getUserSession())?.isAuth) {
     redirect(MON_ESPACE_PATH)
   }
 

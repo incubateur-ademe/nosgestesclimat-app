@@ -19,7 +19,10 @@ export default async function SimulationLayout({
 }: LayoutProps<'/[locale]/simulateur'>) {
   const { locale } = await params
 
-  const user = (await getUserSession())!
+  const user = await getUserSession()
+  if (!user) {
+    redirect(START_SIMULATION_PATH)
+  }
 
   const currentSimulation = await getCurrentSimulation()
   const serverSimulations = currentSimulation ? [currentSimulation] : []
