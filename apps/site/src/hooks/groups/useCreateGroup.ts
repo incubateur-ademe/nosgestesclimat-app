@@ -9,9 +9,7 @@ interface MutateAsyncProps {
     name: string
     emoji: string
     administrator: {
-      userId: string
       name: string
-      email?: string
     }
     participants?: {
       simulation: Simulation

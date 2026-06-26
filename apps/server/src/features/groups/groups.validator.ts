@@ -44,12 +44,23 @@ const GroupCreateUser = v.strictObject({
   name: v.string(),
 })
 
-export type GroupCreateAdministrator = v.InferOutput<typeof GroupCreateUser>
+/**
+ * Administrator identity (id and email) is derived from the authenticated user
+ * so it cannot be spoofed through the request body. Only the display name is
+ * accepted from the client.
+ */
+const GroupCreateAdministrator = v.strictObject({
+  name: v.string(),
+})
+
+export type GroupCreateAdministrator = v.InferOutput<
+  typeof GroupCreateAdministrator
+>
 
 const GroupCreateDto = v.strictObject({
   name: v.string(),
   emoji: v.string(),
-  administrator: GroupCreateUser,
+  administrator: GroupCreateAdministrator,
   participants: v.optional(v.strictTuple([GroupCreateParticipant])),
 })
 

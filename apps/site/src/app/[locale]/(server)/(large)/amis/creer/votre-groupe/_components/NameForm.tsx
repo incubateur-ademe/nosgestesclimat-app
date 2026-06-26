@@ -60,9 +60,7 @@ export default function NameForm({
           name: name ?? '',
           emoji: emoji ?? '',
           administrator: {
-            userId: user.id,
             name: administratorName ?? '',
-            email: user.email,
           },
           participants: lastSimulation
             ? [{ simulation: lastSimulation }]

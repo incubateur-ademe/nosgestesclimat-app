@@ -104,9 +104,11 @@ const findGroupAndParticipant = async (
 export const createGroup = async ({
   groupDto,
   origin,
+  user,
 }: {
   groupDto: GroupCreateDto
   origin: string
+  user: PartialUser
 }) => {
   const {
     group,
@@ -114,7 +116,9 @@ export const createGroup = async ({
     administrator,
     simulationUpdated,
     simulationCreated,
-  } = await transaction((session) => createGroupAndUser(groupDto, { session }))
+  } = await transaction((session) =>
+    createGroupAndUser(groupDto, { user }, { session })
+  )
   const { participants } = group
 
   const events = []
@@ -148,7 +152,7 @@ export const createGroup = async ({
 
   await EventBus.once(...events)
 
-  return groupToDto(group, groupDto.administrator.userId)
+  return groupToDto(group, user.id)
 }
 
 export const updateGroup = async (

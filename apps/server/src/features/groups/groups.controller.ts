@@ -43,24 +43,29 @@ EventBus.on(GroupCreatedEvent, addOrUpdateBrevoAdministratorContact)
  */
 router
   .route('/v1/')
-  .post(validateRequest(GroupCreateValidator), async (req, res) => {
-    try {
-      const group = await createGroup({
-        groupDto: req.body,
-        origin: req.get('origin') || config.app.origin,
-      })
+  .post(
+    authentificationMiddleware(),
+    validateRequest(GroupCreateValidator),
+    async (req, res) => {
+      try {
+        const group = await createGroup({
+          groupDto: req.body,
+          origin: req.get('origin') || config.app.origin,
+          user: req.user!,
+        })
 
-      return res.status(StatusCodes.CREATED).json(group)
-    } catch (err) {
-      if (err instanceof ImmutableSimulationException) {
-        return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        return res.status(StatusCodes.CREATED).json(group)
+      } catch (err) {
+        if (err instanceof ImmutableSimulationException) {
+          return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        }
+
+        logger.error('Group creation failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      logger.error('Group creation failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 EventBus.on(GroupUpdatedEvent, addOrUpdateBrevoAdministratorContact)
 EventBus.on(GroupUpdatedEvent, addOrUpdateBrevoParticipantContact)

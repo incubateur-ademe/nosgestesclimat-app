@@ -5,6 +5,7 @@ import {
   simulationSelectionWithPolls,
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
+import type { PartialUser } from '../../core/types/user.ts'
 import { createParticipantSimulation } from '../simulations/simulations.repository.ts'
 import { createOrUpdateUser } from '../users/users.repository.ts'
 import type {
@@ -21,11 +22,15 @@ export const createGroupAndUser = async (
   {
     name: groupName,
     emoji,
-    administrator: { userId, name, email },
+    administrator: { name },
     participants,
   }: GroupCreateDto,
+  { user }: { user: PartialUser },
   { session }: { session: Session }
 ) => {
+  const { id: userId } = user
+  const email = 'email' in user ? user.email : undefined
+
   // upsert administrator
   const { user: administrator } = await createOrUpdateUser(
     {

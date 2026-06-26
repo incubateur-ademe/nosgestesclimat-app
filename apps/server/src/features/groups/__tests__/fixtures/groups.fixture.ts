@@ -6,6 +6,7 @@ import {
   brevoSendEmail,
   brevoUpdateContact,
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
@@ -39,24 +40,32 @@ export const createGroup = async ({
   group: { administrator, participants, emoji, name } = {},
 }: {
   agent: TestAgent
-  group?: Partial<GroupCreateInputDto>
+  group?: {
+    administrator?: { userId?: string; email?: string; name?: string }
+    participants?: GroupCreateInputDto['participants']
+    emoji?: string
+    name?: string
+  }
 }) => {
+  const userId = administrator?.userId || faker.string.uuid()
+  const { email } = administrator || {}
+
   const payload: GroupCreateInputDto = {
     emoji: emoji || faker.internet.emoji(),
     name: name || faker.company.name(),
-    administrator: administrator || {
-      userId: faker.string.uuid(),
-      name: faker.person.fullName(),
+    administrator: {
+      name: administrator?.name || faker.person.fullName(),
     },
     participants,
   }
 
-  if (payload.administrator.email && participants?.length) {
+  if (email && participants?.length) {
     mswServer.use(brevoSendEmail(), brevoUpdateContact())
   }
 
   const response = await agent
     .post(CREATE_GROUP_ROUTE)
+    .set(authHeaders({ userId, email }))
     .send(payload)
     .expect(StatusCodes.CREATED)
 
