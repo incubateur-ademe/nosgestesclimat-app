@@ -9,13 +9,14 @@ import Banner from '@/design-system/cms/Banner'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { UserProvider } from '@/publicodes-state'
+import type { UserSession } from '@/services/auth/get-user-session'
 import type { SkipLinksDisplayed } from '@/types'
 import type { PropsWithChildren } from 'react'
 import { Suspense } from 'react'
 
 type RootLayoutProps = PropsWithChildren & {
   locale: string
-  serverUserId: string
+  userSession: UserSession
   skipLinksDisplayed?: SkipLinksDisplayed
   serverSimulations?: Simulation[]
 }
@@ -24,13 +25,13 @@ export const ClientLayout = ({
   children,
   skipLinksDisplayed,
   locale,
-  serverUserId,
+  userSession,
   serverSimulations,
 }: RootLayoutProps) => (
   <ErrorBoundary>
     <QueryClientProviderWrapper>
       <UserProvider
-        serverUserId={serverUserId}
+        userSession={userSession}
         serverSimulations={serverSimulations}>
         <PartnerProvider>
           <Suspense>

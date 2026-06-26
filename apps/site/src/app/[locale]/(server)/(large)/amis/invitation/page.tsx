@@ -2,25 +2,33 @@ import {
   getCurrentModel,
   stringifyModel,
 } from '@/helpers/server/model/models'
-import { getCurrentSimulation } from '@/helpers/server/model/simulations'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import type { Locale } from '@/i18nConfig'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { getRegion } from '@/services/users/region'
+import { groupResultsGuard } from '../guard'
 import InvitationPage from './_components/InvitationPage'
 
 export default async function RejoindreGroupePage({
   params,
+  searchParams,
 }: PageProps<'/[locale]/amis/invitation'>) {
-  const user = await getUserSession()
+  const { group } = await groupResultsGuard(searchParams)
   const locale = (await params).locale as Locale
   const regionData = await getRegion()
   const userRegion = regionData!.current
 
   const currentSimulation =
-    (await getCurrentSimulation({ user })) ??
+    (await getCurrentSimulation()) ??
     generateSimulation({
       model: stringifyModel(getCurrentModel({ locale, userRegion })),
     })
-  return <InvitationPage currentSimulation={currentSimulation} />
+
+  return (
+    <InvitationPage
+      currentSimulation={currentSimulation}
+      group={group}
+      locale={locale}
+    />
+  )
 }

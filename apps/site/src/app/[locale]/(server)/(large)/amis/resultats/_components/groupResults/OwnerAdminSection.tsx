@@ -10,7 +10,6 @@ import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
 import { useDeleteGroup } from '@/hooks/groups/useDeleteGroup'
-import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
@@ -29,9 +28,6 @@ export default function OwnerAdminSection({ group }: Props) {
   })
 
   const [isPending, startTransition] = useTransition()
-
-  const { user } = useUser()
-
   const router = useRouter()
 
   const timeoutRef = useRef<NodeJS.Timeout>(undefined)
@@ -49,10 +45,7 @@ export default function OwnerAdminSection({ group }: Props) {
     // Use startTransition instead of isPending prop to handle the timeout
     startTransition(async () => {
       try {
-        await deleteUserOrGroupIfOwner({
-          groupId: group.id,
-          userId: user.userId,
-        })
+        await deleteUserOrGroupIfOwner(group.id)
 
         timeoutRef.current = setTimeout(() => {
           router.refresh()

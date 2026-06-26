@@ -8,9 +8,8 @@ import {
   getNewsletters,
   getNewsletterSubscriptions,
 } from '@/helpers/server/model/newsletter'
-import { getAuthUser } from '@/helpers/server/model/user'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
 import { getRegion, setRegion } from '@/services/users/region'
-import { UserProvider } from '@/publicodes-state'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
 import Localisation from './_components/Localisation'
@@ -24,13 +23,14 @@ export async function updateRegion(region: Region) {
 
 export default async function SettingsPage({ params }: DefaultPageProps) {
   const { locale } = await params
-  const [subscriptions, newsletters, user, regionData] = await throwNextError(() =>
-    Promise.all([
-      getNewsletterSubscriptions(),
-      getNewsletters({ locale }),
-      getAuthUser(),
-      getRegion(),
-    ])
+  const [subscriptions, newsletters, user, regionData] = await throwNextError(
+    () =>
+      Promise.all([
+        getNewsletterSubscriptions(),
+        getNewsletters({ locale }),
+        requireAuthUser(),
+        getRegion(),
+      ])
   )
 
   return (
@@ -59,9 +59,7 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
 
         <div className="flex max-w-[720px] flex-col gap-8">
           <QueryClientProviderWrapper>
-            <UserProvider serverUserId={user.id}>
-              <UserEmail />
-            </UserProvider>
+            <UserEmail user={user} />
           </QueryClientProviderWrapper>
 
           <h2 className="mt-8">
@@ -73,7 +71,7 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
         </div>
       </section>
       <section className="mt-2">
-        {regionData?.initial && regionData?.current ? (
+        {regionData ? (
           <Localisation
             updateRegionAction={updateRegion}
             initialRegion={regionData.initial}

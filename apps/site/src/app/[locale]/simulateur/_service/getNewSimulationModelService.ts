@@ -13,18 +13,18 @@ import type { SearchParams } from 'next/dist/server/request/search-params'
 
 export async function getNewSimulationModelService({
   searchParams,
-  locale,
-  simulationMode = 'standard',
+  locale = 'fr',
+  mode = 'standard',
 }: {
-  searchParams: Promise<SearchParams>
-  locale: Locale
-  simulationMode?: SimulationMode
-}): Promise<Model> {
+  searchParams?: Promise<SearchParams>
+  locale?: Locale
+  mode?: SimulationMode
+} = {}): Promise<Model> {
   const {
     region: regionParam,
     PR: PRNumberParam,
     mode: modeParam,
-  } = await searchParams
+  } = (await searchParams) ?? {}
 
   let userRegion: Region | undefined
   let PRNumber: string | undefined
@@ -44,7 +44,7 @@ export async function getNewSimulationModelService({
     typeof modeParam === 'string' &&
     SIMULATION_MODES.includes(modeParam)
   ) {
-    simulationMode = modeParam as SimulationMode
+    mode = modeParam as SimulationMode
   }
 
   if (PRNumberParam && typeof PRNumberParam === 'string') {
@@ -53,7 +53,7 @@ export async function getNewSimulationModelService({
 
   return getCurrentModel({
     userRegion,
-    mode: simulationMode,
+    mode,
     locale,
     PRNumber,
   })

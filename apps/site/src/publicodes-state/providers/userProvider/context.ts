@@ -7,8 +7,8 @@ import { createContext } from 'react'
 import type { Tutorials, User } from '../../types'
 
 interface UserContextType {
-  user: User
-  setUser: Dispatch<SetStateAction<User>>
+  user: User | null
+  setUser: Dispatch<SetStateAction<User | null>>
   tutorials: Tutorials
   setTutorials: Dispatch<SetStateAction<Tutorials>>
   simulations: Simulation[]
@@ -19,11 +19,7 @@ interface UserContextType {
 }
 
 export default createContext<UserContextType>({
-  user: {
-    name: '',
-    email: '',
-    userId: '',
-  },
+  user: null,
   setUser: () => {},
   tutorials: {},
   setTutorials: () => {},

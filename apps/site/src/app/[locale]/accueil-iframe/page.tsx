@@ -6,7 +6,7 @@ import { noIndexObject } from '@/constants/metadata'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import { ClientLayout } from '../../../components/layout/ClientLayout'
 import InteractiveIllustration from '../_components/InteractiveIllustration'
@@ -28,10 +28,10 @@ export const generateMetadata = getCommonMetadata({
 
 export default async function Homepage({ params }: DefaultPageProps) {
   const { locale } = await params
-  const { id: serverUserId } = await getUserSession()
+  const userSession = await getUserSession()
 
   return (
-    <ClientLayout locale={locale} serverUserId={serverUserId}>
+    <ClientLayout locale={locale} userSession={userSession}>
       <LandingPage
         locale={locale}
         heroIllustration={<InteractiveIllustration />}

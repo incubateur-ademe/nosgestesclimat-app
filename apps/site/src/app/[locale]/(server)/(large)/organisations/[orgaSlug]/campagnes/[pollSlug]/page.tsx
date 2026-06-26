@@ -12,7 +12,8 @@ import Title from '@/design-system/layout/Title'
 import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
 import useFetchOrganisation from '@/hooks/organisations/useFetchOrganisation'
 import { useHandleRedirectFromLegacy } from '@/hooks/organisations/useHandleRedirectFromLegacy'
-import { useUser } from '@/publicodes-state'
+import { isOrganisationAdmin } from '@/services/organisations/is-organisation-admin'
+import { useQuery } from '@tanstack/react-query'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -49,20 +50,13 @@ export default function CampagnePage() {
   // Organisation can only be fetched by a authentified organisation administrator
   const { data: organisation } = useFetchOrganisation()
 
-  const { user } = useUser()
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ['isOrganisationAdmin', orgaSlug],
+    queryFn: () => isOrganisationAdmin(orgaSlug as string),
+    enabled: !!orgaSlug,
+  })
+
   const { t } = useTranslation()
-  // Temp hotfix
-  const isAdmin = !!(
-    poll?.organisation.administrators ||
-    organisation?.administrators.find(
-      ({ userId, email }) =>
-        userId === user.userId ||
-        // Cover possible edge case where admin changes browser and looses his/her original userId
-        email === user.organisation?.administratorEmail ||
-        // Unsecure remove as soon as possible
-        organisation?.slug === user.organisation?.slug
-    )
-  )
 
   if (isLoadingPoll) {
     return <PollLoader />

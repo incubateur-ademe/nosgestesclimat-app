@@ -2,11 +2,9 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
-import {
-  getCompletedSimulations,
-  getCurrentSimulation,
-} from '@/helpers/server/model/simulations'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { Suspense } from 'react'
 import Trans from '../translation/trans/TransServer'
 
@@ -21,8 +19,8 @@ export default function PasserTestBanner({ locale }: { locale: string }) {
 async function PasserTestBannerServer({ locale }: { locale: string }) {
   const user = await getUserSession()
   const [currentSimulation, completedSimulations] = await Promise.all([
-    getCurrentSimulation({ user }),
-    getCompletedSimulations({ user }, { pageSize: 1 }),
+    getCurrentSimulation(),
+    getCompletedSimulations({ pageSize: 1 }),
   ])
   const { t } = await getServerTranslation({ locale })
 

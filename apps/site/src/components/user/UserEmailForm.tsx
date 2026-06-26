@@ -13,7 +13,7 @@ import { useCreateVerificationCode } from '@/hooks/authentication/useCreateVerif
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useUser } from '@/publicodes-state'
+import type { UseMutationResult } from '@tanstack/react-query'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -31,14 +31,18 @@ interface Inputs {
 interface Props {
   submitLabel?: string | ReactNode
   className?: string
+  defaultEmail: string
 }
 
-export default function UserEmailForm({ submitLabel, className }: Props) {
+export default function UserEmailForm({
+  submitLabel,
+  className,
+  defaultEmail,
+}: Props) {
   const { t } = useClientTranslation()
-  const { user } = useUser()
 
   const { register, handleSubmit } = useReactHookForm<Inputs>({
-    defaultValues: { email: user?.email },
+    defaultValues: { email: defaultEmail },
   })
 
   const updateUserSettings = useUpdateUserSettings()
@@ -59,7 +63,7 @@ export default function UserEmailForm({ submitLabel, className }: Props) {
     try {
       const nextEmail = formatEmail(data.email)
 
-      if (nextEmail && nextEmail !== user.email) {
+      if (nextEmail && nextEmail !== defaultEmail) {
         await createVerificationCode(nextEmail)
       }
     } catch (error) {
@@ -86,8 +90,12 @@ export default function UserEmailForm({ submitLabel, className }: Props) {
               onRegisterNewVerification={registerVerification}
               email={pendingVerification.email}
               onVerificationCompleted={completeVerification}
-              verificationMutation={updateUserSettings}
-              mutationPayload={{ userId: user.userId }}
+              verificationMutation={updateUserSettings as UseMutationResult<
+                { userId: string },
+                Error,
+                { email: string; code: string },
+                unknown
+              >}
             />
           </Modal>
         )}

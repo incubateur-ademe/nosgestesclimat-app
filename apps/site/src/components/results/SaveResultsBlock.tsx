@@ -9,7 +9,7 @@ import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 import Image from 'next/image'
 import HideInIframe from '../layout/HideInIframe'
 import SaveResultsForm from './SaveResultsForm'
@@ -46,7 +46,7 @@ export default async function SaveResultsBlock({
               hasSeparator={false}
               id="save-results-block-title"
               className="font-bold! text-white">
-              {user.isAuth ? (
+              {user?.isAuth ? (
                 <Trans
                   i18nKey="results.saveResults.title.authenticated"
                   locale={locale}>
@@ -97,7 +97,7 @@ export default async function SaveResultsBlock({
               </li>
             </ul>
 
-            {user.isAuth ? (
+            {user?.isAuth ? (
               <ButtonLink
                 color="borderless"
                 href={`${MON_ESPACE_PATH}${hasPreviousSimulation ? '#chart' : ''}`}>
@@ -117,12 +117,12 @@ export default async function SaveResultsBlock({
               </ButtonLink>
             ) : (
               <QueryClientProviderWrapper>
-                <SaveResultsForm userId={user.id} />
+                <SaveResultsForm userSession={user} />
               </QueryClientProviderWrapper>
             )}
           </div>
           <div className="max-w-full">
-            {user.isAuth ? (
+            {user?.isAuth ? (
               <div className="flex w-full justify-center">
                 <Image
                   src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/visuel_login_cbf2f03684.svg"

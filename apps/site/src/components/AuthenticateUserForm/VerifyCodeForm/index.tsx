@@ -9,15 +9,14 @@ import { useCallback } from 'react'
 import NotReceived from './NotReceived'
 import VerificationContent from './VerificationContent'
 
-interface Props<T extends object> {
+interface Props {
   email: string
   onRegisterNewVerification: (newVerification: PendingVerification) => void
   onVerificationCompleted: (serverUserId: string) => void | Promise<void>
-  mutationPayload?: T
   verificationMutation: UseMutationResult<
     { userId: string },
     Error,
-    { email?: string; code?: string } & T,
+    { email: string; code: string },
     unknown
   >
   onCompleteError?: string
@@ -44,13 +43,12 @@ const getErrorMessage = ({ error, t }: { error: Error; t: TFunction }) => {
 
 const NUM_SECONDS = 30
 
-export default function VerificationForm<T extends object>({
+export default function VerificationForm({
   email,
   onVerificationCompleted,
   onRegisterNewVerification,
-  mutationPayload: mutateProps,
   verificationMutation,
-}: Props<T>) {
+}: Props) {
   const { timeLeft, setTimeLeft } = useTimeLeft(NUM_SECONDS)
 
   const { t } = useClientTranslation()
@@ -79,20 +77,13 @@ export default function VerificationForm<T extends object>({
       const payload = {
         email,
         code,
-        ...((mutateProps ?? {}) as T),
       }
 
       const { userId } = await mutateAsync(payload)
 
-      await onVerificationCompleted?.(userId)
+      await onVerificationCompleted(userId)
     },
-    [
-      isValidationDisabled,
-      mutateAsync,
-      email,
-      mutateProps,
-      onVerificationCompleted,
-    ]
+    [isValidationDisabled, mutateAsync, email, onVerificationCompleted]
   )
   return (
     <div>

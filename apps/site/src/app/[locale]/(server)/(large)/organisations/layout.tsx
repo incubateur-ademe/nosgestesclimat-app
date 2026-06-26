@@ -2,7 +2,7 @@ import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutPro
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { UserProvider } from '@/publicodes-state'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { PropsWithChildren } from 'react'
 
 export const generateMetadata = getCommonMetadata({
@@ -20,7 +20,7 @@ export default async function Layout({ children }: PropsWithChildren) {
   // @TODO : remove userProvider
   return (
     <QueryClientProviderWrapper>
-      <UserProvider serverUserId={user.id}>
+      <UserProvider userSession={user}>
         <div className="bg-white md:-mt-8">{children}</div>
       </UserProvider>
     </QueryClientProviderWrapper>

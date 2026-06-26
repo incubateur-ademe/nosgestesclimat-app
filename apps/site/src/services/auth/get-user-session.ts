@@ -1,7 +1,7 @@
 'use server'
+import type { SessionPayload } from '@nosgestesclimat/core/features/auth/types/session'
 import * as Sentry from '@sentry/nextjs'
 
-import { NotImplementedError } from '@/helpers/server/error'
 import { headers } from 'next/headers'
 import { cache } from 'react'
 
@@ -14,20 +14,29 @@ export interface AuthUser {
   id: string
   email: string
   isAuth: true
-  name?: string
 }
 
+/**
+ * Represents a user that is either authenticated (has an email) or anonymous (has an id but no email).
+ */
 export type AppUser = AuthUser | AnonUser
 
-export const getUserSession = cache(async function (): Promise<AppUser> {
+/**
+ * Represents the result of {@link getUserSession}:
+ * - `AppUser`: A session exists (either anonymous or authenticated).
+ * - `null`: No user session exists (e.g. first visit, no data at all).
+ */
+export type UserSession = AppUser | null
+
+export const getUserSession = cache(async function (): Promise<UserSession> {
   const reqHeaders = await headers()
   const sessionHeader = reqHeaders.get('x-session')
 
   if (!sessionHeader) {
-    throw new NotImplementedError()
+    return null
   }
 
-  const { userId, email } = JSON.parse(sessionHeader)
+  const { userId, email } = JSON.parse(sessionHeader) as SessionPayload
 
   if (email) {
     const user: AuthUser = {

@@ -1,9 +1,8 @@
 'use client'
 
-import { GROUP_URL } from '@/constants/urls/main'
 import { useUser } from '@/publicodes-state'
+import { deleteGroup } from '@/services/groups/delete-group'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
 
 interface Props {
   shouldInvalidateQueries?: boolean
@@ -17,10 +16,9 @@ export function useDeleteGroup(props?: Props) {
   const { updateCurrentSimulation } = useUser()
 
   return useMutation({
-    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) =>
-      axios.delete<void>(`${GROUP_URL}/${userId}/${groupId}`),
-    onSuccess: (_, variables) => {
-      updateCurrentSimulation({ groupToDelete: variables.groupId })
+    mutationFn: (groupId: string) => deleteGroup(groupId),
+    onSuccess: (_, groupId) => {
+      updateCurrentSimulation({ groupToDelete: groupId })
       if (shouldInvalidateQueries) {
         queryClient.invalidateQueries({ queryKey: ['groups'] })
       }

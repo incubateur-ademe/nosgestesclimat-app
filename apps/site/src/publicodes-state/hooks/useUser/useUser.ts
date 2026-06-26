@@ -24,15 +24,10 @@ export default function useUser() {
     migrationInstructions,
   } = useContext(userContext)
 
-  const {
-    updateName,
-    updateEmail,
-    updateRegion,
-    updateInitialRegion,
-    updatePendingVerification,
-    updateUserOrganisation,
-    updateUserId,
-  } = useUserDetails({ user, setUser })
+  const { updateName, updatePendingVerification } = useUserDetails({
+    user,
+    setUser,
+  })
 
   const {
     initSimulation,
@@ -65,29 +60,9 @@ export default function useUser() {
      */
     setUser,
     /**
-     * A setter for updating the user ID
-     */
-    updateUserId,
-    /**
      * A setter for updating the user name (not used for now)
      */
     updateName,
-    /**
-     * A setter for updating the user email
-     */
-    updateEmail,
-    /**
-     * A setter for updating the user's organisation information
-     */
-    updateUserOrganisation,
-    /**
-     * A setter for updating the user current region
-     */
-    updateRegion,
-    /**
-     * A setter for updating the user initial region (via the geolocation)
-     */
-    updateInitialRegion,
     /**
      * A setter for updating the user pending verification information
      */

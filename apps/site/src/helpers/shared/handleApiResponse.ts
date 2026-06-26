@@ -20,9 +20,17 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
       case 429:
         throw new TooManyRequestsError()
       case 400: {
-        const error = (await response.json()) as unknown
+        const text = await response.text()
+        let error: unknown
+        try {
+          error = JSON.parse(text)
+        } catch {
+          error = text
+        }
         throw new InvalidInputError(error)
       }
+      case 202:
+        return response.json() as Promise<T>
       case 500:
         throw new InternalServerError()
       default:

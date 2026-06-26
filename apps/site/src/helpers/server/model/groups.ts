@@ -1,7 +1,7 @@
 'use server'
 
 import { GROUP_URL } from '@/constants/urls/main'
-import type { AppUser } from '@/services/users/get-user-session'
+import type { AppUser } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
 import { fetchServer } from '../fetchServer'
 

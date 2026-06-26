@@ -4,8 +4,8 @@ import {
 } from '@/constants/urls/paths'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import type { DefaultPageProps } from '@/types'
+import { groupResultsGuard } from '../guard'
 import GroupPage from './_components/GroupPage'
-import { groupResultsGuard } from './guard'
 
 export default async function GroupResultsPage({
   params,
@@ -24,6 +24,7 @@ export default async function GroupResultsPage({
       <GroupPage
         group={group}
         locale={locale}
+        user={user}
         userSimulation={userSimulation}
       />
     </div>

@@ -3,26 +3,20 @@ import { middlewareFeatureFlags } from '@/helpers/server/proxy/middleware-featur
 import { middlewareRegion } from '@/helpers/server/proxy/middleware-region'
 import i18nConfig from '@/i18nConfig'
 import { i18nRouter } from 'next-i18n-router'
-import { type NextRequest, NextResponse } from 'next/server'
+import type { NextRequest , NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api/server')
-
   // Phase 1 — Interceptors
-  if (!isApiRoute) {
-    const ff = middlewareFeatureFlags(request)
-    if (ff.redirect) return ff.redirect
-  }
+  const ff = middlewareFeatureFlags(request)
+  if (ff.redirect) return ff.redirect
 
   const auth = await middlewareAuth(request)
-  if (auth.redirect && !isApiRoute) return auth.redirect
+  if (auth.redirect) return auth.redirect
 
   const region = await middlewareRegion(request)
 
   // Phase 2 — Routing
-  const response = isApiRoute
-    ? NextResponse.next()
-    : i18nRouter(request, i18nConfig)
+  const response = i18nRouter(request, i18nConfig)
 
   // Phase 3 — Apply cookies
   for (const cookie of [...auth.cookies, ...region.cookies]) {
@@ -47,9 +41,6 @@ export const config = {
      * - videos (public videos directory)
      * - robots.txt (robots file)
      * - datashare (iframe datashare modal)
-     *
-     * Note: /api/server is intentionally NOT excluded — the proxy
-     * handles auth and region cookies for those routes.
      */
     {
       source:

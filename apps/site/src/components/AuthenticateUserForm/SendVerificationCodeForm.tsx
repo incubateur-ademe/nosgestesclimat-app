@@ -50,7 +50,8 @@ export default function SendVerificationCodeForm({
   const user = useUser().user
 
   const defaultEmail =
-    safeSessionStorage.getItem(EMAIL_PENDING_AUTHENTICATION_KEY) ?? user.email
+    safeSessionStorage.getItem(EMAIL_PENDING_AUTHENTICATION_KEY) ??
+    (user && 'email' in user ? user.email : '')
 
   const {
     register,

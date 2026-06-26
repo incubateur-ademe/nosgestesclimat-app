@@ -1,9 +1,9 @@
+'use client'
+
 import type { PollDefaultAdditionalQuestion } from '@/constants/organisations/pollDefaultAdditionalQuestion'
-import { ORGANISATION_URL } from '@/constants/urls/main'
 import type { SimulationMode } from '@/helpers/server/model/simulations'
-import type { OrganisationPoll } from '@/types/organisations'
+import { createPoll } from '@/services/organisations/create-poll'
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
 import { useLocale } from '../../useLocale'
 
 interface PollToCreate {
@@ -19,18 +19,7 @@ export function useCreatePoll(organisationIdOrSlug: string) {
 
   return useMutation({
     mutationKey: ['organisations', organisationIdOrSlug, 'polls'],
-    mutationFn: (pollToCreate: PollToCreate) =>
-      axios
-        .post<OrganisationPoll>(
-          `${ORGANISATION_URL}/${organisationIdOrSlug}/polls`,
-          pollToCreate,
-          {
-            params: {
-              locale,
-            },
-            withCredentials: true,
-          }
-        )
-        .then((res) => res.data),
+    mutationFn: (poll: PollToCreate) =>
+      createPoll({ organisationIdOrSlug, poll, locale }),
   })
 }

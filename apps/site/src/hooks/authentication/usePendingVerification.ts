@@ -19,7 +19,7 @@ export function usePendingVerification({
 
   const { cookieState } = useCookieManagement()
 
-  let pendingVerification = user.user.pendingVerification
+  let pendingVerification = user.user?.pendingVerification
 
   if (
     pendingVerification &&
@@ -37,8 +37,6 @@ export function usePendingVerification({
       try {
         await reconcileUserOnAuth({
           userId,
-          email: pendingVerification.email,
-          user,
           cookieState,
         })
 

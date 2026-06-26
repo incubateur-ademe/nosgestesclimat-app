@@ -8,8 +8,8 @@ import Breadcrumbs from '@/design-system/layout/Breadcrumbs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getSimulation } from '@/helpers/server/model/simulations'
-import { getAuthUser } from '@/helpers/server/model/user'
+import { getSimulation } from '@/services/simulations/get-simulation'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
 import type { DefaultPageProps } from '@/types'
 
 export default async function DetailledResultsWaterPage({
@@ -19,9 +19,9 @@ export default async function DetailledResultsWaterPage({
 
   const { t } = await getServerTranslation({ locale })
 
+  const user = await requireAuthUser()
   const simulationResult = await throwNextError(async () => {
-    const user = await getAuthUser()
-    const simulation = await getSimulation({ user, simulationId })
+    const simulation = await getSimulation(simulationId)
     return getSimulationResult({
       simulation,
       user,

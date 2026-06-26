@@ -38,7 +38,10 @@ export const findSimulationComputation = async (simulationId: string) =>
     where: { simulationId },
   })
 
-export const findLastSimulationComputationByUserId = async (userId: string) => {
+export const findLastSimulationComputationByUserId = async (
+  userId: string | undefined
+) => {
+  if (!userId) return undefined
   const simulation = await prisma.simulation.findFirst({
     where: { userId },
     orderBy: { createdAt: 'desc' },

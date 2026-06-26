@@ -2,14 +2,14 @@ import { ClientLayout } from '@/components/layout/ClientLayout'
 import LocalisationBanner from '@/components/translation/LocalisationBanner'
 import { END_PAGE_PATH, START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { NotFoundError } from '@/helpers/server/error'
 import { parseModelString } from '@/helpers/server/model/models'
-import { getCurrentSimulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { EngineProvider, FormProvider } from '@/publicodes-state'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
@@ -19,9 +19,9 @@ export default async function SimulationLayout({
 }: LayoutProps<'/[locale]/simulateur'>) {
   const { locale } = await params
 
-  const user = await getUserSession()
+  const user = (await getUserSession())!
 
-  const currentSimulation = await getCurrentSimulation({ user })
+  const currentSimulation = await getCurrentSimulation()
   const serverSimulations = currentSimulation ? [currentSimulation] : []
   if (!currentSimulation) {
     captureException(new NotFoundError(), { level: 'warning' })
@@ -41,7 +41,7 @@ export default async function SimulationLayout({
       serverSimulations={serverSimulations}
       skipLinksDisplayed={new Set(['main', 'footer'])}
       locale={locale}
-      serverUserId={user.id}>
+      userSession={user}>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
       <EngineProvider rules={rules} root="bilan">
         {model && <LocalisationBanner model={model} />}
