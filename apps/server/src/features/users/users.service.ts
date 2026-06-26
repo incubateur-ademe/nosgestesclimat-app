@@ -16,10 +16,8 @@ import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser } from '../../core/types/user.ts'
-import {
-  createToken,
-  verifyCode,
-} from '../authentication/authentication.service.ts'
+import { verifyCode } from '../authentication/authentication.service.ts'
+import { invalidateVerificationCode } from '../authentication/verification-codes.repository.ts'
 import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
 import {
   createOrUpdateUser,
@@ -140,7 +138,7 @@ export const updateUserAndContact = async ({
   newUserData: UserUpdateDto
   origin: string
 }) => {
-  const { user, contact, nextEmail, verified, previousContact, token } =
+  const { user, contact, nextEmail, verified, previousContact } =
     await transaction(async (session) => {
       const verifiedUser = isVerifiedUser(userToUpdate)
 
@@ -156,7 +154,12 @@ export const updateUserAndContact = async ({
         previousUser
       )
 
-      let token: string | undefined
+      if (!verifiedUser && !!nextEmail && nextEmail !== previousEmail) {
+        throw new ForbiddenException(
+          'Forbidden ! Cannot update email without a verified account.'
+        )
+      }
+
       if (verifiedUser && emailChanged) {
         if (!code) {
           throw new ForbiddenException(
@@ -165,7 +168,7 @@ export const updateUserAndContact = async ({
         }
 
         try {
-          await verifyCode(
+          const verificationCode = await verifyCode(
             {
               ...userToUpdate,
               code,
@@ -173,6 +176,8 @@ export const updateUserAndContact = async ({
             },
             { session }
           )
+
+          await invalidateVerificationCode(verificationCode, { session })
         } catch (e) {
           if (e instanceof EntityNotFoundException) {
             throw new ForbiddenException(
@@ -211,7 +216,6 @@ export const updateUserAndContact = async ({
             { session }
           )
         ).user
-        token = createToken(user)
       } else {
         user = (
           await createOrUpdateUser(
@@ -227,7 +231,6 @@ export const updateUserAndContact = async ({
 
       return {
         user,
-        token,
         contact,
         verified,
         nextEmail,
@@ -248,7 +251,6 @@ export const updateUserAndContact = async ({
   await EventBus.once(userUpdatedEvent)
 
   return {
-    token,
     verified,
     user: userToDto({
       ...user,

@@ -7,10 +7,6 @@ import { EventBus } from '../../core/event-bus/event-bus.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import {
-  COOKIE_NAME,
-  getCookieOptions,
-} from '../authentication/authentication.service.ts'
 import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
 import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.ts'
 import { removePreviousBrevoContact } from './handlers/remove-previous-brevo-contact.ts'
@@ -79,16 +75,12 @@ router
       try {
         const origin = req.get('origin') || config.app.origin
 
-        const { user, verified, token } = await updateUserAndContact({
+        const { user, verified } = await updateUserAndContact({
           user: req.user!,
           code: req.query.code,
           newUserData: req.body,
           origin,
         })
-
-        if (token) {
-          res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
-        }
 
         return verified
           ? res.status(StatusCodes.OK).json(user)
