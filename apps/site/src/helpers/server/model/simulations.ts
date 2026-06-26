@@ -1,5 +1,6 @@
 import { SIMULATION_URL } from '@/constants/urls/main'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
+import type { AppUser } from '@/services/users/get-user-session'
 import type {
   DottedName,
   ExtendedSituation,
@@ -8,7 +9,6 @@ import type {
   ComputedResults,
   Situation,
 } from '../../../publicodes-state/types'
-import { type AppUser } from '../dal/user'
 import { fetchServer } from '../fetchServer'
 import { migrateSimulationIfNeeded, stringifyModel, type Model } from './models'
 import { setDefaultExtendedSituation } from './utils/setDefaultExtendedSituation'

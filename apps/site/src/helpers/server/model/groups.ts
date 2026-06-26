@@ -1,8 +1,8 @@
 'use server'
 
 import { GROUP_URL } from '@/constants/urls/main'
+import type { AppUser } from '@/services/users/get-user-session'
 import type { Group } from '@/types/groups'
-import type { AppUser } from '../dal/user'
 import { fetchServer } from '../fetchServer'
 
 export async function getGroups({ user }: { user: AppUser }): Promise<Group[]> {

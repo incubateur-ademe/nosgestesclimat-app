@@ -5,8 +5,8 @@ import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import { getRules } from '@/helpers/modelFetching/getRules'
 import { getRuleTitle } from '@/helpers/publicodes/getRuleTitle'
-import { getUser } from '@/helpers/server/dal/user'
 import { getCurrentSimulation } from '@/helpers/server/model/simulations'
+import { getUserSession } from '@/services/users/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import { capitalizeString } from '@/utils/capitalizeString'
 import { decodeRuleNameFromPath } from '@/utils/decodeRuleNameFromPath'
@@ -59,7 +59,7 @@ export default async function DocumentationPage({
   params: { slug: string[] }
 }>) {
   const { locale, slug } = await params
-  const user = await getUser()
+  const user = await getUserSession()
   const currentSimulation = await getCurrentSimulation({ user })
 
   const rules = await getCachedRules({

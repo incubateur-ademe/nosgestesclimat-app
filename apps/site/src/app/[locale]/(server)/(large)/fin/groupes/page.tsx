@@ -1,12 +1,12 @@
 import EmptyState from '@/components/results/groups/EmptyState'
 import Groups from '@/components/results/groups/Groups'
 import Organisation from '@/components/results/groups/Organisation'
-import { getUser } from '@/helpers/server/dal/user'
 import { getGroups } from '@/helpers/server/model/groups'
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
+import { getUserSession } from '@/services/users/get-user-session'
 
 export default async function GroupsDashboard() {
-  const user = await getUser()
+  const user = await getUserSession()
   const [organisation, groups] = await Promise.all([
     user.isAuth ? getUserOrganisation() : undefined,
     getGroups({ user }),

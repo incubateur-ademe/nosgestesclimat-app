@@ -1,6 +1,6 @@
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
-import type { SimulationMode } from '@/helpers/server/model/simulations'
 import { copyAndReadClipboard } from '../helpers/clipboard'
 import {
   getPlaywrightState,

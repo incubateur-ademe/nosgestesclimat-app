@@ -1,7 +1,7 @@
 'use client'
 
 import { trackingLocale, trackingRegion } from '@/constants/tracking/misc'
-import type { UserRegion } from '@/helpers/server/model/models'
+import type { Region } from '@/helpers/server/model/models'
 import { useTrackPageview } from '@/hooks/tracking/useTrackPageview'
 import type { Locale } from '@/i18nConfig'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
@@ -13,7 +13,7 @@ export function ClientTrackers({
   region,
 }: {
   locale: Locale
-  region: UserRegion | undefined
+  region: Region | undefined
 }) {
   useEffect(() => {
     trackMatomoEvent__deprecated(trackingLocale(locale))

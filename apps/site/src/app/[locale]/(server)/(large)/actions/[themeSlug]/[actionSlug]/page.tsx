@@ -13,9 +13,9 @@ import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
+import { getUserSession } from '@/services/users/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
 import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
@@ -62,7 +62,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function ActionPage({ params }: Props) {
   const { locale, themeSlug, actionSlug } = await params
-  const user = await getUser()
+  const user = await getUserSession()
   const flag = await getFeatureFlag('actions-v2', user.id)
 
   if (!flag) notFound()

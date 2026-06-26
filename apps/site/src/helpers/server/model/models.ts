@@ -1,7 +1,10 @@
 import { MODELE_URL } from '@/constants/urls/main'
 import packageJson from '@incubateur-ademe/nosgestesclimat/package.json'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
-import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
+import {
+  supportedRegions,
+  type Region,
+} from '@nosgestesclimat/core/features/region/region.schema'
 import {
   parseModelString,
   serializeModel,
@@ -17,16 +20,14 @@ import { captureException } from '@sentry/nextjs'
 import { fetchServer } from '../fetchServer'
 import type { Simulation, SimulationMode } from './simulations'
 
-const { ED: _, ...supportedRegionsWithoutED } = supportedRegions
-export { supportedRegionsWithoutED as supportedRegions }
+export { supportedRegions }
 
-export type { Model, ModelLocale, ModelRegion, ModelVersion }
-export type UserRegion = Exclude<ModelRegion, 'ED'>
+export type { Model, ModelLocale, ModelRegion, ModelVersion, Region }
 
 export { parseModelString }
 
 export const CURRENT_MODEL_VERSION = packageJson.version
-export const DEFAULT_REGION: UserRegion = 'FR'
+export const DEFAULT_REGION: Region = 'FR'
 
 export const stringifyModel = serializeModel
 
@@ -37,7 +38,7 @@ export function getCurrentModel({
   PRNumber,
 }: {
   mode?: SimulationMode
-  userRegion?: UserRegion
+  userRegion?: Region
   PRNumber?: string
   locale: ModelLocale
 }): Model {
@@ -62,13 +63,13 @@ export function getCurrentModel({
   }
 }
 
-export async function getGeolocation(): Promise<UserRegion> {
+export async function getGeolocation(): Promise<Region> {
   try {
     const geo = await fetchServer<{ code: string; region: string }>(
       `${MODELE_URL}/geolocation`
     )
     if (geo.code in supportedRegions) {
-      return geo.code as UserRegion
+      return geo.code as Region
     }
     if (geo.region === 'Europe') {
       return 'EU'

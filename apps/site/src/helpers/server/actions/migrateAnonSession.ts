@@ -1,7 +1,7 @@
 'use server'
 
+import { getUserSession } from '@/services/users/get-user-session'
 import { validate } from 'uuid'
-import { getAnonSession } from '../dal/anonSession'
 import { InvalidInputError } from '../error'
 
 /**
@@ -16,8 +16,8 @@ export async function migrateAnonSession(userId: string) {
     throw new InvalidInputError(`Invalid userId: ${userId} is not a valid UUID`)
   }
 
-  const session = await getAnonSession()
+  await getUserSession()
 
-  session.userId = userId
-  await session.save()
+  // session.userId = userId
+  // await session.save()
 }

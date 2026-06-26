@@ -5,9 +5,9 @@ import { AGE_PAGE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUser } from '@/helpers/server/dal/user'
 import { UserProvider } from '@/publicodes-state'
 import { getUserAgeRange } from '@/services/users/get-user-age-range'
+import { getUserSession } from '@/services/users/get-user-session'
 import AgeForm from './_components/AgeForm'
 
 export const generateMetadata = getCommonMetadata({
@@ -30,7 +30,7 @@ export default async function AgePage({
 }: PageProps<'/[locale]/simulateur/age'>) {
   const [{ locale }, user, ageRange] = await Promise.all([
     params,
-    getUser(),
+    getUserSession(),
     getUserAgeRange(),
   ])
 

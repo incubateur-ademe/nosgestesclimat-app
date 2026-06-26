@@ -2,9 +2,9 @@ import FAQ from '@/components/landing-pages/FAQ'
 import Partners from '@/components/landing-pages/Partners'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Markdown from '@/design-system/utils/Markdown'
-import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
 import { fetchPartnerCampaign } from '@/services/cms/fetchPartnerCampaign'
+import { getUserSession } from '@/services/users/get-user-session'
 import { notFound } from 'next/navigation'
 import { ClientLayout } from '../../../../components/layout/ClientLayout'
 import PartnerCampaignContent from './_components/PartnerCampaignContent'
@@ -17,7 +17,7 @@ export default async function PartnerCampaignPage({
 }) {
   const { locale, pollSlug } = await params
 
-  const { id: serverUserId } = await getUser()
+  const { id: serverUserId } = await getUserSession()
 
   const partnerCampaign = await fetchPartnerCampaign({
     locale,

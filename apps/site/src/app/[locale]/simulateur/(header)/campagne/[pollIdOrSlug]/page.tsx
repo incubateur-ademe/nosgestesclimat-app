@@ -1,7 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
-import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
 import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
 import {
@@ -9,6 +8,7 @@ import {
   getCurrentSimulation,
 } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { getUserSession } from '@/services/users/get-user-session'
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import { getNewSimulationModelService } from '../../../_service/getNewSimulationModelService'
@@ -26,7 +26,7 @@ export default async function CampagnePage({
     locale: Locale
   }
 
-  const user = await getUser()
+  const user = await getUserSession()
 
   const [poll, [lastCompletedSimulation], currentSimulation] =
     await throwNextError(() =>

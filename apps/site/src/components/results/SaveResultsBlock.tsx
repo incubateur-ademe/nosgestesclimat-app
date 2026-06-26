@@ -9,7 +9,7 @@ import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUserSession } from '@/services/users/get-user-session'
 import Image from 'next/image'
 import HideInIframe from '../layout/HideInIframe'
 import SaveResultsForm from './SaveResultsForm'
@@ -23,7 +23,7 @@ export default async function SaveResultsBlock({
   locale,
   hasPreviousSimulation,
 }: Props) {
-  const user = await getUser()
+  const user = await getUserSession()
 
   const { t } = await getServerTranslation({ locale })
 

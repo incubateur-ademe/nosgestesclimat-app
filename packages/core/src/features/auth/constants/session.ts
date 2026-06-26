@@ -1,0 +1,2 @@
+export const SESSION_TTL_SECONDS = 20 * 60
+export const REFRESH_TOKEN_TTL_DAYS = 180

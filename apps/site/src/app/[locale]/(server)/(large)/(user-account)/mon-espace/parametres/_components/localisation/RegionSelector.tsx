@@ -11,7 +11,7 @@ import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
 import {
   supportedRegions,
-  type UserRegion,
+  type Region,
 } from '@/helpers/server/model/models'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'
@@ -20,8 +20,8 @@ import { useState } from 'react'
 
 interface Props {
   isOpen?: boolean
-  updateRegion: (code: UserRegion) => Promise<void>
-  region: UserRegion
+  updateRegion: (code: Region) => Promise<void>
+  region: Region
 }
 
 export default function RegionSelector({
@@ -36,7 +36,7 @@ export default function RegionSelector({
 
   const { hideTutorial } = useUser()
   const [currentRegion, setCurrentRegion] = useState(region)
-  async function onUpdate(code: UserRegion) {
+  async function onUpdate(code: Region) {
     setCurrentRegion(code)
     trackMatomoEvent__deprecated(profilClickRegion(code))
 

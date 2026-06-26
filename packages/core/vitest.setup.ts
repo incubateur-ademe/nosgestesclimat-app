@@ -6,6 +6,8 @@ const db = await createTestDatabase()
 
 vi.mock('./src/prisma/client', () => ({ prisma: db.prisma }))
 
+process.env.SESSION_ENCRYPTION_KEY = 'test-jose-encryption-key-256bit!'
+
 const prismaMigrationDir = path.join('.', 'prisma', 'migrations')
 
 beforeAll(async () => {
