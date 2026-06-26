@@ -1,8 +1,4 @@
-import { getCookieOptions } from '@/helpers/server/cookies'
-import {
-  REFRESH_TOKEN_TTL_DAYS,
-  SESSION_TTL_SECONDS,
-} from '@nosgestesclimat/core/features/auth/constants/session'
+import { REFRESH_TOKEN_TTL_DAYS } from '@nosgestesclimat/core/features/auth/constants/session'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
@@ -14,6 +10,7 @@ import type {
 } from '@nosgestesclimat/core/features/auth/types/session'
 import { captureException } from '@sentry/nextjs'
 import { type NextRequest, NextResponse } from 'next/server'
+import { getCookieOptions } from './cookies'
 import type { MiddlewareResult } from './types'
 
 export const SESSION_COOKIE = 'ngc_session'
@@ -89,6 +86,7 @@ export async function middlewareAuth(
       const rtCount = parseInt(url.searchParams.get('_rt') ?? '0', 10) + 1
 
       if (rtCount <= 2) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
         url.searchParams.set('_rt', String(rtCount))
         return { redirect: NextResponse.redirect(url), cookies: [] }
       }
@@ -101,7 +99,7 @@ export async function middlewareAuth(
         ),
         { level: 'error' }
       )
-      return { redirect: null, cookies: [] }
+      return stripRt(request)
     }
 
     // (G) Unknown error during rotation — log and continue anonymously.
@@ -121,14 +119,17 @@ export async function middlewareAuth(
       {
         name: SESSION_COOKIE,
         value: tokens.accessToken,
-        options: { ...getCookieOptions(), maxAge: SESSION_TTL_SECONDS },
+        options: {
+          ...getCookieOptions(),
+          maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60,
+        },
       },
       {
         name: REFRESH_COOKIE,
         value: tokens.refreshToken,
         options: {
           ...getCookieOptions(),
-          maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 3600,
+          maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60,
         },
       },
     ],

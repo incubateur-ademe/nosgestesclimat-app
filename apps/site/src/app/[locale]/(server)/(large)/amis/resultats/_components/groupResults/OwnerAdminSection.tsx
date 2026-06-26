@@ -5,16 +5,13 @@ import {
   amisDashboardOpenDeleteGroup,
   amisDashboardValidateDeleteGroup,
 } from '@/constants/tracking/pages/amisDashboard'
-import { MON_ESPACE_GROUPS_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
-import { useDeleteGroup } from '@/hooks/groups/useDeleteGroup'
 import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
-import { captureException } from '@sentry/nextjs'
-import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useActionState, useState } from 'react'
+import { deleteGroupAction } from '../../_actions/delete-group.action'
 
 interface Props {
   group: Group
@@ -22,40 +19,7 @@ interface Props {
 
 export default function OwnerAdminSection({ group }: Props) {
   const [isConfirming, setIsConfirming] = useState(false)
-
-  const { mutateAsync: deleteUserOrGroupIfOwner, isSuccess } = useDeleteGroup({
-    shouldInvalidateQueries: false,
-  })
-
-  const [isPending, startTransition] = useTransition()
-  const router = useRouter()
-
-  const timeoutRef = useRef<NodeJS.Timeout>(undefined)
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(timeoutRef.current)
-    }
-  }, [])
-
-  function handleDelete() {
-    trackMatomoEvent__deprecated(amisDashboardOpenDeleteGroup)
-    if (!group) return
-
-    // Use startTransition instead of isPending prop to handle the timeout
-    startTransition(async () => {
-      try {
-        await deleteUserOrGroupIfOwner(group.id)
-
-        timeoutRef.current = setTimeout(() => {
-          router.refresh()
-          router.push(MON_ESPACE_GROUPS_PATH)
-        }, 2000)
-      } catch (error) {
-        captureException(error)
-      }
-    })
-  }
+  const [, action, pending] = useActionState(deleteGroupAction, undefined)
 
   return (
     <section className="my-6" aria-live="polite">
@@ -71,7 +35,7 @@ export default function OwnerAdminSection({ group }: Props) {
         </Trans>
       </p>
 
-      {isConfirming && !isSuccess && (
+      {isConfirming && (
         <Card className="border-none bg-gray-100">
           <p className="text-sm md:text-base">
             <Trans>
@@ -79,30 +43,39 @@ export default function OwnerAdminSection({ group }: Props) {
               ses membres.
             </Trans>
           </p>
-          <div className="flex gap-4">
-            <Button
-              disabled={isPending}
-              color="secondary"
-              onClick={() => {
-                setIsConfirming(false)
-              }}
-              size="sm">
-              <Trans>Annuler</Trans>
-            </Button>
 
-            <Button
-              loading={isPending}
-              onClick={handleDelete}
-              size="sm"
-              color="primary"
-              data-testid="button-confirm-delete-group">
-              <Trans>Supprimer</Trans>
-            </Button>
-          </div>
+          <form
+            action={action}
+            onSubmit={() =>
+              trackMatomoEvent__deprecated(amisDashboardOpenDeleteGroup)
+            }>
+            <input type="hidden" name="groupId" value={group?.id} />
+
+            <div className="flex gap-4">
+              <Button
+                disabled={pending}
+                color="secondary"
+                onClick={() => {
+                  setIsConfirming(false)
+                }}
+                size="sm">
+                <Trans>Annuler</Trans>
+              </Button>
+
+              <Button
+                loading={pending}
+                type="submit"
+                size="sm"
+                color="primary"
+                data-testid="button-confirm-delete-group">
+                <Trans>Supprimer</Trans>
+              </Button>
+            </div>
+          </form>
         </Card>
       )}
 
-      {!isConfirming && !isSuccess && (
+      {!isConfirming && (
         <Button
           color="link"
           onClick={() => {
@@ -112,17 +85,6 @@ export default function OwnerAdminSection({ group }: Props) {
           data-testid="button-delete-group">
           <Trans>Supprimer le groupe</Trans>
         </Button>
-      )}
-
-      {isSuccess && (
-        <Card className="border-none bg-gray-100">
-          <p className="mb-0 text-sm md:text-base">
-            <Trans>
-              Votre groupe a été supprimé. Vous allez être redirigé vers la page
-              d'accueil du mode groupe.
-            </Trans>
-          </p>
-        </Card>
       )}
     </section>
   )

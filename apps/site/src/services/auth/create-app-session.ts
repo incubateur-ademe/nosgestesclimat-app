@@ -7,10 +7,7 @@ import {
   REFRESH_COOKIE,
   SESSION_COOKIE,
 } from '@/helpers/server/proxy/middleware-auth'
-import {
-  REFRESH_TOKEN_TTL_DAYS,
-  SESSION_TTL_SECONDS,
-} from '@nosgestesclimat/core/features/auth/constants/session'
+import { REFRESH_TOKEN_TTL_DAYS } from '@nosgestesclimat/core/features/auth/constants/session'
 import { createSession } from '@nosgestesclimat/core/features/auth/services/create-session.service'
 import type { SessionTokens } from '@nosgestesclimat/core/features/auth/types/session'
 
@@ -29,7 +26,7 @@ export async function createAppSession(
   const store = await cookies()
   store.set(SESSION_COOKIE, tokens.accessToken, {
     ...getCookieOptions(),
-    maxAge: SESSION_TTL_SECONDS,
+    maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 3600,
   })
   store.set(REFRESH_COOKIE, tokens.refreshToken, {
     ...getCookieOptions(),

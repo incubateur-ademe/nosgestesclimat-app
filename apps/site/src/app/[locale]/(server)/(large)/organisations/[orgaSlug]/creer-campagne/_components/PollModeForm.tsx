@@ -7,29 +7,18 @@ import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
 import { useCreatePollStep2 } from '../_hooks/useCreatePollStep2'
-import { revalidationOrganisationPath } from './actions/revalidationOrganisationPath'
 
 interface Props {
   organisation: Organisation
 }
 
 export default function PollModeForm({ organisation }: Props) {
-  const { register, onSubmit, isPending, isError, modes } = useCreatePollStep2({
+  const { handleSubmit, isPending, isError, modes } = useCreatePollStep2({
     organisationSlug: organisation.slug,
-    revalidatePath: revalidationOrganisationPath,
   })
 
   return (
-    <form
-      className="mt-2"
-      onSubmit={(e) => {
-        if (isPending) {
-          e.preventDefault()
-          return
-        }
-        void onSubmit(e)
-      }}
-      id="poll-form">
+    <form className="mt-2" action={handleSubmit} id="poll-form">
       <fieldset>
         <legend className="sr-only">
           <Trans>Choisissez le mode du test</Trans>
@@ -62,10 +51,10 @@ export default function PollModeForm({ organisation }: Props) {
 
               <input
                 type="radio"
+                name="mode"
                 value={mode.value}
                 className="sr-only"
                 defaultChecked={mode.value === 'standard'}
-                {...register('mode')}
               />
 
               <h3 className="mt-3 mb-2 text-base font-bold text-gray-900 md:mt-0 md:text-lg">

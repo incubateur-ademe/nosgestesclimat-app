@@ -9,6 +9,10 @@ import {
 } from '@/helpers/server/error'
 
 export async function handleApiResponse<T>(response: Response): Promise<T> {
+  if (response.status === 204) {
+    return undefined as T
+  }
+
   if (!response.ok) {
     switch (response.status) {
       case 404:

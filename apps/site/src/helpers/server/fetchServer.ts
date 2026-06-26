@@ -49,7 +49,6 @@ export async function fetchServer<T = unknown>(
       reqHeaders['x-user-email'] = effectiveSession.email
     }
     reqHeaders['x-session'] = JSON.stringify(effectiveSession)
-    reqHeaders['x-internal-key'] = process.env.INTERNAL_API_KEY
   }
 
   const response = await fetch(url, {

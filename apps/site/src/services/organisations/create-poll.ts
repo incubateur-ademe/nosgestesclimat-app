@@ -4,6 +4,8 @@ import type { PollDefaultAdditionalQuestion } from '@/constants/organisations/po
 import { ORGANISATION_URL } from '@/constants/urls/main'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import type { OrganisationPoll } from '@/types/organisations'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 interface PollToCreate {
   name: string
@@ -15,7 +17,7 @@ interface PollToCreate {
 
 export const createPoll = async ({
   organisationIdOrSlug,
-  poll,
+  poll: pollDTO,
   locale,
 }: {
   organisationIdOrSlug: string
@@ -24,11 +26,14 @@ export const createPoll = async ({
 }) => {
   const params = locale ? `?locale=${locale}` : ''
 
-  return fetchServer<OrganisationPoll>(
+  const poll = await fetchServer<OrganisationPoll>(
     `${ORGANISATION_URL}/${organisationIdOrSlug}/polls${params}`,
     {
       method: 'POST',
-      body: poll,
+      body: pollDTO,
     }
   )
+
+  revalidatePath(`/organisations/${organisationIdOrSlug}`)
+  redirect(`/organisations/${organisationIdOrSlug}/campagnes/${poll.slug}`)
 }

@@ -3,9 +3,21 @@ import { middlewareFeatureFlags } from '@/helpers/server/proxy/middleware-featur
 import { middlewareRegion } from '@/helpers/server/proxy/middleware-region'
 import i18nConfig from '@/i18nConfig'
 import { i18nRouter } from 'next-i18n-router'
-import type { NextRequest , NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
+  // In Turbopack dev, Next.js forwards server actions between internal workers
+  // via a self-fetch to localhost:3000, targeting the action's worker page
+  // (e.g. `/[locale]/simulateur/bilan`). That self-fetch goes through this
+  // proxy. i18nRouter would rewrite its no-locale URL (prepending the default
+  // locale), which changes the page seen by `selectWorkerForForwarding` and
+  // makes it re-forward indefinitely → "failed to forward action response"
+  // storm. Forward-fetches target a specific worker page on purpose and must
+  // not be i18n-rewritten, so pass them through untouched.
+  if (request.headers.get('x-action-forwarded')) {
+    return NextResponse.next()
+  }
+
   // Phase 1 — Interceptors
   const ff = middlewareFeatureFlags(request)
   if (ff.redirect) return ff.redirect

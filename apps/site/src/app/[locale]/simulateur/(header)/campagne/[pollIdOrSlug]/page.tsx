@@ -4,7 +4,7 @@ import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import { throwNextError } from '@/helpers/server/error'
 import type { Locale } from '@/i18nConfig'
 import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
-import { getUserPoll } from '@/services/organisations/get-user-poll'
+import { getPublicPoll } from '@/services/organisations/get-public-poll'
 import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { redirect } from 'next/navigation'
@@ -27,7 +27,7 @@ export default async function CampagnePage({
   const [poll, [lastCompletedSimulation], currentSimulation] =
     await throwNextError(() =>
       Promise.all([
-        getUserPoll(pollIdOrSlug),
+        getPublicPoll(pollIdOrSlug),
         getCompletedSimulations({ pageSize: 1 }),
         getCurrentSimulation(),
       ])

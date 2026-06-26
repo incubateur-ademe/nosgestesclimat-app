@@ -13,11 +13,11 @@ import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPo
 import useFetchOrganisation from '@/hooks/organisations/useFetchOrganisation'
 import { useHandleRedirectFromLegacy } from '@/hooks/organisations/useHandleRedirectFromLegacy'
 import { isOrganisationAdmin } from '@/services/organisations/is-organisation-admin'
-import { useQuery } from '@tanstack/react-query'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
@@ -28,7 +28,6 @@ import FootprintDistribution from './_components/footPrintDistribution/Footprint
 export default function CampagnePage() {
   const { orgaSlug, pollSlug } = useParams()
   const searchParams = useSearchParams()
-
   const isRedirectFromLegacy = Boolean(searchParams.get('isRedirectFromLegacy'))
 
   useHandleRedirectFromLegacy()

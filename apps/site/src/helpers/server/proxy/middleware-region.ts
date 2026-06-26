@@ -41,6 +41,10 @@ export async function middlewareRegion(
 
   request.headers.set('x-region', cookieValue)
 
+  if (existingValue === cookieValue) {
+    return { redirect: null, cookies: [] }
+  }
+
   return {
     redirect: null,
     cookies: [
