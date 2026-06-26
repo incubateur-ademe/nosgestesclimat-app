@@ -27,7 +27,7 @@ export const UPDATE_USER_GROUP_ROUTE = '/groups/v1/:groupId'
 export const CREATE_PARTICIPANT_ROUTE = '/groups/v1/:groupId/participants'
 
 export const DELETE_PARTICIPANT_ROUTE =
-  '/groups/v1/:userId/:groupId/participants/:participantId'
+  '/groups/v1/:groupId/participants/:participantId'
 
 export const FETCH_USER_GROUPS_ROUTE = '/groups/v1/:userId'
 
