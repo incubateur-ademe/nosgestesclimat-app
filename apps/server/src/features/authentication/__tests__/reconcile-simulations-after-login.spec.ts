@@ -249,7 +249,7 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
         test('Then the group participation is migrated to the verified user', async () => {
           const response = await agent
-            .get(FETCH_USER_GROUP_ROUTE)
+            .get(FETCH_USER_GROUP_ROUTE.replace(':groupId', groupId))
             .set(authHeaders({ userId: verifiedUserId }))
             .expect(StatusCodes.OK)
 

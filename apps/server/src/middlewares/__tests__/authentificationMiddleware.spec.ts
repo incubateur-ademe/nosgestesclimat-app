@@ -48,7 +48,7 @@ describe('authentication middleware', () => {
           .set('x-user-email', email)
           .expect(StatusCodes.OK)
 
-        expect(response.body).toEqual({ userId, email })
+        expect(response.body).toEqual({ id: userId, email })
         expect(response.headers['set-cookie']).toBeUndefined()
       })
     })
@@ -63,7 +63,7 @@ describe('authentication middleware', () => {
           .set('x-user-id', userId)
           .expect(StatusCodes.OK)
 
-        expect(response.body).toEqual({ userId })
+        expect(response.body).toEqual({ id: userId })
         expect(response.headers['set-cookie']).toBeUndefined()
       })
     })
@@ -120,7 +120,7 @@ describe('authentication middleware passIfUnauthorized: true', () => {
         .set('x-user-email', email)
         .expect(StatusCodes.OK)
 
-      expect(response.body).toEqual({ userId, email })
+      expect(response.body).toEqual({ id: userId, email })
       expect(response.headers['set-cookie']).toBeUndefined()
     })
   })
