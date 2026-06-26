@@ -13,12 +13,11 @@ import {
 import { PollDefaultAdditionalQuestionType } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import { type OrganisationPollCreateDto } from '../organisations.validator.ts'
 import {
   CREATE_ORGANISATION_POLL_ROUTE,
@@ -40,7 +39,7 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
+  describe('And no authentication', () => {
     describe('When creating a poll in his organisation', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -55,7 +54,7 @@ describe('Given a NGC user', () => {
     })
   })
 
-  describe('And invalid cookie', () => {
+  describe('And not a verified user', () => {
     describe('When creating a poll in his organisation', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -65,19 +64,22 @@ describe('Given a NGC user', () => {
               faker.database.mongodbObjectId()
             )
           )
-          .set('cookie', `${COOKIE_NAME}=invalid cookie`)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            name: faker.company.buzzNoun(),
+          })
           .expect(StatusCodes.UNAUTHORIZED)
       })
     })
   })
 
-  describe('And logged in', () => {
-    let cookie: string
+  describe('And a verified user', () => {
     let email: string
     let userId: string
 
-    beforeEach(async () => {
-      ;({ cookie, email, userId } = await login({ agent }))
+    beforeEach(() => {
+      userId = faker.string.uuid()
+      email = faker.internet.email()
     })
 
     describe('When creating a poll in his organisation', () => {
@@ -90,7 +92,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.BAD_REQUEST)
         })
       })
@@ -104,7 +106,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: '',
             })
@@ -117,7 +119,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.string.alpha(151),
             })
@@ -134,7 +136,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
               defaultAdditionalQuestions: [
@@ -154,7 +156,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
               mode: 'invalid-mode',
@@ -172,7 +174,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
               defaultAdditionalQuestions: [
@@ -189,7 +191,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
               defaultAdditionalQuestions: [
@@ -231,7 +233,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
             })
@@ -250,7 +252,8 @@ describe('Given a NGC user', () => {
           ;({ polls: _organisationPolls, ...organisation } =
             await createOrganisation({
               agent,
-              cookie,
+              userId,
+              email,
             }))
           ;({
             id: organisationId,
@@ -272,7 +275,7 @@ describe('Given a NGC user', () => {
 
           const response = await agent
             .post(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -323,7 +326,7 @@ describe('Given a NGC user', () => {
             body: { id },
           } = await agent
             .post(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -403,7 +406,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -450,7 +453,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
         })
@@ -499,7 +502,7 @@ describe('Given a NGC user', () => {
 
             await agent
               .post(url.replace(':organisationIdOrSlug', organisationId))
-              .set('cookie', cookie)
+              .set(authHeaders({ userId, email }))
               .send(payload)
               .set('origin', 'https://preprod.nosgestesclimat.fr')
               .expect(StatusCodes.CREATED)
@@ -550,7 +553,7 @@ describe('Given a NGC user', () => {
 
             await agent
               .post(url.replace(':organisationIdOrSlug', organisationId))
-              .set('cookie', cookie)
+              .set(authHeaders({ userId, email }))
               .send(payload)
               .query({
                 locale: Locales.en,
@@ -573,7 +576,7 @@ describe('Given a NGC user', () => {
 
             const response = await agent
               .post(url.replace(':organisationIdOrSlug', organisationSlug))
-              .set('cookie', cookie)
+              .set(authHeaders({ userId, email }))
               .send(payload)
               .expect(StatusCodes.CREATED)
 
@@ -616,7 +619,8 @@ describe('Given a NGC user', () => {
             type: organisationType,
           } = await createOrganisation({
             agent,
-            cookie,
+            userId,
+            email,
             organisation: {
               administrators: [
                 {
@@ -664,7 +668,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -682,13 +686,15 @@ describe('Given a NGC user', () => {
           ;({ polls: _organisationPolls, ...organisation } =
             await createOrganisation({
               agent,
-              cookie,
+              userId,
+              email,
             }))
           ;({ id: organisationId } = organisation)
           name = faker.company.buzzNoun()
           await createOrganisationPoll({
             agent,
-            cookie,
+            userId,
+            email,
             organisationId,
             poll: { name },
           })
@@ -707,7 +713,7 @@ describe('Given a NGC user', () => {
 
           const response = await agent
             .post(url.replace(':organisationIdOrSlug', organisationId))
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -755,7 +761,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
             })
@@ -770,7 +776,7 @@ describe('Given a NGC user', () => {
                 faker.database.mongodbObjectId()
               )
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.buzzNoun(),
             })

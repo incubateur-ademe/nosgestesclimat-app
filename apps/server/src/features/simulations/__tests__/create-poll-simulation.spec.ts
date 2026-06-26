@@ -196,7 +196,8 @@ describe('Given a NGC user', () => {
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
 
         beforeEach(async () => {
-          const { cookie } = await login({ agent })
+          const adminUserId = faker.string.uuid()
+          const adminEmail = faker.internet.email()
           ;({
             id: organisationId,
             name: organisationName,
@@ -205,11 +206,16 @@ describe('Given a NGC user', () => {
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
-          } = await createOrganisation({ agent, cookie }))
+          } = await createOrganisation({
+            agent,
+            userId: adminUserId,
+            email: adminEmail,
+          }))
 
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId: adminUserId,
+            email: adminEmail,
             organisationId,
           })
           ;({ id: pollId, slug: pollSlug } = poll)
@@ -914,7 +920,8 @@ describe('Given a NGC user', () => {
         let userId: string
 
         beforeEach(async () => {
-          const { cookie } = await login({ agent })
+          const adminUserId = faker.string.uuid()
+          const adminEmail = faker.internet.email()
           ;({
             id: organisationId,
             name: organisationName,
@@ -925,7 +932,8 @@ describe('Given a NGC user', () => {
             ],
           } = await createOrganisation({
             agent,
-            cookie,
+            userId: adminUserId,
+            email: adminEmail,
             organisation: {
               administrators: [
                 {
@@ -937,7 +945,8 @@ describe('Given a NGC user', () => {
 
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId: adminUserId,
+            email: adminEmail,
             organisationId,
           })
           ;({ id: pollId } = poll)
@@ -1078,7 +1087,8 @@ describe('Given a NGC user', () => {
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
 
         beforeEach(async () => {
-          const { cookie } = await login({ agent })
+          const adminUserId = faker.string.uuid()
+          const adminEmail = faker.internet.email()
           ;({
             id: organisationId,
             name: organisationName,
@@ -1087,11 +1097,16 @@ describe('Given a NGC user', () => {
             administrators: [
               { userId: administratorId, email: administratorEmail },
             ],
-          } = await createOrganisation({ agent, cookie }))
+          } = await createOrganisation({
+            agent,
+            userId: adminUserId,
+            email: adminEmail,
+          }))
 
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId: adminUserId,
+            email: adminEmail,
             organisationId,
           })
           ;({ id: pollId, slug: pollSlug } = poll)
@@ -1421,7 +1436,8 @@ describe('Given a NGC user', () => {
             simulation = await createOrganisationPollSimulation({
               agent,
               pollId,
-              cookie,
+              userId,
+              email,
             })
           })
 
