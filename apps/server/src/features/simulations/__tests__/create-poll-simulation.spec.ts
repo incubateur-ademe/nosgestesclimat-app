@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
@@ -15,6 +16,7 @@ import {
 } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
@@ -29,17 +31,22 @@ import {
 import type { SimulationCreateInputDto } from '../simulations.validator.ts'
 import { getRandomTestCase } from './fixtures/simulations.fixtures.ts'
 
+const defaultModelVersion = modelPackage.version
+  .match(/^(\d+\.\d+\.\d+)/)!
+  .pop()
+const model = `FR-fr-${defaultModelVersion}`
+
 describe('Given a NGC user', () => {
   const agent = supertest(app)
   const url = CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE
-  const { computedResults, nom, situation, extendedSituation } =
-    getRandomTestCase()
+  const { computedResults, situation, extendedSituation } = getRandomTestCase()
 
   afterEach(async () => {
     await EventBus.flush()
     await Promise.all([
       prisma.organisationAdministrator.deleteMany(),
       prisma.simulationPoll.deleteMany(),
+      prisma.simulation.deleteMany(),
     ])
     await Promise.all([
       prisma.organisation.deleteMany(),
@@ -49,182 +56,392 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe(`And ${nom} persona situation`, () => {
-    describe('When creating a simulation in a poll', () => {
-      describe('And invalid user Id', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.alpha(34))
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .expect(StatusCodes.BAD_REQUEST)
-        })
+  describe('When creating a simulation in a poll', () => {
+    describe('And no authentication headers', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .expect(StatusCodes.UNAUTHORIZED)
       })
+    })
 
-      describe('And no data provided', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .expect(StatusCodes.BAD_REQUEST)
-        })
+    describe('And no data provided', () => {
+      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.BAD_REQUEST)
       })
+    })
 
-      describe('And invalid user email', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-              user: {
-                name: nom,
-                email: 'Je ne donne jamais mon email',
-              },
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And invalid simulation id', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.database.mongodbObjectId(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-              user: {
-                name: nom,
-              },
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And invalid situation', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.string.uuid(),
-              situation: null,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-              user: {
-                name: nom,
-              },
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And invalid computedResults', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults: null,
-              extendedSituation,
-              user: {
-                name: nom,
-              },
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And poll does not exist', () => {
-        test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-            })
-            .expect(StatusCodes.NOT_FOUND)
-        })
-      })
-
-      describe('And poll does exist', () => {
-        let organisationId: string
-        let organisationSlug: string
-        let organisationName: string
-        let organisationType: string
-        let administratorEmail: string
-        let administratorId: string
-        let userId: string
-        let pollId: string
-        let pollSlug: string
-        let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
-
-        beforeEach(async () => {
-          const adminUserId = faker.string.uuid()
-          const adminEmail = faker.internet.email()
-          ;({
-            id: organisationId,
-            name: organisationName,
-            slug: organisationSlug,
-            type: organisationType,
-            administrators: [
-              { userId: administratorId, email: administratorEmail },
-            ],
-          } = await createOrganisation({
-            agent,
-            userId: adminUserId,
-            email: adminEmail,
-          }))
-
-          poll = await createOrganisationPoll({
-            agent,
-            userId: adminUserId,
-            email: adminEmail,
-            organisationId,
+    describe('And invalid simulation id', () => {
+      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            id: faker.database.mongodbObjectId(),
+            situation,
+            progression: 1,
+            computedResults,
+            extendedSituation,
           })
-          ;({ id: pollId, slug: pollSlug } = poll)
-          userId = faker.string.uuid()
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+    })
+
+    describe('And invalid situation', () => {
+      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            id: faker.string.uuid(),
+            situation: null,
+            progression: 1,
+            computedResults,
+            extendedSituation,
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+    })
+
+    describe('And invalid computedResults', () => {
+      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            id: faker.string.uuid(),
+            situation,
+            progression: 1,
+            computedResults: null,
+            extendedSituation,
+          })
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+    })
+
+    describe('And poll does not exist', () => {
+      test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            id: faker.string.uuid(),
+            situation,
+            progression: 1,
+            computedResults,
+            extendedSituation,
+          })
+          .expect(StatusCodes.NOT_FOUND)
+      })
+    })
+
+    describe('And poll does exist', () => {
+      let organisationName: string
+      let organisationSlug: string
+      let organisationType: string
+      let administratorEmail: string
+      let administratorId: string
+      let userId: string
+      let pollId: string
+      let pollSlug: string
+
+      beforeEach(async () => {
+        const adminUserId = faker.string.uuid()
+        const adminEmail = faker.internet.email()
+        let organisationId: string
+        ;({
+          id: organisationId,
+          name: organisationName,
+          slug: organisationSlug,
+          type: organisationType,
+          administrators: [
+            { userId: administratorId, email: administratorEmail },
+          ],
+        } = await createOrganisation({
+          agent,
+          userId: adminUserId,
+          email: adminEmail,
+        }))
+
+        const poll = await createOrganisationPoll({
+          agent,
+          userId: adminUserId,
+          email: adminEmail,
+          organisationId,
+        })
+        ;({ id: pollId, slug: pollSlug } = poll)
+        userId = faker.string.uuid()
+      })
+
+      test(`Then it returns a ${StatusCodes.CREATED} response with the created simulation`, async () => {
+        const expected = {
+          id: faker.string.uuid(),
+          model,
+          situation,
+          progression: 1,
+          computedResults,
+        }
+
+        const payload: SimulationCreateInputDto = {
+          ...expected,
+          extendedSituation,
+        }
+        mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
+
+        const response = await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+
+        expect(response.body).toEqual({
+          ...expected,
+          date: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          actionChoices: {},
+          additionalQuestionsAnswers: [],
+          foldedSteps: [],
+          polls: [
+            {
+              id: pollId,
+              slug: pollSlug,
+            },
+          ],
+          groups: [],
+          user: {
+            id: userId,
+            email: null,
+            name: null,
+            ageRange: null,
+          },
+        })
+      })
+
+      test('Then it stores a simulation in database', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          date: new Date(),
+          model,
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+          actionChoices: {
+            myAction: true,
+          },
+          foldedSteps: [],
+          additionalQuestionsAnswers: [
+            {
+              type: SimulationAdditionalQuestionAnswerType.custom,
+              key: 'myKey',
+              answer: 'myAnswer',
+            },
+            {
+              type: SimulationAdditionalQuestionAnswerType.default,
+              key: PollDefaultAdditionalQuestionType.postalCode,
+              answer: '00001',
+            },
+          ],
+        }
+        mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
+        const {
+          body: { id },
+        } = await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+        const createdSimulation = await prisma.simulation.findUnique({
+          where: {
+            id,
+          },
+          select: {
+            id: true,
+            date: true,
+            model: true,
+            situation: true,
+            foldedSteps: true,
+            progression: true,
+            actionChoices: true,
+            computedResults: true,
+            extendedSituation: true,
+            additionalQuestionsAnswers: {
+              select: {
+                key: true,
+                answer: true,
+                type: true,
+              },
+            },
+            polls: {
+              select: {
+                pollId: true,
+                poll: {
+                  select: {
+                    slug: true,
+                  },
+                },
+              },
+            },
+            states: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            createdAt: true,
+            updatedAt: true,
+          },
         })
 
+        expect(createdSimulation).toEqual({
+          ...payload,
+          createdAt: expect.any(Date),
+          date: expect.any(Date),
+          updatedAt: expect.any(Date),
+          polls: [
+            {
+              pollId,
+              poll: {
+                slug: pollSlug,
+              },
+            },
+          ],
+          states: [
+            {
+              id: expect.any(String),
+              date: expect.any(Date),
+              simulationId: id,
+              progression: 1,
+            },
+          ],
+          user: {
+            id: userId,
+            name: null,
+            email: null,
+          },
+        })
+      })
+
+      test('Then it updates organisation administrator in brevo', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+        mswServer.use(
+          brevoUpdateContact({
+            expectBody: {
+              email: administratorEmail,
+              attributes: {
+                USER_ID: administratorId,
+                IS_ORGANISATION_ADMIN: true,
+                ORGANISATION_NAME: organisationName,
+                ORGANISATION_SLUG: organisationSlug,
+                OPT_IN: false,
+                ORGANISATION_TYPE: organisationType,
+              },
+              updateEnabled: true,
+            },
+          }),
+          brevoRemoveFromList(27, {
+            expectBody: {
+              emails: [administratorEmail],
+            },
+          })
+        )
+
+        await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+      })
+
+      test('Then it updates poll fun facts', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+
+        mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
+
+        await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+
+        const { funFacts } = await prisma.poll.findUniqueOrThrow({
+          where: {
+            id: pollId,
+          },
+          select: {
+            funFacts: true,
+          },
+        })
+
+        expect(funFacts).toEqual(
+          Object.fromEntries(
+            Object.entries(modelFunFacts).map(([k]) => [k, expect.any(Number)])
+          )
+        )
+      })
+
+      test('Then it does not update poll fun facts if simulation is incomplete', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          situation,
+          progression: 0.5,
+          computedResults,
+          extendedSituation,
+        }
+
+        mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
+
+        await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+
+        const { funFacts } = await prisma.poll.findUniqueOrThrow({
+          where: {
+            id: pollId,
+          },
+          select: {
+            funFacts: true,
+          },
+        })
+
+        expect(funFacts).toBeNull()
+      })
+
+      describe('And using poll slug', () => {
         test(`Then it returns a ${StatusCodes.CREATED} response with the created simulation`, async () => {
           const expected = {
             id: faker.string.uuid(),
+            model,
             situation,
             progression: 1,
             computedResults,
@@ -234,19 +451,20 @@ describe('Given a NGC user', () => {
             ...expected,
             extendedSituation,
           }
+
           mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
 
           const response = await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
+            .post(url.replace(':pollIdOrSlug', pollSlug))
+            .set(authHeaders({ userId }))
             .send(payload)
             .expect(StatusCodes.CREATED)
+
+          await EventBus.flush()
 
           expect(response.body).toEqual({
             ...expected,
             date: expect.any(String),
-            model: 'FR-fr-0.0.0',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             actionChoices: {},
@@ -267,803 +485,152 @@ describe('Given a NGC user', () => {
             },
           })
         })
-
-        test('Then it stores a simulation in database', async () => {
-          const payload: SimulationCreateInputDto = {
-            id: faker.string.uuid(),
-            date: new Date(),
-            situation,
-            progression: 1,
-            computedResults,
-            extendedSituation,
-            actionChoices: {
-              myAction: true,
-            },
-            // foldedSteps: ['myStep'], // Cannot do that with PG lite
-            foldedSteps: [],
-            additionalQuestionsAnswers: [
-              {
-                type: SimulationAdditionalQuestionAnswerType.custom,
-                key: 'myKey',
-                answer: 'myAnswer',
-              },
-              {
-                type: SimulationAdditionalQuestionAnswerType.default,
-                key: PollDefaultAdditionalQuestionType.postalCode,
-                answer: '00001',
-              },
-            ],
-            user: {
-              name: nom,
-              email: faker.internet.email().toLocaleLowerCase(),
-            },
-          }
-          mswServer.use(
-            brevoUpdateContact(),
-            brevoRemoveFromList(27),
-            brevoSendEmail()
-          )
-          const {
-            body: { id },
-          } = await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-          const createdSimulation = await prisma.simulation.findUnique({
-            where: {
-              id,
-            },
-            select: {
-              id: true,
-              date: true,
-              situation: true,
-              foldedSteps: true,
-              progression: true,
-              actionChoices: true,
-              computedResults: true,
-              extendedSituation: true,
-              additionalQuestionsAnswers: {
-                select: {
-                  key: true,
-                  answer: true,
-                  type: true,
-                },
-              },
-              polls: {
-                select: {
-                  pollId: true,
-                  poll: {
-                    select: {
-                      slug: true,
-                    },
-                  },
-                },
-              },
-              states: true,
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                },
-              },
-              createdAt: true,
-              updatedAt: true,
-            },
-          })
-
-          expect(createdSimulation).toEqual({
-            ...payload,
-            createdAt: expect.any(Date),
-            date: expect.any(Date),
-            updatedAt: expect.any(Date),
-            polls: [
-              {
-                pollId,
-                poll: {
-                  slug: pollSlug,
-                },
-              },
-            ],
-            states: [
-              {
-                id: expect.any(String),
-                date: expect.any(Date),
-                simulationId: id,
-                progression: 1,
-              },
-            ],
-            user: {
-              ...payload.user,
-              id: userId,
-            },
-          })
-        })
-
-        test('Then it updates organisation administrator in brevo', async () => {
-          const payload: SimulationCreateInputDto = {
-            id: faker.string.uuid(),
-            situation,
-            progression: 1,
-            computedResults,
-            extendedSituation,
-          }
-          mswServer.use(
-            brevoUpdateContact({
-              expectBody: {
-                email: administratorEmail,
-                attributes: {
-                  USER_ID: administratorId,
-                  IS_ORGANISATION_ADMIN: true,
-                  ORGANISATION_NAME: organisationName,
-                  ORGANISATION_SLUG: organisationSlug,
-                  OPT_IN: false,
-                  ORGANISATION_TYPE: organisationType,
-                },
-                updateEnabled: true,
-              },
-            }),
-            brevoRemoveFromList(27, {
-              expectBody: {
-                emails: [administratorEmail],
-              },
-            })
-          )
-
-          await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-        })
-
-        test('Then it updates poll fun facts', async () => {
-          const payload: SimulationCreateInputDto = {
-            id: faker.string.uuid(),
-            situation,
-            progression: 1,
-            computedResults,
-            extendedSituation,
-          }
-
-          mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
-
-          await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-
-          const { funFacts } = await prisma.poll.findUniqueOrThrow({
-            where: {
-              id: pollId,
-            },
-            select: {
-              funFacts: true,
-            },
-          })
-
-          expect(funFacts).toEqual(
-            Object.fromEntries(
-              Object.entries(modelFunFacts).map(([k]) => [
-                k,
-                expect.any(Number),
-              ])
-            )
-          )
-        })
-
-        test('Then it does not update poll fun facts if simulation is incomplete', async () => {
-          const payload: SimulationCreateInputDto = {
-            id: faker.string.uuid(),
-            situation,
-            progression: 0.5,
-            computedResults,
-            extendedSituation,
-          }
-
-          mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
-
-          await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-
-          const { funFacts } = await prisma.poll.findUniqueOrThrow({
-            where: {
-              id: pollId,
-            },
-            select: {
-              funFacts: true,
-            },
-          })
-
-          expect(funFacts).toBeNull()
-        })
-
-        describe('And using organisation and poll slugs', () => {
-          test(`Then it returns a ${StatusCodes.CREATED} response with the created simulation`, async () => {
-            const expected = {
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-            }
-
-            const payload: SimulationCreateInputDto = {
-              ...expected,
-              extendedSituation,
-            }
-
-            mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
-
-            const response = await agent
-              .post(
-                url
-                  .replace(':userId', userId)
-                  .replace(':pollIdOrSlug', pollSlug)
-              )
-              .send(payload)
-              .expect(StatusCodes.CREATED)
-
-            expect(response.body).toEqual({
-              ...expected,
-              date: expect.any(String),
-              model: 'FR-fr-0.0.0',
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
-              actionChoices: {},
-              additionalQuestionsAnswers: [],
-              foldedSteps: [],
-              polls: [
-                {
-                  id: pollId,
-                  slug: pollSlug,
-                },
-              ],
-              groups: [],
-              user: {
-                id: userId,
-                email: null,
-                name: null,
-                ageRange: null,
-              },
-            })
-          })
-        })
-
-        describe('And leaving his/her email', () => {
-          test('Then it adds or updates contacts in brevo', async () => {
-            const date = new Date()
-            const email = faker.internet.email().toLocaleLowerCase()
-            const payload: SimulationCreateInputDto = {
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-              date,
-              user: {
-                email,
-              },
-            }
-
-            const contactBodies: unknown[] = []
-
-            mswServer.use(
-              brevoSendEmail(),
-              brevoRemoveFromList(27),
-              brevoUpdateContact({
-                storeBodies: contactBodies,
-              })
-            )
-
-            await agent
-              .post(
-                url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-              )
-              .send(payload)
-              .expect(StatusCodes.CREATED)
-
-            await EventBus.flush()
-
-            expect(contactBodies).toEqual(
-              expect.arrayContaining([
-                {
-                  email,
-                  attributes: {
-                    USER_ID: userId,
-                    LAST_SIMULATION_DATE: date.toISOString(),
-                    ACTIONS_SELECTED_NUMBER: 0,
-                    LAST_SIMULATION_BILAN_FOOTPRINT: (
-                      computedResults.carbone.bilan / 1000
-                    ).toLocaleString('fr-FR', {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                      computedResults.carbone.categories.transport / 1000
-                    ).toLocaleString('fr-FR', {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                      computedResults.carbone.categories.alimentation / 1000
-                    ).toLocaleString('fr-FR', {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                      computedResults.carbone.categories.logement / 1000
-                    ).toLocaleString('fr-FR', {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                      computedResults.carbone.categories.divers / 1000
-                    ).toLocaleString('fr-FR', {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                      computedResults.carbone.categories['services sociétaux'] /
-                      1000
-                    ).toLocaleString('fr-FR', {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_BILAN_WATER: Math.round(
-                      computedResults.eau.bilan / 365
-                    ).toString(),
-                  },
-                  updateEnabled: true,
-                },
-                {
-                  attributes: {
-                    IS_ORGANISATION_ADMIN: true,
-                    OPT_IN: false,
-                    ORGANISATION_TYPE: organisationType,
-                    ORGANISATION_NAME: organisationName,
-                    ORGANISATION_SLUG: organisationSlug,
-                    USER_ID: administratorId,
-                  },
-                  email: administratorEmail,
-                  updateEnabled: true,
-                },
-              ])
-            )
-          })
-
-          test('Then it sends a creation email', async () => {
-            const email = faker.internet.email().toLocaleLowerCase()
-            const payload: SimulationCreateInputDto = {
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-              user: {
-                email,
-              },
-            }
-
-            mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 122,
-                  params: {
-                    ORGANISATION_NAME: organisationName,
-                    DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                  },
-                },
-              }),
-              brevoUpdateContact(),
-              brevoRemoveFromList(27)
-            )
-
-            await agent
-              .post(
-                url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-              )
-              .send(payload)
-              .expect(StatusCodes.CREATED)
-
-            await EventBus.flush()
-          })
-
-          describe('And incomplete simulation', () => {
-            test('Then it sends a continuation email', async () => {
-              const email = faker.internet.email().toLocaleLowerCase()
-              const payload: SimulationCreateInputDto = {
-                id: faker.string.uuid(),
-                situation,
-                computedResults,
-                progression: 0.5,
-                extendedSituation,
-                user: {
-                  email,
-                },
-              }
-
-              mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 102,
-                    params: {
-                      SIMULATION_URL: `https://nosgestesclimat.test/simulateur/bilan?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=pause-test-en-cours`,
-                    },
-                  },
-                }),
-                brevoUpdateContact(),
-                brevoRemoveFromList(27)
-              )
-
-              await agent
-                .post(
-                  url
-                    .replace(':userId', userId)
-                    .replace(':pollIdOrSlug', pollId)
-                )
-                .send(payload)
-                .expect(StatusCodes.CREATED)
-
-              await EventBus.flush()
-            })
-          })
-
-          describe('And custom user origin (preprod)', () => {
-            test('Then it sends a creation email', async () => {
-              const email = faker.internet.email().toLocaleLowerCase()
-              const payload: SimulationCreateInputDto = {
-                id: faker.string.uuid(),
-                situation,
-                progression: 1,
-                computedResults,
-                extendedSituation,
-                user: {
-                  email,
-                },
-              }
-
-              mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 122,
-                    params: {
-                      ORGANISATION_NAME: organisationName,
-                      DETAILED_VIEW_URL: `https://preprod.nosgestesclimat.fr/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                      SIMULATION_URL: `https://preprod.nosgestesclimat.fr/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    },
-                  },
-                }),
-                brevoUpdateContact(),
-                brevoRemoveFromList(27)
-              )
-
-              await agent
-                .post(
-                  url
-                    .replace(':userId', userId)
-                    .replace(':pollIdOrSlug', pollId)
-                )
-                .set('origin', 'https://preprod.nosgestesclimat.fr')
-                .send(payload)
-                .expect(StatusCodes.CREATED)
-
-              await EventBus.flush()
-            })
-          })
-
-          describe(`And ${Locales.en} locale`, () => {
-            test('Then it sends a creation email', async () => {
-              const email = faker.internet.email().toLocaleLowerCase()
-              const payload: SimulationCreateInputDto = {
-                id: faker.string.uuid(),
-                situation,
-                progression: 1,
-                computedResults,
-                extendedSituation,
-                user: {
-                  email,
-                },
-              }
-
-              mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 123,
-                    params: {
-                      ORGANISATION_NAME: organisationName,
-                      DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                      SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    },
-                  },
-                }),
-                brevoUpdateContact(),
-                brevoRemoveFromList(27)
-              )
-
-              await agent
-                .post(
-                  url
-                    .replace(':userId', userId)
-                    .replace(':pollIdOrSlug', pollId)
-                )
-                .send(payload)
-                .query({
-                  locale: Locales.en,
-                })
-                .expect(StatusCodes.CREATED)
-
-              await EventBus.flush()
-            })
-          })
-
-          describe('And joining twice', () => {
-            let simulation: Awaited<
-              ReturnType<typeof createOrganisationPollSimulation>
-            >
-
-            beforeEach(async () => {
-              simulation = await createOrganisationPollSimulation({
-                agent,
-                pollId,
-                simulation: {
-                  user: {
-                    email: faker.internet.email(),
-                  },
-                },
-              })
-            })
-
-            test('Then it does not send email twice', async () => {
-              const {
-                createdAt: _1,
-                updatedAt: _2,
-                polls: _3,
-                user,
-                ...payload
-              } = simulation
-              const { id: _4, name: _5, ageRange: _6, ...userPayload } = user
-
-              mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
-
-              await agent
-                .post(
-                  url
-                    .replace(':userId', user.id)
-                    .replace(':pollIdOrSlug', pollId)
-                )
-                .send({
-                  ...payload,
-                  user: userPayload,
-                })
-                .expect(StatusCodes.CREATED)
-
-              await EventBus.flush()
-            })
-
-            describe('And from another device', () => {
-              test('Then it does not send email twice', async () => {
-                const {
-                  createdAt: _1,
-                  updatedAt: _2,
-                  polls: _3,
-                  user,
-                  ...payload
-                } = simulation
-                const { id: _4, name: _5, ageRange: _6, ...userPayload } = user
-
-                mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
-
-                await agent
-                  .post(
-                    url
-                      .replace(':userId', user.id)
-                      .replace(':pollIdOrSlug', pollId)
-                  )
-                  .send({
-                    ...payload,
-                    user: userPayload,
-                  })
-                  .expect(StatusCodes.CREATED)
-
-                await EventBus.flush()
-              })
-            })
-          })
-        })
       })
+    })
 
-      describe('And poll does exist And administrator opt in for communications', () => {
+    describe('And poll does exist And administrator opt in for communications', () => {
+      let organisationName: string
+      let organisationSlug: string
+      let organisationType: string
+      let administratorEmail: string
+      let administratorId: string
+      let pollId: string
+      let userId: string
+
+      beforeEach(async () => {
+        const adminUserId = faker.string.uuid()
+        const adminEmail = faker.internet.email()
         let organisationId: string
-        let organisationSlug: string
-        let organisationName: string
-        let organisationType: string
-        let administratorEmail: string
-        let administratorId: string
-        let pollId: string
-        let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
-        let userId: string
-
-        beforeEach(async () => {
-          const adminUserId = faker.string.uuid()
-          const adminEmail = faker.internet.email()
-          ;({
-            id: organisationId,
-            name: organisationName,
-            slug: organisationSlug,
-            type: organisationType,
+        ;({
+          id: organisationId,
+          name: organisationName,
+          slug: organisationSlug,
+          type: organisationType,
+          administrators: [
+            { userId: administratorId, email: administratorEmail },
+          ],
+        } = await createOrganisation({
+          agent,
+          userId: adminUserId,
+          email: adminEmail,
+          organisation: {
             administrators: [
-              { userId: administratorId, email: administratorEmail },
+              {
+                optedInForCommunications: true,
+              },
             ],
-          } = await createOrganisation({
-            agent,
-            userId: adminUserId,
-            email: adminEmail,
-            organisation: {
-              administrators: [
-                {
-                  optedInForCommunications: true,
-                },
-              ],
-            },
-          }))
+          },
+        }))
 
-          poll = await createOrganisationPoll({
-            agent,
-            userId: adminUserId,
-            email: adminEmail,
-            organisationId,
-          })
-          ;({ id: pollId } = poll)
-          userId = faker.string.uuid()
+        const poll = await createOrganisationPoll({
+          agent,
+          userId: adminUserId,
+          email: adminEmail,
+          organisationId,
         })
+        ;({ id: pollId } = poll)
+        userId = faker.string.uuid()
+      })
 
-        test('Then it updates organisation administrator in brevo', async () => {
-          const payload: SimulationCreateInputDto = {
+      test('Then it updates organisation administrator in brevo', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+
+        mswServer.use(
+          brevoUpdateContact({
+            expectBody: {
+              email: administratorEmail,
+              listIds: [27],
+              attributes: {
+                USER_ID: administratorId,
+                IS_ORGANISATION_ADMIN: true,
+                ORGANISATION_NAME: organisationName,
+                ORGANISATION_SLUG: organisationSlug,
+                OPT_IN: true,
+                ORGANISATION_TYPE: organisationType,
+              },
+              updateEnabled: true,
+            },
+          })
+        )
+
+        await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+      })
+    })
+
+    describe('And database failure', () => {
+      const databaseError = new Error('Something went wrong')
+
+      beforeEach(() => {
+        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
+          databaseError
+        )
+      })
+
+      afterEach(() => {
+        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRestore()
+      })
+
+      test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
             id: faker.string.uuid(),
             situation,
             progression: 1,
             computedResults,
             extendedSituation,
-          }
-
-          mswServer.use(
-            brevoUpdateContact({
-              expectBody: {
-                email: administratorEmail,
-                listIds: [27],
-                attributes: {
-                  USER_ID: administratorId,
-                  IS_ORGANISATION_ADMIN: true,
-                  ORGANISATION_NAME: organisationName,
-                  ORGANISATION_SLUG: organisationSlug,
-                  OPT_IN: true,
-                  ORGANISATION_TYPE: organisationType,
-                },
-                updateEnabled: true,
-              },
-            })
-          )
-
-          await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .send(payload)
-            .expect(StatusCodes.CREATED)
-
-          await EventBus.flush()
-        })
+          })
+          .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
-      describe('And database failure', () => {
-        const databaseError = new Error('Something went wrong')
+      test('Then it logs the exception', async () => {
+        await agent
+          .post(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            id: faker.string.uuid(),
+            situation,
+            progression: 1,
+            computedResults,
+            extendedSituation,
+          })
+          .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
-        beforeEach(() => {
-          vi.spyOn(
-            prismaTransactionAdapter,
-            'transaction'
-          ).mockRejectedValueOnce(databaseError)
-        })
-
-        afterEach(() => {
-          vi.spyOn(prismaTransactionAdapter, 'transaction').mockRestore()
-        })
-
-        test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-            })
-            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
-        })
-
-        test('Then it logs the exception', async () => {
-          await agent
-            .post(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-            )
-            .send({
-              id: faker.string.uuid(),
-              situation,
-              progression: 1,
-              computedResults,
-              extendedSituation,
-            })
-            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
-
-          expect(logger.error).toHaveBeenCalledWith(
-            'Poll simulation creation failed',
-            databaseError
-          )
-        })
+        expect(logger.error).toHaveBeenCalledWith(
+          'Poll simulation creation failed',
+          databaseError
+        )
       })
     })
 
     describe('And logged in', () => {
-      let cookie: string
       let email: string
       let userId: string
 
       beforeEach(async () => {
-        ;({ cookie, email, userId } = await login({ agent }))
+        ;({ email, userId } = await login({ agent }))
       })
 
       describe('And poll does not exist', () => {
         test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
           await agent
             .post(
-              url
-                .replace(':userId', userId)
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
+              url.replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               id: faker.string.uuid(),
               situation,
@@ -1076,19 +643,18 @@ describe('Given a NGC user', () => {
       })
 
       describe('And poll does exist', () => {
-        let organisationId: string
         let organisationName: string
         let organisationSlug: string
         let organisationType: string
-        let administratorId: string
         let administratorEmail: string
+        let administratorId: string
         let pollId: string
         let pollSlug: string
-        let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
 
         beforeEach(async () => {
           const adminUserId = faker.string.uuid()
           const adminEmail = faker.internet.email()
+          let organisationId: string
           ;({
             id: organisationId,
             name: organisationName,
@@ -1103,7 +669,7 @@ describe('Given a NGC user', () => {
             email: adminEmail,
           }))
 
-          poll = await createOrganisationPoll({
+          const poll = await createOrganisationPoll({
             agent,
             userId: adminUserId,
             email: adminEmail,
@@ -1115,6 +681,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.CREATED} response with the created simulation`, async () => {
           const expected = {
             id: faker.string.uuid(),
+            model,
             situation,
             progression: 1,
             computedResults,
@@ -1128,22 +695,20 @@ describe('Given a NGC user', () => {
           mswServer.use(
             brevoSendEmail(),
             brevoUpdateContact(),
-
             brevoRemoveFromList(27)
           )
 
           const response = await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .set('cookie', cookie)
+            .post(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
+
+          await EventBus.flush()
 
           expect(response.body).toEqual({
             ...expected,
             date: expect.any(String),
-            model: 'FR-fr-0.0.0',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             actionChoices: {},
@@ -1173,6 +738,7 @@ describe('Given a NGC user', () => {
           const payload: SimulationCreateInputDto = {
             id: faker.string.uuid(),
             date: new Date(),
+            model,
             situation,
             progression: 1,
             computedResults,
@@ -1180,7 +746,6 @@ describe('Given a NGC user', () => {
             actionChoices: {
               myAction: true,
             },
-            // foldedSteps: ['myStep'], // Cannot do that with PG lite
             foldedSteps: [],
             additionalQuestionsAnswers: [
               {
@@ -1205,12 +770,12 @@ describe('Given a NGC user', () => {
           const {
             body: { id },
           } = await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .set('cookie', cookie)
+            .post(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
+
+          await EventBus.flush()
 
           const createdSimulation = await prisma.simulation.findUnique({
             where: {
@@ -1219,6 +784,7 @@ describe('Given a NGC user', () => {
             select: {
               id: true,
               date: true,
+              model: true,
               situation: true,
               foldedSteps: true,
               progression: true,
@@ -1282,16 +848,54 @@ describe('Given a NGC user', () => {
               },
             ],
             user: {
-              ...payload.user,
               id: userId,
               email,
             },
             verifiedUser: {
-              ...payload.user,
               id: userId,
               email,
             },
           })
+        })
+
+        test('Then it sends a creation email', async () => {
+          const payload: SimulationCreateInputDto = {
+            id: faker.string.uuid(),
+            model,
+            situation,
+            progression: 1,
+            computedResults,
+            extendedSituation,
+          }
+
+          mswServer.use(
+            brevoSendEmail({
+              expectBody: {
+                to: [
+                  {
+                    name: email,
+                    email,
+                  },
+                ],
+                templateId: 122,
+                params: {
+                  ORGANISATION_NAME: organisationName,
+                  DETAILED_VIEW_URL: `https://nosgestesclimat.fr/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
+                  SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                },
+              },
+            }),
+            brevoUpdateContact(),
+            brevoRemoveFromList(27)
+          )
+
+          await agent
+            .post(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId, email }))
+            .send(payload)
+            .expect(StatusCodes.CREATED)
+
+          await EventBus.flush()
         })
 
         test('Then it adds or updates contacts in brevo', async () => {
@@ -1316,10 +920,8 @@ describe('Given a NGC user', () => {
           )
 
           await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-            )
-            .set('cookie', cookie)
+            .post(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -1386,54 +988,52 @@ describe('Given a NGC user', () => {
           )
         })
 
-        test('Then it sends a creation email', async () => {
-          const payload: SimulationCreateInputDto = {
-            id: faker.string.uuid(),
-            situation,
-            progression: 1,
-            computedResults,
-            extendedSituation,
-          }
+        describe('And custom user origin (preprod)', () => {
+          test('Then it sends a creation email', async () => {
+            const payload: SimulationCreateInputDto = {
+              id: faker.string.uuid(),
+              model,
+              situation,
+              progression: 1,
+              computedResults,
+              extendedSituation,
+            }
 
-          mswServer.use(
-            brevoSendEmail({
-              expectBody: {
-                to: [
-                  {
-                    name: email,
-                    email,
+            mswServer.use(
+              brevoSendEmail({
+                expectBody: {
+                  to: [
+                    {
+                      name: email,
+                      email,
+                    },
+                  ],
+                  templateId: 122,
+                  params: {
+                    ORGANISATION_NAME: organisationName,
+                    DETAILED_VIEW_URL: `https://preprod.nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
+                    SIMULATION_URL: `https://preprod.nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
                   },
-                ],
-                templateId: 122,
-                params: {
-                  ORGANISATION_NAME: organisationName,
-                  DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                  SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
                 },
-              },
-            }),
-            brevoUpdateContact(),
-            brevoRemoveFromList(27)
-          )
-
-          await agent
-            .post(
-              url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
+              }),
+              brevoUpdateContact(),
+              brevoRemoveFromList(27)
             )
-            .set('cookie', cookie)
-            .send(payload)
-            .expect(StatusCodes.CREATED)
 
-          await EventBus.flush()
+            await agent
+              .post(url.replace(':pollIdOrSlug', pollId))
+              .set(authHeaders({ userId, email }))
+              .set('origin', 'https://preprod.nosgestesclimat.fr')
+              .send(payload)
+              .expect(StatusCodes.CREATED)
+
+            await EventBus.flush()
+          })
         })
 
         describe('And joining twice', () => {
-          let simulation: Awaited<
-            ReturnType<typeof createOrganisationPollSimulation>
-          >
-
           beforeEach(async () => {
-            simulation = await createOrganisationPollSimulation({
+            await createOrganisationPollSimulation({
               agent,
               pollId,
               userId,
@@ -1442,22 +1042,66 @@ describe('Given a NGC user', () => {
           })
 
           test('Then it does not send email twice', async () => {
-            const {
-              createdAt: _1,
-              updatedAt: _2,
-              polls: _3,
-              user: _4,
-              ...payload
-            } = simulation
+            const payload: SimulationCreateInputDto = {
+              id: faker.string.uuid(),
+              model,
+              situation,
+              progression: 1,
+              computedResults,
+              extendedSituation,
+            }
 
             mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
 
             await agent
-              .post(
-                url.replace(':userId', userId).replace(':pollIdOrSlug', pollId)
-              )
-              .set('cookie', cookie)
+              .post(url.replace(':pollIdOrSlug', pollId))
+              .set(authHeaders({ userId, email }))
               .send(payload)
+              .expect(StatusCodes.CREATED)
+
+            await EventBus.flush()
+          })
+        })
+
+        describe(`And ${Locales.en} locale`, () => {
+          test('Then it sends a creation email', async () => {
+            const payload: SimulationCreateInputDto = {
+              id: faker.string.uuid(),
+              model,
+              situation,
+              progression: 1,
+              computedResults,
+              extendedSituation,
+            }
+
+            mswServer.use(
+              brevoSendEmail({
+                expectBody: {
+                  to: [
+                    {
+                      name: email,
+                      email,
+                    },
+                  ],
+                  templateId: 123,
+                  params: {
+                    ORGANISATION_NAME: organisationName,
+                    DETAILED_VIEW_URL: `https://nosgestesclimat.fr/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
+                    SIMULATION_URL: `https://nosgestesclimat.fr/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                  },
+                },
+              }),
+              brevoUpdateContact(),
+              brevoRemoveFromList(27)
+            )
+
+            await agent
+              .post(url.replace(':pollIdOrSlug', pollId))
+              .set(authHeaders({ userId, email }))
+              .send(payload)
+              .query({
+                locale: Locales.en,
+              })
               .expect(StatusCodes.CREATED)
 
             await EventBus.flush()

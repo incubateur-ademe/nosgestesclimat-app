@@ -116,15 +116,34 @@ export const createSimulation = async ({
   user: PartialUser
 }) => {
   const verifiedUser = isVerifiedUser(user) ? user : undefined
-  const fullUser = await transaction((session) =>
-    fetchUser(
-      {
-        id: user.id,
-        select: defaultUserSelection,
-      },
-      { session }
+
+  let fullUser
+  // Case 1. The user is authentified
+  if (verifiedUser) {
+    fullUser = await transaction((session) =>
+      fetchUser(
+        {
+          id: user.id,
+          select: defaultUserSelection,
+        },
+        { session }
+      )
     )
-  )
+  }
+
+  // Case 2. Not authentified: upsert the unverified user account by its id
+  if (!fullUser) {
+    ;({ user: fullUser } = await transaction((session) =>
+      createOrUpdateUser(
+        {
+          id: user.id,
+          user: {},
+          select: defaultUserSelection,
+        },
+        { session }
+      )
+    ))
+  }
 
   const {
     simulation,
@@ -268,7 +287,7 @@ export const createPollSimulation = async ({
         createOrUpdateUser(
           {
             id: requestUser.id,
-            user: simulationDto.user ?? {},
+            user: {},
             select: defaultUserSelection,
           },
           { session }

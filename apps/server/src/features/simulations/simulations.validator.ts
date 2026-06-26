@@ -135,19 +135,6 @@ export type ExtendedSituationSchema = v.InferOutput<
   typeof ExtendedSituationSchema
 >
 
-const SimulationCreateUser = v.strictObject({
-  email: v.optional(
-    v.pipe(
-      v.string(),
-      v.email(),
-      v.transform((email) => email.toLocaleLowerCase())
-    )
-  ),
-  name: v.optional(v.string()),
-})
-
-export type SimulationCreateUser = v.InferOutput<typeof SimulationCreateUser>
-
 export const SimulationParticipantCreateDto = v.object({
   id: v.pipe(v.string(), v.uuid()),
   date: v.optional(
@@ -178,7 +165,6 @@ export type SimulationParticipantCreateInputDto = v.InferInput<
 
 const SimulationCreateDto = v.object({
   ...SimulationParticipantCreateDto.entries,
-  user: v.optional(SimulationCreateUser),
 })
 
 export type SimulationCreateDto = v.InferOutput<typeof SimulationCreateDto>

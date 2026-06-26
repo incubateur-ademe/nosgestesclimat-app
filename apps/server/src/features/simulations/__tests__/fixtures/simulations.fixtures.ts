@@ -36,11 +36,11 @@ type TestAgent = ReturnType<typeof supertest>
 
 export const CREATE_SIMULATION_ROUTE = '/simulations/v1'
 
-export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1/:userId'
+export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1'
 
 export const FETCH_USER_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
-export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:userId/:simulationId'
+export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
 const defaultModelVersion = modelPackage.version
   .match(/^(\d+\.\d+\.\d+)/)!
@@ -220,17 +220,23 @@ export const createSimulation = async ({
   agent,
   userId,
   cookie,
+  email,
+  name,
   simulation = {},
 }:
   | {
       agent: TestAgent
       userId?: string
+      email?: string
+      name?: string
       simulation?: Partial<SimulationCreateInputDto>
       cookie?: undefined
     }
   | {
       agent: TestAgent
       userId?: undefined
+      email?: string
+      name?: string
       simulation?: Partial<SimulationCreateInputDto>
       cookie?: string
     }) => {
@@ -241,21 +247,19 @@ export const createSimulation = async ({
   }
 
   userId = userId ?? faker.string.uuid()
-  const { user } = simulation
-  const payload: SimulationCreateInputDto = {
-    ...getSimulationPayload(simulation),
-    user,
-  }
+  const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
 
   // The internal API connects the simulation to an existing user (the proxy
   // creates it from the session). Tests target the API directly, so seed it.
+  // The user identity (id/email) is resolved from the session by the proxy and
+  // forwarded as headers; it is never part of the request body.
   await prisma.user.upsert({
     where: { id: userId },
-    create: { id: userId, name: payload.user?.name },
+    create: { id: userId, name },
     update: {},
   })
 
-  if (payload.user?.email || cookie) {
+  if (email || cookie) {
     mswServer.use(
       brevoUpdateContact(),
       brevoRemoveFromList(22, { invalid: true }),
@@ -269,7 +273,7 @@ export const createSimulation = async ({
 
   const request = agent
     .post(CREATE_SIMULATION_ROUTE)
-    .set(authHeaders({ userId, email: payload.user?.email }))
+    .set(authHeaders({ userId, email }))
 
   const response = await request.send(payload).expect(StatusCodes.CREATED)
 

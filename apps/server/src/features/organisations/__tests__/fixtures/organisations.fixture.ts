@@ -185,13 +185,11 @@ export const createOrganisationPollSimulation = async ({
   pollId: string
   simulation?: Partial<SimulationCreateInputDto>
 }) => {
-  const { user } = simulation
-  const payload: SimulationCreateInputDto = {
-    ...getSimulationPayload(simulation),
-    user,
-  }
+  const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
 
-  const contactEmail = email ?? payload.user?.email
+  // The user identity (id/email) is resolved from the session by the proxy and
+  // forwarded as headers; it is never part of the request body.
+  const contactEmail = email
 
   mswServer.use(
     brevoUpdateContact(),
