@@ -10,7 +10,6 @@ import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
 import { useDeleteGroup } from '@/hooks/groups/useDeleteGroup'
-import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
@@ -29,8 +28,6 @@ export default function OwnerAdminSection({ group }: Props) {
   })
 
   const [isPending, startTransition] = useTransition()
-
-  const { user } = useUser()
 
   const router = useRouter()
 
@@ -51,7 +48,6 @@ export default function OwnerAdminSection({ group }: Props) {
       try {
         await deleteUserOrGroupIfOwner({
           groupId: group.id,
-          userId: user.userId,
         })
 
         timeoutRef.current = setTimeout(() => {
