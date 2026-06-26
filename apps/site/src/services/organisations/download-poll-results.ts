@@ -14,15 +14,15 @@ const isExcelExport = (
   data: AcceptedExcelExportType | ExcelExportType
 ): data is ExcelExportType => 'url' in data
 
-export const downloadPollResults = ({
+export async function downloadPollResults({
   poll: {
     slug: pollIdOrSlug,
     organisation: { slug: orgaIdOrSlug },
   },
 }: {
   poll: PublicOrganisationPoll
-}): Promise<ExcelExportType> =>
-  new Promise<ExcelExportType>((resolve, reject) => {
+}): Promise<ExcelExportType> {
+  return new Promise<ExcelExportType>((resolve, reject) => {
     const performRequest = async (jobId?: string) => {
       try {
         const path = `${ORGANISATION_URL}/${orgaIdOrSlug}/polls/${pollIdOrSlug}/simulations/download`
@@ -45,3 +45,4 @@ export const downloadPollResults = ({
 
     return performRequest()
   })
+}

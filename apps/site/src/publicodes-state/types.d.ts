@@ -38,7 +38,6 @@ export interface RegionFromGeolocation {
 export type User = UserSession & {
   name?: string
   ageRange?: AgeRange
-  pendingVerification?: { expirationDate: Date; email: string }
 }
 
 export type Tutorials = Record<string, boolean>

@@ -44,7 +44,12 @@ export async function fetchServer<T = unknown>(
 
   const effectiveSession = session ?? (await getUserSession())
   if (effectiveSession) {
+    reqHeaders['x-user-id'] = effectiveSession.id
+    if (effectiveSession.isAuth) {
+      reqHeaders['x-user-email'] = effectiveSession.email
+    }
     reqHeaders['x-session'] = JSON.stringify(effectiveSession)
+    reqHeaders['x-internal-key'] = process.env.INTERNAL_API_KEY
   }
 
   const response = await fetch(url, {
