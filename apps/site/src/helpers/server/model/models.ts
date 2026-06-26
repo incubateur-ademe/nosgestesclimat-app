@@ -18,7 +18,7 @@ import {
 import { migrateSituation } from '@publicodes/tools/migration'
 import { captureException } from '@sentry/nextjs'
 import { fetchServer } from '../fetchServer'
-import type { Simulation } from './simulations'
+import type { Simulation, SimulationMode } from './simulations'
 
 export { supportedRegions }
 
@@ -37,7 +37,7 @@ export function getCurrentModel({
   locale,
   PRNumber,
 }: {
-  mode?: 'scolaire' | 'standard'
+  mode?: SimulationMode
   userRegion?: Region
   PRNumber?: string
   locale: ModelLocale

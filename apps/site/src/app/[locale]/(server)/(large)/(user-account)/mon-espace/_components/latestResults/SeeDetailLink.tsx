@@ -6,7 +6,7 @@ import {
   baseClassNames,
   colorClassNames,
   sizeClassNames,
-} from '@/design-system/buttons/Button'
+} from '@/design-system/buttons/buttonStyles'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 

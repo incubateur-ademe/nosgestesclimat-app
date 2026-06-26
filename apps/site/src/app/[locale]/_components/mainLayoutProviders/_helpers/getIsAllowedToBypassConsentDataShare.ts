@@ -1,21 +1,10 @@
 import { verifyIfIntegratorBypassRights } from './verifyIntegratorBypassRights'
 
-export const getIsAllowedToBypassConsentDataShare = () => {
-  if (typeof window === 'undefined') return false
+export const getIsAllowedToBypassConsentDataShare = (): Promise<boolean> => {
+  if (typeof window === 'undefined') return Promise.resolve(false)
 
-  let windowParentLocation
+  const bypasskey =
+    new URLSearchParams(window.location.search).get('bypass_key') ?? ''
 
-  try {
-    windowParentLocation = window.parent.location
-  } catch {
-    windowParentLocation = undefined
-  }
-
-  const integratorUrl = new URL(
-    window.location != windowParentLocation
-      ? (document.referrer || 'about:blank')
-      : (document.location.href || 'about:blank')
-  ).origin
-
-  return verifyIfIntegratorBypassRights(integratorUrl)
+  return verifyIfIntegratorBypassRights(bypasskey)
 }

@@ -1,19 +1,12 @@
 'use client'
 
 import { getIsFrenchRegion } from '@/helpers/regions/getIsFrenchRegion'
-import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { getIsIframe } from '@/utils/getIsIframe'
-import { createContext, useEffect, useState } from 'react'
-import { getIsAllowedToBypassConsentDataShare } from './_helpers/getIsAllowedToBypassConsentDataShare'
+import { createContext, useEffect } from 'react'
+import { useBypassConsentDataShare } from './_hooks/useBypassConsentDataShare'
+import { useIframeStorageParams } from './_hooks/useIframeStorageParams'
 import { useStoragePermissions } from './_hooks/useStoragePermissions'
 import StorageAccessOverlay from './iframeOptionsContext/StorageAccessOverlay'
-
-const STORAGE_KEYS = {
-  IFRAME_SHARE_DATA: 'ngc-iframe-share-data',
-  IFRAME_ONLY_SIMULATION: 'ngc-iframe-only-simulation',
-  IFRAME_REGION: 'ngc-iframe-region',
-  IFRAME_LANG: 'ngc-iframe-lang',
-} as const
 
 export const BODY_ID = 'ngc-body'
 
@@ -32,66 +25,20 @@ export const IframeOptionsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const searchParams = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
-  )
-
   // Detect iframe mode using window check
   const isIframe = getIsIframe()
 
   // Special case : Safari doesn't handle cookies in iframes
-  const { needPermission, askForPermission } = useStoragePermissions()
+  const { needPermission, askForPermission, hasError } = useStoragePermissions()
 
-  const [isIframeShareData, setIsIframeShareData] = useState(() => {
-    if (!isIframe) return false
-    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_SHARE_DATA) === 'true'
-  })
-  const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(() => {
-    if (!isIframe) return false
-    return (
-      safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION) === 'true'
-    )
-  })
-  const [iframeLang, setIframeLang] = useState<string | null>(() => {
-    if (!isIframe) return null
-    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
-  })
-  const [iframeRegion, setIframeRegion] = useState<string | null>(() => {
-    if (!isIframe) return null
-    return safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_REGION)
-  })
+  const {
+    isIframeShareData,
+    isIframeOnlySimulation,
+    iframeLang,
+    iframeRegion,
+  } = useIframeStorageParams(isIframe)
 
-  // Read iframe parameters from URL and persist to sessionStorage
-  useEffect(() => {
-    if (!isIframe) return
-
-    const urlShareData = searchParams.get('shareData') === 'true'
-    if (urlShareData) {
-      setIsIframeShareData(true)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_SHARE_DATA, 'true')
-    }
-
-    const urlOnlySimulation = searchParams.get('onlySimulation') === 'true'
-    if (urlOnlySimulation) {
-      setIsIframeOnlySimulation(true)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_ONLY_SIMULATION, 'true')
-    }
-
-    const urlRegion = searchParams.get('region')
-    if (urlRegion) {
-      setIframeRegion(urlRegion)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_REGION, urlRegion)
-    }
-
-    const urlLang = searchParams.get('lang')
-    if (urlLang) {
-      setIframeLang(urlLang)
-      safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, urlLang)
-    }
-  }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const isAllowedToBypassConsentDataShare =
-    getIsAllowedToBypassConsentDataShare()
+  const { isAllowedToBypassConsentDataShare } = useBypassConsentDataShare()
 
   // Add body classes for iframe styling
   useEffect(() => {
@@ -124,7 +71,10 @@ export const IframeOptionsProvider = ({
         isFrenchRegion,
       }}>
       {isIframe && needPermission ? (
-        <StorageAccessOverlay onAskPermission={askForPermission} />
+        <StorageAccessOverlay
+          onAskPermission={askForPermission}
+          hasError={hasError}
+        />
       ) : (
         children
       )}

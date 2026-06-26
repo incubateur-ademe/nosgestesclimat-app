@@ -509,9 +509,13 @@ const redirects = [
     destination: '/',
     permanent: true,
   },
-
   {
     source: '/partage',
+    destination: '/',
+    permanent: true,
+  },
+  {
+    source: '/personas',
     destination: '/',
     permanent: true,
   },

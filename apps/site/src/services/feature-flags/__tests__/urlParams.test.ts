@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('../flags', () => ({
   FLAGS: {
     'actions-v2': { kind: 'boolean' },
-    'mode-scolaire': { kind: 'boolean' },
     variant: { kind: 'variant', variants: ['control', 'test'] },
   },
 }))

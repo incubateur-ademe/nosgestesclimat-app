@@ -10,7 +10,7 @@ import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 
 interface Props {
   group: Group
@@ -21,6 +21,8 @@ export default function ParticipantAdminSection({ group }: Props) {
 
   const { mutateAsync: removePartipant, isSuccess } = useRemoveParticipant()
 
+  const [isPending, startTransition] = useTransition()
+
   const {
     user: { userId },
   } = useUser()
@@ -29,24 +31,27 @@ export default function ParticipantAdminSection({ group }: Props) {
 
   const timeoutRef = useRef<NodeJS.Timeout>(undefined)
 
-  async function handleDelete() {
-    const participant = group.participants.find((p) => p.userId === userId)
+  function handleDelete() {
+    // Use startTransition instead of isPending prop to handle timeout
+    startTransition(async () => {
+      const participant = group.participants.find((p) => p.userId === userId)
 
-    if (!participant) return
+      if (!participant) return
 
-    try {
-      await removePartipant({
-        participantId: participant.id,
-        groupId: group.id,
-        userId,
-      })
+      try {
+        await removePartipant({
+          participantId: participant.id,
+          groupId: group.id,
+          userId,
+        })
 
-      timeoutRef.current = setTimeout(() => {
-        router.push(MON_ESPACE_GROUPS_PATH)
-      }, 1750)
-    } catch (error) {
-      captureException(error)
-    }
+        timeoutRef.current = setTimeout(() => {
+          router.push(MON_ESPACE_GROUPS_PATH)
+        }, 1750)
+      } catch (error) {
+        captureException(error)
+      }
+    })
   }
 
   useEffect(() => {
@@ -80,13 +85,15 @@ export default function ParticipantAdminSection({ group }: Props) {
 
           <div className="flex gap-4">
             <Button
+              disabled={isPending}
+              color="secondary"
               onClick={() => setIsConfirming(false)}
-              size="sm"
-              color="secondary">
+              size="sm">
               Annuler
             </Button>
 
             <Button
+              loading={isPending}
               onClick={handleDelete}
               size="sm"
               color="primary"

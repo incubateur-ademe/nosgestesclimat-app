@@ -10,16 +10,12 @@ import { useLocale } from '../useLocale'
 import { type PendingVerification } from './usePendingVerification'
 
 export const enum CREATE_VERIFICATION_CODE_ERROR {
-  SIGNIN_USER_DOES_NOT_EXIST = 'User does not exist',
-  SIGNUP_USER_ALREADY_EXISTS = 'User already exists',
   UNKNOWN_ERROR = 'An unknown error occurred',
 }
 
 export function useCreateVerificationCode({
-  mode,
   onComplete,
 }: {
-  mode?: AuthenticationMode
   onComplete?: (pendingVerification: PendingVerification) => void
 } = {}) {
   const locale = useLocale()
@@ -30,7 +26,6 @@ export function useCreateVerificationCode({
   } = useMutation({
     mutationFn: ({
       email,
-      mode,
     }: {
       email: string
 
@@ -38,7 +33,7 @@ export function useCreateVerificationCode({
     }) =>
       axios
         .post(
-          `${VERIFICATION_CODE_URL}${mode ? `?mode=${mode}` : ''}`,
+          VERIFICATION_CODE_URL,
           {
             email,
           },
@@ -62,27 +57,16 @@ export function useCreateVerificationCode({
 
         const { expirationDate } = await postVerificationCode({
           email,
-          mode,
         })
 
+        safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
         onComplete?.({ email, expirationDate })
-      } catch (error) {
-        const errorMessage =
-          error && error instanceof AxiosError && error.response?.data
-        // Save e-mail value attempt in the session storage
-        if (
-          errorMessage ===
-            CREATE_VERIFICATION_CODE_ERROR.SIGNIN_USER_DOES_NOT_EXIST ||
-          errorMessage ===
-            CREATE_VERIFICATION_CODE_ERROR.SIGNUP_USER_ALREADY_EXISTS
-        ) {
-          safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
-        }
+      } catch {
         // Error is handled by the useCreateVerificationCode hook
         return
       }
     },
-    [mode, onComplete, postVerificationCode]
+    [onComplete, postVerificationCode]
   )
 
   return {

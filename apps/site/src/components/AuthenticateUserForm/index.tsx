@@ -1,7 +1,10 @@
 'use client'
 
 import type { AuthenticationMode } from '@/types/authentication'
+import type { UseMutationResult } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { useCallback, useState, type ReactNode } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import {
@@ -17,9 +20,6 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-import type { UseMutationResult } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
 import type { ButtonColor } from '../../design-system/buttons/Button'
 import Trans from '../translation/trans/TransClient'
 import SendVerificationCodeForm from './SendVerificationCodeForm'
@@ -141,7 +141,6 @@ export default function AuthenticateUserForm({
       buttonLabel={buttonLabel}
       additionnalButton={additionnalButton}
       buttonColor={buttonColor}
-      mode={mode}
       onCodeSent={(pendingVerification) => {
         registerVerification(pendingVerification)
         trackMatomoEvent__deprecated(signinTrackEvent(mode))

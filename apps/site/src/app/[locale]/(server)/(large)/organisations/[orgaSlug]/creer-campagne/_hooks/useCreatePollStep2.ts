@@ -1,3 +1,4 @@
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import { useCreatePoll } from '@/hooks/organisations/polls/useCreatePoll'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -10,11 +11,11 @@ import {
 
 interface UseCreatePollStep2Props {
   organisationSlug: string
-  revalidatePath: (slug: string) => void
+  revalidatePath: (slug: string) => Promise<void>
 }
 
 interface Step2Inputs {
-  mode: 'standard' | 'scolaire'
+  mode: SimulationMode
 }
 
 /**
@@ -82,7 +83,7 @@ export function useCreatePollStep2({
 
       const pollCreated = await createPoll(payload)
 
-      revalidatePath(organisationSlug)
+      void revalidatePath(organisationSlug)
 
       clearDraft()
 
