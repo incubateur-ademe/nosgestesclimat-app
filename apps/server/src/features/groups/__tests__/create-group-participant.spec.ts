@@ -9,6 +9,7 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
@@ -32,14 +33,26 @@ describe('Given a NGC user', () => {
     await Promise.all([prisma.user.deleteMany(), prisma.group.deleteMany()])
   })
 
+  describe('When not authenticated', () => {
+    test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+      await agent
+        .post(url.replace(':groupId', faker.database.mongodbObjectId()))
+        .send({
+          name: faker.person.fullName(),
+          simulation: getSimulationPayload(),
+        })
+        .expect(StatusCodes.UNAUTHORIZED)
+    })
+  })
+
   describe("When trying to join another administrator's group", () => {
     describe('And group does not exist', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
         await agent
           .post(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.person.fullName(),
-            userId: faker.string.uuid(),
             simulation: getSimulationPayload(),
           })
           .expect(StatusCodes.NOT_FOUND)
@@ -60,33 +73,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url.replace(':groupId', groupId))
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And invalid email', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(url.replace(':groupId', groupId))
-            .send({
-              name: faker.person.fullName(),
-              email: 'Je ne donne jamais mon email',
-              userId: faker.string.uuid(),
-              simulation: getSimulationPayload(),
-            })
-            .expect(StatusCodes.BAD_REQUEST)
-        })
-      })
-
-      describe('And invalid user id', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .post(url.replace(':groupId', groupId))
-            .send({
-              name: faker.person.fullName(),
-              userId: faker.string.alpha(34),
-              simulation: getSimulationPayload(),
-            })
+            .set(authHeaders({ userId: faker.string.uuid() }))
             .expect(StatusCodes.BAD_REQUEST)
         })
       })
@@ -95,8 +82,8 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
             .send({
-              id: faker.string.uuid(),
               name: faker.person.fullName(),
               simulation: {
                 ...getSimulationPayload(),
@@ -111,8 +98,8 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
             .send({
-              id: faker.string.uuid(),
               name: faker.person.fullName(),
               simulation: {
                 ...getSimulationPayload(),
@@ -127,8 +114,8 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
             .send({
-              id: faker.string.uuid(),
               name: faker.person.fullName(),
               simulation: {
                 ...getSimulationPayload(),
@@ -140,20 +127,22 @@ describe('Given a NGC user', () => {
       })
 
       test(`Then it returns a ${StatusCodes.CREATED} response with created participant`, async () => {
+        const userId = faker.string.uuid()
         const payload: ParticipantInputCreateDto = {
           name: faker.person.fullName(),
-          userId: faker.string.uuid(),
           simulation: getSimulationPayload(),
         }
 
         const response = await agent
           .post(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
         expect(response.body).toEqual({
           id: expect.any(String),
           ...payload,
+          userId,
           simulation: {
             ...payload.simulation,
             date: expect.any(String),
@@ -171,16 +160,15 @@ describe('Given a NGC user', () => {
       })
 
       test('Then it stores a participant in database', async () => {
+        const userId = faker.string.uuid()
         const payload: ParticipantInputCreateDto = {
-          userId: faker.string.uuid(),
           name: faker.person.fullName(),
           simulation: getSimulationPayload(),
         }
 
-        mswServer.use(brevoSendEmail(), brevoUpdateContact())
-
         await agent
           .post(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -188,7 +176,7 @@ describe('Given a NGC user', () => {
           where: {
             groupId_userId: {
               groupId,
-              userId: payload.userId,
+              userId,
             },
           },
           select: {
@@ -204,7 +192,7 @@ describe('Given a NGC user', () => {
         expect(createdParticipant).toEqual({
           id: expect.any(String),
           user: {
-            id: payload.userId,
+            id: userId,
             name: payload.name,
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
@@ -219,17 +207,15 @@ describe('Given a NGC user', () => {
       })
 
       test('Then it stores the participant simulation in database', async () => {
+        const userId = faker.string.uuid()
         const payload: ParticipantInputCreateDto = {
-          userId: faker.string.uuid(),
           name: faker.person.fullName(),
-          email: faker.internet.email().toLocaleLowerCase(),
           simulation: getSimulationPayload(),
         }
 
-        mswServer.use(brevoSendEmail(), brevoUpdateContact())
-
         await agent
           .post(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -272,7 +258,7 @@ describe('Given a NGC user', () => {
           ],
           user: {
             name: payload.name,
-            id: payload.userId,
+            id: userId,
             email: null,
           },
         })
@@ -295,20 +281,22 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
           await agent
             .post(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
             .send({
               name: faker.person.fullName(),
-              userId: faker.string.uuid(),
               simulation: getSimulationPayload(),
             })
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
         })
 
         test('Then it logs the exception', async () => {
-          await agent.post(url.replace(':groupId', groupId)).send({
-            name: faker.person.fullName(),
-            userId: faker.string.uuid(),
-            simulation: getSimulationPayload(),
-          })
+          await agent
+            .post(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
+            .send({
+              name: faker.person.fullName(),
+              simulation: getSimulationPayload(),
+            })
 
           expect(logger.error).toHaveBeenCalledWith(
             'Participant creation failed',
@@ -351,7 +339,6 @@ describe('Given a NGC user', () => {
       test('Then it updates group administrator in brevo', async () => {
         const payload: ParticipantInputCreateDto = {
           name: faker.person.fullName(),
-          userId: faker.string.uuid(),
           simulation: getSimulationPayload(),
         }
 
@@ -374,6 +361,7 @@ describe('Given a NGC user', () => {
 
         await agent
           .post(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -401,12 +389,12 @@ describe('Given a NGC user', () => {
       test('Then it does not update group administrator in brevo', async () => {
         const payload: ParticipantInputCreateDto = {
           name: faker.person.fullName(),
-          userId: faker.string.uuid(),
           simulation: getSimulationPayload(),
         }
 
         await agent
           .post(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send(payload)
           .expect(StatusCodes.CREATED)
       })
@@ -430,19 +418,20 @@ describe('Given a NGC user', () => {
 
     test(`Then it returns a ${StatusCodes.CREATED} response with created participant`, async () => {
       const payload: ParticipantInputCreateDto = {
-        userId,
         name: userName,
         simulation: getSimulationPayload(),
       }
 
       const response = await agent
         .post(url.replace(':groupId', groupId))
+        .set(authHeaders({ userId }))
         .send(payload)
         .expect(StatusCodes.CREATED)
 
       expect(response.body).toEqual({
         id: expect.any(String),
         ...payload,
+        userId,
         simulation: {
           ...payload.simulation,
           date: expect.any(String),
@@ -493,7 +482,6 @@ describe('Given a NGC user', () => {
 
     test(`Then it returns a ${StatusCodes.CREATED} response with created participant`, async () => {
       const payload: ParticipantInputCreateDto = {
-        userId: administratorId,
         name: administratorName,
         simulation: getSimulationPayload(),
       }
@@ -502,12 +490,16 @@ describe('Given a NGC user', () => {
 
       const response = await agent
         .post(url.replace(':groupId', groupId))
+        .set(
+          authHeaders({ userId: administratorId, email: administratorEmail })
+        )
         .send(payload)
         .expect(StatusCodes.CREATED)
 
       expect(response.body).toEqual({
         id: expect.any(String),
         ...payload,
+        userId: administratorId,
         simulation: {
           ...payload.simulation,
           date: expect.any(String),
@@ -529,7 +521,6 @@ describe('Given a NGC user', () => {
       const simulation = getSimulationPayload({ date })
       const { computedResults } = simulation
       const payload: ParticipantInputCreateDto = {
-        userId: administratorId,
         name: administratorName,
         simulation,
       }
@@ -545,6 +536,9 @@ describe('Given a NGC user', () => {
 
       await agent
         .post(url.replace(':groupId', groupId))
+        .set(
+          authHeaders({ userId: administratorId, email: administratorEmail })
+        )
         .send(payload)
         .expect(StatusCodes.CREATED)
 
@@ -613,7 +607,6 @@ describe('Given a NGC user', () => {
 
     test('Then it sends a creation email', async () => {
       const payload: ParticipantInputCreateDto = {
-        userId: administratorId,
         name: administratorName,
         simulation: getSimulationPayload(),
       }
@@ -642,6 +635,9 @@ describe('Given a NGC user', () => {
 
       await agent
         .post(url.replace(':groupId', groupId))
+        .set(
+          authHeaders({ userId: administratorId, email: administratorEmail })
+        )
         .send(payload)
         .expect(StatusCodes.CREATED)
 

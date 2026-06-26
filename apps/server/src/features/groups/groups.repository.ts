@@ -139,9 +139,12 @@ export const updateUserGroup = (
 
 export const createParticipantAndUser = async (
   { groupId }: GroupParams,
-  { userId, name, simulation: simulationDto }: ParticipantCreateDto,
+  { name, simulation: simulationDto }: ParticipantCreateDto,
+  { user }: { user: PartialUser },
   { session }: { session: Session }
 ) => {
+  const { id: userId } = user
+
   const existingParticipant = await session.groupParticipant.findUnique({
     where: {
       groupId_userId: {

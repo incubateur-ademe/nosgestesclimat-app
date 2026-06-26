@@ -103,29 +103,34 @@ router
  */
 router
   .route('/v1/:groupId/participants')
-  .post(validateRequest(ParticipantCreateValidator), async (req, res) => {
-    try {
-      const participant = await createParticipant({
-        params: req.params,
-        origin: req.get('origin') || config.app.origin,
-        participantDto: req.body,
-      })
+  .post(
+    authentificationMiddleware(),
+    validateRequest(ParticipantCreateValidator),
+    async (req, res) => {
+      try {
+        const participant = await createParticipant({
+          params: req.params,
+          origin: req.get('origin') || config.app.origin,
+          participantDto: req.body,
+          user: req.user!,
+        })
 
-      return res.status(StatusCodes.CREATED).json(participant)
-    } catch (err) {
-      if (err instanceof ImmutableSimulationException) {
-        return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        return res.status(StatusCodes.CREATED).json(participant)
+      } catch (err) {
+        if (err instanceof ImmutableSimulationException) {
+          return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        }
+
+        if (err instanceof EntityNotFoundException) {
+          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        }
+
+        logger.error('Participant creation failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      if (err instanceof EntityNotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-      }
-
-      logger.error('Participant creation failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 /**
  * Removes a participant from a group (participant leaves)

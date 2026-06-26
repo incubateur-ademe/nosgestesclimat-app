@@ -82,20 +82,23 @@ export const joinGroup = async ({
   groupId,
 }: {
   agent: TestAgent
-  participant?: Partial<ParticipantInputCreateDto>
+  participant?: Partial<ParticipantInputCreateDto> & {
+    userId?: string
+    email?: string
+  }
   groupId: string
 }) => {
+  const participantUserId = userId || faker.string.uuid()
+
   const payload: ParticipantInputCreateDto = {
-    userId: userId || faker.string.uuid(),
     name: name || faker.person.fullName(),
     simulation: simulation || getSimulationPayload(),
-    email,
   }
 
   const [existingUser, group, existingParticipant] = await Promise.all([
     prisma.user.findFirst({
       where: {
-        id: payload.userId,
+        id: participantUserId,
       },
       select: {
         email: true,
@@ -163,6 +166,7 @@ export const joinGroup = async ({
 
   const response = await agent
     .post(CREATE_PARTICIPANT_ROUTE.replace(':groupId', groupId))
+    .set(authHeaders({ userId: participantUserId, email }))
     .send(payload)
     .expect(StatusCodes.CREATED)
 

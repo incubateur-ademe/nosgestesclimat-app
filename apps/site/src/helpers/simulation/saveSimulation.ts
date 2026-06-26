@@ -29,7 +29,6 @@ export async function saveSimulation({
     return updateGroupParticipant({
       groupId: groups.at(-1)!.id,
       simulation,
-      userId,
       name,
     }).then((response) => response.data.simulation as Simulation)
   }

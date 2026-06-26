@@ -187,18 +187,20 @@ export const createParticipant = async ({
   origin,
   params,
   participantDto,
+  user,
 }: {
   origin: string
   params: GroupParams
   participantDto: ParticipantCreateDto
+  user: PartialUser
 }) => {
   try {
     const { participant, created, simulationCreated, simulationUpdated } =
       await transaction((session) =>
-        createParticipantAndUser(params, participantDto, { session })
+        createParticipantAndUser(params, participantDto, { user }, { session })
       )
     const {
-      user,
+      user: participantUser,
       group,
       simulation,
       group: { participants },
@@ -206,7 +208,7 @@ export const createParticipant = async ({
     const administrator = group.administrator!.user
 
     const groupUpdatedEvent = new GroupUpdatedEvent({
-      participantUser: user,
+      participantUser,
       administrator,
       participants,
     })
@@ -220,7 +222,7 @@ export const createParticipant = async ({
       simulation,
       origin,
       group,
-      user,
+      user: participantUser,
     })
 
     EventBus.emit(groupUpdatedEvent).emit(simulationUpsertedEvent)
@@ -229,7 +231,7 @@ export const createParticipant = async ({
 
     await EventBus.once(...events)
 
-    return participantToDto(participant, participantDto.userId)
+    return participantToDto(participant, user.id)
   } catch (e) {
     if (isPrismaErrorForeignKeyConstraintFailed(e)) {
       throw new EntityNotFoundException('Group not found')

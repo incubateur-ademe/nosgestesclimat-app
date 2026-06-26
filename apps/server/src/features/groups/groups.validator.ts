@@ -32,18 +32,6 @@ export type GroupCreateParticipant = v.InferOutput<
   typeof GroupCreateParticipant
 >
 
-const GroupCreateUser = v.strictObject({
-  userId: v.pipe(v.string(), v.uuid()),
-  email: v.optional(
-    v.pipe(
-      v.string(),
-      v.email(),
-      v.transform((email) => email.toLocaleLowerCase())
-    )
-  ),
-  name: v.string(),
-})
-
 /**
  * Administrator identity (id and email) is derived from the authenticated user
  * so it cannot be spoofed through the request body. Only the display name is
@@ -86,8 +74,13 @@ export const GroupUpdateValidator = {
   query: LocaleQuery,
 }
 
+/**
+ * Participant identity (id and email) is derived from the authenticated user
+ * so it cannot be spoofed through the request body. Only the display name is
+ * accepted from the client.
+ */
 const ParticipantCreateDto = v.strictObject({
-  ...GroupCreateUser.entries,
+  name: v.string(),
   ...GroupCreateParticipant.entries,
 })
 

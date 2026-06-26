@@ -28,7 +28,7 @@ export default function UpdateSimulationUsed({ group }: Props) {
   >(undefined)
 
   const {
-    user: { userId, email },
+    user: { userId },
     simulations,
   } = useUser()
 
@@ -64,9 +64,7 @@ export default function UpdateSimulationUsed({ group }: Props) {
       try {
         await updateGroupParticipantAction({
           groupId: group.id,
-          email,
           simulation: latestSimulation,
-          userId,
           name: group.participants.find((p) => p.userId === userId)?.name ?? '',
         })
 

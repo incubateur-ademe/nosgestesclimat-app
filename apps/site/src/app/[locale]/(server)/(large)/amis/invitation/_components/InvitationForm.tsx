@@ -49,7 +49,6 @@ export default function InvitationForm({
       await updateGroupParticipant({
         groupId: group.id,
         simulation: currentSimulation,
-        userId: user.userId,
         name: guestName,
       })
 
