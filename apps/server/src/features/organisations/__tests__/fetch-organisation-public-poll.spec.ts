@@ -40,10 +40,10 @@ describe('Given a NGC user', () => {
 
   describe('When fetching a public organisation poll', () => {
     describe('And no authentication', () => {
-      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+      test(`Then it does not block the request and returns a ${StatusCodes.NOT_FOUND} error for an unknown poll`, async () => {
         await agent
           .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
-          .expect(StatusCodes.UNAUTHORIZED)
+          .expect(StatusCodes.NOT_FOUND)
       })
     })
 
@@ -125,6 +125,23 @@ describe('Given a NGC user', () => {
           const response = await agent
             .get(url.replace(':pollIdOrSlug', pollId))
             .set(authHeaders({ userId: faker.string.uuid() }))
+            .expect(StatusCodes.OK)
+
+          expect(response.body).toEqual({
+            ...poll,
+            organisation: {
+              id: organisationId,
+              slug: organisationSlug,
+              name: organisationName,
+            },
+          })
+        })
+      })
+
+      describe('And the user is not authenticated', () => {
+        test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
+          const response = await agent
+            .get(url.replace(':pollIdOrSlug', pollId))
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual({

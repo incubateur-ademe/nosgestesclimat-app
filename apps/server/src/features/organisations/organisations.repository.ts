@@ -331,10 +331,7 @@ type SimulationsInfo = {
 )
 
 const fetchPollSimulationsInfo = async (
-  {
-    poll: { id },
-    user: { id: userId },
-  }: { poll: { id: string }; user: PartialUser },
+  { poll: { id }, user }: { poll: { id: string }; user?: PartialUser },
   { session }: { session: Session }
 ): Promise<SimulationsInfo> => {
   const [count, finished, userSimulation] = await Promise.all([
@@ -351,29 +348,31 @@ const fetchPollSimulationsInfo = async (
         },
       },
     }),
-    session.simulationPoll.findFirst({
-      where: {
-        pollId: id,
-        simulation: {
-          user: {
-            id: userId,
+    user
+      ? session.simulationPoll.findFirst({
+          where: {
+            pollId: id,
+            simulation: {
+              user: {
+                id: user.id,
+              },
+            },
           },
-        },
-      },
-      select: {
-        simulation: {
           select: {
-            computedResults: true,
-            progression: true,
+            simulation: {
+              select: {
+                computedResults: true,
+                progression: true,
+              },
+            },
           },
-        },
-      },
-      orderBy: {
-        simulation: {
-          createdAt: 'desc',
-        },
-      },
-    }),
+          orderBy: {
+            simulation: {
+              createdAt: 'desc',
+            },
+          },
+        })
+      : null,
   ])
 
   const userComputedResults = v.safeParse(
@@ -655,7 +654,7 @@ export const fetchOrganisationPoll = async (
 }
 
 export const fetchOrganisationPublicPoll = async (
-  { pollIdOrSlug, user }: PublicPollParams & { user: PartialUser },
+  { pollIdOrSlug, user }: PublicPollParams & { user?: PartialUser },
   { session }: { session: Session }
 ) => {
   const { organisation, ...poll } = await session.poll.findFirstOrThrow({

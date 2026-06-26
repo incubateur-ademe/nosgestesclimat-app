@@ -446,13 +446,13 @@ router
 router
   .route('/v1/public-polls/:pollIdOrSlug')
   .get(
-    authentificationMiddleware(),
+    authentificationMiddleware({ passIfUnauthorized: true }),
     validateRequest(OrganisationPublicPollFetchValidator),
     async (req, res) => {
       try {
         const poll = await fetchPublicPoll({
           params: req.params,
-          user: req.user!,
+          user: req.user,
         })
 
         return res.status(StatusCodes.OK).json(poll)

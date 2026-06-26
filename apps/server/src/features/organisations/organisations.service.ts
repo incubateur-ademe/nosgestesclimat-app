@@ -455,7 +455,7 @@ export const fetchPublicPoll = async ({
   user,
 }: {
   params: PublicPollParams
-  user: PartialUser
+  user?: PartialUser
 }) => {
   try {
     const { poll, organisation, simulationsInfos } = await transaction(
