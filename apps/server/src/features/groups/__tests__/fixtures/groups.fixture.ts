@@ -22,7 +22,7 @@ type TestAgent = ReturnType<typeof supertest>
 
 export const CREATE_GROUP_ROUTE = '/groups/v1'
 
-export const UPDATE_USER_GROUP_ROUTE = '/groups/v1/:userId/:groupId'
+export const UPDATE_USER_GROUP_ROUTE = '/groups/v1/:groupId'
 
 export const CREATE_PARTICIPANT_ROUTE = '/groups/v1/:groupId/participants'
 
