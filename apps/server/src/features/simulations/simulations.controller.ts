@@ -10,10 +10,6 @@ import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import {
-  COOKIE_NAME,
-  getCookieOptions,
-} from '../authentication/authentication.service.ts'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { programComputation } from './handlers/program-computation.ts'
 import { publishRedisEvent } from './handlers/publish-redis-event.ts'
@@ -45,10 +41,13 @@ EventBus.on(SimulationUpsertedEvent, programComputation)
 /**
  * Upserts a simulation
  */
-router.route('/v1/:userId').post(
-  authentificationMiddleware<unknown, unknown, unknown, SimulationCreateQuery>({
-    passIfUnauthorized: true,
-  }),
+router.route('/v1').post(
+  authentificationMiddleware<
+    unknown,
+    unknown,
+    unknown,
+    SimulationCreateQuery
+  >(),
   rateLimitSameRequestMiddleware({
     ttlInSeconds: 30,
     hashRequest: ({ method, url, query }) => {
@@ -62,22 +61,21 @@ router.route('/v1/:userId').post(
   async (req, res) => {
     try {
       const origin = req.get('origin') || config.app.origin
-      const { simulation, token } = await createSimulation({
+      const { simulation } = await createSimulation({
         simulationDto: req.body,
         query: req.query,
-        params: req.params,
         origin,
-        user: req.user,
+        user: req.user!,
       })
-
-      if (token) {
-        res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
-      }
 
       return res.status(StatusCodes.CREATED).json(simulation)
     } catch (err) {
       if (err instanceof ImmutableSimulationException) {
         return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+      }
+
+      if (err instanceof ForbiddenException) {
+        return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
       }
 
       if (err instanceof EntityNotFoundException) {
@@ -95,21 +93,20 @@ router.route('/v1/:userId').post(
  * Returns simulations for a user
  */
 router
-  .route('/v1/:userId')
+  .route('/v1')
   .get(
     authentificationMiddleware<
       unknown,
       unknown,
       unknown,
       SimulationsFetchQuery
-    >({ passIfUnauthorized: true }),
+    >(),
     validateRequest(SimulationsFetchValidator),
-    async ({ params, query, user }, res) => {
+    async ({ query, user }, res) => {
       try {
         const { simulations, count } = await fetchSimulations({
-          params,
           query,
-          user,
+          user: user!,
         })
         return withPaginationHeaders({
           ...query,
@@ -129,13 +126,13 @@ router
  * Returns simulations for a user and an id
  */
 router
-  .route('/v1/:userId/:simulationId')
+  .route('/v1/:simulationId')
   .get(
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(SimulationFetchValidator),
-    async ({ params }, res) => {
+    async ({ params, user }, res) => {
       try {
-        const simulation = await fetchSimulation(params)
+        const simulation = await fetchSimulation({ params, user: user! })
 
         return res.status(StatusCodes.OK).json(simulation)
       } catch (err) {
@@ -154,13 +151,13 @@ router
  * Soft deletes a simulation by associating it with a deleted user id
  */
 router
-  .route('/v1/:userId/:simulationId')
+  .route('/v1/:simulationId')
   .delete(
     authentificationMiddleware(),
     validateRequest(SimulationFetchValidator),
     async ({ params, user }, res) => {
       try {
-        await softDeleteSimulation({ params, user })
+        await softDeleteSimulation({ params, user: user! })
 
         return res
           .status(StatusCodes.ACCEPTED)

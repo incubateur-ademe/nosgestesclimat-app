@@ -8,6 +8,7 @@ import Title from '@/design-system/layout/Title'
 import { useDeleteGroup } from '@/hooks/groups/useDeleteGroup'
 import { useFetchGroup } from '@/hooks/groups/useFetchGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useUser } from '@/publicodes-state'
 import type { Participant } from '@/types/groups'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -15,11 +16,15 @@ import { useRouter } from 'next/navigation'
 export default function SupprimerGroupePage({
   searchParams,
 }: {
-  searchParams: { groupId: string; userId: string }
+  searchParams: { groupId: string }
 }) {
   const router = useRouter()
 
-  const { groupId, userId } = searchParams
+  const { groupId } = searchParams
+
+  const {
+    user: { userId },
+  } = useUser()
 
   const { data: group, refetch: refetchGroup, isError } = useFetchGroup(groupId)
 
@@ -37,7 +42,6 @@ export default function SupprimerGroupePage({
     try {
       await deleteUserOrGroupIfOwner({
         groupId,
-        userId,
       })
 
       // Refresh cache

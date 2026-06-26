@@ -48,7 +48,7 @@ export default async function GroupNamePage({
         title={t("Créer un groupe d'amis")}
         subtitle={t('Invitez vos proches à passer le test')}
       />
-      <NameForm user={user} lastSimulation={lastSimulation} />
+      <NameForm lastSimulation={lastSimulation} />
     </div>
   )
 }

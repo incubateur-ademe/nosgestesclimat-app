@@ -6,8 +6,6 @@ import { revalidatePath } from 'next/cache'
 
 export async function updateGroupParticipantAction(data: {
   groupId: string
-  userId: string
-  email?: string
   simulation: {
     id: string
     date: string | Date
@@ -20,9 +18,7 @@ export async function updateGroupParticipantAction(data: {
   await fetchServer(`${GROUP_URL}/${data.groupId}/participants`, {
     method: 'POST',
     body: {
-      email: data.email,
       simulation: data.simulation,
-      userId: data.userId,
       name: data.name,
     },
   })

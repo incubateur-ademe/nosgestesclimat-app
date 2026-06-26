@@ -10,7 +10,6 @@ import GridRadioInputs from '@/design-system/inputs/GridRadioInputs'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import type { AuthUser } from '@/helpers/server/model/user'
 import { useCreateGroup } from '@/hooks/groups/useCreateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
@@ -27,10 +26,8 @@ interface Inputs {
 }
 
 export default function NameForm({
-  user,
   lastSimulation,
 }: {
-  user: AuthUser
   lastSimulation: Simulation | undefined
 }) {
   const { t } = useClientTranslation()
@@ -60,9 +57,7 @@ export default function NameForm({
           name: name ?? '',
           emoji: emoji ?? '',
           administrator: {
-            userId: user.id,
             name: administratorName ?? '',
-            email: user.email,
           },
           participants: lastSimulation
             ? [{ simulation: lastSimulation }]
@@ -84,7 +79,6 @@ export default function NameForm({
         await updateGroupParticipant({
           groupId: group.id,
           simulation: currentSimulation,
-          userId: user.id,
           name: administratorName,
         })
 

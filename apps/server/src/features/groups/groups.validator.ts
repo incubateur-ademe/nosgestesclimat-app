@@ -1,7 +1,6 @@
 import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { SimulationParticipantCreateDto } from '../simulations/simulations.validator.ts'
-import { UserParams } from '../users/users.validator.ts'
 
 const GroupParams = v.strictObject({
   groupId: v.string(),
@@ -9,20 +8,13 @@ const GroupParams = v.strictObject({
 
 export type GroupParams = v.InferOutput<typeof GroupParams>
 
-const UserGroupParams = v.strictObject({
+const GroupParticipantParams = v.strictObject({
   ...GroupParams.entries,
-  ...UserParams.entries,
-})
-
-export type UserGroupParams = v.InferOutput<typeof UserGroupParams>
-
-const UserGroupParticipantParams = v.strictObject({
-  ...UserGroupParams.entries,
   participantId: v.pipe(v.string(), v.uuid()),
 })
 
-export type UserGroupParticipantParams = v.InferOutput<
-  typeof UserGroupParticipantParams
+export type GroupParticipantParams = v.InferOutput<
+  typeof GroupParticipantParams
 >
 
 const GroupCreateParticipant = v.strictObject({
@@ -33,24 +25,23 @@ export type GroupCreateParticipant = v.InferOutput<
   typeof GroupCreateParticipant
 >
 
-const GroupCreateUser = v.strictObject({
-  userId: v.pipe(v.string(), v.uuid()),
-  email: v.optional(
-    v.pipe(
-      v.string(),
-      v.email(),
-      v.transform((email) => email.toLocaleLowerCase())
-    )
-  ),
+/**
+ * Administrator identity (id and email) is derived from the authenticated user
+ * so it cannot be spoofed through the request body. Only the display name is
+ * accepted from the client.
+ */
+const GroupCreateAdministrator = v.strictObject({
   name: v.string(),
 })
 
-export type GroupCreateAdministrator = v.InferOutput<typeof GroupCreateUser>
+export type GroupCreateAdministrator = v.InferOutput<
+  typeof GroupCreateAdministrator
+>
 
 const GroupCreateDto = v.strictObject({
   name: v.string(),
   emoji: v.string(),
-  administrator: GroupCreateUser,
+  administrator: GroupCreateAdministrator,
   participants: v.optional(v.strictTuple([GroupCreateParticipant])),
 })
 
@@ -72,12 +63,17 @@ export type GroupUpdateDto = v.InferOutput<typeof GroupUpdateDto>
 
 export const GroupUpdateValidator = {
   body: GroupUpdateDto,
-  params: UserGroupParams,
+  params: GroupParams,
   query: LocaleQuery,
 }
 
+/**
+ * Participant identity (id and email) is derived from the authenticated user
+ * so it cannot be spoofed through the request body. Only the display name is
+ * accepted from the client.
+ */
 const ParticipantCreateDto = v.strictObject({
-  ...GroupCreateUser.entries,
+  name: v.string(),
   ...GroupCreateParticipant.entries,
 })
 
@@ -95,7 +91,7 @@ export const ParticipantCreateValidator = {
 
 export const ParticipantDeleteValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserGroupParticipantParams,
+  params: GroupParticipantParams,
   query: LocaleQuery,
 }
 
@@ -108,18 +104,18 @@ export type GroupsFetchQuery = v.InferOutput<typeof GroupsFetchQuery>
 
 export const GroupsFetchValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserParams,
+  params: v.optional(v.strictObject({})),
   query: GroupsFetchQuery,
 }
 
 export const GroupFetchValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserGroupParams,
+  params: GroupParams,
   query: LocaleQuery,
 }
 
 export const GroupDeleteValidator = {
   body: v.optional(v.strictObject({})),
-  params: UserGroupParams,
+  params: GroupParams,
   query: LocaleQuery,
 }

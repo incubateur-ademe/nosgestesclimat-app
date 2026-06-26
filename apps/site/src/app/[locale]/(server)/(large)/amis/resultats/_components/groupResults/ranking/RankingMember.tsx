@@ -10,7 +10,6 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useIsGroupOwner } from '@/hooks/groups/useIsGroupOwner'
 import { useRemoveParticipant } from '@/hooks/groups/useRemoveParticipant'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useUser } from '@/publicodes-state'
 import type { Group, Participant } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import { captureException } from '@sentry/nextjs'
@@ -51,9 +50,6 @@ export default function RankingMember({
   participant: Participant
   metric: Metrics
 }) {
-  const {
-    user: { userId },
-  } = useUser()
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false)
 
   const { t } = useClientTranslation()
@@ -99,7 +95,6 @@ export default function RankingMember({
       await removePartipant({
         participantId: participant.id,
         groupId: group.id,
-        userId,
       })
 
       router.refresh()

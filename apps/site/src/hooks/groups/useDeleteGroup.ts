@@ -17,8 +17,8 @@ export function useDeleteGroup(props?: Props) {
   const { updateCurrentSimulation } = useUser()
 
   return useMutation({
-    mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) =>
-      axios.delete<void>(`${GROUP_URL}/${userId}/${groupId}`),
+    mutationFn: ({ groupId }: { groupId: string }) =>
+      axios.delete<void>(`${GROUP_URL}/${groupId}`),
     onSuccess: (_, variables) => {
       updateCurrentSimulation({ groupToDelete: variables.groupId })
       if (shouldInvalidateQueries) {

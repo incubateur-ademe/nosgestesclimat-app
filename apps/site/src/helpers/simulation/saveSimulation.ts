@@ -29,7 +29,6 @@ export async function saveSimulation({
     return updateGroupParticipant({
       groupId: groups.at(-1)!.id,
       simulation,
-      userId,
       name,
     }).then((response) => response.data.simulation as Simulation)
   }
@@ -37,7 +36,7 @@ export async function saveSimulation({
   if (polls.length) {
     return axios
       .post(
-        `${ORGANISATION_URL}/${userId}/public-polls/${polls[polls.length - 1].id}/simulations`,
+        `${ORGANISATION_URL}/public-polls/${polls[polls.length - 1].id}/simulations`,
         simulation,
         {
           params: {

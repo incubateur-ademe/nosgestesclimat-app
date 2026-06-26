@@ -5,6 +5,7 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
 import { getSimulationPayload } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
 import {
@@ -30,18 +31,17 @@ describe('Given a NGC user', () => {
   })
 
   describe('When fetching his groups', () => {
-    describe('And invalid userId', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
-          .get(url.replace(':userId', faker.string.alpha(34)))
-          .expect(StatusCodes.BAD_REQUEST)
+    describe('And no authentication', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+        await agent.get(url).expect(StatusCodes.UNAUTHORIZED)
       })
     })
 
     describe('And no group does exist', () => {
       test(`Then it returns a ${StatusCodes.OK} response with an empty list`, async () => {
         const response = await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([])
@@ -61,7 +61,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.OK} response with a list containing the group`, async () => {
         const response = await agent
-          .get(url.replace(':userId', userId))
+          .get(url)
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([group])
@@ -146,7 +147,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.OK} response with a list containing the groups`, async () => {
         const response = await agent
-          .get(url.replace(':userId', user1Id))
+          .get(url)
+          .set(authHeaders({ userId: user1Id }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([
@@ -243,7 +245,8 @@ describe('Given a NGC user', () => {
       describe('And filtering the list by groupIds', () => {
         test(`Then it returns a ${StatusCodes.OK} response with a list containing the filtered groups`, async () => {
           const response = await agent
-            .get(url.replace(':userId', user1Id))
+            .get(url)
+            .set(authHeaders({ userId: user1Id }))
             .query({
               'groupIds[]': [group1.id],
             })
@@ -314,13 +317,15 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
       test('Then it logs the exception', async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
         expect(logger.error).toHaveBeenCalledWith(

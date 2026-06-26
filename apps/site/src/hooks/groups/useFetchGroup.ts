@@ -18,7 +18,7 @@ export function useFetchGroup(
     queryKey: ['groups', userId, groupId],
     queryFn: () =>
       axios
-        .get(`${GROUP_URL}/${userId}/${groupId}`)
+        .get(`${GROUP_URL}/${groupId}`)
         .then((response) => response.data)
         .then((data) => {
           return {

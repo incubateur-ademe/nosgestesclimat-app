@@ -10,14 +10,14 @@ import { stringifyModel } from './models'
 import type { Simulation } from './simulations'
 
 export async function getUserPoll({
-  user,
+  user: _user,
   pollIdOrSlug,
 }: {
   user: AppUser
   pollIdOrSlug: string
 }): Promise<PublicOrganisationPoll> {
   return fetchServer<PublicOrganisationPoll>(
-    `${ORGANISATION_URL}/${user.id}/public-polls/${pollIdOrSlug}`
+    `${ORGANISATION_URL}/public-polls/${pollIdOrSlug}`
   )
 }
 
@@ -31,14 +31,14 @@ export async function createPollSimulation(
     | { model: Model; simulation?: undefined }
   )
 ) {
-  const { user, poll, locale } = props
+  const { poll, locale } = props
 
   const simulation =
     props.simulation ??
     generateSimulation({ model: stringifyModel(props.model) })
 
   return fetchServer(
-    `${ORGANISATION_URL}/${user.id}/public-polls/${poll.id}/simulations?locale=${locale}`,
+    `${ORGANISATION_URL}/public-polls/${poll.id}/simulations?locale=${locale}`,
     {
       method: 'POST',
       body: simulation,

@@ -12,7 +12,6 @@ import { config } from '../../../config.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -48,12 +47,14 @@ describe('Given a poll participation', () => {
     let event: SimulationUpsertedAsyncEvent
 
     beforeEach(async () => {
-      const { cookie } = await login({ agent })
-      const organisation = await createOrganisation({ agent, cookie })
+      const userId = faker.string.uuid()
+      const email = faker.internet.email()
+      const organisation = await createOrganisation({ agent, userId, email })
 
       poll = await createOrganisationPoll({
         organisationId: organisation.id,
-        cookie,
+        userId,
+        email,
         agent,
       })
 
