@@ -5,6 +5,7 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
 import {
   createGroup,
@@ -29,26 +30,19 @@ describe('Given a NGC user', () => {
   })
 
   describe('When fetching one of his groups', () => {
-    describe('And invalid userId', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+    describe('And no authentication', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':userId', faker.string.alpha(34))
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
-          .expect(StatusCodes.BAD_REQUEST)
+          .get(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .expect(StatusCodes.UNAUTHORIZED)
       })
     })
 
     describe('And no group does exist', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
+          .get(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.NOT_FOUND)
       })
     })
@@ -68,7 +62,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.OK} response with the group`, async () => {
         const response = await agent
-          .get(url.replace(':userId', userId).replace(':groupId', groupId))
+          .get(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual(group)
@@ -84,7 +79,8 @@ describe('Given a NGC user', () => {
 
         test(`Then it returns a ${StatusCodes.OK} response with the group`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId).replace(':groupId', groupId))
+            .get(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId }))
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual({
@@ -117,21 +113,15 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
-          .get(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
+          .get(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
       test('Then it logs the exception', async () => {
         await agent
-          .get(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
+          .get(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
         expect(logger.error).toHaveBeenCalledWith(
@@ -154,11 +144,8 @@ describe('Given a NGC user', () => {
     describe('When fetching the group', () => {
       test(`Then it returns a ${StatusCodes.OK} response with the group`, async () => {
         const response = await agent
-          .get(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', groupId)
-          )
+          .get(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual({
@@ -181,11 +168,8 @@ describe('Given a NGC user', () => {
 
         test(`Then it returns a ${StatusCodes.OK} response with the group`, async () => {
           const response = await agent
-            .get(
-              url
-                .replace(':userId', faker.string.uuid())
-                .replace(':groupId', groupId)
-            )
+            .get(url.replace(':groupId', groupId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual({

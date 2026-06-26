@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import { ME_ROUTE } from './fixtures/users.fixture.ts'
 
@@ -27,22 +28,22 @@ describe('Given a NGC User', () => {
   })
 
   describe('And logged in', () => {
-    let cookie: string
-    let user: { userId: string; email: string }
+    let userId: string
+    let email: string
 
     beforeEach(async () => {
-      ;({ cookie, ...user } = await login({ agent }))
+      ;({ userId, email } = await login({ agent }))
     })
 
     it(`Then it should return ${StatusCodes.OK} with the user data`, async () => {
       const response = await agent
         .get(url)
-        .set('Cookie', cookie)
+        .set(authHeaders({ userId, email }))
         .expect(StatusCodes.OK)
 
       expect(response.body).toEqual({
-        id: user.userId,
-        email: user.email,
+        id: userId,
+        email,
       })
     })
   })
