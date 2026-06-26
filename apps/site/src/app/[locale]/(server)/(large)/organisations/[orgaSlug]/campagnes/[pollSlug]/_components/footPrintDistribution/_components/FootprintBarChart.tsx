@@ -35,16 +35,16 @@ export default function FootprintBarChart({
   })
 
   // Values are in kg CO2e — always convert to tonnes for consistent display
-  const groupFootprintInTonnes = groupFootprint / 1000
-  const userFootprintInTonnes = userFootprint ? userFootprint / 1000 : undefined
-  const targetValueInTonnes = targetValue
+  const groupFootprintInTon = groupFootprint / 1000
+  const userFootprintInTon = userFootprint ? userFootprint / 1000 : undefined
+  const targetValueInTon = targetValue
 
   const maxValue =
     Math.ceil(
       Math.max(
-        groupFootprintInTonnes,
-        userFootprintInTonnes || 0,
-        targetValueInTonnes
+        groupFootprintInTon,
+        userFootprintInTon || 0,
+        targetValueInTon
       ) / 5
     ) * 5
 
@@ -61,7 +61,7 @@ export default function FootprintBarChart({
         'pollResults.footprintBarChart.groupFootprint',
         'Empreinte moyenne du groupe'
       ),
-      value: groupFootprintInTonnes,
+      value: groupFootprintInTon,
       formattedValue: `${groupFormatted.formattedValue} ${groupFormatted.unit}`,
     },
     ...(userFootprint
@@ -71,7 +71,7 @@ export default function FootprintBarChart({
               'pollResults.footprintBarChart.userFootprint',
               'Votre empreinte'
             ),
-            value: userFootprintInTonnes,
+            value: userFootprintInTon,
             formattedValue: `${userFormatted?.formattedValue} ${userFormatted?.unit}`,
           },
         ]
@@ -252,14 +252,14 @@ export default function FootprintBarChart({
             </Bar>
 
             <ReferenceLine
-              x={targetValueInTonnes}
+              x={targetValueInTon}
               stroke="#a60e66"
               strokeDasharray="5 5"
               strokeWidth={2}
             />
 
             <ReferenceLine
-              x={targetValueInTonnes}
+              x={targetValueInTon}
               stroke="transparent"
               label={({ viewBox }) => {
                 const { x, y } = viewBox
@@ -276,7 +276,7 @@ export default function FootprintBarChart({
                         'pollResults.footprintBarChart.targetLabelMobile',
                         'Objectif 2050 :'
                       )}{' '}
-                      {targetValueInTonnes}{' '}
+                      {targetValueInTon}{' '}
                       {t(
                         'pollResults.footprintBarChart.targetLabelUnit',
                         'tonnes'
