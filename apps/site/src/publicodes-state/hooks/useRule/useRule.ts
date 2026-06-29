@@ -127,7 +127,7 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getNumericValue, dottedName, metric, evaluation])
 
-  const { displayValue } = useDisplayValue({
+  const displayValue = useDisplayValue({
     value,
     type,
   })

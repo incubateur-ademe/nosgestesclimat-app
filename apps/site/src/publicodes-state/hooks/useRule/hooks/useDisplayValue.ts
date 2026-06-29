@@ -32,7 +32,5 @@ export default function useDisplayValue({ value, type }: Props) {
     return ''
   }, [value, type])
 
-  return {
-    displayValue,
-  }
+  return displayValue
 }

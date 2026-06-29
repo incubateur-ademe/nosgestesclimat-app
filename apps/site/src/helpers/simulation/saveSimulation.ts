@@ -21,11 +21,20 @@ export async function saveSimulation({
   name,
 }: SaveSimulationPayload): Promise<Simulation | undefined> {
   if (simulation.computedResults.carbone.bilan === 0) {
+    const exception = new InternalServerError(
+      'Simulation with zero bilan cannot be saved.'
+    )
     captureException({
-      exception: new Error('Simulation with zero bilan cannot be saved.'),
-      hint: `Simulation ID: ${simulation.id}, User ID: ${userId}`,
+      exception,
+      extra: {
+        situation: JSON.stringify(simulation.situation),
+        simulationId: simulation.id,
+        userId: userId,
+      },
     })
-    throw new InternalServerError()
+    // eslint-disable-next-line no-console
+    console.error(exception)
+    return
   }
 
   const { groups = [], polls = [] } = simulation
