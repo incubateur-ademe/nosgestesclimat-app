@@ -30,6 +30,7 @@ interface Props {
   onKeyDown?: (e: KeyboardEvent<HTMLAnchorElement>) => void
   trackingEvent?: (string | null)[]
   target?: string
+  scroll?: boolean
   loading?: boolean
   disabled?: boolean
   showLoadingOnClick?: boolean
@@ -46,6 +47,7 @@ export default function ButtonLink({
   onKeyDown,
   trackingEvent,
   target = '_self',
+  scroll = true,
   loading,
   disabled,
   showLoadingOnClick = false,
@@ -59,6 +61,7 @@ export default function ButtonLink({
 
   return (
     <Link
+      scroll={scroll}
       href={href}
       onClick={(e) => {
         if (isDisabled) {

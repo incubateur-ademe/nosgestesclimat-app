@@ -1,3 +1,4 @@
+import Carousel from '@/design-system/carousel/Carousel'
 import type { Locale } from '@/i18nConfig'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
@@ -6,7 +7,6 @@ import { twMerge } from 'tailwind-merge'
 import TrophyIcon from '../icons/TrophyIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard/ActionCard'
-import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
   actions: PersonalizedAction[]
@@ -56,7 +56,7 @@ export default function HighestImpactActionsSection({
           </p>
         </div>
       </div>
-      <ActionsCarousel
+      <Carousel
         locale={locale}
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
@@ -71,7 +71,7 @@ export default function HighestImpactActionsSection({
             rank={index + 1}
           />
         ))}
-      </ActionsCarousel>
+      </Carousel>
     </section>
   )
 }

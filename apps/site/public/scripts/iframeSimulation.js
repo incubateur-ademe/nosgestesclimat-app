@@ -5,6 +5,7 @@
 
   if (!script) {
     console.error('Iframe Nos Gestes Climat: No target element found')
+    return
   }
 
   // Avoid unwanted reloading loop

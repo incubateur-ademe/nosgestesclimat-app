@@ -131,10 +131,7 @@ export default {
           '80%': { opacity: 1 },
           '100%': { opacity: 1, transform: 'translateY(0)' },
         },
-        iconsRotation: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' },
-        },
+
         rainbow: {
           '0%': {
             'background-position': '100% 50%',
@@ -169,62 +166,7 @@ export default {
             transform: 'translate3d(0, -4px, 0) scaleY(1.02)',
           },
         },
-        swim: {
-          from: {
-            transform: 'translateX(-10vw)',
-          },
-          to: {
-            transform: 'translateX(110vw)',
-          },
-        },
-        swimDelay: {
-          from: {
-            transform: 'translateX(-10vw)',
-          },
-          '48%': {
-            transform: 'translateX(-10vw)',
-          },
-          '50%': {
-            transform: 'translateX(100vw)',
-          },
-          '98%': {
-            transform: 'translateX(100vw)',
-          },
-          to: {
-            transform: 'translateX(-10vw)',
-          },
-        },
-        swimBackwards: {
-          from: {
-            transform: 'translateX(110vw)',
-          },
-          to: {
-            transform: 'translateX(-10vw)',
-          },
-        },
-        'pulse-bg': {
-          '0%': {
-            backgroundColor: '#fff',
-            transform: 'scale(1)',
-          },
-          '80%': {
-            backgroundColor: '#fff',
-            transform: 'scale(1)',
-          },
-          '90%': {
-            backgroundColor: '#fde6f7',
-            transform: 'scale(1.1)',
-          },
-          '100%': {
-            backgroundColor: '#fff',
-            transform: 'scale(1)',
-          },
-        },
-        levitate: {
-          '0%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-5px)' },
-          '100%': { transform: 'translateY(0px)' },
-        },
+
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
@@ -272,21 +214,24 @@ export default {
           '0%, 100%': { backgroundColor: '#4949ba' },
           '50%': { backgroundColor: '#373978' },
         },
+        'rainbow-shadow-move': {
+          '0%': {
+            'background-position': '0% 50%',
+          },
+          '50%': {
+            'background-position': '100% 50%',
+          },
+          '100%': {
+            'background-position': '0% 50%',
+          },
+        },
       },
       animation: {
         valuechange: 'valuechange 0.5s ease-out forwards',
         'valuechange-reverse': 'valuechange-reverse 0.5s ease-out forwards',
-        iconsRotation: 'iconsRotation 1s ease-in-out',
         'rainbow-slow': 'rainbow 30s linear infinite',
         'rainbow-fast': 'rainbow 5s linear infinite',
         jump: 'jump 1s infinite',
-        swim: 'swim 10s linear infinite',
-        'swim-delay': 'swimDelay 120s linear infinite',
-        'swim-fast': 'swim 5s linear infinite',
-        'swim-slow': 'swim 15s linear infinite',
-        'swim-backwards': 'swimBackwards 10s linear infinite',
-        'swim-backwards-fast': 'swimBackwards 5s linear infinite',
-        'swim-backwards-slow': 'swimBackwards 15s linear infinite',
         'fade-in': 'fade-in 0.2s ease-out',
         'pulse-scale': 'pulse-scale 2s ease-in-out infinite',
         'bar-grow-vertical': 'bar-grow-vertical 0.8s ease-out forwards',
@@ -301,6 +246,7 @@ export default {
         'float-leaf-2': 'float-badge 5.5s ease-in-out 0.8s infinite',
         'float-leaf-3': 'float-badge 4.8s ease-in-out 1.5s infinite',
         'bg-pulse': 'bg-pulse 5s ease-in-out infinite',
+        'rainbow-shadow-move': 'rainbow-shadow-move 8s linear infinite',
       },
       screens: {
         xs: '320px',
