@@ -1,7 +1,7 @@
 /** Event page data — centralized mock content before CMS integration. */
 
 import Trans from '@/components/translation/trans/TransServer'
-import { ORGANISATION_SIGN_IN_PATH } from '@/constants/urls/paths'
+import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
 import type { Locale } from '@/i18nConfig'
 import type { ReactNode } from 'react'
 
@@ -72,7 +72,7 @@ export function getEventPageData({
 
   return {
     detailImageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/journee_de_la_terre_2026_8ead81e894.svg',
+      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/VIGNETTE_SEDD_f711b1d37b.svg',
     startDate: '2026-09-01T00:00:00+02:00',
     endDate: '2026-09-30T23:59:59+02:00',
     dynamicCounter: {
@@ -80,7 +80,7 @@ export function getEventPageData({
       targetValue,
       progressPercentage:
         targetValue > 0 ? (currentValue / targetValue) * 100 : 0,
-      primaryCtaHref: ORGANISATION_SIGN_IN_PATH,
+      primaryCtaHref: ORGANISATION_HOME_PAGE,
       secondaryCtaHref:
         'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
     },
@@ -225,7 +225,7 @@ export function getEventPageData({
       ],
     },
     ctaImageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/people_raising_arms_v2_dd1c17393a.svg',
+      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ILLUSTRATION_SEDD_e1a82fa2e2.svg',
     ctaHeading: t('event.ctas.heading', "Prêt·e à rejoindre l'aventure ?"),
     ctaDescription: t(
       'event.ctas.description',
@@ -256,7 +256,7 @@ export function getEventPageData({
           'event.ctas.card2.buttonLabel',
           'Je crée un test collectif'
         ),
-        buttonHref: ORGANISATION_SIGN_IN_PATH,
+        buttonHref: ORGANISATION_HOME_PAGE,
       },
     ],
   }
