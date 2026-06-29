@@ -86,7 +86,7 @@ export default function AuthenticateUserForm({
       await onComplete?.(user)
 
       if (redirectPathname) {
-        router.push(redirectPathname)
+        window.location.href = redirectPathname
       } else {
         router.refresh()
       }
