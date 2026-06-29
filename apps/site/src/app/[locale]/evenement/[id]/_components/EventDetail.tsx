@@ -12,26 +12,26 @@ export default async function EventDetail({ locale, imageSrc }: Props) {
   const { t } = await getServerTranslation({ locale })
   return (
     <div className="mt-6 mb-6 flex flex-row items-center gap-5">
-      <div className="w-40 min-w-28">
+      <div className="w-70 min-w-32">
         <Image
           src={imageSrc}
-          width="160"
-          height="160"
+          width="300"
+          height="300"
           alt={t(
             'event.detail.alt',
-            '22 avril, Jour de la terre avec Nos Gestes Climat'
+            'Du 18 septembre au 8 octobre, Semaine européenne du Développement Durable sur nosgestesclimat.fr'
           )}
         />
       </div>
 
-      <div>
+      <div className="text-xs sm:text-base">
         <p className="text-secondary-700 mb-0 font-bold uppercase">
           <Trans locale={locale} i18nKey="event.detail.dates">
             Du 18 septembre au 8 octobre 2026
           </Trans>
         </p>
 
-        <p className="text-lg font-medium">
+        <p className="font-medium sm:text-lg">
           <Trans locale={locale} i18nKey="event.detail.title">
             Semaine Européenne du
             <br />
