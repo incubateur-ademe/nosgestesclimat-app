@@ -152,7 +152,10 @@ export function getEventPageData({
         ),
         author: {
           name: 'Anonyme',
-          job: 'test collectif réalisé par l’organisation Pass Culture',
+          job: t(
+            'event.testimonies.4.author.job',
+            'Test collectif réalisé par l’organisation Pass Culture'
+          ),
         },
       },
     ],
