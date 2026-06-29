@@ -14,7 +14,6 @@ export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
     organisation,
     simulation,
     sendEmail,
-    verified,
     locale,
     poll,
   },
