@@ -1,3 +1,4 @@
+import Carousel from '@/design-system/carousel/Carousel'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
@@ -11,7 +12,6 @@ import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard/ActionCard'
-import ActionsCarousel from './ActionsCarousel/ActionsCarousel'
 
 const classesByTheme: Record<
   Theme['key'],
@@ -82,7 +82,7 @@ export default function ThemeSection({
           </div>
         </div>
       </div>
-      <ActionsCarousel
+      <Carousel
         locale={locale}
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
@@ -97,7 +97,7 @@ export default function ThemeSection({
             className="h-full"
           />
         ))}
-      </ActionsCarousel>
+      </Carousel>
     </section>
   )
 }
