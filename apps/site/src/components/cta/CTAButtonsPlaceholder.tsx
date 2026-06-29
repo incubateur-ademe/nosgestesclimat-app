@@ -1,4 +1,7 @@
-import { baseClassNames, colorClassNames } from '@/design-system/buttons/Button'
+import {
+  baseClassNames,
+  colorClassNames,
+} from '@/design-system/buttons/buttonStyles'
 import Loader from '@/design-system/layout/Loader'
 import { twMerge } from 'tailwind-merge'
 

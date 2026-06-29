@@ -1497,3 +1497,9 @@ entries:
   event.podium.remainingList.ariaLabel: Suite du classement
   event.podium.block.score.text1: calculs d'empreinte
   event.podium.block.score.text2: En attente du lancement
+  results.footprintBlock.actionsBlock.link: Découvrir mes actions
+  results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
+  common.co2eAn.title: CO₂e / an
+  iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
+  iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
+  iframe.safari.errorTitle: Version de Safari incompatible

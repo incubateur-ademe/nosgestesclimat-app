@@ -1,8 +1,6 @@
 'use client'
 
 import {
-  isSafariVersionBeforeOrEgalTo18,
-  isStorageAccessApiSupported,
   requestStorageAccess,
   requiresStoragePermissions,
 } from '@/helpers/iframe/storageAccess'
@@ -11,13 +9,10 @@ import { useCallback, useEffect, useState } from 'react'
 export const useStoragePermissions = (): {
   needPermission: boolean
   askForPermission: () => Promise<void> | undefined
+  hasError: boolean
 } => {
-  // Only Safari ≤ 18 needs the storage access permission flow.
-  // Use a synchronous Safari check for the initial state to avoid
-  // flashing the overlay on Firefox / Chrome before the async check resolves.
-  const [needPermission, setNeedPermission] = useState(
-    () => isSafariVersionBeforeOrEgalTo18() && isStorageAccessApiSupported()
-  )
+  const [needPermission, setNeedPermission] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   // On mount, check if storage access is already granted (e.g. after a
   // Safari auto-reload following a successful requestStorageAccess grant).
@@ -25,7 +20,7 @@ export const useStoragePermissions = (): {
     requiresStoragePermissions()
       .then(setNeedPermission)
       .catch(() => {
-        // Keep the conservative default (true)
+        // Keep the conservative default (false)
       })
   }, [])
 
@@ -35,12 +30,13 @@ export const useStoragePermissions = (): {
       const needsPermission = await requiresStoragePermissions()
       setNeedPermission(needsPermission)
     } catch {
-      // Do nothing
+      setHasError(true)
     }
   }, [])
 
   return {
     needPermission,
-    askForPermission: () => askForPermission(),
+    askForPermission,
+    hasError,
   }
 }

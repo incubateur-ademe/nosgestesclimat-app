@@ -11,7 +11,7 @@ import {
 
 interface UseCreatePollStep2Props {
   organisationSlug: string
-  revalidatePath: (slug: string) => void
+  revalidatePath: (slug: string) => Promise<void>
 }
 
 interface Step2Inputs {
@@ -83,7 +83,7 @@ export function useCreatePollStep2({
 
       const pollCreated = await createPoll(payload)
 
-      revalidatePath(organisationSlug)
+      void revalidatePath(organisationSlug)
 
       clearDraft()
 

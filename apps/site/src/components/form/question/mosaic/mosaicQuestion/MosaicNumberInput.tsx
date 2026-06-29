@@ -45,12 +45,14 @@ export default function MosaicNumberInput({
         'focus-within:ring-primary-700 flex items-center justify-between gap-1 rounded-xl border border-slate-500 bg-white p-3 focus-within:ring-2 focus-within:ring-offset-2'
       }>
       <div>
-        {title && icons ? (
+        {title ? (
           <span className="mb-1 block text-sm md:text-base">
             {title}{' '}
-            <Emoji className="inline-flex items-center leading-tight">
-              {icons}
-            </Emoji>
+            {icons && (
+              <Emoji className="inline-flex items-center leading-tight">
+                {icons}
+              </Emoji>
+            )}
           </span>
         ) : null}
         {description ? (
