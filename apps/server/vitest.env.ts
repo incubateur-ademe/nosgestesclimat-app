@@ -9,6 +9,7 @@ export default () => {
   process.env.CONNECT_CLIENT_SECRET = 'mySuperTestConnectClientSecret'
   process.env.JOB_SECRET = 'mySuperTestJobSecret'
   process.env.JWT_SECRET = 'mySuperTestJwtSecret'
+  process.env.INTERNAL_API_KEY = 'mySuperTestInternalApiKey'
   process.env.MATOMO_BETA_TOKEN = 'mySuperTestMatomoBetaToken'
   process.env.ORIGIN = 'https://nosgestesclimat.test'
   process.env.TWO_TONS_URL = 'https://api.two-tons.com'

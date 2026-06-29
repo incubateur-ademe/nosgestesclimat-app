@@ -46,6 +46,7 @@ const SecuritySchema = v.strictObject({
   }),
   job: v.strictObject({ secret: v.string() }),
   jwt: v.strictObject({ secret: v.string() }),
+  internalApiKey: v.string(),
 })
 
 const AgirSchema = v.strictObject({
@@ -162,6 +163,7 @@ const {
     CONNECT_CLIENT_SECRET,
     CONNECT_URL,
     AUTH_COOKIE_NAME,
+    INTERNAL_API_KEY,
     JOB_SECRET,
     JWT_SECRET,
     MATOMO_BETA_SITE_ID,
@@ -212,6 +214,7 @@ export const config = v.parse(ConfigSchema, {
     jwt: {
       secret: JWT_SECRET,
     },
+    internalApiKey: INTERNAL_API_KEY,
   },
   thirdParty: {
     agir: {
