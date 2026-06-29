@@ -27,6 +27,23 @@ export const authentificationMiddleware =
     ReqQuery
   > =>
   (req, res, next) => {
+    const internalApiKey = config.security.internalApiKey
+    const providedInternalKey = req.headers['x-internal-key']
+
+    if (providedInternalKey === internalApiKey) {
+      const userId = req.headers['x-user-id']
+      const email = req.headers['x-user-email']
+
+      if (typeof userId === 'string' && typeof email === 'string') {
+        req.user = { userId, email }
+        return next()
+      }
+
+      return passIfUnauthorized
+        ? next()
+        : res.status(StatusCodes.UNAUTHORIZED).end()
+    }
+
     const cookiesHeader = req.headers.cookie
 
     const token =

@@ -10,7 +10,6 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { UserProvider } from '@/publicodes-state'
 import type { SkipLinksDisplayed } from '@/types'
-import { MotionConfig } from 'framer-motion'
 import type { PropsWithChildren } from 'react'
 import { Suspense } from 'react'
 
@@ -34,17 +33,15 @@ export const ClientLayout = ({
         serverUserId={serverUserId}
         serverSimulations={serverSimulations}>
         <PartnerProvider>
-          <MotionConfig reducedMotion="user">
-            <Suspense>
-              <MainHooks />
-            </Suspense>
-            <SkipToMainContentLink skipLinksDisplayed={skipLinksDisplayed} />
+          <Suspense>
+            <MainHooks />
+          </Suspense>
+          <SkipToMainContentLink skipLinksDisplayed={skipLinksDisplayed} />
 
-            <Banner locale={locale as Locale} />
-            {children}
-            <GoogleTagScript />
-            <GoogleTagIframe />
-          </MotionConfig>
+          <Banner locale={locale as Locale} />
+          {children}
+          <GoogleTagScript />
+          <GoogleTagIframe />
         </PartnerProvider>
       </UserProvider>
     </QueryClientProviderWrapper>
