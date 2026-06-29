@@ -6,7 +6,7 @@ export default async function BetaBanner({ locale }: { locale: string }) {
   const { t } = await getServerTranslation({ locale })
 
   return (
-    <div className="-mt-12 mb-8">
+    <div className="-mt-2 mb-8 md:-mt-4">
       <BannerContent
         color="secondary"
         banner={{
