@@ -1697,7 +1697,7 @@ entries:
   Créer mon lien de test: Create my test link
   Communiquez sur le test collectif: Communicate about the collective test
   Mes tests collectifs: My collective tests
-  Créer un test collectif: Create a collective test
+  Créer un test collectif: Start a group test
   Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.: An error has occurred while creating your collective test. Please try again.
   collectiveTest.title: Choose a name for your collective test
   collectiveTest.title.lock: Choisissez un nom pour votre test collectif
@@ -2039,15 +2039,190 @@ entries:
   actions.beta-banner.link.aria-label.lock: Laisser votre avis, nouvelle fenêtre
   actions.beta-banner.content: This <1>beta version</1> is currently being improved. Help us improve it by <4>leaving your feedback.</4>
   actions.beta-banner.content.lock: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
+  event.tutorial.carousel.nextSlide: Next slide
+  event.tutorial.carousel.nextSlide.lock: Diapositive suivante
+  event.ctas.card2.title: With your organisation
+  event.ctas.card2.title.lock: Avec votre organisation
+  event.tutorial.individual.3.title: Take action
+  event.tutorial.individual.3.title.lock: Passez à l'action
+  event.podium.block.score.text: carbon footprint calculations
+  event.podium.block.score.text.lock: calculs d'empreinte
+  event.ctas.card2.alt: With your organisation
+  event.ctas.card2.alt.lock: Avec votre organisation
+  event.tutorial.carousel.firstSlide: This is the first slide
+  event.tutorial.carousel.firstSlide.lock: Ceci est la première diapositive
+  event.tutorial.carousel.lastSlide: This is the last slide
+  event.tutorial.carousel.lastSlide.lock: Ceci est la dernière diapositive
+  event.tutorial.carousel.prevSlide: Previous slide
+  event.tutorial.carousel.prevSlide.lock: Diapositive précédente
+  event.podium.list.item.score: tests
+  event.podium.list.item.score.lock: tests
+  event.dynamicCounter.target.text: carbon footprint calculations
+  event.dynamicCounter.target.text.lock: calculs d'empreinte carbone
+  event.dynamicCounter.target.title: Objective
+  event.dynamicCounter.target.title.lock: Objectif
+  event.testimonies.subtitle: They took the plunge
+  event.testimonies.subtitle.lock: Ils ont franchi le pas
+  event.tutorial.org.2.title: Share the link
+  event.tutorial.org.2.title.lock: Partagez le lien
+  event.ctas.card2.buttonLabel: Start a collective test
+  event.ctas.card2.buttonLabel.lock: Je crée un test collectif
+  event.podium.subtitle: The mobilisation podium
+  event.podium.subtitle.lock: Le podium de la mobilisation
+  event.testimonies.title: Testimonials
+  event.testimonies.title.lock: Témoignages
+  event.tutorial.individual.1.title: Answer the questions
+  event.tutorial.individual.1.title.lock: Répondez aux questions
+  event.tutorial.org.3.title: Follow the results
+  event.tutorial.org.3.title.lock: Suivez les résultats
+  event.podium.yourOrg: Organisation 1
+  event.podium.yourOrg.lock: Organisation 1
+  event.hero.title.part2: when it is collective
+  event.hero.title.part2.lock: quand il est collectif
+  event.dynamicCounter.text: LIVE
+  event.dynamicCounter.text.lock: EN DIRECT
+  event.ctas.heading: Ready to join the adventure?
+  event.ctas.heading.lock: Prêt·e à rejoindre l'aventure ?
+  event.tutorial.carousel.paginationBullet: Go to the slide {{index}}
+  event.tutorial.carousel.paginationBullet.lock: Aller à la diapositive {{index}}
+  event.tutorial.org.1.title: Create a collective test
+  event.tutorial.org.1.title.lock: Créez un test collectif
+  event.ctas.card1.title: On an individual basis
+  event.ctas.card1.title.lock: À titre individuel
+  event.tutorial.carousel.itemRole: Slide
+  event.tutorial.carousel.itemRole.lock: Diapositive
+  event.tutorial.individual.2.title: Instant result
+  event.tutorial.individual.2.title.lock: Résultat instantané
+  event.statistics.third.text: Organisations already involved
+  event.statistics.third.text.lock: Organisations déjà mobilisées
+  event.tutorial.title: How can I take part?
+  event.tutorial.title.lock: Comment participer ?
+  event.dynamicCounter.secondaryCta: Participate as an individual
+  event.dynamicCounter.secondaryCta.lock: Je participe individuellement
+  event.testimonies.2.author.job: Head of Public Relations at Pass Culture
+  event.testimonies.2.author.job.lock: Responsable des relations avec les publics du Pass Culture
+  event.ctas.card1.alt: As an individual
+  event.ctas.card1.alt.lock: À titre individuel
+  event.testimonies.1.author.job: Impact Officer at HomeExchange
+  event.testimonies.1.author.job.lock: Impact Officer chez HomeExchange
+  event.podium.competitor: Rival organisation
+  event.podium.competitor.lock: Organisation concurrente
+  event.statistics.first: carbon footprint calculations already carried out
+  event.statistics.first.lock: calculs d'empreinte carbone déjà réalisés
+  event.detail.title: European Week for<1></1>Sustainable Development<3></3>
+  event.detail.title.lock: Semaine Européenne du<1></1>Développement<3></3>Durable
+  event.statistics.third.link: Join them!
+  event.statistics.third.link.lock: Rejoignez-les !
+  event.ctas.card1.buttonLabel: Start now
+  event.ctas.card1.buttonLabel.lock: Je participe
+  event.tutorial.individual.2.description: Find out your personal carbon footprint, broken down by category.
+  event.tutorial.individual.2.description.lock: Découvrez votre empreinte carbone personnelle détaillée par catégorie.
+  event.testimonies.3.author.job: Head of Public Relations at Pass Culture
+  event.testimonies.3.author.job.lock: Responsable des relations avec les publics du Pass Culture
+  event.dynamicCounter.promise: Results in 10 minutes — 100% free
+  event.dynamicCounter.promise.lock: Résultats en 10 minutes — 100% gratuit
+  event.dynamicCounter.primaryCta: Mobilise my organisation
+  event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
+  event.detail.dates: From 18 September to 8 October 2026
+  event.detail.dates.lock: Du 18 septembre au 8 octobre 2026
+  event.tutorial.org.1.description: Set up your campaign in just a few clicks and define your objectives.
+  event.tutorial.org.1.description.lock: Configurez votre campagne en quelques clics et définissez vos objectifs.
+  event.ctas.description: There are two ways to take part in the challenge.
+  event.ctas.description.lock: Deux façons de participer au challenge.
+  event.hero.title.part1: The impact is greater
+  event.hero.title.part1.lock: L'impact est plus fort
+  event.tutorial.org.3.description: View participation levels and the collective carbon footprint in real time.
+  event.tutorial.org.3.description.lock: Visualisez en temps réel les participations et l’empreinte carbone collective.
+  event.tutorial.org.2.description: Share a unique link with your staff via email, social media or a QR code.<1></1>Make use of our <4>communications pack!</4>
+  event.tutorial.org.2.description.lock: Diffusez un lien unique par email, réseau social ou QR code auprès de vos collaborateurs.<1></1>Aidez-vous de notre <4>kit de communication !</4>
+  event.ctas.card1.description: Calculate your carbon footprint in 10 minutes and discover your personalised action points.
+  event.ctas.card1.description.lock: Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés.
+  event.tutorial.individual.3.description: Get personalised tips on how to reduce your environmental impact in your day-to-day life.
+  event.tutorial.individual.3.description.lock: Recevez des actions personnalisées pour réduire votre impact au quotidien.
+  event.detail.alt: 22 April, Earth Day with Nos Gestes Climat
+  event.detail.alt.lock: 22 avril, Jour de la terre avec Nos Gestes Climat
+  event.ctas.card2.description: Create a dedicated space to engage your colleagues, pupils or students, or stakeholders.
+  event.ctas.card2.description.lock: Créez un espace dédié pour mobiliser vos collègues, élèves / étudiants, ou parties prenantes.
+  event.tutorial.individual.1.description: Browse the topics (food, transport, housing, etc.) in just a few minutes.
+  event.tutorial.individual.1.description.lock: Parcourez les thématiques (alimentation, transport, logement…) en quelques minutes.
+  event.hero.title.description: 'To mark European Sustainable Development Week, take up the challenge with your organisation: <2>measure your carbon footprint and take action to reduce it collectively</2>'
+  event.hero.title.description.lock: "A l'occasion de la Semaine européenne du développement durable, relevez le défi avec votre organisation : <2>mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement</2>"
+  event.testimonies.2.text: The ‘Nos Gestes Climat’ campaign really helped to bring the topic to life on the Pass Culture app, as well as internally, where nearly a third of the 170 employees took part. The format was really appreciated by everyone and helped to spark important discussions.
+  event.testimonies.2.text.lock: La campagne Nos Gestes Climat a réellement permis de faire vivre le sujet sur l'application pass Culture, mais aussi en interne où près d'un tiers des 170 collaborateurs ont participé. Le format a été réellement apprécié par tous et a permis d'initier des discussions importantes.
+  event.testimonies.3.text: On a personal level, we organised a small internal competition with my children. On a professional level, as part of our efforts to improve our carbon footprint, we used this tool to raise awareness amongst our staff about the impact of their daily lives.
+  event.testimonies.3.text.lock: À titre privé nous avons fait organiser un petit concours interne avec mes enfants. À titre professionnel, dans le cadre de l’amélioration de notre bilan carbone, nous avons utilisé cet outil afin de sensibiliser nos collaborateurs sur l’impact de leur quotidien.
+  event.testimonies.1.text: 'We invited our community of travellers to use Nos Gestes Climat to calculate their carbon footprint. It was a simple and accessible way to raise awareness without making people feel guilty. The result: nearly 4,700 participants. A real catalyst for sparking a conversation about more responsible tourism.'
+  event.testimonies.1.text.lock: "Nous avons proposé à notre communauté de voyageurs d'utiliser Nos Gestes Climat pour calculer leur empreinte écologique. C'était une manière simple et accessible de sensibiliser sans culpabiliser. Résultat : près de 4 700 participations. Un vrai levier pour initier le dialogue sur un tourisme plus responsable."
+  event.podium.title: Live rankings of organisations
+  event.podium.title.lock: Classement des organisations en direct
+  event.funFacts.title: <2>0</2> have already taken part.
+  event.funFacts.title.lock: Vous êtes déjà <1>0</1><2></2>à avoir participé.
+  event.meta.title: Community carbon footprint event – Nos Gestes Climat
+  event.meta.title.lock: Événement collectif d'empreinte carbone - Nos Gestes Climat
+  event.meta.description: 'Take up the challenge with your organisation: measure your carbon footprint and take action to reduce it collectively.'
+  event.meta.description.lock: "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
+  event.statistics.second: actions you can take to reduce your carbon footprint
+  event.statistics.second.lock: actions disponibles pour réduire son empreinte
   contact.iframe.title.fr: Form – please send us your feedback on the website
   contact.iframe.title.fr.lock: Formulaire - nous faire part de vos remarques sur le site
   contact.iframe.title.en: Form – provide feedback on Nos Gestes Climat
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
+  event.podium.list.item.score.big: footprint calculations
+  event.podium.list.item.score.big.lock: calculs d'empreinte
+  event.podium.list.item.score.small: tests
+  event.podium.list.item.score.small.lock: tests
+  event.testimonies.5.text: I was surprised to learn that our target is to reduce our carbon footprint to 2 tonnes of CO₂ per person per year by 2050. I didn’t realise the gap between that and our current way of life was so wide.
+  event.testimonies.5.text.lock: J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.
+  event.testimonies.4.text: I was surprised to find that the bulk of my carbon footprint doesn’t come from my direct actions, such as my journeys, but rather from more invisible aspects of daily life, such as public services or the production of the goods I buy. It made me realise that carbon impact is often indirect.
+  event.testimonies.4.text.lock: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
+  event.countdown.label: Start in
+  event.countdown.label.lock: Début dans
+  event.statistics.title: Live data will appear on launch
+  event.statistics.title.lock: Les données en direct apparaîtront au lancement
+  event.countdown.date: Launch on 1 September 2026
+  event.countdown.date.lock: Lancement le 1er septembre 2026
+  event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
+  event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
+  Éducation: Education
+  Associations: Charities
+  Services publics: Public services
+  Individu: Individual
+  Organisation: Organisation
+  event.podium.nextButton.label: Next organisation
+  event.podium.remainingList.ariaLabel: Rest of the rankings
+  event.podium.nextButton.label.lock: Organisation suivante
+  event.podium.block.score.text1: footprint calculations
+  event.podium.block.score.text1.lock: calculs d'empreinte
+  event.podium.block.score.text2: Awaiting launch
+  event.podium.block.score.text2.lock: En attente du lancement
+  event.podium.remainingList.ariaLabel.lock: Suite du classement
+  results.footprintBlock.actionsBlock.link: Find out about my activities
+  results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
+  common.co2eAn.title: CO₂e per year
+  common.co2eAn.title.lock: CO₂e / an
+  results.footprintBlock.actionsBlock.title: 'How to reduce your carbon footprint:'
+  results.footprintBlock.actionsBlock.title.lock: 'Comment réduire votre empreinte :'
   iframe.safari.openInNewTab: Open the calculator in a new tab
   iframe.safari.openInNewTab.lock: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.errorTitle: Incompatible version of Safari
   iframe.safari.errorTitle.lock: Version de Safari incompatible
   iframe.safari.errorDescription: Your version of Safari does not allow our website to function correctly on this embedded page. To use the calculator, please update your Safari browser to the latest version or open the calculator in a new window.
   iframe.safari.errorDescription.lock: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
+  common.letsGo: Let's go!
+  common.letsGo.lock: C'est parti !
+  common.seeResults: View the results
+  common.seeResults.lock: Voir les résultats
+  common.confirm: Confirm
+  common.confirm.lock: Confirmer
+  common.cancel: Cancel
+  common.cancel.lock: Annuler
+  poll.tutorial.alreadyTookTest.youth: You have already taken this test.
+  poll.tutorial.alreadyTookTest.youth.lock: Tu as déja participé à ce test.
+  tutorial.reuseData.newTestButton.label: Start a new test
+  tutorial.reuseData.newTestButton.label.lock: Commencer un nouveau test
+  tutorial.reuseData.useDataButton.label: Use my existing data
+  tutorial.reuseData.useDataButton.label.lock: Utiliser mes données existantes
+  poll.tutorial.alreadyTookTest.default: You have already taken part in this survey.
+  poll.tutorial.alreadyTookTest.default.lock: Vous avez déjà participé à ce sondage.

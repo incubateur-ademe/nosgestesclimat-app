@@ -1,16 +1,10 @@
 'use client'
 
 import NextLink from 'next/link'
-import type {
-  HTMLAttributes,
-  MouseEventHandler,
-  PropsWithChildren,
-} from 'react'
+import type { MouseEventHandler } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-export interface LinkProps extends PropsWithChildren<
-  HTMLAttributes<HTMLAnchorElement>
-> {
+export interface LinkProps extends React.ComponentProps<typeof NextLink> {
   href: string
   className?: string
   onClick?: MouseEventHandler<HTMLAnchorElement>
