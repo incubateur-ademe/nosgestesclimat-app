@@ -1426,7 +1426,7 @@ entries:
   event.ctas.card2.title: Avec votre organisation
   event.ctas.description: Deux façons de participer au challenge.
   event.ctas.heading: Prêt·e à rejoindre l'aventure ?
-  event.detail.alt: 22 avril, Jour de la terre avec Nos Gestes Climat
+  event.detail.alt: Du 18 septembre au 8 octobre, Semaine européenne du Développement Durable sur nosgestesclimat.fr
   event.detail.dates: Du 18 septembre au 8 octobre 2026
   event.detail.title: Semaine Européenne du<1></1>Développement<3></3>Durable
   event.dynamicCounter.primaryCta: Je mobilise mon organisation
@@ -1482,6 +1482,11 @@ entries:
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
   event.podium.list.item.score.big: calculs d'empreinte
   event.podium.list.item.score.small: tests
+  event.podium.categories.all: Toutes
+  event.podium.categories.companies: Entreprises
+  event.podium.categories.associations: Associations
+  event.podium.categories.education: Éducation
+  event.podium.categories.publicServices: Services publics
   event.testimonies.4.text: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.testimonies.5.text: J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.
   event.countdown.date: Lancement le 1er septembre 2026
@@ -1511,3 +1516,9 @@ entries:
   poll.tutorial.alreadyTookTest.youth: Tu as déja participé à ce test.
   tutorial.reuseData.newTestButton.label: Commencer un nouveau test
   tutorial.reuseData.useDataButton.label: Utiliser mes données existantes
+  common.days: Jours
+  common.hours: heures
+  common.minutes: Minutes
+  common.seconds: seconds
+  event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
+  Toutes: Toutes

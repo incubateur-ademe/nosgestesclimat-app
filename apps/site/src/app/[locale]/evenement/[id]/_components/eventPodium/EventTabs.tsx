@@ -18,7 +18,7 @@ const FILTER_TRANSLATIONS: Record<
   FilterValue,
   { key: string; defaultLabel: string }
 > = {
-  all: { key: 'event.podium.categories.all', defaultLabel: 'Toutes' },
+  all: { key: 'event.podium.categories.all', defaultLabel: t('Toutes') },
   companies: {
     key: 'event.podium.categories.companies',
     defaultLabel: t('Entreprises'),
