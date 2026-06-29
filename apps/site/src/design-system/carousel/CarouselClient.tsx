@@ -25,9 +25,7 @@ interface CarouselClientProps {
   className?: string
   slideClassName?: string
   translations: CarouselTranslations
-  showMobileNav?: boolean
-  slidesPerGroup?: number
-  slidesPerGroupDesktop?: number
+  slidesPerGroup?: { mobile?: number; desktop?: number }
 }
 
 export default function CarouselClient({
@@ -35,9 +33,7 @@ export default function CarouselClient({
   className,
   slideClassName,
   translations,
-  showMobileNav = false,
-  slidesPerGroup,
-  slidesPerGroupDesktop,
+  slidesPerGroup: slidesPerGroupProp,
 }: CarouselClientProps) {
   const [isInitialized, setIsInitialized] = useState(false)
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null)
@@ -74,15 +70,13 @@ export default function CarouselClient({
         a11y={translations}
         spaceBetween={8}
         slidesPerView="auto"
-        slidesPerGroupAuto={
-          slidesPerGroup == null && slidesPerGroupDesktop == null
-        }
-        slidesPerGroup={slidesPerGroup ?? 1}
+        slidesPerGroupAuto={slidesPerGroupProp?.desktop == null}
+        slidesPerGroup={slidesPerGroupProp?.mobile ?? 1}
         breakpoints={
-          slidesPerGroupDesktop != null
+          slidesPerGroupProp?.desktop != null
             ? {
                 768: {
-                  slidesPerGroup: slidesPerGroupDesktop,
+                  slidesPerGroup: slidesPerGroupProp.desktop,
                   slidesPerGroupAuto: false,
                 },
               }
@@ -115,24 +109,22 @@ export default function CarouselClient({
           )
         })}
       </Swiper>
-      {showMobileNav && (
-        <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
-          <Button
-            onClick={() => swiper?.slidePrev()}
-            color="secondary"
-            className="h-11 w-11 p-0!"
-            aria-label={translations.prevSlideMessage}>
-            <ChevronLeft />
-          </Button>
-          <Button
-            onClick={() => swiper?.slideNext()}
-            color="secondary"
-            className="h-11 w-11 p-0!"
-            aria-label={translations.nextSlideMessage}>
-            <ChevronLeft className="rotate-180" />
-          </Button>
-        </div>
-      )}
+      <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
+        <Button
+          onClick={() => swiper?.slidePrev()}
+          color="secondary"
+          className="h-11 w-11 p-0!"
+          aria-label={translations.prevSlideMessage}>
+          <ChevronLeft />
+        </Button>
+        <Button
+          onClick={() => swiper?.slideNext()}
+          color="secondary"
+          className="h-11 w-11 p-0!"
+          aria-label={translations.nextSlideMessage}>
+          <ChevronLeft className="rotate-180" />
+        </Button>
+      </div>
     </>
   )
 }
@@ -146,7 +138,7 @@ const NavigationButton = forwardRef(function NavigationButtonWithRef(
       {...props}
       className={twMerge(
         'absolute top-1/2 z-10 hidden -translate-y-1/2 md:flex',
-        'border-primary-700 h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-blue-500 transition-all',
+        'border-primary-700 h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-blue-500 shadow-sm transition-all',
         'focus:outline-primary-700 hover:scale-110 disabled:opacity-0',
         className
       )}

@@ -172,7 +172,7 @@ export default async function ProfileTab({
   return (
     <Tabs
       items={tabsItems}
-      className="mb-8"
+      className="mb-6 md:mb-8"
       ariaLabel={t('Navigation de mon espace')}
       containerId="mon-espace-tabs"
     />

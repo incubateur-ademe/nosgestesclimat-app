@@ -115,8 +115,7 @@ export default function EventTutorial({ stepsByMode }: Props) {
               <CarouselClient
                 translations={carouselTranslations}
                 className="px-4 py-1"
-                slideClassName="w-full max-w-none sm:w-full"
-                showMobileNav>
+                slideClassName="w-full max-w-none sm:w-full">
                 {steps.map((step) => (
                   <StepCard key={step.number} step={step} />
                 ))}

@@ -9,9 +9,7 @@ export interface CarouselProps extends React.ComponentPropsWithoutRef<'div'> {
   innerClassName?: string
   /** className applied to each SwiperSlide */
   slideClassName?: string
-  slidesPerGroup?: number
-  slidesPerGroupDesktop?: number
-  showMobileNav?: boolean
+  slidesPerGroup?: { mobile?: number; desktop?: number }
 }
 
 export default async function Carousel({
@@ -21,8 +19,6 @@ export default async function Carousel({
   children,
   locale,
   slidesPerGroup,
-  slidesPerGroupDesktop,
-  showMobileNav,
   ...rest
 }: CarouselProps) {
   const { t } = await getServerTranslation({ locale })
@@ -66,9 +62,7 @@ export default async function Carousel({
         translations={translations}
         className={innerClassName}
         slideClassName={slideClassName}
-        slidesPerGroup={slidesPerGroup}
-        slidesPerGroupDesktop={slidesPerGroupDesktop}
-        showMobileNav={showMobileNav}>
+        slidesPerGroup={slidesPerGroup}>
         {children}
       </CarouselClient>
     </div>
