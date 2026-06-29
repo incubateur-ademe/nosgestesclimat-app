@@ -3,7 +3,7 @@ import {
   baseClassNames,
   colorClassNames,
   sizeClassNames,
-} from '@/design-system/buttons/Button'
+} from '@/design-system/buttons/buttonStyles'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
