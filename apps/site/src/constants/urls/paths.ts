@@ -21,6 +21,7 @@ export const MON_ESPACE_SETTINGS_PATH = '/mon-espace/parametres'
 export const MON_ESPACE_RESULTS_DETAIL_PATH =
   '/mon-espace/resultats/:simulationId'
 
+export const ORGANISATION_HOME_PAGE = '/organisations'
 export const ORGANISATION_CREATE_PATH = '/organisations/creer'
 export const ORGANISATION_SIGN_IN_PATH = '/organisations/connexion'
 export const ORGANISATION_SIGN_UP_PATH = '/organisations/inscription'
