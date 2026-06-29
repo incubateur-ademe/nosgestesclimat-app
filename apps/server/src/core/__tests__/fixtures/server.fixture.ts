@@ -10,5 +10,6 @@ export const resetMswServer = () => {
       expect(handler.isUsed).toBeTruthy()
     }
   }
+
   mswServer.resetHandlers()
 }
