@@ -1503,3 +1503,11 @@ entries:
   iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
   iframe.safari.errorTitle: Version de Safari incompatible
+  common.cancel: Annuler
+  common.confirm: Confirmer
+  common.letsGo: C'est parti !
+  common.seeResults: Voir les résultats
+  poll.tutorial.alreadyTookTest.default: Vous avez déjà participé à ce sondage.
+  poll.tutorial.alreadyTookTest.youth: Tu as déja participé à ce test.
+  tutorial.reuseData.newTestButton.label: Commencer un nouveau test
+  tutorial.reuseData.useDataButton.label: Utiliser mes données existantes

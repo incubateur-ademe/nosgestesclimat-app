@@ -2210,3 +2210,19 @@ entries:
   iframe.safari.errorTitle.lock: Version de Safari incompatible
   iframe.safari.errorDescription: Your version of Safari does not allow our website to function correctly on this embedded page. To use the calculator, please update your Safari browser to the latest version or open the calculator in a new window.
   iframe.safari.errorDescription.lock: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
+  common.letsGo: Let's go!
+  common.letsGo.lock: C'est parti !
+  common.seeResults: View the results
+  common.seeResults.lock: Voir les résultats
+  common.confirm: Confirm
+  common.confirm.lock: Confirmer
+  common.cancel: Cancel
+  common.cancel.lock: Annuler
+  poll.tutorial.alreadyTookTest.youth: You have already taken this test.
+  poll.tutorial.alreadyTookTest.youth.lock: Tu as déja participé à ce test.
+  tutorial.reuseData.newTestButton.label: Start a new test
+  tutorial.reuseData.newTestButton.label.lock: Commencer un nouveau test
+  tutorial.reuseData.useDataButton.label: Use my existing data
+  tutorial.reuseData.useDataButton.label.lock: Utiliser mes données existantes
+  poll.tutorial.alreadyTookTest.default: You have already taken part in this survey.
+  poll.tutorial.alreadyTookTest.default.lock: Vous avez déjà participé à ce sondage.
