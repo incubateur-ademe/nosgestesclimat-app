@@ -1,0 +1,23 @@
+#!/bin/sh
+# Déclenché automatiquement à chaque `git worktree add` (UI Zed, CLI, etc.)
+# Copie les fichiers ignorés (.env, etc.) depuis le worktree principal.
+#
+# Fonctionne avec Husky : .husky/_/post-checkout → .husky/_/h → ce script
+
+# Seulement pour les checkouts de branche ($3 = 1), pas les file checkouts
+[ "$3" != "1" ] && exit 0
+
+MAIN=$(git worktree list | head -1 | awk '{print $1}')
+CURRENT=$(pwd)
+
+# Rien à faire dans le worktree principal
+[ "$CURRENT" = "$MAIN" ] && exit 0
+
+git -C "$MAIN" ls-files --others --ignored --exclude-standard --directory |
+  grep -vE '^(node_modules|\.pnpm-store|\.yarn|dist|build|\.next|\.turbo|coverage)/' |
+  while IFS= read -r f; do
+    if [ -e "$MAIN/$f" ] && [ ! -e "$f" ]; then
+      mkdir -p "$(dirname "$f")"
+      cp -r "$MAIN/$f" "$f"
+    fi
+  done

@@ -47,3 +47,7 @@ package-lock.json
 
 # IDE
 .history/
+
+# Devcontainer — générés dynamiquement
+.devcontainer/.env
+.devcontainer/.cid
