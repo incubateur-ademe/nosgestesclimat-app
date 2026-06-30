@@ -44,7 +44,20 @@ export async function middlewareMigrateLegacySessions(
 
   const tokens = await migrateLegacySessions({ jwt, ironUserId })
   if (!tokens) {
-    return { redirect: null, cookies: [] }
+    const cookies: MiddlewareResult['cookies'] = []
+    if (jwt)
+      cookies.push({
+        name: LEGACY_SESSION_COOKIE!,
+        value: '',
+        options: { maxAge: 0 },
+      })
+    if (anonCookie)
+      cookies.push({
+        name: ANON_SESSION_COOKIE,
+        value: '',
+        options: { maxAge: 0 },
+      })
+    return { redirect: null, cookies }
   }
 
   let userId: string
