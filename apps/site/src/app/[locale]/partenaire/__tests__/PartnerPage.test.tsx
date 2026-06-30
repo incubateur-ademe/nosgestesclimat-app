@@ -1,18 +1,20 @@
-import { mswServer } from '@/__tests__/server'
 import { PARTNER_JAGIS, PARTNER_KEY } from '@/constants/partners'
-import { INTEGRATION_URL } from '@/constants/urls/main'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { faker } from '@faker-js/faker'
 import '@testing-library/jest-dom'
 import { act, screen, waitFor } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
 import { notFound } from 'next/navigation'
 import { vi } from 'vitest'
 import PartnerPage from '../page'
 
+const mockVerifyPartner = vi.fn<[string], Promise<unknown>>()
 const mockNotFound = vi.mocked(notFound)
+
+vi.mock('@/services/partners/verifyPartner', () => ({
+  verifyPartner: (partner: string) => mockVerifyPartner(partner),
+}))
 
 vi.mock('@/components/layout/HeaderServer', () => ({
   __esModule: true,
@@ -38,11 +40,7 @@ describe('PartnerPage', () => {
   describe('when user has a simulation', () => {
     it('should display a message indicating the upcoming redirection', async () => {
       // Given
-      mswServer.use(
-        http.get(`${INTEGRATION_URL}/${PARTNER_JAGIS}`, () => {
-          return HttpResponse.json({ name: 'Test Partner' })
-        })
-      )
+      mockVerifyPartner.mockResolvedValue({ name: 'Test Partner' })
 
       // When
       await act(async () => {
@@ -87,11 +85,7 @@ describe('PartnerPage', () => {
   describe('when partner is not verified', () => {
     it('should redirect to /404', async () => {
       // Given
-      mswServer.use(
-        http.get(`${INTEGRATION_URL}/${PARTNER_JAGIS}`, () => {
-          return HttpResponse.error()
-        })
-      )
+      mockVerifyPartner.mockResolvedValue(undefined)
 
       // When & Then
       await expect(
@@ -107,11 +101,7 @@ describe('PartnerPage', () => {
   describe('when user has not completed the test', () => {
     it('should redirect to /simulateur/bilan', async () => {
       // Given
-      mswServer.use(
-        http.get(`${INTEGRATION_URL}/${PARTNER_JAGIS}`, () => {
-          return HttpResponse.json({ name: 'Test Partner' })
-        })
-      )
+      mockVerifyPartner.mockResolvedValue({ name: 'Test Partner' })
 
       // When
       await act(async () =>
