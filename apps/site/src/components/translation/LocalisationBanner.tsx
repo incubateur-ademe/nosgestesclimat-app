@@ -44,7 +44,7 @@ export default function LocalisationBanner({ model }: { model: Model }) {
     <Card
       tabIndex={-1}
       id={LOCALISATION_BANNER_ID}
-      className="bg-primary-50 fixed right-4 bottom-12 left-4 z-50 mx-auto mb-8 flex-row sm:right-8 sm:left-auto md:bottom-0">
+      className="bg-primary-50 fixed right-4 bottom-12 left-4 z-100 mx-auto mb-8 flex-row sm:right-8 sm:left-auto md:bottom-0">
       <div className="flex w-full gap-4">
         <div className="w-full flex-1">
           <>
