@@ -195,12 +195,15 @@ export const captureActionsClickUnderstandCalculation = ({
 
 // Fin
 
-export const captureEndClickCategory = ({ category }: PosthogProps) => ({
-  eventName: 'Fin click Category',
-  properties: {
-    category,
-  },
-})
+export const captureEndClickCategory = ({ category, action }: PosthogProps) => {
+  return {
+    eventName: 'Results page click see details category',
+    properties: {
+      category,
+      action,
+    },
+  }
+}
 
 // Landing
 
