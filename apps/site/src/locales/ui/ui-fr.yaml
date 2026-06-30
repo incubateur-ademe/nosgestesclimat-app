@@ -1466,7 +1466,7 @@ entries:
   event.tutorial.individual.2.title: Résultat instantané
   event.tutorial.individual.3.description: Recevez des actions personnalisées pour réduire votre impact au quotidien.
   event.tutorial.individual.3.title: Passez à l'action
-  event.tutorial.org.1.description: Configurez votre campagne en quelques clics et définissez vos objectifs.
+  event.tutorial.org.1.description: <0>Configurez votre campagne</0> en quelques clics et définissez vos objectifs.
   event.tutorial.org.1.title: Créez un test collectif
   event.tutorial.org.2.description: Diffusez un lien unique par email, réseau social ou QR code auprès de vos collaborateurs.<1></1>Aidez-vous de notre <4>kit de communication !</4>
   event.tutorial.org.2.title: Partagez le lien

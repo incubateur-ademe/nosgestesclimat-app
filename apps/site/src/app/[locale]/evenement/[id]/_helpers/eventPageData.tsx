@@ -1,5 +1,6 @@
 /** Event page data — centralized mock content before CMS integration. */
 
+import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
 import type { Locale } from '@/i18nConfig'
@@ -164,9 +165,13 @@ export function getEventPageData({
         {
           number: 1,
           title: t('event.tutorial.org.1.title', 'Créez un test collectif'),
-          description: t(
-            'event.tutorial.org.1.description',
-            'Configurez votre campagne en quelques clics et définissez vos objectifs.'
+          description: (
+            <Trans i18nKey="event.tutorial.org.1.description" locale={locale}>
+              <Link href={ORGANISATION_HOME_PAGE}>
+                Configurez votre campagne
+              </Link>{' '}
+              en quelques clics et définissez vos objectifs.
+            </Trans>
           ),
         },
         {

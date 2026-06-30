@@ -2125,8 +2125,8 @@ entries:
   event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
   event.detail.dates: From 18 September to 8 October 2026
   event.detail.dates.lock: Du 18 septembre au 8 octobre 2026
-  event.tutorial.org.1.description: Set up your campaign in just a few clicks and define your objectives.
-  event.tutorial.org.1.description.lock: Configurez votre campagne en quelques clics et définissez vos objectifs.
+  event.tutorial.org.1.description: <0>Set up your campaign</0> in just a few clicks and define your objectives.
+  event.tutorial.org.1.description.lock: <0>Configurez votre campagne</0> en quelques clics et définissez vos objectifs.
   event.ctas.description: There are two ways to take part in the challenge.
   event.ctas.description.lock: Deux façons de participer au challenge.
   event.hero.title.part1: The impact is greater
