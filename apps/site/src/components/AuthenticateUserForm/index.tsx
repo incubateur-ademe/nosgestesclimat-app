@@ -21,6 +21,7 @@ import {
 } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import type { ButtonColor } from '../../design-system/buttons/Button'
+import { revalidateAllSitePath } from '../../services/routing/revalidateAllSitePath'
 import Trans from '../translation/trans/TransClient'
 import SendVerificationCodeForm from './SendVerificationCodeForm'
 import VerifyCodeForm from './VerifyCodeForm'
@@ -86,7 +87,8 @@ export default function AuthenticateUserForm({
       await onComplete?.(user)
 
       if (redirectPathname) {
-        window.location.href = redirectPathname
+        await revalidateAllSitePath()
+        router.push(redirectPathname)
       } else {
         router.refresh()
       }
