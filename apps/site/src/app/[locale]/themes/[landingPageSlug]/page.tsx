@@ -17,9 +17,9 @@ import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { fetchThematicLandingPage } from '@/services/cms/fetchThematicLandingPage'
 import { fetchThematicLandingPageMetadata } from '@/services/cms/fetchThematicLandingPageMetadata'
-import { getUserSession } from '@/services/users/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import { getArticleHref } from '@/utils/cms/getArticleHref'
 import Image from 'next/image'
@@ -60,7 +60,7 @@ export default async function ThematicLandingPage({
   params: Promise<{ landingPageSlug: string; locale: Locale }>
 }>) {
   const { landingPageSlug, locale } = await params
-  const { id: serverUserId } = await getUserSession()
+  const userSession = await getUserSession()
   const { thematicLandingPage } =
     (await fetchThematicLandingPage({
       landingPageSlug,
@@ -86,7 +86,7 @@ export default async function ThematicLandingPage({
   } = thematicLandingPage
 
   return (
-    <ClientLayout locale={locale} serverUserId={serverUserId}>
+    <ClientLayout locale={locale} userSession={userSession}>
       <JSONLD
         jsonLd={[
           {

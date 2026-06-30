@@ -1,8 +1,8 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { ComputedResults } from '@/publicodes-state/types'
-import type { AppUser } from '@/services/users/get-user-session'
+import type { AppUser } from '@/services/auth/get-user-session'
+import { getPublicPoll } from '@/services/organisations/get-public-poll'
 import { getGroup } from './groups'
-import { getUserPoll } from './poll'
 
 export interface SimulationResult {
   computedResults: ComputedResults
@@ -32,10 +32,7 @@ export async function getSimulationResult({
   // If no group found, try to find an associated poll/campaign
   if (!group && simulation.polls?.length) {
     const poll = simulation.polls[0]
-    const pollDetails = await getUserPoll({
-      user,
-      pollIdOrSlug: poll.id,
-    })
+    const pollDetails = await getPublicPoll(poll.id)
     group = {
       name: pollDetails.name,
       href: `/organisations/${pollDetails.organisation.slug}/campagnes/${poll.slug}`,

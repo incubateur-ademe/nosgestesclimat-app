@@ -6,23 +6,29 @@ import { i18nRouter } from 'next-i18n-router'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api/server')
-
-  // Phase 1 — Interceptors
-  if (!isApiRoute) {
-    const ff = middlewareFeatureFlags(request)
-    if (ff.redirect) return ff.redirect
+  // In Turbopack dev, Next.js forwards server actions between internal workers
+  // via a self-fetch to localhost:3000, targeting the action's worker page
+  // (e.g. `/[locale]/simulateur/bilan`). That self-fetch goes through this
+  // proxy. i18nRouter would rewrite its no-locale URL (prepending the default
+  // locale), which changes the page seen by `selectWorkerForForwarding` and
+  // makes it re-forward indefinitely → "failed to forward action response"
+  // storm. Forward-fetches target a specific worker page on purpose and must
+  // not be i18n-rewritten, so pass them through untouched.
+  if (request.headers.get('x-action-forwarded')) {
+    return NextResponse.next()
   }
 
+  // Phase 1 — Interceptors
+  const ff = middlewareFeatureFlags(request)
+  if (ff.redirect) return ff.redirect
+
   const auth = await middlewareAuth(request)
-  if (auth.redirect && !isApiRoute) return auth.redirect
+  if (auth.redirect) return auth.redirect
 
   const region = await middlewareRegion(request)
 
   // Phase 2 — Routing
-  const response = isApiRoute
-    ? NextResponse.next()
-    : i18nRouter(request, i18nConfig)
+  const response = i18nRouter(request, i18nConfig)
 
   // Phase 3 — Apply cookies
   for (const cookie of [...auth.cookies, ...region.cookies]) {
@@ -47,9 +53,6 @@ export const config = {
      * - videos (public videos directory)
      * - robots.txt (robots file)
      * - datashare (iframe datashare modal)
-     *
-     * Note: /api/server is intentionally NOT excluded — the proxy
-     * handles auth and region cookies for those routes.
      */
     {
       source:

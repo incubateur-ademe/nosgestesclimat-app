@@ -1,27 +1,12 @@
-import { ADMINISTRATOR_SEPARATOR } from '@/constants/organisations/administrator'
-import type { OrganisationTypeEnum } from '@/constants/organisations/organisationTypes'
-import { ORGANISATION_URL } from '@/constants/urls/main'
-import type {
-  OrgaSettingsInputsType,
-  Organisation,
-} from '@/types/organisations'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
+'use client'
 
-interface OrganisationToUpdate {
-  name?: string
-  type?: OrganisationTypeEnum | null
-  numberOfCollaborators?: number | null
-  administrators?: [
-    {
-      name?: string | null
-      telephone?: string | null
-      position?: string | null
-      email?: string
-      optedInForCommunications?: boolean
-    },
-  ]
-}
+import { ADMINISTRATOR_SEPARATOR } from '@/constants/organisations/administrator'
+import {
+  updateOrganisation,
+  type OrganisationToUpdate,
+} from '@/services/organisations/update-organisation'
+import type { OrgaSettingsInputsType } from '@/types/organisations'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export function useUpdateOrganisation() {
   const queryClient = useQueryClient()
@@ -30,14 +15,11 @@ export function useUpdateOrganisation() {
     mutationFn: async ({
       organisationIdOrSlug,
       formData,
-      code,
     }: {
       organisationIdOrSlug: string
       formData: OrgaSettingsInputsType
-      email?: string
-      code?: string
     }) => {
-      const organisationToUpdate: OrganisationToUpdate = {
+      const organisationToUpdate = {
         ...(formData.name ? { name: formData.name } : {}),
         type: formData.organisationType,
         ...(formData.numberOfCollaborators && +formData.numberOfCollaborators
@@ -60,21 +42,10 @@ export function useUpdateOrganisation() {
         ],
       }
 
-      return axios
-        .put<Organisation>(
-          `${ORGANISATION_URL}/${organisationIdOrSlug}`,
-          organisationToUpdate,
-          {
-            withCredentials: true,
-            params: {
-              code,
-            },
-          }
-        )
-        .then((response) => ({
-          ...response.data,
-          userId: response.data.administrators[0].userId,
-        }))
+      return updateOrganisation({
+        organisationIdOrSlug,
+        organisation: organisationToUpdate as OrganisationToUpdate,
+      })
     },
     onSuccess: () =>
       queryClient.invalidateQueries({

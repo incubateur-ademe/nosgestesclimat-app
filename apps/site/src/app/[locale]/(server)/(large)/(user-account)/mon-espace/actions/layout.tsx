@@ -1,9 +1,9 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { Locale } from '@/i18nConfig'
 import { EngineProvider, UserProvider } from '@/publicodes-state'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 
 export default async function Layout({
   children,
@@ -11,7 +11,7 @@ export default async function Layout({
 }: LayoutProps<'/[locale]/mon-espace/actions'>) {
   const locale = (await params).locale as Locale
   const user = await getUserSession()
-  const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
+  const simulations = await getCompletedSimulations({ pageSize: 1 })
   const lastCompletedSimulation = simulations.at(0)
   const rules = await getCachedRules({
     modelStr: lastCompletedSimulation?.model,
@@ -20,7 +20,7 @@ export default async function Layout({
 
   return (
     <div>
-      <UserProvider serverSimulations={simulations} serverUserId={user.id}>
+      <UserProvider serverSimulations={simulations} userSession={user}>
         <QueryClientProviderWrapper>
           <EngineProvider rules={rules}>{children}</EngineProvider>
         </QueryClientProviderWrapper>

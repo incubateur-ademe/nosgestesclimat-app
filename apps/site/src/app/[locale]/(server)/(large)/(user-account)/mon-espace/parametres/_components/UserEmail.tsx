@@ -3,18 +3,18 @@
 import Trans from '@/components/translation/trans/TransClient'
 import UserEmailForm from '@/components/user/UserEmailForm'
 import Button from '@/design-system/buttons/Button'
-import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
-import { useUser } from '@/publicodes-state'
+import type { AuthUser } from '@/services/auth/get-user-session'
 import { useState } from 'react'
-
-export default function UserEmail() {
+interface Props {
+  user: AuthUser
+}
+export default function UserEmail({ user }: Props) {
   const [isEditing, setIsEditing] = useState(false)
-
-  const { user } = useUser()
 
   if (isEditing) {
     return (
       <UserEmailForm
+        defaultEmail={user.email}
         submitLabel={
           <Trans i18nKey="mon-espace.settings.userInfos.submitLabel">
             Mettre à jour mes informations
@@ -39,11 +39,7 @@ export default function UserEmail() {
 
   return (
     <div className="flex flex-wrap items-center">
-      {user.email ? (
-        <p className="m-0 text-sm md:text-base">{user.email}</p>
-      ) : (
-        <BlockSkeleton className="my-0 h-6 w-[200px]" />
-      )}
+      <p className="m-0 text-sm md:text-base">{user.email}</p>
 
       <Button
         color="link"

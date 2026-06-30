@@ -7,7 +7,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import Image from 'next/image'
 import { ClientLayout } from '../../../components/layout/ClientLayout'
@@ -36,9 +36,9 @@ export default async function CarbonFootprintLandingPage({
   params,
 }: DefaultPageProps) {
   const { locale } = await params
-  const { id: serverUserId } = await getUserSession()
+  const userSession = await getUserSession()
   return (
-    <ClientLayout serverUserId={serverUserId} locale={locale}>
+    <ClientLayout userSession={userSession} locale={locale}>
       <JSONLD
         jsonLd={[
           {

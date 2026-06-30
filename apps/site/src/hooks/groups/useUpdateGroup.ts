@@ -1,25 +1,14 @@
-import { GROUP_URL } from '@/constants/urls/main'
-import { useUser } from '@/publicodes-state'
-import type { Group } from '@/types/groups'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
+'use client'
 
-interface MutationFnType {
-  groupId: string
-  name: string
-}
+import { updateGroup } from '@/services/groups/update-group'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+
 export const useUpdateGroup = () => {
   const queryClient = useQueryClient()
 
-  const {
-    user: { userId },
-  } = useUser()
-
   return useMutation({
-    mutationFn: ({ groupId, name }: MutationFnType) =>
-      axios.put<Group>(`${GROUP_URL}/${userId}/${groupId}`, {
-        name,
-      }),
+    mutationFn: ({ groupId, name }: { groupId: string; name: string }) =>
+      updateGroup({ groupId, name }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] })
     },

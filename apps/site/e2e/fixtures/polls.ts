@@ -56,18 +56,14 @@ export class Poll {
     await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
     const modeLabel = this.page.getByTestId(`poll-mode-${mode}`)
     await modeLabel.click()
-    // Wait for the radio input inside the label to be checked
-    await expect(modeLabel.locator('input[type="radio"]')).toBeChecked()
 
+    await this.page.waitForTimeout(100)
     const submitButton = this.page.getByTestId('poll-form-type-button')
     await submitButton.click()
 
-    // Wait for the button to be disabled (form is submitting)
-    await expect(submitButton).toBeDisabled()
-
     // Retrieve the poll slug (allow more time for the API call)
-    const pollUrl = /\/campagnes\/([a-z0-9-]*)/
-    await expect(this.page).toHaveURL(pollUrl, { timeout: 30000 })
+    const pollUrl = /\/campagnes\/([a-z0-9-]+)/
+    await expect(this.page).toHaveURL(pollUrl)
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 

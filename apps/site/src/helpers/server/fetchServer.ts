@@ -2,7 +2,9 @@
 
 import { SERVER_URL } from '@/constants/urls/main'
 import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
-import { headers as getHeaders } from 'next/headers'
+import type { AppUser } from '@/services/auth/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
+import { headers } from 'next/headers'
 import { InternalServerError } from './error'
 
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? ''
@@ -13,17 +15,26 @@ export async function fetchServer<T = unknown>(
     method = 'GET',
     body,
     next,
+    session,
   }: {
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
     body?: unknown
     next?: NextFetchRequestConfig
+    /**
+     * Optional session override. When a service creates a new session
+     * within the same request (e.g. via {@link withUserId}), the
+     * `x-session` request header is not yet populated — it is only set
+     * by the proxy on the next request cycle. Pass the session here so
+     * `fetchServer` can forward it to Express immediately.
+     */
+    session?: AppUser
   } = {}
 ): Promise<T> {
   if (!url.startsWith(SERVER_URL)) {
     throw new InternalServerError()
   }
 
-  const nextHeaders = await getHeaders()
+  const nextHeaders = await headers()
 
   const reqHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -31,9 +42,13 @@ export async function fetchServer<T = unknown>(
     'x-internal-key': INTERNAL_API_KEY,
   }
 
-  const sessionHeader = nextHeaders.get('x-session')
-  if (sessionHeader) {
-    reqHeaders['x-session'] = sessionHeader
+  const effectiveSession = session ?? (await getUserSession())
+  if (effectiveSession) {
+    reqHeaders['x-user-id'] = effectiveSession.id
+    if (effectiveSession.isAuth) {
+      reqHeaders['x-user-email'] = effectiveSession.email
+    }
+    reqHeaders['x-session'] = JSON.stringify(effectiveSession)
   }
 
   const response = await fetch(url, {

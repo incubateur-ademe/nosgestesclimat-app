@@ -14,8 +14,7 @@ import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr
 import '@testing-library/jest-dom'
 import type { RenderOptions } from '@testing-library/react'
 import { render } from '@testing-library/react'
-import { randomUUID } from 'crypto'
-import type { ReactElement } from 'react'
+import type { ComponentProps, ReactElement } from 'react'
 import { vi } from 'vitest'
 import { getInitialExtendedSituation } from '../modelFetching/getInitialExtendedSituation'
 import { stringifyModel } from '../server/model/models'
@@ -98,11 +97,6 @@ interface ProviderConfig {
   cookieConsent?: boolean
 }
 
-interface UserProviderProps {
-  serverSimulations?: Simulation[]
-  serverUserId?: string
-}
-
 const TestWrapper = ({
   children,
   providers,
@@ -110,7 +104,7 @@ const TestWrapper = ({
 }: {
   children: ReactElement
   providers: ProviderConfig
-  userProviderProps?: UserProviderProps
+  userProviderProps?: ComponentProps<typeof UserProvider>
 }) => {
   let wrapped = children
 
@@ -142,7 +136,7 @@ const TestWrapper = ({
   if (providers.user) {
     wrapped = (
       <UserProvider
-        serverUserId={userProviderProps?.serverUserId ?? randomUUID()}
+        userSession={userProviderProps?.userSession ?? null}
         serverSimulations={userProviderProps?.serverSimulations}>
         {wrapped}
       </UserProvider>
@@ -204,12 +198,13 @@ export const renderWithWrapper = (
   )
 
   // Pass user provider props for server-hydrated mode to avoid async localStorage loading issues
-  const userProviderProps: UserProviderProps | undefined = providers.user
-    ? {
-        serverSimulations: simulations,
-        serverUserId: userMerged.userId,
-      }
-    : undefined
+  const userProviderProps: ComponentProps<typeof UserProvider> | undefined =
+    providers.user
+      ? {
+          serverSimulations: simulations,
+          userSession: null,
+        }
+      : undefined
 
   return render(
     <TestWrapper providers={providers} userProviderProps={userProviderProps}>

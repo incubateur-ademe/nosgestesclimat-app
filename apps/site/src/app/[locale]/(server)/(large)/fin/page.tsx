@@ -8,19 +8,15 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import {
-  NoSessionFoundError,
-  NotFoundError,
-  throwNextError,
-} from '@/helpers/server/error'
+import { NoSessionFoundError, throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import {
   getTendency,
   type Tendency,
 } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
@@ -57,28 +53,17 @@ export default async function FinPage({
   }
 
   const user = await getUserSession()
-  let simulations
-  try {
-    simulations = await getCompletedSimulations(
-      { user },
-      { pageSize: user.isAuth ? 2 : 1 }
-    )
-  } catch (e) {
-    captureException(e)
+  if (!user) {
+    captureException(new NoSessionFoundError(), { level: 'warning' })
     redirect('/')
   }
+
+  const simulations = await getCompletedSimulations({
+    pageSize: user.isAuth ? 2 : 1,
+  })
 
   const [simulation, previousSimulation] = simulations
 
-  if (!simulation) {
-    // @tofix: user can be null once getUser() returns null for anonymous visitors without session (refonte auth)
-    if (!user?.id) {
-      captureException(new NoSessionFoundError())
-    } else {
-      captureException(new NotFoundError(), { level: 'warning' })
-    }
-    redirect('/')
-  }
   const simulationResult = await throwNextError(async () => {
     return getSimulationResult({
       user,

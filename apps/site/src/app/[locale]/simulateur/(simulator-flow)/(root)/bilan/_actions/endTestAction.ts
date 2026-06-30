@@ -3,8 +3,8 @@ import { EMAIL_PAGE_PATH, END_PAGE_PATH } from '@/constants/urls/paths'
 import { InternalServerError } from '@/helpers/server/error'
 import { getLocaleFromHeaders } from '@/helpers/server/getLocaleForNotFoundOrUnautorizedPage'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import { saveSimulation } from '@/helpers/simulation/saveSimulation'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
+import { saveSimulation } from '@/services/simulations/save-simulation'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -17,11 +17,13 @@ export async function endTestAction(simulation: Simulation, userName?: string) {
   }
   await saveSimulation({
     simulation,
-    userId: user.id,
     name: userName,
     locale,
   })
-  if (!user.isAuth && (simulation.polls?.length || simulation.groups?.length)) {
+  if (
+    !user?.isAuth &&
+    (simulation.polls?.length || simulation.groups?.length)
+  ) {
     redirect(EMAIL_PAGE_PATH)
   }
   redirect(END_PAGE_PATH)

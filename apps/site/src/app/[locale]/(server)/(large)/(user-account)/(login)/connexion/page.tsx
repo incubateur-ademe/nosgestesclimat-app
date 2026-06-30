@@ -10,7 +10,7 @@ import Title from '@/design-system/layout/Title'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { UserProvider } from '@/publicodes-state'
-import { getUserSession } from '@/services/users/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
 
@@ -23,7 +23,7 @@ export const generateMetadata = getCommonMetadata({
 
 export default async function Connexion({ params }: DefaultPageProps) {
   const { locale } = await params
-  const { id: initialUserId } = await getUserSession()
+  const userSession = await getUserSession()
 
   return (
     <div className="flex justify-center pb-32 lg:justify-start">
@@ -43,7 +43,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
         />
 
         <QueryClientProviderWrapper>
-          <UserProvider serverUserId={initialUserId}>
+          <UserProvider userSession={userSession}>
             <AuthenticateUserForm
               mode="signIn"
               redirectPathname={MON_ESPACE_PATH}

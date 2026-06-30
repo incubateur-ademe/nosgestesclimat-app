@@ -14,7 +14,6 @@ import {
 import Button from '@/design-system/buttons/Button'
 import useLogin from '@/hooks/authentication/useLogin'
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
-import { useUser } from '@/publicodes-state'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -69,8 +68,6 @@ export default function AuthenticateUserForm({
   verificationClassName,
 }: Props) {
   const router = useRouter()
-  const { user } = useUser()
-
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   // Called upon code verification
@@ -118,7 +115,7 @@ export default function AuthenticateUserForm({
         )}>
         <VerifyCodeForm
           onRegisterNewVerification={registerVerification}
-          email={pendingVerification?.email ?? user.email ?? ''}
+          email={pendingVerification?.email ?? ''}
           onVerificationCompleted={completeVerification}
           verificationMutation={verificationMutationToUse}
         />

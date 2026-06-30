@@ -3,12 +3,9 @@
 import Link from '@/components/Link'
 import ChevronRight from '@/components/icons/ChevronRight'
 import Trans from '@/components/translation/trans/TransClient'
-import { classementClickGroup } from '@/constants/tracking/pages/classements'
 import Emoji from '@/design-system/utils/Emoji'
 import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
-import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 interface Props {
   group: Group
@@ -16,21 +13,10 @@ interface Props {
 }
 
 export default function GroupItem({ group }: Props) {
-  const { user } = useUser()
-  const isAdministator = user.userId === group.administrator.id
-
   return (
     <Link
       className="hover:bg-primary-100 mb-3 rounded-xl bg-gray-100 px-5 py-2 no-underline decoration-auto transition-colors"
-      href={getLinkToGroupDashboard({ groupId: group.id })}
-      onClick={() =>
-        trackMatomoEvent__deprecated(
-          classementClickGroup({
-            isAdministator,
-            numParticipants: group.participants.length,
-          })
-        )
-      }>
+      href={getLinkToGroupDashboard({ groupId: group.id })}>
       <div className="flex items-center justify-between py-4">
         <div className="flex w-full items-center">
           <div className="shrink-0 text-2xl">

@@ -10,14 +10,15 @@ import Button from '@/design-system/buttons/Button'
 import InlineTextInput from '@/design-system/inputs/InlineTextInput'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
-import { useIsGroupOwner } from '@/hooks/groups/useIsGroupOwner'
 import { useUpdateGroup } from '@/hooks/groups/useUpdateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useUser } from '@/publicodes-state'
 import type { Group } from '@/types/groups'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { isGroupOwner } from '../../_helpers/isGroupOwner'
 
 export default function EditableGroupTitle({ group }: { group: Group }) {
   const formattedGroupId = group.id?.replaceAll('/', '')
@@ -31,7 +32,8 @@ export default function EditableGroupTitle({ group }: { group: Group }) {
 
   const router = useRouter()
 
-  const { isGroupOwner } = useIsGroupOwner({ group })
+  const { user } = useUser()
+  const isOwner = isGroupOwner(group, user)
 
   const handleSubmit = async (groupNameUpdated: string) => {
     setIsSubmitting(true)
@@ -77,7 +79,7 @@ export default function EditableGroupTitle({ group }: { group: Group }) {
                   <Emoji>{group?.emoji}</Emoji> <span>{group?.name}</span>
                 </span>
 
-                {isGroupOwner ? (
+                {isOwner ? (
                   <Button
                     className="h-12 w-12 p-1!"
                     aria-label={t('Modifier le nom du groupe')}
@@ -93,7 +95,7 @@ export default function EditableGroupTitle({ group }: { group: Group }) {
               </span>
             }
             subtitle={t('Créé par {{name}}', {
-              name: isGroupOwner ? vousWord : group?.administrator?.name,
+              name: isOwner ? vousWord : group?.administrator?.name,
             })}
           />
         )}
