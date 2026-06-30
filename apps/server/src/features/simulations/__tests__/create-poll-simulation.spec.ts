@@ -193,6 +193,7 @@ describe('Given a NGC user', () => {
         let userId: string
         let pollId: string
         let pollSlug: string
+        let pollName: string
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
 
         beforeEach(async () => {
@@ -212,7 +213,7 @@ describe('Given a NGC user', () => {
             cookie,
             organisationId,
           })
-          ;({ id: pollId, slug: pollSlug } = poll)
+          ;({ id: pollId, slug: pollSlug, name: pollName } = poll)
           userId = faker.string.uuid()
         })
 
@@ -228,6 +229,7 @@ describe('Given a NGC user', () => {
             ...expected,
             extendedSituation,
           }
+
           mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
 
           const response = await agent
@@ -250,6 +252,7 @@ describe('Given a NGC user', () => {
               {
                 id: pollId,
                 slug: pollSlug,
+                name: pollName,
               },
             ],
             groups: [],
@@ -527,6 +530,7 @@ describe('Given a NGC user', () => {
                 {
                   id: pollId,
                   slug: pollSlug,
+                  name: pollName,
                 },
               ],
               groups: [],
@@ -1075,6 +1079,7 @@ describe('Given a NGC user', () => {
         let administratorEmail: string
         let pollId: string
         let pollSlug: string
+        let pollName: string
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
 
         beforeEach(async () => {
@@ -1094,7 +1099,7 @@ describe('Given a NGC user', () => {
             cookie,
             organisationId,
           })
-          ;({ id: pollId, slug: pollSlug } = poll)
+          ;({ id: pollId, slug: pollSlug, name: pollName } = poll)
         })
 
         test(`Then it returns a ${StatusCodes.CREATED} response with the created simulation`, async () => {
@@ -1138,6 +1143,7 @@ describe('Given a NGC user', () => {
               {
                 id: pollId,
                 slug: pollSlug,
+                name: pollName,
               },
             ],
             groups: [],

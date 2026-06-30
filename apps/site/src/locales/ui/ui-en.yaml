@@ -2249,3 +2249,39 @@ entries:
   event.testimonies.4.author.job.lock: Test collectif réalisé par l’organisation Pass Culture
   simulator.dontKnow.button.reassuranceYouth: Don’t worry, we use average data to ensure the results remain reliable.
   simulator.dontKnow.button.reassuranceYouth.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  reuseSimulationForPoll.testDate.at: to
+  reuseSimulationForPoll.testDate.at.lock: à
+  reuseSimulationForPoll.attachedToPoll: 'Related to the group test:'
+  reuseSimulationForPoll.attachedToPoll.lock: 'Rattachée au test collectif :'
+  reuseSimulationForPoll.description: You can use your existing data, or start the test again.
+  reuseSimulationForPoll.description.lock: Vous pouvez utiliser vos données existantes, ou recommencer le test.
+  reuseSimulationForPoll.title: Have you already carried out a carbon footprint calculation on our website?
+  reuseSimulationForPoll.title.lock: Vous avez déjà réalisé un calcul d’empreinte sur notre site
+  reuseSimulationForPoll.testDate: |-
+    Test carried out on {dayjs(simulation.updated_at)
+                  .toDate()
+                  .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })} <4>to</4> {dayjs(simulation.updated_at)
+                  .toDate()
+                  .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+  reuseSimulationForPoll.testDate.lock: |-
+    Test réalisé le {dayjs(simulation.updated_at)
+                  .toDate()
+                  .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })} <4>à</4> {dayjs(simulation.updated_at)
+                  .toDate()
+                  .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+  reuseSimulationForPoll.yourFootprint: 'Your fingerprint:'
+  reuseSimulationForPoll.yourFootprint.lock: 'Votre empreinte :'

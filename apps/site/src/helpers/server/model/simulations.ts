@@ -27,7 +27,7 @@ export interface Simulation {
   progression: number
   model: string
   user?: { id: string; name?: string }
-  polls?: { id: string; slug: string }[]
+  polls?: { id: string; slug: string; name?: string }[]
   groups?: { id: string }[]
   updated_at: string
 }
