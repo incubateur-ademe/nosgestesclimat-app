@@ -1523,3 +1523,21 @@ entries:
   event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  reuseSimulationForPoll.attachedToPoll: 'Rattachée au test collectif :'
+  reuseSimulationForPoll.description: Vous pouvez utiliser vos données existantes, ou recommencer le test.
+  reuseSimulationForPoll.testDate: |-
+    Test réalisé le {dayjs(simulation.updated_at)
+                  .toDate()
+                  .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })} <4>à</4> {dayjs(simulation.updated_at)
+                  .toDate()
+                  .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+  reuseSimulationForPoll.testDate.at: à
+  reuseSimulationForPoll.title: Vous avez déjà réalisé un calcul d’empreinte sur notre site
+  reuseSimulationForPoll.yourFootprint: 'Votre empreinte :'
