@@ -3,6 +3,7 @@ import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import dayjs from 'dayjs'
 import ReuseButtons from './reuseSimulationForPoll/ReuseButtons'
@@ -14,14 +15,15 @@ interface ReuseSimulationForPollProps {
   disclaimer: React.ReactNode
   simulation: Simulation
 }
-export default function ReuseSimulationForPoll({
+export default async function ReuseSimulationForPoll({
   reuseSimulation,
   createNewSimulation,
   locale,
   disclaimer,
   simulation,
-  t,
 }: ReuseSimulationForPollProps) {
+  const { t } = await getServerTranslation({ locale })
+
   const { formattedValue, unit } = formatFootprint(
     simulation.computedResults.carbone.bilan,
     {
