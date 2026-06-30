@@ -44,7 +44,7 @@ export default async function MonEspaceActionsPage({
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
       {flag && maybePersonalizedActionsCatalogue ? (
-        <div className="pt-4">
+        <div>
           <ActionsPage
             topActions={maybePersonalizedActionsCatalogue.topActions}
             actions={maybePersonalizedActionsCatalogue.actions}

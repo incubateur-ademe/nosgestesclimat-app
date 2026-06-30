@@ -1,11 +1,9 @@
 'use client'
 
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
-import { useIframe } from '@/hooks/useIframe'
 import { useFormState } from '@/publicodes-state'
 import { twMerge } from 'tailwind-merge'
 import TotalFootprintNumber from '../misc/TotalFootprintNumber'
-import ButtonBack from './topBar/ButtonBack'
 import Category from './topBar/Category'
 import Progress from './topBar/Progress'
 import TotalButtons from './topBar/TotalButtons'
@@ -21,9 +19,8 @@ export default function TopBar({
   showTotal?: boolean
   className?: string
 }) {
-  const { isIframe, isIframeOnlySimulation } = useIframe()
-
   const { currentCategory } = useFormState()
+
   return (
     <header
       className={twMerge(
@@ -40,9 +37,6 @@ export default function TopBar({
 
         <div className="mb-0 flex w-full max-w-5xl justify-between overflow-visible pr-4 pl-1 lg:mx-auto lg:px-4">
           <div className="relative flex items-center gap-1 lg:gap-4">
-            {simulationMode && !isIframe && !isIframeOnlySimulation && (
-              <ButtonBack />
-            )}
             {showTotal ? (
               <TotalFootprintNumber
                 size="lg"

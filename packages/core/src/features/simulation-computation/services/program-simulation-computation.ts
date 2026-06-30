@@ -1,6 +1,7 @@
 import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import { log } from '../../logger/index.ts'
 import { getSimulationById } from '../../simulations/repository/simulation.repository.ts'
+import type { ModelRegion } from '../../simulations/types/model.ts'
 import {
   SimulationNotFinishedException,
   UnsupportedModelException,
@@ -21,7 +22,7 @@ export const programSimulationComputation = async (
   const model = simulation.model
   if (
     model.locale !== 'fr' ||
-    model.region !== 'FR' ||
+    !isRegionSupported(model.region) ||
     'PRNumber' in model.version ||
     model.version.publishedTag !== pkg.version
   ) {
@@ -30,4 +31,9 @@ export const programSimulationComputation = async (
   }
 
   await createSimulationComputation(simulationId)
+}
+
+function isRegionSupported(region: ModelRegion) {
+  // ED (School mode) is supported
+  return region === 'FR' || region === 'ED'
 }
