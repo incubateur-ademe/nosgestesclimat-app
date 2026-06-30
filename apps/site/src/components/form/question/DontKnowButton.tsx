@@ -4,6 +4,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
 import { questionClickPass } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useCurrentSimulation, useEngine, useRule } from '@/publicodes-state'
 import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
@@ -21,7 +22,11 @@ interface Props {
 export default function DontKnowButton({ question }: Props) {
   const { t } = useClientTranslation()
   const { goToNextQuestion } = useGotoNextQuestion()
-  const { updateCurrentSimulation } = useCurrentSimulation()
+  const { updateCurrentSimulation, ...currentSimulation } =
+    useCurrentSimulation()
+
+  const simulationMode = getSimulationMode(currentSimulation)
+  const isSchoolMode = simulationMode === 'scolaire'
 
   const { questionsOfMosaicFromParent, isMissing } = useRule(question)
 
@@ -91,10 +96,17 @@ export default function DontKnowButton({ question }: Props) {
       </Button>
 
       <p className="text-primary-600 w-80 max-w-full text-sm">
-        <Trans i18nKey="simulator.dontKnow.button.reassurance">
-          Pas d'inquiétude : nous utiliserons des données moyennes, le résultat
-          reste fiable
-        </Trans>
+        {isSchoolMode ? (
+          <Trans i18nKey="simulator.dontKnow.button.reassuranceYouth">
+            Pas d'inquiétude, on prend des données moyennes pour garder les
+            résultats fiables.
+          </Trans>
+        ) : (
+          <Trans i18nKey="simulator.dontKnow.button.reassurance">
+            Pas d'inquiétude : nous utiliserons des données moyennes, le
+            résultat reste fiable
+          </Trans>
+        )}
       </p>
     </div>
   )

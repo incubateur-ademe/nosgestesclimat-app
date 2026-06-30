@@ -944,8 +944,8 @@ entries:
   common.category.transport.lock: Transport
   common.category.alimentation: Food
   common.category.alimentation.lock: Alimentation
-  common.category.divers: Miscellaneous
-  common.category.divers.lock: Divers
+  common.category.divers: Consumption
+  common.category.divers.lock: Consommation
   pollResults.distribution.title: Breakdown of carbon footprints
   pollResults.distribution.title.lock: Répartition des empreintes carbone
   pollResults.footprintBarChart.accessibleDescription.higher: superior
@@ -1874,10 +1874,10 @@ entries:
   simulator.intercalaire.transport.meta.description.lock: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
   simulator.intercalaire.transport.iframe.title: Transport CO₂ impact comparator
   simulator.intercalaire.transport.iframe.title.lock: Comparateur d'impact CO₂ des transports
-  simulator.intercalaire.divers.meta.title: Miscellaneous section completed - Nos Gestes Climat
-  simulator.intercalaire.divers.meta.title.lock: Section divers terminée - Nos Gestes Climat
-  simulator.intercalaire.divers.meta.description: Well done, you've completed the miscellaneous section. Discover the impact of digital technology and consumption.
-  simulator.intercalaire.divers.meta.description.lock: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.meta.title: Consumption section complete – Nos Gestes Climat
+  simulator.intercalaire.divers.meta.title.lock: Section consommation terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Well done – you’ve completed the section on consumption. Find out about the impact of digital technology and consumption.
+  simulator.intercalaire.divers.meta.description.lock: Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.
   simulator.intercalaire.divers.iframe.title: Digital CO₂ impact comparator
   simulator.intercalaire.divers.iframe.title.lock: Comparateur d'impact CO₂ du numérique
   simulator.funFact.clothing.text2: 9.5 kg of clothes... but only sort 3.4 kg!
@@ -2247,3 +2247,7 @@ entries:
   Toutes: All
   event.testimonies.4.author.job: Collective test carried out by the Pass Culture
   event.testimonies.4.author.job.lock: Test collectif réalisé par l’organisation Pass Culture
+  simulator.dontKnow.button.reassuranceYouth: Don’t worry, we use average data to ensure the results remain reliable.
+  simulator.dontKnow.button.reassuranceYouth.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  category.divers: Consumption
+  category.divers.lock: Consommation
