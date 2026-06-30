@@ -3,6 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import UserEmailForm from '@/components/user/UserEmailForm'
 import Button from '@/design-system/buttons/Button'
+import { UserProvider } from '@/publicodes-state'
 import type { AuthUser } from '@/services/auth/get-user-session'
 import { useState } from 'react'
 interface Props {
@@ -13,15 +14,17 @@ export default function UserEmail({ user }: Props) {
 
   if (isEditing) {
     return (
-      <UserEmailForm
-        defaultEmail={user.email}
-        submitLabel={
-          <Trans i18nKey="mon-espace.settings.userInfos.submitLabel">
-            Mettre à jour mes informations
-          </Trans>
-        }
-        className="mb-8"
-      />
+      <UserProvider userSession={user}>
+        <UserEmailForm
+          defaultEmail={user.email}
+          submitLabel={
+            <Trans i18nKey="mon-espace.settings.userInfos.submitLabel">
+              Mettre à jour mes informations
+            </Trans>
+          }
+          className="mb-8"
+        />
+      </UserProvider>
     )
   }
 
