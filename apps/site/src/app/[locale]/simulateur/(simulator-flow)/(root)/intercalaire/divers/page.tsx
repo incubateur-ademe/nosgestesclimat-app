@@ -17,11 +17,11 @@ export async function generateMetadata({
     locale,
     title: t(
       'simulator.intercalaire.divers.meta.title',
-      'Section divers terminée - Nos Gestes Climat'
+      'Section consommation terminée - Nos Gestes Climat'
     ),
     description: t(
       'simulator.intercalaire.divers.meta.description',
-      'Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.'
+      'Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.'
     ),
     robots: noIndexObject,
   })
