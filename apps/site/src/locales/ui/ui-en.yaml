@@ -1783,8 +1783,8 @@ entries:
   youthTutorial.list.custom.lock: Résultat perso
   youthTutorial.cta.label: Here we go
   youthTutorial.cta.label.lock: Allez, c'est parti
-  simulator.dontKnow.button.reassurance: Don't worry, we use average data to keep the results reliable.
-  simulator.dontKnow.button.reassurance.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  simulator.dontKnow.button.reassurance: 'Don’t worry: we’ll be using average figures, so the result will still be reliable'
+  simulator.dontKnow.button.reassurance.lock: "Pas d'inquiétude : nous utiliserons des données moyennes, le résultat reste fiable"
   youthTutorial.cta.helper: It only takes a few minutes
   youthTutorial.cta.helper.lock: Ça prend seulement quelques minutes
   youthTutorial.list.advice: Practical advice
