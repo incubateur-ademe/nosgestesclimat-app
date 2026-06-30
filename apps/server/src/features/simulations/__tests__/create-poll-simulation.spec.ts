@@ -694,24 +694,7 @@ describe('Given a NGC user', () => {
                 },
               }
 
-              mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 102,
-                    params: {
-                      SIMULATION_URL: `https://nosgestesclimat.test/simulateur/bilan?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=pause-test-en-cours`,
-                    },
-                  },
-                }),
-                brevoUpdateContact(),
-                brevoRemoveFromList(27)
-              )
+              mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
 
               await agent
                 .post(

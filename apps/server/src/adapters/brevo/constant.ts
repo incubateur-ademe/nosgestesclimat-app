@@ -10,7 +10,6 @@ const FrTemplateIds = {
   ORGANISATION_CREATED: 70,
   ORGANISATION_JOINED: 122,
   POLL_CREATED: 126,
-  SIMULATION_IN_PROGRESS: 102,
   API_VERIFICATION_CODE: 116,
   NEWSLETTER_CONFIRMATION: 118,
   SIGN_UP: 137,
@@ -108,7 +107,6 @@ export const MATOMO_KEYWORDS = {
     'fin-retrouver-simulation',
   [TemplateIds[Locales.fr].SIGN_UP_SIMULATION_COMPLETED]:
     'fin-retrouver-simulation',
-  [TemplateIds[Locales.fr].SIMULATION_IN_PROGRESS]: 'pause-test-en-cours',
   [TemplateIds[Locales.fr].GROUP_CREATED]: {
     GROUP_URL: 'groupe-admin-voir-classement',
     SHARE_URL: 'groupe-admin-url-partage',

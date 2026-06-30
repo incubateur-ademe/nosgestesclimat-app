@@ -2,7 +2,6 @@ import {
   sendGroupCreatedEmail,
   sendGroupParticipantSimulationUpsertedEmail,
   sendPollSimulationUpsertedEmail,
-  sendSimulationUpsertedEmail,
 } from '../../../adapters/brevo/client.ts'
 import type { Handler } from '../../../core/event-bus/handler.ts'
 import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event.ts'
@@ -15,7 +14,6 @@ export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
     organisation,
     simulation,
     sendEmail,
-    verified,
     locale,
     poll,
   },
@@ -26,40 +24,32 @@ export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
 
   const { email } = user
 
-  if (simulation?.progression === 1) {
-    if (organisation) {
-      return sendPollSimulationUpsertedEmail({
-        organisation,
-        simulation,
-        locale,
-        origin,
-        email,
-        poll,
-      })
-    }
+  if (simulation?.progression !== 1) return
 
-    if (attributes.group) {
-      const { user, administrator, group } = attributes
-      const isAdministrator = user.id === administrator.id
-      const params = {
-        group,
-        origin,
-        user,
-      }
-
-      return isAdministrator
-        ? // @ts-expect-error sometimes control-flow is broken
-          sendGroupCreatedEmail(params)
-        : // @ts-expect-error sometimes control-flow is broken
-          sendGroupParticipantSimulationUpsertedEmail(params)
-    }
+  if (organisation) {
+    return sendPollSimulationUpsertedEmail({
+      organisation,
+      simulation,
+      locale,
+      origin,
+      email,
+      poll,
+    })
   }
 
-  return sendSimulationUpsertedEmail({
-    email,
-    origin,
-    locale,
-    simulation,
-    verified: !!verified,
-  })
+  if (attributes.group) {
+    const { user, administrator, group } = attributes
+    const isAdministrator = user.id === administrator.id
+    const params = {
+      group,
+      origin,
+      user,
+    }
+
+    return isAdministrator
+      ? // @ts-expect-error sometimes control-flow is broken
+        sendGroupCreatedEmail(params)
+      : // @ts-expect-error sometimes control-flow is broken
+        sendGroupParticipantSimulationUpsertedEmail(params)
+  }
 }

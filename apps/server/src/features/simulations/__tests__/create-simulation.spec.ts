@@ -7,7 +7,6 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   brevoRemoveFromList,
-  brevoSendEmail,
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import {
@@ -478,54 +477,6 @@ describe('Given a NGC user', () => {
             }
 
             mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 55,
-                  params: {
-                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    LAST_SIMULATION_BILAN_FOOTPRINT: (
-                      computedResults.carbone.bilan / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                      computedResults.carbone.categories.transport / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                      computedResults.carbone.categories.alimentation / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                      computedResults.carbone.categories.logement / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                      computedResults.carbone.categories.divers / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                      computedResults.carbone.categories['services sociétaux'] /
-                      1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_BILAN_WATER: Math.round(
-                      computedResults.eau.bilan / 365
-                    ).toString(),
-                  },
-                },
-              }),
               brevoUpdateContact(),
               brevoRemoveFromList(22),
               brevoRemoveFromList(32),
@@ -560,55 +511,6 @@ describe('Given a NGC user', () => {
               }
 
               mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 55,
-                    params: {
-                      SIMULATION_URL: `https://preprod.nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                      LAST_SIMULATION_BILAN_FOOTPRINT: (
-                        computedResults.carbone.bilan / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                        computedResults.carbone.categories.transport / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                        computedResults.carbone.categories.alimentation / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                        computedResults.carbone.categories.logement / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                        computedResults.carbone.categories.divers / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                        computedResults.carbone.categories[
-                          'services sociétaux'
-                        ] / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_BILAN_WATER: Math.round(
-                        computedResults.eau.bilan / 365
-                      ).toString(),
-                    },
-                  },
-                }),
                 brevoUpdateContact(),
                 brevoRemoveFromList(22),
                 brevoRemoveFromList(32),
@@ -847,23 +749,7 @@ describe('Given a NGC user', () => {
               },
             }
 
-            mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 102,
-                  params: {
-                    SIMULATION_URL: `https://nosgestesclimat.test/simulateur/bilan?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=pause-test-en-cours`,
-                  },
-                },
-              }),
-              brevoUpdateContact()
-            )
+            mswServer.use(brevoUpdateContact())
 
             await EventBus.flush()
 
@@ -1354,55 +1240,6 @@ describe('Given a NGC user', () => {
           }
 
           mswServer.use(
-            brevoSendEmail({
-              expectBody: {
-                to: [
-                  {
-                    name: email,
-                    email,
-                  },
-                ],
-                templateId: 138,
-                params: {
-                  SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                  DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
-                  LAST_SIMULATION_BILAN_FOOTPRINT: (
-                    computedResults.carbone.bilan / 1000
-                  ).toLocaleString(Locales.fr, {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                    computedResults.carbone.categories.transport / 1000
-                  ).toLocaleString(Locales.fr, {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                    computedResults.carbone.categories.alimentation / 1000
-                  ).toLocaleString(Locales.fr, {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                    computedResults.carbone.categories.logement / 1000
-                  ).toLocaleString(Locales.fr, {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                    computedResults.carbone.categories.divers / 1000
-                  ).toLocaleString(Locales.fr, {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                    computedResults.carbone.categories['services sociétaux'] /
-                    1000
-                  ).toLocaleString(Locales.fr, {
-                    maximumFractionDigits: 1,
-                  }),
-                  LAST_SIMULATION_BILAN_WATER: Math.round(
-                    computedResults.eau.bilan / 365
-                  ).toString(),
-                },
-              },
-            }),
             brevoUpdateContact(),
             brevoRemoveFromList(22),
             brevoRemoveFromList(32),
@@ -1437,56 +1274,6 @@ describe('Given a NGC user', () => {
             }
 
             mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 138,
-                  params: {
-                    SIMULATION_URL: `https://preprod.nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    DASHBOARD_URL:
-                      'https://preprod.nosgestesclimat.fr/mon-espace',
-                    LAST_SIMULATION_BILAN_FOOTPRINT: (
-                      computedResults.carbone.bilan / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                      computedResults.carbone.categories.transport / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                      computedResults.carbone.categories.alimentation / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                      computedResults.carbone.categories.logement / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                      computedResults.carbone.categories.divers / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                      computedResults.carbone.categories['services sociétaux'] /
-                      1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_BILAN_WATER: Math.round(
-                      computedResults.eau.bilan / 365
-                    ).toString(),
-                  },
-                },
-              }),
               brevoUpdateContact(),
               brevoRemoveFromList(22),
               brevoRemoveFromList(32),
@@ -1523,55 +1310,6 @@ describe('Given a NGC user', () => {
             }
 
             mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 140,
-                  params: {
-                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
-                    LAST_SIMULATION_BILAN_FOOTPRINT: (
-                      computedResults.carbone.bilan / 1000
-                    ).toLocaleString(Locales.en, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                      computedResults.carbone.categories.transport / 1000
-                    ).toLocaleString(Locales.en, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                      computedResults.carbone.categories.alimentation / 1000
-                    ).toLocaleString(Locales.en, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                      computedResults.carbone.categories.logement / 1000
-                    ).toLocaleString(Locales.en, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                      computedResults.carbone.categories.divers / 1000
-                    ).toLocaleString(Locales.en, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                      computedResults.carbone.categories['services sociétaux'] /
-                      1000
-                    ).toLocaleString(Locales.en, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_BILAN_WATER: Math.round(
-                      computedResults.eau.bilan / 365
-                    ).toString(),
-                  },
-                },
-              }),
               brevoUpdateContact(),
               brevoRemoveFromList(22),
               brevoRemoveFromList(32),
@@ -1585,7 +1323,6 @@ describe('Given a NGC user', () => {
               .post(url.replace(':userId', userId))
               .send(payload)
               .query({
-                locale: Locales.en,
                 sendEmail: true,
                 email,
                 code,
@@ -2103,55 +1840,6 @@ describe('Given a NGC user', () => {
             }
 
             mswServer.use(
-              brevoSendEmail({
-                expectBody: {
-                  to: [
-                    {
-                      name: email,
-                      email,
-                    },
-                  ],
-                  templateId: 138,
-                  params: {
-                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                    DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
-                    LAST_SIMULATION_BILAN_FOOTPRINT: (
-                      computedResults.carbone.bilan / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                      computedResults.carbone.categories.transport / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                      computedResults.carbone.categories.alimentation / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                      computedResults.carbone.categories.logement / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                      computedResults.carbone.categories.divers / 1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                      computedResults.carbone.categories['services sociétaux'] /
-                      1000
-                    ).toLocaleString(Locales.fr, {
-                      maximumFractionDigits: 1,
-                    }),
-                    LAST_SIMULATION_BILAN_WATER: Math.round(
-                      computedResults.eau.bilan / 365
-                    ).toString(),
-                  },
-                },
-              }),
               brevoUpdateContact(),
               brevoRemoveFromList(22),
               brevoRemoveFromList(32),
@@ -2185,57 +1873,6 @@ describe('Given a NGC user', () => {
               }
 
               mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 138,
-                    params: {
-                      SIMULATION_URL: `https://preprod.nosgestesclimat.fr/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                      DASHBOARD_URL:
-                        'https://preprod.nosgestesclimat.fr/mon-espace',
-                      LAST_SIMULATION_BILAN_FOOTPRINT: (
-                        computedResults.carbone.bilan / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                        computedResults.carbone.categories.transport / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                        computedResults.carbone.categories.alimentation / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                        computedResults.carbone.categories.logement / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                        computedResults.carbone.categories.divers / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                        computedResults.carbone.categories[
-                          'services sociétaux'
-                        ] / 1000
-                      ).toLocaleString(Locales.fr, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_BILAN_WATER: Math.round(
-                        computedResults.eau.bilan / 365
-                      ).toString(),
-                    },
-                  },
-                }),
                 brevoUpdateContact(),
                 brevoRemoveFromList(22),
                 brevoRemoveFromList(32),
@@ -2247,7 +1884,6 @@ describe('Given a NGC user', () => {
 
               await agent
                 .post(url.replace(':userId', userId))
-                .set('cookie', cookie)
                 .send(payload)
                 .query({
                   sendEmail: true,
@@ -2271,56 +1907,6 @@ describe('Given a NGC user', () => {
               }
 
               mswServer.use(
-                brevoSendEmail({
-                  expectBody: {
-                    to: [
-                      {
-                        name: email,
-                        email,
-                      },
-                    ],
-                    templateId: 140,
-                    params: {
-                      SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
-                      DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
-                      LAST_SIMULATION_BILAN_FOOTPRINT: (
-                        computedResults.carbone.bilan / 1000
-                      ).toLocaleString(Locales.en, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_TRANSPORTS_FOOTPRINT: (
-                        computedResults.carbone.categories.transport / 1000
-                      ).toLocaleString(Locales.en, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_ALIMENTATION_FOOTPRINT: (
-                        computedResults.carbone.categories.alimentation / 1000
-                      ).toLocaleString(Locales.en, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_LOGEMENT_FOOTPRINT: (
-                        computedResults.carbone.categories.logement / 1000
-                      ).toLocaleString(Locales.en, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_DIVERS_FOOTPRINT: (
-                        computedResults.carbone.categories.divers / 1000
-                      ).toLocaleString(Locales.en, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_SERVICES_FOOTPRINT: (
-                        computedResults.carbone.categories[
-                          'services sociétaux'
-                        ] / 1000
-                      ).toLocaleString(Locales.en, {
-                        maximumFractionDigits: 1,
-                      }),
-                      LAST_SIMULATION_BILAN_WATER: Math.round(
-                        computedResults.eau.bilan / 365
-                      ).toString(),
-                    },
-                  },
-                }),
                 brevoUpdateContact(),
                 brevoRemoveFromList(22),
                 brevoRemoveFromList(32),
