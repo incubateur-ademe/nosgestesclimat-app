@@ -1783,8 +1783,8 @@ entries:
   youthTutorial.list.custom.lock: Résultat perso
   youthTutorial.cta.label: Here we go
   youthTutorial.cta.label.lock: Allez, c'est parti
-  simulator.dontKnow.button.reassurance: Don't worry, we use average data to keep the results reliable.
-  simulator.dontKnow.button.reassurance.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  simulator.dontKnow.button.reassurance: 'Don’t worry: we’ll be using average figures, so the result will still be reliable'
+  simulator.dontKnow.button.reassurance.lock: "Pas d'inquiétude : nous utiliserons des données moyennes, le résultat reste fiable"
   youthTutorial.cta.helper: It only takes a few minutes
   youthTutorial.cta.helper.lock: Ça prend seulement quelques minutes
   youthTutorial.list.advice: Practical advice
@@ -2125,8 +2125,8 @@ entries:
   event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
   event.detail.dates: From 18 September to 8 October 2026
   event.detail.dates.lock: Du 18 septembre au 8 octobre 2026
-  event.tutorial.org.1.description: Set up your campaign in just a few clicks and define your objectives.
-  event.tutorial.org.1.description.lock: Configurez votre campagne en quelques clics et définissez vos objectifs.
+  event.tutorial.org.1.description: <0>Set up your campaign</0> in just a few clicks and define your objectives.
+  event.tutorial.org.1.description.lock: <0>Configurez votre campagne</0> en quelques clics et définissez vos objectifs.
   event.ctas.description: There are two ways to take part in the challenge.
   event.ctas.description.lock: Deux façons de participer au challenge.
   event.hero.title.part1: The impact is greater
@@ -2139,8 +2139,8 @@ entries:
   event.ctas.card1.description.lock: Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés.
   event.tutorial.individual.3.description: Get personalised tips on how to reduce your environmental impact in your day-to-day life.
   event.tutorial.individual.3.description.lock: Recevez des actions personnalisées pour réduire votre impact au quotidien.
-  event.detail.alt: 22 April, Earth Day with Nos Gestes Climat
-  event.detail.alt.lock: 22 avril, Jour de la terre avec Nos Gestes Climat
+  event.detail.alt: 'From 18 September to 8 October: European Sustainable Development Week on nosgestesclimat.fr'
+  event.detail.alt.lock: Du 18 septembre au 8 octobre, Semaine européenne du Développement Durable sur nosgestesclimat.fr
   event.ctas.card2.description: Create a dedicated space to engage your colleagues, pupils or students, or stakeholders.
   event.ctas.card2.description.lock: Créez un espace dédié pour mobiliser vos collègues, élèves / étudiants, ou parties prenantes.
   event.tutorial.individual.1.description: Browse the topics (food, transport, housing, etc.) in just a few minutes.
@@ -2173,11 +2173,16 @@ entries:
   event.podium.list.item.score.big.lock: calculs d'empreinte
   event.podium.list.item.score.small: tests
   event.podium.list.item.score.small.lock: tests
+  event.podium.categories.all: All
+  event.podium.categories.companies: Businesses
+  event.podium.categories.associations: Charities
+  event.podium.categories.education: Education
+  event.podium.categories.publicServices: Public services
   event.testimonies.5.text: I was surprised to learn that our target is to reduce our carbon footprint to 2 tonnes of CO₂ per person per year by 2050. I didn’t realise the gap between that and our current way of life was so wide.
   event.testimonies.5.text.lock: J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.
   event.testimonies.4.text: I was surprised to find that the bulk of my carbon footprint doesn’t come from my direct actions, such as my journeys, but rather from more invisible aspects of daily life, such as public services or the production of the goods I buy. It made me realise that carbon impact is often indirect.
   event.testimonies.4.text.lock: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
-  event.countdown.label: Start in
+  event.countdown.label: Starting in
   event.countdown.label.lock: Début dans
   event.statistics.title: Live data will appear on launch
   event.statistics.title.lock: Les données en direct apparaîtront au lancement
@@ -2226,3 +2231,19 @@ entries:
   tutorial.reuseData.useDataButton.label.lock: Utiliser mes données existantes
   poll.tutorial.alreadyTookTest.default: You have already taken part in this survey.
   poll.tutorial.alreadyTookTest.default.lock: Vous avez déjà participé à ce sondage.
+  common.days: Days
+  common.days.lock: Jours
+  common.minutes: Minutes
+  common.minutes.lock: Minutes
+  common.seconds: seconds
+  common.seconds.lock: seconds
+  common.hours: hours
+  common.hours.lock: heures
+  event.podium.categories.publicServices.lock: Services publics
+  event.podium.categories.education.lock: Éducation
+  event.podium.categories.associations.lock: Associations
+  event.podium.categories.all.lock: Toutes
+  event.podium.categories.companies.lock: Entreprises
+  Toutes: All
+  event.testimonies.4.author.job: Collective test carried out by the Pass Culture
+  event.testimonies.4.author.job.lock: Test collectif réalisé par l’organisation Pass Culture

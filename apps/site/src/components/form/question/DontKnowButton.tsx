@@ -92,8 +92,8 @@ export default function DontKnowButton({ question }: Props) {
 
       <p className="text-primary-600 w-80 max-w-full text-sm">
         <Trans i18nKey="simulator.dontKnow.button.reassurance">
-          Pas d'inquiétude, on prend des données moyennes pour garder les
-          résultats fiables.
+          Pas d'inquiétude : nous utiliserons des données moyennes, le résultat
+          reste fiable
         </Trans>
       </p>
     </div>
