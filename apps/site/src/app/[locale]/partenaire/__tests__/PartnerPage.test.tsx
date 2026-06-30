@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation'
 import { vi } from 'vitest'
 import PartnerPage from '../page'
 
-const mockVerifyPartner = vi.fn<[string], Promise<unknown>>()
+const mockVerifyPartner = vi.fn<(partner: string) => Promise<unknown>>()
 const mockNotFound = vi.mocked(notFound)
 
 vi.mock('@/services/partners/verifyPartner', () => ({
