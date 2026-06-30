@@ -538,6 +538,9 @@ importers:
       jose:
         specifier: ^5.9.6
         version: 5.10.0
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.3
       posthog-node:
         specifier: ^5.30.6
         version: 5.30.6
@@ -563,6 +566,9 @@ importers:
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.10
       fishery:
         specifier: ^2.4.0
         version: 2.4.0

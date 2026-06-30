@@ -3,7 +3,7 @@ import type { Region } from '@/helpers/server/model/models'
 import {
   buildRegionCookie,
   REGION_COOKIE,
-} from '@/helpers/server/proxy/middleware-region'
+} from '@/helpers/server/proxy/region.middleware'
 import {
   RegionDataSchema,
   type RegionData,
