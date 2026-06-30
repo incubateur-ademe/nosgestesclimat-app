@@ -109,6 +109,6 @@ export class PostHog {
   }
 
   private registerProperties() {
-    posthog.register(this.iframeInformation)
+    posthog.register_for_session(this.iframeInformation)
   }
 }
