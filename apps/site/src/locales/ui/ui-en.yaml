@@ -1614,8 +1614,8 @@ entries:
   common.transport.lock: Transport
   carbonResults.objective.description: <0>You have a role to play.</0> We are here to help you.
   carbonResults.objective.description.lock: <0>Vous avez votre rôle à jouer.</0> Nous sommes là pour vous aider.
-  results.where.title: Where does your result come from?
-  results.where.title.lock: D’où vient votre résultat ?
+  results.where.title: 'Breakdown of your carbon footprint:'
+  results.where.title.lock: 'Répartition de votre empreinte :'
   common.housing: Housing
   common.housing.lock: Logement
   common.alimentation: Food
