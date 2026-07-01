@@ -239,6 +239,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
         size="sm"
         color="secondary"
         className="inline-flex gap-1 align-baseline"
+        data-testid="my-space-button"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-controls={menuId}
@@ -267,10 +268,11 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
           tabIndex={-1}>
           <ul>
             <li>
-              <Link
+                <Link
                 ref={firstMenuItemRef}
                 href={MON_ESPACE_PATH}
                 role="menuitem"
+                data-testid="my-space-link"
                 className={twMerge(
                   'text-default hover:bg-primary-100 block min-h-10 px-4 py-2 text-sm no-underline! transition-colors focus:outline-none',
                   isKeyboardNavigation
@@ -303,10 +305,11 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
               </Link>
             </li>
             <li>
-              <button
+                <button
                 ref={logoutButtonRef}
                 type="button"
                 role="menuitem"
+                data-testid="my-space-logout-button"
                 className="text-default hover:bg-primary-50 focus:bg-primary-50 focus:ring-primary-700 flex min-h-10 w-full items-center gap-2 px-4 py-2 text-sm transition-colors hover:underline! focus:underline! focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 onClick={handleLogout}
                 onKeyDown={(e) => {

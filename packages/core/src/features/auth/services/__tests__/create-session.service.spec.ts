@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { userFactory } from '../../../users/factories/user.factory.ts'
 import { hashToken } from '../../helpers/hash-token.ts'
 import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
 import { createSession } from '../create-session.service.ts'
 import { decryptSession } from '../decrypt-session.service.ts'
 
-const USER_ID = '00000000-0000-0000-0000-000000000001'
+let userId: string
 
 describe('createSession', () => {
   beforeEach(async () => {
-    await prisma.user.create({ data: { id: USER_ID } })
+    const user = await userFactory.create()
+    userId = user.id
   })
 
   afterEach(async () => {
@@ -18,22 +20,22 @@ describe('createSession', () => {
   })
 
   it('creates a RefreshToken in DB and returns valid tokens', async () => {
-    const tokens = await createSession(USER_ID)
+    const tokens = await createSession(userId)
 
     expect(tokens.refreshToken).toBeTruthy()
 
     const payload = await decryptSession(tokens.accessToken)
     expect.assert(payload)
-    expect(payload.userId).toBe(USER_ID)
+    expect(payload.userId).toBe(userId)
 
-    const dbTokens = await findAllByUserId(USER_ID)
+    const dbTokens = await findAllByUserId(userId)
     expect(dbTokens).toHaveLength(1)
     expect(dbTokens[0].expiresAt.getTime()).toBeGreaterThan(Date.now())
     expect(dbTokens[0].token).toBe(hashToken(tokens.refreshToken))
   })
 
   it('includes email in access token when provided', async () => {
-    const tokens = await createSession(USER_ID, 'test@example.fr')
+    const tokens = await createSession(userId, 'test@example.fr')
     const payload = await decryptSession(tokens.accessToken)
     expect.assert(payload)
     expect(payload.email).toBe('test@example.fr')

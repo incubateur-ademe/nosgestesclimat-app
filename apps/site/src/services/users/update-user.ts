@@ -1,9 +1,12 @@
 'use server'
 
 import { USER_URL } from '@/constants/urls/main'
+import { ForbiddenError, UnauthorizedError } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
+import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
-import { withUserId } from '../auth/with-user-id'
+import { createAppSession } from '../auth/create-app-session'
+import { getUserSession } from '../auth/get-user-session'
 
 export const updateUser = async ({
   email,
@@ -16,17 +19,26 @@ export const updateUser = async ({
   ageRange?: AgeRange
   code?: string
 }) => {
-  return withUserId(async (userId) => {
-    const params = code ? `?code=${code}` : ''
+  const session = await getUserSession()
+  if (!session) {
+    throw new UnauthorizedError()
+  }
 
-    const data = await fetchServer<{ id: string }>(
-      `${USER_URL}/${userId}${params}`,
-      {
-        method: 'PUT',
-        body: { email, name, ageRange },
-      }
-    )
+  if (!session.isAuth) {
+    throw new ForbiddenError()
+  }
+  const params = code ? `?code=${code}` : ''
 
-    return { ...data, userId: data.id }
-  })
+  const data = await fetchServer<{ id: string }>(
+    `${USER_URL}/${session.id}${params}`,
+    {
+      method: 'PUT',
+      body: { email, name, ageRange },
+    }
+  )
+  if (email !== session.email) {
+    await revokeAllSessions(session.id)
+    await createAppSession(session.id, email)
+  }
+  return { ...data, userId: data.id }
 }

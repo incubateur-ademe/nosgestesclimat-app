@@ -33,6 +33,7 @@ export default function Badge({
   category,
   tag = 'div',
   border = true,
+  ...props
 }: PropsWithChildren<{
   color?: BadgeColor
   size?: 'xs' | 'sm' | 'md'
@@ -40,10 +41,15 @@ export default function Badge({
   category?: string
   tag?: 'div' | 'span' | 'p' | 'h2' | 'h3' | 'h4'
   border?: boolean
+  ['data-testid']?: string
 }>) {
+  const {
+    'data-testid': dataTestId,
+  } = props
   const Tag = tag
   return (
     <Tag
+      data-testid={dataTestId}
       className={twMerge(
         'inline-block rounded-sm border-2 px-2 leading-none font-black whitespace-nowrap',
         sizeClassNames[size],

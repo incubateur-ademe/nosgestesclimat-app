@@ -123,10 +123,14 @@ export default function RankingMember({
               : getRank(index)}
           </span>
 
-          <span className={textColor}>{participant.name}</span>
+          <span className={textColor} data-testid="participant-name">
+            {participant.name}
+          </span>
 
           {isCurrentMember && (
-            <Badge className="text-secondary-800 ml-2 inline rounded-xl border-pink-100 bg-pink-200 text-xs font-bold">
+            <Badge
+              className="text-secondary-800 ml-2 inline rounded-xl border-pink-100 bg-pink-200 text-xs font-bold"
+              data-testid="current-member-badge">
               <Trans>Vous</Trans>
             </Badge>
           )}
