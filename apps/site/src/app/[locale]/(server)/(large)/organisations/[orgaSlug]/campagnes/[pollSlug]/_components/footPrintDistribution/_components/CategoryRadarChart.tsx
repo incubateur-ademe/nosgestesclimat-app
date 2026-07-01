@@ -35,7 +35,7 @@ export default function CategoryRadarChart({
       ? t('common.category.alimentationShort', 'Alim.')
       : t('common.category.alimentation', 'Alimentation'),
     logement: t('common.category.logement', 'Logement'),
-    divers: t('common.category.divers', 'Divers'),
+    divers: t('common.category.divers', 'Consommation'),
     'services sociétaux': t('common.category.services', 'Services'),
   }
 
@@ -43,7 +43,7 @@ export default function CategoryRadarChart({
     transport: t('common.category.transport', 'Transport'),
     alimentation: t('common.category.alimentation', 'Alimentation'),
     logement: t('common.category.logement', 'Logement'),
-    divers: t('common.category.divers', 'Divers'),
+    divers: t('common.category.divers', 'Consommation'),
     'services sociétaux': t('common.category.services', 'Services'),
   }
 
