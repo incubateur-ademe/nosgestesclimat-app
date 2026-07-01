@@ -29,7 +29,9 @@ export default async function ProfileTab({
     {
       id: 'dashboard',
       label: (
-        <span className="flex flex-col items-center gap-1 md:flex-row">
+        <span
+          className="flex flex-col items-center gap-1 md:flex-row"
+          data-testid="my-results-tab">
           <BilanIcon
             className={twMerge(
               'h-6 w-6',
