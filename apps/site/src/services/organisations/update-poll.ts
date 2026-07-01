@@ -21,7 +21,7 @@ export const updatePoll = async ({
   pollSlug: string
   poll: PollToUpdate
 }) =>
-  fetchServer<OrganisationPoll>(
+  await fetchServer<OrganisationPoll>(
     `${ORGANISATION_URL}/${orgaSlug}/polls/${pollSlug}`,
     {
       method: 'PUT',

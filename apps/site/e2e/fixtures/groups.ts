@@ -115,12 +115,12 @@ interface GroupPageFixtures {
 const test = base.extend<GroupPageFixtures>({
   group: async ({ browser, user, setup, page, storageState }, use) => {
     if (setup) {
-      return use(new Group(page, user))
+      return await use(new Group(page, user))
     }
 
     const useCurrentContext = storageState === GROUP_ADMIN_STATE
     if (useCurrentContext) {
-      return use(await Group.fromContext(page))
+      return await use(await Group.fromContext(page))
     }
 
     const context = await browser.newContext({

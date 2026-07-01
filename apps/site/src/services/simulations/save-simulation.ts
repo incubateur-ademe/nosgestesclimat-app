@@ -1,7 +1,7 @@
 'use server'
 
 import { ORGANISATION_URL, SIMULATION_URL } from '@/constants/urls/main'
-import { InternalServerError } from '@/helpers/server/error'
+import { InternalError } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { withUserId } from '@/services/auth/with-user-id'
@@ -17,7 +17,7 @@ export const saveSimulation = async ({
   locale?: string
 }): Promise<Simulation> => {
   if (simulation.computedResults.carbone.bilan === 0) {
-    throw new InternalServerError()
+    throw new InternalError()
   }
 
   const { groups = [], polls = [] } = simulation
@@ -33,11 +33,11 @@ export const saveSimulation = async ({
   }
 
   if (polls.length) {
-    return withUserId(async (userId) => {
+    return await withUserId(async (userId) => {
       const pollId = polls.at(-1)!.id
       const params = locale ? `?locale=${locale}` : ''
 
-      return fetchServer<Simulation>(
+      return await fetchServer<Simulation>(
         `${ORGANISATION_URL}/${userId}/public-polls/${pollId}/simulations${params}`,
         {
           method: 'POST',
@@ -47,10 +47,11 @@ export const saveSimulation = async ({
     })
   }
 
-  return withUserId((userId) =>
-    fetchServer<Simulation>(`${SIMULATION_URL}/${userId}`, {
-      method: 'POST',
-      body: simulation,
-    })
+  return await withUserId(
+    async (userId) =>
+      await fetchServer<Simulation>(`${SIMULATION_URL}/${userId}`, {
+        method: 'POST',
+        body: simulation,
+      })
   )
 }

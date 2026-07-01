@@ -22,7 +22,7 @@ export default async function DetailledResultsPage({
   const user = await requireAuthUser()
   const simulationResult = await throwNextError(async () => {
     const simulation = await getSimulation(simulationId)
-    return getSimulationResult({
+    return await getSimulationResult({
       simulation,
       user,
     })

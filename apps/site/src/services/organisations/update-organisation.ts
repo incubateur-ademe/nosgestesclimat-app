@@ -26,7 +26,7 @@ export const updateOrganisation = async ({
   organisationIdOrSlug: string
   organisation: OrganisationToUpdate
 }) => {
-  return fetchServer<Organisation>(
+  return await fetchServer<Organisation>(
     `${ORGANISATION_URL}/${organisationIdOrSlug}`,
     {
       method: 'PUT',

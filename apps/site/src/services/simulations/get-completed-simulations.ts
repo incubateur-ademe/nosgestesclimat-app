@@ -6,4 +6,4 @@ import { getSimulations } from './get-simulations'
 export const getCompletedSimulations = async ({
   pageSize,
 }: { pageSize?: number } = {}): Promise<Simulation[]> =>
-  getSimulations({ completedOnly: true, pageSize })
+  await getSimulations({ completedOnly: true, pageSize })

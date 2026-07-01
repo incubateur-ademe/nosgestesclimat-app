@@ -28,7 +28,7 @@ export const createOrganisation = async ({
 }) => {
   const params = locale ? `?locale=${locale}` : ''
 
-  return fetchServer<Organisation>(`${ORGANISATION_URL}${params}`, {
+  return await fetchServer<Organisation>(`${ORGANISATION_URL}${params}`, {
     method: 'POST',
     body: organisation,
   })

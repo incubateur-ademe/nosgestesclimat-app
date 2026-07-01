@@ -16,7 +16,7 @@ async function uploadHistoricalSimulations() {
 
   if (simulations.length === 0) return
 
-  return uploadLocalSimulations(simulations)
+  return await uploadLocalSimulations(simulations)
 }
 
 export async function reconcileUserOnAuth({

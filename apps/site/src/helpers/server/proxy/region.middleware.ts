@@ -4,7 +4,8 @@ import {
   REGION_COOKIE,
 } from '@/helpers/server/cookie/region.cookie'
 import type { Region } from '@/helpers/server/model/models'
-import { getGeolocation, supportedRegions } from '@/helpers/server/model/models'
+import { supportedRegions } from '@/helpers/server/model/models'
+import { getGeolocation } from '@/services/geolocation/get-geolocation'
 import type { NextRequest } from 'next/server'
 import type { MiddlewareResult } from './types'
 

@@ -22,3 +22,18 @@ export function buildSessionCookies(tokens: SessionTokens): CookieToSet[] {
     },
   ]
 }
+
+export function deleteSessionCookies(): CookieToSet[] {
+  return [
+    {
+      name: SESSION_COOKIE,
+      value: '',
+      options: { ...getCookieOptions(), maxAge: 0 },
+    },
+    {
+      name: REFRESH_COOKIE,
+      value: '',
+      options: { ...getCookieOptions(), maxAge: 0 },
+    },
+  ]
+}

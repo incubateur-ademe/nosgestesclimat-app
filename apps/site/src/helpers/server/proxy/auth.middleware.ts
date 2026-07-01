@@ -1,5 +1,6 @@
 import {
   buildSessionCookies,
+  deleteSessionCookies,
   REFRESH_COOKIE,
   SESSION_COOKIE,
 } from '@/helpers/server/cookie/auth.cookie'
@@ -99,12 +100,15 @@ export async function middlewareAuth(
         ),
         { level: 'error' }
       )
-      return stripRt(request)
+      return {
+        redirect: null,
+        cookies: deleteSessionCookies(),
+      }
     }
 
     // (G) Unknown error during rotation — log and continue anonymously.
     captureException(err, { level: 'error' })
-    return { redirect: null, cookies: [] }
+    return { redirect: null, cookies: deleteSessionCookies() }
   }
 
   // (H) Fresh tokens obtained. Return the new session + refresh

@@ -30,10 +30,10 @@ export async function getRules({
     } else {
       fileName = `co2-model.${region}-lang.${locale}.json`
     }
-    return importPreviewFile({
+    return await (importPreviewFile({
       fileName,
       PRNumber: version.PRNumber,
-    }) as Promise<NGCRules>
+    }) as Promise<NGCRules>)
   }
 
   if (version.publishedTag !== CURRENT_MODEL_VERSION) {
@@ -54,7 +54,7 @@ export async function getRules({
   } else {
     fileName = `co2-model.${region}-lang.${locale}.json`
   }
-  return importRulesFromModel({
+  return await (importRulesFromModel({
     fileName,
-  }) as Promise<NGCRules>
+  }) as Promise<NGCRules>)
 }

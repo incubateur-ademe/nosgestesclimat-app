@@ -21,7 +21,7 @@ export async function withUserId<T>(
 ): Promise<T> {
   const session = await getUserSession()
   if (session) {
-    return fn(session.id)
+    return await fn(session.id)
   }
 
   const userId = randomUUID()

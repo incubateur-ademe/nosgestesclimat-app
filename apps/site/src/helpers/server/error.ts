@@ -1,41 +1,41 @@
 import { notFound, unauthorized } from 'next/navigation'
-
-export class NotFoundError extends Error {
+export class APIError extends Error {}
+export class NotFoundError extends APIError {
   constructor() {
     super('Not Found')
     this.name = 'NotFoundError'
   }
 }
 
-export class NoSessionFoundError extends Error {
+export class NoSessionFoundError extends APIError {
   constructor() {
     super('No session found in cookies')
     this.name = 'NoSessionFound'
   }
 }
 
-export class UnauthorizedError extends Error {
+export class UnauthorizedError extends APIError {
   constructor() {
     super('Unauthorized')
     this.name = 'UnauthorizedError'
   }
 }
 
-export class ForbiddenError extends Error {
+export class ForbiddenError extends APIError {
   constructor() {
     super('Forbidden')
     this.name = 'ForbiddenError'
   }
 }
 
-export class TooManyRequestsError extends Error {
+export class TooManyRequestsError extends APIError {
   constructor() {
     super('Too Many Requests')
     this.name = 'TooManyRequestsError'
   }
 }
 
-export class InternalServerError extends Error {
+export class InternalServerError extends APIError {
   constructor(message = 'Internal Server Error') {
     super(message)
 
@@ -43,24 +43,17 @@ export class InternalServerError extends Error {
   }
 }
 
-export class UnknownError extends Error {
+export class UnknownError extends APIError {
   constructor(statusCode: number, message: string) {
     super(`Unknown Error requesting server ${statusCode}: ${message}`)
     this.name = 'UnknownError'
   }
 }
 
-export class InvalidInputError extends Error {
+export class InvalidInputError extends APIError {
   constructor(public errorObject: unknown) {
     super('Invalid Input')
     this.name = 'InvalidInputError'
-  }
-}
-
-export class NotImplementedError extends Error {
-  constructor() {
-    super('Not Implemented')
-    this.name = 'NotImplementedError'
   }
 }
 
@@ -78,5 +71,13 @@ export async function throwNextError<T>(fn: () => Promise<T>): Promise<T> {
     } else {
       throw error
     }
+  }
+}
+
+export class InternalError extends Error {
+  constructor(message = 'Internal Server Error') {
+    super(message)
+
+    this.name = 'InternalServerError'
   }
 }

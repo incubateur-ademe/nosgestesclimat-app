@@ -71,6 +71,9 @@ export default function VerificationForm({
 
   const handleValidateVerificationCode = useCallback(
     async (code: string) => {
+      if (isPending || isSuccess) {
+        return
+      }
       if (isValidationDisabled) {
         return
       }
@@ -83,7 +86,14 @@ export default function VerificationForm({
 
       await onVerificationCompleted(userId)
     },
-    [isValidationDisabled, mutateAsync, email, onVerificationCompleted]
+    [
+      isValidationDisabled,
+      mutateAsync,
+      email,
+      onVerificationCompleted,
+      isPending,
+      isSuccess,
+    ]
   )
   return (
     <div>

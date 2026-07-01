@@ -23,7 +23,7 @@ export const getPublicPoll = async (
 ): Promise<PublicOrganisationPoll> => {
   const session = await getUserSession()
 
-  return fetchServer<PublicOrganisationPoll>(
+  return await fetchServer<PublicOrganisationPoll>(
     `${ORGANISATION_URL}/${session?.id ?? NO_SESSION_USER_ID}/public-polls/${pollIdOrSlug}`
   )
 }

@@ -19,11 +19,11 @@ class PosthogServer {
     flag: string,
     userId: string
   ): Promise<FeatureFlagValue | undefined> {
-    return this.client.getFeatureFlag(flag, userId)
+    return await this.client.getFeatureFlag(flag, userId)
   }
 
   async shutdown(): Promise<void> {
-    return this.client.shutdown()
+    return await this.client.shutdown()
   }
 }
 

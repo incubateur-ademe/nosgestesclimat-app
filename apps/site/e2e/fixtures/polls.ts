@@ -105,12 +105,12 @@ interface PollPageFixtures {
 const test = base.extend<PollPageFixtures>({
   poll: async ({ browser, organisation, setup, page, storageState }, use) => {
     if (setup) {
-      return use(new Poll(page, organisation))
+      return await use(new Poll(page, organisation))
     }
 
     const useCurrentContext = storageState === ORGANISATION_ADMIN_STATE
     if (useCurrentContext) {
-      return use(await Poll.fromContext(page, organisation))
+      return await use(await Poll.fromContext(page, organisation))
     }
 
     const context = await browser.newContext({

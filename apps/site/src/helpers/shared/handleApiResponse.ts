@@ -7,6 +7,7 @@ import {
   UnauthorizedError,
   UnknownError,
 } from '@/helpers/server/error'
+import * as Sentry from '@sentry/nextjs'
 
 export async function handleApiResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) {
@@ -14,6 +15,23 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
   }
 
   if (!response.ok) {
+    const body = await response.text()
+    let parsedBody: unknown = body
+    try {
+      parsedBody = JSON.parse(body)
+    } catch {
+      // use raw body
+    }
+
+    const apiErrorContext: Record<string, unknown> = {
+      url: response.url,
+      status: response.status,
+    }
+    if (body) {
+      apiErrorContext.body = parsedBody
+    }
+    Sentry.setContext('apiError', apiErrorContext)
+
     switch (response.status) {
       case 404:
         throw new NotFoundError()
@@ -24,23 +42,16 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
       case 429:
         throw new TooManyRequestsError()
       case 400: {
-        const text = await response.text()
-        let error: unknown
-        try {
-          error = JSON.parse(text)
-        } catch {
-          error = text
-        }
-        throw new InvalidInputError(error)
+        throw new InvalidInputError(parsedBody)
       }
       case 202:
-        return response.json() as Promise<T>
+        return await (response.json() as Promise<T>)
       case 500:
         throw new InternalServerError()
       default:
-        throw new UnknownError(response.status, await response.text())
+        throw new UnknownError(response.status, body)
     }
   }
 
-  return response.json() as Promise<T>
+  return await (response.json() as Promise<T>)
 }

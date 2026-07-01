@@ -16,7 +16,7 @@ export async function exportSituation({
   const partnerParamsToSend = { ...partnerParams }
   delete partnerParamsToSend?.partner
 
-  return fetchServer<{ redirectUrl: string }>(
+  return await fetchServer<{ redirectUrl: string }>(
     `${INTEGRATION_URL}/${partner}/export-situation?${new URLSearchParams(partnerParamsToSend).toString()}`,
     {
       method: 'POST',

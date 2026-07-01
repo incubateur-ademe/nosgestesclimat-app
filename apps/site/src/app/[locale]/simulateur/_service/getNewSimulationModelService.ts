@@ -1,13 +1,13 @@
 import { SIMULATION_MODES } from '@/constants/model/simulationModes'
 import {
   getCurrentModel,
-  getGeolocation,
   supportedRegions,
   type Model,
   type Region,
 } from '@/helpers/server/model/models'
 import type { SimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { getGeolocation } from '@/services/geolocation/get-geolocation'
 import { getRegion } from '@/services/users/region'
 import type { SearchParams } from 'next/dist/server/request/search-params'
 

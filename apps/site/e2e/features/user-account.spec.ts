@@ -1,3 +1,4 @@
+import { START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { faker } from '@faker-js/faker'
 import { expect, test } from '../fixtures'
 import { UserMailbox } from '../helpers/user-mailbox'
@@ -58,8 +59,15 @@ test.describe('Email change', () => {
 
 test.describe('Simulation deletion', () => {
   test.use({ storageState: GROUP_ADMIN_STATE })
+  test.setTimeout(120_000)
 
-  test('can delete a simulation from personal space', async ({ page }) => {
+  test('can delete a simulation from personal space', async ({
+    page,
+    ngcTest,
+  }) => {
+    await page.goto(START_SIMULATION_PATH)
+    await ngcTest.skipAllQuestions()
+
     await page.goto('/mon-espace')
     await expect(page.getByTestId('results-list-title')).toBeVisible()
 

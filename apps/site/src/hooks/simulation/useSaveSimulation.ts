@@ -14,7 +14,7 @@ export function useSaveSimulation() {
   const { mutateAsync, isPending, isSuccess, isError, error } = useMutation({
     mutationFn: async ({ simulation }: { simulation: Simulation }) => {
       simulation.computedResults = getComputedResults(engineContext)
-      return saveSimulation({ simulation, name: user?.name, locale })
+      return await saveSimulation({ simulation, name: user?.name, locale })
     },
   })
 

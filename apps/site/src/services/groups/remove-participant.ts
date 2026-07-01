@@ -18,7 +18,7 @@ export const removeParticipant = async ({
     throw new UnauthorizedError()
   }
 
-  return fetchServer<void>(
+  return await fetchServer<void>(
     `${GROUP_URL}/${session.id}/${groupId}/participants/${participantId}`,
     {
       method: 'DELETE',

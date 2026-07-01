@@ -23,7 +23,7 @@ export const createGroup = async ({
     throw new UnauthorizedError()
   }
 
-  return fetchServer<Group>(GROUP_URL, {
+  return await fetchServer<Group>(GROUP_URL, {
     method: 'POST',
     body: {
       name,
