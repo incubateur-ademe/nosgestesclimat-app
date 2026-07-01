@@ -1,10 +1,15 @@
-import posthog from 'posthog-js'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { useEffect } from 'react'
 import { useGetTrackedPathname } from './useGetTrackedUrl'
 
 export function useTrackPageview() {
   const trackedUrl = process.env.NEXT_PUBLIC_SITE_URL + useGetTrackedPathname()
   useEffect(() => {
-    posthog.capture('$pageview', { $current_url: trackedUrl })
+    trackPosthogEvent({
+      eventName: '$pageview',
+      properties: {
+        $current_url: trackedUrl,
+      },
+    })
   }, [trackedUrl])
 }
