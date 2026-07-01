@@ -130,7 +130,7 @@ export function getCategoriesDisplayData({
 
     return {
       dottedName,
-      title: getRuleTitle({ ...rules[dottedName], dottedName }),
+      title: getRuleTitle({ ...rules[dottedName], dottedName }) ?? '',
       icon: meta.icon,
       bgBarClassName: meta.bgBarClassName,
       bgLightClassName: meta.bgLightClassName,
