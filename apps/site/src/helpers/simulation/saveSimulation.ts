@@ -3,6 +3,7 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { postSimulation } from '@/helpers/simulation/postSimulation'
 import type { Locale } from '@/i18nConfig'
 import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
+import { captureException } from '@sentry/nextjs'
 import axios from 'axios'
 import { InternalServerError } from '../server/error'
 
@@ -20,7 +21,20 @@ export async function saveSimulation({
   name,
 }: SaveSimulationPayload): Promise<Simulation | undefined> {
   if (simulation.computedResults.carbone.bilan === 0) {
-    throw new InternalServerError()
+    const exception = new InternalServerError(
+      'Simulation with zero bilan cannot be saved.'
+    )
+    captureException({
+      exception,
+      extra: {
+        situation: JSON.stringify(simulation.situation),
+        simulationId: simulation.id,
+        userId: userId,
+      },
+    })
+    // eslint-disable-next-line no-console
+    console.error(exception)
+    return
   }
 
   const { groups = [], polls = [] } = simulation
