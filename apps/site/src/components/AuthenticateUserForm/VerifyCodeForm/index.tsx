@@ -57,8 +57,8 @@ export default function VerificationForm<T extends object>({
 
   const {
     createVerificationCode,
-    // @TODO : handle error when asking for a new verification code
     createVerificationCodePending,
+    createVerificationCodeError,
   } = useCreateVerificationCode({
     onComplete: (pendingVerification) => {
       onRegisterNewVerification(pendingVerification)
@@ -94,6 +94,9 @@ export default function VerificationForm<T extends object>({
       onVerificationCompleted,
     ]
   )
+  const handleCodeChange = useCallback(() => {
+    verificationMutation.reset()
+  }, [verificationMutation])
   return (
     <div>
       <VerificationContent
@@ -102,12 +105,13 @@ export default function VerificationForm<T extends object>({
         isSuccessValidate={isSuccess}
         isPendingValidate={isPending}
         handleValidateVerificationCode={handleValidateVerificationCode}
+        onCodeChange={handleCodeChange}
       />
 
       {!isSuccess && (
         <NotReceived
           isRetryButtonDisabled={isRetryButtonDisabled}
-          isErrorResend={!!error}
+          isErrorResend={!!createVerificationCodeError}
           onResendVerificationCode={() => {
             void createVerificationCode(email)
           }}

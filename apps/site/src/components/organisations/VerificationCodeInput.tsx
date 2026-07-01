@@ -14,6 +14,7 @@ interface Props {
   isSuccessValidate: boolean
   isPendingValidate: boolean
   handleValidateVerificationCode: (verificationCode: string) => void
+  onCodeChange?: () => void
 }
 
 export default function VerificationCodeInput({
@@ -21,6 +22,7 @@ export default function VerificationCodeInput({
   isSuccessValidate,
   isPendingValidate,
   handleValidateVerificationCode,
+  onCodeChange,
 }: Props) {
   return (
     <fieldset className="m-0 border-0 p-0">
@@ -61,12 +63,17 @@ export default function VerificationCodeInput({
           characterFilled: 'text-primary-700!',
         }}
         placeholder=""
-        onChange={(code) => {
+        onChange={async (code) => {
           // Do not validate if the code is not 6 characters long
           if (code.length !== 6) {
+            onCodeChange?.()
             return
           }
-          handleValidateVerificationCode(code)
+          try {
+            await handleValidateVerificationCode(code)
+          } catch {
+            // L'erreur est déjà gérée par le state error du useMutation
+          }
         }}
       />
 
