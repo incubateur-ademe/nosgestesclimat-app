@@ -84,7 +84,8 @@ export default function Button({
         sizeClassNames[size],
         colorClassNames[color],
         isDisabled && 'cursor-not-allowed opacity-50!',
-        className
+        className,
+        'before:bg-primary-400 before:border-primary-600 active:bg-primary-900 relative before:absolute before:-bottom-2 before:-z-10 before:h-[calc(100%+4px)] before:w-full before:scale-102 before:rounded-full before:border before:content-[""] active:top-1.5 active:before:-translate-y-1.5'
       )}
       {...props}>
       {showLoader && (
