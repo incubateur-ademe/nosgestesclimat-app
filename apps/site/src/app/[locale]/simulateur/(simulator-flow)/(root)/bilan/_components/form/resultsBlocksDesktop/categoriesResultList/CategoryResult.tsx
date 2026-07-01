@@ -2,7 +2,6 @@
 
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { getCategoryTitle } from '@/helpers/formatters/getCategoryTitle'
 import { getTextDarkColor } from '@/helpers/getCategoryColorClass'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
@@ -63,13 +62,7 @@ export default function CategoryResult({
           )}>
           {icons}
         </Emoji>
-        <span>
-          {getCategoryTitle({
-            ruleTitle: title ?? '',
-            dottedName: category,
-            t,
-          })}
-        </span>{' '}
+        <span>{title}</span>{' '}
       </div>
       <span
         className={twMerge(

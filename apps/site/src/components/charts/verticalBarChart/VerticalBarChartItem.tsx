@@ -4,9 +4,7 @@ import Badge from '@/design-system/layout/Badge'
 import BarChart from '@/design-system/utils/BarChart'
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { getCategoryTitle } from '@/helpers/formatters/getCategoryTitle'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
@@ -61,13 +59,7 @@ export default function VerticalBarChartItem({
         />
       </div>
 
-      <Emoji
-        className="mt-3 text-2xl"
-        title={getCategoryTitle({
-          ruleTitle: title,
-          dottedName: category as DottedName,
-          t,
-        })}>
+      <Emoji className="mt-3 text-2xl" title={title}>
         {icons}
       </Emoji>
     </li>

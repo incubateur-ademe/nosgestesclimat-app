@@ -1,7 +1,6 @@
 'use client'
 
 import VerticalBarChartItem from '@/components/charts/verticalBarChart/VerticalBarChartItem'
-import { getCategoryTitle } from '@/helpers/formatters/getCategoryTitle'
 import { getBackgroundColor } from '@/helpers/getCategoryColorClass'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useRule } from '@/publicodes-state'
@@ -21,12 +20,6 @@ export default function CategoryChartItem({
 
   const { numericValue, icons, title } = useRule(category)
 
-  const categoryTitle = getCategoryTitle({
-    ruleTitle: title ?? '',
-    dottedName: category,
-    t,
-  })
-
   const percentageOfMaxValue = 1 - (maxValue - numericValue) / maxValue
 
   const formattedValue = formatValue(numericValue / 1000, { precision: 1 })
@@ -37,11 +30,11 @@ export default function CategoryChartItem({
       index={index}
       percentage={percentageOfMaxValue}
       ariaLabel={t(
-        'La catégorie {{categoryTitle}} représente {{formattedValue}} tonnes de CO₂e.',
-        { formattedValue, categoryTitle }
+        'La catégorie {{title}} représente {{formattedValue}} tonnes de CO₂e.',
+        { formattedValue, title }
       )}
       barColor={getBackgroundColor(category)}
-      title={categoryTitle ?? ''}
+      title={title ?? ''}
       icons={icons}
     />
   )
