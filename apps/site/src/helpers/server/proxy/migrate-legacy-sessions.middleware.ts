@@ -1,4 +1,7 @@
-import { buildSessionCookies, SESSION_COOKIE } from '@/helpers/server/cookies'
+import {
+  buildSessionCookies,
+  SESSION_COOKIE,
+} from '@/helpers/server/cookie/auth.cookie'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { migrateLegacySessions } from '@nosgestesclimat/core/features/auth/services/migrate-legacy-sessions.service'
 import { getIronSession } from 'iron-session'

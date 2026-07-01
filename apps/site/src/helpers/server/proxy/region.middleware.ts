@@ -1,14 +1,12 @@
-import { getCookieOptions } from '@/helpers/server/cookies'
+import { getCookieOptions } from '@/helpers/server/cookie/helpers'
+import {
+  buildRegionCookie,
+  REGION_COOKIE,
+} from '@/helpers/server/cookie/region.cookie'
 import type { Region } from '@/helpers/server/model/models'
 import { getGeolocation, supportedRegions } from '@/helpers/server/model/models'
 import type { NextRequest } from 'next/server'
 import type { MiddlewareResult } from './types'
-
-export const REGION_COOKIE = 'ngc_region'
-
-export function buildRegionCookie(region: Region, initial?: Region) {
-  return JSON.stringify({ current: region, initial: initial ?? region })
-}
 
 export async function middlewareRegion(
   request: NextRequest

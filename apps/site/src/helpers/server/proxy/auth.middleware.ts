@@ -2,7 +2,7 @@ import {
   buildSessionCookies,
   REFRESH_COOKIE,
   SESSION_COOKIE,
-} from '@/helpers/server/cookies'
+} from '@/helpers/server/cookie/auth.cookie'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'

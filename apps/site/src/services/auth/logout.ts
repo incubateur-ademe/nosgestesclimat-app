@@ -1,10 +1,10 @@
 'use server'
 
 import {
-  getCookieOptions,
   REFRESH_COOKIE,
   SESSION_COOKIE,
-} from '@/helpers/server/cookies'
+} from '@/helpers/server/cookie/auth.cookie'
+import { getCookieOptions } from '@/helpers/server/cookie/helpers'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'

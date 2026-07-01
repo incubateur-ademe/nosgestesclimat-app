@@ -1,4 +1,4 @@
-import { getCookieOptions } from '@/helpers/server/cookies'
+import { getCookieOptions } from '@/helpers/server/cookie/helpers'
 import { FF_COOKIE_NAME } from '@/services/feature-flags/constants'
 import {
   parseFeatureFlagCookie,
