@@ -72,7 +72,7 @@ export default function VerificationCodeInput({
           try {
             await handleValidateVerificationCode(code)
           } catch {
-            // L'erreur est déjà gérée par le state error du useMutation
+            // Error handled by error state of useMutation
           }
         }}
       />
