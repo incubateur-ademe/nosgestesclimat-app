@@ -1,3 +1,5 @@
+import { getIframeInformation } from '@/services/tracking/iframeInformation'
+import type { CaptureOptions } from 'posthog-js'
 import posthog from 'posthog-js'
 
 declare global {
@@ -29,6 +31,20 @@ export const trackMatomoEvent__deprecated = (args: (string | null)[]) => {
 export const trackPosthogEvent = (args: {
   eventName: string
   properties?: Record<string, string | number | boolean | null | undefined>
+  options?: CaptureOptions
 }) => {
-  posthog.capture(args.eventName, { ...args.properties })
+  const iframeInfo = getIframeInformation()
+
+  const iframeProperties = iframeInfo.iframe
+    ? {
+        $referrer: iframeInfo.$referrer,
+        $referring_domain: iframeInfo.$referring_domain,
+      }
+    : {}
+
+  posthog.capture(
+    args.eventName,
+    { ...args.properties, ...iframeProperties },
+    args.options
+  )
 }
