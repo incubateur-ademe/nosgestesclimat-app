@@ -517,6 +517,10 @@ html[data-useragent*='Trident'] #js {
   margin-top: 0;
 }
 
+.markdown details {
+  @apply mb-4;
+}
+
 @keyframes rainbow {
   0% {
     background-position: 100% 50%;
