@@ -42,9 +42,17 @@ export const trackPosthogEvent = (args: {
       }
     : {}
 
+  // 1. Inject directly into the captured event
   posthog.capture(
     args.eventName,
     { ...args.properties, ...iframeProperties },
     args.options
   )
+
+  // 2. Re-register immédiatement après pour réparer la persistence
+  // (save_referrer() vient de l'écraser pendant le capture ci-dessus)
+  // Note: this is a workaround for a bug in PostHog where the $referrer and $referring_domain properties are not persisted across events due to the save_referrer() function being called during auto-capture. By re-registering the properties immediately after capturing the event, we ensure that they are available for subsequent events.
+  if (iframeInfo.iframe) {
+    posthog.register(iframeProperties)
+  }
 }
