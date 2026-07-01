@@ -6,6 +6,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getCategoryTitle } from '@/helpers/formatters/getCategoryTitle'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
@@ -62,7 +63,11 @@ export default function VerticalBarChartItem({
 
       <Emoji
         className="mt-3 text-2xl"
-        title={getCategoryTitle({ ruleTitle: title, dottedName: category, t })}>
+        title={getCategoryTitle({
+          ruleTitle: title,
+          dottedName: category as DottedName,
+          t,
+        })}>
         {icons}
       </Emoji>
     </li>
