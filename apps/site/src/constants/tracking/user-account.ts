@@ -12,6 +12,34 @@ export const headerClickAccessMySpaceAuthenticatedServer = [
   'Authenticated',
 ]
 
+export const headerClickActionsAuthenticatedServer = [
+  'trackEvent',
+  'Header',
+  'Click Accéder à mes actions',
+  'Authenticated',
+]
+
+export const headerClickActionsUnauthenticatedServer = [
+  'trackEvent',
+  'Header',
+  'Click Accéder à mes actions',
+  'Unauthenticated',
+]
+
+export const headerClickCollectiveAuthenticatedServer = [
+  'trackEvent',
+  'Header',
+  'Click Accéder à mes tests collectifs',
+  'Authenticated',
+]
+
+export const headerClickCollectiveUnauthenticatedServer = [
+  'trackEvent',
+  'Header',
+  'Click Accéder à mes tests collectifs',
+  'Unauthenticated',
+]
+
 export const headerClickLogoutAuthenticatedServer = [
   'trackEvent',
   'Header',

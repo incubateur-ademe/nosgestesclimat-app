@@ -252,6 +252,34 @@ export const captureClickHeaderAccessMySpaceAuthenticatedServer = {
   },
 }
 
+export const captureClickHeaderActionsAuthenticatedServer = {
+  eventName: 'click header actions',
+  properties: {
+    status: 'authenticated',
+  },
+}
+
+export const captureClickHeaderActionsUnuthenticatedServer = {
+  eventName: 'click header actions',
+  properties: {
+    status: 'unauthenticated',
+  },
+}
+
+export const captureClickHeaderCollectiveTestsAuthenticatedServer = {
+  eventName: 'click header collective tests',
+  properties: {
+    status: 'authenticated',
+  },
+}
+
+export const captureClickHeaderCollectiveTestsUnuthenticatedServer = {
+  eventName: 'click header collective tests',
+  properties: {
+    status: 'unauthenticated',
+  },
+}
+
 export const captureClickHeaderLogoutAuthenticatedServer = {
   eventName: 'click header logout',
   properties: {
