@@ -42,11 +42,14 @@ export default function UserEmail({ user }: Props) {
 
   return (
     <div className="flex flex-wrap items-center">
-      <p className="m-0 text-sm md:text-base">{user.email}</p>
+      <p className="m-0 text-sm md:text-base" data-testid="user-email-display">
+        {user.email}
+      </p>
 
       <Button
         color="link"
         className="text-base font-bold md:text-lg"
+        data-testid="edit-email-button"
         onClick={onEditClick}>
         <Trans i18nKey="mon-espace.settings.userInfos.editLabel">
           Modifier
