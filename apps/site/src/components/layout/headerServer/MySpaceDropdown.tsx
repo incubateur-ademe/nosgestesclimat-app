@@ -15,8 +15,12 @@ import {
 } from '@/constants/tracking/user-account'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
+import { truncateMiddle } from '@/helpers/formatters/truncateMiddle'
 import { resetLocalState } from '@/helpers/user/resetLocalState'
+import { useDropdown } from '@/hooks/navigation/useDropdown'
+import { useMenuKeyboardNavigation } from '@/hooks/navigation/useMenuKeyboardNavigation'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useInputMethod } from '@/hooks/useInputMethod'
 import { useUser } from '@/publicodes-state'
 import {
   trackMatomoEvent__deprecated,
@@ -24,10 +28,11 @@ import {
 } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import posthog from 'posthog-js'
-import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react'
+import { type KeyboardEvent, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 const MAX_EMAIL_LENGTH = 20
+const MENU_ITEM_COUNT = 2
 
 interface Props {
   email: string
@@ -36,183 +41,84 @@ interface Props {
 
 export default function MySpaceDropdown({ email, onLogout }: Props) {
   const { t } = useClientTranslation()
-  const [isOpen, setIsOpen] = useState(false)
-  const [isKeyboardNavigation, setIsKeyboardNavigation] = useState(false)
-  const openedWithKeyboardRef = useRef(false)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const firstMenuItemRef = useRef<HTMLAnchorElement>(null)
-  const logoutButtonRef = useRef<HTMLButtonElement>(null)
-  const buttonId = useId()
-  const menuId = useId()
+
+  const { isOpen, close, toggle, open, buttonRef, menuRef, buttonId, menuId } =
+    useDropdown()
+
+  const { isKeyboardNavigation, setKeyboardInputMethod } = useInputMethod()
+
+  const { handleMenuKeyDown, setItemRef, focusFirstItem } =
+    useMenuKeyboardNavigation({
+      itemCount: MENU_ITEM_COUNT,
+      onEscape: close,
+    })
 
   const { setUser, updateSimulations } = useUser()
 
-  const displayEmail =
-    email.length > MAX_EMAIL_LENGTH
-      ? `${email.substring(0, MAX_EMAIL_LENGTH)}…`
-      : email
+  const displayEmail = truncateMiddle(email, MAX_EMAIL_LENGTH)
 
-  // Track keyboard vs mouse navigation
-  useEffect(() => {
-    function handleKeyDown() {
-      setIsKeyboardNavigation(true)
-    }
+  // Local safety ref to distinguish keyboard vs mouse opening of the menu
+  // even if the global input method listeners haven't settled yet.
+  const openedWithKeyboardRef = useRef(false)
 
-    function handleMouseDown() {
-      setIsKeyboardNavigation(false)
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('mousedown', handleMouseDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('mousedown', handleMouseDown)
-    }
-  }, [])
-
-  // Close the menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        isOpen &&
-        menuRef.current &&
-        buttonRef.current &&
-        !menuRef.current.contains(event.target as Node) &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-      }
-    }
-  }, [isOpen])
-
-  // Close the menu with the Escape key
-  useEffect(() => {
-    function handleEscape(event: globalThis.KeyboardEvent) {
-      if (event.key === 'Escape' && isOpen) {
-        setIsOpen(false)
-        buttonRef.current?.focus()
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      return () => {
-        document.removeEventListener('keydown', handleEscape)
-      }
-    }
-  }, [isOpen])
-
-  // Focus the first item in the menu when the menu is opened with keyboard
+  // Focus the first item when the menu is opened with a keyboard interaction
   useEffect(() => {
     if (isOpen && isKeyboardNavigation) {
       requestAnimationFrame(() => {
-        firstMenuItemRef.current?.focus()
+        focusFirstItem()
       })
     }
-  }, [isOpen, isKeyboardNavigation])
-
-  // Close the menu on blur
-  useEffect(() => {
-    function handleFocusOut(event: FocusEvent) {
-      if (
-        isOpen &&
-        menuRef.current &&
-        buttonRef.current &&
-        !menuRef.current.contains(event.relatedTarget as Node) &&
-        !buttonRef.current.contains(event.relatedTarget as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-
-    if (isOpen) {
-      const menu = menuRef.current
-      const button = buttonRef.current
-
-      if (menu && button) {
-        menu.addEventListener('focusout', handleFocusOut)
-        button.addEventListener('focusout', handleFocusOut)
-
-        return () => {
-          menu.removeEventListener('focusout', handleFocusOut)
-          button.removeEventListener('focusout', handleFocusOut)
-        }
-      }
-    }
-  }, [isOpen])
+  }, [isOpen, isKeyboardNavigation, focusFirstItem])
 
   const handleToggleMenu = () => {
     trackMatomoEvent__deprecated(headerClickMonEspaceAuthenticatedServer)
     trackPosthogEvent(captureClickHeaderMonEspaceAuthenticatedServer)
-    setIsOpen((prev) => {
-      const willOpen = !prev
-      // If opening with mouse click, reset keyboard navigation flag
-      if (willOpen && !openedWithKeyboardRef.current) {
-        setIsKeyboardNavigation(false)
-      }
-      // Reset the flag after checking
-      if (willOpen) {
-        openedWithKeyboardRef.current = false
-      }
-      return willOpen
-    })
+
+    const isOpening = !isOpen
+
+    // When opening with a mouse click, ensure keyboard navigation is disabled
+    if (isOpening && !openedWithKeyboardRef.current) {
+      setKeyboardInputMethod(false)
+    }
+
+    // Reset the ref for the next interaction
+    if (isOpening) {
+      openedWithKeyboardRef.current = false
+    }
+
+    toggle()
   }
 
   const handleButtonKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       openedWithKeyboardRef.current = true
-      setIsKeyboardNavigation(true)
+      setKeyboardInputMethod(true)
       handleToggleMenu()
     } else if (event.key === 'ArrowDown' && !isOpen) {
       event.preventDefault()
       openedWithKeyboardRef.current = true
-      setIsKeyboardNavigation(true)
-      setIsOpen(true)
-    }
-  }
-
-  const handleMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      setIsOpen(false)
-      buttonRef.current?.focus()
-    } else if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      if (document.activeElement === firstMenuItemRef.current) {
-        logoutButtonRef.current?.focus()
-      } else {
-        firstMenuItemRef.current?.focus()
-      }
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      if (document.activeElement === logoutButtonRef.current) {
-        firstMenuItemRef.current?.focus()
-      } else {
-        logoutButtonRef.current?.focus()
-      }
+      setKeyboardInputMethod(true)
+      open()
     }
   }
 
   const handleLogout = () => {
     trackMatomoEvent__deprecated(headerClickLogoutAuthenticatedServer)
     trackPosthogEvent(captureClickHeaderLogoutAuthenticatedServer)
-    setIsOpen(false)
+    close()
 
     resetLocalState({ setUser, updateSimulations })
 
     posthog.reset()
 
     onLogout()
+  }
+
+  const handleAccessMySpace = () => {
+    close()
+    trackMatomoEvent__deprecated(headerClickAccessMySpaceAuthenticatedServer)
+    trackPosthogEvent(captureClickHeaderAccessMySpaceAuthenticatedServer)
   }
 
   const ariaLabelTitle = isOpen
@@ -268,7 +174,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
           <ul>
             <li>
               <Link
-                ref={firstMenuItemRef}
+                ref={setItemRef(0)}
                 href={MON_ESPACE_PATH}
                 role="menuitem"
                 className={twMerge(
@@ -277,24 +183,10 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
                     ? 'focus:bg-primary-50 focus:ring-primary-700 focus:underline! focus:ring-2 focus:ring-offset-2'
                     : 'focus:bg-primary-50 hover:bg-primary-50 focus:ring-color-transparent! hover:underline! focus:underline! focus:ring-0! focus:ring-offset-0!'
                 )}
-                onClick={() => {
-                  setIsOpen(false)
-                  trackMatomoEvent__deprecated(
-                    headerClickAccessMySpaceAuthenticatedServer
-                  )
-                  trackPosthogEvent(
-                    captureClickHeaderAccessMySpaceAuthenticatedServer
-                  )
-                }}
+                onClick={handleAccessMySpace}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
-                    setIsOpen(false)
-                    trackMatomoEvent__deprecated(
-                      headerClickAccessMySpaceAuthenticatedServer
-                    )
-                    trackPosthogEvent(
-                      captureClickHeaderAccessMySpaceAuthenticatedServer
-                    )
+                    handleAccessMySpace()
                   }
                 }}>
                 <Trans i18nKey="header.monEspace.access">
@@ -304,7 +196,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
             </li>
             <li>
               <button
-                ref={logoutButtonRef}
+                ref={setItemRef(1)}
                 type="button"
                 role="menuitem"
                 className="text-default hover:bg-primary-50 focus:bg-primary-50 focus:ring-primary-700 flex min-h-10 w-full items-center gap-2 px-4 py-2 text-sm transition-colors hover:underline! focus:underline! focus:ring-2 focus:ring-offset-2 focus:outline-none"
