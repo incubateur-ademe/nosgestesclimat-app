@@ -83,6 +83,10 @@ export default function ButtonLink({
         if (isDisabled) {
           return
         }
+
+        // Auto-disable link after click
+        if (showLoadingOnClick) clickOnce()
+
         if (onKeyDown) {
           onKeyDown(e)
         }

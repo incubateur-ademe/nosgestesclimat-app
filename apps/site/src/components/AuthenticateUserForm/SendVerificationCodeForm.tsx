@@ -23,6 +23,7 @@ interface Props {
   required?: boolean
   isVerticalLayout?: boolean
   additionnalButton?: ReactNode
+  disabled?: boolean
 }
 
 interface FormData {
@@ -37,6 +38,7 @@ export default function SendVerificationCodeForm({
   additionnalButton,
   required = true,
   isVerticalLayout = true,
+  disabled,
 }: Props) {
   const { t } = useClientTranslation()
   const {
@@ -69,7 +71,8 @@ export default function SendVerificationCodeForm({
       buttonColor={buttonColor}
       additionnalButton={additionnalButton}
       isVerticalLayout={isVerticalLayout}
-      loading={createVerificationCodePending}>
+      loading={createVerificationCodePending}
+      disabled={disabled}>
       <EmailInput
         data-testid="verification-code-email-input"
         containerClassName={isVerticalLayout ? 'w-full' : 'max-w-full w-96'}
