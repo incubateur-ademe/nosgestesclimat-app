@@ -1,9 +1,9 @@
+import { buildSessionCookies, SESSION_COOKIE } from '@/helpers/server/cookies'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { migrateLegacySessions } from '@nosgestesclimat/core/features/auth/services/migrate-legacy-sessions.service'
 import { getIronSession } from 'iron-session'
 import type { NextRequest } from 'next/server'
 import { InternalServerError } from '../error'
-import { buildSessionCookies, SESSION_COOKIE } from './auth-cookies'
 import type { MiddlewareResult } from './types'
 
 const ANON_SESSION_COOKIE = 'ngc_anon_user'

@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers'
 
-import { buildSessionCookies } from '@/helpers/server/proxy/auth-cookies'
+import { buildSessionCookies } from '@/helpers/server/cookies'
 import { createSession } from '@nosgestesclimat/core/features/auth/services/create-session.service'
 import type { SessionTokens } from '@nosgestesclimat/core/features/auth/types/session'
 

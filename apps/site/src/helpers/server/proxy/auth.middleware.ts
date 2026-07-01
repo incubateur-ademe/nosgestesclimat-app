@@ -1,3 +1,8 @@
+import {
+  buildSessionCookies,
+  REFRESH_COOKIE,
+  SESSION_COOKIE,
+} from '@/helpers/server/cookies'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
@@ -9,11 +14,6 @@ import type {
 } from '@nosgestesclimat/core/features/auth/types/session'
 import { captureException } from '@sentry/nextjs'
 import { type NextRequest, NextResponse } from 'next/server'
-import {
-  buildSessionCookies,
-  REFRESH_COOKIE,
-  SESSION_COOKIE,
-} from './auth-cookies'
 import type { MiddlewareResult } from './types'
 
 /**
