@@ -1,4 +1,4 @@
-import { requestIdleCallback } from '@/utils/requestIdleCallback'
+import { useCommitValue } from '@/hooks/useCommitValue'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Evaluation } from 'publicodes'
 import { useEffect, useState } from 'react'
@@ -26,6 +26,8 @@ export default function ChoicesInput(props: Props) {
     firstInputId,
     ...otherProps
   } = props
+
+  const commitValue = useCommitValue(setValue)
 
   // For now, it only concerns `DPE` question whose possibilities are very short, so 4 colomns is ok. However, we should have done a special question.
   const isGrid = choices
@@ -56,7 +58,7 @@ export default function ChoicesInput(props: Props) {
     ) {
       const singleChoice = choices[0]
       setCurrentValue(singleChoice)
-      requestIdleCallback(() => setValue(String(singleChoice)))
+      commitValue(String(singleChoice))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choices, value])
@@ -80,10 +82,10 @@ export default function ChoicesInput(props: Props) {
             setValue={(choice: string | number) => {
               if (currentValue === choice) {
                 setCurrentValue(undefined)
-                requestIdleCallback(() => setValue(undefined))
+                commitValue(undefined)
               } else {
                 setCurrentValue(choice)
-                requestIdleCallback(() => setValue(String(choice)))
+                commitValue(String(choice))
               }
             }}
             isWithinGrid={isGrid}
