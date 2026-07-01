@@ -10,7 +10,9 @@ import { getRuleTitle } from '@/helpers/publicodes/getRuleTitle'
 import type { Locale } from '@/i18nConfig'
 import type { ComputedResults, Metric } from '@/publicodes-state/types'
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
+import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
+import { getCategoryTitle } from './formatters/getCategoryTitle'
 
 export interface SubcategoryDisplayData {
   dottedName: DottedName
@@ -109,7 +111,7 @@ export function getCategoriesDisplayData({
   rules: Partial<NGCRules>
   metric?: Metric
   locale: Locale
-  t?: (key: string) => string
+  t: TFunction
 }): CategoryDisplayData[] {
   const categoriesData = computedResults[metric].categories
   const subcategoriesData = computedResults[metric].subcategories
@@ -130,7 +132,11 @@ export function getCategoriesDisplayData({
 
     return {
       dottedName,
-      title: getRuleTitle({ ...rules[dottedName], dottedName }),
+      title: getCategoryTitle({
+        ruleTitle: getRuleTitle({ ...rules[dottedName], dottedName }) ?? '',
+        dottedName,
+        t,
+      }),
       icon: meta.icon,
       bgBarClassName: meta.bgBarClassName,
       bgLightClassName: meta.bgLightClassName,

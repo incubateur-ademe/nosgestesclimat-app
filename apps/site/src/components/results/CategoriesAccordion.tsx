@@ -2,6 +2,7 @@ import HorizontalBarChartItem from '@/components/charts/HorizontalBarChartItem'
 import { carboneMetric } from '@/constants/model/metric'
 import Card from '@/design-system/layout/Card'
 import AccordionItem from '@/design-system/layout/accordion/AccordionItem'
+import { getCategoryTitle } from '@/helpers/formatters/getCategoryTitle'
 import { getCategoriesDisplayData } from '@/helpers/getCategoriesDisplayData'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
@@ -51,7 +52,13 @@ export default async function CategoriesAccordion({
                 icon={category.icon}
                 title={
                   <span className="flex items-center gap-2 text-sm sm:text-base">
-                    <strong className="text-left">{category.title}</strong>
+                    <strong className="text-left">
+                      {getCategoryTitle({
+                        ruleTitle: category.title,
+                        dottedName: category.dottedName,
+                        t,
+                      })}
+                    </strong>
 
                     <span className="whitespace-nowrap">
                       {category.formattedValue}&nbsp;
@@ -67,8 +74,16 @@ export default async function CategoriesAccordion({
                 bgIconClassName={category.bgIconClassName}
               />
             }
-            name={category.title}
-            ariaLabel={`${category.title} - ${category.formattedValue} ${category.unit}`}
+            name={getCategoryTitle({
+              ruleTitle: category.title,
+              dottedName: category.dottedName,
+              t,
+            })}
+            ariaLabel={`${getCategoryTitle({
+              ruleTitle: category.title,
+              dottedName: category.dottedName,
+              t,
+            })} - ${category.formattedValue} ${category.unit}`}
             content={
               <Card
                 className={`rounded-lg border border-slate-400 ${category.bgLightClassName}`}>

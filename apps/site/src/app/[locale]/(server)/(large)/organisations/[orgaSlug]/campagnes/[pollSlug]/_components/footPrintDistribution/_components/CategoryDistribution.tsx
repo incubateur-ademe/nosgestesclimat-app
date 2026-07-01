@@ -30,7 +30,7 @@ export default function CategoryDistribution({
     transport: t('common.category.transport', 'Transport'),
     alimentation: t('common.category.alimentation', 'Alimentation'),
     logement: t('common.category.logement', 'Logement'),
-    divers: t('common.category.divers', 'Divers'),
+    divers: t('common.category.divers', 'Consommation'),
     'services sociétaux': t('common.category.services', 'Services sociétaux'),
   }
 
@@ -38,7 +38,7 @@ export default function CategoryDistribution({
     transport: t('common.category.transport', 'Transport'),
     alimentation: t('common.category.alimentation', 'Alimentation'),
     logement: t('common.category.logement', 'Logement'),
-    divers: t('common.category.divers', 'Divers'),
+    divers: t('common.category.divers', 'Consommation'),
     'services sociétaux': t('common.category.services', 'Services sociétaux'),
   }
 
@@ -48,8 +48,8 @@ export default function CategoryDistribution({
       t,
     })
     return {
-      name: categoryLabels[key as Categories],
-      nameFull: categoryLabelsFull[key as Categories],
+      name: categoryLabels[key as keyof typeof categoryLabels],
+      nameFull: categoryLabelsFull[key as keyof typeof categoryLabelsFull],
       value: value,
       color: COLORS[key as Categories],
       formattedValue,
