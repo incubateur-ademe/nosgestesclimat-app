@@ -13,7 +13,7 @@ interface Props {
   inputError: string | undefined
   isSuccessValidate: boolean
   isPendingValidate: boolean
-  handleValidateVerificationCode: (verificationCode: string) => void
+  handleValidateVerificationCode: (verificationCode: string) => Promise<void>
   onCodeChange?: () => void
 }
 
@@ -63,17 +63,15 @@ export default function VerificationCodeInput({
           characterFilled: 'text-primary-700!',
         }}
         placeholder=""
-        onChange={async (code) => {
+        onChange={(code) => {
           // Do not validate if the code is not 6 characters long
           if (code.length !== 6) {
             onCodeChange?.()
             return
           }
-          try {
-            await handleValidateVerificationCode(code)
-          } catch {
+          handleValidateVerificationCode(code).catch(() => {
             // Error handled by error state of useMutation
-          }
+          })
         }}
       />
 
