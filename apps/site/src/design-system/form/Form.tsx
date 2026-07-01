@@ -1,6 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
+import { cloneElement, isValidElement, type ReactElement } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { ButtonColor } from '../buttons/Button'
 import Button from '../buttons/Button'
@@ -67,7 +68,14 @@ export default function Form({
             color={buttonColor}>
             {buttonLabel ?? <Trans>Enregistrer</Trans>}
           </Button>
-          {additionnalButton}
+          {additionnalButton && isValidElement(additionnalButton)
+            ? cloneElement(
+                additionnalButton as ReactElement<{ disabled?: boolean }>,
+                {
+                  disabled: disabled || loading,
+                }
+              )
+            : additionnalButton}
         </div>
       </div>
     </form>
