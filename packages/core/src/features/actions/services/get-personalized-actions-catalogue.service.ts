@@ -4,7 +4,7 @@ import { findAllVisiblePersonalizedActions } from '../repositories/actions.repos
 import type { PersonalizedAction } from '../types/action.ts'
 
 export const getPersonalizedActionsCatalogue = async (
-  userId: string
+  userId: string | undefined
 ): Promise<{
   assessmentStatus: SimulationComputationStatus | null
   actions: PersonalizedAction[]

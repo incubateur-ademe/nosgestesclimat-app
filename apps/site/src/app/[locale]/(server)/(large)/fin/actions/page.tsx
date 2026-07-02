@@ -2,13 +2,12 @@ import ActionsPage from '@/components/actions/pages/ActionsPage'
 import { LegacyActionPage } from '@/components/results/LegacyActionPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import type { AppUser } from '@/helpers/server/dal/user'
-import { getUser } from '@/helpers/server/dal/user'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
 import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
+import { getUserSession } from '@/services/auth/get-user-session'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 
 export const generateMetadata = getCommonMetadata({
@@ -22,11 +21,11 @@ export default async function ResultatsActionsPage({
   params,
 }: DefaultPageProps) {
   const { locale } = await params
-  const user = await getUser()
-  const flag = await hasActionV2Rollout(user.id)
+  const user = await getUserSession()
+  const flag = user && (await hasActionV2Rollout(user.id))
 
   if (!flag) {
-    return <LegacyResultatsActionsPage user={user} locale={locale} />
+    return <LegacyResultatsActionsPage locale={locale} />
   }
 
   const [actionsCatalogue, themes] = await Promise.all([
@@ -46,13 +45,11 @@ export default async function ResultatsActionsPage({
 }
 
 async function LegacyResultatsActionsPage({
-  user,
   locale,
 }: {
-  user: AppUser
   locale: Locale
 }) {
-  const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
+  const simulations = await getCompletedSimulations({ pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />
 }

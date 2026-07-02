@@ -1,11 +1,9 @@
 import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import { throwNextError } from '@/helpers/server/error'
-import {
-  deleteSimulation,
-  getCompletedSimulations,
-} from '@/helpers/server/model/simulations'
-import { getAuthUser } from '@/helpers/server/model/user'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
+import { deleteSimulation } from '@/services/simulations/delete-simulation'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { revalidatePath } from 'next/cache'
 import ResultsView from './_components/ResultsView'
@@ -16,10 +14,8 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
   const { [SHOW_WELCOME_BANNER_QUERY_PARAM]: showWelcomeBanner } =
     (await searchParams) ?? {}
 
-  const [simulations, user] = await throwNextError(async () => {
-    const user = await getAuthUser()
-    return [await getCompletedSimulations({ user }), user]
-  })
+  await requireAuthUser()
+  const simulations = await throwNextError(() => getCompletedSimulations())
 
   return (
     <div>
@@ -30,7 +26,7 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
       <ResultsView
         onSimulationDelete={async (simulationId) => {
           'use server'
-          await deleteSimulation({ user, simulationId })
+          await deleteSimulation(simulationId)
           revalidatePath(MON_ESPACE_PATH)
           revalidatePath(`${MON_ESPACE_PATH}/resultats/${simulationId}`)
         }}

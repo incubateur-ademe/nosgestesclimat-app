@@ -14,7 +14,7 @@ export async function getCachedRules({
   isOptim?: boolean
 }) {
   'use cache'
-  return getRules({
+  return await getRules({
     ...(modelStr ? parseModelString(modelStr) : {}),
     locale,
     isOptim,

@@ -8,23 +8,18 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
-import { getUser } from '@/helpers/server/dal/user'
-import {
-  NoSessionFoundError,
-  NotFoundError,
-  throwNextError,
-} from '@/helpers/server/error'
+import { NoSessionFoundError, throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
 import {
   getTendency,
   type Tendency,
 } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
+import { getUserSession } from '@/services/auth/get-user-session'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { captureException } from '@sentry/nextjs'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 export async function generateMetadata({ params }: DefaultPageProps) {
   const { locale } = await params
@@ -57,32 +52,23 @@ export default async function FinPage({
     )
   }
 
-  const user = await getUser()
-  let simulations
-  try {
-    simulations = await getCompletedSimulations(
-      { user },
-      { pageSize: user.isAuth ? 2 : 1 }
-    )
-  } catch (e) {
-    captureException(e)
+  const user = await getUserSession()
+  if (!user) {
+    captureException(new NoSessionFoundError(), { level: 'warning' })
     redirect('/')
   }
+
+  const simulations = await getCompletedSimulations({
+    pageSize: user.isAuth ? 2 : 1,
+  })
 
   const [simulation, previousSimulation] = simulations
-
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!simulation) {
-    const session = await getAnonSession()
-    if (!session.userId) {
-      captureException(new NoSessionFoundError())
-    } else {
-      captureException(new NotFoundError(), { level: 'warning' })
-    }
-    redirect('/')
+    notFound()
   }
+
   const simulationResult = await throwNextError(async () => {
-    return getSimulationResult({
+    return await getSimulationResult({
       user,
       simulation,
     })
