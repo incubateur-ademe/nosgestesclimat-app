@@ -105,6 +105,14 @@ export class PostHog {
       this.switchDNTOn()
     }
     this.registerProperties()
+
+    if (this.iframeInformation.iframe) {
+      // PostHog recomputes $referrer/$referring_domain from the browser's
+      // real referrer on every capture (including autocapture), overwriting
+      // the iframe referrer we registered above. Re-register it right after
+      // each event is sent so it survives for the next one.
+      posthog.on('eventCaptured', () => this.registerProperties())
+    }
   }
 
   private registerProperties() {
