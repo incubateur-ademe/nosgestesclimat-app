@@ -50,7 +50,7 @@ export default async function CategoriesAccordion({
                 index={index}
                 icon={category.icon}
                 title={
-                  <span className="flex items-center gap-2 text-sm sm:text-base">
+                  <span className="flex items-center gap-2 text-xs sm:text-base">
                     <strong className="text-left">{category.title}</strong>
 
                     <span className="whitespace-nowrap">
@@ -71,7 +71,7 @@ export default async function CategoriesAccordion({
             ariaLabel={`${category.title} - ${category.formattedValue} ${category.unit}`}
             content={
               <Card
-                className={`rounded-lg border border-slate-400 ${category.bgLightClassName}`}>
+                className={`rounded-lg border border-slate-400 p-4 ${category.bgLightClassName}`}>
                 {category.dottedName.startsWith('services') && (
                   <ServicesDescription />
                 )}

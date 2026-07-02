@@ -36,7 +36,7 @@ export default async function SaveResultsBlock({
       </Title>
 
       <section
-        className="bg-primary-700 mb-12 rounded-2xl p-8"
+        className="bg-primary-700 mb-8 rounded-2xl p-5 md:mb-12 md:p-8"
         aria-labelledby="save-results-block-title">
         <div className="flex flex-col flex-wrap items-stretch gap-8 md:flex-row md:items-center lg:flex-nowrap">
           <div className="max-w-full flex-1">
@@ -45,7 +45,7 @@ export default async function SaveResultsBlock({
               size="md"
               hasSeparator={false}
               id="save-results-block-title"
-              className="font-bold! text-white">
+              className="mb-4 font-bold! text-white">
               {user?.isAuth ? (
                 <Trans
                   i18nKey="results.saveResults.title.authenticated"
