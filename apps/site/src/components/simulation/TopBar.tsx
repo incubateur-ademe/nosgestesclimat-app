@@ -39,11 +39,16 @@ export default function TopBar({
 
         <div className="mb-0 flex w-full max-w-5xl justify-between overflow-visible pr-4 pl-1 lg:mx-auto lg:px-4">
           <div className="flex items-center gap-1 md:gap-4">
-            <Link href="/" className="mr-2 md:mr-0">
-              <Logo size="sm" />
-            </Link>
+            {!showTotal && (
+              <>
+                <Link href="/" className="mr-2 md:mr-0">
+                  <Logo size="sm" />
+                </Link>
+                <span aria-hidden className="my-auto h-8 w-px bg-slate-300" />
+              </>
+            )}
 
-            <div className="flex border-l border-slate-300 pl-2 md:pl-4">
+            <div className="flex max-h-12">
               {showTotal ? (
                 <TotalFootprintNumber
                   size="lg"
@@ -52,7 +57,7 @@ export default function TopBar({
               ) : currentCategory ? (
                 <Category category={currentCategory} />
               ) : (
-                <BlockSkeleton className="h-12 w-40 pt-4" />
+                <BlockSkeleton />
               )}
             </div>
           </div>
