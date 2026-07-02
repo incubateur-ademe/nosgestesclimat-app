@@ -1,4 +1,9 @@
-import { REFRESH_TOKEN_TTL_DAYS } from '@nosgestesclimat/core/features/auth/constants/session'
+import {
+  buildSessionCookies,
+  deleteSessionCookies,
+  REFRESH_COOKIE,
+  SESSION_COOKIE,
+} from '@/helpers/server/cookie/auth.cookie'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
@@ -10,11 +15,7 @@ import type {
 } from '@nosgestesclimat/core/features/auth/types/session'
 import { captureException } from '@sentry/nextjs'
 import { type NextRequest, NextResponse } from 'next/server'
-import { getCookieOptions } from './cookies'
 import type { MiddlewareResult } from './types'
-
-export const SESSION_COOKIE = 'ngc_session'
-export const REFRESH_COOKIE = 'ngc_refresh'
 
 /**
  * Auth interceptor middleware.
@@ -99,12 +100,15 @@ export async function middlewareAuth(
         ),
         { level: 'error' }
       )
-      return stripRt(request)
+      return {
+        redirect: null,
+        cookies: deleteSessionCookies(),
+      }
     }
 
     // (G) Unknown error during rotation — log and continue anonymously.
     captureException(err, { level: 'error' })
-    return { redirect: null, cookies: [] }
+    return { redirect: null, cookies: deleteSessionCookies() }
   }
 
   // (H) Fresh tokens obtained. Return the new session + refresh
@@ -115,24 +119,7 @@ export async function middlewareAuth(
   )
   return {
     redirect: null,
-    cookies: [
-      {
-        name: SESSION_COOKIE,
-        value: tokens.accessToken,
-        options: {
-          ...getCookieOptions(),
-          maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60,
-        },
-      },
-      {
-        name: REFRESH_COOKIE,
-        value: tokens.refreshToken,
-        options: {
-          ...getCookieOptions(),
-          maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60,
-        },
-      },
-    ],
+    cookies: buildSessionCookies(tokens),
   }
 }
 

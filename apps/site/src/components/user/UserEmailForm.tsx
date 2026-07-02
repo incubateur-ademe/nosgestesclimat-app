@@ -13,13 +13,14 @@ import { useCreateVerificationCode } from '@/hooks/authentication/useCreateVerif
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import type { UseMutationResult } from '@tanstack/react-query'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
 import { captureException } from '@sentry/nextjs'
+import type { UseMutationResult } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { type ReactNode } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm as useReactHookForm } from 'react-hook-form'
@@ -46,13 +47,17 @@ export default function UserEmailForm({
   })
 
   const updateUserSettings = useUpdateUserSettings()
-
+  const router = useRouter()
   const {
     pendingVerification,
     registerVerification,
     resetVerification,
     completeVerification,
-  } = usePendingVerification({})
+  } = usePendingVerification({
+    onComplete: () => {
+      router.refresh()
+    },
+  })
 
   const { createVerificationCode, createVerificationCodeError } =
     useCreateVerificationCode({ onComplete: registerVerification })
@@ -90,12 +95,14 @@ export default function UserEmailForm({
               onRegisterNewVerification={registerVerification}
               email={pendingVerification.email}
               onVerificationCompleted={completeVerification}
-              verificationMutation={updateUserSettings as UseMutationResult<
-                { userId: string },
-                Error,
-                { email: string; code: string },
-                unknown
-              >}
+              verificationMutation={
+                updateUserSettings as UseMutationResult<
+                  { userId: string },
+                  Error,
+                  { email: string; code: string },
+                  unknown
+                >
+              }
             />
           </Modal>
         )}

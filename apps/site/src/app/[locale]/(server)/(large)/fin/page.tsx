@@ -19,7 +19,7 @@ import { getUserSession } from '@/services/auth/get-user-session'
 import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { captureException } from '@sentry/nextjs'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 export async function generateMetadata({ params }: DefaultPageProps) {
   const { locale } = await params
@@ -63,9 +63,12 @@ export default async function FinPage({
   })
 
   const [simulation, previousSimulation] = simulations
+  if (!simulation) {
+    notFound()
+  }
 
   const simulationResult = await throwNextError(async () => {
-    return getSimulationResult({
+    return await getSimulationResult({
       user,
       simulation,
     })

@@ -1,11 +1,9 @@
-'use server'
-
 import { SERVER_URL } from '@/constants/urls/main'
 import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
 import type { AppUser } from '@/services/auth/get-user-session'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { headers } from 'next/headers'
-import { InternalServerError } from './error'
+import { InternalError } from './error'
 
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? ''
 
@@ -31,7 +29,7 @@ export async function fetchServer<T = unknown>(
   } = {}
 ): Promise<T> {
   if (!url.startsWith(SERVER_URL)) {
-    throw new InternalServerError()
+    throw new InternalError()
   }
 
   const nextHeaders = await headers()
@@ -59,5 +57,5 @@ export async function fetchServer<T = unknown>(
     next,
   })
 
-  return handleApiResponse<T>(response)
+  return await handleApiResponse<T>(response)
 }

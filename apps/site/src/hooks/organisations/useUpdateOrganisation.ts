@@ -42,7 +42,7 @@ export function useUpdateOrganisation() {
         ],
       }
 
-      return updateOrganisation({
+      return await updateOrganisation({
         organisationIdOrSlug,
         organisation: organisationToUpdate as OrganisationToUpdate,
       })

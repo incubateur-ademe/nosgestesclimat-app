@@ -20,11 +20,11 @@ export const createPollSimulation = async ({
   simulation?: Simulation
   model?: Model
 }) =>
-  withUserId(async (userId) => {
+  await withUserId(async (userId) => {
     const sim =
       simulation ?? generateSimulation({ model: stringifyModel(model!) })
 
-    return fetchServer(
+    return await fetchServer(
       `${ORGANISATION_URL}/${userId}/public-polls/${poll.id}/simulations?locale=${locale}`,
       {
         method: 'POST',

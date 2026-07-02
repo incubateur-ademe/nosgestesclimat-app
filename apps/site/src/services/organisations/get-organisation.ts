@@ -5,5 +5,5 @@ import { fetchServer } from '@/helpers/server/fetchServer'
 import type { Organisation } from '@/types/organisations'
 
 export async function getOrganisation(slug: string) {
-  return fetchServer<Organisation>(`${ORGANISATION_URL}/${slug}`)
+  return await fetchServer<Organisation>(`${ORGANISATION_URL}/${slug}`)
 }

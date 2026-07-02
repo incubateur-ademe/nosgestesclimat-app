@@ -11,6 +11,6 @@ export const getOrganisationPoll = async ({
   orgaSlug: string
   pollSlug: string
 }) =>
-  fetchServer<OrganisationPoll>(
+  await fetchServer<OrganisationPoll>(
     `${ORGANISATION_URL}/${orgaSlug}/polls/${pollSlug}`
   )

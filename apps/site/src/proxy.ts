@@ -1,6 +1,7 @@
-import { middlewareAuth } from '@/helpers/server/proxy/middleware-auth'
-import { middlewareFeatureFlags } from '@/helpers/server/proxy/middleware-feature-flags'
-import { middlewareRegion } from '@/helpers/server/proxy/middleware-region'
+import { middlewareAuth } from '@/helpers/server/proxy/auth.middleware'
+import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags.middleware'
+import { middlewareMigrateLegacySessions } from '@/helpers/server/proxy/migrate-legacy-sessions.middleware'
+import { middlewareRegion } from '@/helpers/server/proxy/region.middleware'
 import i18nConfig from '@/i18nConfig'
 import { i18nRouter } from 'next-i18n-router'
 import { type NextRequest, NextResponse } from 'next/server'
@@ -22,6 +23,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const ff = middlewareFeatureFlags(request)
   if (ff.redirect) return ff.redirect
 
+  const migrate = await middlewareMigrateLegacySessions(request)
+
   const auth = await middlewareAuth(request)
   if (auth.redirect) return auth.redirect
 
@@ -31,7 +34,11 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const response = i18nRouter(request, i18nConfig)
 
   // Phase 3 — Apply cookies
-  for (const cookie of [...auth.cookies, ...region.cookies]) {
+  for (const cookie of [
+    ...migrate.cookies,
+    ...auth.cookies,
+    ...region.cookies,
+  ]) {
     response.cookies.set(cookie.name, cookie.value, cookie.options)
   }
 

@@ -10,6 +10,6 @@ export const deletePoll = async ({
   orgaSlug: string
   pollSlug: string
 }) =>
-  fetchServer<void>(`${ORGANISATION_URL}/${orgaSlug}/polls/${pollSlug}`, {
+  await fetchServer<void>(`${ORGANISATION_URL}/${orgaSlug}/polls/${pollSlug}`, {
     method: 'DELETE',
   })

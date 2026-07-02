@@ -18,7 +18,7 @@ export const createVerificationCode = async ({
   if (locale) params.set('locale', locale)
   const qs = params.toString()
 
-  return fetchServer<{ expirationDate: string }>(
+  return await fetchServer<{ expirationDate: string }>(
     `${VERIFICATION_CODE_URL}${qs ? `?${qs}` : ''}`,
     { method: 'POST', body: { email } }
   )

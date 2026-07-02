@@ -15,7 +15,7 @@ export const updateGroupParticipant = async ({
   simulation: Simulation
   name?: string
 }) =>
-  withUserId(async (userId) => {
+  await withUserId(async (userId) => {
     const result = await fetchServer(`${GROUP_URL}/${groupId}/participants`, {
       method: 'POST',
       body: {

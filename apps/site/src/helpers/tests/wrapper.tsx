@@ -29,7 +29,7 @@ vi.mock('@/hooks/useRules', () => ({
 }))
 
 // Mock getGeolocation with a valid region to avoid userId issues in usePersistentUser
-vi.mock('@/helpers/api/getGeolocation', () => ({
+vi.mock('@/services/geolocation/get-geolocation', () => ({
   getGeolocation: () => Promise.resolve({ code: 'FR', name: 'France' }),
 }))
 

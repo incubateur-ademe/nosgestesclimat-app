@@ -39,7 +39,7 @@ export default async function SimulationPage({
     notFound()
   }
   const simulationResult = await throwNextError(async () => {
-    return getSimulationResult({
+    return await getSimulationResult({
       user,
       simulation,
     })

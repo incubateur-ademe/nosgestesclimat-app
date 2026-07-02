@@ -6,7 +6,7 @@ import type { Group } from '@/types/groups'
 import { fetchServer } from '../fetchServer'
 
 export async function getGroups({ user }: { user: AppUser }): Promise<Group[]> {
-  return fetchServer<Group[]>(`${GROUP_URL}/${user.id}`)
+  return await fetchServer<Group[]>(`${GROUP_URL}/${user.id}`)
 }
 
 /**
@@ -23,7 +23,7 @@ export async function getGroup({
   groupId: string
   user: UserSession
 }): Promise<Group> {
-  return fetchServer<Group>(
+  return await fetchServer<Group>(
     `${GROUP_URL}/${user?.id ?? NO_SESSION_USER_ID}/${groupId}`
   )
 }

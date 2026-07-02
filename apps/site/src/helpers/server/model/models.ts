@@ -1,4 +1,3 @@
-import { MODELE_URL } from '@/constants/urls/main'
 import packageJson from '@incubateur-ademe/nosgestesclimat/package.json'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import {
@@ -16,8 +15,6 @@ import {
   type ModelVersion,
 } from '@nosgestesclimat/core/features/simulations/types/model'
 import { migrateSituation } from '@publicodes/tools/migration'
-import { captureException } from '@sentry/nextjs'
-import { fetchServer } from '../fetchServer'
 import type { Simulation, SimulationMode } from './simulations'
 
 export { supportedRegions }
@@ -60,24 +57,6 @@ export function getCurrentModel({
     version,
     region,
     locale,
-  }
-}
-
-export async function getGeolocation(): Promise<Region> {
-  try {
-    const geo = await fetchServer<{ code: string; region: string }>(
-      `${MODELE_URL}/geolocation`
-    )
-    if (geo.code in supportedRegions) {
-      return geo.code as Region
-    }
-    if (geo.region === 'Europe') {
-      return 'EU'
-    }
-    return DEFAULT_REGION
-  } catch (e) {
-    captureException(e, { level: 'warning' })
-    return DEFAULT_REGION
   }
 }
 

@@ -9,7 +9,7 @@ export const uploadLocalSimulations = async (simulations: Simulation[]) => {
   const session = await getUserSession()
   if (!session) return
 
-  return Promise.allSettled(
+  return await Promise.allSettled(
     simulations.map((simulation) =>
       fetchServer(`${SIMULATION_URL}/${session.id}`, {
         method: 'POST',

@@ -59,6 +59,7 @@
     "@sentry/node": "^10.48.0",
     "dotenv": "^17.4.2",
     "jose": "^5.9.6",
+    "jsonwebtoken": "^9.0.2",
     "posthog-node": "^5.30.6",
     "prisma": "^7.8.0",
     "publicodes": "^1.10.1",
@@ -69,6 +70,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.16",
     "@faker-js/faker": "^10.4.0",
+    "@types/jsonwebtoken": "^9.0.9",
     "fishery": "^2.4.0",
     "pglite-prisma-adapter": "^0.6.1",
     "typescript": "^5.9.3"

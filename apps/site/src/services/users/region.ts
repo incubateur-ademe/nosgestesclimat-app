@@ -1,9 +1,9 @@
-import { getCookieOptions } from '@/helpers/server/cookies'
-import type { Region } from '@/helpers/server/model/models'
+import { getCookieOptions } from '@/helpers/server/cookie/helpers'
 import {
   buildRegionCookie,
   REGION_COOKIE,
-} from '@/helpers/server/proxy/middleware-region'
+} from '@/helpers/server/cookie/region.cookie'
+import type { Region } from '@/helpers/server/model/models'
 import {
   RegionDataSchema,
   type RegionData,

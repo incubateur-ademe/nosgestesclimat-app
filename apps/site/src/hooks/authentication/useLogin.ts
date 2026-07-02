@@ -8,6 +8,7 @@ export default function useLogin() {
   const locale = useLocale()
 
   return useMutation({
+    gcTime: 30000,
     mutationFn: ({ email, code }: { email: string; code: string }) =>
       login({ email, code, locale }),
   })

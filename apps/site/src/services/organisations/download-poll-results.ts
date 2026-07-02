@@ -22,7 +22,7 @@ export async function downloadPollResults({
 }: {
   poll: PublicOrganisationPoll
 }): Promise<ExcelExportType> {
-  return new Promise<ExcelExportType>((resolve, reject) => {
+  return await new Promise<ExcelExportType>((resolve, reject) => {
     const performRequest = async (jobId?: string) => {
       try {
         const path = `${ORGANISATION_URL}/${orgaIdOrSlug}/polls/${pollIdOrSlug}/simulations/download`
