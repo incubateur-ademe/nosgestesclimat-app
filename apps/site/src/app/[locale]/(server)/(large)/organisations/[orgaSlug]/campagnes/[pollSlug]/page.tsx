@@ -20,6 +20,7 @@ import {
 import dayjs from 'dayjs'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import CommunicationKit from './_components/CommunicationKit'
 import PollNotFound from './_components/PollNotFound'
 import ShareSection from './_components/ShareSection'
 import FootprintDistribution from './_components/footPrintDistribution/FootprintDistribution'
@@ -131,6 +132,9 @@ export default function CampagnePage() {
               }
             />
           )}
+
+          <CommunicationKit />
+
           <PollStatistics
             simulationsCount={simulations?.finished ?? 0}
             computedResults={computedResults}
