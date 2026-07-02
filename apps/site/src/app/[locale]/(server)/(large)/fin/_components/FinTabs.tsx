@@ -34,7 +34,7 @@ export default function FinTabs() {
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <BilanIcon
             className={twMerge(
-              'h-6 w-6',
+              'h-6 w-4 md:w-6',
               isResultsActive ? 'fill-primary-600' : 'fill-default'
             )}
           />
@@ -55,7 +55,7 @@ export default function FinTabs() {
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <ActionsIcon
             className={twMerge(
-              'h-6 w-6',
+              'h-6 w-4 md:w-6',
               isActionsActive ? 'fill-primary-600' : 'fill-default'
             )}
           />
@@ -80,7 +80,7 @@ export default function FinTabs() {
                 data-testid="my-groups-tab">
                 <AmisIcon
                   className={twMerge(
-                    'h-6 w-6',
+                    'h-6 w-4 md:w-6',
                     isGroupsActive
                       ? 'stroke-primary-600 fill-primary-600'
                       : 'stroke-default'
