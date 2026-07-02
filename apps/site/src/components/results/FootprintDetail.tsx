@@ -4,6 +4,7 @@ import Title from '@/design-system/layout/Title'
 import { getRules } from '@/helpers/modelFetching/getRules'
 import type { Locale } from '@/i18nConfig'
 import type { ComputedResults, Metric } from '@/publicodes-state/types'
+import Image from 'next/image'
 
 interface Props {
   locale: Locale
@@ -18,7 +19,7 @@ export default async function FootprintDetail({
 }: Props) {
   const rules = await getRules({ locale })
   return (
-    <section className="mb-12">
+    <section className="mb-8 md:mb-12">
       <div className="flex flex-col gap-12 md:flex-row md:justify-between">
         <div className="md:w-xl">
           <Title tag="h2" hasSeparator={false} size="md" className="mb-6">
@@ -35,9 +36,11 @@ export default async function FootprintDetail({
           />
         </div>
 
-        <div className="w-auto">
-          <img
-            className="mx-auto w-48 md:w-72 md:w-xs"
+        <div className="hidden w-auto md:block">
+          <Image
+            width="300"
+            height="300"
+            className="mx-auto w-48 md:w-72"
             src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_carbone_achats_be9fd99289.svg"
             alt=""
           />

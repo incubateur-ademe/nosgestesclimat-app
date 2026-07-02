@@ -41,7 +41,7 @@ export default async function FootprintBlock({
         'flex flex-col items-stretch gap-4 md:flex-row md:gap-8',
         className
       )}>
-      <div className="bg-primary-100 animate-fade-in-slide-from-top md:no-wrap flex w-full flex-wrap items-center justify-between gap-4 rounded-2xl p-8 [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:w-[65%]">
+      <div className="bg-primary-100 animate-fade-in-slide-from-top md:no-wrap flex w-full flex-wrap items-center justify-between gap-4 rounded-2xl p-5 [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:w-[65%] md:p-8">
         <h1 className="mb-0 flex-1">
           <span className="mb-1 block text-lg font-normal">{title}</span>
 
@@ -57,7 +57,7 @@ export default async function FootprintBlock({
         {tendency && <TendencyIndicator locale={locale} tendency={tendency} />}
       </div>
 
-      <div className="bg-secondary-100 animate-fade-in-slide-from-top flex w-full flex-col rounded-2xl p-8 [animation-delay:500ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:w-[35%]">
+      <div className="bg-secondary-100 animate-fade-in-slide-from-top flex w-full flex-col rounded-2xl p-5 [animation-delay:500ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:w-[35%] md:p-8">
         <p className="font-bold">
           <Trans
             locale={locale}

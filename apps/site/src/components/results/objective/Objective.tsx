@@ -13,7 +13,7 @@ interface Props {
 export default function Objective({ locale, carbonFootprint }: Props) {
   return (
     <div className="flex flex-col">
-      <div className="-order-1 mb-6 md:order-0">
+      <div className="-order-1 md:order-0 md:mb-6">
         <Title size="lg" tag="h2" hasSeparator={false}>
           <Trans locale={locale} i18nKey="results.objective.title">
             Objectif national :{' '}
