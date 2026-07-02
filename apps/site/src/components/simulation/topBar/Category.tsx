@@ -12,7 +12,7 @@ export default function Category({ category }: { category: DottedName }) {
   const { t } = useClientTranslation()
 
   return (
-    <div className="flex">
+    <div>
       <h1
         className={twMerge(
           'mb-0 text-base font-bold lg:text-lg',

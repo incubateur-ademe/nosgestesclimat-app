@@ -12,7 +12,7 @@ export default function GroupThankYouBlock({ locale, group }: Props) {
   const groupName = group.name
   return (
     <section
-      className="mb-12 rounded-2xl bg-pink-100 px-8 py-10 text-center"
+      className="mb-8 rounded-2xl bg-pink-100 px-8 py-10 text-center md:mb-12"
       data-testid="poll-confirmation-block">
       <p className="mb-1 text-lg font-bold">
         <Trans locale={locale} i18nKey="results.groupThankYou.title">

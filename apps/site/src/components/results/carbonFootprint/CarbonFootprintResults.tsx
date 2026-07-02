@@ -28,7 +28,7 @@ export default function CarbonFootprintResults({
   return (
     <>
       <FootprintBlock
-        className="mb-12"
+        className="mb-8 md:mb-12"
         tendency={tendency}
         locale={locale}
         value={simulationResult.computedResults.carbone.bilan}

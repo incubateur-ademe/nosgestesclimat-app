@@ -24,7 +24,7 @@ export default function SubcategoryItem({
   return (
     <li className="py-3 first:pt-0 last:pb-0">
       <div className="flex flex-col gap-2">
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-baseline gap-2 text-xs sm:text-base">
           <strong>{capitalizeString(subcategory.title)}</strong>
           <span className="whitespace-nowrap">
             {subcategory.formattedValue}&nbsp;
