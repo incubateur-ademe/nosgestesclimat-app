@@ -5,7 +5,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { UseMutationResult } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import type { TFunction } from 'i18next'
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import NotReceived from './NotReceived'
 import VerificationContent from './VerificationContent'
 
@@ -71,20 +71,31 @@ export default function VerificationForm<T extends object>({
     isPending || isSuccess || createVerificationCodePending
   const isRetryButtonDisabled = isValidationDisabled || timeLeft > 0
 
+  // Add check to make sure no double call can be made
+  // which may cause the code to be invalidated
+  const isMutationInProgress = useRef(false)
+
   const handleValidateVerificationCode = useCallback(
     async (code: string) => {
-      if (isValidationDisabled) {
+      if (isValidationDisabled || isMutationInProgress.current) {
         return
       }
-      const payload = {
-        email,
-        code,
-        ...((mutateProps ?? {}) as T),
+
+      try {
+        isMutationInProgress.current = true
+
+        const payload = {
+          email,
+          code,
+          ...((mutateProps ?? {}) as T),
+        }
+
+        const { userId } = await mutateAsync(payload)
+
+        await onVerificationCompleted?.(userId)
+      } finally {
+        isMutationInProgress.current = false
       }
-
-      const { userId } = await mutateAsync(payload)
-
-      await onVerificationCompleted?.(userId)
     },
     [
       isValidationDisabled,
