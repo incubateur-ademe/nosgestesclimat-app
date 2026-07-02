@@ -18,9 +18,9 @@ export default async function FootprintsLinks({
   const { t } = await getServerTranslation({ locale })
 
   return (
-    <div className="text-center md:text-right">
+    <div className="mb-6 text-center md:mb-8 md:text-right">
       <Switch
-        className="mb-6 inline-flex md:mb-8"
+        className="inline-flex"
         aria-label={t(
           'results.footprintsLinks.ariaLabel',
           "Sélecteur de type d'empreinte"
