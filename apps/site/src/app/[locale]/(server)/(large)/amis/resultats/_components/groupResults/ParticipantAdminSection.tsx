@@ -23,9 +23,8 @@ export default function ParticipantAdminSection({ group }: Props) {
 
   const [isPending, startTransition] = useTransition()
 
-  const {
-    user: { userId },
-  } = useUser()
+  const { user } = useUser()
+  const userId = user!.id
 
   const router = useRouter()
 
@@ -42,7 +41,6 @@ export default function ParticipantAdminSection({ group }: Props) {
         await removePartipant({
           participantId: participant.id,
           groupId: group.id,
-          userId,
         })
 
         timeoutRef.current = setTimeout(() => {

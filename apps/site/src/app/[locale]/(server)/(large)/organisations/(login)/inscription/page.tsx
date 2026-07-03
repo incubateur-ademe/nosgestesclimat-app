@@ -11,7 +11,7 @@ import Separator from '@/design-system/layout/Separator'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
-import { isUserAuthenticated } from '@/helpers/server/model/user'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { redirect } from 'next/navigation'
 
 async function redirectAfterLogin() {
@@ -28,7 +28,7 @@ export default async function Page({
   params,
 }: PageProps<'/[locale]/organisations/connexion'>) {
   const { locale } = await params
-  if (await isUserAuthenticated()) {
+  if ((await getUserSession())?.isAuth) {
     await redirectAfterLogin()
   }
 

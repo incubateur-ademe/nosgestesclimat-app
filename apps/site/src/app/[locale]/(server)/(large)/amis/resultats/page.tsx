@@ -24,6 +24,7 @@ export default async function GroupResultsPage({
       <GroupPage
         group={group}
         locale={locale}
+        user={user}
         userSimulation={userSimulation}
       />
     </div>

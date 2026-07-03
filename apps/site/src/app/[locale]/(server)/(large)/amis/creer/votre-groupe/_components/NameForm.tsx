@@ -10,11 +10,10 @@ import GridRadioInputs from '@/design-system/inputs/GridRadioInputs'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import type { AuthUser } from '@/helpers/server/model/user'
 import { useCreateGroup } from '@/hooks/groups/useCreateGroup'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
+import { updateGroupParticipant } from '@/services/groups/update-group-participant'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
@@ -27,10 +26,8 @@ interface Inputs {
 }
 
 export default function NameForm({
-  user,
   lastSimulation,
 }: {
-  user: AuthUser
   lastSimulation: Simulation | undefined
 }) {
   const { t } = useClientTranslation()
@@ -56,18 +53,12 @@ export default function NameForm({
   async function onSubmit({ name, emoji, administratorName }: Inputs) {
     try {
       const group = await createGroup({
-        groupInfo: {
-          name: name ?? '',
-          emoji: emoji ?? '',
-          administrator: {
-            userId: user.id,
-            name: administratorName ?? '',
-            email: user.email,
-          },
-          participants: lastSimulation
-            ? [{ simulation: lastSimulation }]
-            : undefined,
-        },
+        name: name ?? '',
+        emoji: emoji ?? '',
+        administratorName: administratorName ?? '',
+        participants: lastSimulation
+          ? [{ simulation: lastSimulation }]
+          : undefined,
       })
 
       trackMatomoEvent__deprecated(amisCreationEtapeVotreGroupeSuivant)
@@ -84,7 +75,6 @@ export default function NameForm({
         await updateGroupParticipant({
           groupId: group.id,
           simulation: currentSimulation,
-          userId: user.id,
           name: administratorName,
         })
 

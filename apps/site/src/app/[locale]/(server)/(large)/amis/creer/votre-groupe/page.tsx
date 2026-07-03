@@ -7,8 +7,8 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { throwNextError } from '@/helpers/server/error'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
-import { getAuthUser } from '@/helpers/server/model/user'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
 import type { DefaultPageProps } from '@/types'
 import NameForm from './_components/NameForm'
 
@@ -29,9 +29,9 @@ export default async function GroupNamePage({
   const { locale } = await params
   const { [SHOW_STEP_KEY]: showStep } = (await searchParams) ?? {}
 
-  const user = await throwNextError(getAuthUser)
+  await requireAuthUser()
   const [lastSimulation] = await throwNextError(() =>
-    getCompletedSimulations({ user }, { pageSize: 1 })
+    getCompletedSimulations({ pageSize: 1 })
   )
   const { t } = await getServerTranslation({ locale })
 
@@ -48,7 +48,7 @@ export default async function GroupNamePage({
         title={t("Créer un groupe d'amis")}
         subtitle={t('Invitez vos proches à passer le test')}
       />
-      <NameForm user={user} lastSimulation={lastSimulation} />
+      <NameForm lastSimulation={lastSimulation} />
     </div>
   )
 }

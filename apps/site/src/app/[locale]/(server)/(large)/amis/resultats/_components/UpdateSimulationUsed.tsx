@@ -8,18 +8,20 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
+import type { AppUser } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
 import { captureException } from '@sentry/nextjs'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
-import { updateGroupParticipantAction } from '../_actions'
+import { updateGroupParticipant } from '@/services/groups/update-group-participant'
 
 interface Props {
   group: Group
+  user: AppUser
 }
 
-export default function UpdateSimulationUsed({ group }: Props) {
+export default function UpdateSimulationUsed({ group, user }: Props) {
   const [isPending, startTransition] = useTransition()
   const [isError, setIsError] = useState(false)
   const [isUpdated, setIsUpdated] = useState(false)
@@ -27,10 +29,7 @@ export default function UpdateSimulationUsed({ group }: Props) {
     Simulation | undefined
   >(undefined)
 
-  const {
-    user: { userId, email },
-    simulations,
-  } = useUser()
+  const { simulations } = useUser()
 
   const router = useRouter()
 
@@ -38,7 +37,7 @@ export default function UpdateSimulationUsed({ group }: Props) {
 
   // The user hasn't got newer simulation than the one used in the group
   const groupSimulation = group.participants.find(
-    (p) => p.userId === userId
+    (p) => p.userId === user.id
   )?.simulation
   useEffect(() => {
     if (latestSimulation) return
@@ -62,12 +61,11 @@ export default function UpdateSimulationUsed({ group }: Props) {
   const handleUpdateSimulation = () => {
     startTransition(async () => {
       try {
-        await updateGroupParticipantAction({
+        await updateGroupParticipant({
           groupId: group.id,
-          email,
           simulation: latestSimulation,
-          userId,
-          name: group.participants.find((p) => p.userId === userId)?.name ?? '',
+          name:
+            group.participants.find((p) => p.userId === user.id)?.name ?? '',
         })
 
         setIsUpdated(true)

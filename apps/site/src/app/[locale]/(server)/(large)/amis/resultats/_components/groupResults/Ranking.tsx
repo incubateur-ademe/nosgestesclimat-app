@@ -21,9 +21,8 @@ export default function Ranking({
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const {
-    user: { userId },
-  } = useUser()
+  const { user } = useUser()
+  const userId = user!.id
 
   const { topThreeMembers, restOfMembers, membersWithUncompletedSimulations } =
     getTopThreeAndRestMembers(group.participants, metric) || {}
