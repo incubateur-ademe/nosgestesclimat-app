@@ -81,8 +81,8 @@ importers:
         specifier: ^3.1023.0
         version: 3.1028.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975(publicodes@1.10.1)
+        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389
+        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389(publicodes@1.10.1)
       '@nosgestesclimat/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -250,8 +250,8 @@ importers:
   apps/site:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975(publicodes@1.10.1)
+        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389
+        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389(publicodes@1.10.1)
       '@next/mdx':
         specifier: ^16.2.2
         version: 16.2.2(@mdx-js/loader@3.1.1(webpack@5.105.4(esbuild@0.27.7)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.4))
@@ -521,8 +521,8 @@ importers:
   packages/core:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975(publicodes@1.10.1)
+        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389
+        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389(publicodes@1.10.1)
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -2065,8 +2065,8 @@ packages:
   '@incubateur-ademe/nosgestesclimat-scripts@0.8.0':
     resolution: {integrity: sha512-Jc3d3SAWDDBQNLG1d7+ao+5QPMpiEZg2tfY0EDmray0UBpP9lj0LvWG0uwWoA0waeYFroYNuK58yBrbqGRQMLg==}
 
-  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975':
-    resolution: {integrity: sha512-fL8AONIZHu4Yzs//Cf2MZQtsxMiYek+CvwTvaD2V+YLZNP6N82dioDUBk0SXRwepJPF67anA/+LKkydK1Ed6PQ==, tarball: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975}
+  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389':
+    resolution: {integrity: sha512-UYV9WxKY/IuLouF7bQYmp1TWalcg/jzCd8FR2ECydtq2S/E3sc2/J6M+l3vYFGUAQLpTvnRX2YylTTxkpB4b/A==, tarball: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389}
     version: 4.13.2
     engines: {node: '>=24'}
     peerDependencies:
@@ -11695,7 +11695,7 @@ snapshots:
       - debug
       - encoding
 
-  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@90fdf975(publicodes@1.10.1)':
+  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@6345389(publicodes@1.10.1)':
     dependencies:
       publicodes: 1.10.1
 
