@@ -1,3 +1,4 @@
+import type { UserSession } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
 import type {
   DottedName,
@@ -34,16 +35,9 @@ export interface RegionFromGeolocation {
   name: string
 }
 
-export interface User {
-  userId: string
+export type User = UserSession & {
   name?: string
-  email?: string
   ageRange?: AgeRange
-  northStarRatings?: Record<string, unknown> // TODO: should be NorthStartType or something
-  loginExpirationDate?: Date
-  pendingVerification?: { expirationDate: Date; email: string }
-  organisation?: UserOrganisationInfo
-  administratorEmail?: string
 }
 
 export type Tutorials = Record<string, boolean>

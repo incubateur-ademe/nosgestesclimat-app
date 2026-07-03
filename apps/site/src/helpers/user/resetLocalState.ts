@@ -5,16 +5,14 @@ import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { generateSimulation } from '../simulation/generateSimulation'
 
 interface Props {
-  setUser: (user: User) => void
+  setUser: (user: User | null) => void
   updateSimulations: (simulations: Simulation[]) => void
 }
 
 export function resetLocalState({ setUser, updateSimulations }: Props) {
   const defaultSimulation = generateSimulation()
 
-  const resettedUser = {
-    userId: '',
-  }
+  const resettedUser = null
 
   safeLocalStorage.setItem(
     STORAGE_KEY,

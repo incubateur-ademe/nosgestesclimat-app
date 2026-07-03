@@ -3,7 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
-import type { PollToUpdate } from '@/hooks/organisations/polls/useUpdatePoll'
+import type { PollToUpdate } from '@/services/organisations/update-poll'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { OrganisationPoll } from '@/types/organisations'
 import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'

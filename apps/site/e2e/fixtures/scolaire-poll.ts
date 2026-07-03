@@ -15,7 +15,7 @@ const test = base.extend<ScolairePollFixtures>({
   scolairePoll: async ({ browser, organisation, page, storageState }, use) => {
     const useCurrentContext = storageState === ORGANISATION_ADMIN_STATE
     if (useCurrentContext) {
-      return use(
+      return await use(
         await Poll.fromContext(page, organisation, SCOLAIRE_POLL_STATE_KEY)
       )
     }

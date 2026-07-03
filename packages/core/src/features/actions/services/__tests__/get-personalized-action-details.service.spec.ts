@@ -36,6 +36,15 @@ describe('getPersonalizedActionDetails', () => {
   })
 
   describe('without assessment', () => {
+    it('returns a PersonalizedAction without assessment when userId is undefined', async () => {
+      const action = await actionFactory.published().create()
+
+      const result = await getPersonalizedActionDetails(action.slug, undefined)
+
+      expect.assert(result)
+      expect(result.assessment).toBeNull()
+    })
+
     it('returns a PersonalizedAction without assessment when user has no simulation', async () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()

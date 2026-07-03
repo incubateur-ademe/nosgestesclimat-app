@@ -3,7 +3,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
-import { isUserAuthenticated } from '@/helpers/server/model/user'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
 import { redirect } from 'next/navigation'
 import CreationForm from './_components/CreationForm'
 
@@ -11,9 +11,7 @@ import CreationForm from './_components/CreationForm'
 export default async function CreationPage({
   params,
 }: PageProps<'/[locale]/organisations/creer'>) {
-  if (!(await isUserAuthenticated())) {
-    redirect('/organisations/connexion')
-  }
+  await requireAuthUser({ redirect: '/organisations/connexion' })
   const userOrganisation = await getUserOrganisation()
   if (userOrganisation) {
     redirect(`/organisations/${userOrganisation.slug}`)

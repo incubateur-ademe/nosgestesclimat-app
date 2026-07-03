@@ -8,11 +8,11 @@ import { getLinkToGroupDashboard } from '@/helpers/navigation/groupPages'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import { updateGroupParticipant } from '@/services/groups/updateGroupParticipant'
 import type { Group } from '@/types/groups'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 
+import { updateGroupParticipant } from '@/services/groups/update-group-participant'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
 interface Inputs {
@@ -29,7 +29,6 @@ export default function InvitationForm({
   const [isPending, startTransition] = useTransition()
 
   const { t } = useClientTranslation()
-
   const { user, updateName } = useUser()
 
   const {
@@ -49,7 +48,6 @@ export default function InvitationForm({
       await updateGroupParticipant({
         groupId: group.id,
         simulation: currentSimulation,
-        userId: user.userId,
         name: guestName,
       })
 
@@ -65,7 +63,7 @@ export default function InvitationForm({
     <form onSubmit={handleSubmit(onSubmit) as () => void} autoComplete="off">
       <PrenomInput
         data-testid="member-name"
-        value={user.name ?? ''}
+        value={user?.name ?? ''}
         error={errors.guestName?.message}
         {...register('guestName', {
           required: t('Ce champ est requis.'),

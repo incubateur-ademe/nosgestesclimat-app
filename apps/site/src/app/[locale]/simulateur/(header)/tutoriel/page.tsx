@@ -1,11 +1,8 @@
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
-import { getUser } from '@/helpers/server/dal/user'
-import {
-  getCompletedSimulations,
-  getCurrentSimulation,
-} from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { redirect } from 'next/navigation'
 import Tutorial from '../_components/Tutorial'
 import ButtonNext from './_components/ButtonNext'
@@ -14,23 +11,23 @@ export default async function TutorielPage({
   params,
 }: PageProps<'/[locale]/simulateur/tutoriel'>) {
   const { locale } = await params
-  const user = await getUser()
 
   const [currentSimulation, completedSimulations] = await Promise.all([
-    getCurrentSimulation({ user }),
-    getCompletedSimulations({ user }, { pageSize: 1 }),
+    getCurrentSimulation(),
+    getCompletedSimulations({ pageSize: 1 }),
   ])
 
-  if (!currentSimulation) {
-    redirect('/')
-  }
-
-  if (currentSimulation.progression > 0 || completedSimulations.length) {
+  if (
+    (currentSimulation && currentSimulation.progression > 0) ||
+    completedSimulations.length
+  ) {
     redirect(SIMULATOR_PATH)
   }
   return (
     <>
-      <CurrentSimulationTracker currentSimulation={currentSimulation} />
+      {currentSimulation && (
+        <CurrentSimulationTracker currentSimulation={currentSimulation} />
+      )}
 
       <Tutorial locale={locale} buttonNext={<ButtonNext />} />
     </>

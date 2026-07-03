@@ -15,7 +15,7 @@ export async function importPreviewFile({
   const previewURL = getPreviewUrl(PRNumber)
   // eslint-disable-next-line no-console
   console.log('fetching preview file', fileName)
-  return axios
+  return await axios
     .get(`${previewURL}/${fileName}`)
     .then((res) => res.data)
     .catch((e) => {

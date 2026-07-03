@@ -7,7 +7,7 @@ import LandingPage from '@/design-system/layout/LandingPage'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import Image from 'next/image'
 import { ClientLayout } from '../../../components/layout/ClientLayout'
@@ -40,10 +40,11 @@ export default async function WaterFootprintLandingPage(
 ) {
   const { t } = await getServerTranslation(props.params)
   const { locale } = await props.params
-  const { id: serverUserId } = await getUser()
+
+  const userSession = await getUserSession()
 
   return (
-    <ClientLayout locale={locale} serverUserId={serverUserId}>
+    <ClientLayout locale={locale} userSession={userSession}>
       <JSONLD
         jsonLd={[
           {

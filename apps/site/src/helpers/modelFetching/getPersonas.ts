@@ -23,8 +23,11 @@ export async function getPersonas(
 ): Promise<Personas> {
   if (PRNumber) {
     const fileName = `personas-${locale}.json`
-    return importPreviewFile({ fileName, PRNumber }) as Promise<Personas>
+    return await (importPreviewFile({
+      fileName,
+      PRNumber,
+    }) as Promise<Personas>)
   }
 
-  return Promise.resolve(personasByLocale[locale])
+  return await Promise.resolve(personasByLocale[locale])
 }

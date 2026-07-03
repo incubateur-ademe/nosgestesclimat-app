@@ -4,14 +4,12 @@ import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import type { AppUser } from '@/helpers/server/dal/user'
-import { throwNextError } from '@/helpers/server/error'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
-import { getAuthUser } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
 import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
 import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
 
@@ -26,7 +24,7 @@ export default async function MonEspaceActionsPage({
   params,
 }: DefaultPageProps) {
   const { locale } = await params
-  const user = await throwNextError(getAuthUser)
+  const user = await requireAuthUser()
   const flag = await hasActionV2Rollout(user.id)
 
   const [maybePersonalizedActionsCatalogue, themes] = flag
@@ -56,20 +54,18 @@ export default async function MonEspaceActionsPage({
           />
         </div>
       ) : (
-        <LegacyMonEspaceActionsPage user={user} locale={locale} />
+        <LegacyMonEspaceActionsPage locale={locale} />
       )}
     </div>
   )
 }
 
 async function LegacyMonEspaceActionsPage({
-  user,
   locale,
 }: {
-  user: AppUser
   locale: Locale
 }) {
-  const simulations = await getCompletedSimulations({ user }, { pageSize: 1 })
+  const simulations = await getCompletedSimulations({ pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />
 }
