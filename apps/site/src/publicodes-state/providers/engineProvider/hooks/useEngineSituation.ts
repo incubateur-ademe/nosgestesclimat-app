@@ -10,7 +10,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
 
 interface Props {
-  engine: Engine
+  engine: Engine | undefined
   safeEvaluate: SafeEvaluate
   rawMissingVariables: MissingVariables
 }
@@ -25,6 +25,9 @@ export function useAddToEngineSituation({
   const { situation } = useCurrentSimulation()
   const addToEngineSituation = useCallback(
     (situationToAdd: Situation): Situation => {
+      if (!engine) {
+        return {} as Situation
+      }
       engine.setSituation({ ...situation, ...situationToAdd })
 
       // The current engine situation might have been filtered with Publicodes filtering logic.
