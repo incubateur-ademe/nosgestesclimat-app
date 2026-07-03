@@ -6,6 +6,7 @@ import { fetchServer } from '@/helpers/server/fetchServer'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { withUserId } from '@/services/auth/with-user-id'
 import { updateGroupParticipant } from '@/services/groups/update-group-participant'
+import { setExtra } from '@sentry/nextjs'
 
 export const saveSimulation = async ({
   simulation,
@@ -17,7 +18,9 @@ export const saveSimulation = async ({
   locale?: string
 }): Promise<Simulation> => {
   if (simulation.computedResults.carbone.bilan === 0) {
-    throw new InternalError()
+    setExtra('situation', JSON.stringify(simulation.situation))
+    setExtra('simulationId', simulation.id)
+    throw new InternalError('Simulation with zero bilan cannot be saved.')
   }
 
   const { groups = [], polls = [] } = simulation
