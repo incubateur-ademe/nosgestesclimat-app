@@ -19,7 +19,7 @@ export async function savePlaywrightState(
   key: string,
   value: unknown
 ): Promise<void> {
-  return page.evaluate(
+  return await page.evaluate(
     ([key, value]) => {
       localStorage.setItem(key as string, JSON.stringify(value))
     },

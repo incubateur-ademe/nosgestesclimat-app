@@ -1,6 +1,7 @@
-import { ORGANISATION_URL } from '@/constants/urls/main'
+'luse client'
+
+import { deletePoll } from '@/services/organisations/delete-poll'
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
 import { useParams } from 'next/navigation'
 
 export function useDeletePoll() {
@@ -9,10 +10,9 @@ export function useDeletePoll() {
   return useMutation({
     mutationKey: ['organisations', orgaSlug, 'polls', pollSlug],
     mutationFn: () =>
-      axios
-        .delete(`${ORGANISATION_URL}/${orgaSlug}/polls/${pollSlug}`, {
-          withCredentials: true,
-        })
-        .then((res) => res.data),
+      deletePoll({
+        orgaSlug: orgaSlug as string,
+        pollSlug: pollSlug as string,
+      }),
   })
 }

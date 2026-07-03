@@ -384,6 +384,9 @@ importers:
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
+      valibot:
+        specifier: ^1.4.0
+        version: 1.4.0(typescript@5.9.3)
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.11.1
@@ -532,6 +535,12 @@ importers:
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
+      jose:
+        specifier: ^5.9.6
+        version: 5.10.0
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.3
       posthog-node:
         specifier: ^5.30.6
         version: 5.30.6
@@ -557,6 +566,9 @@ importers:
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.10
       fishery:
         specifier: ^2.4.0
         version: 2.4.0
@@ -6935,6 +6947,9 @@ packages:
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
+
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -17498,6 +17513,8 @@ snapshots:
       supports-color: 8.1.1
 
   jiti@2.6.1: {}
+
+  jose@5.10.0: {}
 
   js-tokens@10.0.0: {}
 

@@ -8,22 +8,6 @@ export const classementCreateGroup = [
   'Create Group',
 ]
 
-interface ClassementClickItem {
-  isAdministator: boolean
-  numParticipants?: number
-}
-
-// Figma comment #85
-export const classementClickGroup = ({
-  numParticipants,
-}: ClassementClickItem) => [
-  'trackEvent',
-  'Classements',
-  'Click Group',
-  null,
-  String(numParticipants),
-]
-
 // Figma comment #86
 export const classementClickOrganisation = [
   'trackEvent',

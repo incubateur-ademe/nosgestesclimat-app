@@ -5,6 +5,7 @@ import {
   NEWSLETTER_IDS,
   updateNewsletterSubscription,
 } from '@/helpers/server/model/newsletter'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { isEmailValid } from '@/utils/isEmailValid'
 import { captureException } from '@sentry/nextjs'
 
@@ -23,7 +24,13 @@ export async function postNewsletterFormAction(
     (id) => !!formData.get(id.toString())
   ) as ListIds
 
-  const email = formData.get('email')?.toString()
+  let email = formData.get('email')?.toString()
+  if (!email) {
+    const session = await getUserSession()
+    if (session?.isAuth) {
+      email = session.email
+    }
+  }
 
   if (!email) {
     return {

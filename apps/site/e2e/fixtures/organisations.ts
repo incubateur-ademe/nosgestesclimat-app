@@ -88,12 +88,12 @@ interface OrganisationPageFixtures {
 const test = base.extend<OrganisationPageFixtures>({
   organisation: async ({ browser, user, setup, page, storageState }, use) => {
     if (setup) {
-      return use(new Organisation(page, user))
+      return await use(new Organisation(page, user))
     }
 
     const useCurrentContext = storageState === ORGANISATION_ADMIN_STATE
     if (useCurrentContext) {
-      return use(await Organisation.fromContext(page))
+      return await use(await Organisation.fromContext(page))
     }
 
     const context = await browser.newContext({

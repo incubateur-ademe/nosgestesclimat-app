@@ -42,7 +42,6 @@ export default function NewsletterSettings({
         action={formAction}
         noValidate
         className="mb-8 flex flex-col items-start gap-4">
-        <input type="hidden" name="email" value={state.email} />
         <NewsletterCheckBoxes
           newsletters={newsletters}
           defaultListIds={state.listIds}
