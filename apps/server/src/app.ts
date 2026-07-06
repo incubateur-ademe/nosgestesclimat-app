@@ -12,6 +12,7 @@ import { allowedOrigins } from './config.ts'
 import { isAllowedOrigin } from './core/allowed-urls.ts'
 import authenticationController from './features/authentication/authentication.controller.ts'
 import verificationCodeController from './features/authentication/verification-codes.controller.ts'
+import eventsController from './features/events/events.controller.ts'
 import groupsController from './features/groups/groups.controller.ts'
 import integrationsApiContract from './features/integrations/api/api.contract.ts'
 import integrationsApiController from './features/integrations/api/api.controller.ts'
@@ -70,6 +71,7 @@ app.use('/groups', groupsController)
 app.use('/integrations', integrationsController)
 app.use('/newsletters', newslettersController)
 app.use('/organisations', organisationController)
+app.use('/events', eventsController)
 app.use('/simulations', simulationController)
 app.use('/stats', statsController)
 app.use('/users', usersController)
