@@ -24,24 +24,25 @@ export const BannerContent = ({
   banner,
   color = 'primary',
 }: {
-  banner: BannerType
+  banner: Pick<BannerType, 'link' | 'text' | 'id'> | null
   color?: BannerColor
 }) => {
   const [shouldHideBanner, setShouldHideBanner] = useState(false)
 
   // Necessary to let hydration occur first
   useEffect(() => {
+    if (!banner) return
     setShouldHideBanner(
       safeLocalStorage.getItem(`${STORAGE_KEY_PREFIX}-${banner.id}`) === 'true'
     )
-  }, [banner.id])
+  }, [banner, banner?.id])
 
   const pathname = usePathname()
 
   const { t } = useClientTranslation()
 
   // Don't show banner on simulator results page
-  if (pathname.startsWith(SIMULATOR_PATH) || shouldHideBanner) {
+  if (pathname.startsWith(SIMULATOR_PATH) || shouldHideBanner || !banner) {
     return null
   }
 
