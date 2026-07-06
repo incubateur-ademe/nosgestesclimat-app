@@ -109,17 +109,13 @@ entries:
   Vos points forts: Your strengths
   Vos points faibles: Your weaknesses
   Par rapport à la moyenne du groupe.: Compared with the group average.
-  Supprimer mes données: Delete my data
   Partagez cette page à vos proches pour leur permettre de rejoindre votre groupe.: Share this page with your friends and family to let them join your group.
   Ok, sauvegarder la modification: OK, save changes
   Veuillez renseigner un nom.: Please enter a name.
-  Données supprimées.: Deleted data.
   Modifier le nom du groupe: Change group name
   Découvrez nos pistes pour agir dès aujourd’hui pour le climat, ou passez le test pour obtenir des recommandations personnalisées.: Find out how you can take action for the climate today, or take the test to get personalized recommendations.
   Créer et passer mon test: Create and take my test
   Rejoindre et passer mon test: Join and take my test
-  Supprimer vos données de groupe enregistrées ? Seules vos données de membre seront supprimées. Cette action est irréversible.: Delete your saved group data? Only your member data will be deleted. This action is irreversible.
-  Supprimer votre groupe <1>{group?.name}</1> ? Les données sauvegardées seront supprimées pour tous les membres du groupe. Cette action est irréversible.: Delete your group <1>{group?.name}</1>? Saved data will be deleted for all group members. This action is irreversible.
   Créer un groupe: Create a group
   Bientôt disponible: Available soon
   C'est un test individuel !: It's an individual test!
@@ -181,7 +177,6 @@ entries:
   Ma région de simulation: My simulation region
   D'autres questions ?: Any other questions?
   Vous pouvez supprimer le groupe en cliquant sur le bouton ci-dessous. Il sera supprimé définitivement pour tous ses autres membres puisque vous en êtes l'administrateur.: You can delete the group by clicking on the button below. It will be permanently deleted for all its other members, as you are the administrator.
-  Votre groupe a été supprimé. Vous allez être redirigé vers la page d'accueil du mode groupe.: Your group has been deleted. You will be redirected to the group mode home page.
   Vous pouvez quitter le groupe en cliquant sur le bouton ci-dessous. Le groupe ne sera en revanche pas supprimé puisque vous n’en êtes pas l’administrateur.: You can leave the group by clicking on the button below. However, the group will not be deleted as you are not the administrator.
   Cette opération est définitive et supprimera le groupe pour tous ses membres.: This operation is definitive and will delete the group for all its members.
   Vous avez quitté ce groupe. Vous allez être redirigé vers la page d'accueil du mode groupe: You have left this group. You will be redirected to the group mode home page
@@ -269,7 +264,6 @@ entries:
   CGU - Nos Gestes Climat: Terms and conditions - Nos Gestes Climat
   Vos résultats de tests de notre calculateur d'empreinte carbone.: Your test results for our carbon footprint simulator.
   Rejoignez votre groupe pour calculez votre empreinte carbone et la comparer avec l'empreinte de vos proches grâce au calculateur de bilan carbone personnel Nos Gestes Climat.: Join your group to calculate your carbon footprint and compare it with the footprint of others using the Nos Gestes Climat personal carbon footprint simulator.
-  Supprimez vos données de groupe enregistrées dans le calculateur Nos Gestes Climat.: Delete your group data saved in the Nos Gestes Climat simulator.
   Le guide - Nos Gestes Climat: The guide - Nos Gestes Climat
   Mentions légales - Nos Gestes Climat: Legal information - Nos Gestes Climat
   Retrouvez les réponses aux questions les plus fréquentes sur  Nos Gestes Climat.: Find the answers to the most frequently asked questions about Nos Gestes Climat.
@@ -295,7 +289,6 @@ entries:
   Mentions légales du site Nos Gestes Climat.: Legal information about Nos Gestes Climat.
   Notre documentation détaille les calculs qui nous ont permis de calculer votre bilan carbone personnel.: Our documentation details the calculations we used to calculate your personal carbon footprint.
   Actions, suite à votre simulation d'empreinte climat - Nos Gestes Climat: Actions following your climate footprint simulation - Nos Gestes Climat
-  Supprimer mes données de groupe - Nos Gestes Climat: Delete my group data - Nos Gestes Climat
   Plan du site - Nos Gestes Climat: Site map - Nos Gestes Climat
   Calculez votre empreinte sur le climat en 10 minutes chrono. Découvrez les gestes qui comptent vraiment pour le climat.: Calculate your climate footprint in just 10 minutes. Discover the actions that really matter for the climate.
   Ce test vous est proposé par: This test is brought to you by
@@ -938,8 +931,8 @@ entries:
   common.category.transport.lock: Transport
   common.category.alimentation: Food
   common.category.alimentation.lock: Alimentation
-  common.category.divers: Miscellaneous
-  common.category.divers.lock: Divers
+  common.category.divers: Consumption
+  common.category.divers.lock: Consommation
   pollResults.distribution.title: Breakdown of carbon footprints
   pollResults.distribution.title.lock: Répartition des empreintes carbone
   pollResults.footprintBarChart.accessibleDescription.higher: superior
@@ -995,8 +988,6 @@ entries:
   pollResults.radarChart.accessibleDescription.chart.lock: 'Graphique radar comparant vos résultats aux moyennes par catégorie. '
   pollResults.adminSection.title: Invite new people
   pollResults.adminSection.title.lock: Invitez de nouvelles personnes
-  pollResults.adminSection.shareDirectly: Or share directly
-  pollResults.adminSection.shareDirectly.lock: Ou partagez directement
   copyButton.copiedAriaLabel: Link copied to clipboard
   copyButton.copiedAriaLabel.lock: Lien copié dans le presse-papiers
   pollResults.radarChart.title: Your footprint in relation to other participants
@@ -1860,10 +1851,10 @@ entries:
   simulator.intercalaire.transport.meta.description.lock: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
   simulator.intercalaire.transport.iframe.title: Transport CO₂ impact comparator
   simulator.intercalaire.transport.iframe.title.lock: Comparateur d'impact CO₂ des transports
-  simulator.intercalaire.divers.meta.title: Miscellaneous section completed - Nos Gestes Climat
-  simulator.intercalaire.divers.meta.title.lock: Section divers terminée - Nos Gestes Climat
-  simulator.intercalaire.divers.meta.description: Well done, you've completed the miscellaneous section. Discover the impact of digital technology and consumption.
-  simulator.intercalaire.divers.meta.description.lock: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.meta.title: Consumption section complete – Nos Gestes Climat
+  simulator.intercalaire.divers.meta.title.lock: Section consommation terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Well done – you’ve completed the section on consumption. Find out about the impact of digital technology and consumption.
+  simulator.intercalaire.divers.meta.description.lock: Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.
   simulator.intercalaire.divers.iframe.title: Digital CO₂ impact comparator
   simulator.intercalaire.divers.iframe.title.lock: Comparateur d'impact CO₂ du numérique
   simulator.funFact.clothing.text2: 9.5 kg of clothes... but only sort 3.4 kg!
@@ -2174,7 +2165,7 @@ entries:
   Toutes: All
   event.testimonies.4.author.job: Collective test carried out by the Pass Culture
   event.testimonies.4.author.job.lock: Test collectif réalisé par l’organisation Pass Culture
-  simulator.dontKnow.button.reassuranceYouth: Don’t worry, we use average data to ensure the results remain reliable.
+  simulator.dontKnow.button.reassuranceYouth: Don't worry, we use average data to ensure the results remain reliable.
   simulator.dontKnow.button.reassuranceYouth.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
   reuseSimulationForPoll.testDate.at: to
   reuseSimulationForPoll.testDate.at.lock: à
@@ -2188,3 +2179,15 @@ entries:
   reuseSimulationForPoll.yourFootprint.lock: 'Votre empreinte :'
   reuseSimulationForPoll.testDate.testDone: Test carried out on
   reuseSimulationForPoll.testDate.testDone.lock: Test réalisé le
+  category.divers: Consumption
+  category.divers.lock: Consommation
+  poll.results.communicationKit.button: Access the kit
+  poll.results.communicationKit.button.lock: Accéder au kit
+  poll.results.communicationKit.title: Need some inspiration for sharing your group quiz?
+  poll.results.communicationKit.title.lock: Besoin d'inspiration pour diffuser votre test collectif ?
+  poll.results.communicationKit.text2: Sample emails, LinkedIn posts, visuals…
+  poll.results.communicationKit.text2.lock: Des e-mails type, post Linkedin, visuels…
+  poll.shareSection.sendByEmail: Send by email
+  poll.shareSection.sendByEmail.lock: Envoyer par e-mail
+  poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
+  poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.

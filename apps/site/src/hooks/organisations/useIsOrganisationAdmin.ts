@@ -1,12 +1,18 @@
 'use client'
 
-import useFetchOrganisation from '@/hooks/organisations/useFetchOrganisation'
+import { isOrganisationAdmin } from '@/services/organisations/is-organisation-admin'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 
 export function useIsOrganisationAdmin() {
-  const params = useParams()
+  const { orgaSlug } = useParams()
 
-  const { data: organisation, isLoading } = useFetchOrganisation()
+  const { data: isAdmin, isLoading } = useQuery({
+    queryKey: ['isOrganisationAdmin', orgaSlug],
+    queryFn: () => isOrganisationAdmin(orgaSlug as string),
+    enabled: !!orgaSlug,
+    retry: false,
+  })
 
-  return { isAdmin: organisation?.slug === params.orgaSlug, isLoading }
+  return { isAdmin: !!isAdmin, isLoading }
 }

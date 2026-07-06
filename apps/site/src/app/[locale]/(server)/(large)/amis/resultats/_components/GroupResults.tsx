@@ -7,12 +7,12 @@ import Trans from '@/components/translation/trans/TransClient'
 import { carboneMetric } from '@/constants/model/metric'
 import Separator from '@/design-system/layout/Separator'
 import { useGetGroupStats } from '@/hooks/groups/useGetGroupStats'
-import { useIsGroupOwner } from '@/hooks/groups/useIsGroupOwner'
 import { useUser } from '@/publicodes-state'
 import type { Group, Results } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
+import { isGroupOwner } from '../../_helpers/isGroupOwner'
 import InviteBlock from './groupResults/InviteBlock'
 import OwnerAdminSection from './groupResults/OwnerAdminSection'
 import ParticipantAdminSection from './groupResults/ParticipantAdminSection'
@@ -28,7 +28,7 @@ export default function GroupResults({
 }) {
   const { user } = useUser()
 
-  const { isGroupOwner } = useIsGroupOwner({ group })
+  const isOwner = isGroupOwner(group, user)
 
   const [footprintSelected, setFootprintSelected] =
     useState<Metrics>(carboneMetric)
@@ -37,7 +37,7 @@ export default function GroupResults({
 
   const results: Results = useGetGroupStats({
     groupMembers: group.participants,
-    userId: user.userId,
+    userId: user!.id,
   })
 
   return (
@@ -91,7 +91,7 @@ export default function GroupResults({
         )
       }
 
-      {isGroupOwner ? (
+      {isOwner ? (
         <OwnerAdminSection group={group} />
       ) : (
         <ParticipantAdminSection group={group} />

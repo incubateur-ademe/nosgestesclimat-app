@@ -21,7 +21,9 @@ export default function ResultsList({
 }: Props) {
   return (
     <div className="mb-8 md:mb-10">
-      <h2 className="mb-6 text-2xl md:mb-8">
+      <h2
+        className="mb-6 text-2xl md:mb-8"
+        data-testid="results-list-title">
         <Trans locale={locale} i18nKey="mon-espace.resultsList.title">
           Tous mes résultats
         </Trans>

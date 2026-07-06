@@ -6,12 +6,12 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getUser } from '@/helpers/server/dal/user'
 import {
-  getCurrentSimulation,
   getSimulationMode,
 } from '@/helpers/server/model/simulations'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { UserProvider } from '@/publicodes-state'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { notFound } from 'next/navigation'
 
 export default async function Email({
@@ -19,8 +19,8 @@ export default async function Email({
 }: PageProps<'/[locale]/simulateur/email'>) {
   const { locale } = await params
   const { t } = await getServerTranslation({ locale })
-  const user = await getUser()
-  const currentSimulation = await getCurrentSimulation({ user })
+  const user = await getUserSession()
+  const currentSimulation = await getCurrentSimulation()
   if (!currentSimulation) {
     notFound()
   }
@@ -93,7 +93,7 @@ export default async function Email({
           </>
         }
       />
-      <UserProvider serverUserId={user.id}>
+      <UserProvider userSession={user}>
         <QueryClientProviderWrapper>
           <AuthenticateUserForm
             inputLabel={

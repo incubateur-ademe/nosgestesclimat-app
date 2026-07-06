@@ -1,32 +1,32 @@
 import { SIMULATION_MODES } from '@/constants/model/simulationModes'
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import {
   getCurrentModel,
-  getGeolocation,
-  type Model,
   supportedRegions,
-  type UserRegion,
+  type Model,
+  type Region,
 } from '@/helpers/server/model/models'
 import type { SimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { getGeolocation } from '@/services/geolocation/get-geolocation'
+import { getRegion } from '@/services/users/region'
 import type { SearchParams } from 'next/dist/server/request/search-params'
 
 export async function getNewSimulationModelService({
   searchParams,
-  locale,
-  simulationMode = 'standard',
+  locale = 'fr',
+  mode = 'standard',
 }: {
-  searchParams: Promise<SearchParams>
-  locale: Locale
-  simulationMode?: SimulationMode
-}): Promise<Model> {
+  searchParams?: Promise<SearchParams>
+  locale?: Locale
+  mode?: SimulationMode
+} = {}): Promise<Model> {
   const {
     region: regionParam,
     PR: PRNumberParam,
     mode: modeParam,
-  } = await searchParams
+  } = (await searchParams) ?? {}
 
-  let userRegion: UserRegion | undefined
+  let userRegion: Region | undefined
   let PRNumber: string | undefined
 
   if (
@@ -34,9 +34,9 @@ export async function getNewSimulationModelService({
     typeof regionParam === 'string' &&
     regionParam in supportedRegions
   ) {
-    userRegion = regionParam as UserRegion
+    userRegion = regionParam as Region
   } else {
-    userRegion = (await getAnonSession()).region ?? (await getGeolocation())
+    userRegion = (await getRegion())?.current ?? (await getGeolocation())
   }
 
   if (
@@ -44,7 +44,7 @@ export async function getNewSimulationModelService({
     typeof modeParam === 'string' &&
     SIMULATION_MODES.includes(modeParam)
   ) {
-    simulationMode = modeParam as SimulationMode
+    mode = modeParam as SimulationMode
   }
 
   if (PRNumberParam && typeof PRNumberParam === 'string') {
@@ -53,7 +53,7 @@ export async function getNewSimulationModelService({
 
   return getCurrentModel({
     userRegion,
-    mode: simulationMode,
+    mode,
     locale,
     PRNumber,
   })

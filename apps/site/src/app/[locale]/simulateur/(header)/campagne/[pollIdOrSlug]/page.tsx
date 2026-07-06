@@ -2,14 +2,12 @@ import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
 import Emoji from '@/design-system/utils/Emoji'
-import { getUser } from '@/helpers/server/dal/user'
 import { throwNextError } from '@/helpers/server/error'
-import { createPollSimulation, getUserPoll } from '@/helpers/server/model/poll'
-import {
-  getCompletedSimulations,
-  getCurrentSimulation,
-} from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
+import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
+import { getPublicPoll } from '@/services/organisations/get-public-poll'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import { getNewSimulationModelService } from '../../../_service/getNewSimulationModelService'
@@ -27,14 +25,12 @@ export default async function CampagnePage({
     locale: Locale
   }
 
-  const user = await getUser()
-
   const [poll, [lastCompletedSimulation], currentSimulation] =
     await throwNextError(() =>
       Promise.all([
-        getUserPoll({ user, pollIdOrSlug }),
-        getCompletedSimulations({ user }, { pageSize: 1 }),
-        getCurrentSimulation({ user }),
+        getPublicPoll(pollIdOrSlug),
+        getCompletedSimulations({ pageSize: 1 }),
+        getCurrentSimulation(),
       ])
     )
 
@@ -50,12 +46,11 @@ export default async function CampagnePage({
     'use server'
     await createPollSimulation({
       poll,
-      user,
       locale,
       model: await getNewSimulationModelService({
         searchParams,
         locale,
-        simulationMode: poll.mode,
+        mode: poll.mode,
       }),
     })
     redirect(SIMULATOR_PATH)
@@ -65,7 +60,6 @@ export default async function CampagnePage({
     'use server'
     await createPollSimulation({
       poll,
-      user,
       simulation: lastCompletedSimulation,
       locale,
     })

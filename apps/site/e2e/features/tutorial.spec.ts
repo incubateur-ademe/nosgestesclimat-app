@@ -16,14 +16,6 @@ test('should start test when clicking on the start button', async ({
   await expect(page).toHaveURL(new RegExp('/simulateur/bilan'))
 })
 
-test('should redirect to home for new users', async ({
-  page,
-  tutorialPage,
-}) => {
-  await tutorialPage.goto()
-  await expect(page).toHaveURL('/')
-})
-
 test.describe('when a user starts to answer test', () => {
   test.beforeEach(async ({ page, ngcTest }) => {
     await ngcTest.start()

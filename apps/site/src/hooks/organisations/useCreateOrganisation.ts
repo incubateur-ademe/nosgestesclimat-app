@@ -1,8 +1,8 @@
+'use client'
+
 import type { OrganisationTypeEnum } from '@/constants/organisations/organisationTypes'
-import { ORGANISATION_URL } from '@/constants/urls/main'
-import type { Organisation } from '@/types/organisations'
+import { createOrganisation } from '@/services/organisations/create-organisation'
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
 import { useLocale } from '../useLocale'
 
 interface OrganisationToCreate {
@@ -23,14 +23,7 @@ export function useCreateOrganisation() {
   const locale = useLocale()
 
   return useMutation({
-    mutationFn: (organisationToCreate: OrganisationToCreate) =>
-      axios
-        .post<Organisation>(ORGANISATION_URL, organisationToCreate, {
-          params: {
-            locale,
-          },
-          withCredentials: true,
-        })
-        .then((response) => response.data),
+    mutationFn: (organisation: OrganisationToCreate) =>
+      createOrganisation({ organisation, locale }),
   })
 }

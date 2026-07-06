@@ -5,7 +5,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
-import { useActions, useRule } from '@/publicodes-state'
+import useRule from '@/publicodes-state/hooks/useRule/useRule'
 import type { Metric } from '@/publicodes-state/types'
 import { twMerge } from 'tailwind-merge'
 
@@ -28,48 +28,24 @@ export default function TotalFootprintNumber({
 }: Props) {
   const locale = useLocale()
   const { t } = useClientTranslation()
-
   const { numericValue: totalFootprintValue } = useRule('bilan', metric)
 
-  const { totalChosenActionsValue } = useActions()
-
-  const totalFootprintValueMinusActions =
-    totalFootprintValue - totalChosenActionsValue
-
-  const { formattedValue: formattedValueMinusActions, unit } = formatFootprint(
-    totalFootprintValueMinusActions,
-    { t, locale, metric }
-  )
-
-  const { formattedValue: formatedTotalFootprintValue } = formatFootprint(
+  const { formattedValue: formatedTotalFootprintValue, unit } = formatFootprint(
     totalFootprintValue,
     { t, locale, metric }
   )
-
-  const shouldDisplayTotalWithoutActions =
-    totalFootprintValue !== totalFootprintValueMinusActions
 
   return (
     <div
       className={twMerge('flex flex-col gap-1 md:gap-0', className)}
       aria-live="polite"
       data-testid="total-footprint-number">
-      {shouldDisplayTotalWithoutActions && (
-        <strong
-          className={twMerge(
-            'mr-4 block leading-0! font-black text-slate-500 line-through md:text-xl',
-            size === 'lg' && 'text-xl md:text-3xl'
-          )}>
-          {formatedTotalFootprintValue}
-        </strong>
-      )}
-
       <strong
         className={twMerge(
           'block text-lg leading-0! font-black md:text-2xl',
           size === 'lg' && 'text-xl md:text-4xl'
         )}>
-        {formattedValueMinusActions}{' '}
+        {formatedTotalFootprintValue}{' '}
         <span
           className={twMerge(
             'text-xs font-medium',

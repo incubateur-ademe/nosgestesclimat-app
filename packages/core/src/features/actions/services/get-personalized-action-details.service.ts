@@ -3,6 +3,6 @@ import type { PersonalizedAction } from '../types/action.ts'
 
 export const getPersonalizedActionDetails = async (
   slug: string,
-  userId: string
+  userId: string | undefined
 ): Promise<PersonalizedAction | null> =>
   findVisiblePersonalizedActionBySlug(slug, userId)

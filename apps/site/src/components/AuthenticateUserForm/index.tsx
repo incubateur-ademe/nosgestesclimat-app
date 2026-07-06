@@ -1,7 +1,6 @@
 'use client'
 
 import type { AuthenticationMode } from '@/types/authentication'
-import type { UseMutationResult } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState, type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -14,7 +13,6 @@ import {
 import Button from '@/design-system/buttons/Button'
 import useLogin from '@/hooks/authentication/useLogin'
 import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
-import { useUser } from '@/publicodes-state'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -45,12 +43,6 @@ interface Props {
   }
   isVerticalLayout?: boolean
   onCompleteError?: string
-  verificationMutation?: UseMutationResult<
-    { userId: string },
-    Error,
-    { email: string; code: string },
-    unknown
-  >
   verificationClassName?: string
 }
 
@@ -65,12 +57,10 @@ export default function AuthenticateUserForm({
   required = true,
   trackers,
   isVerticalLayout = true,
-  verificationMutation,
+
   verificationClassName,
 }: Props) {
   const router = useRouter()
-  const { user } = useUser()
-
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   // Called upon code verification
@@ -87,9 +77,8 @@ export default function AuthenticateUserForm({
 
       if (redirectPathname) {
         router.push(redirectPathname)
-      } else {
-        router.refresh()
       }
+      router.refresh()
     },
     [redirectPathname, onComplete, router, trackers]
   )
@@ -107,8 +96,6 @@ export default function AuthenticateUserForm({
 
   const login = useLogin()
 
-  const verificationMutationToUse = verificationMutation ?? login
-
   if (pendingVerification || isRedirecting) {
     return (
       <div
@@ -118,14 +105,14 @@ export default function AuthenticateUserForm({
         )}>
         <VerifyCodeForm
           onRegisterNewVerification={registerVerification}
-          email={pendingVerification?.email ?? user.email ?? ''}
+          email={pendingVerification?.email ?? ''}
           onVerificationCompleted={completeVerification}
-          verificationMutation={verificationMutationToUse}
+          verificationMutation={login}
         />
         <Button
           onClick={() => {
             resetVerification()
-            verificationMutationToUse.reset()
+            login.reset()
           }}
           color="link"
           className="dark:text-primary-50 dark:hover:text-primary-100 mt-2 -ml-2 flex items-center font-normal">

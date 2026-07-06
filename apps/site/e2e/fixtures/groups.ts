@@ -48,8 +48,7 @@ export class Group {
     await this.page.getByTestId('group-name').fill(this.name)
     await this.page.getByTestId(`group-select-emoji-🍒`).click()
     await this.page.getByTestId('button-validate-create-group').click()
-    // eslint-disable-next-line playwright/no-networkidle
-    await this.page.waitForLoadState('networkidle')
+
     await expect(this.page).toHaveURL(/groupId=.*/)
     this.data.url = this.page.url()
   }
@@ -116,12 +115,12 @@ interface GroupPageFixtures {
 const test = base.extend<GroupPageFixtures>({
   group: async ({ browser, user, setup, page, storageState }, use) => {
     if (setup) {
-      return use(new Group(page, user))
+      return await use(new Group(page, user))
     }
 
     const useCurrentContext = storageState === GROUP_ADMIN_STATE
     if (useCurrentContext) {
-      return use(await Group.fromContext(page))
+      return await use(await Group.fromContext(page))
     }
 
     const context = await browser.newContext({

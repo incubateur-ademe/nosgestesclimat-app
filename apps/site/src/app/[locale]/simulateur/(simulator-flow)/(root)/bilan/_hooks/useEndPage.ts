@@ -17,7 +17,7 @@ export function useEndTest() {
       startTransition(() => {
         const simulation = { ...currentSimulation }
         simulation.computedResults = getComputedResults(engineContext)
-        void endTestAction(simulation, user.name)
+        void endTestAction(simulation, user?.name)
       }),
   }
 }

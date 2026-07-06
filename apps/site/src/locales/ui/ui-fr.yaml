@@ -85,16 +85,12 @@ entries:
   Vos points faibles: Vos points faibles
   Vos points forts: Vos points forts
   Découvrez nos pistes pour agir dès aujourd’hui pour le climat, ou passez le test pour obtenir des recommandations personnalisées.: Découvrez nos pistes pour agir dès aujourd’hui pour le climat, ou passez le test pour obtenir des recommandations personnalisées.
-  Données supprimées.: Données supprimées.
   Modifier le nom du groupe: Modifier le nom du groupe
   Ok, sauvegarder la modification: Ok, sauvegarder la modification
   Partagez cette page à vos proches pour leur permettre de rejoindre votre groupe.: Partagez cette page à vos proches pour leur permettre de rejoindre votre groupe.
-  Supprimer mes données: Supprimer mes données
   Veuillez renseigner un nom.: Veuillez renseigner un nom.
   Créer et passer mon test: Créer et passer mon test
   Rejoindre et passer mon test: Rejoindre et passer mon test
-  Supprimer vos données de groupe enregistrées ? Seules vos données de membre seront supprimées. Cette action est irréversible.: Supprimer vos données de groupe enregistrées ? Seules vos données de membre seront supprimées. Cette action est irréversible.
-  Supprimer votre groupe <1>{group?.name}</1> ? Les données sauvegardées seront supprimées pour tous les membres du groupe. Cette action est irréversible.: Supprimer votre groupe <1>{group?.name}</1> ? Les données sauvegardées seront supprimées pour tous les membres du groupe. Cette action est irréversible.
   Avant de commencer: Avant de commencer
   Bientôt disponible: Bientôt disponible
   C'est un test individuel !: C'est un test individuel !
@@ -151,7 +147,6 @@ entries:
   de: de
   Ma région de simulation: Ma région de simulation
   Quitter: Quitter
-  Votre groupe a été supprimé. Vous allez être redirigé vers la page d'accueil du mode groupe.: Votre groupe a été supprimé. Vous allez être redirigé vers la page d'accueil du mode groupe.
   Vous avez quitté ce groupe. Vous allez être redirigé vers la page d'accueil du mode groupe: Vous avez quitté ce groupe. Vous allez être redirigé vers la page d'accueil du mode groupe
   Vous pouvez quitter le groupe en cliquant sur le bouton ci-dessous. Le groupe ne sera en revanche pas supprimé puisque vous n’en êtes pas l’administrateur.: Vous pouvez quitter le groupe en cliquant sur le bouton ci-dessous. Le groupe ne sera en revanche pas supprimé puisque vous n’en êtes pas l’administrateur.
   Vous pouvez supprimer le groupe en cliquant sur le bouton ci-dessous. Il sera supprimé définitivement pour tous ses autres membres puisque vous en êtes l'administrateur.: Vous pouvez supprimer le groupe en cliquant sur le bouton ci-dessous. Il sera supprimé définitivement pour tous ses autres membres puisque vous en êtes l'administrateur.
@@ -259,8 +254,6 @@ entries:
   Retrouvez dans ce guide toutes les informations sur Nos Gestes Climat.: Retrouvez dans ce guide toutes les informations sur Nos Gestes Climat.
   Retrouvez les réponses aux questions les plus fréquentes sur  Nos Gestes Climat.: Retrouvez les réponses aux questions les plus fréquentes sur  Nos Gestes Climat.
   Retrouvez toutes les pages du site nosgestesclimat.fr pour calculer votre empreinte carbone.: Retrouvez toutes les pages du site nosgestesclimat.fr pour calculer votre empreinte carbone.
-  Supprimer mes données de groupe - Nos Gestes Climat: Supprimer mes données de groupe - Nos Gestes Climat
-  Supprimez vos données de groupe enregistrées dans le calculateur Nos Gestes Climat.: Supprimez vos données de groupe enregistrées dans le calculateur Nos Gestes Climat.
   Vos résultats de tests de notre calculateur d'empreinte carbone.: Vos résultats de tests de notre calculateur d'empreinte carbone.
   Ce test vous est proposé par: Ce test vous est proposé par
   Reprendre mon test: Reprendre mon test
@@ -805,7 +798,7 @@ entries:
   homePage.interactiveIllustration.waterScore: ' et empreinte eau notée {{waterScore}} sur 5'
   Lancer le défilement: Lancer le défilement
   common.category.alimentation: Alimentation
-  common.category.divers: Divers
+  common.category.divers: Consommation
   common.category.logement: Logement
   common.category.services: Services
   common.category.transport: Transport
@@ -832,7 +825,6 @@ entries:
   copyButton.copyAriaLabel: Copier le lien dans le presse-papiers
   copyButton.shareAriaLabel: Partager le lien
   copyButton.shareTitle: Découvre mon empreinte carbone !
-  pollResults.adminSection.shareDirectly: Ou partagez directement
   pollResults.adminSection.title: Invitez de nouvelles personnes
   pollResults.radarChart.accessibleDescription.category: '{{category}}: vos résultats {{user}} {{comparison}} à la moyenne {{average}}.'
   pollResults.radarChart.accessibleDescription.chart: 'Graphique radar comparant vos résultats aux moyennes par catégorie. '
@@ -1321,8 +1313,8 @@ entries:
   simulator.intercalaire.transport.meta.title: Section transport terminée - Nos Gestes Climat
   simulator.intercalaire.transport.meta.description: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
   simulator.intercalaire.transport.iframe.title: Comparateur d'impact CO₂ des transports
-  simulator.intercalaire.divers.meta.title: Section divers terminée - Nos Gestes Climat
-  simulator.intercalaire.divers.meta.description: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.meta.title: Section consommation terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.
   simulator.intercalaire.divers.iframe.title: Comparateur d'impact CO₂ du numérique
   simulator.transition.alimentation.funFact.line1: Tous les repas
   simulator.transition.alimentation.funFact.line2: n'ont pas
@@ -1477,7 +1469,7 @@ entries:
   common.hours: heures
   common.minutes: Minutes
   common.seconds: seconds
-  event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
+  event.testimonies.4.author.job: Test collectif réalisé par l'organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
   reuseSimulationForPoll.attachedToPoll: 'Rattachée au test collectif :'
@@ -1486,3 +1478,9 @@ entries:
   reuseSimulationForPoll.title: Vous avez déjà réalisé un calcul d’empreinte sur notre site
   reuseSimulationForPoll.yourFootprint: 'Votre empreinte :'
   reuseSimulationForPoll.testDate.testDone: Test réalisé le
+  category.divers: Consommation
+  poll.results.communicationKit.button: Accéder au kit
+  poll.results.communicationKit.text1: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  poll.results.communicationKit.text2: Des e-mails type, post Linkedin, visuels…
+  poll.results.communicationKit.title: Besoin d'inspiration pour diffuser votre test collectif ?
+  poll.shareSection.sendByEmail: Envoyer par e-mail

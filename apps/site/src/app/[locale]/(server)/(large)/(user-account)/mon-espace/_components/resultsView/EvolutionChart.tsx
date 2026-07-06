@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Locale } from '@/i18nConfig'
 import isMobile from 'is-mobile'
@@ -87,7 +87,7 @@ export default function EvolutionChart({
       {disabled && (
         <div className="border-primary-400 absolute top-6 left-1/2 z-10 flex max-w-96 -translate-x-1/2 -translate-y-full items-center justify-center rounded-xl border-2 bg-white p-6">
           <p className="mb-0 text-center">
-            <Link href={`${SIMULATOR_PATH}?newsimulation=true`}>
+            <Link href={START_SIMULATION_PATH}>
               <strong className="text-primary-700 underline">
                 <Trans i18nKey="mon-espace.evolutionGraph.chartDisabledTitle.part1">
                   Passez à nouveau le test
