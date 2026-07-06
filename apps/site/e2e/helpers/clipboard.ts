@@ -29,5 +29,5 @@ export async function copyAndReadClipboard({
 
   await copyAction()
 
-  return page.evaluate(() => navigator.clipboard.readText())
+  return await page.evaluate(() => navigator.clipboard.readText())
 }

@@ -1,3 +1,4 @@
+import type { CaptureOptions } from 'posthog-js'
 import posthog from 'posthog-js'
 
 declare global {
@@ -29,6 +30,7 @@ export const trackMatomoEvent__deprecated = (args: (string | null)[]) => {
 export const trackPosthogEvent = (args: {
   eventName: string
   properties?: Record<string, string | number | boolean | null | undefined>
+  options?: CaptureOptions
 }) => {
-  posthog.capture(args.eventName, { ...args.properties })
+  posthog.capture(args.eventName, { ...args.properties }, args.options)
 }

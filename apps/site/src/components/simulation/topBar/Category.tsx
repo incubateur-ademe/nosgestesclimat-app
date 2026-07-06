@@ -8,7 +8,7 @@ export default function Category({ category }: { category: DottedName }) {
   const { icons, title } = useRule(category)
 
   return (
-    <div className="flex">
+    <div>
       <h1
         className={twMerge(
           'mb-0 text-base font-bold lg:text-lg',

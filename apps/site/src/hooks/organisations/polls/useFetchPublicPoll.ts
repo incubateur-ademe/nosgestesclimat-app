@@ -1,8 +1,8 @@
-import { ORGANISATION_URL } from '@/constants/urls/main'
-import { useUser } from '@/publicodes-state'
+'use client'
+
+import { getPublicPoll } from '@/services/organisations/get-public-poll'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
-import axios from 'axios'
 import { useParams, useSearchParams } from 'next/navigation'
 
 export const useFetchPublicPoll = ({
@@ -11,28 +11,16 @@ export const useFetchPublicPoll = ({
 }: {
   pollIdOrSlug?: string | string[] | null | undefined
   enabled?: boolean
-} = {}): UseQueryResult<PublicOrganisationPoll, Error> => {
+} = {}): UseQueryResult<PublicOrganisationPoll | null, Error> => {
   const params = useParams()
   const searchParams = useSearchParams()
 
   const localPollIdOrSlug =
     pollIdOrSlug ?? params.pollSlug ?? searchParams.get('poll')
 
-  const {
-    user: { userId },
-  } = useUser()
-
   return useQuery({
-    queryKey: ['organisations', userId, 'polls', localPollIdOrSlug],
-    queryFn: () =>
-      axios
-        .get<PublicOrganisationPoll>(
-          `${ORGANISATION_URL}/${userId}/public-polls/${localPollIdOrSlug as string}`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((res) => res.data),
+    queryKey: ['organisations', 'polls', localPollIdOrSlug],
+    queryFn: () => getPublicPoll(localPollIdOrSlug as string),
     enabled: !!localPollIdOrSlug && enabled,
     retry: false,
   })

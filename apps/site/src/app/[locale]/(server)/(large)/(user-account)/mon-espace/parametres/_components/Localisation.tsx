@@ -6,7 +6,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import {
   supportedRegions,
-  type UserRegion,
+  type Region,
 } from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
@@ -19,9 +19,9 @@ export default function Localisation({
   initialRegion,
   region,
 }: {
-  updateRegionAction: (code: UserRegion) => Promise<void>
-  initialRegion: UserRegion
-  region: UserRegion
+  updateRegionAction: (code: Region) => Promise<void>
+  initialRegion: Region
+  region: Region
 }) {
   const locale = useLocale()
 

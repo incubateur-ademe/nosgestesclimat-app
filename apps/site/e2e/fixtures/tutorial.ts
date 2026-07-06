@@ -1,3 +1,4 @@
+import { START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { test as base, expect, type Page } from '@playwright/test'
 
 export class TutorialPage {
@@ -7,7 +8,7 @@ export class TutorialPage {
   constructor(public readonly page: Page) {}
 
   async start() {
-    await this.page.goto('/simulateur/commencer')
+    await this.page.goto(START_SIMULATION_PATH)
   }
   async goto() {
     await this.page.goto(TutorialPage.URL)

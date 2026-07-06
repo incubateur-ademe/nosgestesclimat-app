@@ -19,13 +19,13 @@ export function usePendingVerification({
 
   const { cookieState } = useCookieManagement()
 
-  let pendingVerification = user.user.pendingVerification
+  let pendingVerification = user.pendingVerification
 
   if (
     pendingVerification &&
     dayjs(pendingVerification.expirationDate).isBefore(dayjs())
   ) {
-    pendingVerification = undefined
+    pendingVerification = null
   }
 
   const handleVerificationCompleted = useCallback(
@@ -37,8 +37,6 @@ export function usePendingVerification({
       try {
         await reconcileUserOnAuth({
           userId,
-          email: pendingVerification.email,
-          user,
           cookieState,
         })
 

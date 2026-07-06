@@ -1,49 +1,69 @@
-import i18nConfig, { NEXT_LOCALE_COOKIE_NAME } from '@/i18nConfig'
-import { cookies } from 'next/headers'
-import type { NextRequest, ProxyConfig } from 'next/server'
-import { userMiddleware } from './helpers/server/dal/middleware'
-import { featureFlagMiddleware } from './middlewares/featureFlagMiddleware'
-import i18nMiddleware from './middlewares/i18nMiddleware'
+import { middlewareAuth } from '@/helpers/server/proxy/auth.middleware'
+import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags.middleware'
+import { middlewareMigrateLegacySessions } from '@/helpers/server/proxy/migrate-legacy-sessions.middleware'
+import { middlewareRegion } from '@/helpers/server/proxy/region.middleware'
+import i18nConfig from '@/i18nConfig'
+import { i18nRouter } from 'next-i18n-router'
+import { type NextRequest, NextResponse } from 'next/server'
 
-export async function proxy(request: NextRequest) {
-  const response = await featureFlagMiddleware(request, (req) =>
-    userMiddleware(req, i18nMiddleware)
-  )
+export async function proxy(request: NextRequest): Promise<NextResponse> {
+  // In Turbopack dev, Next.js forwards server actions between internal workers
+  // via a self-fetch to localhost:3000, targeting the action's worker page
+  // (e.g. `/[locale]/simulateur/bilan`). That self-fetch goes through this
+  // proxy. i18nRouter would rewrite its no-locale URL (prepending the default
+  // locale), which changes the page seen by `selectWorkerForForwarding` and
+  // makes it re-forward indefinitely → "failed to forward action response"
+  // storm. Forward-fetches target a specific worker page on purpose and must
+  // not be i18n-rewritten, so pass them through untouched.
+  if (request.headers.get('x-action-forwarded')) {
+    return NextResponse.next()
+  }
 
-  // Sync NEXT_LOCALE cookie with the URL path locale (e.g. /en → en).
-  // Uses cookies().set() — the same mechanism iron-session uses internally.
-  const pathname = request.nextUrl.pathname
-  const pathLocale = i18nConfig.locales.find(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  )
+  // Phase 1 — Interceptors
+  const ff = middlewareFeatureFlags(request)
+  if (ff.redirect) return ff.redirect
 
-  if (pathLocale) {
-    const cookieStore = await cookies()
+  const migrate = await middlewareMigrateLegacySessions(request)
 
-    cookieStore.set(
-      NEXT_LOCALE_COOKIE_NAME,
-      pathLocale,
-      i18nConfig.cookieOptions ?? {}
-    )
+  const auth = await middlewareAuth(request)
+  if (auth.redirect) return auth.redirect
+
+  const region = await middlewareRegion(request)
+
+  // Phase 2 — Routing
+  const response = i18nRouter(request, i18nConfig)
+
+  // Phase 3 — Apply cookies
+  for (const cookie of [
+    ...migrate.cookies,
+    ...auth.cookies,
+    ...region.cookies,
+  ]) {
+    response.cookies.set(cookie.name, cookie.value, cookie.options)
   }
 
   return response
 }
 
-export const config: ProxyConfig = {
+export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
-     * - images (image optimization files)
-     * - favicon.ico (favicon file)
-     * - manifest.webmanifest (manifest file)
+     * - _next/image (image optimization files)
+     * - favicon.ico / favicon.png (favicon files)
+     * - images (public images directory)
+     * - manifest.webmanifest (PWA manifest)
+     * - scripts (public scripts directory)
+     * - demos (public demos directory)
+     * - misc (public misc directory)
+     * - videos (public videos directory)
      * - robots.txt (robots file)
+     * - datashare (iframe datashare modal)
      */
     {
       source:
-        '/((?!api|_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|datashare).*)',
+        '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|datashare).*)',
     },
   ],
 }

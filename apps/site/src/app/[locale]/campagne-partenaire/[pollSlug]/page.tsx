@@ -2,8 +2,8 @@ import FAQ from '@/components/landing-pages/FAQ'
 import Partners from '@/components/landing-pages/Partners'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Markdown from '@/design-system/utils/Markdown'
-import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { fetchPartnerCampaign } from '@/services/cms/fetchPartnerCampaign'
 import { notFound } from 'next/navigation'
 import { ClientLayout } from '../../../../components/layout/ClientLayout'
@@ -17,7 +17,7 @@ export default async function PartnerCampaignPage({
 }) {
   const { locale, pollSlug } = await params
 
-  const { id: serverUserId } = await getUser()
+  const userSession = await getUserSession()
 
   const partnerCampaign = await fetchPartnerCampaign({
     locale,
@@ -29,7 +29,7 @@ export default async function PartnerCampaignPage({
   }
 
   return (
-    <ClientLayout locale={locale} serverUserId={serverUserId}>
+    <ClientLayout locale={locale} userSession={userSession}>
       <PartnerCampaignHeader
         logoSrc={partnerCampaign.logo?.url ?? ''}
         alt={partnerCampaign.logo?.alternativeText ?? ''}>

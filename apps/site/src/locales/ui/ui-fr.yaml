@@ -1520,6 +1520,12 @@ entries:
   common.hours: heures
   common.minutes: Minutes
   common.seconds: seconds
-  event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
+  event.testimonies.4.author.job: Test collectif réalisé par l'organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  category.divers: Consommation
+  poll.results.communicationKit.button: Accéder au kit
+  poll.results.communicationKit.text1: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  poll.results.communicationKit.text2: Des e-mails type, post Linkedin, visuels…
+  poll.results.communicationKit.title: Besoin d'inspiration pour diffuser votre test collectif ?
+  poll.shareSection.sendByEmail: Envoyer par e-mail

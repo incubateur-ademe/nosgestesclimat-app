@@ -12,14 +12,16 @@ import Title from '@/design-system/layout/Title'
 import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
 import useFetchOrganisation from '@/hooks/organisations/useFetchOrganisation'
 import { useHandleRedirectFromLegacy } from '@/hooks/organisations/useHandleRedirectFromLegacy'
-import { useUser } from '@/publicodes-state'
+import { isOrganisationAdmin } from '@/services/organisations/is-organisation-admin'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import CommunicationKit from './_components/CommunicationKit'
 import PollNotFound from './_components/PollNotFound'
 import ShareSection from './_components/ShareSection'
 import FootprintDistribution from './_components/footPrintDistribution/FootprintDistribution'
@@ -27,7 +29,6 @@ import FootprintDistribution from './_components/footPrintDistribution/Footprint
 export default function CampagnePage() {
   const { orgaSlug, pollSlug } = useParams()
   const searchParams = useSearchParams()
-
   const isRedirectFromLegacy = Boolean(searchParams.get('isRedirectFromLegacy'))
 
   useHandleRedirectFromLegacy()
@@ -49,20 +50,13 @@ export default function CampagnePage() {
   // Organisation can only be fetched by a authentified organisation administrator
   const { data: organisation } = useFetchOrganisation()
 
-  const { user } = useUser()
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ['isOrganisationAdmin', orgaSlug],
+    queryFn: () => isOrganisationAdmin(orgaSlug as string),
+    enabled: !!orgaSlug,
+  })
+
   const { t } = useTranslation()
-  // Temp hotfix
-  const isAdmin = !!(
-    poll?.organisation.administrators ||
-    organisation?.administrators.find(
-      ({ userId, email }) =>
-        userId === user.userId ||
-        // Cover possible edge case where admin changes browser and looses his/her original userId
-        email === user.organisation?.administratorEmail ||
-        // Unsecure remove as soon as possible
-        organisation?.slug === user.organisation?.slug
-    )
-  )
 
   if (isLoadingPoll) {
     return <PollLoader />
@@ -131,6 +125,9 @@ export default function CampagnePage() {
               }
             />
           )}
+
+          <CommunicationKit />
+
           <PollStatistics
             simulationsCount={simulations?.finished ?? 0}
             computedResults={computedResults}
