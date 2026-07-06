@@ -10,6 +10,7 @@
     "dev": "NODE_ENV=development node --experimental-strip-types --watch ./src/index.ts",
     "dev:worker": "NODE_ENV=development node --experimental-strip-types --watch ./src/worker.ts",
     "format": "prettier --write \"**/*.{js,ts,md,json}\"",
+    "jobs:cleanupExpiredTokens": "node --experimental-strip-types ./src/jobs/cleanup-expired-tokens.ts",
     "jobs:computePollStats": "node --experimental-strip-types ./src/jobs/compute-poll-stats.ts",
     "jobs:recoverMatomoStats": "node --experimental-strip-types ./src/jobs/recover-matomo-stats.ts",
     "jobs:recoverNewsletterStats": "node --experimental-strip-types ./src/jobs/recover-newsletter-stats.ts",

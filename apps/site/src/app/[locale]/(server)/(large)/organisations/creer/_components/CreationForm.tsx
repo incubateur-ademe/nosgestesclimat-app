@@ -16,10 +16,8 @@ import TextInput from '@/design-system/inputs/TextInput'
 import Separator from '@/design-system/layout/Separator'
 import { useCreateOrganisation } from '@/hooks/organisations/useCreateOrganisation'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useUser } from '@/publicodes-state'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
 interface Inputs {
@@ -32,8 +30,6 @@ interface Inputs {
 }
 
 export default function CreationForm() {
-  const { user, updateUserOrganisation } = useUser()
-
   const { t } = useClientTranslation()
 
   const router = useRouter()
@@ -71,10 +67,6 @@ export default function CreationForm() {
         ],
       })
 
-      updateUserOrganisation({
-        name,
-        slug: organisationUpdated.slug,
-      })
 
       router.push(
         `/organisations/${organisationUpdated.slug}/creer-campagne/informations`
@@ -84,13 +76,6 @@ export default function CreationForm() {
     }
   }
 
-  // Redirect to organisation page if user has already an organisation
-  useEffect(() => {
-    if (user.organisation?.slug) {
-      router.push(`/organisations/${user.organisation.slug}`)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mb-12">

@@ -166,6 +166,7 @@ export default defineConfig([
       '@typescript-eslint/no-empty-function': 'warn',
       // project specific rules
       '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/return-await': ['error', 'always'],
       '@typescript-eslint/no-unnecessary-condition': 'warn',
     },
   },

@@ -1,6 +1,4 @@
 import { expect, test } from '../fixtures'
-import { User } from '../fixtures/user'
-import { saveContext } from '../helpers/save-context'
 import { ORGANISATION_ADMIN_STATE } from '../state'
 
 test.use({ storageState: ORGANISATION_ADMIN_STATE })
@@ -83,41 +81,5 @@ test.describe('The parameters page', () => {
     await expect(page.getByTestId('input-administrator-last-name')).toHaveValue(
       organisation.admin.lastName
     )
-  })
-
-  test('should allow to change the administrator info', async ({
-    page,
-    organisation,
-  }) => {
-    // @TODO : the test that have side effect on shared state should run in a last step
-    // or during setup
-    test.skip()
-    const admin = new User(page)
-    await page
-      .getByTestId('input-administrator-first-name')
-      .fill(admin.firstName)
-
-    await page.getByTestId('input-administrator-last-name').fill(admin.lastName)
-    await page.waitForTimeout(500)
-    await page.getByTestId('button-submit').click()
-
-    // Should display a verification code input
-    const verificationCodeInput = page.getByTestId('verification-code-input')
-
-    await expect(verificationCodeInput).toBeInViewport()
-
-    const code = await admin.mailbox.getVerificationCode()
-
-    await verificationCodeInput.fill(code)
-    await expect(verificationCodeInput).toBeHidden()
-
-    await expect(page.getByTestId('success-message')).toBeVisible()
-
-    await page.reload()
-
-    // We update the admin info in playwright state
-    organisation.admin = admin
-    await organisation.saveInContext()
-    await saveContext(page, ORGANISATION_ADMIN_STATE)
   })
 })

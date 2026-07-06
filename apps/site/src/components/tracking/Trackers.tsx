@@ -1,8 +1,8 @@
-import { getAnonSession } from '@/helpers/server/dal/anonSession'
 import type { Locale } from '@/i18nConfig'
+import { getRegion } from '@/services/users/region'
 import { ClientTrackers } from './ClientTrackers'
 
 export default async function Trackers({ locale }: { locale: Locale }) {
-  const anonSession = await getAnonSession()
-  return <ClientTrackers region={anonSession.region} locale={locale} />
+  const regionData = await getRegion()
+  return <ClientTrackers region={regionData?.current} locale={locale} />
 }

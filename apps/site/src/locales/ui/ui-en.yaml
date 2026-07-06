@@ -2247,7 +2247,17 @@ entries:
   Toutes: All
   event.testimonies.4.author.job: Collective test carried out by the Pass Culture
   event.testimonies.4.author.job.lock: Test collectif réalisé par l’organisation Pass Culture
-  simulator.dontKnow.button.reassuranceYouth: Don’t worry, we use average data to ensure the results remain reliable.
+  simulator.dontKnow.button.reassuranceYouth: Don't worry, we use average data to ensure the results remain reliable.
   simulator.dontKnow.button.reassuranceYouth.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
   category.divers: Consumption
   category.divers.lock: Consommation
+  poll.results.communicationKit.button: Access the kit
+  poll.results.communicationKit.button.lock: Accéder au kit
+  poll.results.communicationKit.title: Need some inspiration for sharing your group quiz?
+  poll.results.communicationKit.title.lock: Besoin d'inspiration pour diffuser votre test collectif ?
+  poll.results.communicationKit.text2: Sample emails, LinkedIn posts, visuals…
+  poll.results.communicationKit.text2.lock: Des e-mails type, post Linkedin, visuels…
+  poll.shareSection.sendByEmail: Send by email
+  poll.shareSection.sendByEmail.lock: Envoyer par e-mail
+  poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
+  poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.

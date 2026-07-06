@@ -1,12 +1,8 @@
 import DefaultUnautorizedAlert from '@/components/error/DefaultUnautorizedAlert'
 import { ORGANISATION_SIGN_IN_PATH } from '@/constants/urls/paths'
-import { getUser } from '@/helpers/server/dal/user'
-import { redirect } from 'next/navigation'
+import { requireAuthUser } from '@/services/auth/require-auth-user'
 
 export default async function UnauthorizedPage() {
-  const user = await getUser()
-  if (!user.isAuth) {
-    redirect(ORGANISATION_SIGN_IN_PATH)
-  }
+  await requireAuthUser({ redirect: ORGANISATION_SIGN_IN_PATH })
   return <DefaultUnautorizedAlert />
 }

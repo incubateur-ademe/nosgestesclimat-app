@@ -11,7 +11,7 @@ import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { isUserAuthenticated } from '@/helpers/server/model/user'
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import { redirect } from 'next/navigation'
 
@@ -26,7 +26,7 @@ export const generateMetadata = getCommonMetadata({
 })
 
 export default async function GroupConnexionPage({ params }: DefaultPageProps) {
-  if (await isUserAuthenticated()) {
+  if ((await getUserSession())?.isAuth) {
     redirect('/amis/creer/votre-groupe')
   }
 

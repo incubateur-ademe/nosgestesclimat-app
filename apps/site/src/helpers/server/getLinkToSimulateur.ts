@@ -6,8 +6,8 @@ import {
   TUTORIAL_PATH,
 } from '@/constants/urls/paths'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import type { UserSession } from '@/services/auth/get-user-session'
 import type { TFunction } from 'i18next'
-import type { AppUser } from './dal/user'
 export function getMainCTA({
   currentSimulation,
   completedSimulations,
@@ -15,7 +15,7 @@ export function getMainCTA({
   t,
 }: {
   currentSimulation?: Simulation
-  user: AppUser
+  user: UserSession
   completedSimulations: Simulation[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: TFunction<any, string>
@@ -37,7 +37,7 @@ export function getMainCTA({
   if (currentSimulation.progression === 1) {
     return {
       children: t('Voir mes résultats'),
-      href: user.isAuth ? MON_ESPACE_PATH : END_PAGE_PATH,
+      href: user?.isAuth ? MON_ESPACE_PATH : END_PAGE_PATH,
     }
   }
 

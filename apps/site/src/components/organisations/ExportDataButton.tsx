@@ -3,7 +3,7 @@
 import type { ButtonProps } from '@/design-system/buttons/Button'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
-import { fetchPollResults } from '@/services/organisations/fetchPollResults'
+import { downloadPollResults } from '@/services/organisations/download-poll-results'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 import { captureException } from '@sentry/nextjs'
 import { useTransition } from 'react'
@@ -31,7 +31,7 @@ export default function ExportDataButton({
       }
 
       try {
-        const data = await fetchPollResults(props)
+        const data = await downloadPollResults(props)
 
         window.open(data.url, '_blank')
       } catch (error) {
