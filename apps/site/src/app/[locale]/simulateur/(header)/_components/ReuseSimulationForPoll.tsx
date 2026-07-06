@@ -48,25 +48,27 @@ export default async function ReuseSimulationForPoll({
 
       <div className="border-primary-100 bg-primary-100 mb-8 w-lg max-w-full rounded-lg border px-5 py-4">
         <p className="mb-2 text-sm">
-          <Trans locale={locale} i18nKey="reuseSimulationForPoll.testDate">
-            Test réalisé le{' '}
-            {dayjs(simulation.updated_at)
-              .toDate()
-              .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-              })}{' '}
-            <Trans locale={locale} i18nKey="reuseSimulationForPoll.testDate.at">
-              à
-            </Trans>{' '}
-            {dayjs(simulation.updated_at)
-              .toDate()
-              .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-          </Trans>
+          <Trans
+            locale={locale}
+            i18nKey="reuseSimulationForPoll.testDate.testDone">
+            Test réalisé le
+          </Trans>{' '}
+          {dayjs(simulation.updated_at)
+            .toDate()
+            .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            })}{' '}
+          <Trans locale={locale} i18nKey="reuseSimulationForPoll.testDate.at">
+            à
+          </Trans>{' '}
+          {dayjs(simulation.updated_at)
+            .toDate()
+            .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
         </p>
 
         <p className="text-primary-800 mb-2 text-base">
