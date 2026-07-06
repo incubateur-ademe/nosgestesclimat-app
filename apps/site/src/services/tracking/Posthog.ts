@@ -100,6 +100,35 @@ export class PostHog {
         'organisation',
         'poll',
       ], // Enable to set query parameters as properties on the events
+
+      // PostHog recomputes $referrer/$referring_domain from the browser's
+      // real referrer on every capture and stores it in sessionPersistence,
+      // which always wins over the value we `register()` below. Disabling
+      // this in iframe mode lets our registered iframe referrer survive.
+      save_referrer: !this.iframeInformation.iframe,
+
+      // $session_entry_referrer/_referring_domain and the person-level
+      // $initial_referrer/_referring_domain (sent via $set_once) come from
+      // PostHog's session and person bootstrap logic, which always reads the
+      // real browser referrer and isn't gated by `save_referrer`. `before_send`
+      // is the only public hook that runs late enough to override them.
+      before_send: (event) => {
+        if (event && this.iframeInformation.iframe) {
+          const { $referrer, $referring_domain } = this.iframeInformation
+          event.properties.$session_entry_referrer = $referrer
+          event.properties.$session_entry_referring_domain = $referring_domain
+
+          if (event.$set_once) {
+            if ('$initial_referrer' in event.$set_once) {
+              event.$set_once.$initial_referrer = $referrer
+            }
+            if ('$initial_referring_domain' in event.$set_once) {
+              event.$set_once.$initial_referring_domain = $referring_domain
+            }
+          }
+        }
+        return event
+      },
     })
 
     if (savedCookieState.posthog === 'do_not_track') {
@@ -109,6 +138,6 @@ export class PostHog {
   }
 
   private registerProperties() {
-    posthog.register_for_session(this.iframeInformation)
+    posthog.register(this.iframeInformation)
   }
 }
