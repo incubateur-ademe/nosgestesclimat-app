@@ -1,5 +1,4 @@
 entries:
-  ' En savoir plus sur notre modèle': ' Learn more about our model'
   404.action: Return to a safe place
   404.action.lock: Revenir en lieu sûr
   'Accessibilité : partiellement conforme': 'Accessibility: partially compliant'
@@ -110,17 +109,13 @@ entries:
   Vos points forts: Your strengths
   Vos points faibles: Your weaknesses
   Par rapport à la moyenne du groupe.: Compared with the group average.
-  Supprimer mes données: Delete my data
   Partagez cette page à vos proches pour leur permettre de rejoindre votre groupe.: Share this page with your friends and family to let them join your group.
   Ok, sauvegarder la modification: OK, save changes
   Veuillez renseigner un nom.: Please enter a name.
-  Données supprimées.: Deleted data.
   Modifier le nom du groupe: Change group name
   Découvrez nos pistes pour agir dès aujourd’hui pour le climat, ou passez le test pour obtenir des recommandations personnalisées.: Find out how you can take action for the climate today, or take the test to get personalized recommendations.
   Créer et passer mon test: Create and take my test
   Rejoindre et passer mon test: Join and take my test
-  Supprimer vos données de groupe enregistrées ? Seules vos données de membre seront supprimées. Cette action est irréversible.: Delete your saved group data? Only your member data will be deleted. This action is irreversible.
-  Supprimer votre groupe <1>{group?.name}</1> ? Les données sauvegardées seront supprimées pour tous les membres du groupe. Cette action est irréversible.: Delete your group <1>{group?.name}</1>? Saved data will be deleted for all group members. This action is irreversible.
   Créer un groupe: Create a group
   Bientôt disponible: Available soon
   C'est un test individuel !: It's an individual test!
@@ -166,7 +161,6 @@ entries:
   Plan du site: Site map
   Pour toute autre remarque ou question, vous pouvez nous envoyer un message via le formulaire de contact ci-dessous.: If you have any other comments or questions, please send us a message using the contact form below.
   N'hésitez pas à consulter notre <2>FAQ</2> avant de nous écrire, vous y trouverez sans doute la réponse à votre question !: Don't hesitate to consult our <2>FAQ</2> before writing to us - you're sure to find the answer to your question there!
-  Le modèle Nos Gestes Climat: The Nos Gestes Climat model
   Statistiques: Statistics
   FAQ: FAQ
   Partenaires: Partners
@@ -183,7 +177,6 @@ entries:
   Ma région de simulation: My simulation region
   D'autres questions ?: Any other questions?
   Vous pouvez supprimer le groupe en cliquant sur le bouton ci-dessous. Il sera supprimé définitivement pour tous ses autres membres puisque vous en êtes l'administrateur.: You can delete the group by clicking on the button below. It will be permanently deleted for all its other members, as you are the administrator.
-  Votre groupe a été supprimé. Vous allez être redirigé vers la page d'accueil du mode groupe.: Your group has been deleted. You will be redirected to the group mode home page.
   Vous pouvez quitter le groupe en cliquant sur le bouton ci-dessous. Le groupe ne sera en revanche pas supprimé puisque vous n’en êtes pas l’administrateur.: You can leave the group by clicking on the button below. However, the group will not be deleted as you are not the administrator.
   Cette opération est définitive et supprimera le groupe pour tous ses membres.: This operation is definitive and will delete the group for all its members.
   Vous avez quitté ce groupe. Vous allez être redirigé vers la page d'accueil du mode groupe: You have left this group. You will be redirected to the group mode home page
@@ -252,7 +245,6 @@ entries:
   Empreinte: Footprint
   Annuler: Cancel
   Supprimer le groupe: Delete group
-  Voir les résultats: See the results
   Invitez d'autres personnes à rejoindre votre groupe: Invite other people to join your group
   l’équipe de nosgestesclimat.fr: the nosgestesclimat.fr team
   l’équipe de nosgestesclimat.fr.lock: l’équipe de nosgestesclimat.fr
@@ -272,7 +264,6 @@ entries:
   CGU - Nos Gestes Climat: Terms and conditions - Nos Gestes Climat
   Vos résultats de tests de notre calculateur d'empreinte carbone.: Your test results for our carbon footprint simulator.
   Rejoignez votre groupe pour calculez votre empreinte carbone et la comparer avec l'empreinte de vos proches grâce au calculateur de bilan carbone personnel Nos Gestes Climat.: Join your group to calculate your carbon footprint and compare it with the footprint of others using the Nos Gestes Climat personal carbon footprint simulator.
-  Supprimez vos données de groupe enregistrées dans le calculateur Nos Gestes Climat.: Delete your group data saved in the Nos Gestes Climat simulator.
   Le guide - Nos Gestes Climat: The guide - Nos Gestes Climat
   Mentions légales - Nos Gestes Climat: Legal information - Nos Gestes Climat
   Retrouvez les réponses aux questions les plus fréquentes sur  Nos Gestes Climat.: Find the answers to the most frequently asked questions about Nos Gestes Climat.
@@ -298,7 +289,6 @@ entries:
   Mentions légales du site Nos Gestes Climat.: Legal information about Nos Gestes Climat.
   Notre documentation détaille les calculs qui nous ont permis de calculer votre bilan carbone personnel.: Our documentation details the calculations we used to calculate your personal carbon footprint.
   Actions, suite à votre simulation d'empreinte climat - Nos Gestes Climat: Actions following your climate footprint simulation - Nos Gestes Climat
-  Supprimer mes données de groupe - Nos Gestes Climat: Delete my group data - Nos Gestes Climat
   Plan du site - Nos Gestes Climat: Site map - Nos Gestes Climat
   Calculez votre empreinte sur le climat en 10 minutes chrono. Découvrez les gestes qui comptent vraiment pour le climat.: Calculate your climate footprint in just 10 minutes. Discover the actions that really matter for the climate.
   Ce test vous est proposé par: This test is brought to you by
@@ -325,7 +315,6 @@ entries:
   Voir plus: See more
   Enregistrer: Save
   2 tonnes: 2 tonnes
-  Confirmer: Confirm
   Ce champ est requis: This field is required
   Une erreur est survenue. Veuillez réessayer.: An error has occurred. Please try again.
   Paramètres de: Parameters of
@@ -705,7 +694,6 @@ entries:
   nous contacter: contact us
   Oups ! Une erreur s'est produite. Veuillez recharger la page. Si le problème persiste, vous pouvez: Oops! An error has occurred. Please reload the page. If the problem persists, you can
   Oups ! Une erreur s'est produite. Veuillez réessayer plus tard. Si le problème persiste, vous pouvez: Oops! An error has occurred. Please try again later. If the problem persists, you can
-  C'est parti !: Let's go!
   Chargement en cours...: Loading...
   Conditions d’utilisation des données « Base Empreinte »: Conditions of use of "Base Empreinte" data
   footer.thematicLandingPages.title: Thematic pages
@@ -867,7 +855,6 @@ entries:
   documentation.search.results.label: Search results
   documentation.search.results.label.lock: Résultats de recherche
   Ce graphique présente la distribution des résultats de simulation des utilisateurs, permettant d'analyser les tendances et les comportements.: This graph shows the distribution of users' simulation results, enabling trends and behaviour to be analysed.
-  Formulaire - nous faire part de vos remarques sur le site: Form - send us your comments on the site
   Graphique de distribution des résultats de simulation pour le mois dernier: Graph showing the distribution of simulation results for last month
   Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, et les tendances d'utilisation.: This dashboard displays site traffic statistics, including the number of visits, simulations completed and usage trends.
   Statistiques d'usage du mode "Challenge tes amis": Usage statistics for the "Challenge your friends" mode
@@ -1001,8 +988,6 @@ entries:
   pollResults.radarChart.accessibleDescription.chart.lock: 'Graphique radar comparant vos résultats aux moyennes par catégorie. '
   pollResults.adminSection.title: Invite new people
   pollResults.adminSection.title.lock: Invitez de nouvelles personnes
-  pollResults.adminSection.shareDirectly: Or share directly
-  pollResults.adminSection.shareDirectly.lock: Ou partagez directement
   copyButton.copiedAriaLabel: Link copied to clipboard
   copyButton.copiedAriaLabel.lock: Lien copié dans le presse-papiers
   pollResults.radarChart.title: Your footprint in relation to other participants
@@ -1091,8 +1076,6 @@ entries:
   login.colourBlock.login.highlight3.end.lock: (organisations, famille, amis...)
   signup.button.label: Sign up
   signup.button.label.lock: M'inscrire
-  signIn.email.error.userDoesNotExist: We do not have an e-mail address registered at this address. Please register to access your space.
-  signIn.email.error.userDoesNotExist.lock: Nous n’avons pas d’e-mail enregistré à cette adresse. Veuillez vous inscrire pour accéder à votre espace.
   signup.colourBlock.highlight3.title.middle: and
   signup.colourBlock.highlight3.title.middle.lock: et
   login.list.login.label: Sign in
@@ -1113,8 +1096,6 @@ entries:
   login.login.title.lock: Accédez à votre espace Nos Gestes Climat
   signup.title: Create your Nos Gestes Climat space
   signup.title.lock: Créez votre espace Nos Gestes Climat
-  signIn.email.error.userAlreadyExists: You already have an account with this e-mail address. Please log in directly.
-  signIn.email.error.userAlreadyExists.lock: Vous avez déjà un compte avec cet e-mail. Merci de vous connecter directement.
   signIn.verificationForm.email.verificationCode.prefix: Enter the
   signIn.verificationForm.email.verificationCode.prefix.lock: Entrez le
   signIn.verificationForm.email.verificationCode.strong: verification code
@@ -1648,10 +1629,6 @@ entries:
   results.saveResults.buttonLabel.authenticated.noPreviousResults.lock: Accéder à mon espace
   common.navigation.nextQuestion.loading.label: End the test and go to the results page, loading in progress
   common.navigation.nextQuestion.loading.label.lock: Terminer le test et accéder à la page de résultats, chargement en cours
-  Commencer un nouveau test: Start a new test
-  Utiliser mes données existantes: Use my existing data
-  Vous pouvez utiliser vos données existantes, ou recommencer le test.: You can use your existing data, or start the test again.
-  Vous avez déjà réalisé le test Nos Gestes Climat !: You've already taken the Nos Gestes Climat test!
   results.groupThankYou.description: Find out the results of the group test <2> at{{groupName}}</2>
   results.groupThankYou.description.lock: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
   results.objective.collectiveEffort.companies: The companies
@@ -1884,8 +1861,6 @@ entries:
   simulator.funFact.clothing.text2.lock: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
   common.previousExtended: Back, return to the previous page
   common.previousExtended.lock: Précédent, revenir à la page précédente
-  Vous avez déjà participé à ce sondage.: You have already taken part in this survey.
-  Tu as déja participé à ce test.: You've already taken part in this test.
   Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.: Calculate your climate footprint in just<1> 10 minutes </1>.
   common.logement: housing
   common.logement.lock: logement
@@ -1905,20 +1880,6 @@ entries:
   actions.mTaTerre.title.lock: Tu veux comprendre ET agir pour la planète ?
   actions.mTaTerre.text: 'Climate, biodiversity, energy, food.<2>..</2><1></1><2></2> M<2>ta Terre</2> is the website for you: <5>articles</5>, <7>videos</7>, <10>podcasts</10> and <12>practical tips</12> to take action on a daily basis.'
   actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
-  simulator.age.options.under18: Under 18
-  simulator.age.options.under18.lock: Moins de 18 ans
-  simulator.age.options.18-24: 18 - 24 years
-  simulator.age.options.18-24.lock: 18 - 24 ans
-  simulator.age.options.25-34: 25 - 34 years
-  simulator.age.options.25-34.lock: 25 - 34 ans
-  simulator.age.options.35-49: 35 - 49 years
-  simulator.age.options.35-49.lock: 35 - 49 ans
-  simulator.age.options.50-64: 50 - 64 years
-  simulator.age.options.50-64.lock: 50 - 64 ans
-  simulator.age.options.65AndMore: 65 years and over
-  simulator.age.options.65AndMore.lock: 65 ans et +
-  simulator.age.options.undisclosed: I prefer not to say
-  simulator.age.options.undisclosed.lock: Je préfère ne pas le préciser
   common.skip: Skip
   common.skip.lock: Passer
   tutorial.email.title.youth: Your e-mail address
@@ -1957,8 +1918,6 @@ entries:
   common.byDay.lock: / jour
   actions.components.themeSection.description: '{{count}} recommended actions'
   actions.components.themeSection.description.lock: '{{count}} actions recommandées'
-  actions.detailPage.nav: Page navigation
-  actions.detailPage.nav.lock: Navigation de la page
   actions.detailPage.404.description: The action you are looking for does not exist or has been deleted.
   actions.detailPage.404.description.lock: L'action que vous cherchez n'existe pas ou a été supprimée.
   actions.detailPage.impact.title: Max reduction on your footprint
@@ -1993,33 +1952,14 @@ entries:
   actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
-  actions.components.themeSection.description_other: '{{count}} recommended actions'
-  actions.components.themeSection.description_other.lock: '{{count}} actions recommandées'
-  actions.components.themeSection.description_one: '{{count}} recommended action'
-  actions.components.themeSection.description_one.lock: '{{count}} action recommandée'
-  actions.components.themeSection.description_zero: No action recommended
-  actions.components.themeSection.description_zero.lock: Aucune action recommandée
-  common.facultatif.uppercase: Optional
-  common.facultatif.uppercase.lock: Facultatif
-  Passer: Go to
   simulator.tutorial.letsGoButton.label: Start now!
   simulator.tutorial.letsGoButton.label.lock: C'est parti !
   components.carousel.lastSlideMessage: This is the last slide
   components.carousel.lastSlideMessage.lock: Ceci est la dernière diapo
-  simulator.age.inputLabel: What age bracket do you fall into?
-  simulator.age.inputLabel.lock: Dans quelle tranche d'âge vous situez-vous ?
-  simulator.age.metadata.title: Getting to know you better - Nos Gestes Climat
-  simulator.age.metadata.title.lock: Pour mieux vous connaitre - Nos Gestes Climat
-  simulator.age.title: Let's start with you. How old are you?
-  simulator.age.title.lock: On commence par vous, quel est votre âge ?
   simulator.transition.housing.graph.arrowText: This graph gives you a better understanding of the carbon impact of different heating methods
   simulator.transition.housing.graph.arrowText.lock: Ce graphique te permet de mieux comprendre l’impact carbone des différents modes de chauffage
   simulator.transition.divers.graph.arrowText: This graph shows the carbon footprint of all your digital devices
   simulator.transition.divers.graph.arrowText.lock: Ce graphique te permet d’observer l’empreinte carbone de tous tes appareils numériques
-  simulator.age.metadata.description: A first question before calculating your climate footprint.
-  simulator.age.metadata.description.lock: Une première question avant de calculer votre empreinte sur le climat.
-  simulator.age.subtitle: We want to get to know our test participants better for statistical purposes.
-  simulator.age.subtitle.lock: Nous cherchons à mieux connaître nos participants au test à des fins statistiques.
   L'empreinte moyenne d'un Français est de <2>8,2 tonnes de CO2e par an</2> (source SDES).: The average footprint of a French person is <2>8.2 tonnes of CO2e per year</2> (source SDES).
   iframe.safari.askPermission: Authorise
   iframe.safari.askPermission.lock: Autoriser
@@ -2045,8 +1985,6 @@ entries:
   event.ctas.card2.title.lock: Avec votre organisation
   event.tutorial.individual.3.title: Take action
   event.tutorial.individual.3.title.lock: Passez à l'action
-  event.podium.block.score.text: carbon footprint calculations
-  event.podium.block.score.text.lock: calculs d'empreinte
   event.ctas.card2.alt: With your organisation
   event.ctas.card2.alt.lock: Avec votre organisation
   event.tutorial.carousel.firstSlide: This is the first slide
@@ -2055,8 +1993,6 @@ entries:
   event.tutorial.carousel.lastSlide.lock: Ceci est la dernière diapositive
   event.tutorial.carousel.prevSlide: Previous slide
   event.tutorial.carousel.prevSlide.lock: Diapositive précédente
-  event.podium.list.item.score: tests
-  event.podium.list.item.score.lock: tests
   event.dynamicCounter.target.text: carbon footprint calculations
   event.dynamicCounter.target.text.lock: calculs d'empreinte carbone
   event.dynamicCounter.target.title: Objective
@@ -2105,8 +2041,6 @@ entries:
   event.ctas.card1.alt.lock: À titre individuel
   event.testimonies.1.author.job: Impact Officer at HomeExchange
   event.testimonies.1.author.job.lock: Impact Officer chez HomeExchange
-  event.podium.competitor: Rival organisation
-  event.podium.competitor.lock: Organisation concurrente
   event.statistics.first: carbon footprint calculations already carried out
   event.statistics.first.lock: calculs d'empreinte carbone déjà réalisés
   event.detail.title: European Week for<1></1>Sustainable Development<3></3>
@@ -2117,8 +2051,6 @@ entries:
   event.ctas.card1.buttonLabel.lock: Je participe
   event.tutorial.individual.2.description: Find out your personal carbon footprint, broken down by category.
   event.tutorial.individual.2.description.lock: Découvrez votre empreinte carbone personnelle détaillée par catégorie.
-  event.testimonies.3.author.job: Head of Public Relations at Pass Culture
-  event.testimonies.3.author.job.lock: Responsable des relations avec les publics du Pass Culture
   event.dynamicCounter.promise: Results in 10 minutes — 100% free
   event.dynamicCounter.promise.lock: Résultats en 10 minutes — 100% gratuit
   event.dynamicCounter.primaryCta: Mobilise my organisation
@@ -2155,8 +2087,6 @@ entries:
   event.testimonies.1.text.lock: "Nous avons proposé à notre communauté de voyageurs d'utiliser Nos Gestes Climat pour calculer leur empreinte écologique. C'était une manière simple et accessible de sensibiliser sans culpabiliser. Résultat : près de 4 700 participations. Un vrai levier pour initier le dialogue sur un tourisme plus responsable."
   event.podium.title: Live rankings of organisations
   event.podium.title.lock: Classement des organisations en direct
-  event.funFacts.title: <2>0</2> have already taken part.
-  event.funFacts.title.lock: Vous êtes déjà <1>0</1><2></2>à avoir participé.
   event.meta.title: Community carbon footprint event – Nos Gestes Climat
   event.meta.title.lock: Événement collectif d'empreinte carbone - Nos Gestes Climat
   event.meta.description: 'Take up the challenge with your organisation: measure your carbon footprint and take action to reduce it collectively.'
@@ -2173,13 +2103,6 @@ entries:
   event.podium.list.item.score.big.lock: calculs d'empreinte
   event.podium.list.item.score.small: tests
   event.podium.list.item.score.small.lock: tests
-  event.podium.categories.all: All
-  event.podium.categories.companies: Businesses
-  event.podium.categories.associations: Charities
-  event.podium.categories.education: Education
-  event.podium.categories.publicServices: Public services
-  event.testimonies.5.text: I was surprised to learn that our target is to reduce our carbon footprint to 2 tonnes of CO₂ per person per year by 2050. I didn’t realise the gap between that and our current way of life was so wide.
-  event.testimonies.5.text.lock: J’ai été surprise d’apprendre que notre objectif est de réduire notre empreinte carbone à 2 tonnes de CO₂ par personne et par an d’ici 2050. Je ne pensais pas que l’écart avec notre mode de vie actuel était aussi important.
   event.testimonies.4.text: I was surprised to find that the bulk of my carbon footprint doesn’t come from my direct actions, such as my journeys, but rather from more invisible aspects of daily life, such as public services or the production of the goods I buy. It made me realise that carbon impact is often indirect.
   event.testimonies.4.text.lock: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.countdown.label: Starting in
@@ -2239,16 +2162,23 @@ entries:
   common.seconds.lock: seconds
   common.hours: hours
   common.hours.lock: heures
-  event.podium.categories.publicServices.lock: Services publics
-  event.podium.categories.education.lock: Éducation
-  event.podium.categories.associations.lock: Associations
-  event.podium.categories.all.lock: Toutes
-  event.podium.categories.companies.lock: Entreprises
   Toutes: All
   event.testimonies.4.author.job: Collective test carried out by the Pass Culture
   event.testimonies.4.author.job.lock: Test collectif réalisé par l’organisation Pass Culture
   simulator.dontKnow.button.reassuranceYouth: Don't worry, we use average data to ensure the results remain reliable.
   simulator.dontKnow.button.reassuranceYouth.lock: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  reuseSimulationForPoll.testDate.at: to
+  reuseSimulationForPoll.testDate.at.lock: à
+  reuseSimulationForPoll.attachedToPoll: 'Related to the group test:'
+  reuseSimulationForPoll.attachedToPoll.lock: 'Rattachée au test collectif :'
+  reuseSimulationForPoll.description: You can use your existing data, or start the test again.
+  reuseSimulationForPoll.description.lock: Vous pouvez utiliser vos données existantes, ou recommencer le test.
+  reuseSimulationForPoll.title: Have you already carried out a carbon footprint calculation on our website?
+  reuseSimulationForPoll.title.lock: Vous avez déjà réalisé un calcul d’empreinte sur notre site
+  reuseSimulationForPoll.yourFootprint: 'Your fingerprint:'
+  reuseSimulationForPoll.yourFootprint.lock: 'Votre empreinte :'
+  reuseSimulationForPoll.testDate.testDone: Test carried out on
+  reuseSimulationForPoll.testDate.testDone.lock: Test réalisé le
   category.divers: Consumption
   category.divers.lock: Consommation
   poll.results.communicationKit.button: Access the kit
