@@ -90,7 +90,7 @@ function getFormattedPercentages({
 
   const percentFormatter = new Intl.NumberFormat(locale, {
     style: 'percent',
-    maximumFractionDigits: 1,
+    maximumFractionDigits: 0,
   })
 
   return roundedPercentagesAtOneDecimal.map((v) =>
@@ -124,34 +124,37 @@ export function getCategoriesDisplayData({
     locale,
   })
 
-  return categories.map((dottedName, i) => {
-    const value = categoriesData[dottedName]
-    const meta = CATEGORIES_MAPPER[dottedName as keyof typeof CATEGORIES_MAPPER]
+  return categories
+    .map((dottedName, i) => {
+      const value = categoriesData[dottedName]
+      const meta =
+        CATEGORIES_MAPPER[dottedName as keyof typeof CATEGORIES_MAPPER]
 
-    return {
-      dottedName,
-      title: getRuleTitle({ ...rules[dottedName], dottedName }) ?? '',
-      icon: meta.icon,
-      bgBarClassName: meta.bgBarClassName,
-      bgLightClassName: meta.bgLightClassName,
-      bgIconClassName: meta.bgIconClassName,
-      percentage: (value / maxValue) * 100,
-      displayPercentage: displayPercentages[i],
-      subcategories: getSubcategoriesDisplayData({
-        categoryDottedName: dottedName,
-        categoryValue: value,
-        subcategoriesData,
-        rules,
-        metric,
-        locale,
-        t,
-      }),
-      ...formatFootprint(value, {
-        metric,
-        t,
-      }),
-    }
-  })
+      return {
+        dottedName,
+        title: getRuleTitle({ ...rules[dottedName], dottedName }),
+        icon: meta.icon,
+        bgBarClassName: meta.bgBarClassName,
+        bgLightClassName: meta.bgLightClassName,
+        bgIconClassName: meta.bgIconClassName,
+        percentage: (value / maxValue) * 100,
+        displayPercentage: displayPercentages[i],
+        subcategories: getSubcategoriesDisplayData({
+          categoryDottedName: dottedName,
+          categoryValue: value,
+          subcategoriesData,
+          rules,
+          metric,
+          locale,
+          t,
+        }),
+        ...formatFootprint(value, {
+          metric,
+          t,
+        }),
+      }
+    })
+    .sort((cat1, cat2) => cat2.percentage - cat1.percentage)
 }
 
 function getSubcategoriesDisplayData({
