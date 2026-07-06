@@ -6,7 +6,7 @@ import { fetchServer } from '../fetchServer'
 export async function getOrganisationPolls(
   idOrSlug: string
 ): Promise<OrganisationPoll[]> {
-  return fetchServer<OrganisationPoll[]>(
+  return await fetchServer<OrganisationPoll[]>(
     `${ORGANISATION_URL}/${idOrSlug}/polls`
   )
 }

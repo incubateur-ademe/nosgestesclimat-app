@@ -9,7 +9,7 @@ import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUserSession } from '@/services/auth/get-user-session'
 import Image from 'next/image'
 import HideInIframe from '../layout/HideInIframe'
 import SaveResultsForm from './SaveResultsForm'
@@ -23,7 +23,7 @@ export default async function SaveResultsBlock({
   locale,
   hasPreviousSimulation,
 }: Props) {
-  const user = await getUser()
+  const user = await getUserSession()
 
   const { t } = await getServerTranslation({ locale })
 
@@ -36,7 +36,7 @@ export default async function SaveResultsBlock({
       </Title>
 
       <section
-        className="bg-primary-700 mb-12 rounded-2xl p-8"
+        className="bg-primary-700 mb-8 rounded-2xl p-5 md:mb-12 md:p-8"
         aria-labelledby="save-results-block-title">
         <div className="flex flex-col flex-wrap items-stretch gap-8 md:flex-row md:items-center lg:flex-nowrap">
           <div className="max-w-full flex-1">
@@ -45,8 +45,8 @@ export default async function SaveResultsBlock({
               size="md"
               hasSeparator={false}
               id="save-results-block-title"
-              className="font-bold! text-white">
-              {user.isAuth ? (
+              className="mb-4 font-bold! text-white">
+              {user?.isAuth ? (
                 <Trans
                   i18nKey="results.saveResults.title.authenticated"
                   locale={locale}>
@@ -97,7 +97,7 @@ export default async function SaveResultsBlock({
               </li>
             </ul>
 
-            {user.isAuth ? (
+            {user?.isAuth ? (
               <ButtonLink
                 color="borderless"
                 href={`${MON_ESPACE_PATH}${hasPreviousSimulation ? '#chart' : ''}`}>
@@ -117,12 +117,12 @@ export default async function SaveResultsBlock({
               </ButtonLink>
             ) : (
               <QueryClientProviderWrapper>
-                <SaveResultsForm userId={user.id} />
+                <SaveResultsForm userSession={user} />
               </QueryClientProviderWrapper>
             )}
           </div>
           <div className="max-w-full">
-            {user.isAuth ? (
+            {user?.isAuth ? (
               <div className="flex w-full justify-center">
                 <Image
                   src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/visuel_login_cbf2f03684.svg"

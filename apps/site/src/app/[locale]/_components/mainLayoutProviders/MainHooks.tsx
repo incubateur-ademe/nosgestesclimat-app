@@ -7,10 +7,8 @@
 
 import { useInitSimulationParam } from '@/hooks/useInitSimulationParam'
 import { useRedirectIfInAppBrowser } from '@/hooks/useRedirectIfInAppBrowser'
-import { useUserInfosParams } from '@/hooks/useUserInfosParams'
 
 export default function MainHooks() {
-  useUserInfosParams()
   useInitSimulationParam()
   useRedirectIfInAppBrowser()
 

@@ -4,6 +4,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import { safeEvaluateHelper } from '@/publicodes-state/helpers/safeEvaluateHelper'
 import { safeGetRuleHelper } from '@/publicodes-state/helpers/safeGetRuleHelper'
 import type { Metric, SafeEvaluate, Situation } from '@/publicodes-state/types'
+import { isServerSide } from '@/utils/nextjs/isServerSide'
 import type {
   DottedName,
   NGCRuleNode,
@@ -26,6 +27,9 @@ export function useEngine(
   initialSituation: Situation
 ) {
   const engine = useMemo(() => {
+    if (isServerSide()) {
+      return undefined
+    }
     const nbRules = Object.keys(rules).length
     console.time(`⚙️ Parsing ${nbRules}`)
     const engine = new Engine<DottedName>(rules, {
@@ -69,12 +73,15 @@ export function useEngine(
   }, [rules])
 
   const pristineEngine = useMemo(
-    () => engine.shallowCopy().setSituation({}),
+    () => (engine ? engine.shallowCopy().setSituation({}) : undefined),
     [engine]
   )
 
   const safeEvaluate = useCallback(
     (expr: PublicodesExpression, metric: Metric = carboneMetric) => {
+      if (!engine) {
+        return null
+      }
       // Somehow, for the case for `textile . empreinte`, the evaluation was not working. Defining the context only for "non default" metric ("eau"). Still, it seems that there is a bug... Maybe due to some delay somewhere.
       const exprWithContext =
         metric === carboneMetric
@@ -95,7 +102,7 @@ export function useEngine(
     (ruleName: DottedName) => NGCRuleNode | undefined
   >(
     () => (ruleName: DottedName) =>
-      safeGetRuleHelper(ruleName, engine) ?? undefined,
+      engine ? (safeGetRuleHelper(ruleName, engine) ?? undefined) : undefined,
     [engine]
   )
 

@@ -1,14 +1,17 @@
 'use client'
 
 import type { Simulation } from '@/helpers/server/model/simulations'
+import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
 import type { Migration } from '@publicodes/tools/migration'
 import type { Dispatch, SetStateAction } from 'react'
 import { createContext } from 'react'
 import type { Tutorials, User } from '../../types'
 
 interface UserContextType {
-  user: User
-  setUser: Dispatch<SetStateAction<User>>
+  user: User | null
+  setUser: Dispatch<SetStateAction<User | null>>
+  pendingVerification: PendingVerification | null
+  setPendingVerification: Dispatch<SetStateAction<PendingVerification | null>>
   tutorials: Tutorials
   setTutorials: Dispatch<SetStateAction<Tutorials>>
   simulations: Simulation[]
@@ -19,12 +22,10 @@ interface UserContextType {
 }
 
 export default createContext<UserContextType>({
-  user: {
-    name: '',
-    email: '',
-    userId: '',
-  },
+  user: null,
   setUser: () => {},
+  pendingVerification: null,
+  setPendingVerification: () => {},
   tutorials: {},
   setTutorials: () => {},
   simulations: [],

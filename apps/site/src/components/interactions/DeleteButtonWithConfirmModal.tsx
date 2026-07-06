@@ -38,6 +38,7 @@ export function DeleteButtonWithConfirmModal({
       <Button
         onClick={() => setIsModalOpen(true)}
         color="link"
+        data-testid="delete-simulation-button"
         className="font-normal text-red-700 hover:text-red-800">
         <Trans i18nKey="mySpace.resultList.item.delete.mainButton.label">
           Supprimer
@@ -53,7 +54,8 @@ export function DeleteButtonWithConfirmModal({
             disabled={isPending}
             onClick={handleDeleteAction}
             key="submit"
-            color="red">
+            color="red"
+            data-testid="confirm-delete-simulation-button">
             {isPending && <Loader color="light" className="mr-2" />}
             <Trans i18nKey="mySpace.resultList.item.delete.modal.confirm">
               Confirmer la suppression

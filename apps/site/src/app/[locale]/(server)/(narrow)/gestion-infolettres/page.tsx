@@ -3,10 +3,10 @@ import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getNewsletters } from '@/helpers/server/model/newsletter'
-import { isUserAuthenticated } from '@/helpers/server/model/user'
 import type { Locale } from '@/i18nConfig'
 import { redirect } from 'next/navigation'
 
+import { getUserSession } from '@/services/auth/get-user-session'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default async function NewsletterManagementPage({
 }: {
   params: Promise<{ locale: Locale }>
 }) {
-  if (await isUserAuthenticated()) {
+  if ((await getUserSession())?.isAuth) {
     redirect(`${MON_ESPACE_SETTINGS_PATH}#infolettres`)
   }
   const { locale } = await params

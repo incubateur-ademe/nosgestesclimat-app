@@ -1,12 +1,12 @@
 'use client'
 
-import { useContext } from 'react'
-
+import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
+import { useCallback, useContext } from 'react'
 import userContext from '../../providers/userProvider/context'
+import type { User } from '../../types'
 import useActions from './hooks/useActions'
 import useSimulations from './hooks/useSimulations'
 import useTutorials from './hooks/useTutorials'
-import useUserDetails from './hooks/useUserDetails'
 
 /**
  * A hook to get and set every info about a user
@@ -15,6 +15,8 @@ export default function useUser() {
   const {
     user,
     setUser,
+    pendingVerification,
+    setPendingVerification,
     tutorials,
     setTutorials,
     simulations,
@@ -24,15 +26,17 @@ export default function useUser() {
     migrationInstructions,
   } = useContext(userContext)
 
-  const {
-    updateName,
-    updateEmail,
-    updateRegion,
-    updateInitialRegion,
-    updatePendingVerification,
-    updateUserOrganisation,
-    updateUserId,
-  } = useUserDetails({ user, setUser })
+  const updateName = useCallback(
+    (name: string) =>
+      setUser((prevUser: User | null) => prevUser && { ...prevUser, name }),
+    [setUser]
+  )
+
+  const updatePendingVerification = useCallback(
+    (value: PendingVerification | undefined) =>
+      setPendingVerification(value ?? null),
+    [setPendingVerification]
+  )
 
   const {
     initSimulation,
@@ -65,29 +69,13 @@ export default function useUser() {
      */
     setUser,
     /**
-     * A setter for updating the user ID
-     */
-    updateUserId,
-    /**
      * A setter for updating the user name (not used for now)
      */
     updateName,
     /**
-     * A setter for updating the user email
+     * The pending verification state (email + expiration date), set when a verification code is sent
      */
-    updateEmail,
-    /**
-     * A setter for updating the user's organisation information
-     */
-    updateUserOrganisation,
-    /**
-     * A setter for updating the user current region
-     */
-    updateRegion,
-    /**
-     * A setter for updating the user initial region (via the geolocation)
-     */
-    updateInitialRegion,
+    pendingVerification,
     /**
      * A setter for updating the user pending verification information
      */

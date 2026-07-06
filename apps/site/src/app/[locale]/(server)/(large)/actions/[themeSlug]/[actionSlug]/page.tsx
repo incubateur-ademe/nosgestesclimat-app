@@ -13,8 +13,8 @@ import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { getUser } from '@/helpers/server/dal/user'
 import type { Locale } from '@/i18nConfig'
+import { getUserSession } from '@/services/auth/get-user-session'
 import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
@@ -62,12 +62,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function ActionPage({ params }: Props) {
   const { locale, themeSlug, actionSlug } = await params
-  const user = await getUser()
-  const flag = await getFeatureFlag('actions-v2', user.id)
+  const user = await getUserSession()
+  const flag = user?.id ? await getFeatureFlag('actions-v2', user.id) : true
 
   if (!flag) notFound()
 
-  const action = await getPersonalizedActionDetails(actionSlug, user.id)
+  const action = await getPersonalizedActionDetails(actionSlug, user?.id)
 
   if (action?.theme.slug !== themeSlug) notFound()
 
@@ -78,7 +78,7 @@ export default async function ActionPage({ params }: Props) {
       <BetaBanner locale={locale} />
       <ActionTracker eventName="consulted" action={action} />
       <GoBackLink
-        href={user.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
+        href={user?.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
         className="mb-10"
       />
       <header

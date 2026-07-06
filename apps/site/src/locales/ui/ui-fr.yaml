@@ -811,7 +811,7 @@ entries:
   homePage.interactiveIllustration.waterScore: ' et empreinte eau notée {{waterScore}} sur 5'
   Lancer le défilement: Lancer le défilement
   common.category.alimentation: Alimentation
-  common.category.divers: Divers
+  common.category.divers: Consommation
   common.category.logement: Logement
   common.category.services: Services
   common.category.transport: Transport
@@ -1334,8 +1334,8 @@ entries:
   simulator.intercalaire.transport.meta.title: Section transport terminée - Nos Gestes Climat
   simulator.intercalaire.transport.meta.description: Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.
   simulator.intercalaire.transport.iframe.title: Comparateur d'impact CO₂ des transports
-  simulator.intercalaire.divers.meta.title: Section divers terminée - Nos Gestes Climat
-  simulator.intercalaire.divers.meta.description: Bravo, tu as terminé la section divers. Découvre l’impact du numérique et de la consommation.
+  simulator.intercalaire.divers.meta.title: Section consommation terminée - Nos Gestes Climat
+  simulator.intercalaire.divers.meta.description: Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.
   simulator.intercalaire.divers.iframe.title: Comparateur d'impact CO₂ du numérique
   simulator.transition.alimentation.funFact.line1: Tous les repas
   simulator.transition.alimentation.funFact.line2: n'ont pas
@@ -1520,6 +1520,12 @@ entries:
   common.hours: heures
   common.minutes: Minutes
   common.seconds: seconds
-  event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
+  event.testimonies.4.author.job: Test collectif réalisé par l'organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
+  category.divers: Consommation
+  poll.results.communicationKit.button: Accéder au kit
+  poll.results.communicationKit.text1: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  poll.results.communicationKit.text2: Des e-mails type, post Linkedin, visuels…
+  poll.results.communicationKit.title: Besoin d'inspiration pour diffuser votre test collectif ?
+  poll.shareSection.sendByEmail: Envoyer par e-mail

@@ -7,8 +7,8 @@ import Trans from '@/components/translation/trans/TransServer'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUser } from '@/helpers/server/dal/user'
 import i18nConfig, { type Locale } from '@/i18nConfig'
+import { getUserSession } from '@/services/auth/get-user-session'
 import Partners from '../../components/landing-pages/Partners'
 import CollectivelyCommit from './_components/CollectivelyCommit'
 import DecryptChallenges from './_components/DecryptChallenges'
@@ -41,10 +41,10 @@ export function generateStaticParams() {
 
 export default async function Homepage({ params }: PageProps<'/[locale]'>) {
   const locale = (await params).locale as Locale
-  const { id: serverUserId } = await getUser()
+  const userSession = await getUserSession()
 
   return (
-    <ClientLayout locale={locale} serverUserId={serverUserId}>
+    <ClientLayout locale={locale} userSession={userSession}>
       <JSONLD
         jsonLd={[
           {
