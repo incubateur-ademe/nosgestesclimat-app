@@ -81,8 +81,8 @@ importers:
         specifier: ^3.1023.0
         version: 3.1028.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.13.0-rc.2
-        version: 4.13.0-rc.2(publicodes@1.10.1)
+        specifier: 4.13.1
+        version: 4.13.1(publicodes@1.10.1)
       '@nosgestesclimat/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -250,8 +250,8 @@ importers:
   apps/site:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.13.0-rc.2
-        version: 4.13.0-rc.2(publicodes@1.10.1)
+        specifier: 4.13.1
+        version: 4.13.1(publicodes@1.10.1)
       '@next/mdx':
         specifier: ^16.2.2
         version: 16.2.2(@mdx-js/loader@3.1.1(webpack@5.105.4(esbuild@0.27.7)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.4))
@@ -384,6 +384,9 @@ importers:
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
+      valibot:
+        specifier: ^1.4.0
+        version: 1.4.0(typescript@5.9.3)
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.11.1
@@ -518,8 +521,8 @@ importers:
   packages/core:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.13.0-rc.2
-        version: 4.13.0-rc.2(publicodes@1.10.1)
+        specifier: 4.13.1
+        version: 4.13.1(publicodes@1.10.1)
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -532,6 +535,12 @@ importers:
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
+      jose:
+        specifier: ^5.9.6
+        version: 5.10.0
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.3
       posthog-node:
         specifier: ^5.30.6
         version: 5.30.6
@@ -557,6 +566,9 @@ importers:
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.10
       fishery:
         specifier: ^2.4.0
         version: 2.4.0
@@ -2053,8 +2065,8 @@ packages:
   '@incubateur-ademe/nosgestesclimat-scripts@0.8.0':
     resolution: {integrity: sha512-Jc3d3SAWDDBQNLG1d7+ao+5QPMpiEZg2tfY0EDmray0UBpP9lj0LvWG0uwWoA0waeYFroYNuK58yBrbqGRQMLg==}
 
-  '@incubateur-ademe/nosgestesclimat@4.13.0-rc.2':
-    resolution: {integrity: sha512-tErw584OM/FNfiTnEgFxJlEeCdG8EZYB/zc47E1iCtjeeMX2H2Ov90kXQU119ikCbVTda9J8sstV0Kg4OmBD+Q==}
+  '@incubateur-ademe/nosgestesclimat@4.13.1':
+    resolution: {integrity: sha512-GQE4936LERJ8ZBa+0Tf4tPlmSx64k/kj4ZFV6t9KxmcA8Tkv27v6SrDzOe5/hgDqlOcYzZmoRz1oGorB91wVRA==}
     engines: {node: '>=24'}
     peerDependencies:
       publicodes: ^1.8.5
@@ -6935,6 +6947,9 @@ packages:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
 
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
 
@@ -11679,7 +11694,7 @@ snapshots:
       - debug
       - encoding
 
-  '@incubateur-ademe/nosgestesclimat@4.13.0-rc.2(publicodes@1.10.1)':
+  '@incubateur-ademe/nosgestesclimat@4.13.1(publicodes@1.10.1)':
     dependencies:
       publicodes: 1.10.1
 
@@ -17497,6 +17512,8 @@ snapshots:
       supports-color: 8.1.1
 
   jiti@2.6.1: {}
+
+  jose@5.10.0: {}
 
   js-tokens@10.0.0: {}
 

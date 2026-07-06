@@ -38,7 +38,7 @@ export default function EvolutionGraph({
     transport: t('common.category.transport', 'Transport'),
     alimentation: t('common.category.alimentation', 'Alimentation'),
     logement: t('common.category.logement', 'Logement'),
-    divers: t('common.category.divers', 'Divers'),
+    divers: t('common.category.divers', 'Consommation'),
   }
 
   // Generate mocked data when there's only one simulation

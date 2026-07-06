@@ -1,21 +1,15 @@
 import { ClientLayout } from '@/components/layout/ClientLayout'
 import LocalisationBanner from '@/components/translation/LocalisationBanner'
-import {
-  AGE_PAGE_PATH,
-  END_PAGE_PATH,
-  START_SIMULATION_PATH,
-} from '@/constants/urls/paths'
+import { END_PAGE_PATH, START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
-import { getUser } from '@/helpers/server/dal/user'
+import { getUserSession } from '@/services/auth/get-user-session'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { NotFoundError } from '@/helpers/server/error'
 import { parseModelString } from '@/helpers/server/model/models'
-import { getCurrentSimulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { EngineProvider, FormProvider } from '@/publicodes-state'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
-import { getUserAgeRange } from '@/services/users/get-user-age-range'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
@@ -25,9 +19,12 @@ export default async function SimulationLayout({
 }: LayoutProps<'/[locale]/simulateur'>) {
   const { locale } = await params
 
-  const user = await getUser()
+  const user = await getUserSession()
+  if (!user) {
+    redirect(START_SIMULATION_PATH)
+  }
 
-  const currentSimulation = await getCurrentSimulation({ user })
+  const currentSimulation = await getCurrentSimulation()
   const serverSimulations = currentSimulation ? [currentSimulation] : []
   if (!currentSimulation) {
     captureException(new NotFoundError(), { level: 'warning' })
@@ -37,14 +34,6 @@ export default async function SimulationLayout({
     redirect(END_PAGE_PATH)
   }
 
-  if (
-    currentSimulation.progression === 0 &&
-    (await getFeatureFlag('ab-test-question-tranche-dage', user.id)) ===
-      'test' &&
-    !(await getUserAgeRange())
-  ) {
-    redirect(AGE_PAGE_PATH)
-  }
   const rules = await getCachedRules({
     modelStr: currentSimulation.model,
     locale: locale as Locale,
@@ -55,7 +44,7 @@ export default async function SimulationLayout({
       serverSimulations={serverSimulations}
       skipLinksDisplayed={new Set(['main', 'footer'])}
       locale={locale}
-      serverUserId={user.id}>
+      userSession={user}>
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
       <EngineProvider rules={rules} root="bilan">
         {model && <LocalisationBanner model={model} />}

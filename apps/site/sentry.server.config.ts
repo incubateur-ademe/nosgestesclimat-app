@@ -8,6 +8,6 @@ import { APP_ENV } from './config/app-env'
 Sentry.init({
   dsn: 'https://75dcf9dfe74c4439977a517be2805122@sentry.incubateur.net/118',
   environment: APP_ENV,
-  sampleRate: APP_ENV === 'production' ? 0.1 : 1,
+  sampleRate: 1,
   tracesSampleRate: 0.005,
 })

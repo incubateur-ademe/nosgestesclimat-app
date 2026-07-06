@@ -6,10 +6,15 @@ import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 
 import { UserProvider } from '@/publicodes-state'
+import type { UserSession } from '@/services/auth/get-user-session'
 
-export default function SaveResultsForm({ userId }: { userId: string }) {
+export default function SaveResultsForm({
+  userSession,
+}: {
+  userSession: UserSession
+}) {
   return (
-    <UserProvider serverUserId={userId}>
+    <UserProvider userSession={userSession}>
       <div className="dark">
         <AuthenticateUserForm
           buttonColor="borderless"

@@ -1,40 +1,21 @@
-'use client'
-
-import GroupLoader from '@/components/groups/GroupLoader'
-import GroupNotFound from '@/components/groups/GroupNotFound'
 import Trans from '@/components/translation/trans/TransClient'
 import Title from '@/design-system/layout/Title'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import { useFetchGroup } from '@/hooks/groups/useFetchGroup'
-import { useGroupIdInQueryParams } from '@/hooks/groups/useGroupIdInQueryParams'
-import { useGroupPagesGuard } from '@/hooks/navigation/useGroupPagesGuard'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
+import type { Group } from '@/types/groups'
 import InvitationForm from './InvitationForm'
 import LaconicRanking from './LaconicRanking'
 
-export default function InvitationPage({
+export default async function InvitationPage({
   currentSimulation,
+  group,
+  locale,
 }: {
   currentSimulation: Simulation
+  group: Group
+  locale: string
 }) {
-  // Guarding the route and redirecting if necessary
-  const { isGuardRedirecting } = useGroupPagesGuard()
-
-  const { t } = useClientTranslation()
-
-  const { groupIdInQueryParams } = useGroupIdInQueryParams()
-
-  const { data: group, isLoading } = useFetchGroup(groupIdInQueryParams)
-
-  // If we are still fetching the group (or we are redirecting the user), we display a loader
-  if (isGuardRedirecting || isLoading) {
-    return <GroupLoader />
-  }
-
-  // If the group doesn't exist, we display a 404 page
-  if (!group) {
-    return <GroupNotFound />
-  }
+  const { t } = await getServerTranslation({ locale })
 
   return (
     <div className="p-4 md:p-8">

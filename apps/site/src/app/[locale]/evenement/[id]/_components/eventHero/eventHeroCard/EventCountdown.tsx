@@ -2,6 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
@@ -67,6 +68,8 @@ export default function EventCountdown({
     calculateTimeLeft(targetDate)
   )
 
+  const { t } = useClientTranslation()
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft(targetDate))
@@ -93,19 +96,31 @@ export default function EventCountdown({
       </span>
 
       <div className="mb-4 flex items-center justify-center gap-2 sm:mb-6 sm:gap-3 md:gap-4">
-        <AnimatedNumber value={timeLeft.days} label="Jours" />
+        <AnimatedNumber
+          value={timeLeft.days}
+          label={t('common.days', 'Jours')}
+        />
         <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
           :
         </span>
-        <AnimatedNumber value={timeLeft.hours} label="Heures" />
+        <AnimatedNumber
+          value={timeLeft.hours}
+          label={t('common.hours', 'heures')}
+        />
         <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
           :
         </span>
-        <AnimatedNumber value={timeLeft.minutes} label="Minutes" />
+        <AnimatedNumber
+          value={timeLeft.minutes}
+          label={t('common.minutes', 'Minutes')}
+        />
         <span className="mb-6 text-lg font-bold text-slate-300 max-sm:text-base sm:text-2xl md:text-3xl">
           :
         </span>
-        <AnimatedNumber value={timeLeft.seconds} label="Secondes" />
+        <AnimatedNumber
+          value={timeLeft.seconds}
+          label={t('common.seconds', 'seconds')}
+        />
       </div>
 
       <p className="mb-4 text-center text-xs leading-snug text-slate-600 sm:text-sm">

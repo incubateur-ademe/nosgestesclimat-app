@@ -11,7 +11,7 @@ import {
   DEFAULT_REGION,
   type Model,
   supportedRegions,
-  type UserRegion,
+  type Region,
 } from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
@@ -29,7 +29,7 @@ export default function LocalisationBanner({ model }: { model: Model }) {
     return null
   }
 
-  const region = model.region as UserRegion
+  const region = model.region as Region
 
   if (iframeRegion) return null
   const regionParams = supportedRegions[region]
@@ -44,7 +44,7 @@ export default function LocalisationBanner({ model }: { model: Model }) {
     <Card
       tabIndex={-1}
       id={LOCALISATION_BANNER_ID}
-      className="bg-primary-50 fixed right-4 bottom-12 left-4 z-50 mx-auto mb-8 flex-row sm:right-8 sm:left-auto md:bottom-0">
+      className="bg-primary-50 fixed right-4 bottom-12 left-4 z-100 mx-auto mb-8 flex-row sm:right-8 sm:left-auto md:bottom-0">
       <div className="flex w-full gap-4">
         <div className="w-full flex-1">
           <>

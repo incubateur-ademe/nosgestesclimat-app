@@ -113,7 +113,7 @@ export const deleteManyActions = async (ids: string[]): Promise<number> => {
 
 export const findVisiblePersonalizedActionBySlug = async (
   slug: string,
-  userId: string
+  userId: string | undefined
 ): Promise<PersonalizedAction | null> => {
   const [action, simulation] = await Promise.all([
     findVisibleActionBySlug(slug),
@@ -136,7 +136,7 @@ export const findVisiblePersonalizedActionBySlug = async (
 }
 
 export const findAllVisiblePersonalizedActions = async (
-  userId: string
+  userId: string | undefined
 ): Promise<PersonalizedAction[]> => {
   const [actions, simulation] = await Promise.all([
     findVisibleActions(),
@@ -162,7 +162,10 @@ export const findAllVisiblePersonalizedActions = async (
 }
 
 // TODO: move to a separate repository file
-const findLastCompletedSimulationByUserId = async (userId: string) => {
+const findLastCompletedSimulationByUserId = async (
+  userId: string | undefined
+) => {
+  if (!userId) return null
   return prisma.simulation.findFirst({
     select: { id: true },
     where: {

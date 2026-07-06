@@ -1,7 +1,7 @@
-import { ORGANISATION_URL } from '@/constants/urls/main'
-import type { OrganisationPoll } from '@/types/organisations'
+'use client'
+
+import { getOrganisationPolls } from '@/services/organisations/get-organisation-polls'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { useParams } from 'next/navigation'
 
 export function useFetchPolls({ enabled }: { enabled: boolean }) {
@@ -9,12 +9,7 @@ export function useFetchPolls({ enabled }: { enabled: boolean }) {
 
   return useQuery({
     queryKey: ['organisations', organisationIdOrSlug, 'polls'],
-    queryFn: () =>
-      axios
-        .get<
-          OrganisationPoll[]
-        >(`${ORGANISATION_URL}/${organisationIdOrSlug}/polls`, { withCredentials: true })
-        .then((res) => res.data),
+    queryFn: () => getOrganisationPolls(organisationIdOrSlug as string),
     enabled,
   })
 }

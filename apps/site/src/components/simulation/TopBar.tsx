@@ -1,11 +1,11 @@
 'use client'
 
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
-import { useIframe } from '@/hooks/useIframe'
 import { useFormState } from '@/publicodes-state'
+import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
+import Logo from '../misc/Logo'
 import TotalFootprintNumber from '../misc/TotalFootprintNumber'
-import ButtonBack from './topBar/ButtonBack'
 import Category from './topBar/Category'
 import Progress from './topBar/Progress'
 import TotalButtons from './topBar/TotalButtons'
@@ -21,9 +21,8 @@ export default function TopBar({
   showTotal?: boolean
   className?: string
 }) {
-  const { isIframe, isIframeOnlySimulation } = useIframe()
-
   const { currentCategory } = useFormState()
+
   return (
     <header
       className={twMerge(
@@ -39,20 +38,28 @@ export default function TopBar({
         {simulationMode && <Progress />}
 
         <div className="mb-0 flex w-full max-w-5xl justify-between overflow-visible pr-4 pl-1 lg:mx-auto lg:px-4">
-          <div className="relative flex items-center gap-1 lg:gap-4">
-            {simulationMode && !isIframe && !isIframeOnlySimulation && (
-              <ButtonBack />
+          <div className="flex items-center gap-1 md:gap-4">
+            {!showTotal && (
+              <>
+                <Link href="/" className="mr-2 md:mr-0">
+                  <Logo size="sm" />
+                </Link>
+                <span aria-hidden className="my-auto h-8 w-px bg-slate-300" />
+              </>
             )}
-            {showTotal ? (
-              <TotalFootprintNumber
-                size="lg"
-                className="flex-row items-baseline bg-white md:gap-1"
-              />
-            ) : currentCategory ? (
-              <Category category={currentCategory} />
-            ) : (
-              <BlockSkeleton className="h-12 w-40 pt-4" />
-            )}
+
+            <div className="flex max-h-12">
+              {showTotal ? (
+                <TotalFootprintNumber
+                  size="lg"
+                  className="flex-row items-baseline bg-white md:gap-1"
+                />
+              ) : currentCategory ? (
+                <Category category={currentCategory} />
+              ) : (
+                <BlockSkeleton />
+              )}
+            </div>
           </div>
           {toggleQuestionList ? (
             <TotalButtons toggleQuestionList={toggleQuestionList} />

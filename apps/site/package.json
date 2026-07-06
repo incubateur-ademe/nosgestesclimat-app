@@ -43,7 +43,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@incubateur-ademe/nosgestesclimat": "4.13.0-rc.2",
+    "@incubateur-ademe/nosgestesclimat": "4.13.1",
     "@next/mdx": "^16.2.2",
     "@nosgestesclimat/core": "workspace:*",
     "@publicodes/react-ui": "^1.10.0",
@@ -87,7 +87,8 @@
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
     "typescript": "5.9.3",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "valibot": "^1.4.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",

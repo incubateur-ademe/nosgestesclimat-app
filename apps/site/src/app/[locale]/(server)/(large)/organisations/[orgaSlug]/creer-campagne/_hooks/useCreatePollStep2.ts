@@ -1,21 +1,12 @@
-import type { SimulationMode } from '@/helpers/server/model/simulations'
-import { useCreatePoll } from '@/hooks/organisations/polls/useCreatePoll'
-import { captureException } from '@sentry/nextjs'
+'use client'
+
+import { createPoll } from '@/services/organisations/create-poll'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import {
-  buildCreatePollPayload,
-  clearDraft,
-  readDraft,
-} from './createPollDraft'
+import { useEffect, useState, useTransition } from 'react'
+import { clearDraft, readDraft } from './createPollDraft'
 
 interface UseCreatePollStep2Props {
   organisationSlug: string
-  revalidatePath: (slug: string) => Promise<void>
-}
-
-interface Step2Inputs {
-  mode: SimulationMode
 }
 
 /**
@@ -52,54 +43,52 @@ export type PollMode = (typeof pollModes)[number]
  */
 export function useCreatePollStep2({
   organisationSlug,
-  revalidatePath,
 }: UseCreatePollStep2Props) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [isError, setIsError] = useState(false)
+  const [draft] = useState(() => readDraft())
 
-  const { handleSubmit, register } = useForm<Step2Inputs>({
-    defaultValues: {
-      mode: 'standard',
-    },
-  })
-
-  const {
-    mutateAsync: createPoll,
-    isError,
-    isPending,
-  } = useCreatePoll(organisationSlug)
-
-  async function submitPoll({ mode }: Step2Inputs) {
-    try {
-      const draft = readDraft()
-
-      if (!draft) {
-        router.push(
-          `/organisations/${organisationSlug}/creer-campagne/informations`
-        )
-        return
-      }
-
-      const payload = buildCreatePollPayload(draft, mode)
-
-      const pollCreated = await createPoll(payload)
-
-      void revalidatePath(organisationSlug)
-
-      clearDraft()
-
+  useEffect(() => {
+    if (!draft) {
       router.push(
-        `/organisations/${organisationSlug}/campagnes/${pollCreated.slug}`
+        `/organisations/${organisationSlug}/creer-campagne/informations`
       )
-    } catch (error) {
-      captureException(error)
     }
+  }, [draft, organisationSlug, router])
+
+  function handleSubmit(formData: FormData) {
+    if (!draft) return
+
+    setIsError(false)
+    const mode = formData.get('mode') as string
+    if (!mode) {
+      setIsError(true)
+      return
+    }
+
+    startTransition(async () => {
+      try {
+        await createPoll({
+          organisationIdOrSlug: organisationSlug,
+          poll: {
+            ...draft,
+            mode: mode as 'standard' | 'scolaire',
+          },
+        })
+        clearDraft()
+      } catch (err) {
+        if (!(err instanceof Error) || !err.message.includes('NEXT_REDIRECT')) {
+          setIsError(true)
+        } else {
+          throw err
+        }
+      }
+    })
   }
 
-  const onSubmit = handleSubmit(submitPoll)
-
   return {
-    register,
-    onSubmit,
+    handleSubmit,
     isPending,
     isError,
     modes: pollModes,

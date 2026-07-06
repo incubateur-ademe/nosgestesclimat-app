@@ -1,8 +1,8 @@
-import { InternalServerError } from '@/helpers/server/error'
+import { InternalError } from '@/helpers/server/error'
 
 export function getClientCookie(name: string): string | undefined {
   if (typeof document === 'undefined')
-    throw new InternalServerError(
+    throw new InternalError(
       'getClientCookie must be called on the client (hook)'
     )
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
