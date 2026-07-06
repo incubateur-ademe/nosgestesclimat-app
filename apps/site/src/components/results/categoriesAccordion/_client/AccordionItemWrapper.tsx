@@ -32,7 +32,10 @@ export default function AccordionItemWrapper({
           category: categoryDottedName,
         })
 
-        const properties = enhancer(eventConfig.properties)
+        const properties = enhancer({
+          category: eventConfig.properties.category ?? '',
+          action: eventConfig.properties.action ?? '',
+        })
 
         trackPosthogEvent({
           eventName: eventConfig.eventName,
