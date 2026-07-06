@@ -125,8 +125,7 @@ export default function CampagnePage() {
               }
             />
           )}
-
-          <CommunicationKit />
+          {isAdmin && <CommunicationKit />}
 
           <PollStatistics
             simulationsCount={simulations?.finished ?? 0}
