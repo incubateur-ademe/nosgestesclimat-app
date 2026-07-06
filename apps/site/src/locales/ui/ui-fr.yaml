@@ -1182,7 +1182,7 @@ entries:
   results.actions.subtitle: Découvrez des gestes concrets pour y arriver
   results.actions.text: Nous avons préparé des <1>actions personnalisées</1> pour vous aider à aller plus loin
   results.actions.title: Votre plan d'action
-  results.where.title: D’où vient votre résultat ?
+  results.where.title: 'Répartition de votre empreinte :'
   carbonResults.tendency.decrease: <0>En baisse depuis</0><1>votre dernier résultat</1>
   carbonResults.tendency.increase: <0>En hausse depuis</0><1>votre dernier résultat</1>
   mon-espace.resultsDetail.breadcrumb.waterFootprint: Empreinte eau
