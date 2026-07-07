@@ -1,6 +1,5 @@
 import type { PendingVerification } from '@/components/authentication/authenticateUserForm/_hooks/usePendingVerification'
 
-// Phases — discriminated union, each carries only the data it needs
 export type AuthPhase =
   | { phase: 'idle' }
   | { phase: 'email_sending'; email: string }
@@ -22,7 +21,6 @@ export type AuthPhase =
   | { phase: 'authenticated'; email: string; userId: string }
   | { phase: 'redirecting'; email: string; userId: string }
 
-// Events
 export type AuthEvent =
   | { type: 'SUBMIT_EMAIL'; email: string }
   | { type: 'EMAIL_SENT'; pendingVerification: PendingVerification }
@@ -37,10 +35,8 @@ export type AuthEvent =
   | { type: 'FINALIZE' }
   | { type: 'RESET' }
 
-// Initial state
 export const initialAuthPhase: AuthPhase = { phase: 'idle' }
 
-// Reducer — pure function.
 export function authReducer(state: AuthPhase, event: AuthEvent): AuthPhase {
   // Global event that resets from any phase
   if (event.type === 'RESET') {
