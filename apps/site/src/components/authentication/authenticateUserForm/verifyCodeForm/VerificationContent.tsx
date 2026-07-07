@@ -9,6 +9,7 @@ interface Props {
   isSuccessValidate: boolean
   isPendingValidate: boolean
   handleValidateVerificationCode: (verificationCode: string) => Promise<void>
+  isInputDisabled: boolean
   onInputChange?: (code: string) => void
 }
 
@@ -18,6 +19,7 @@ export default function VerificationContent({
   isSuccessValidate,
   isPendingValidate,
   handleValidateVerificationCode,
+  isInputDisabled,
   onInputChange,
 }: Props) {
   return (
@@ -51,6 +53,7 @@ export default function VerificationContent({
           isSuccessValidate={isSuccessValidate}
           isPendingValidate={isPendingValidate}
           handleValidateVerificationCode={handleValidateVerificationCode}
+          isInputDisabled={isInputDisabled}
           onInputChange={onInputChange}
         />
       </form>

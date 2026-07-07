@@ -14,7 +14,7 @@ interface Props {
   isSuccessValidate: boolean
   isPendingValidate: boolean
   handleValidateVerificationCode: (verificationCode: string) => Promise<void>
-  /** Called on every keystroke */
+  isInputDisabled: boolean
   onInputChange?: (code: string) => void
 }
 
@@ -23,9 +23,10 @@ export default function VerificationCodeInput({
   isSuccessValidate,
   isPendingValidate,
   handleValidateVerificationCode,
+  isInputDisabled,
   onInputChange,
 }: Props) {
-  const isDisabled = isPendingValidate || isSuccessValidate
+  const isDisabled = isPendingValidate || isSuccessValidate || isInputDisabled
 
   return (
     <fieldset className="m-0 border-0 p-0">
@@ -71,17 +72,17 @@ export default function VerificationCodeInput({
         onChange={(code) => {
           onInputChange?.(code)
 
-          // Do not validate if the code is not 6 characters long
           if (code.length !== 6) {
             return
           }
+
           handleValidateVerificationCode(code).catch(() => {
             // Error handled by error state of useMutation
           })
         }}
       />
 
-      {inputError && (
+      {inputError && !isInputDisabled && (
         <div>
           <p
             id="verification-error"

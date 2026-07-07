@@ -18,6 +18,8 @@ enum ERROR_MESSAGES {
   INVALID_CODE = 'Forbidden ! Invalid verification code.',
 }
 
+const NUM_SECONDS = 30
+
 const getErrorMessage = ({ error, t }: { error: Error; t: TFunction }) => {
   const errorMessage =
     error instanceof AxiosError
@@ -32,10 +34,10 @@ const getErrorMessage = ({ error, t }: { error: Error; t: TFunction }) => {
   return t('Une erreur est survenue. Veuillez réessayer.')
 }
 
-const NUM_SECONDS = 30
-
 export default function VerificationForm({ email }: Props) {
-  const { timeLeft, setTimeLeft } = useTimeLeft(NUM_SECONDS)
+  const { timeLeft: resendTimeLeft, setTimeLeft: setResendTimeLeft } =
+    useTimeLeft(NUM_SECONDS)
+
   const { t } = useClientTranslation()
 
   const {
@@ -53,8 +55,10 @@ export default function VerificationForm({ email }: Props) {
   const isResending = state?.phase === 'resending_code'
 
   const isValidationDisabled = isPending || isSuccess || isResending
-  const isRetryButtonDisabled = isValidationDisabled || timeLeft > 0
 
+  const isRetryButtonDisabled = isValidationDisabled || resendTimeLeft > 0
+
+  // Normal error message (hide it during rate-limit cooldown)
   const inputError =
     loginError && state?.phase === 'code_sent'
       ? getErrorMessage({ error: loginError, t })
@@ -78,9 +82,9 @@ export default function VerificationForm({ email }: Props) {
   )
 
   const handleResend = useCallback(() => {
-    setTimeLeft(NUM_SECONDS)
+    setResendTimeLeft(NUM_SECONDS)
     void resendCode?.(email)
-  }, [resendCode, setTimeLeft, email])
+  }, [resendCode, setResendTimeLeft, email])
 
   return (
     <div>
@@ -90,6 +94,7 @@ export default function VerificationForm({ email }: Props) {
         isSuccessValidate={isSuccess}
         isPendingValidate={isPending}
         handleValidateVerificationCode={handleValidateVerificationCode}
+        isInputDisabled={isValidationDisabled}
         onInputChange={handleInputChange}
       />
 
@@ -98,7 +103,7 @@ export default function VerificationForm({ email }: Props) {
           isRetryButtonDisabled={isRetryButtonDisabled}
           isErrorResend={hasResendError ?? false}
           onResendVerificationCode={handleResend}
-          timeLeft={timeLeft}
+          timeLeft={resendTimeLeft}
         />
       )}
     </div>
