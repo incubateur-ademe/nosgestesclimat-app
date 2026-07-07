@@ -26,9 +26,7 @@ const getErrorMessage = ({ error, t }: { error: Error; t: TFunction }) => {
       ? (error.response?.data as { message?: string }).message
       : error.message
 
-  if (errorMessage === ERROR_MESSAGES.ACCOUNT_ALREADY_EXISTS) {
-    return t('Un compte avec cette adresse e-mail existe déjà')
-  } else if (errorMessage === ERROR_MESSAGES.INVALID_CODE) {
+  if (errorMessage === ERROR_MESSAGES.INVALID_CODE) {
     return t('Le code est invalide')
   }
   return t('Une erreur est survenue. Veuillez réessayer.')
