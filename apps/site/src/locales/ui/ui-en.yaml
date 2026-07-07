@@ -1488,10 +1488,10 @@ entries:
   results.objective.reduction.over4.description.lock: Votre rythme indicatif pour parvenir à <2>{{secondObjectiveNumber}}T en {{year}}</2>
   results.objective.description: France's objective to achieve carbon neutrality by 2050 and help limit global warming to +2°C.
   results.objective.description.lock: L'objectif de la France pour atteindre la neutralité carbone en 2050 et aider à limiter le réchauffement mondial à + 2 °C.
-  signIn.emailForm.inputLabel: Your e-mail address
-  signIn.emailForm.buttonLabel: Access my account
-  signIn.emailForm.error.required: Please enter your e-mail address
-  signIn.emailForm.error.invalid: The e-mail address is invalid
+  signIn.emailForm.inputLabel: Your email address
+  signIn.emailForm.buttonLabel: Log in to my account
+  signIn.emailForm.error.required: Please enter your email address
+  signIn.emailForm.error.invalid: The email address is invalid
   results.objective.under4.description.body: With the work of the government and society as a whole over the coming years, your footprint should naturally fall to around 2 tonnes.
   results.objective.under4.description.body.lock: Avec le travail de l’État et toute la société dans les années à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des 2 tonnes.
   Part de la sous-catégorie {{percentage}}: Share of sub-category {{percentage}}
@@ -2195,3 +2195,11 @@ entries:
   poll.shareSection.sendByEmail.lock: Envoyer par e-mail
   poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
   poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  signIn.code.invalid: The code is invalid
+  signIn.code.invalid.lock: Le code est invalide
+  signIn.emailForm.inputLabel.lock: Votre adresse e-mail
+  signIn.emailForm.buttonLabel.lock: Accéder à mon espace
+  common.errors.errorHappened: An error has occurred. Please try again.
+  common.errors.errorHappened.lock: Une erreur est survenue. Veuillez réessayer.
+  signIn.emailForm.error.invalid.lock: L'adresse e-mail est invalide
+  signIn.emailForm.error.required.lock: Merci de renseigner votre adresse e-mail

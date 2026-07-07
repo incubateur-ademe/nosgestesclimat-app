@@ -14,7 +14,6 @@ interface Props {
 }
 
 enum ERROR_MESSAGES {
-  ACCOUNT_ALREADY_EXISTS = 'Different user ids found',
   INVALID_CODE = 'Forbidden ! Invalid verification code.',
 }
 
@@ -27,9 +26,12 @@ const getErrorMessage = ({ error, t }: { error: Error; t: TFunction }) => {
       : error.message
 
   if (errorMessage === ERROR_MESSAGES.INVALID_CODE) {
-    return t('Le code est invalide')
+    return t('signIn.code.invalid', 'Le code est invalide')
   }
-  return t('Une erreur est survenue. Veuillez réessayer.')
+  return t(
+    'common.errors.errorHappened',
+    'Une erreur est survenue. Veuillez réessayer.'
+  )
 }
 
 export default function VerificationForm({ email }: Props) {
@@ -56,7 +58,6 @@ export default function VerificationForm({ email }: Props) {
 
   const isRetryButtonDisabled = isValidationDisabled || resendTimeLeft > 0
 
-  // Normal error message (hide it during rate-limit cooldown)
   const inputError =
     loginError && state?.phase === 'code_sent'
       ? getErrorMessage({ error: loginError, t })

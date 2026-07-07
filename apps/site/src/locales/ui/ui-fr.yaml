@@ -1469,7 +1469,7 @@ entries:
   common.hours: heures
   common.minutes: Minutes
   common.seconds: seconds
-  event.testimonies.4.author.job: Test collectif réalisé par l'organisation Pass Culture
+  event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
   reuseSimulationForPoll.attachedToPoll: 'Rattachée au test collectif :'
@@ -1488,3 +1488,5 @@ entries:
   signIn.emailForm.buttonLabel: Accéder à mon espace
   signIn.emailForm.error.required: Merci de renseigner votre adresse e-mail
   signIn.emailForm.error.invalid: L'adresse e-mail est invalide
+  common.errors.errorHappened: Une erreur est survenue. Veuillez réessayer.
+  signIn.code.invalid: Le code est invalide
