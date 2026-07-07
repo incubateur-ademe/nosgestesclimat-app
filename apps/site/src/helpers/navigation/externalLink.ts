@@ -11,6 +11,10 @@ interface Props {
 }
 
 export function isExternalLink(href: string): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
   try {
     const url = new URL(href, window.location.origin)
     return url.origin !== window.location.origin
