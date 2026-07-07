@@ -3,16 +3,10 @@
 import LockIcon from '@/components/icons/LockIcon'
 import CheckCircleIcon from '@/components/icons/status/CheckCircleIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  captureClickResendCode,
-  clickResendCode,
-} from '@/constants/tracking/pages/signin'
+import { captureClickResendCode } from '@/constants/tracking/pages/signin'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { useState } from 'react'
 
 interface Props {
@@ -36,7 +30,6 @@ export default function ResendButton({
       return
     }
 
-    trackMatomoEvent__deprecated(clickResendCode)
     trackPosthogEvent(captureClickResendCode())
 
     await onResendVerificationCode()

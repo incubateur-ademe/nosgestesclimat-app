@@ -25,6 +25,8 @@ export default function VerificationCodeInput({
   handleValidateVerificationCode,
   onInputChange,
 }: Props) {
+  const isDisabled = isPendingValidate || isSuccessValidate
+
   return (
     <fieldset className="m-0 border-0 p-0">
       <legend className="sr-only">
@@ -46,6 +48,7 @@ export default function VerificationCodeInput({
                 .filter(Boolean)
                 .join(' ') || undefined,
             'aria-invalid': inputError ? 'true' : 'false',
+            disabled: isDisabled,
           } as DetailedHTMLProps<
             InputHTMLAttributes<HTMLInputElement>,
             HTMLInputElement
@@ -57,7 +60,8 @@ export default function VerificationCodeInput({
             'border-2! border-slate-500! rounded-xl w-8 text-primary-700! font-medium',
             marianne.className,
             inputError ? 'border-red-700! border-2' : '',
-            isSuccessValidate ? 'border-green-700! border-2' : ''
+            isSuccessValidate ? 'border-green-700! border-2' : '',
+            isDisabled ? 'opacity-50 cursor-not-allowed' : ''
           ),
           characterInactive: 'text-transparent',
           characterSelected: 'character--selected',

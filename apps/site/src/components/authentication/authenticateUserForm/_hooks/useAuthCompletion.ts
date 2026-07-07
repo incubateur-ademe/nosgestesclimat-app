@@ -15,7 +15,6 @@ interface UseAuthCompletionOptions {
   onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
   redirectPathname?: string
   trackers?: {
-    matomo?: string[]
     posthog: {
       eventName: string
       properties?: Record<string, string | number | boolean | null | undefined>
