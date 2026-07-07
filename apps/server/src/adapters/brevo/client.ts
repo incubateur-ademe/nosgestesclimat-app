@@ -297,19 +297,12 @@ const sendGroupEmail = ({
   shareSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
   shareSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].SHARE_URL)
 
-  const deleteUrl = new URL(`${origin}/amis/supprimer`)
-  const { searchParams: deleteSp } = deleteUrl
-  deleteSp.append('groupId', groupId)
-  deleteSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  deleteSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].DELETE_URL)
-
   return sendEmail({
     email,
     templateId,
     params: {
       GROUP_URL: groupUrl.toString(),
       SHARE_URL: shareUrl.toString(),
-      DELETE_URL: deleteUrl.toString(),
       GROUP_NAME: groupName,
       NAME: userName,
     },
