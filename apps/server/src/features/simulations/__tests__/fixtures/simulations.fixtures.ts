@@ -3,10 +3,7 @@ import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
-import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
-import type { JwtPayload } from 'jsonwebtoken'
-import jwt from 'jsonwebtoken'
 import type { PublicodesExpression } from 'publicodes'
 import Engine, { utils } from 'publicodes'
 import type supertest from 'supertest'
@@ -24,7 +21,6 @@ import {
 } from '../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../core/event-bus/event-bus.ts'
 import type { Metric } from '../../../../types/types.ts'
-import { COOKIE_NAME } from '../../../authentication/authentication.service.ts'
 import type {
   ExtendedSituationSchema,
   SimulationCreateInputDto,
@@ -219,47 +215,18 @@ export const getSimulationPayload = ({
 export const createSimulation = async ({
   agent,
   userId,
-  cookie,
   email,
-  name,
   simulation = {},
-}:
-  | {
-      agent: TestAgent
-      userId?: string
-      email?: string
-      name?: string
-      simulation?: Partial<SimulationCreateInputDto>
-      cookie?: undefined
-    }
-  | {
-      agent: TestAgent
-      userId?: undefined
-      email?: string
-      name?: string
-      simulation?: Partial<SimulationCreateInputDto>
-      cookie?: string
-    }) => {
-  if (cookie) {
-    ;({ userId } = jwt.decode(
-      cookie.split(';').shift()!.replace(`${COOKIE_NAME}=`, '')!
-    ) as JwtPayload)
-  }
-
+}: {
+  agent: TestAgent
+  userId?: string
+  email?: string
+  simulation?: Partial<SimulationCreateInputDto>
+}) => {
   userId = userId ?? faker.string.uuid()
   const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
 
-  // The internal API connects the simulation to an existing user (the proxy
-  // creates it from the session). Tests target the API directly, so seed it.
-  // The user identity (id/email) is resolved from the session by the proxy and
-  // forwarded as headers; it is never part of the request body.
-  await prisma.user.upsert({
-    where: { id: userId },
-    create: { id: userId, name },
-    update: {},
-  })
-
-  if (email || cookie) {
+  if (email) {
     mswServer.use(
       brevoUpdateContact(),
       brevoRemoveFromList(22, { invalid: true }),
