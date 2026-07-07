@@ -13,6 +13,9 @@ import { isEmailValid } from '@/utils/isEmailValid'
 import { type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { captureClickSubmitEmail } from '@/constants/tracking/pages/signin'
+import type { AuthenticationMode } from '@/types/authentication'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { useAuthContext } from './AuthContext'
 
 interface Props {
@@ -22,6 +25,7 @@ interface Props {
   required?: boolean
   isVerticalLayout?: boolean
   additionnalButton?: ReactNode
+  mode?: AuthenticationMode
 }
 
 interface FormData {
@@ -35,6 +39,7 @@ export default function SendVerificationCodeForm({
   additionnalButton,
   required = true,
   isVerticalLayout = true,
+  mode,
 }: Props) {
   const { t } = useClientTranslation()
 
@@ -61,6 +66,7 @@ export default function SendVerificationCodeForm({
   return (
     <Form
       onSubmit={(e) => {
+        trackPosthogEvent(captureClickSubmitEmail({ mode }))
         void handleSubmit((data: FormData) => {
           void sendEmail?.(data.email)
         })(e)

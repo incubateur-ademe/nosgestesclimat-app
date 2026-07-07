@@ -1,17 +1,8 @@
 'use client'
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  type ReactNode,
-} from 'react'
+import { createContext, useContext, useReducer, type ReactNode } from 'react'
 
-import { captureClickSubmitEmail } from '@/constants/tracking/pages/signin'
 import type { AuthenticationMode } from '@/types/authentication'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 
 import { useAuthCodeCreation } from './_hooks/useAuthCodeCreation'
 import { useAuthCompletion } from './_hooks/useAuthCompletion'
@@ -30,6 +21,7 @@ export interface AuthContextValue {
   hasEmailError: boolean
   hasResendError: boolean
   loginError: Error | null
+  mode?: AuthenticationMode
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -44,7 +36,6 @@ export interface AuthProviderProps {
   redirectPathname?: string
   onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
   trackers?: {
-    matomo?: string[]
     posthog: {
       eventName: string
       properties?: Record<string, string | number | boolean | null | undefined>
@@ -90,16 +81,6 @@ export function AuthProvider({
       resetCodeCreation,
     })
 
-  // Track analytics once when we enter the code_sent phase
-  const prevPhaseRef = useRef(state.phase)
-  useEffect(() => {
-    const prevPhase = prevPhaseRef.current
-    prevPhaseRef.current = state.phase
-    if (prevPhase !== 'code_sent' && state.phase === 'code_sent') {
-      trackPosthogEvent(captureClickSubmitEmail({ mode }))
-    }
-  }, [state.phase, mode])
-
   return (
     <AuthContext.Provider
       value={{
@@ -115,6 +96,7 @@ export function AuthProvider({
         hasResendError:
           !!createVerificationCodeError && state.phase === 'code_sent',
         loginError,
+        mode,
       }}>
       {children}
     </AuthContext.Provider>

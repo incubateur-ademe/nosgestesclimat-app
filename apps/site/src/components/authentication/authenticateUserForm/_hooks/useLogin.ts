@@ -1,8 +1,8 @@
 'use client'
 
+import { useLocale } from '@/hooks/useLocale'
 import { login } from '@/services/auth/login'
 import { useMutation } from '@tanstack/react-query'
-import { useLocale } from '../../../../hooks/useLocale'
 
 export function useLogin() {
   const locale = useLocale()

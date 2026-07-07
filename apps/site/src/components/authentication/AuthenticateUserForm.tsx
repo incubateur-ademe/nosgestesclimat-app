@@ -85,7 +85,7 @@ function AuthenticateUserFormContent({
   isVerticalLayout?: boolean
   verificationClassName?: string
 }) {
-  const { state, goBack } = useAuthContext() ?? {}
+  const { state, goBack, mode } = useAuthContext() ?? {}
 
   // Switch on phase so TypeScript narrows the discriminated union
   switch (state?.phase) {
@@ -99,6 +99,7 @@ function AuthenticateUserFormContent({
           inputLabel={inputLabel}
           required={required}
           isVerticalLayout={isVerticalLayout}
+          mode={mode}
         />
       )
     default: {

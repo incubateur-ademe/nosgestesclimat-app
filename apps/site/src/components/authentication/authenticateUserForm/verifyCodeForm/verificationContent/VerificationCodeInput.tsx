@@ -62,7 +62,7 @@ export default function VerificationCodeInput({
             marianne.className,
             inputError ? 'border-red-700! border-2' : '',
             isSuccessValidate ? 'border-green-700! border-2' : '',
-            isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+            isDisabled ? 'bg-slate-100! cursor-not-allowed' : ''
           ),
           characterInactive: 'text-transparent',
           characterSelected: 'character--selected',
