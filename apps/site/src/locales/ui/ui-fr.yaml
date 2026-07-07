@@ -1484,3 +1484,7 @@ entries:
   poll.results.communicationKit.text2: Des e-mails type, post Linkedin, visuels…
   poll.results.communicationKit.title: Besoin d'inspiration pour diffuser votre test collectif ?
   poll.shareSection.sendByEmail: Envoyer par e-mail
+  signIn.emailForm.inputLabel: Votre adresse e-mail
+  signIn.emailForm.buttonLabel: Accéder à mon espace
+  signIn.emailForm.error.required: Merci de renseigner votre adresse e-mail
+  signIn.emailForm.error.invalid: L'adresse e-mail est invalide

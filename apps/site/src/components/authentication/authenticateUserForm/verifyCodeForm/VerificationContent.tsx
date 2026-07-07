@@ -1,7 +1,7 @@
 'use client'
 
-import VerificationCodeInput from '@/components/organisations/VerificationCodeInput'
 import Trans from '@/components/translation/trans/TransClient'
+import VerificationCodeInput from './verificationContent/VerificationCodeInput'
 
 interface Props {
   email: string
@@ -9,7 +9,7 @@ interface Props {
   isSuccessValidate: boolean
   isPendingValidate: boolean
   handleValidateVerificationCode: (verificationCode: string) => Promise<void>
-  onCodeChange?: () => void
+  onInputChange?: (code: string) => void
 }
 
 export default function VerificationContent({
@@ -18,7 +18,7 @@ export default function VerificationContent({
   isSuccessValidate,
   isPendingValidate,
   handleValidateVerificationCode,
-  onCodeChange,
+  onInputChange,
 }: Props) {
   return (
     <>
@@ -51,7 +51,7 @@ export default function VerificationContent({
           isSuccessValidate={isSuccessValidate}
           isPendingValidate={isPendingValidate}
           handleValidateVerificationCode={handleValidateVerificationCode}
-          onCodeChange={onCodeChange}
+          onInputChange={onInputChange}
         />
       </form>
     </>

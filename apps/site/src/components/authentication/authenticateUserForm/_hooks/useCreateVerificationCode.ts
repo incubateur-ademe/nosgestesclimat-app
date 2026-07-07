@@ -1,12 +1,12 @@
 'use client'
 
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
+import { useLocale } from '@/hooks/useLocale'
 import { createVerificationCode } from '@/services/auth/create-verification-code'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { formatEmail } from '@/utils/format/formatEmail'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { useLocale } from '../useLocale'
 import { type PendingVerification } from './usePendingVerification'
 
 export const enum CREATE_VERIFICATION_CODE_ERROR {
@@ -14,15 +14,16 @@ export const enum CREATE_VERIFICATION_CODE_ERROR {
 }
 
 export function useCreateVerificationCode({
-  onComplete,
+  onCompleteAction,
 }: {
-  onComplete?: (pendingVerification: PendingVerification) => void
+  onCompleteAction?: (pendingVerification: PendingVerification) => void
 } = {}) {
   const locale = useLocale()
   const {
     mutateAsync: postVerificationCode,
     error,
     isPending,
+    reset,
   } = useMutation({
     mutationFn: ({ email }: { email: string }) =>
       createVerificationCode({ email, locale }),
@@ -40,17 +41,18 @@ export function useCreateVerificationCode({
         })
 
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
-        onComplete?.({ email, expirationDate: new Date(expirationDate) })
+        onCompleteAction?.({ email, expirationDate: new Date(expirationDate) })
       } catch {
         return
       }
     },
-    [onComplete, postVerificationCode]
+    [onCompleteAction, postVerificationCode]
   )
 
   return {
     createVerificationCode: createVerificationCodeFn,
     createVerificationCodeError: errorCode,
     createVerificationCodePending: isPending,
+    resetVerificationCode: reset,
   }
 }

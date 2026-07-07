@@ -1,7 +1,7 @@
 'use client'
 
+import type { PendingVerification } from '@/components/authentication/authenticateUserForm/_hooks/usePendingVerification'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
 import type { Migration } from '@publicodes/tools/migration'
 import type { Dispatch, SetStateAction } from 'react'
 import { createContext } from 'react'

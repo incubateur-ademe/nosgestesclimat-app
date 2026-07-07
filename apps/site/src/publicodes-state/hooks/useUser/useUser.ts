@@ -1,6 +1,6 @@
 'use client'
 
-import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
+import type { PendingVerification } from '@/components/authentication/authenticateUserForm/_hooks/usePendingVerification'
 import { useCallback, useContext } from 'react'
 import userContext from '../../providers/userProvider/context'
 import type { User } from '../../types'

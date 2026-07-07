@@ -57,13 +57,23 @@ export default function ResendButton({
             ? t('Renvoyer le code, désactivé pendant 30 secondes')
             : ''
         }
-        className="dark:text-primary-50 dark:hover:text-primary-50 -ml-2 font-normal"
+        className="dark:text-primary-50 dark:hover:text-primary-50 -ml-2 font-normal no-underline"
         onClick={() => {
           void handleResendVerificationCode()
         }}>
-        {isRetryButtonDisabled && timeLeft > 0 && (
-          <span className="mr-2 flex items-center">
-            <LockIcon className="fill-primary-700 dark:fill-primary-50 mr-2 h-4 w-4" />
+        {!shouldDisplayConfirmation &&
+          isRetryButtonDisabled &&
+          timeLeft > 0 && (
+            <span className="mr-2 flex cursor-not-allowed items-center underline">
+              <LockIcon className="fill-primary-700 dark:fill-primary-50 mr-2 h-4 w-4" />
+              <Trans i18nKey="signIn.verificationForm.notReceived.resendButton">
+                Renvoyer le code
+              </Trans>
+            </span>
+          )}
+
+        {!shouldDisplayConfirmation && !isRetryButtonDisabled && (
+          <span className="flex items-center underline">
             <Trans i18nKey="signIn.verificationForm.notReceived.resendButton">
               Renvoyer le code
             </Trans>
@@ -71,18 +81,10 @@ export default function ResendButton({
         )}
 
         {shouldDisplayConfirmation && (
-          <span className="flex items-center text-green-500 no-underline dark:text-green-100">
+          <span className="flex cursor-default items-center text-green-500 no-underline dark:text-green-100">
             <CheckCircleIcon className="mr-2 h-4 w-4 fill-green-500" />
             <Trans i18nKey="signIn.verificationForm.notReceived.resendButton.confirmation">
               Code renvoyé
-            </Trans>
-          </span>
-        )}
-
-        {!shouldDisplayConfirmation && !isRetryButtonDisabled && (
-          <span className="flex items-center underline">
-            <Trans i18nKey="signIn.verificationForm.notReceived.resendButton">
-              Renvoyer le code
             </Trans>
           </span>
         )}

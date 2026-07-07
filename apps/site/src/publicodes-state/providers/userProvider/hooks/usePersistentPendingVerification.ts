@@ -1,5 +1,5 @@
+import type { PendingVerification } from '@/components/authentication/authenticateUserForm/_hooks/usePendingVerification'
 import { STORAGE_KEY } from '@/constants/storage'
-import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 

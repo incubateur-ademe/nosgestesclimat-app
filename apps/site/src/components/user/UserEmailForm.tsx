@@ -1,6 +1,8 @@
 'use client'
 
-import VerifyCodeForm from '@/components/AuthenticateUserForm/VerifyCodeForm'
+import { useCreateVerificationCode } from '@/components/authentication/authenticateUserForm/_hooks/useCreateVerificationCode'
+import { usePendingVerification } from '@/components/authentication/authenticateUserForm/_hooks/usePendingVerification'
+import VerifyCodeForm from '@/components/authentication/authenticateUserForm/VerifyCodeForm'
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
 import { captureClickUpdateUserEmail } from '@/constants/tracking/posthogTrackers'
@@ -9,8 +11,6 @@ import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import Modal from '@/design-system/modals/Modal'
-import { useCreateVerificationCode } from '@/hooks/authentication/useCreateVerificationCode'
-import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import {

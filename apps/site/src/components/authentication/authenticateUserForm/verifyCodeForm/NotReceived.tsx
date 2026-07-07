@@ -3,7 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 
 import Button from '@/design-system/buttons/Button'
-import ResendButton from './ResendButton'
+import ResendButton from './notReceived/ResendButton'
 
 interface Props {
   isRetryButtonDisabled: boolean

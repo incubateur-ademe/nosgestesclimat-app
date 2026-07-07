@@ -14,7 +14,8 @@ interface Props {
   isSuccessValidate: boolean
   isPendingValidate: boolean
   handleValidateVerificationCode: (verificationCode: string) => Promise<void>
-  onCodeChange?: () => void
+  /** Called on every keystroke */
+  onInputChange?: (code: string) => void
 }
 
 export default function VerificationCodeInput({
@@ -22,7 +23,7 @@ export default function VerificationCodeInput({
   isSuccessValidate,
   isPendingValidate,
   handleValidateVerificationCode,
-  onCodeChange,
+  onInputChange,
 }: Props) {
   return (
     <fieldset className="m-0 border-0 p-0">
@@ -64,9 +65,10 @@ export default function VerificationCodeInput({
         }}
         placeholder=""
         onChange={(code) => {
+          onInputChange?.(code)
+
           // Do not validate if the code is not 6 characters long
           if (code.length !== 6) {
-            onCodeChange?.()
             return
           }
           handleValidateVerificationCode(code).catch(() => {
