@@ -12,7 +12,6 @@ import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.
 import { removePreviousBrevoContact } from './handlers/remove-previous-brevo-contact.ts'
 import { fetchUserContact, updateUserAndContact } from './users.service.ts'
 import {
-  FetchMeValidator,
   FetchUserContactValidator,
   UpdateUserValidator,
 } from './users.validator.ts'
@@ -41,22 +40,6 @@ router
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-    }
-  )
-
-/**
- * Returns current user data
- */
-router
-  .route('/v1/me')
-  .get(
-    authentificationMiddleware(),
-    validateRequest(FetchMeValidator),
-    (req, res) => {
-      return res.status(StatusCodes.OK).json({
-        id: req.user!.id,
-        email: 'email' in req.user! ? req.user.email : undefined,
-      })
     }
   )
 
