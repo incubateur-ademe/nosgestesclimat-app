@@ -122,6 +122,60 @@ describe('Given a NGC user', () => {
       })
     })
 
+    describe('And verified user does not exist in database', () => {
+      let pollId: string
+      let userId: string
+      let email: string
+
+      beforeEach(async () => {
+        const adminUserId = faker.string.uuid()
+        const adminEmail = faker.internet.email()
+        const { id: organisationId } = await createOrganisation({
+          agent,
+          userId: adminUserId,
+          email: adminEmail,
+        })
+
+        const poll = await createOrganisationPoll({
+          agent,
+          userId: adminUserId,
+          email: adminEmail,
+          organisationId,
+        })
+        pollId = poll.id
+        userId = faker.string.uuid()
+        email = faker.internet.email()
+      })
+
+      test('Then it does not create a verified user', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+
+        await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId, email }))
+          .send(payload)
+          .expect(StatusCodes.UNAUTHORIZED)
+
+        await EventBus.flush()
+
+        const [userCount, verifiedUserCount] = await Promise.all([
+          prisma.user.count({ where: { id: userId } }),
+          prisma.verifiedUser.count({
+            where: { OR: [{ id: userId }, { email }] },
+          }),
+        ])
+
+        expect(userCount).toBe(0)
+        expect(verifiedUserCount).toBe(0)
+      })
+    })
+
     describe('And poll does not exist', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
         await agent
@@ -487,6 +541,68 @@ describe('Given a NGC user', () => {
               ageRange: null,
             },
           })
+        })
+      })
+
+      test('Then it creates an unverified user when it does not exist', async () => {
+        const payload: SimulationCreateInputDto = {
+          id: faker.string.uuid(),
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+
+        mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
+
+        await agent
+          .post(url.replace(':pollIdOrSlug', pollId))
+          .set(authHeaders({ userId }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+
+        const createdUser = await prisma.user.findUnique({
+          where: { id: userId },
+        })
+        expect(createdUser).toBeDefined()
+        expect(createdUser?.id).toBe(userId)
+        expect(createdUser?.email).toBeNull()
+      })
+
+      describe('And unverified user already exists', () => {
+        beforeEach(async () => {
+          await prisma.user.create({
+            data: { id: userId, email: null },
+          })
+        })
+
+        test('Then it uses existing unverified user without creating a new one', async () => {
+          const payload: SimulationCreateInputDto = {
+            id: faker.string.uuid(),
+            situation,
+            progression: 1,
+            computedResults,
+            extendedSituation,
+          }
+
+          mswServer.use(brevoUpdateContact(), brevoRemoveFromList(27))
+
+          await agent
+            .post(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId }))
+            .send(payload)
+            .expect(StatusCodes.CREATED)
+
+          await EventBus.flush()
+
+          const users = await prisma.user.findMany({
+            where: { id: userId },
+          })
+          expect(users).toHaveLength(1)
+          expect(users[0].id).toBe(userId)
+          expect(users[0].email).toBeNull()
         })
       })
     })

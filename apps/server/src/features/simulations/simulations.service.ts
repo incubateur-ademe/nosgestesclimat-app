@@ -17,6 +17,7 @@ import { redis } from '../../adapters/redis/client.ts'
 import { KEYS } from '../../adapters/redis/constant.ts'
 import { deepMergeSum } from '../../core/deep-merge.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
@@ -34,7 +35,6 @@ import type {
 } from '../organisations/organisations.validator.ts'
 import {
   createOrUpdateUser,
-  fetchUser,
   fetchVerifiedUser,
 } from '../users/users.repository.ts'
 import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.ts'
@@ -124,15 +124,21 @@ export const createSimulation = async ({
   let fullUser
   // Case 1. The user is authentified
   if (verifiedUser) {
-    fullUser = await transaction((session) =>
-      fetchUser(
+    const dbVerifiedUser = await transaction((session) =>
+      fetchVerifiedUser(
         {
-          id: user.id,
-          select: defaultUserSelection,
+          email: verifiedUser.email,
+          select: defaultVerifiedUserSelection,
         },
         { session }
       )
     )
+
+    if (!dbVerifiedUser || dbVerifiedUser.id !== user.id) {
+      throw new UnauthorizedException()
+    }
+
+    fullUser = dbVerifiedUser
   }
 
   // Case 2. Not authentified: upsert the unverified user account by its id
@@ -283,6 +289,10 @@ export const createPollSimulation = async ({
           { session }
         )
       )
+
+      if (!user || user.id !== verifiedUser.id) {
+        throw new UnauthorizedException()
+      }
     }
 
     // Case 2. Not authentified

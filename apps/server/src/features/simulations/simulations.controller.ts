@@ -4,6 +4,7 @@ import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
+import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { withPaginationHeaders } from '../../core/pagination.ts'
 import logger from '../../logger.ts'
@@ -78,7 +79,10 @@ router.route('/v1').post(
         return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
       }
 
-      if (err instanceof EntityNotFoundException) {
+      if (
+        err instanceof EntityNotFoundException ||
+        err instanceof UnauthorizedException
+      ) {
         return res.status(StatusCodes.UNAUTHORIZED).end()
       }
 
