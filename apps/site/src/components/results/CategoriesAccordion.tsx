@@ -1,13 +1,13 @@
 import HorizontalBarChartItem from '@/components/charts/HorizontalBarChartItem'
 import { carboneMetric } from '@/constants/model/metric'
 import Card from '@/design-system/layout/Card'
-import AccordionItem from '@/design-system/layout/accordion/AccordionItem'
 import { getCategoriesDisplayData } from '@/helpers/getCategoriesDisplayData'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { ComputedResults, Metric } from '@/publicodes-state/types'
 import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import SubcategoriesList from './categoriesAccordion/SubcategoriesList'
+import AccordionItemWrapper from './categoriesAccordion/_client/AccordionItemWrapper'
 import AnimatedAccordionItem from './categoriesAccordion/_client/AnimatedAccordionItem'
 import ServicesDescription from './categoriesAccordion/_client/ServicesDescription'
 
@@ -41,7 +41,7 @@ export default async function CategoriesAccordion({
     <div className="flex flex-col gap-2">
       {categories.map((category, index) => (
         <AnimatedAccordionItem key={category.dottedName} index={index}>
-          <AccordionItem
+          <AccordionItemWrapper
             title={
               <HorizontalBarChartItem
                 percentageOfTotalValue={
@@ -69,6 +69,7 @@ export default async function CategoriesAccordion({
             }
             name={category.title}
             ariaLabel={`${category.title} - ${category.formattedValue} ${category.unit}`}
+            categoryDottedName={category.dottedName}
             content={
               <Card
                 className={`rounded-lg border border-slate-400 p-4 ${category.bgLightClassName}`}>

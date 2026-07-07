@@ -1,17 +1,17 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
-import { getUser } from '@/helpers/server/dal/user'
-import { getCompletedSimulations } from '@/helpers/server/model/simulations'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import { UserProvider } from '@/publicodes-state'
+import { getUserSession } from '@/services/auth/get-user-session'
 
 export default async function Layout({
   children,
 }: LayoutProps<'/[locale]/amis'>) {
-  const user = await getUser()
-  const simulations = await getCompletedSimulations({ user })
+  const user = await getUserSession()
+  const simulations = await getCompletedSimulations()
 
   return (
     <QueryClientProviderWrapper>
-      <UserProvider serverSimulations={simulations} serverUserId={user.id}>
+      <UserProvider serverSimulations={simulations} userSession={user}>
         {children}
       </UserProvider>
     </QueryClientProviderWrapper>

@@ -7,7 +7,6 @@ import Badge from '@/design-system/layout/Badge'
 import ConfirmationModal from '@/design-system/modals/ConfirmationModal'
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { useIsGroupOwner } from '@/hooks/groups/useIsGroupOwner'
 import { useRemoveParticipant } from '@/hooks/groups/useRemoveParticipant'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
@@ -18,6 +17,7 @@ import isMobile from 'is-mobile'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { isGroupOwner } from '../../../../_helpers/isGroupOwner'
 
 const getRank = (index: number) => {
   switch (index) {
@@ -51,9 +51,7 @@ export default function RankingMember({
   participant: Participant
   metric: Metrics
 }) {
-  const {
-    user: { userId },
-  } = useUser()
+  const { user } = useUser()
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false)
 
   const { t } = useClientTranslation()
@@ -62,7 +60,7 @@ export default function RankingMember({
 
   const router = useRouter()
 
-  const { isGroupOwner } = useIsGroupOwner({ group })
+  const isOwner = isGroupOwner(group, user)
 
   const { mutateAsync: removePartipant, isPending } = useRemoveParticipant()
 
@@ -99,7 +97,6 @@ export default function RankingMember({
       await removePartipant({
         participantId: participant.id,
         groupId: group.id,
-        userId,
       })
 
       router.refresh()
@@ -126,10 +123,14 @@ export default function RankingMember({
               : getRank(index)}
           </span>
 
-          <span className={textColor}>{participant.name}</span>
+          <span className={textColor} data-testid="participant-name">
+            {participant.name}
+          </span>
 
           {isCurrentMember && (
-            <Badge className="text-secondary-800 ml-2 inline rounded-xl border-pink-100 bg-pink-200 text-xs font-bold">
+            <Badge
+              className="text-secondary-800 ml-2 inline rounded-xl border-pink-100 bg-pink-200 text-xs font-bold"
+              data-testid="current-member-badge">
               <Trans>Vous</Trans>
             </Badge>
           )}
@@ -138,7 +139,7 @@ export default function RankingMember({
         <div className={textColor}>{quantity}</div>
       </div>
 
-      {isGroupOwner &&
+      {isOwner &&
         (isCurrentMember ? (
           // Add a gap to keep the layout consistent
           <div

@@ -79,6 +79,7 @@ export const defaultGroupParticipantSimulationSelection = {
       poll: {
         select: {
           slug: true,
+          name: true,
         },
       },
     },
@@ -162,6 +163,7 @@ export const simulationSelectionWithPolls = {
       poll: {
         select: {
           slug: true,
+          name: true,
         },
       },
     },

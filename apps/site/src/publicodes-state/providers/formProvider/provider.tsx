@@ -84,13 +84,13 @@ export default function FailSafeFormProvider({
 }: PropsWithChildren<{
   root?: DottedName
 }>) {
-  const { safeEvaluate, rules } = useEngine()
+  const { safeEvaluate, rules, engine } = useEngine()
 
   const isRootSafe = useMemo<boolean>(() => {
-    if (!rules) return true
+    if (!rules || !engine) return true
 
     return safeEvaluate(root) ? true : false
-  }, [safeEvaluate, root, rules])
+  }, [safeEvaluate, root, rules, engine])
 
   if (!isRootSafe) {
     notFound()

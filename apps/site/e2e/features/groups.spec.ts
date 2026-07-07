@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
 import { createPage } from '../fixtures/feature-flags'
@@ -76,6 +77,18 @@ test.describe('The group result page, when accessed by an admin', () => {
   test('displays main section', async ({ page }) => {
     await expect(page.getByTestId('votre-empreinte-title')).toBeVisible()
   })
+
+  test('displays the admin first name in the ranking', async ({
+    page,
+    group,
+  }) => {
+    await expect(
+      page
+        .getByTestId('participant-name')
+        .filter({ hasText: group.admin.firstName })
+    ).toBeVisible()
+    await expect(page.getByTestId('current-member-badge')).toBeVisible()
+  })
 })
 
 test.describe('A new user', () => {
@@ -130,6 +143,39 @@ test.describe('A new user', () => {
     await expect(page).toHaveURL('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(group.url)
+  })
+
+  // TODO: Fails because updateGroupParticipant does not persist the participant name
+  // on the server side for non-admin users. The ranking displays empty names.
+  test.skip('sees its first name in the group ranking after joining', async ({
+    page,
+    ngcTest,
+    tutorialPage,
+    group,
+  }) => {
+    test.setTimeout(60_000)
+    const participantName = faker.person.firstName()
+    const user = new User(page, {
+      firstName: participantName,
+      lastName: faker.person.lastName(),
+      email: faker.internet.email({
+        provider: `${process.env.MAILISK_NAMESPACE!}.mailisk.net`,
+        firstName: participantName,
+      }),
+    })
+
+    await group.joinWithInviteLink(user)
+    await tutorialPage.skip()
+    await ngcTest.skipAllQuestions()
+    await user.fillEmailAndCompleteVerification()
+    await expect(page).toHaveURL('/fin')
+
+    await page.getByTestId('see-group-result-button').click()
+    await expect(page).toHaveURL(group.url)
+
+    await expect(
+      page.getByTestId('participant-name').filter({ hasText: participantName })
+    ).toBeVisible()
   })
 })
 

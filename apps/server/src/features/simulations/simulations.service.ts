@@ -93,7 +93,11 @@ const simulationToDto = (
 ) => ({
   ...rest,
   groups: groups?.map(({ groupId }) => ({ id: groupId })),
-  polls: polls?.map(({ pollId, poll: { slug } }) => ({ id: pollId, slug })),
+  polls: polls?.map(({ pollId, poll: { slug, name } }) => ({
+    id: pollId,
+    slug,
+    name,
+  })),
   ...(user
     ? { user: user.id === connectedUser ? user : { name: user.name } }
     : {}),

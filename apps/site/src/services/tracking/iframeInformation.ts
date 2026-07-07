@@ -7,7 +7,7 @@ export type IframeInformation =
   | {
       iframe: true
       $referrer: string | undefined
-      $referringDomain: string | undefined
+      $referring_domain: string | undefined
     }
 
 /**
@@ -37,6 +37,6 @@ export function getIframeInformation(): IframeInformation {
   return {
     iframe,
     $referrer: referrer,
-    $referringDomain: referringDomain,
+    $referring_domain: referringDomain,
   }
 }

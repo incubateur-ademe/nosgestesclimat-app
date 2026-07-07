@@ -1,10 +1,11 @@
-'use server'
-
 import { SERVER_URL } from '@/constants/urls/main'
 import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
-import { cookies, headers as getHeaders } from 'next/headers'
-import { SERVER_AUTH_COOKIE_NAME } from './dal/authCookie'
-import { InternalServerError } from './error'
+import type { AppUser } from '@/services/auth/get-user-session'
+import { getUserSession } from '@/services/auth/get-user-session'
+import { headers } from 'next/headers'
+import { InternalError } from './error'
+
+const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? ''
 
 export async function fetchServer<T = unknown>(
   url: string,
@@ -12,36 +13,49 @@ export async function fetchServer<T = unknown>(
     method = 'GET',
     body,
     next,
+    session,
   }: {
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
     body?: unknown
     next?: NextFetchRequestConfig
+    /**
+     * Optional session override. When a service creates a new session
+     * within the same request (e.g. via {@link withUserId}), the
+     * `x-session` request header is not yet populated — it is only set
+     * by the proxy on the next request cycle. Pass the session here so
+     * `fetchServer` can forward it to Express immediately.
+     */
+    session?: AppUser
   } = {}
 ): Promise<T> {
   if (!url.startsWith(SERVER_URL)) {
-    throw new InternalServerError()
-  }
-  const [nextHeaders, cookieStore] = await Promise.all([
-    getHeaders(),
-    cookies(),
-  ])
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    // Some server route need IP of the client (for instance geolocation)
-    'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
+    throw new InternalError()
   }
 
-  const ngcCookie = cookieStore.get(SERVER_AUTH_COOKIE_NAME)
-  if (ngcCookie) {
-    headers.cookie = `${ngcCookie.name}=${ngcCookie.value}`
+  const nextHeaders = await headers()
+
+  const reqHeaders: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
+    'x-internal-key': INTERNAL_API_KEY,
   }
+
+  const effectiveSession = session ?? (await getUserSession())
+  if (effectiveSession) {
+    reqHeaders['x-user-id'] = effectiveSession.id
+    if (effectiveSession.isAuth) {
+      reqHeaders['x-user-email'] = effectiveSession.email
+    }
+    reqHeaders['x-session'] = JSON.stringify(effectiveSession)
+  }
+
   const response = await fetch(url, {
     method,
     body: body ? JSON.stringify(body) : undefined,
-    headers,
+    headers: reqHeaders,
     credentials: 'include',
     next,
   })
 
-  return handleApiResponse<T>(response)
+  return await handleApiResponse<T>(response)
 }
