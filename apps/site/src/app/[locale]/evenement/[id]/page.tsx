@@ -39,11 +39,9 @@ export default async function EvenementPage({
   params,
   searchParams,
 }: PageProps<'/[locale]/evenement/[id]'>) {
-  const { locale: localeParam } = await params
+  const { locale: localeParam, id: eventId } = await params
 
   const locale = localeParam as Locale
-
-  const { t } = await getServerTranslation({ locale })
 
   const {
     detailImageSrc,
@@ -57,7 +55,7 @@ export default async function EvenementPage({
     ctaHeading,
     ctaDescription,
     ctaCards,
-  } = getEventPageData({ t, locale })
+  } = await getEventPageData({ eventId, locale })
 
   const hasStarted = new Date() >= new Date(startDate)
 

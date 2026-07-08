@@ -1,15 +1,26 @@
-/** Event page data — centralized mock content before CMS integration. */
+/** Event page data — feeds real-time data from the materialized view, falls back to mock content before CMS integration. */
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
+import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
+
+export type PodiumCategory =
+  | 'all'
+  | 'companies'
+  | 'associations'
+  | 'education'
+  | 'public-services'
 
 export interface PodiumItem {
   rank: number
   label: string
   score: number
+  category: PodiumCategory
 }
 
 export interface Testimony {
@@ -61,15 +72,61 @@ export interface EventPageData {
   ctaCards: CtaCard[]
 }
 
-export function getEventPageData({
-  t,
+const ORGANISATION_TYPE_TO_CATEGORY: Record<string, PodiumCategory> = {
+  company: 'companies',
+  association: 'associations',
+  universityOrSchool: 'education',
+  publicOrRegionalAuthority: 'public-services',
+}
+
+function organisationTypeToCategory(type: string): PodiumCategory {
+  return ORGANISATION_TYPE_TO_CATEGORY[type] ?? 'all'
+}
+
+const TARGET_VALUE = 50000
+
+export async function getEventPageData({
+  eventId,
+
   locale,
 }: {
-  t: (key: string, defaultValue: string) => string
+  eventId: string
   locale: Locale
-}): EventPageData {
-  const currentValue = 0
-  const targetValue = 50000
+}): Promise<EventPageData> {
+  'use cache'
+  cacheLife({ stale: 600, revalidate: 600, expire: 600 })
+
+  const { t } = await getServerTranslation({ locale })
+
+  const eventInfo = await getEventInfo(eventId)
+
+  const currentValue = eventInfo.totalSimulations
+
+  const podiumItems =
+    eventInfo.organisations.length > 0
+      ? eventInfo.organisations.map((org, index) => ({
+          rank: index + 1,
+          label: org.name,
+          score: org.simulationsCount,
+          category: organisationTypeToCategory(org.type),
+        }))
+      : [
+          {
+            rank: 1,
+            label: t('event.podium.yourOrg', 'Organisation 1'),
+            score: 0,
+            category: 'all' as const,
+          },
+          ...Array.from({ length: 9 }, (_, index) => ({
+            rank: index + 2,
+            label: t(
+              `event.podium.competitor${index + 2}`,
+              `Organisation ${index + 2}`
+            ),
+            score: 0,
+            category: 'all' as const,
+          })),
+        ]
 
   return {
     detailImageSrc:
@@ -78,33 +135,18 @@ export function getEventPageData({
     endDate: '2026-09-30T23:59:59+02:00',
     dynamicCounter: {
       currentValue,
-      targetValue,
-      progressPercentage:
-        targetValue > 0 ? (currentValue / targetValue) * 100 : 0,
+      targetValue: TARGET_VALUE,
+      progressPercentage: (currentValue / TARGET_VALUE) * 100,
       primaryCtaHref: ORGANISATION_HOME_PAGE,
       secondaryCtaHref:
         'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
     },
     statisticsValues: {
-      simulations: 0,
+      simulations: eventInfo.totalSimulations,
       actions: 0,
-      organisations: 0,
+      organisations: eventInfo.organisationCount,
     },
-    podiumItems: [
-      {
-        rank: 1,
-        label: t('event.podium.yourOrg', 'Organisation 1'),
-        score: 0,
-      },
-      ...Array.from({ length: 9 }, (_, index) => ({
-        rank: index + 2,
-        label: t(
-          `event.podium.competitor${index + 2}`,
-          `Organisation ${index + 2}`
-        ),
-        score: 0,
-      })),
-    ],
+    podiumItems,
     testimonies: [
       {
         text: t(

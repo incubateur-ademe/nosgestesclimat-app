@@ -10,9 +10,9 @@ model Event {
 }
 
 view EventComputation {
-  eventId       String
-  pollId        String
-  nbSimulations Int
+  eventId          String
+  organisationId   String
+  simulationsCount Int
 
   @@map("event_computation")
   @@schema("ngc")

@@ -5,6 +5,23 @@ import { userFactory } from '../src/features/users/factories/user.factory.ts'
 import { prisma } from '../src/prisma/client.ts'
 
 const seed = async () => {
+  // Default event — créé une seule fois, idempotent
+  const existing = await prisma.event.findFirst({
+    where: {
+      name: 'SEDD 2026',
+      startDate: new Date('2026-09-18T00:00:00Z'),
+    },
+  })
+
+  if (!existing) {
+    await prisma.event.create({
+      data: {
+        name: 'SEDD 2026',
+        startDate: new Date('2026-09-18T00:00:00Z'),
+        endDate: new Date('2026-10-08T23:59:59Z'),
+      },
+    })
+  }
   // Actions
   const publishedActions = await actionFactory.published().createList(15)
   await actionFactory.draft().createList(5)
