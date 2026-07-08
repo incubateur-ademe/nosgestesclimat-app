@@ -1,5 +1,6 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
@@ -35,7 +36,8 @@ router.route('/v1/inscription').post(
     },
   }),
   async (req, res) => {
-    const origin = req.get('origin') || config.app.origin
+    const origin =
+      req.get('x-forwarded-origin') || req.get('origin') || config.app.origin
     try {
       if (isVerifiedUser(req.user)) {
         if (req.user.email !== req.body.email) {
@@ -61,37 +63,51 @@ router.route('/v1/inscription').post(
   }
 )
 
-router
-  .route('/v1/confirmation')
-  .get(validateRequest(NewsletterConfirmationValidator), async (req, res) => {
-    const redirectUrl = new URL(req.query.origin)
+router.route('/v1/confirmation').get(async (req, res) => {
+  const parsedQuery = await v.safeParseAsync(
+    NewsletterConfirmationValidator.query,
+    req.query
+  )
+
+  if (!parsedQuery.success) {
+    const redirectUrl = new URL(config.app.origin)
     redirectUrl.pathname = '/newsletter-confirmation'
-    const { searchParams: redirectSearchParams } = redirectUrl
+    redirectUrl.searchParams.append('success', 'false')
+    redirectUrl.searchParams.append(
+      'status',
+      StatusCodes.BAD_REQUEST.toString()
+    )
+    return res.redirect(redirectUrl.toString())
+  }
 
-    try {
-      await confirmNewsletterSubscriptions({
-        query: req.query,
-      })
+  const redirectUrl = new URL(parsedQuery.output.origin)
+  redirectUrl.pathname = '/newsletter-confirmation'
+  const { searchParams: redirectSearchParams } = redirectUrl
 
-      redirectSearchParams.append('success', 'true')
-    } catch (err) {
-      const expired = err instanceof EntityNotFoundException
+  try {
+    await confirmNewsletterSubscriptions({
+      query: parsedQuery.output,
+    })
 
-      if (!expired) {
-        logger.error('Newsletter confirmation failed', err)
-      }
+    redirectSearchParams.append('success', 'true')
+  } catch (err) {
+    const expired = err instanceof EntityNotFoundException
 
-      redirectSearchParams.append('success', 'false')
-      redirectSearchParams.append(
-        'status',
-        (expired
-          ? StatusCodes.NOT_FOUND
-          : StatusCodes.INTERNAL_SERVER_ERROR
-        ).toString()
-      )
+    if (!expired) {
+      logger.error('Newsletter confirmation failed', err)
     }
 
-    return res.redirect(redirectUrl.toString())
-  })
+    redirectSearchParams.append('success', 'false')
+    redirectSearchParams.append(
+      'status',
+      (expired
+        ? StatusCodes.NOT_FOUND
+        : StatusCodes.INTERNAL_SERVER_ERROR
+      ).toString()
+    )
+  }
+
+  return res.redirect(redirectUrl.toString())
+})
 
 export default router
