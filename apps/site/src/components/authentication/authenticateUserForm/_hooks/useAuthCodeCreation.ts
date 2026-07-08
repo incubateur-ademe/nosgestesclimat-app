@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, type Dispatch } from 'react'
+import { useCallback, type Dispatch } from 'react'
 
 import { useCreateVerificationCode } from '@/components/authentication/authenticateUserForm/_hooks/useCreateVerificationCode'
 
@@ -8,8 +8,6 @@ import type { AuthEvent } from '../authMachine'
 
 interface UseAuthCodeCreationOptions {
   dispatch: Dispatch<AuthEvent>
-  /** Current machine phase — needed to dispatch the correct error event */
-  phase: string
   /** Called when a verification code is successfully created */
   onRegisterVerification: (verification: {
     expirationDate: Date
@@ -22,7 +20,6 @@ interface UseAuthCodeCreationOptions {
  */
 export function useAuthCodeCreation({
   dispatch,
-  phase,
   onRegisterVerification,
 }: UseAuthCodeCreationOptions) {
   const {
@@ -37,21 +34,14 @@ export function useAuthCodeCreation({
     },
   })
 
-  // When the code-creation mutation fails, tell the machine which error
-  useEffect(() => {
-    if (!createVerificationCodeError) return
-
-    if (phase === 'email_sending') {
-      dispatch({ type: 'EMAIL_ERROR' })
-    } else if (phase === 'resending_code') {
-      dispatch({ type: 'CODE_RESEND_ERROR' })
-    }
-  }, [createVerificationCodeError, phase, dispatch])
-
   const sendEmail = useCallback(
     async (email: string) => {
       dispatch({ type: 'SUBMIT_EMAIL', email })
-      await createVerificationCode(email)
+      try {
+        await createVerificationCode(email)
+      } catch {
+        dispatch({ type: 'EMAIL_ERROR' })
+      }
     },
     [createVerificationCode, dispatch]
   )
@@ -59,7 +49,11 @@ export function useAuthCodeCreation({
   const resendCode = useCallback(
     async (email: string) => {
       dispatch({ type: 'RESEND_CODE' })
-      await createVerificationCode(email)
+      try {
+        await createVerificationCode(email)
+      } catch {
+        dispatch({ type: 'CODE_RESEND_ERROR' })
+      }
     },
     [createVerificationCode, dispatch]
   )

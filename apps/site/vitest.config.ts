@@ -10,6 +10,7 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     env: {
       NEXT_PUBLIC_SITE_URL: 'http://localhost:3000',
+      SESSION_ENCRYPTION_KEY: 'dGVzdC1qb3NlLWVuY3J5cHRpb24ta2V5LTI1NmJpdCE=',
     },
     css: true,
     exclude: ['**/node_modules/**', '**/e2e/**', '**/.next/**'],

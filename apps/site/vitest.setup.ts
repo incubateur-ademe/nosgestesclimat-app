@@ -90,6 +90,11 @@ vi.mock('@sentry/nextjs', () => ({
   captureException: vi.fn(),
 }))
 
+// Mock next/font/local to avoid file-system reads in jsdom
+vi.mock('@/app/[locale]/marianne', () => ({
+  marianne: { className: 'font-marianne' },
+}))
+
 // In order to be able to use user-event
 // https://github.com/testing-library/user-event/issues/1115#issuecomment-2495876991
 vi.stubGlobal('jest', {

@@ -19,9 +19,7 @@ interface Props {
   inputLabel?: ReactNode | string
   mode?: AuthenticationMode
   redirectPathname?: string
-  onEmailEntered?: (email: string) => void
   additionnalButton?: ReactNode
-  onEmailEmpty?: () => void
   onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
   required?: boolean
   trackers?: {
@@ -32,7 +30,6 @@ interface Props {
     }
   }
   isVerticalLayout?: boolean
-  onCompleteError?: string
   verificationClassName?: string
 }
 
@@ -85,10 +82,10 @@ function AuthenticateUserFormContent({
   isVerticalLayout?: boolean
   verificationClassName?: string
 }) {
-  const { state, goBack, mode } = useAuthContext() ?? {}
+  const { state, goBack, mode } = useAuthContext()
 
   // Switch on phase so TypeScript narrows the discriminated union
-  switch (state?.phase) {
+  switch (state.phase) {
     case 'idle':
     case 'email_sending':
       return (
@@ -104,14 +101,14 @@ function AuthenticateUserFormContent({
       )
     default: {
       // All remaining phases carry an `email` field
-      const { email } = state ?? {}
+      const { email } = state
       return (
         <div
           className={twMerge(
             'dark:bg-primary-700 mb-8 rounded-xl bg-[#F4F5FB] p-4 md:p-8 dark:text-white',
             verificationClassName
           )}>
-          <VerifyCodeForm email={email ?? ''} />
+          <VerifyCodeForm email={email} />
 
           <Button
             onClick={goBack}

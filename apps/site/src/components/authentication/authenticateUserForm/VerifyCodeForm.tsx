@@ -47,26 +47,26 @@ export default function VerificationForm({ email }: Props) {
     loginError,
     hasResendError,
     clearLoginError,
-  } = useAuthContext() ?? {}
+  } = useAuthContext()
 
-  const isPending = state?.phase === 'verifying_code'
+  const isPending = state.phase === 'verifying_code'
   const isSuccess =
-    state?.phase === 'authenticated' || state?.phase === 'redirecting'
-  const isResending = state?.phase === 'resending_code'
+    state.phase === 'authenticated' || state.phase === 'redirecting'
+  const isResending = state.phase === 'resending_code'
 
   const isValidationDisabled = isPending || isSuccess || isResending
 
   const isRetryButtonDisabled = isValidationDisabled || resendTimeLeft > 0
 
   const inputError =
-    loginError && state?.phase === 'code_sent'
+    loginError && state.phase === 'code_sent'
       ? getErrorMessage({ error: loginError, t })
       : undefined
 
   const handleValidateVerificationCode = useCallback(
     async (code: string) => {
       if (isValidationDisabled) return
-      await verifyCode?.(code, email)
+      await verifyCode(code, email)
     },
     [isValidationDisabled, verifyCode, email]
   )
@@ -74,7 +74,7 @@ export default function VerificationForm({ email }: Props) {
   const handleInputChange = useCallback(
     (code: string) => {
       if (code.length < 6) {
-        clearLoginError?.()
+        clearLoginError()
       }
     },
     [clearLoginError]
@@ -82,7 +82,7 @@ export default function VerificationForm({ email }: Props) {
 
   const handleResend = useCallback(() => {
     setResendTimeLeft(NUM_SECONDS)
-    void resendCode?.(email)
+    void resendCode(email)
   }, [resendCode, setResendTimeLeft, email])
 
   return (

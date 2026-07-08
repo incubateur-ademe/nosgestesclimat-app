@@ -43,8 +43,7 @@ export default function SendVerificationCodeForm({
 }: Props) {
   const { t } = useClientTranslation()
 
-  const { sendEmail, state, isCreatingCode, hasEmailError } =
-    useAuthContext() ?? {}
+  const { sendEmail, state, isCreatingCode, hasEmailError } = useAuthContext()
 
   const user = useUser().user
 
@@ -60,15 +59,14 @@ export default function SendVerificationCodeForm({
     },
   })
 
-  const isEmailSending = state?.phase === 'email_sending'
-  const isLoading = isCreatingCode ? true : isEmailSending
+  const isLoading = isCreatingCode || state.phase === 'email_sending'
 
   return (
     <Form
       onSubmit={(e) => {
         trackPosthogEvent(captureClickSubmitEmail({ mode }))
         void handleSubmit((data: FormData) => {
-          void sendEmail?.(data.email)
+          void sendEmail(data.email)
         })(e)
       }}
       buttonLabel={
