@@ -192,7 +192,7 @@ router
 router
   .route('/v1/:groupId')
   .get(
-    authentificationMiddleware(),
+    authentificationMiddleware({ passIfUnauthorized: true }),
     validateRequest(GroupFetchValidator),
     async ({ params, user }, res) => {
       try {
