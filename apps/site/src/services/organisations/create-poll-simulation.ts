@@ -6,7 +6,7 @@ import { stringifyModel, type Model } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import type { Locale } from '@/i18nConfig'
-import { withUserId } from '@/services/auth/with-user-id'
+import { withUserSession } from '@/services/auth/with-user-session'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 
 export const createPollSimulation = async ({
@@ -20,7 +20,7 @@ export const createPollSimulation = async ({
   simulation?: Simulation
   model?: Model
 }) =>
-  await withUserId(async () => {
+  await withUserSession(async (session) => {
     const sim =
       simulation ?? generateSimulation({ model: stringifyModel(model!) })
 
@@ -29,6 +29,7 @@ export const createPollSimulation = async ({
       {
         method: 'POST',
         body: sim,
+        session,
       }
     )
   })

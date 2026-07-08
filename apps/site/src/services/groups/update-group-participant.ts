@@ -4,7 +4,7 @@ import { GROUP_URL } from '@/constants/urls/main'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { revalidatePath } from 'next/cache'
-import { withUserId } from '../auth/with-user-id'
+import { withUserSession } from '../auth/with-user-session'
 
 export const updateGroupParticipant = async ({
   groupId,
@@ -15,13 +15,14 @@ export const updateGroupParticipant = async ({
   simulation: Simulation
   name?: string
 }) =>
-  await withUserId(async () => {
+  await withUserSession(async (session) => {
     const result = await fetchServer(`${GROUP_URL}/${groupId}/participants`, {
       method: 'POST',
       body: {
         simulation,
         name,
       },
+      session,
     })
     revalidatePath('/amis/resultats')
     return result
