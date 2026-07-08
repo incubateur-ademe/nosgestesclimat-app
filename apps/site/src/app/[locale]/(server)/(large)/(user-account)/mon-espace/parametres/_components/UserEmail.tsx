@@ -17,6 +17,7 @@ export default function UserEmail({ user }: Props) {
       <UserProvider userSession={user}>
         <UserEmailForm
           defaultEmail={user.email}
+          resetLocalState={() => setIsEditing(false)}
           submitLabel={
             <Trans i18nKey="mon-espace.settings.userInfos.submitLabel">
               Mettre à jour mes informations

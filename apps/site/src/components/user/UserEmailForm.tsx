@@ -1,22 +1,22 @@
 'use client'
 
-import { AuthProvider } from '@/components/authentication/authenticateUserForm/AuthContext'
+import {
+  AuthProvider,
+  useAuthContext,
+} from '@/components/authentication/authenticateUserForm/AuthContext'
 import VerifyCodeForm from '@/components/authentication/authenticateUserForm/VerifyCodeForm'
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
 import { captureClickUpdateUserEmail } from '@/constants/tracking/posthogTrackers'
-import { clickUpdateUserEmail } from '@/constants/tracking/user-account'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import Modal from '@/design-system/modals/Modal'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
+import { useRouter } from 'next/navigation'
 import { useCallback, useState, type ReactNode } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm as useReactHookForm } from 'react-hook-form'
@@ -29,14 +29,66 @@ interface Props {
   submitLabel?: string | ReactNode
   className?: string
   defaultEmail: string
+  resetLocalState: () => void
 }
 
 export default function UserEmailForm({
   submitLabel,
   className,
   defaultEmail,
+  resetLocalState,
 }: Props) {
+  const router = useRouter()
+
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
+
+  const handleOnComplete = useCallback(() => {
+    setShowVerificationModal(false)
+    router.refresh()
+    resetLocalState()
+  }, [router, resetLocalState])
+
+  return (
+    <AuthProvider onComplete={handleOnComplete}>
+      <UserEmailFormContent
+        submitLabel={submitLabel}
+        className={className}
+        defaultEmail={defaultEmail}
+        showVerificationModal={showVerificationModal}
+        pendingEmail={pendingEmail}
+        onOpenVerification={(email: string) => {
+          setPendingEmail(email)
+          setShowVerificationModal(true)
+        }}
+        onCloseVerification={() => {
+          setShowVerificationModal(false)
+          resetLocalState()
+        }}
+      />
+    </AuthProvider>
+  )
+}
+
+function UserEmailFormContent({
+  submitLabel,
+  className,
+  defaultEmail,
+  showVerificationModal,
+  pendingEmail,
+  onOpenVerification,
+  onCloseVerification,
+}: {
+  submitLabel?: string | ReactNode
+  className?: string
+  defaultEmail: string
+  showVerificationModal: boolean
+  pendingEmail: string
+  onOpenVerification: (email: string) => void
+  onCloseVerification: () => void
+}) {
   const { t } = useClientTranslation()
+  const { sendEmail } = useAuthContext()
 
   const { register, handleSubmit } = useReactHookForm<Inputs>({
     defaultValues: { email: defaultEmail },
@@ -44,24 +96,13 @@ export default function UserEmailForm({
 
   const updateUserSettings = useUpdateUserSettings()
 
-  const [showVerificationModal, setShowVerificationModal] = useState(false)
-  const [pendingEmail, setPendingEmail] = useState('')
-
-  const handleOnComplete = useCallback(
-    (_user: { email: string; userId: string }) => {
-      setShowVerificationModal(false)
-    },
-    []
-  )
-
   const createCodeIfEmailChanged: SubmitHandler<Inputs> = (data) => {
-    trackMatomoEvent__deprecated(clickUpdateUserEmail)
     trackPosthogEvent(captureClickUpdateUserEmail)
     const nextEmail = formatEmail(data.email)
 
     if (nextEmail && nextEmail !== defaultEmail) {
-      setPendingEmail(nextEmail)
-      setShowVerificationModal(true)
+      onOpenVerification(nextEmail)
+      void sendEmail(nextEmail)
     }
   }
 
@@ -77,11 +118,9 @@ export default function UserEmailForm({
               "Fenêtre modale de confirmation d'e-mail"
             )}
             isOpen
-            closeModal={() => setShowVerificationModal(false)}
+            closeModal={onCloseVerification}
             hasAbortCross={false}>
-            <AuthProvider onComplete={handleOnComplete}>
-              <VerifyCodeForm email={pendingEmail} />
-            </AuthProvider>
+            <VerifyCodeForm email={pendingEmail} />
           </Modal>
         )}
 
@@ -120,7 +159,9 @@ export default function UserEmailForm({
               <span data-testid="custom-submit-label">{submitLabel}</span>
             ) : (
               <span data-testid="default-submit-label">
-                <Trans>Mettre à jour mes coordonnées</Trans>
+                <Trans i18nKey="userParams.updateInfo">
+                  Mettre à jour mes coordonnées
+                </Trans>
               </span>
             )}
           </Button>

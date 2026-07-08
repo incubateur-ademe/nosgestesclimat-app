@@ -68,12 +68,6 @@ export const clickCategorySelectorMobile = (category: string) => [
   category,
 ]
 
-export const clickUpdateUserEmail = [
-  'trackEvent',
-  'User Account Settings',
-  'Click Update User Email',
-]
-
 export const clickUpdateUserNewsletters = [
   'trackEvent',
   'User Account Settings',
