@@ -12,7 +12,7 @@ export const authentificationMiddleware =
   >({
     passIfUnauthorized,
   }: {
-    /** Should only be used for endpoints that accept both unauthenticated requests but have a different behavior when authenticated (e.g. checks if `req.user` exists) */
+    /** Should only be used for endpoints that accept unauthenticated requests but need `req.user` if there is one */
     passIfUnauthorized?: true
   } = {}): RequestHandler<ReqParams, ResBody, ReqBody, ReqQuery> =>
   (req, res, next) => {
