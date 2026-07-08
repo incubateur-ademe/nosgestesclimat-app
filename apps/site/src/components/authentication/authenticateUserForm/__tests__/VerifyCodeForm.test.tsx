@@ -7,10 +7,6 @@ import type { AuthContextValue } from '../AuthContext'
 import { useAuthContext } from '../AuthContext'
 import VerifyCodeForm from '../VerifyCodeForm'
 
-vi.mock('@/app/[locale]/marianne', () => ({
-  marianne: { className: 'font-marianne' },
-}))
-
 vi.mock('@/hooks/organisations/useTimeleft', () => ({
   default: vi.fn(() => ({ timeLeft: 0, setTimeLeft: vi.fn() })),
 }))
