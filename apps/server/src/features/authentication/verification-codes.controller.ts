@@ -1,6 +1,5 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import logger from '../../logger.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
@@ -32,7 +31,6 @@ router.route('/v1/').post(
     try {
       const verificationCode = await createVerificationCode({
         verificationCodeDto: req.body,
-        origin: req.get('origin') || config.app.origin,
         ...req.query,
       })
       return res.status(StatusCodes.CREATED).json({

@@ -50,7 +50,10 @@ router
       try {
         const group = await createGroup({
           groupDto: req.body,
-          origin: req.get('origin') || config.app.origin,
+          origin:
+            req.get('x-forwarded-origin') ||
+            req.get('origin') ||
+            config.app.origin,
           user: req.user!,
         })
 
@@ -110,7 +113,10 @@ router
       try {
         const participant = await createParticipant({
           params: req.params,
-          origin: req.get('origin') || config.app.origin,
+          origin:
+            req.get('x-forwarded-origin') ||
+            req.get('origin') ||
+            config.app.origin,
           participantDto: req.body,
           user: req.user!,
         })

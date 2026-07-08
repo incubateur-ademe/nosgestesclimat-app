@@ -61,7 +61,8 @@ router.route('/v1').post(
   validateRequest(SimulationCreateValidator),
   async (req, res) => {
     try {
-      const origin = req.get('origin') || config.app.origin
+      const origin =
+        req.get('x-forwarded-origin') || req.get('origin') || config.app.origin
       const { simulation } = await createSimulation({
         simulationDto: req.body,
         query: req.query,

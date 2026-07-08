@@ -39,11 +39,9 @@ export const generateVerificationCode = async (
 export const createVerificationCode = (
   {
     verificationCodeDto,
-    origin,
     locale,
   }: {
     verificationCodeDto: Pick<VerificationCodeCreateDto, 'email'>
-    origin: string
     locale: Locales
   },
   { session: parentSession }: { session?: Session } = {}
@@ -61,7 +59,6 @@ export const createVerificationCode = (
         code,
       },
       locale,
-      origin,
     })
 
     EventBus.emit(verificationCodeCreatedEvent)

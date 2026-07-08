@@ -43,7 +43,10 @@ router
     validateRequest(LoginValidator),
     async (req, res) => {
       try {
-        const origin = req.get('origin') || config.app.origin
+        const origin =
+          req.get('x-forwarded-origin') ||
+          req.get('origin') ||
+          config.app.origin
         const { token, user } = await login({
           loginDto: req.body,
           origin,

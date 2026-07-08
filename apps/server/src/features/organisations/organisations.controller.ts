@@ -73,7 +73,10 @@ router
       try {
         const organisation = await createOrganisation({
           organisationDto: req.body,
-          origin: req.get('origin') || config.app.origin,
+          origin:
+            req.get('x-forwarded-origin') ||
+            req.get('origin') ||
+            config.app.origin,
           locale: req.query.locale,
           user: req.user,
         })
@@ -210,7 +213,10 @@ router
       }
       try {
         const poll = await createPoll({
-          origin: req.get('origin') || config.app.origin,
+          origin:
+            req.get('x-forwarded-origin') ||
+            req.get('origin') ||
+            config.app.origin,
           locale: req.query.locale,
           pollDto: req.body,
           user: req.user,
@@ -414,7 +420,10 @@ router
       try {
         const simulation = await createPollSimulation({
           simulationDto: req.body,
-          origin: req.get('origin') || config.app.origin,
+          origin:
+            req.get('x-forwarded-origin') ||
+            req.get('origin') ||
+            config.app.origin,
           locale: req.query.locale,
           params: req.params,
           user: req.user!,
