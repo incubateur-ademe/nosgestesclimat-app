@@ -35,7 +35,7 @@ export const updateUser = async ({
     method: 'PUT',
     body: { email, name, ageRange },
   })
-  if (email !== session.email) {
+  if (email !== undefined && email !== session.email) {
     await revokeAllSessions(session.id)
     await createAppSession(session.id, email)
   }
