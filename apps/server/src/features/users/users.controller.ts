@@ -1,6 +1,5 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
@@ -56,13 +55,10 @@ router
     validateRequest(UpdateUserValidator),
     async (req, res) => {
       try {
-        const origin = req.get('origin') || config.app.origin
-
         const { user, verified } = await updateUserAndContact({
           user: req.user!,
           code: req.query.code,
           newUserData: req.body,
-          origin,
         })
 
         return verified
