@@ -22,13 +22,11 @@ interface Props {
   additionnalButton?: ReactNode
   onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
   required?: boolean
-  trackers?: {
-    matomo: string[]
-    posthog: {
-      eventName: string
-      properties?: Record<string, string | number | boolean | null | undefined>
-    }
+  tracker?: {
+    eventName: string
+    properties?: Record<string, string | number | boolean | null | undefined>
   }
+
   isVerticalLayout?: boolean
   verificationClassName?: string
 }
@@ -42,7 +40,7 @@ export default function AuthenticateUserForm({
   mode,
   onComplete,
   required = true,
-  trackers,
+  tracker,
   isVerticalLayout = true,
   verificationClassName,
 }: Props) {
@@ -51,7 +49,7 @@ export default function AuthenticateUserForm({
       mode={mode}
       redirectPathname={redirectPathname}
       onComplete={onComplete}
-      trackers={trackers}>
+      tracker={tracker}>
       <AuthenticateUserFormContent
         buttonLabel={buttonLabel}
         buttonColor={buttonColor}

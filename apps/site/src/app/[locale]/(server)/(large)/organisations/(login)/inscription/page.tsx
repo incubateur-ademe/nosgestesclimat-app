@@ -3,10 +3,7 @@ import OrganisationFilAriane from '@/components/layout/FilAriane'
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNUP_MODE } from '@/constants/authentication/modes'
-import {
-  captureOrganisationsLoginComplete,
-  organisationsLoginComplete,
-} from '@/constants/tracking/pages/organisationsConnexion'
+import { captureOrganisationsLoginComplete } from '@/constants/tracking/pages/organisationsConnexion'
 import Separator from '@/design-system/layout/Separator'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
@@ -68,10 +65,7 @@ export default async function Page({
             />
             <AuthenticateUserForm
               onComplete={redirectAfterLogin}
-              trackers={{
-                matomo: organisationsLoginComplete,
-                posthog: captureOrganisationsLoginComplete,
-              }}
+              tracker={captureOrganisationsLoginComplete}
               buttonLabel={t(
                 'organisations.inscription.cta',
                 'Créer mon compte'

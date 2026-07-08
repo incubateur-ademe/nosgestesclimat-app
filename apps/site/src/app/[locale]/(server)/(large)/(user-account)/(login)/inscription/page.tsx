@@ -3,7 +3,6 @@ import AuthenticateUserForm from '@/components/authentication/AuthenticateUserFo
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNUP_MODE } from '@/constants/authentication/modes'
-import { signupComplete } from '@/constants/tracking/pages/mon-espace'
 import { captureSignupComplete } from '@/constants/tracking/posthogTrackers'
 import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
@@ -53,10 +52,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
               mode="signUp"
               buttonLabel={t('signup.button.label', "M'inscrire")}
               redirectPathname={`${MON_ESPACE_PATH}?${SHOW_WELCOME_BANNER_QUERY_PARAM}=true`}
-              trackers={{
-                matomo: signupComplete,
-                posthog: captureSignupComplete,
-              }}
+              tracker={captureSignupComplete}
             />
           </UserProvider>
         </QueryClientProviderWrapper>

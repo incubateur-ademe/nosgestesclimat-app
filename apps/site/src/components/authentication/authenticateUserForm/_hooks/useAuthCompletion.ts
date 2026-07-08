@@ -14,11 +14,9 @@ interface UseAuthCompletionOptions {
   dispatch: Dispatch<AuthEvent>
   onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
   redirectPathname?: string
-  trackers?: {
-    posthog: {
-      eventName: string
-      properties?: Record<string, string | number | boolean | null | undefined>
-    }
+  tracker?: {
+    eventName: string
+    properties?: Record<string, string | number | boolean | null | undefined>
   }
 }
 
@@ -35,7 +33,7 @@ export function useAuthCompletion({
   dispatch,
   onComplete,
   redirectPathname,
-  trackers,
+  tracker,
 }: UseAuthCompletionOptions) {
   const router = useRouter()
 
@@ -44,8 +42,8 @@ export function useAuthCompletion({
     async (user: { email: string; userId: string }) => {
       safeSessionStorage.removeItem(EMAIL_PENDING_AUTHENTICATION_KEY)
 
-      if (trackers) {
-        trackPosthogEvent(trackers.posthog)
+      if (tracker) {
+        trackPosthogEvent(tracker)
       }
 
       dispatch({ type: 'FINALIZE' })
@@ -57,7 +55,7 @@ export function useAuthCompletion({
       }
       router.refresh()
     },
-    [onComplete, redirectPathname, router, trackers, dispatch]
+    [onComplete, redirectPathname, router, tracker, dispatch]
   )
 
   const { pendingVerification, completeVerification, registerVerification } =

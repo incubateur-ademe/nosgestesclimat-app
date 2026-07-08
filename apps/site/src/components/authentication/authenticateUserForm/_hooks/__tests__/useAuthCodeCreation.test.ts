@@ -23,12 +23,14 @@ describe('useAuthCodeCreation', () => {
   ) {
     const defaultReturn = {
       createVerificationCode: vi.fn().mockResolvedValue(undefined),
-      createVerificationCodeError: false,
+      createVerificationCodeError: false as const,
       createVerificationCodePending: false,
       resetVerificationCode: vi.fn(),
       ...overrides,
     }
-    vi.mocked(useCreateVerificationCode).mockReturnValue(defaultReturn)
+    vi.mocked(useCreateVerificationCode).mockReturnValue(
+      defaultReturn as ReturnType<typeof useCreateVerificationCode>
+    )
     return defaultReturn
   }
 

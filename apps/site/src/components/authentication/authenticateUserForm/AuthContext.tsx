@@ -39,11 +39,9 @@ export interface AuthProviderProps {
   mode?: AuthenticationMode
   redirectPathname?: string
   onComplete?: (user: { email: string; userId: string }) => void | Promise<void>
-  trackers?: {
-    posthog: {
-      eventName: string
-      properties?: Record<string, string | number | boolean | null | undefined>
-    }
+  tracker?: {
+    eventName: string
+    properties?: Record<string, string | number | boolean | null | undefined>
   }
 }
 
@@ -52,7 +50,7 @@ export function AuthProvider({
   mode,
   redirectPathname,
   onComplete,
-  trackers,
+  tracker,
 }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialAuthPhase)
 
@@ -61,7 +59,7 @@ export function AuthProvider({
     dispatch,
     onComplete,
     redirectPathname,
-    trackers,
+    tracker,
   })
 
   // Code creation (send / resend verification email)

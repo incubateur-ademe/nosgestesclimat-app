@@ -1,8 +1,7 @@
-import { act, renderHook, waitFor } from '@testing-library/react'
-import { useCallback } from 'react'
+import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useAuthLogin } from '../useAuthLogin'
 import type { AuthEvent } from '../../authMachine'
+import { useAuthLogin } from '../useAuthLogin'
 
 vi.mock('../useLogin', () => ({
   useLogin: vi.fn(),

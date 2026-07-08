@@ -1,7 +1,6 @@
 'use client'
 
-import { useCreateVerificationCode } from '@/components/authentication/authenticateUserForm/_hooks/useCreateVerificationCode'
-import { usePendingVerification } from '@/components/authentication/authenticateUserForm/_hooks/usePendingVerification'
+import { AuthProvider } from '@/components/authentication/authenticateUserForm/AuthContext'
 import VerifyCodeForm from '@/components/authentication/authenticateUserForm/VerifyCodeForm'
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
@@ -18,10 +17,7 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
-import { captureException } from '@sentry/nextjs'
-import type { UseMutationResult } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
-import { type ReactNode } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
@@ -47,32 +43,25 @@ export default function UserEmailForm({
   })
 
   const updateUserSettings = useUpdateUserSettings()
-  const router = useRouter()
-  const {
-    pendingVerification,
-    registerVerification,
-    resetVerification,
-    completeVerification,
-  } = usePendingVerification({
-    onComplete: () => {
-      router.refresh()
-    },
-  })
 
-  const { createVerificationCode, createVerificationCodeError } =
-    useCreateVerificationCode({ onComplete: registerVerification })
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
+
+  const handleOnComplete = useCallback(
+    async (_user: { email: string; userId: string }) => {
+      setShowVerificationModal(false)
+    },
+    []
+  )
 
   const createCodeIfEmailChanged: SubmitHandler<Inputs> = async (data) => {
     trackMatomoEvent__deprecated(clickUpdateUserEmail)
     trackPosthogEvent(captureClickUpdateUserEmail)
-    try {
-      const nextEmail = formatEmail(data.email)
+    const nextEmail = formatEmail(data.email)
 
-      if (nextEmail && nextEmail !== defaultEmail) {
-        await createVerificationCode(nextEmail)
-      }
-    } catch (error) {
-      captureException(error)
+    if (nextEmail && nextEmail !== defaultEmail) {
+      setPendingEmail(nextEmail)
+      setShowVerificationModal(true)
     }
   }
 
@@ -81,29 +70,18 @@ export default function UserEmailForm({
       <form
         onSubmit={handleSubmit(createCodeIfEmailChanged)}
         className="flex w-full flex-col items-start gap-4">
-        {pendingVerification && (
+        {showVerificationModal && pendingEmail && (
           <Modal
             ariaLabel={t(
               'organisations.emailVerificationModal.title',
               "Fenêtre modale de confirmation d'e-mail"
             )}
             isOpen
-            closeModal={() => resetVerification()}
+            closeModal={() => setShowVerificationModal(false)}
             hasAbortCross={false}>
-            <VerifyCodeForm
-              key={pendingVerification.email}
-              onRegisterNewVerification={registerVerification}
-              email={pendingVerification.email}
-              onVerificationCompleted={completeVerification}
-              verificationMutation={
-                updateUserSettings as UseMutationResult<
-                  { userId: string },
-                  Error,
-                  { email: string; code: string },
-                  unknown
-                >
-              }
-            />
+            <AuthProvider onComplete={handleOnComplete}>
+              <VerifyCodeForm email={pendingEmail} />
+            </AuthProvider>
           </Modal>
         )}
 
@@ -125,7 +103,7 @@ export default function UserEmailForm({
           </p>
         )}
 
-        {createVerificationCodeError && (
+        {updateUserSettings.isError && (
           <div data-testid="error-message">
             <DefaultSubmitErrorMessage />
           </div>

@@ -58,8 +58,7 @@ describe('SendVerificationCodeForm', () => {
     expect(
       screen.getByTestId('verification-code-email-input')
     ).toBeInTheDocument()
-    // The default button label is a translation key rendered by our mock
-    expect(screen.getByRole('button', { type: 'submit' })).toBeInTheDocument()
+    expect(screen.getByRole('button')).toBeInTheDocument()
   })
 
   it('renders with custom buttonLabel and inputLabel', () => {
@@ -83,10 +82,9 @@ describe('SendVerificationCodeForm', () => {
       </Wrapper>
     )
 
-    const button = screen.getByRole('button', { type: 'submit' })
+    const button = screen.getByRole('button')
     await userEvent.click(button)
 
-    // The react-hook-form validation message should appear
     expect(
       screen.getByText('signIn.emailForm.error.required')
     ).toBeInTheDocument()
@@ -102,7 +100,7 @@ describe('SendVerificationCodeForm', () => {
     const input = screen.getByTestId('verification-code-email-input')
     await userEvent.type(input, 'not-an-email')
 
-    const button = screen.getByRole('button', { type: 'submit' })
+    const button = screen.getByRole('button')
     await userEvent.click(button)
 
     expect(
@@ -120,7 +118,7 @@ describe('SendVerificationCodeForm', () => {
     const input = screen.getByTestId('verification-code-email-input')
     await userEvent.type(input, 'user@example.com')
 
-    const button = screen.getByRole('button', { type: 'submit' })
+    const button = screen.getByRole('button')
     await userEvent.click(button)
 
     expect(mockSendEmail).toHaveBeenCalledWith('user@example.com')
@@ -189,9 +187,7 @@ describe('SendVerificationCodeForm', () => {
       </Wrapper>
     )
 
-    // The Form component sets loading={true}, which renders a loader.
-    // We verify by checking the button has the disabled styling (aria-disabled).
-    const button = screen.getByRole('button', { type: 'submit' })
+    const button = screen.getByRole('button')
     expect(button).toHaveAttribute('aria-disabled', 'true')
   })
 })

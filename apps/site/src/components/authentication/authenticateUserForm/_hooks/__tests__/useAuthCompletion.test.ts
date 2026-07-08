@@ -1,3 +1,5 @@
+import { useCookieManagement } from '@/components/cookies/useCookieManagement'
+import { useUser } from '@/publicodes-state'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { act, renderHook, waitFor } from '@testing-library/react'
@@ -20,9 +22,6 @@ vi.mock('@/components/cookies/useCookieManagement', () => ({
 vi.mock('@/helpers/user/reconcileOnAuth', () => ({
   reconcileUserOnAuth: vi.fn(),
 }))
-
-import { useCookieManagement } from '@/components/cookies/useCookieManagement'
-import { useUser } from '@/publicodes-state'
 
 describe('useAuthCompletion', () => {
   const mockDispatch = vi.fn() as React.Dispatch<AuthEvent>
@@ -51,7 +50,9 @@ describe('useAuthCompletion', () => {
       refresh: mockRefresh,
       replace: vi.fn(),
       back: vi.fn(),
-    })
+      prefetch: vi.fn(),
+      forward: vi.fn(),
+    } as any)
 
     return { mockPush, mockRefresh }
   }
@@ -79,9 +80,7 @@ describe('useAuthCompletion', () => {
         dispatch: mockDispatch,
         onComplete: mockOnComplete,
         redirectPathname: '/dashboard',
-        trackers: {
-          posthog: { eventName: 'user_authenticated' },
-        },
+        tracker: { eventName: 'user_authenticated' },
       })
     )
 
@@ -120,7 +119,7 @@ describe('useAuthCompletion', () => {
     expect(mockRefresh).toHaveBeenCalled()
   })
 
-  it('does not track when trackers are not provided', async () => {
+  it('does not track when tracker is not provided', async () => {
     const mockTrack = vi.mocked(trackPosthogEvent)
     mockRouter()
 

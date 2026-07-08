@@ -3,7 +3,6 @@ import AuthenticateUserForm from '@/components/authentication/AuthenticateUserFo
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNIN_MODE } from '@/constants/authentication/modes'
-import { loginComplete } from '@/constants/tracking/pages/mon-espace'
 import { captureLoginComplete } from '@/constants/tracking/posthogTrackers'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
@@ -47,10 +46,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
             <AuthenticateUserForm
               mode="signIn"
               redirectPathname={MON_ESPACE_PATH}
-              trackers={{
-                matomo: loginComplete,
-                posthog: captureLoginComplete,
-              }}
+              tracker={captureLoginComplete}
             />
           </UserProvider>
         </QueryClientProviderWrapper>
