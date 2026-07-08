@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { AxiosError } from 'axios'
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthContextValue } from '../AuthContext'
 import { useAuthContext } from '../AuthContext'
@@ -92,7 +92,7 @@ describe('VerifyCodeForm', () => {
       status: 403,
       statusText: 'Forbidden',
       headers: {},
-      config: {} as unknown as AxiosError['config'],
+      config: {} as InternalAxiosRequestConfig,
     }
 
     vi.mocked(useAuthContext).mockReturnValue({
@@ -127,7 +127,7 @@ describe('VerifyCodeForm', () => {
       status: 500,
       statusText: 'Server Error',
       headers: {},
-      config: {} as unknown as AxiosError['config'],
+      config: {} as InternalAxiosRequestConfig,
     }
 
     vi.mocked(useAuthContext).mockReturnValue({
