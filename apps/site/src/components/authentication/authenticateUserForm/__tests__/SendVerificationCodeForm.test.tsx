@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { AuthContextValue } from '../AuthContext'
 import { useAuthContext } from '../AuthContext'
 import SendVerificationCodeForm from '../SendVerificationCodeForm'
 
@@ -39,11 +40,11 @@ describe('SendVerificationCodeForm', () => {
       state: { phase: 'idle' },
       isCreatingCode: false,
       hasEmailError: false,
-    } as any)
+    } as unknown as AuthContextValue)
 
     vi.mocked(useUser).mockReturnValue({
       user: null,
-    } as any)
+    } as unknown as ReturnType<typeof useUser>)
 
     vi.mocked(safeSessionStorage.getItem).mockReturnValue(null)
   })
@@ -133,16 +134,15 @@ describe('SendVerificationCodeForm', () => {
       </Wrapper>
     )
 
-    const input = screen.getByTestId(
-      'verification-code-email-input'
-    ) as HTMLInputElement
-    expect(input.value).toBe('stored@example.com')
+    expect(screen.getByTestId('verification-code-email-input')).toHaveValue(
+      'stored@example.com'
+    )
   })
 
   it('pre-fills the email from the user object when sessionStorage is empty', () => {
     vi.mocked(useUser).mockReturnValue({
       user: { email: 'user@example.com' },
-    } as any)
+    } as unknown as ReturnType<typeof useUser>)
 
     render(
       <Wrapper>
@@ -150,10 +150,9 @@ describe('SendVerificationCodeForm', () => {
       </Wrapper>
     )
 
-    const input = screen.getByTestId(
-      'verification-code-email-input'
-    ) as HTMLInputElement
-    expect(input.value).toBe('user@example.com')
+    expect(screen.getByTestId('verification-code-email-input')).toHaveValue(
+      'user@example.com'
+    )
   })
 
   it('displays a server error when hasEmailError is true', () => {
@@ -162,7 +161,7 @@ describe('SendVerificationCodeForm', () => {
       state: { phase: 'idle' },
       isCreatingCode: false,
       hasEmailError: true,
-    } as any)
+    } as unknown as AuthContextValue)
 
     render(
       <Wrapper>
@@ -179,7 +178,7 @@ describe('SendVerificationCodeForm', () => {
       state: { phase: 'idle' },
       isCreatingCode: true,
       hasEmailError: false,
-    } as any)
+    } as unknown as AuthContextValue)
 
     render(
       <Wrapper>

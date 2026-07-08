@@ -48,13 +48,13 @@ export default function UserEmailForm({
   const [pendingEmail, setPendingEmail] = useState('')
 
   const handleOnComplete = useCallback(
-    async (_user: { email: string; userId: string }) => {
+    (_user: { email: string; userId: string }) => {
       setShowVerificationModal(false)
     },
     []
   )
 
-  const createCodeIfEmailChanged: SubmitHandler<Inputs> = async (data) => {
+  const createCodeIfEmailChanged: SubmitHandler<Inputs> = (data) => {
     trackMatomoEvent__deprecated(clickUpdateUserEmail)
     trackPosthogEvent(captureClickUpdateUserEmail)
     const nextEmail = formatEmail(data.email)

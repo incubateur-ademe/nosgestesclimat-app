@@ -34,11 +34,11 @@ describe('useAuthCompletion', () => {
     vi.mocked(useUser).mockReturnValue({
       pendingVerification: null,
       updatePendingVerification: vi.fn(),
-    } as any)
+    } as unknown as ReturnType<typeof useUser>)
 
     vi.mocked(useCookieManagement).mockReturnValue({
       cookieState: 'test-cookies',
-    } as any)
+    } as unknown as ReturnType<typeof useCookieManagement>)
   })
 
   function mockRouter() {
@@ -52,7 +52,7 @@ describe('useAuthCompletion', () => {
       back: vi.fn(),
       prefetch: vi.fn(),
       forward: vi.fn(),
-    } as any)
+    } as unknown as ReturnType<typeof useRouter>)
 
     return { mockPush, mockRefresh }
   }
@@ -65,7 +65,7 @@ describe('useAuthCompletion', () => {
         expirationDate: new Date('2099-12-31'),
       },
       updatePendingVerification: vi.fn(),
-    } as any)
+    } as unknown as ReturnType<typeof useUser>)
   }
 
   it('clears sessionStorage, dispatches FINALIZE, calls onComplete, redirects and refreshes on handleComplete', async () => {
@@ -148,7 +148,7 @@ describe('useAuthCompletion', () => {
     vi.mocked(useUser).mockReturnValue({
       pendingVerification,
       updatePendingVerification: vi.fn(),
-    } as any)
+    } as unknown as ReturnType<typeof useUser>)
 
     const { rerender } = renderHook(() =>
       useAuthCompletion({

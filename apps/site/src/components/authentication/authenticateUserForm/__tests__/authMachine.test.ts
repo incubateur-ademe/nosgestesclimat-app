@@ -302,13 +302,19 @@ describe('authReducer', () => {
       // so it transitions to idle from any state including redirecting.
       const nonResetEvents: AuthEvent[] = [
         { type: 'SUBMIT_EMAIL', email: '' },
-        { type: 'EMAIL_SENT', pendingVerification: {} as any },
+        {
+          type: 'EMAIL_SENT',
+          pendingVerification: { email: '', expirationDate: new Date() },
+        },
         { type: 'EMAIL_ERROR' },
         { type: 'SUBMIT_CODE', code: '' },
         { type: 'CODE_VALID', userId: '' },
         { type: 'CODE_INVALID' },
         { type: 'RESEND_CODE' },
-        { type: 'CODE_RESENT', pendingVerification: {} as any },
+        {
+          type: 'CODE_RESENT',
+          pendingVerification: { email: '', expirationDate: new Date() },
+        },
         { type: 'CODE_RESEND_ERROR' },
         { type: 'GO_BACK' },
         { type: 'FINALIZE' },

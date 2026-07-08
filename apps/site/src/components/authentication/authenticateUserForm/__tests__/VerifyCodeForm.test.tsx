@@ -3,6 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AxiosError } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { AuthContextValue } from '../AuthContext'
+import { useAuthContext } from '../AuthContext'
 import VerifyCodeForm from '../VerifyCodeForm'
 
 vi.mock('@/app/[locale]/marianne', () => ({
@@ -16,8 +18,6 @@ vi.mock('@/hooks/organisations/useTimeleft', () => ({
 vi.mock('../AuthContext', () => ({
   useAuthContext: vi.fn(),
 }))
-
-import { useAuthContext } from '../AuthContext'
 
 describe('VerifyCodeForm', () => {
   const queryClient = new QueryClient({
@@ -52,7 +52,7 @@ describe('VerifyCodeForm', () => {
       loginError: null,
       hasResendError: false,
       clearLoginError: mockClearLoginError,
-    } as any)
+    } as unknown as AuthContextValue)
   })
 
   afterEach(() => {
@@ -92,7 +92,7 @@ describe('VerifyCodeForm', () => {
       status: 403,
       statusText: 'Forbidden',
       headers: {},
-      config: {} as any,
+      config: {} as unknown as AxiosError['config'],
     }
 
     vi.mocked(useAuthContext).mockReturnValue({
@@ -109,7 +109,7 @@ describe('VerifyCodeForm', () => {
       loginError: axiosError,
       hasResendError: false,
       clearLoginError: mockClearLoginError,
-    } as any)
+    } as unknown as AuthContextValue)
 
     render(
       <Wrapper>
@@ -127,7 +127,7 @@ describe('VerifyCodeForm', () => {
       status: 500,
       statusText: 'Server Error',
       headers: {},
-      config: {} as any,
+      config: {} as unknown as AxiosError['config'],
     }
 
     vi.mocked(useAuthContext).mockReturnValue({
@@ -144,7 +144,7 @@ describe('VerifyCodeForm', () => {
       loginError: axiosError,
       hasResendError: false,
       clearLoginError: mockClearLoginError,
-    } as any)
+    } as unknown as AuthContextValue)
 
     render(
       <Wrapper>

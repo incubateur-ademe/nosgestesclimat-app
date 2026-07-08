@@ -8,7 +8,7 @@ import { useLogin } from '../useLogin'
 // Mock the entire login module to avoid pulling in server-side encryption deps
 const mockLoginFn = vi.fn()
 vi.mock('@/services/auth/login', () => ({
-  login: (...args: any[]) => mockLoginFn(...args),
+  login: (...args: unknown[]) => mockLoginFn(...args),
 }))
 
 function createWrapper() {
