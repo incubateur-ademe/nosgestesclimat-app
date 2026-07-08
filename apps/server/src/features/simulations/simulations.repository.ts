@@ -56,7 +56,7 @@ export const createParticipantSimulation = async <
     },
   })
 
-  if (existingSimulation?.userId && existingSimulation.userId !== userId) {
+  if (existingSimulation && existingSimulation.userId !== userId) {
     throw new ForbiddenException('Simulation does not belong to the user')
   }
 

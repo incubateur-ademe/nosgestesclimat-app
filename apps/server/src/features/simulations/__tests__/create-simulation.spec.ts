@@ -371,6 +371,105 @@ describe('Given a NGC user', () => {
       })
     })
 
+    describe('And the simulation belongs to another user', () => {
+      let ownerId: string
+      let simulationId: string
+      let payload: SimulationCreateInputDto
+
+      beforeEach(async () => {
+        ownerId = faker.string.uuid()
+        simulationId = faker.string.uuid()
+
+        await agent
+          .post(url)
+          .set(authHeaders({ userId: ownerId }))
+          .send({
+            id: simulationId,
+            situation,
+            progression: 0,
+            computedResults,
+            extendedSituation,
+          })
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+
+        payload = {
+          id: simulationId,
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+      })
+
+      test(`Then it returns a ${StatusCodes.FORBIDDEN} error and does not update the simulation`, async () => {
+        await agent
+          .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send(payload)
+          .expect(StatusCodes.FORBIDDEN)
+
+        const simulation = await prisma.simulation.findUniqueOrThrow({
+          where: { id: simulationId },
+          select: { userId: true, progression: true },
+        })
+
+        expect(simulation).toEqual({ userId: ownerId, progression: 0 })
+      })
+    })
+
+    describe('And the simulation is orphaned (its account was deleted)', () => {
+      let simulationId: string
+      let payload: SimulationCreateInputDto
+
+      beforeEach(async () => {
+        simulationId = faker.string.uuid()
+
+        await agent
+          .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            id: simulationId,
+            situation,
+            progression: 0,
+            computedResults,
+            extendedSituation,
+          })
+          .expect(StatusCodes.CREATED)
+
+        await EventBus.flush()
+
+        await prisma.simulation.update({
+          where: { id: simulationId },
+          data: { userId: null },
+        })
+
+        payload = {
+          id: simulationId,
+          situation,
+          progression: 1,
+          computedResults,
+          extendedSituation,
+        }
+      })
+
+      test(`Then it returns a ${StatusCodes.FORBIDDEN} error and does not attach the simulation to the requesting user`, async () => {
+        await agent
+          .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send(payload)
+          .expect(StatusCodes.FORBIDDEN)
+
+        const simulation = await prisma.simulation.findUniqueOrThrow({
+          where: { id: simulationId },
+          select: { userId: true },
+        })
+
+        expect(simulation.userId).toBeNull()
+      })
+    })
+
     describe('And the user already has a simulation', () => {
       let userId: string
 
