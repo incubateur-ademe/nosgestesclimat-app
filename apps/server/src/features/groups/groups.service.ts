@@ -38,11 +38,11 @@ import type {
  */
 const groupToDto = (
   group: Awaited<ReturnType<typeof createGroupAndUser>>['group'],
-  connectedUser: string
+  connectedUser?: string
 ) => ({
   ...group,
   administrator:
-    group.administrator?.user.id === connectedUser
+    connectedUser && group.administrator?.user.id === connectedUser
       ? group.administrator?.user
       : {
           name: group.administrator?.user.name,
@@ -69,9 +69,9 @@ const participantToDto = (
   }: Partial<PopulatedParticipant> & {
     user: PopulatedParticipant['user']
   },
-  connectedUser: string
+  connectedUser?: string
 ) => ({
-  ...(userId === connectedUser
+  ...(connectedUser && userId === connectedUser
     ? {
         id,
         simulation,
@@ -310,7 +310,7 @@ export const fetchGroup = async ({
   user,
 }: {
   groupId: string
-  user: PartialUser
+  user?: PartialUser
 }) => {
   try {
     const group = await transaction(
@@ -318,7 +318,7 @@ export const fetchGroup = async ({
       prisma
     )
 
-    return groupToDto(group, user.id)
+    return groupToDto(group, user?.id)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Group not found')

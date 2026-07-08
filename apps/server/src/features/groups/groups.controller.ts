@@ -196,7 +196,7 @@ router
     validateRequest(GroupFetchValidator),
     async ({ params, user }, res) => {
       try {
-        const group = await fetchGroup({ groupId: params.groupId, user: user! })
+        const group = await fetchGroup({ groupId: params.groupId, user })
 
         return res.status(StatusCodes.OK).json(group)
       } catch (err) {

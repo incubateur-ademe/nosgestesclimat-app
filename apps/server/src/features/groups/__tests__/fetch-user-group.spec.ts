@@ -31,10 +31,24 @@ describe('Given a NGC user', () => {
 
   describe('When fetching one of his groups', () => {
     describe('And no authentication', () => {
-      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+      test(`Then it returns a ${StatusCodes.OK} response with the group`, async () => {
+        const group = await createGroup({ agent })
+        const response = await agent
+          .get(url.replace(':groupId', group.id))
+          .expect(StatusCodes.OK)
+
+        expect(response.body).toEqual({
+          ...group,
+          administrator: {
+            name: group.administrator.name,
+          },
+        })
+      })
+
+      test(`Then it returns a ${StatusCodes.NOT_FOUND} error for non-existent group`, async () => {
         await agent
           .get(url.replace(':groupId', faker.database.mongodbObjectId()))
-          .expect(StatusCodes.UNAUTHORIZED)
+          .expect(StatusCodes.NOT_FOUND)
       })
     })
 
