@@ -5,6 +5,7 @@ import Alert from '@/design-system/alerts/alert/Alert'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
+import { isFullSimulation } from '@/helpers/groups/isFullSimulation'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
@@ -36,9 +37,11 @@ export default function UpdateSimulationUsed({ group, user }: Props) {
   const { t } = useClientTranslation()
 
   // The user hasn't got newer simulation than the one used in the group
-  const groupSimulation = group.participants.find(
+  const ownSimulation = group.participants.find(
     (p) => p.userId === user.id
   )?.simulation
+  const groupSimulation =
+    ownSimulation && isFullSimulation(ownSimulation) ? ownSimulation : undefined
   useEffect(() => {
     if (latestSimulation) return
 
