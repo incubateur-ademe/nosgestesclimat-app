@@ -9,6 +9,7 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
@@ -29,38 +30,40 @@ describe('Given a NGC user', () => {
   })
 
   describe('When creating his group', () => {
-    describe('And no data provided', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent.post(url).expect(StatusCodes.BAD_REQUEST)
+    describe('And not authenticated', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+        await agent
+          .post(url)
+          .send({
+            name: faker.company.name(),
+            emoji: faker.internet.emoji(),
+            administrator: {
+              name: faker.person.fullName(),
+            },
+          })
+          .expect(StatusCodes.UNAUTHORIZED)
       })
     })
 
-    describe('And invalid email', () => {
+    describe('And no data provided', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.BAD_REQUEST)
+      })
+    })
+
+    describe('And trying to set an administrator id in the body', () => {
+      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+        await agent
+          .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
               userId: faker.string.uuid(),
-              email: 'Je ne donne jamais mon email',
-              name: faker.person.fullName(),
-            },
-          })
-          .expect(StatusCodes.BAD_REQUEST)
-      })
-    })
-
-    describe('And invalid administrator id', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
-          .post(url)
-          .send({
-            name: faker.company.name(),
-            emoji: faker.internet.emoji(),
-            administrator: {
-              userId: faker.string.alpha(34),
               name: faker.person.fullName(),
             },
           })
@@ -72,11 +75,11 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId: faker.string.uuid(),
               name: faker.person.fullName(),
             },
             participants: [
@@ -96,11 +99,11 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId: faker.string.uuid(),
               name: faker.person.fullName(),
             },
             participants: [
@@ -120,11 +123,11 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId: faker.string.uuid(),
               name: faker.person.fullName(),
             },
             participants: [
@@ -144,11 +147,11 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId: faker.string.uuid(),
               name: faker.person.fullName(),
             },
             participants: [
@@ -167,11 +170,11 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId: faker.string.uuid(),
               name: faker.person.fullName(),
             },
             participants: [
@@ -195,13 +198,13 @@ describe('Given a NGC user', () => {
           name: faker.company.name(),
           emoji: faker.internet.emoji(),
           administrator: {
-            userId,
             name,
           },
         }
 
         const response = await agent
           .post(url)
+          .set(authHeaders({ userId }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -230,15 +233,17 @@ describe('Given a NGC user', () => {
           name: faker.company.name(),
           emoji: faker.internet.emoji(),
           administrator: {
-            userId,
-            email,
             name,
           },
         }
 
         const {
           body: { id },
-        } = await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+        } = await agent
+          .post(url)
+          .set(authHeaders({ userId, email }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
 
         const createdGroup = await prisma.group.findUnique({
           where: {
@@ -291,13 +296,15 @@ describe('Given a NGC user', () => {
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId,
-              email,
               name,
             },
           }
 
-          await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+          await agent
+            .post(url)
+            .set(authHeaders({ userId, email }))
+            .send(payload)
+            .expect(StatusCodes.CREATED)
         })
 
         test('Then it does not add or update administrator contact in brevo', async () => {
@@ -308,13 +315,15 @@ describe('Given a NGC user', () => {
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId,
-              email,
               name,
             },
           }
 
-          await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+          await agent
+            .post(url)
+            .set(authHeaders({ userId, email }))
+            .send(payload)
+            .expect(StatusCodes.CREATED)
         })
       })
     })
@@ -328,7 +337,6 @@ describe('Given a NGC user', () => {
           name: faker.company.name(),
           emoji: faker.internet.emoji(),
           administrator: {
-            userId,
             name,
           },
           participants: [
@@ -340,6 +348,7 @@ describe('Given a NGC user', () => {
 
         const response = await agent
           .post(url)
+          .set(authHeaders({ userId }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -357,6 +366,7 @@ describe('Given a NGC user', () => {
           participants: [
             {
               id: expect.any(String),
+              userId,
               ...payload.administrator,
               email: null,
               simulation: {
@@ -387,8 +397,6 @@ describe('Given a NGC user', () => {
           name: faker.company.name(),
           emoji: faker.internet.emoji(),
           administrator: {
-            userId,
-            email,
             name,
           },
           participants: [
@@ -402,7 +410,11 @@ describe('Given a NGC user', () => {
 
         const {
           body: { id },
-        } = await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+        } = await agent
+          .post(url)
+          .set(authHeaders({ userId, email }))
+          .send(payload)
+          .expect(StatusCodes.CREATED)
 
         const createdGroup = await prisma.group.findUnique({
           where: {
@@ -473,8 +485,6 @@ describe('Given a NGC user', () => {
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId,
-              email,
               name,
             },
             participants: [
@@ -493,7 +503,11 @@ describe('Given a NGC user', () => {
             })
           )
 
-          await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+          await agent
+            .post(url)
+            .set(authHeaders({ userId, email }))
+            .send(payload)
+            .expect(StatusCodes.CREATED)
 
           await EventBus.flush()
 
@@ -568,8 +582,6 @@ describe('Given a NGC user', () => {
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId,
-              email,
               name,
             },
             participants: [
@@ -600,11 +612,6 @@ describe('Given a NGC user', () => {
                       '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage$'
                     )
                   ),
-                  DELETE_URL: expect.stringMatching(
-                    new RegExp(
-                      `^https:\\/\\/nosgestesclimat\\.test\\/amis\\/supprimer\\?groupId=[a-zA-Z0-9_]+&userId=${userId}&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-delete$`
-                    )
-                  ),
                   GROUP_NAME: payload.name,
                   NAME: name,
                 },
@@ -613,7 +620,11 @@ describe('Given a NGC user', () => {
             brevoUpdateContact()
           )
 
-          await agent.post(url).send(payload).expect(StatusCodes.CREATED)
+          await agent
+            .post(url)
+            .set(authHeaders({ userId, email }))
+            .send(payload)
+            .expect(StatusCodes.CREATED)
 
           await EventBus.flush()
         })
@@ -628,8 +639,6 @@ describe('Given a NGC user', () => {
               name: faker.company.name(),
               emoji: faker.internet.emoji(),
               administrator: {
-                userId,
-                email,
                 name,
               },
               participants: [
@@ -660,11 +669,6 @@ describe('Given a NGC user', () => {
                         '^https:\\/\\/preprod\\.nosgestesclimat\\.fr\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage$'
                       )
                     ),
-                    DELETE_URL: expect.stringMatching(
-                      new RegExp(
-                        `^https:\\/\\/preprod\\.nosgestesclimat\\.fr\\/amis\\/supprimer\\?groupId=[a-zA-Z0-9_]+&userId=${userId}&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-delete$`
-                      )
-                    ),
 
                     GROUP_NAME: payload.name,
                     NAME: name,
@@ -676,6 +680,7 @@ describe('Given a NGC user', () => {
 
             await agent
               .post(url)
+              .set(authHeaders({ userId, email }))
               .set('origin', 'https://preprod.nosgestesclimat.fr')
               .send(payload)
               .expect(StatusCodes.CREATED)
@@ -702,11 +707,11 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
           .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .send({
             name: faker.company.name(),
             emoji: faker.internet.emoji(),
             administrator: {
-              userId: faker.string.uuid(),
               name: faker.person.fullName(),
             },
           })
@@ -714,14 +719,16 @@ describe('Given a NGC user', () => {
       })
 
       test('Then it logs the exception', async () => {
-        await agent.post(url).send({
-          name: faker.company.name(),
-          emoji: faker.internet.emoji(),
-          administrator: {
-            userId: faker.string.uuid(),
-            name: faker.person.fullName(),
-          },
-        })
+        await agent
+          .post(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            name: faker.company.name(),
+            emoji: faker.internet.emoji(),
+            administrator: {
+              name: faker.person.fullName(),
+            },
+          })
 
         expect(logger.error).toHaveBeenCalledWith(
           'Group creation failed',

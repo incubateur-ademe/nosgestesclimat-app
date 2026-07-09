@@ -12,6 +12,7 @@ import {
 import { ListIds } from '../../../adapters/brevo/constant.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
@@ -318,10 +319,9 @@ describe('Given a NGC user', () => {
   describe('And user is authenticated', () => {
     let email: string
     let userId: string
-    let cookie: string
 
     beforeEach(async () => {
-      ;({ cookie, email, userId } = await login({
+      ;({ email, userId } = await login({
         agent,
       }))
     })
@@ -332,7 +332,7 @@ describe('Given a NGC user', () => {
 
         const { body } = await agent
           .post(url)
-          .set('cookie', cookie)
+          .set(authHeaders({ userId, email }))
           .send({
             email: differentEmail,
             listIds: [ListIds.MAIN_NEWSLETTER],
@@ -370,7 +370,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               email,
               listIds: [ListIds.MAIN_NEWSLETTER],
@@ -418,7 +418,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               email,
               listIds: [ListIds.MAIN_NEWSLETTER, ListIds.TRANSPORT_NEWSLETTER],
@@ -471,7 +471,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               email,
               listIds: [ListIds.MAIN_NEWSLETTER],
@@ -535,7 +535,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               email,
               listIds: [],
@@ -589,7 +589,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               email,
               listIds: [],

@@ -39,7 +39,7 @@ export async function groupResultsGuard(
     redirect(getLinkToGroupInvitation({ groupId }))
   }
 
-  const group = await throwNextError(() => getGroup({ groupId, user }))
+  const group = await throwNextError(() => getGroup({ groupId }))
 
   const userSimulation = group.participants.find(
     (participant) => participant.userId === user.id

@@ -9,8 +9,8 @@ import { EntityNotFoundException } from '../../core/errors/EntityNotFoundExcepti
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { Locales } from '../../core/i18n/constant.ts'
+import type { PartialUser } from '../../core/types/user.ts'
 import { SimulationUpsertedEvent } from '../simulations/events/SimulationUpserted.event.ts'
-import type { UserParams } from '../users/users.validator.ts'
 import { GroupCreatedEvent } from './events/GroupCreated.event.ts'
 import { GroupDeletedEvent } from './events/GroupDeleted.event.ts'
 import { GroupUpdatedEvent } from './events/GroupUpdated.event.ts'
@@ -27,11 +27,10 @@ import {
 import type {
   GroupCreateDto,
   GroupParams,
+  GroupParticipantParams,
   GroupsFetchQuery,
   GroupUpdateDto,
   ParticipantCreateDto,
-  UserGroupParams,
-  UserGroupParticipantParams,
 } from './groups.validator.ts'
 
 /**
@@ -39,11 +38,11 @@ import type {
  */
 const groupToDto = (
   group: Awaited<ReturnType<typeof createGroupAndUser>>['group'],
-  connectedUser: string
+  connectedUser?: string
 ) => ({
   ...group,
   administrator:
-    group.administrator?.user.id === connectedUser
+    connectedUser && group.administrator?.user.id === connectedUser
       ? group.administrator?.user
       : {
           name: group.administrator?.user.name,
@@ -70,9 +69,9 @@ const participantToDto = (
   }: Partial<PopulatedParticipant> & {
     user: PopulatedParticipant['user']
   },
-  connectedUser: string
+  connectedUser?: string
 ) => ({
-  ...(userId === connectedUser
+  ...(connectedUser && userId === connectedUser
     ? {
         id,
         simulation,
@@ -89,7 +88,7 @@ const participantToDto = (
 })
 
 const findGroupAndParticipant = async (
-  params: UserGroupParticipantParams,
+  params: GroupParticipantParams,
   { session }: { session: Session }
 ) => {
   try {
@@ -105,9 +104,11 @@ const findGroupAndParticipant = async (
 export const createGroup = async ({
   groupDto,
   origin,
+  user,
 }: {
   groupDto: GroupCreateDto
   origin: string
+  user: PartialUser
 }) => {
   const {
     group,
@@ -115,7 +116,9 @@ export const createGroup = async ({
     administrator,
     simulationUpdated,
     simulationCreated,
-  } = await transaction((session) => createGroupAndUser(groupDto, { session }))
+  } = await transaction((session) =>
+    createGroupAndUser(groupDto, { user }, { session })
+  )
   const { participants } = group
 
   const events = []
@@ -149,16 +152,16 @@ export const createGroup = async ({
 
   await EventBus.once(...events)
 
-  return groupToDto(group, groupDto.administrator.userId)
+  return groupToDto(group, user.id)
 }
 
 export const updateGroup = async (
-  params: UserGroupParams,
+  { groupId, user }: { groupId: string; user: PartialUser },
   update: GroupUpdateDto
 ) => {
   try {
     const group = await transaction((session) =>
-      updateUserGroup(params, update, { session })
+      updateUserGroup({ groupId, userId: user.id }, update, { session })
     )
     const { participants } = group
 
@@ -171,7 +174,7 @@ export const updateGroup = async (
 
     await EventBus.once(groupUpdatedEvent)
 
-    return groupToDto(group, params.userId)
+    return groupToDto(group, user.id)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Group not found')
@@ -184,18 +187,20 @@ export const createParticipant = async ({
   origin,
   params,
   participantDto,
+  user,
 }: {
   origin: string
   params: GroupParams
   participantDto: ParticipantCreateDto
+  user: PartialUser
 }) => {
   try {
     const { participant, created, simulationCreated, simulationUpdated } =
       await transaction((session) =>
-        createParticipantAndUser(params, participantDto, { session })
+        createParticipantAndUser(params, participantDto, { user }, { session })
       )
     const {
-      user,
+      user: participantUser,
       group,
       simulation,
       group: { participants },
@@ -203,7 +208,7 @@ export const createParticipant = async ({
     const administrator = group.administrator!.user
 
     const groupUpdatedEvent = new GroupUpdatedEvent({
-      participantUser: user,
+      participantUser,
       administrator,
       participants,
     })
@@ -217,7 +222,7 @@ export const createParticipant = async ({
       simulation,
       origin,
       group,
-      user,
+      user: participantUser,
     })
 
     EventBus.emit(groupUpdatedEvent).emit(simulationUpsertedEvent)
@@ -226,7 +231,7 @@ export const createParticipant = async ({
 
     await EventBus.once(...events)
 
-    return participantToDto(participant, participantDto.userId)
+    return participantToDto(participant, user.id)
   } catch (e) {
     if (isPrismaErrorForeignKeyConstraintFailed(e)) {
       throw new EntityNotFoundException('Group not found')
@@ -235,7 +240,13 @@ export const createParticipant = async ({
   }
 }
 
-export const removeParticipant = async (params: UserGroupParticipantParams) => {
+export const removeParticipant = async ({
+  groupId,
+  participantId,
+  user,
+}: GroupParticipantParams & {
+  user: PartialUser
+}) => {
   try {
     const {
       group: { participants, administrator },
@@ -244,10 +255,10 @@ export const removeParticipant = async (params: UserGroupParticipantParams) => {
       const {
         group: { administrator: admin },
         ...participant
-      } = await findGroupAndParticipant(params, { session })
+      } = await findGroupAndParticipant({ groupId, participantId }, { session })
 
       const administratorId = admin?.userId
-      const isConnectedUserGroupAdmin = params.userId === administratorId
+      const isConnectedUserGroupAdmin = user.id === administratorId
 
       if (isConnectedUserGroupAdmin && administratorId === participant.userId) {
         throw new ForbiddenException(
@@ -255,13 +266,13 @@ export const removeParticipant = async (params: UserGroupParticipantParams) => {
         )
       }
 
-      if (!isConnectedUserGroupAdmin && params.userId !== participant.userId) {
+      if (!isConnectedUserGroupAdmin && user.id !== participant.userId) {
         throw new ForbiddenException(
           'Forbidden ! You cannot remove other participants from this group.'
         )
       }
 
-      return deleteParticipantById(params.participantId, { session })
+      return deleteParticipantById(participantId, { session })
     })
 
     const groupUpdatedEvent = new GroupUpdatedEvent({
@@ -283,25 +294,31 @@ export const removeParticipant = async (params: UserGroupParticipantParams) => {
 }
 
 export const fetchGroups = async (
-  params: UserParams,
+  user: PartialUser,
   filters: GroupsFetchQuery
 ) => {
   const groups = await transaction(
-    (session) => fetchUserGroups(params, filters, { session }),
+    (session) => fetchUserGroups({ userId: user.id }, filters, { session }),
     prisma
   )
 
-  return groups.map((p) => groupToDto(p, params.userId))
+  return groups.map((p) => groupToDto(p, user.id))
 }
 
-export const fetchGroup = async (params: UserGroupParams) => {
+export const fetchGroup = async ({
+  groupId,
+  user,
+}: {
+  groupId: string
+  user?: PartialUser
+}) => {
   try {
     const group = await transaction(
-      (session) => fetchUserGroup(params, { session }),
+      (session) => fetchUserGroup({ groupId }, { session }),
       prisma
     )
 
-    return groupToDto(group, params.userId)
+    return groupToDto(group, user?.id)
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Group not found')

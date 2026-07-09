@@ -32,7 +32,7 @@ export async function groupInvitationGuard(
   }
 
   const user = await getUserSession()
-  const group = await throwNextError(() => getGroup({ groupId, user }))
+  const group = await throwNextError(() => getGroup({ groupId }))
   const userSimulation =
     user &&
     group.participants.find((participant) => participant.userId === user.id)

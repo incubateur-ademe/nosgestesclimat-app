@@ -6,10 +6,9 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { deepMergeSubstract, deepMergeSum } from '../../../core/deep-merge.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import type { ComputedResultSchema } from '../../simulations/simulations.validator.ts'
 import {
   createOrganisation,
@@ -39,98 +38,177 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
-    describe('When fetching a public organisation poll', () => {
-      describe('And invalid userId', () => {
-        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-          await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', faker.string.alpha(34))
-            )
-            .expect(StatusCodes.BAD_REQUEST)
+  describe('When fetching a public organisation poll', () => {
+    describe('And no authentication', () => {
+      test(`Then it does not block the request and returns a ${StatusCodes.NOT_FOUND} error for an unknown poll`, async () => {
+        await agent
+          .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .expect(StatusCodes.NOT_FOUND)
+      })
+    })
+
+    describe('And poll does not exist', () => {
+      test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
+        await agent
+          .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.NOT_FOUND)
+      })
+    })
+
+    describe('And database failure', () => {
+      const databaseError = new Error('Something went wrong')
+
+      beforeEach(() => {
+        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
+          databaseError
+        )
+      })
+
+      afterEach(() => {
+        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRestore()
+      })
+
+      test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
+        await agent
+          .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+      })
+
+      test('Then it logs the exception', async () => {
+        await agent
+          .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+
+        expect(logger.error).toHaveBeenCalledWith(
+          'Public poll fetch failed',
+          databaseError
+        )
+      })
+    })
+  })
+
+  describe('And not an administrator of the organisation', () => {
+    let organisationId: string
+    let organisationName: string
+    let organisationSlug: string
+    let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
+    let pollId: string
+    let pollSlug: string
+
+    beforeEach(async () => {
+      const administratorUserId = faker.string.uuid()
+      const administratorEmail = faker.internet.email()
+      ;({
+        id: organisationId,
+        slug: organisationSlug,
+        name: organisationName,
+      } = await createOrganisation({
+        agent,
+        userId: administratorUserId,
+        email: administratorEmail,
+      }))
+      poll = await createOrganisationPoll({
+        agent,
+        userId: administratorUserId,
+        email: administratorEmail,
+        organisationId,
+      })
+      ;({ id: pollId, slug: pollSlug } = poll)
+    })
+
+    describe('When fetching the public organisation poll', () => {
+      describe('And the user did not participate to the poll', () => {
+        test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
+          const response = await agent
+            .get(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId: faker.string.uuid() }))
+            .expect(StatusCodes.OK)
+
+          expect(response.body).toEqual({
+            ...poll,
+            organisation: {
+              id: organisationId,
+              slug: organisationSlug,
+              name: organisationName,
+            },
+          })
         })
       })
 
-      describe('And poll does not exist', () => {
-        test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
-          await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', faker.string.uuid())
-            )
-            .expect(StatusCodes.NOT_FOUND)
+      describe('And the user is not authenticated', () => {
+        test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
+          const response = await agent
+            .get(url.replace(':pollIdOrSlug', pollId))
+            .expect(StatusCodes.OK)
+
+          expect(response.body).toEqual({
+            ...poll,
+            organisation: {
+              id: organisationId,
+              slug: organisationSlug,
+              name: organisationName,
+            },
+          })
         })
       })
 
-      describe('And poll does exist', () => {
-        let organisationId: string
-        let organisationName: string
-        let organisationSlug: string
-        let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
-        let pollId: string
-        let pollSlug: string
+      describe('And the user did participate to the poll', () => {
+        let computedResults: ComputedResultSchema
+        let userId: string
 
         beforeEach(async () => {
-          const { cookie } = await login({ agent })
           ;({
-            id: organisationId,
-            slug: organisationSlug,
-            name: organisationName,
-          } = await createOrganisation({
+            computedResults,
+            user: { id: userId },
+          } = await createOrganisationPollSimulation({
             agent,
-            cookie,
+            pollId,
           }))
-          poll = await createOrganisationPoll({
-            agent,
-            cookie,
-            organisationId,
-          })
-          ;({ id: pollId, slug: pollSlug } = poll)
         })
 
-        describe('And he did not participate to the poll', () => {
-          test(`Then it returns a ${StatusCodes.OK} response with the poll data`, async () => {
-            const response = await agent
-              .get(
-                url
-                  .replace(':pollIdOrSlug', pollId)
-                  .replace(':userId', faker.string.uuid())
-              )
-              .expect(StatusCodes.OK)
+        test(`Then it returns a ${StatusCodes.OK} response with the poll data`, async () => {
+          const response = await agent
+            .get(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId }))
+            .expect(StatusCodes.OK)
 
-            expect(response.body).toEqual({
-              ...poll,
-              organisation: {
-                id: organisationId,
-                slug: organisationSlug,
-                name: organisationName,
-              },
-            })
-          })
-        })
-
-        describe('And he did participate to the poll', () => {
-          let computedResults: ComputedResultSchema
-          let userId: string
-
-          beforeEach(async () => {
-            ;({
+          expect(response.body).toEqual({
+            ...poll,
+            organisation: {
+              id: organisationId,
+              slug: organisationSlug,
+              name: organisationName,
+            },
+            simulations: {
+              count: 1,
+              finished: 1,
+              hasParticipated: true,
+            },
+            progression: 1,
+            computedResults,
+            userComputedResults: computedResults,
+            otherComputedResults: deepMergeSubstract(
               computedResults,
-              user: { id: userId },
-            } = await createOrganisationPollSimulation({
-              agent,
-              pollId,
-            }))
+              computedResults
+            ),
+            funFacts: Object.fromEntries(
+              Object.entries(modelFunFacts).map(([k]) => [
+                k,
+                expect.any(Number),
+              ])
+            ),
+            updatedAt: expect.any(String),
           })
+        })
 
+        describe('And using poll slug', () => {
           test(`Then it returns a ${StatusCodes.OK} response with the poll data`, async () => {
             const response = await agent
-              .get(
-                url.replace(':pollIdOrSlug', pollId).replace(':userId', userId)
-              )
+              .get(url.replace(':pollIdOrSlug', pollSlug))
+              .set(authHeaders({ userId }))
               .expect(StatusCodes.OK)
 
             expect(response.body).toEqual({
@@ -161,159 +239,42 @@ describe('Given a NGC user', () => {
               updatedAt: expect.any(String),
             })
           })
+        })
 
-          describe('And using poll slug', () => {
-            test(`Then it returns a ${StatusCodes.OK} response with the poll data`, async () => {
-              const response = await agent
-                .get(
-                  url
-                    .replace(':pollIdOrSlug', pollSlug)
-                    .replace(':userId', userId)
-                )
-                .expect(StatusCodes.OK)
+        describe('And another user fetches the poll', () => {
+          test(`Then it does not expose the participant computed results`, async () => {
+            const response = await agent
+              .get(url.replace(':pollIdOrSlug', pollId))
+              .set(authHeaders({ userId: faker.string.uuid() }))
+              .expect(StatusCodes.OK)
 
-              expect(response.body).toEqual({
-                ...poll,
-                organisation: {
-                  id: organisationId,
-                  slug: organisationSlug,
-                  name: organisationName,
-                },
-                simulations: {
-                  count: 1,
-                  finished: 1,
-                  hasParticipated: true,
-                },
-                progression: 1,
-                computedResults,
-                userComputedResults: computedResults,
-                otherComputedResults: deepMergeSubstract(
-                  computedResults,
-                  computedResults
-                ),
-                funFacts: Object.fromEntries(
-                  Object.entries(modelFunFacts).map(([k]) => [
-                    k,
-                    expect.any(Number),
-                  ])
-                ),
-                updatedAt: expect.any(String),
-              })
+            expect(response.body.simulations).toEqual({
+              count: 1,
+              finished: 1,
+              hasParticipated: false,
             })
-          })
-        })
-      })
-
-      describe('And database failure', () => {
-        const databaseError = new Error('Something went wrong')
-
-        beforeEach(() => {
-          vi.spyOn(
-            prismaTransactionAdapter,
-            'transaction'
-          ).mockRejectedValueOnce(databaseError)
-        })
-
-        afterEach(() => {
-          vi.spyOn(prismaTransactionAdapter, 'transaction').mockRestore()
-        })
-
-        test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
-          await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', faker.string.uuid())
-            )
-            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
-        })
-
-        test('Then it logs the exception', async () => {
-          await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', faker.string.uuid())
-            )
-            .expect(StatusCodes.INTERNAL_SERVER_ERROR)
-
-          expect(logger.error).toHaveBeenCalledWith(
-            'Public poll fetch failed',
-            databaseError
-          )
-        })
-      })
-    })
-  })
-
-  describe('And invalid cookie on his organisation space', () => {
-    describe('When fetching his organisation public poll', () => {
-      describe('And poll does exist', () => {
-        let userId: string
-        let organisationId: string
-        let organisationName: string
-        let organisationSlug: string
-        let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
-        let pollId: string
-
-        beforeEach(async () => {
-          let cookie: string
-          ;({ cookie, userId } = await login({ agent }))
-          ;({
-            id: organisationId,
-            slug: organisationSlug,
-            name: organisationName,
-          } = await createOrganisation({
-            agent,
-            cookie,
-          }))
-          poll = await createOrganisationPoll({
-            agent,
-            cookie,
-            organisationId,
-          })
-          ;({ id: pollId } = poll)
-        })
-
-        test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
-          const response = await agent
-            .get(
-              url.replace(':pollIdOrSlug', pollId).replace(':userId', userId)
-            )
-            .set('cookie', `${COOKIE_NAME}=invalid cookie`)
-            .expect(StatusCodes.OK)
-
-          expect(response.body).toEqual({
-            ...poll,
-            organisation: {
-              id: organisationId,
-              slug: organisationSlug,
-              name: organisationName,
-            },
+            expect(response.body.userComputedResults).toBeUndefined()
           })
         })
       })
     })
   })
 
-  describe('And logged in on his organisation space', () => {
-    let cookie: string
+  describe('And the administrator of the organisation', () => {
     let userId: string
+    let email: string
 
-    beforeEach(async () => {
-      ;({ cookie, userId } = await login({ agent }))
+    beforeEach(() => {
+      userId = faker.string.uuid()
+      email = faker.internet.email()
     })
 
     describe('When fetching his organisation public poll', () => {
       describe('And poll does not exist', () => {
         test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
           await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', userId)
-            )
-            .set('cookie', cookie)
+            .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NOT_FOUND)
         })
       })
@@ -327,12 +288,14 @@ describe('Given a NGC user', () => {
         beforeEach(async () => {
           organisation = await createOrganisation({
             agent,
-            cookie,
+            userId,
+            email,
           })
           const { id: organisationId } = organisation
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId,
+            email,
             organisationId,
           })
           ;({ id: pollId, slug: pollSlug } = poll)
@@ -340,10 +303,8 @@ describe('Given a NGC user', () => {
 
         test(`Then it returns a ${StatusCodes.OK} response with the private poll data`, async () => {
           const response = await agent
-            .get(
-              url.replace(':pollIdOrSlug', pollId).replace(':userId', userId)
-            )
-            .set('cookie', cookie)
+            .get(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.OK)
 
           const { polls: _, ...expectedOrganisation } = organisation
@@ -357,12 +318,8 @@ describe('Given a NGC user', () => {
         describe('And using poll slug', () => {
           test(`Then it returns a ${StatusCodes.OK} response with the private poll data`, async () => {
             const response = await agent
-              .get(
-                url
-                  .replace(':pollIdOrSlug', pollSlug)
-                  .replace(':userId', userId)
-              )
-              .set('cookie', cookie)
+              .get(url.replace(':pollIdOrSlug', pollSlug))
+              .set(authHeaders({ userId, email }))
               .expect(StatusCodes.OK)
 
             const { polls: _, ...expectedOrganisation } = organisation
@@ -393,12 +350,8 @@ describe('Given a NGC user', () => {
 
           test(`Then it returns a ${StatusCodes.OK} response with the private poll data`, async () => {
             const response = await agent
-              .get(
-                url
-                  .replace(':pollIdOrSlug', pollSlug)
-                  .replace(':userId', userId)
-              )
-              .set('cookie', cookie)
+              .get(url.replace(':pollIdOrSlug', pollSlug))
+              .set(authHeaders({ userId, email }))
               .expect(StatusCodes.OK)
 
             const { polls: _, ...expectedOrganisation } = organisation
@@ -425,43 +378,29 @@ describe('Given a NGC user', () => {
               updatedAt: expect.any(String),
             })
           })
-
-          describe('And trying to access user information', () => {
-            test.skip(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
-              const [
-                {
-                  user: { id },
-                },
-              ] = simulations
-
-              await agent
-                .get(
-                  url.replace(':pollIdOrSlug', pollId).replace(':userId', id)
-                )
-                .set('cookie', cookie)
-                .expect(StatusCodes.FORBIDDEN)
-            })
-          })
         })
       })
 
       describe('And fetching another administrator poll', () => {
-        let organisation: Awaited<ReturnType<typeof createOrganisation>>
         let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
         let pollId: string
         let pollSlug: string
+        let organisation: Awaited<ReturnType<typeof createOrganisation>>
 
         beforeEach(async () => {
-          const { cookie } = await login({ agent })
+          const otherUserId = faker.string.uuid()
+          const otherEmail = faker.internet.email()
 
           organisation = await createOrganisation({
             agent,
-            cookie,
+            userId: otherUserId,
+            email: otherEmail,
           })
           const { id: organisationId } = organisation
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId: otherUserId,
+            email: otherEmail,
             organisationId,
           })
           ;({ id: pollId, slug: pollSlug } = poll)
@@ -469,10 +408,8 @@ describe('Given a NGC user', () => {
 
         test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
           const response = await agent
-            .get(
-              url.replace(':pollIdOrSlug', pollId).replace(':userId', userId)
-            )
-            .set('cookie', cookie)
+            .get(url.replace(':pollIdOrSlug', pollId))
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual({
@@ -488,12 +425,8 @@ describe('Given a NGC user', () => {
         describe('And using poll slug', () => {
           test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
             const response = await agent
-              .get(
-                url
-                  .replace(':pollIdOrSlug', pollSlug)
-                  .replace(':userId', userId)
-              )
-              .set('cookie', cookie)
+              .get(url.replace(':pollIdOrSlug', pollSlug))
+              .set(authHeaders({ userId, email }))
               .expect(StatusCodes.OK)
 
             expect(response.body).toEqual({
@@ -524,87 +457,21 @@ describe('Given a NGC user', () => {
 
         test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
           await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', userId)
-            )
-            .set('cookie', cookie)
+            .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
         })
 
         test('Then it logs the exception', async () => {
           await agent
-            .get(
-              url
-                .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
-                .replace(':userId', userId)
-            )
-            .set('cookie', cookie)
+            .get(url.replace(':pollIdOrSlug', faker.database.mongodbObjectId()))
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
           expect(logger.error).toHaveBeenCalledWith(
             'Public poll fetch failed',
             databaseError
           )
-        })
-      })
-    })
-  })
-
-  describe('And logged in on his organisation space with a different userId', () => {
-    let cookie: string
-    let userId: string
-
-    describe('And poll does exist', () => {
-      let organisation: Awaited<ReturnType<typeof createOrganisation>>
-      let poll: Awaited<ReturnType<typeof createOrganisationPoll>>
-      let pollId: string
-
-      beforeEach(async () => {
-        ;({ cookie, userId } = await login({ agent }))
-
-        organisation = await createOrganisation({
-          agent,
-          cookie,
-        })
-        const { id: organisationId } = organisation
-        poll = await createOrganisationPoll({
-          agent,
-          cookie,
-          organisationId,
-        })
-        ;({ id: pollId } = poll)
-      })
-
-      describe('When fetching his organisation public poll', () => {
-        test(`Then it returns a ${StatusCodes.OK} response with the public poll data`, async () => {
-          const response = await agent
-            .get(
-              url.replace(':pollIdOrSlug', pollId).replace(':userId', userId)
-            )
-            .set('cookie', cookie)
-            .expect(StatusCodes.OK)
-
-          const {
-            organisation: {
-              administrators: [administrator],
-            },
-          } = poll
-
-          expect(response.body).toEqual({
-            ...poll,
-            organisation: {
-              ...poll.organisation,
-              administrators: [
-                {
-                  ...administrator,
-                  userId,
-                  updatedAt: expect.any(String),
-                },
-              ],
-            },
-          })
         })
       })
     })
