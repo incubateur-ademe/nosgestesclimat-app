@@ -1,4 +1,5 @@
 import type { CookieState } from '@/services/tracking/cookieStateStore'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
 import posthog from 'posthog-js'
 import { v5 as uuidv5 } from 'uuid'
@@ -195,12 +196,15 @@ export const captureActionsClickUnderstandCalculation = ({
 
 // Fin
 
-export const captureEndClickCategory = ({ category }: PosthogProps) => ({
-  eventName: 'Fin click Category',
-  properties: {
-    category,
-  },
-})
+export const captureEndClickCategory = ({ category, action }: PosthogProps) => {
+  return {
+    eventName: 'Results page click see details category',
+    properties: {
+      category,
+      action,
+    },
+  }
+}
 
 // Landing
 
@@ -340,13 +344,13 @@ export const captureAction = ({
     uuidv5.DNS
   )
 
-  posthog.capture(
+  trackPosthogEvent({
     eventName,
-    {
+    properties: {
       action_name: actionTrackingId,
       action_theme: actionThemeTrackingId,
       co2_potential_kg: co2PotentialInKg,
     },
-    { uuid }
-  )
+    options: { uuid },
+  })
 }

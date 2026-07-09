@@ -36,7 +36,16 @@ export const getUserSession = cache(async function (): Promise<UserSession> {
     return null
   }
 
-  const { userId, email } = JSON.parse(sessionHeader) as SessionPayload
+  let userId: string
+  let email: string | null | undefined
+  try {
+    const parsed = JSON.parse(sessionHeader) as SessionPayload
+    userId = parsed.userId
+    email = parsed.email
+  } catch {
+    Sentry.captureException(new Error('Malformed x-session header'))
+    return null
+  }
 
   if (email) {
     const user: AuthUser = {

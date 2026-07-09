@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { assertOwnership } from '../assert-ownership.ts'
 import { ForbiddenException } from '../../exceptions/forbidden.exception.ts'
+import { assertOwnership } from '../assert-ownership.ts'
 
 describe('assertOwnership', () => {
   it('does not throw when userIds match', () => {

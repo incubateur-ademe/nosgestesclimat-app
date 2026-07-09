@@ -24,7 +24,7 @@ export default async function FootprintDetail({
         <div className="md:w-xl">
           <Title tag="h2" hasSeparator={false} size="md" className="mb-6">
             <Trans locale={locale} i18nKey="results.where.title">
-              D’où vient votre résultat ?
+              Répartition de votre empreinte :
             </Trans>
           </Title>
 
