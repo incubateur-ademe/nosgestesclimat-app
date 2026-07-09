@@ -29,7 +29,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1023.0",
     "@aws-sdk/s3-request-presigner": "^3.1023.0",
-    "@incubateur-ademe/nosgestesclimat": "https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@df8e482",
+    "@incubateur-ademe/nosgestesclimat": "4.14.0",
     "@nosgestesclimat/core": "workspace:*",
     "@notionhq/client": "^2.3.0",
     "@prisma/adapter-pg": "^7.8.0",
