@@ -39,53 +39,73 @@ import type {
 const groupToDto = (
   group: Awaited<ReturnType<typeof createGroupAndUser>>['group'],
   connectedUser?: string
-) => ({
-  ...group,
-  administrator:
-    connectedUser && group.administrator?.user.id === connectedUser
-      ? group.administrator?.user
-      : {
-          name: group.administrator?.user.name,
-        },
-  participants: (group.participants || []).map((p) =>
-    participantToDto(p, connectedUser)
-  ),
-})
+) => {
+  const { id, name, emoji, createdAt, updatedAt, participants } = group
+  const admin = group.administrator?.user
+
+  const administrator =
+    connectedUser && admin && admin.id === connectedUser
+      ? {
+          id: admin.id,
+          name: admin.name,
+          email: admin.email,
+          ageRange: admin.ageRange,
+          createdAt: admin.createdAt,
+          updatedAt: admin.updatedAt,
+        }
+      : { name: admin?.name }
+
+  return {
+    id,
+    name,
+    emoji,
+    createdAt,
+    updatedAt,
+    administrator,
+    participants: (participants || []).map((p) =>
+      participantToDto(p, connectedUser)
+    ),
+  }
+}
 
 type PopulatedParticipant = Awaited<
   ReturnType<typeof createParticipantAndUser>
 >['participant']
 
 /**
- * Maps a database participant to a dto for the UI
+ * Maps a database participant to a dto for the UI.
+ * Only the connected user's own participant entry carries the full
+ * simulation (it may contain sensitive data like raw survey answers) ;
+ * other participants only get the aggregate fields needed for group
+ * comparison features.
  */
 const participantToDto = (
-  {
-    id,
-    simulation,
-    user: { id: userId, ...rest },
-    createdAt,
-    updatedAt,
-  }: Partial<PopulatedParticipant> & {
+  participant: Partial<PopulatedParticipant> & {
     user: PopulatedParticipant['user']
   },
   connectedUser?: string
-) => ({
-  ...(connectedUser && userId === connectedUser
-    ? {
-        id,
-        simulation,
-        userId,
-        ...rest,
-        createdAt,
-        updatedAt,
-      }
-    : {
-        id,
-        name: rest.name,
-        simulation,
-      }),
-})
+) => {
+  const {
+    id,
+    simulation,
+    user: { id: userId, name, email },
+    createdAt,
+    updatedAt,
+  } = participant
+
+  if (connectedUser && userId === connectedUser) {
+    return { id, userId, name, email, simulation, createdAt, updatedAt }
+  }
+
+  return {
+    id,
+    name,
+    simulation: simulation && {
+      computedResults: simulation.computedResults,
+      progression: simulation.progression,
+    },
+  }
+}
 
 const findGroupAndParticipant = async (
   params: GroupParticipantParams,

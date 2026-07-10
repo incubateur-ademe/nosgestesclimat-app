@@ -1,6 +1,8 @@
+import { isFullSimulation } from '@/helpers/groups/isFullSimulation'
 import { getLinkToGroupInvitation } from '@/helpers/navigation/groupPages'
 import { throwNextError } from '@/helpers/server/error'
 import { getGroup } from '@/helpers/server/model/groups'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { getUserSession, type AppUser } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
 import { notFound, redirect } from 'next/navigation'
@@ -8,7 +10,7 @@ import { notFound, redirect } from 'next/navigation'
 interface GroupResultsGuardReturn {
   group: Group
   user: AppUser
-  userSimulation: NonNullable<Group['participants'][number]['simulation']>
+  userSimulation: Simulation
   groupId: string
 }
 
@@ -41,9 +43,12 @@ export async function groupResultsGuard(
 
   const group = await throwNextError(() => getGroup({ groupId }))
 
-  const userSimulation = group.participants.find(
+  const ownSimulation = group.participants.find(
     (participant) => participant.userId === user.id
   )?.simulation
+
+  const userSimulation =
+    ownSimulation && isFullSimulation(ownSimulation) ? ownSimulation : undefined
 
   if (!userSimulation) {
     redirect(getLinkToGroupInvitation({ group }))
