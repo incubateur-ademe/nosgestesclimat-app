@@ -1,6 +1,5 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
@@ -50,10 +49,6 @@ router
       try {
         const group = await createGroup({
           groupDto: req.body,
-          origin:
-            req.get('x-forwarded-origin') ||
-            req.get('origin') ||
-            config.app.origin,
           user: req.user!,
         })
 
@@ -113,10 +108,6 @@ router
       try {
         const participant = await createParticipant({
           params: req.params,
-          origin:
-            req.get('x-forwarded-origin') ||
-            req.get('origin') ||
-            config.app.origin,
           participantDto: req.body,
           user: req.user!,
         })

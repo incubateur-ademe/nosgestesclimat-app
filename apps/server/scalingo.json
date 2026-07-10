@@ -27,6 +27,10 @@
     "SERVER_URL": {
       "generator": "template",
       "template": "https://nosgestesclimat-preprod-pr%PR_NUMBER%.osc-fr1.scalingo.io"
+    },
+    "ORIGIN": {
+      "generator": "template",
+      "template": "https://nosgestesclimat-site-preprod-pr%PR_NUMBER%.osc-fr1.scalingo.io"
     }
   }
 }

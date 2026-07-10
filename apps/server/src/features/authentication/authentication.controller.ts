@@ -43,17 +43,12 @@ router
     validateRequest(LoginValidator),
     async (req, res) => {
       try {
-        const origin =
-          req.get('x-forwarded-origin') ||
-          req.get('origin') ||
-          config.app.origin
         const { token, user } = await login({
           loginDto: req.body,
-          origin,
           locale: req.query.locale,
         })
 
-        res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
+        res.cookie(COOKIE_NAME, token, getCookieOptions(config.app.origin))
 
         return res.status(StatusCodes.OK).json(user)
       } catch (err) {

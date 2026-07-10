@@ -36,8 +36,6 @@ router.route('/v1/inscription').post(
     },
   }),
   async (req, res) => {
-    const origin =
-      req.get('x-forwarded-origin') || req.get('origin') || config.app.origin
     try {
       if (isVerifiedUser(req.user)) {
         if (req.user.email !== req.body.email) {
@@ -52,7 +50,6 @@ router.route('/v1/inscription').post(
       } else {
         await sendNewsletterConfirmationEmail({
           inscriptionDto: req.body,
-          origin,
         })
       }
       return res.status(StatusCodes.OK).json(req.body)
