@@ -69,7 +69,6 @@ export default async function FinPage({
 
   const simulationResult = await throwNextError(async () => {
     return await getSimulationResult({
-      user,
       simulation,
     })
   })

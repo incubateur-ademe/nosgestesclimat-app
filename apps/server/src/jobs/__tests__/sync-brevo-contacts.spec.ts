@@ -6,7 +6,6 @@ import { brevoUpdateContact } from '../../adapters/brevo/__tests__/fixtures/serv
 import app from '../../app.js'
 import { mswServer } from '../../core/__tests__/fixtures/server.fixture.js'
 import { EventBus } from '../../core/event-bus/event-bus.js'
-import { login } from '../../features/authentication/__tests__/fixtures/login.fixture.js'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -40,8 +39,7 @@ describe('runSync', () => {
 
   describe('When organisation has no polls', () => {
     test('Then it syncs zero counts for all stats', async () => {
-      const { cookie } = await login({ agent })
-      await createOrganisation({ agent, cookie })
+      await createOrganisation({ agent })
 
       const contactBodies: unknown[] = []
       mswServer.use(brevoUpdateContact({ storeBodies: contactBodies }))
@@ -65,14 +63,16 @@ describe('runSync', () => {
 
   describe('When organisation has polls but no simulations', () => {
     test('Then it syncs the correct poll count and zeros for simulations', async () => {
-      const { cookie } = await login({ agent })
+      const userId = faker.string.uuid()
+      const email = faker.internet.email()
       const { id: organisationId } = await createOrganisation({
         agent,
-        cookie,
+        userId,
+        email,
       })
 
-      await createOrganisationPoll({ agent, cookie, organisationId })
-      await createOrganisationPoll({ agent, cookie, organisationId })
+      await createOrganisationPoll({ agent, userId, email, organisationId })
+      await createOrganisationPoll({ agent, userId, email, organisationId })
 
       const contactBodies: unknown[] = []
       mswServer.use(brevoUpdateContact({ storeBodies: contactBodies }))
@@ -96,26 +96,27 @@ describe('runSync', () => {
 
   describe('When organisation has polls with completed simulations', () => {
     test('Then it syncs correct counts and the last simulation date', async () => {
-      const { cookie } = await login({ agent })
+      const userId = faker.string.uuid()
+      const email = faker.internet.email()
       const { id: organisationId } = await createOrganisation({
         agent,
-        cookie,
+        userId,
+        email,
       })
 
       const poll = await createOrganisationPoll({
         agent,
-        cookie,
+        userId,
+        email,
         organisationId,
       })
 
       await createOrganisationPollSimulation({
         agent,
-        cookie,
         pollId: poll.id,
       })
       await createOrganisationPollSimulation({
         agent,
-        cookie,
         pollId: poll.id,
       })
 
@@ -142,42 +143,43 @@ describe('runSync', () => {
 
   describe('When multiple organisations exist', () => {
     test('Then it syncs all organisations independently', async () => {
-      const { cookie: cookie1 } = await login({ agent })
-
+      const admin1 = {
+        userId: faker.string.uuid(),
+        email: faker.internet.email(),
+      }
       const { id: orgId1 } = await createOrganisation({
         agent,
-        cookie: cookie1,
+        ...admin1,
       })
       const poll1 = await createOrganisationPoll({
         agent,
-        cookie: cookie1,
+        ...admin1,
         organisationId: orgId1,
       })
       await createOrganisationPollSimulation({
         agent,
-        cookie: cookie1,
         pollId: poll1.id,
       })
 
-      const { cookie: cookie2 } = await login({ agent })
-
+      const admin2 = {
+        userId: faker.string.uuid(),
+        email: faker.internet.email(),
+      }
       const { id: orgId2 } = await createOrganisation({
         agent,
-        cookie: cookie2,
+        ...admin2,
       })
       const poll2 = await createOrganisationPoll({
         agent,
-        cookie: cookie2,
+        ...admin2,
         organisationId: orgId2,
       })
       await createOrganisationPollSimulation({
         agent,
-        cookie: cookie2,
         pollId: poll2.id,
       })
       await createOrganisationPollSimulation({
         agent,
-        cookie: cookie2,
         pollId: poll2.id,
       })
 
@@ -217,8 +219,7 @@ describe('runSync', () => {
 
   describe('When organisation has no administrator', () => {
     test('Then it logs a warning and still counts it as processed', async () => {
-      const { cookie } = await login({ agent })
-      await createOrganisation({ agent, cookie })
+      await createOrganisation({ agent })
 
       const orgWithoutAdmin = await prisma.organisation.create({
         data: {
@@ -244,10 +245,8 @@ describe('runSync', () => {
 
   describe('When Brevo API fails', () => {
     test('Then it retries and counts the error', async () => {
-      const { cookie } = await login({ agent })
       const { id: organisationId } = await createOrganisation({
         agent,
-        cookie,
       })
 
       mswServer.use(brevoUpdateContact({ networkError: true }))

@@ -2,6 +2,7 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
+import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
@@ -36,7 +37,7 @@ router.route('/v1/inscription').post(
   async (req, res) => {
     const origin = req.get('origin') || config.app.origin
     try {
-      if (req.user) {
+      if (isVerifiedUser(req.user)) {
         if (req.user.email !== req.body.email) {
           return res
             .status(StatusCodes.FORBIDDEN)

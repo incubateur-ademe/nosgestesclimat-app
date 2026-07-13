@@ -4,16 +4,15 @@ import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
+import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { withPaginationHeaders } from '../../core/pagination.ts'
+import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import {
-  createPollSimulation,
-  fetchPublicPollSimulations,
-} from '../simulations/simulations.service.ts'
+import { createPollSimulation } from '../simulations/simulations.service.ts'
 import { OrganisationPollSimulationCreateValidator } from '../simulations/simulations.validator.ts'
 import { OrganisationCreatedEvent } from './events/OrganisationCreated.event.ts'
 import { OrganisationUpdatedEvent } from './events/OrganisationUpdated.event.ts'
@@ -49,7 +48,6 @@ import {
   OrganisationPollSimulationsDownloadValidator,
   OrganisationPollUpdateValidator,
   OrganisationPublicPollFetchValidator,
-  OrganisationPublicPollSimulationsFetchValidator,
   OrganisationsFetchValidator,
   OrganisationUpdateValidator,
 } from './organisations.validator.ts'
@@ -69,12 +67,15 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationCreateValidator),
     async (req, res) => {
+      if (!isVerifiedUser(req.user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const organisation = await createOrganisation({
           organisationDto: req.body,
           origin: req.get('origin') || config.app.origin,
           locale: req.query.locale,
-          user: req.user!,
+          user: req.user,
         })
 
         return res.status(StatusCodes.CREATED).json(organisation)
@@ -103,11 +104,14 @@ router
     validateRequest(OrganisationUpdateValidator),
     async (req, res) => {
       const { body, params, user } = req
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const { organisation } = await updateOrganisation({
           params,
           organisationDto: body,
-          user: user!,
+          user,
         })
 
         return res.status(StatusCodes.OK).json(organisation)
@@ -141,9 +145,12 @@ router
     >(),
     validateRequest(OrganisationsFetchValidator),
     async ({ user, query }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const { organisations, count } = await fetchOrganisations({
-          user: user!,
+          user,
           query,
         })
 
@@ -167,8 +174,11 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationFetchValidator),
     async ({ params, user }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
-        const organisation = await fetchOrganisation({ params, user: user! })
+        const organisation = await fetchOrganisation({ params, user })
 
         return res.status(StatusCodes.OK).json(organisation)
       } catch (err) {
@@ -195,12 +205,15 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationPollCreateValidator),
     async (req, res) => {
+      if (!isVerifiedUser(req.user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const poll = await createPoll({
           origin: req.get('origin') || config.app.origin,
           locale: req.query.locale,
           pollDto: req.body,
-          user: req.user!,
+          user: req.user,
           params: req.params,
         })
 
@@ -228,10 +241,13 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationPollUpdateValidator),
     async ({ body, params, user }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const poll = await updatePoll({
           pollDto: body,
-          user: user!,
+          user,
           params,
         })
 
@@ -259,9 +275,12 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationPollDeleteValidator),
     async ({ params, user }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         await deletePoll({
-          user: user!,
+          user,
           params,
         })
 
@@ -287,9 +306,12 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationPollsFetchValidator),
     async ({ params, user }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const polls = await fetchPolls({
-          user: user!,
+          user,
           params,
         })
 
@@ -315,9 +337,12 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationPollFetchValidator),
     async ({ params, user }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const poll = await fetchPoll({
-          user: user!,
+          user,
           params,
         })
 
@@ -343,11 +368,14 @@ router
     authentificationMiddleware(),
     validateRequest(OrganisationPollSimulationsDownloadValidator),
     async ({ params, user, query }, res) => {
+      if (!isVerifiedUser(user)) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
       try {
         const { jobId } = query
         if (jobId) {
           const { status, job } = await getDownloadPollSimulationResultJob({
-            user: user!,
+            user,
             params,
             jobId,
           })
@@ -356,7 +384,7 @@ router
         }
 
         const job = await startDownloadPollSimulationResultJob({
-          user: user!,
+          user,
           params,
         })
 
@@ -377,10 +405,10 @@ router
  * Upserts simulation poll for an organisation and an id or a slug
  */
 router
-  .route('/v1/:userId/public-polls/:pollIdOrSlug/simulations')
+  .route('/v1/public-polls/:pollIdOrSlug/simulations')
   .post(
     rateLimitSameRequestMiddleware(),
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(OrganisationPollSimulationCreateValidator),
     async (req, res) => {
       try {
@@ -389,13 +417,21 @@ router
           origin: req.get('origin') || config.app.origin,
           locale: req.query.locale,
           params: req.params,
-          user: req.user,
+          user: req.user!,
         })
 
         return res.status(StatusCodes.CREATED).json(simulation)
       } catch (err) {
         if (err instanceof ImmutableSimulationException) {
           return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        }
+
+        if (err instanceof ForbiddenException) {
+          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
+        }
+
+        if (err instanceof UnauthorizedException) {
+          return res.status(StatusCodes.UNAUTHORIZED).end()
         }
 
         if (err instanceof EntityNotFoundException) {
@@ -413,17 +449,16 @@ router
  * Returns poll informations for public or administrator users following authentication
  */
 router
-  .route('/v1/:userId/public-polls/:pollIdOrSlug')
+  .route('/v1/public-polls/:pollIdOrSlug')
   .get(
     authentificationMiddleware({ passIfUnauthorized: true }),
     validateRequest(OrganisationPublicPollFetchValidator),
     async (req, res) => {
       try {
-        // if (req.user && req.user.userId !== req.params.userId) {
-        //   throw new ForbiddenException(`Different user ids found`)
-        // }
-
-        const poll = await fetchPublicPoll(req)
+        const poll = await fetchPublicPoll({
+          params: req.params,
+          user: req.user,
+        })
 
         return res.status(StatusCodes.OK).json(poll)
       } catch (err) {
@@ -436,39 +471,6 @@ router
         }
 
         logger.error('Public poll fetch failed', err)
-
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-      }
-    }
-  )
-
-/**
- * Returns poll simulations for public or administrator users following authentication
- */
-router
-  .route('/v1/:userId/public-polls/:pollIdOrSlug/simulations')
-  .get(
-    authentificationMiddleware({ passIfUnauthorized: true }),
-    validateRequest(OrganisationPublicPollSimulationsFetchValidator),
-    async (req, res) => {
-      try {
-        // if (req.user && req.user.userId !== req.params.userId) {
-        //   throw new ForbiddenException(`Different user ids found`)
-        // }
-
-        const simulations = await fetchPublicPollSimulations(req)
-
-        return res.status(StatusCodes.OK).json(simulations)
-      } catch (err) {
-        if (err instanceof EntityNotFoundException) {
-          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-        }
-
-        if (err instanceof ForbiddenException) {
-          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-        }
-
-        logger.error('Public poll simulations fetch failed', err)
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }

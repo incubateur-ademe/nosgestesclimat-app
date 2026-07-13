@@ -14,7 +14,7 @@ export default async function GroupsDashboard() {
 
   const [organisation, groups] = await Promise.all([
     user.isAuth ? getUserOrganisation() : undefined,
-    getGroups({ user }),
+    getGroups(),
   ])
 
   if (!organisation && !groups.length) {

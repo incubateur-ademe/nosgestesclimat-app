@@ -1,7 +1,6 @@
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
-import type { Request } from 'express'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
   fetchContact,
@@ -15,11 +14,10 @@ import { transaction } from '../../adapters/prisma/transaction.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import { isAuthenticated } from '../../core/typeguards/isAuthenticated.ts'
-import {
-  createToken,
-  verifyCode,
-} from '../authentication/authentication.service.ts'
+import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
+import type { PartialUser } from '../../core/types/user.ts'
+import { verifyCode } from '../authentication/authentication.service.ts'
+import { invalidateVerificationCode } from '../authentication/verification-codes.repository.ts'
 import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
 import {
   createOrUpdateUser,
@@ -28,7 +26,7 @@ import {
   transferOwnershipToUser,
   transferSimulationsFromUser,
 } from './users.repository.ts'
-import type { UserParams, UserUpdateDto } from './users.validator.ts'
+import type { UserUpdateDto } from './users.validator.ts'
 
 interface UserDto {
   id: string
@@ -69,22 +67,22 @@ export const syncUserData = ({
   )
 }
 
-export const fetchUserContact = async (params: UserParams) => {
+export const fetchUserContact = async (user: PartialUser) => {
   try {
-    const user = await transaction(
+    const contactUser = await transaction(
       (session) =>
         fetchUser(
-          { id: params.userId, select: defaultUserSelection },
+          { id: user.id, select: defaultUserSelection },
           { session, orThrow: true }
         ),
       prisma
     )
 
-    if (!user.email) {
+    if (!contactUser.email) {
       throw new EntityNotFoundException('Contact not found')
     }
 
-    const contact = await fetchContact(user.email)
+    const contact = await fetchContact(contactUser.email)
 
     if (!contact) {
       throw new EntityNotFoundException('Contact not found')
@@ -131,33 +129,38 @@ const getEmailMutation = <
 
 export const updateUserAndContact = async ({
   code,
-  params,
-  userDto,
+  user: userToUpdate,
+  newUserData,
   origin,
 }: {
-  params: UserParams | NonNullable<Request['user']>
+  user: PartialUser
   code?: string
-  userDto: UserUpdateDto
+  newUserData: UserUpdateDto
   origin: string
 }) => {
-  const { user, contact, nextEmail, verified, previousContact, token } =
+  const { user, contact, nextEmail, verified, previousContact } =
     await transaction(async (session) => {
-      const isVerifiedUser = isAuthenticated(params)
+      const verifiedUser = isVerifiedUser(userToUpdate)
 
-      const previousUser = await (isVerifiedUser
-        ? params
+      const previousUser = await (verifiedUser
+        ? userToUpdate
         : fetchUser(
-            { id: params.userId, select: defaultUserSelection },
+            { id: userToUpdate.id, select: defaultUserSelection },
             { session }
           ))
 
       const { emailChanged, nextEmail, previousEmail } = getEmailMutation(
-        userDto,
+        newUserData,
         previousUser
       )
 
-      let token: string | undefined
-      if (isVerifiedUser && emailChanged) {
+      if (!verifiedUser && !!nextEmail && nextEmail !== previousEmail) {
+        throw new ForbiddenException(
+          'Forbidden ! Cannot update email without a verified account.'
+        )
+      }
+
+      if (verifiedUser && emailChanged) {
         if (!code) {
           throw new ForbiddenException(
             'Forbidden ! Cannot update email without a verification code.'
@@ -165,14 +168,16 @@ export const updateUserAndContact = async ({
         }
 
         try {
-          await verifyCode(
+          const verificationCode = await verifyCode(
             {
-              ...params,
+              ...userToUpdate,
               code,
               email: nextEmail,
             },
             { session }
           )
+
+          await invalidateVerificationCode(verificationCode, { session })
         } catch (e) {
           if (e instanceof EntityNotFoundException) {
             throw new ForbiddenException(
@@ -192,31 +197,30 @@ export const updateUserAndContact = async ({
         }
       }
 
-      const verified = isVerifiedUser || !nextEmail
+      const verified = verifiedUser || !nextEmail
 
       const update =
         verified || !emailChanged
-          ? userDto
-          : { ...userDto, email: previousEmail }
+          ? newUserData
+          : { ...newUserData, email: previousEmail }
 
       let user
-      if (isVerifiedUser) {
+      if (verifiedUser) {
         user = (
           await createOrUpdateVerifiedUser(
             {
-              id: params,
+              id: userToUpdate,
               user: update,
               select: defaultVerifiedUserSelection,
             },
             { session }
           )
         ).user
-        token = createToken(user)
       } else {
         user = (
           await createOrUpdateUser(
             {
-              id: params.userId,
+              id: userToUpdate.id,
               user: update,
               select: defaultUserSelection,
             },
@@ -227,7 +231,6 @@ export const updateUserAndContact = async ({
 
       return {
         user,
-        token,
         contact,
         verified,
         nextEmail,
@@ -248,7 +251,6 @@ export const updateUserAndContact = async ({
   await EventBus.once(userUpdatedEvent)
 
   return {
-    token,
     verified,
     user: userToDto({
       ...user,
