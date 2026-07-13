@@ -1,37 +1,39 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/AuthenticateUserForm'
 import Trans from '@/components/translation/trans/TransServer'
-import { END_PAGE_PATH } from '@/constants/urls/paths'
+import { EMAIL_SIMULATOR_PATH, END_PAGE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import {
-  getSimulationMode,
-} from '@/helpers/server/model/simulations'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { notFound } from 'next/navigation'
+import { getEmailPageData } from './_helpers/getEmailPageData'
+import EmailConfirmation from './_components/EmailConfirmation'
 
 export default async function Email({
   params,
+  searchParams,
 }: PageProps<'/[locale]/simulateur/email'>) {
   const { locale } = await params
+  const { confirm } = await searchParams
   const { t } = await getServerTranslation({ locale })
+
   const user = await getUserSession()
+
   const currentSimulation = await getCurrentSimulation()
   if (!currentSimulation) {
     notFound()
   }
-  const simulationMode = getSimulationMode(currentSimulation)
-  const isSchoolMode = simulationMode === 'scolaire'
-  const pollSlug = currentSimulation.polls?.[0]?.slug
-  const hasContest =
-    pollSlug &&
-    (process.env.NEXT_PUBLIC_POLL_CONTEST_SLUGS ?? '')
-      .split(',')
-      .includes(pollSlug)
+
+  const { isSchoolMode, hasContest, organisationName } =
+    await getEmailPageData(currentSimulation)
+
+  if (confirm === 'true') {
+    return <EmailConfirmation organisationName={organisationName ?? ''} />
+  }
 
   return (
     <>
@@ -41,11 +43,11 @@ export default async function Email({
         title={
           isSchoolMode ? (
             <Trans i18nKey="tutorial.email.title.youth" locale={locale}>
-              Ton adresse électronique
+              Ton adresse e-mail
             </Trans>
           ) : (
             <Trans i18nKey="tutorial.email.title.default" locale={locale}>
-              Votre adresse électronique
+              Votre adresse e-mail
             </Trans>
           )
         }
@@ -99,17 +101,17 @@ export default async function Email({
             inputLabel={
               isSchoolMode ? (
                 <Trans i18nKey="tutorial.email.title.youth" locale={locale}>
-                  Ton adresse électronique
+                  Ton adresse e-mail
                 </Trans>
               ) : (
                 <Trans i18nKey="tutorial.email.title.default" locale={locale}>
-                  Votre adresse électronique
+                  Votre adresse e-mail
                 </Trans>
               )
             }
             buttonLabel={t(
               'common.authentication.verifyEmail',
-              'Vérifier mon adresse électronique'
+              'Vérifier mon adresse e-mail'
             )}
             additionnalButton={
               <ButtonLink
@@ -122,7 +124,7 @@ export default async function Email({
                 </Trans>
               </ButtonLink>
             }
-            redirectPathname={END_PAGE_PATH}
+            redirectPathname={`${EMAIL_SIMULATOR_PATH}?confirm=true`}
           />
         </QueryClientProviderWrapper>
       </UserProvider>
