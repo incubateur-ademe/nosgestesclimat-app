@@ -1882,16 +1882,16 @@ entries:
   actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
   common.skip: Skip
   common.skip.lock: Passer
-  tutorial.email.title.youth: Your e-mail address
-  tutorial.email.title.youth.lock: Ton adresse électronique
+  tutorial.email.title.youth: Your email address
+  tutorial.email.title.youth.lock: Ton adresse e-mail
   tutorial.email.seeMore: Find out more
   tutorial.email.seeMore.lock: En savoir plus
   common.optional: optional
   common.optional.lock: facultatif
-  tutorial.email.title.default: Your e-mail address
-  tutorial.email.title.default.lock: Votre adresse électronique
-  common.authentication.verifyEmail: Check my e-mail address
-  common.authentication.verifyEmail.lock: Vérifier mon adresse électronique
+  tutorial.email.title.default: Your email address
+  tutorial.email.title.default.lock: Votre adresse e-mail
+  common.authentication.verifyEmail: Verify my email address
+  common.authentication.verifyEmail.lock: Vérifier mon adresse e-mail
   tutorial.email.contest.youth: Your e-mail address will be used for the prize draw.
   tutorial.email.contest.youth.lock: Ton e-mail sera utilisé pour le tirage au sort.
   tutorial.email.contest.default: Your e-mail address will be used for the prize draw.
@@ -2140,8 +2140,8 @@ entries:
   iframe.safari.errorDescription.lock: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
   common.letsGo: Let's go!
   common.letsGo.lock: C'est parti !
-  common.seeResults: View the results
-  common.seeResults.lock: Voir les résultats
+  common.seeResults: View my results
+  common.seeResults.lock: Voir mes résultats
   common.confirm: Confirm
   common.confirm.lock: Confirmer
   common.cancel: Cancel
@@ -2189,5 +2189,16 @@ entries:
   poll.results.communicationKit.text2.lock: Des e-mails type, post Linkedin, visuels…
   poll.shareSection.sendByEmail: Send by email
   poll.shareSection.sendByEmail.lock: Envoyer par e-mail
-  poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
+  poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>join the challenge</7> and come and <10>calculate their carbon footprint</10>.
   poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  common.autoRedirect: Automatic redirection in {{seconds}} seconds
+  common.autoRedirect.lock: Redirection automatique dans {{seconds}} secondes
+  common.redirecting: Redirecting...
+  common.redirecting.lock: Redirection en cours
+  emailConfirmation.subtitle: Your entry has been successfully recorded
+  emailConfirmation.subtitle.lock: Votre participation a bien été prise en compte
+  emailConfirmation.text: You will be redirected to your fingerprint results.
+  emailConfirmation.text.lock: Vous allez être redirigé vers vos résultats d'empreinte.
+  poll.results.communicationKit.text1.lock.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l'emploi</4> pour tous les temps forts de l'année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  emailConfirmation.title: Competition -
+  emailConfirmation.title.lock: Jeu concours -

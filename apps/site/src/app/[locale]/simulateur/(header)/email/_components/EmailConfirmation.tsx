@@ -3,7 +3,7 @@
 import AnimatedCheckIcon from '@/components/icons/status/AnimatedCheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import { END_PAGE_PATH } from '@/constants/urls/paths'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
+import AutoRedirectButton from '@/design-system/buttons/AutoRedirectButton'
 import { motion } from 'framer-motion'
 
 interface Props {
@@ -45,7 +45,7 @@ export default function EmailConfirmation({ organisationName }: Props) {
       <motion.h1
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut', delay: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut', delay: 1.5 }}
         className="text-primary-700 mb-2 text-center text-lg leading-7 font-bold">
         <Trans i18nKey="emailConfirmation.title">Jeu concours -</Trans>{' '}
         {organisationName}{' '}
@@ -55,7 +55,7 @@ export default function EmailConfirmation({ organisationName }: Props) {
         className="text-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut', delay: 2 }}>
+        transition={{ duration: 0.4, ease: 'easeOut', delay: 2.5 }}>
         <p className="mb-6! text-center text-2xl font-medium">
           <Trans i18nKey="emailConfirmation.subtitle">
             Votre participation a bien été prise en compte
@@ -64,16 +64,16 @@ export default function EmailConfirmation({ organisationName }: Props) {
 
         <p className="mb-6">
           <Trans i18nKey="emailConfirmation.text">
-            Vous allez être redirigé vers vos résultats d’empreinte.
+            Vous allez être redirigé vers vos résultats d'empreinte.
           </Trans>
         </p>
 
-        <ButtonLink href={END_PAGE_PATH}>
+        <AutoRedirectButton duration={10} startDelay={3} href={END_PAGE_PATH}>
           <Trans i18nKey="common.seeResults">Voir mes résultats</Trans>
           <span aria-hidden="true" className="ml-1">
             →
           </span>
-        </ButtonLink>
+        </AutoRedirectButton>
       </motion.div>
     </div>
   )
