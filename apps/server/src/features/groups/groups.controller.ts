@@ -43,24 +43,29 @@ EventBus.on(GroupCreatedEvent, addOrUpdateBrevoAdministratorContact)
  */
 router
   .route('/v1/')
-  .post(validateRequest(GroupCreateValidator), async (req, res) => {
-    try {
-      const group = await createGroup({
-        groupDto: req.body,
-        origin: req.get('origin') || config.app.origin,
-      })
+  .post(
+    authentificationMiddleware(),
+    validateRequest(GroupCreateValidator),
+    async (req, res) => {
+      try {
+        const group = await createGroup({
+          groupDto: req.body,
+          origin: req.get('origin') || config.app.origin,
+          user: req.user!,
+        })
 
-      return res.status(StatusCodes.CREATED).json(group)
-    } catch (err) {
-      if (err instanceof ImmutableSimulationException) {
-        return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        return res.status(StatusCodes.CREATED).json(group)
+      } catch (err) {
+        if (err instanceof ImmutableSimulationException) {
+          return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        }
+
+        logger.error('Group creation failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      logger.error('Group creation failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 EventBus.on(GroupUpdatedEvent, addOrUpdateBrevoAdministratorContact)
 EventBus.on(GroupUpdatedEvent, addOrUpdateBrevoParticipantContact)
@@ -69,88 +74,108 @@ EventBus.on(GroupUpdatedEvent, addOrUpdateBrevoParticipantContact)
  * Updates a user group
  */
 router
-  .route('/v1/:userId/:groupId')
-  .put(validateRequest(GroupUpdateValidator), async (req, res) => {
-    try {
-      const group = await updateGroup(req.params, req.body)
+  .route('/v1/:groupId')
+  .put(
+    authentificationMiddleware(),
+    validateRequest(GroupUpdateValidator),
+    async (req, res) => {
+      try {
+        const group = await updateGroup(
+          { groupId: req.params.groupId, user: req.user! },
+          req.body
+        )
 
-      return res.status(StatusCodes.OK).json(group)
-    } catch (err) {
-      if (err instanceof EntityNotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        return res.status(StatusCodes.OK).json(group)
+      } catch (err) {
+        if (err instanceof EntityNotFoundException) {
+          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        }
+
+        logger.error('Group update failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      logger.error('Group update failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 /**
  * Adds a participant to a group (participant joins)
  */
 router
   .route('/v1/:groupId/participants')
-  .post(validateRequest(ParticipantCreateValidator), async (req, res) => {
-    try {
-      const participant = await createParticipant({
-        params: req.params,
-        origin: req.get('origin') || config.app.origin,
-        participantDto: req.body,
-      })
+  .post(
+    authentificationMiddleware(),
+    validateRequest(ParticipantCreateValidator),
+    async (req, res) => {
+      try {
+        const participant = await createParticipant({
+          params: req.params,
+          origin: req.get('origin') || config.app.origin,
+          participantDto: req.body,
+          user: req.user!,
+        })
 
-      return res.status(StatusCodes.CREATED).json(participant)
-    } catch (err) {
-      if (err instanceof ImmutableSimulationException) {
-        return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        return res.status(StatusCodes.CREATED).json(participant)
+      } catch (err) {
+        if (err instanceof ImmutableSimulationException) {
+          return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
+        }
+
+        if (err instanceof EntityNotFoundException) {
+          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        }
+
+        logger.error('Participant creation failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      if (err instanceof EntityNotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-      }
-
-      logger.error('Participant creation failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 /**
  * Removes a participant from a group (participant leaves)
  */
 router
-  .route('/v1/:userId/:groupId/participants/:participantId')
-  .delete(validateRequest(ParticipantDeleteValidator), async (req, res) => {
-    try {
-      await removeParticipant(req.params)
+  .route('/v1/:groupId/participants/:participantId')
+  .delete(
+    authentificationMiddleware(),
+    validateRequest(ParticipantDeleteValidator),
+    async (req, res) => {
+      try {
+        await removeParticipant({
+          groupId: req.params.groupId,
+          participantId: req.params.participantId,
+          user: req.user!,
+        })
 
-      return res.status(StatusCodes.NO_CONTENT).end()
-    } catch (err) {
-      if (err instanceof EntityNotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        return res.status(StatusCodes.NO_CONTENT).end()
+      } catch (err) {
+        if (err instanceof EntityNotFoundException) {
+          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
+        }
+
+        if (err instanceof ForbiddenException) {
+          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
+        }
+
+        logger.error('Participant deletion failed', err)
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }
-
-      if (err instanceof ForbiddenException) {
-        return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-      }
-
-      logger.error('Participant deletion failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }
-  })
+  )
 
 /**
  * Returns groups for a user
  */
 router
-  .route('/v1/:userId')
+  .route('/v1')
   .get(
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(GroupsFetchValidator),
-    async ({ params, query }, res) => {
+    async ({ query, user }, res) => {
       try {
-        const groups = await fetchGroups(params, query)
+        const groups = await fetchGroups(user!, query)
 
         return res.status(StatusCodes.OK).json(groups)
       } catch (err) {
@@ -165,13 +190,13 @@ router
  * Returns group for a user and an id
  */
 router
-  .route('/v1/:userId/:groupId')
+  .route('/v1/:groupId')
   .get(
     authentificationMiddleware({ passIfUnauthorized: true }),
     validateRequest(GroupFetchValidator),
-    async ({ params }, res) => {
+    async ({ params, user }, res) => {
       try {
-        const group = await fetchGroup(params)
+        const group = await fetchGroup({ groupId: params.groupId, user })
 
         return res.status(StatusCodes.OK).json(group)
       } catch (err) {
@@ -193,12 +218,13 @@ EventBus.on(GroupDeletedEvent, addOrUpdateBrevoParticipantContact)
  * Deletes group for a user and an id
  */
 router
-  .route('/v1/:userId/:groupId')
+  .route('/v1/:groupId')
   .delete(
+    authentificationMiddleware(),
     validateRequest(GroupDeleteValidator),
-    async ({ params: { userId, groupId } }, res) => {
+    async (req, res) => {
       try {
-        await deleteGroup({ userId, groupId })
+        await deleteGroup({ userId: req.user!.id, groupId: req.params.groupId })
 
         return res.status(StatusCodes.NO_CONTENT).end()
       } catch (err) {

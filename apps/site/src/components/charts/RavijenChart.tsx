@@ -37,7 +37,7 @@ export default function RavijenChart({
     <div className="mb-8">
       <ul
         id="ravijen"
-        className="flex h-[40rem] max-w-full scale-75 items-end gap-1 bg-white py-4 md:w-[36rem] md:scale-100 md:px-4">
+        className="flex h-160 max-w-full scale-75 items-end gap-1 bg-white py-4 md:w-xl md:scale-100 md:px-4">
         {categories.map((category) => (
           <li key={category} className="h-full flex-1">
             <CategoryChart

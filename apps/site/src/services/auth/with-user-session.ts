@@ -3,6 +3,7 @@
 import { v4 as randomUUID } from 'uuid'
 
 import { createAppSession } from './create-app-session'
+import type { AnonUser, AppUser } from './get-user-session'
 import { getUserSession } from './get-user-session'
 
 /**
@@ -16,16 +17,13 @@ import { getUserSession } from './get-user-session'
  * Ce service suppose que l'appel à `fn` crée un enregistrement `User` via
  * l'API Express, ce qui satisfait la FK `RefreshToken.userId`.
  */
-export async function withUserId<T>(
-  fn: (userId: string) => Promise<T>
+export async function withUserSession<T>(
+  fn: (session: AppUser) => Promise<T>
 ): Promise<T> {
-  const session = await getUserSession()
-  if (session) {
-    return await fn(session.id)
-  }
-
-  const userId = randomUUID()
-  const result = await fn(userId)
-  await createAppSession(userId)
+  const existingSession = await getUserSession()
+  const session =
+    existingSession ?? ({ id: randomUUID(), isAuth: false } satisfies AnonUser)
+  const result = await fn(session)
+  if (!existingSession) await createAppSession(session.id)
   return result
 }
