@@ -4,12 +4,23 @@ import { SIMULATION_URL } from '@/constants/urls/main'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import { migrateSimulationIfNeeded } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import {
+  hasDisplayableComputedResults,
+  normalizeLegacyComputedResults,
+} from '@/helpers/server/model/utils/normalizeLegacyComputedResults'
 import { setDefaultExtendedSituation } from '@/helpers/server/model/utils/setDefaultExtendedSituation'
 import { getUserSession } from '@/services/auth/get-user-session'
 
 interface SimulationFilter {
   completedOnly?: boolean
   pageSize?: number
+}
+
+function prepareSimulation(simulation: Simulation): Simulation {
+  const updatedSimulation = setDefaultExtendedSituation(simulation)
+  delete updatedSimulation.user
+
+  return normalizeLegacyComputedResults(updatedSimulation)
 }
 
 export const getSimulations = async ({
@@ -23,17 +34,18 @@ export const getSimulations = async ({
     `${SIMULATION_URL}?completedOnly=${completedOnly}&pageSize=${pageSize}`
   )
 
-  const simulations = serverSimulations.map((simulation) => {
-    const updatedSimulation = setDefaultExtendedSituation(simulation)
-    delete updatedSimulation.user
-    return updatedSimulation
-  })
+  let simulations = serverSimulations.map(prepareSimulation)
+
+  if (completedOnly) {
+    simulations = simulations.filter(hasDisplayableComputedResults)
+  }
 
   const [lastSimulation, ...prev] = simulations
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!lastSimulation) {
     return simulations
   }
+
   const migratedLastSimulation = migrateSimulationIfNeeded(lastSimulation)
   return [migratedLastSimulation, ...prev]
 }
