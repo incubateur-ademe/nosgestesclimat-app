@@ -10,10 +10,9 @@ import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.
 import { client } from '../../../adapters/scaleway/client.ts'
 import app from '../../../app.ts'
 import { config } from '../../../config.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -41,7 +40,7 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
+  describe('And no authentication', () => {
     describe('When downloading one of his organisation poll result', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -58,7 +57,7 @@ describe('Given a NGC user', () => {
     })
   })
 
-  describe('And invalid cookie', () => {
+  describe('And not a verified user', () => {
     describe('When downloading one of his organisation poll result', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -70,18 +69,17 @@ describe('Given a NGC user', () => {
               )
               .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
           )
-          .set('cookie', `${COOKIE_NAME}=invalid cookie`)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.UNAUTHORIZED)
       })
     })
   })
 
-  describe('And logged in', () => {
-    let cookie: string
+  describe('And a verified user', () => {
     let user: { userId: string; email: string }
 
-    beforeEach(async () => {
-      ;({ cookie, ...user } = await login({ agent }))
+    beforeEach(() => {
+      user = { userId: faker.string.uuid(), email: faker.internet.email() }
     })
 
     describe('When downloading one of his organisation poll result', () => {
@@ -96,7 +94,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders(user))
             .expect(StatusCodes.NOT_FOUND)
         })
       })
@@ -108,10 +106,7 @@ describe('Given a NGC user', () => {
         beforeEach(
           async () =>
             ({ id: organisationId, slug: organisationSlug } =
-              await createOrganisation({
-                agent,
-                cookie,
-              }))
+              await createOrganisation({ agent, ...user }))
         )
 
         describe('And poll does not exist in the organisation', () => {
@@ -122,7 +117,7 @@ describe('Given a NGC user', () => {
                   .replace(':organisationIdOrSlug', organisationId)
                   .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
               )
-              .set('cookie', cookie)
+              .set(authHeaders(user))
               .expect(StatusCodes.NOT_FOUND)
           })
         })
@@ -145,7 +140,7 @@ describe('Given a NGC user', () => {
 
             poll = await createOrganisationPoll({
               agent,
-              cookie,
+              ...user,
               organisationId,
             })
             ;({ id: pollId, slug: pollSlug } = poll)
@@ -169,7 +164,7 @@ describe('Given a NGC user', () => {
                   .replace(':organisationIdOrSlug', organisationId)
                   .replace(':pollIdOrSlug', pollId)
               )
-              .set('cookie', cookie)
+              .set(authHeaders(user))
               .expect(StatusCodes.ACCEPTED)
 
             const expectedId = crypto
@@ -178,7 +173,8 @@ describe('Given a NGC user', () => {
                 `${config.security.job.secret}${new URLSearchParams(
                   Object.entries({
                     ...params,
-                    ...user,
+                    id: user.userId,
+                    email: user.email,
                   })
                 ).toString()}`
               )
@@ -208,7 +204,7 @@ describe('Given a NGC user', () => {
                     .replace(':organisationIdOrSlug', organisationSlug)
                     .replace(':pollIdOrSlug', pollSlug)
                 )
-                .set('cookie', cookie)
+                .set(authHeaders(user))
                 .expect(StatusCodes.ACCEPTED)
 
               const expectedId = crypto
@@ -217,7 +213,8 @@ describe('Given a NGC user', () => {
                   `${config.security.job.secret}${new URLSearchParams(
                     Object.entries({
                       ...params,
-                      ...user,
+                      id: user.userId,
+                      email: user.email,
                     })
                   ).toString()}`
                 )
@@ -249,7 +246,7 @@ describe('Given a NGC user', () => {
                 ;({ id: jobId } =
                   await downloadOrganisationPollSimulationsResult({
                     agent,
-                    cookie,
+                    ...user,
                     pollId,
                     organisationId,
                   }))
@@ -267,7 +264,7 @@ describe('Given a NGC user', () => {
                       .replace(':pollIdOrSlug', pollId)
                   )
                   .query({ jobId })
-                  .set('cookie', cookie)
+                  .set(authHeaders(user))
                   .expect(StatusCodes.ACCEPTED)
 
                 expect(response.body).toEqual({
@@ -292,7 +289,7 @@ describe('Given a NGC user', () => {
                         .replace(':organisationIdOrSlug', organisationId)
                         .replace(':pollIdOrSlug', pollId)
                     )
-                    .set('cookie', cookie)
+                    .set(authHeaders(user))
                     .expect(StatusCodes.ACCEPTED)
 
                   expect(response.body).toEqual({
@@ -316,7 +313,7 @@ describe('Given a NGC user', () => {
                 ;({ id: jobId } =
                   await downloadOrganisationPollSimulationsResult({
                     agent,
-                    cookie,
+                    ...user,
                     pollId,
                     organisationId,
                   }))
@@ -332,7 +329,7 @@ describe('Given a NGC user', () => {
                       .replace(':pollIdOrSlug', pollId)
                   )
                   .query({ jobId })
-                  .set('cookie', cookie)
+                  .set(authHeaders(user))
                   .expect(StatusCodes.OK)
 
                 const baseUrl = new URL(process.env.SCALEWAY_ENDPOINT!)
@@ -387,7 +384,7 @@ describe('Given a NGC user', () => {
 
                 await downloadOrganisationPollSimulationsResult({
                   agent,
-                  cookie,
+                  ...user,
                   pollId,
                   organisationId,
                 })
@@ -413,7 +410,7 @@ describe('Given a NGC user', () => {
                 ;({ id: jobId } =
                   await downloadOrganisationPollSimulationsResult({
                     agent,
-                    cookie,
+                    ...user,
                     pollId,
                     organisationId,
                   }))
@@ -427,7 +424,7 @@ describe('Given a NGC user', () => {
                       .replace(':pollIdOrSlug', pollId)
                   )
                   .query({ jobId })
-                  .set('cookie', cookie)
+                  .set(authHeaders(user))
                   .expect(StatusCodes.INTERNAL_SERVER_ERROR)
               })
 
@@ -441,11 +438,14 @@ describe('Given a NGC user', () => {
           })
 
           describe('And an other user tries to recover the job result', () => {
-            let cookie2: string
+            let user2: { userId: string; email: string }
             let jobId: string
 
-            beforeEach(async () => {
-              ;({ cookie: cookie2 } = await login({ agent }))
+            beforeEach(() => {
+              user2 = {
+                userId: faker.string.uuid(),
+                email: faker.internet.email(),
+              }
             })
 
             describe('And the job is pending/running', () => {
@@ -456,7 +456,7 @@ describe('Given a NGC user', () => {
                 ;({ id: jobId } =
                   await downloadOrganisationPollSimulationsResult({
                     agent,
-                    cookie,
+                    ...user,
                     pollId,
                     organisationId,
                   }))
@@ -474,7 +474,7 @@ describe('Given a NGC user', () => {
                       .replace(':pollIdOrSlug', pollId)
                   )
                   .query({ jobId })
-                  .set('cookie', cookie2)
+                  .set(authHeaders(user2))
                   .expect(StatusCodes.NOT_FOUND)
               })
             })
@@ -484,7 +484,7 @@ describe('Given a NGC user', () => {
                 ;({ id: jobId } =
                   await downloadOrganisationPollSimulationsResult({
                     agent,
-                    cookie,
+                    ...user,
                     pollId,
                     organisationId,
                   }))
@@ -498,7 +498,7 @@ describe('Given a NGC user', () => {
                       .replace(':pollIdOrSlug', pollId)
                   )
                   .query({ jobId })
-                  .set('cookie', cookie2)
+                  .set(authHeaders(user2))
                   .expect(StatusCodes.NOT_FOUND)
               })
             })
@@ -530,7 +530,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders(user))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
         })
 
@@ -544,7 +544,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders(user))
 
           expect(logger.error).toHaveBeenCalledWith(
             'Poll download simulations failed',

@@ -9,6 +9,7 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { VerificationCodeMode } from '../../../adapters/prisma/generated.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import {
@@ -52,7 +53,6 @@ describe('Given a NGC user with a previous anonymous session', () => {
       simulation = await createSimulation({
         agent,
         userId: anonUserId,
-        simulation: { user: { email } },
       })
 
       const verificationCode = await createVerificationCode({
@@ -77,7 +77,8 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
     test('Then the simulation remains accessible under the same userId', async () => {
       const response = await agent
-        .get(FETCH_USER_SIMULATIONS_ROUTE.replace(':userId', anonUserId))
+        .get(FETCH_USER_SIMULATIONS_ROUTE)
+        .set(authHeaders({ userId: anonUserId }))
         .expect(StatusCodes.OK)
 
       expect(response.body).toHaveLength(1)
@@ -120,7 +121,6 @@ describe('Given a NGC user with a previous anonymous session', () => {
       anonSimulation = await createSimulation({
         agent,
         userId: anonUserId,
-        simulation: { user: { email } },
       })
     })
 
@@ -148,7 +148,8 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
       test('Then the anonymous simulation is transferred to the verified user', async () => {
         const response = await agent
-          .get(FETCH_USER_SIMULATIONS_ROUTE.replace(':userId', verifiedUserId))
+          .get(FETCH_USER_SIMULATIONS_ROUTE)
+          .set(authHeaders({ userId: verifiedUserId }))
           .expect(StatusCodes.OK)
 
         const simulationIds = response.body.map((s: { id: string }) => s.id)
@@ -157,7 +158,8 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
       test('Then the anonymous session no longer holds any simulations', async () => {
         const response = await agent
-          .get(FETCH_USER_SIMULATIONS_ROUTE.replace(':userId', anonUserId))
+          .get(FETCH_USER_SIMULATIONS_ROUTE)
+          .set(authHeaders({ userId: anonUserId }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toHaveLength(0)
@@ -210,7 +212,6 @@ describe('Given a NGC user with a previous anonymous session', () => {
         anonSimulation = await createSimulation({
           agent,
           userId: anonUserId,
-          simulation: { user: { email } },
         })
       })
 
@@ -238,9 +239,8 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
         test('Then the anonymous simulation is transferred to the verified user', async () => {
           const response = await agent
-            .get(
-              FETCH_USER_SIMULATIONS_ROUTE.replace(':userId', verifiedUserId)
-            )
+            .get(FETCH_USER_SIMULATIONS_ROUTE)
+            .set(authHeaders({ userId: verifiedUserId }))
             .expect(StatusCodes.OK)
 
           const simulationIds = response.body.map((s: { id: string }) => s.id)
@@ -249,12 +249,8 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
         test('Then the group participation is migrated to the verified user', async () => {
           const response = await agent
-            .get(
-              FETCH_USER_GROUP_ROUTE.replace(':userId', verifiedUserId).replace(
-                ':groupId',
-                groupId
-              )
-            )
+            .get(FETCH_USER_GROUP_ROUTE.replace(':groupId', groupId))
+            .set(authHeaders({ userId: verifiedUserId }))
             .expect(StatusCodes.OK)
 
           expect(response.body.id).toBe(groupId)

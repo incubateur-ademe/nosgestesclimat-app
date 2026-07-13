@@ -9,6 +9,7 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
@@ -31,26 +32,19 @@ describe('Given a NGC user', () => {
   })
 
   describe('When deleting his group', () => {
-    describe('And invalid userId', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+    describe('And no authentication', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
-          .delete(
-            url
-              .replace(':groupId', faker.database.mongodbObjectId())
-              .replace(':userId', faker.string.alpha(34))
-          )
-          .expect(StatusCodes.BAD_REQUEST)
+          .delete(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .expect(StatusCodes.UNAUTHORIZED)
       })
     })
 
     describe('And group does not exist', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
         await agent
-          .delete(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
+          .delete(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.NOT_FOUND)
       })
     })
@@ -69,9 +63,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.NO_CONTENT} response`, async () => {
         await agent
-          .delete(
-            url.replace(':groupId', groupId).replace(':userId', administratorId)
-          )
+          .delete(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId: administratorId }))
           .expect(StatusCodes.NO_CONTENT)
       })
     })
@@ -126,8 +119,9 @@ describe('Given a NGC user', () => {
         )
 
         await agent
-          .delete(
-            url.replace(':groupId', groupId).replace(':userId', administratorId)
+          .delete(url.replace(':groupId', groupId))
+          .set(
+            authHeaders({ userId: administratorId, email: administratorEmail })
           )
           .expect(StatusCodes.NO_CONTENT)
 
@@ -138,12 +132,13 @@ describe('Given a NGC user', () => {
     describe('And a group does exist And administrator left his/her email but did not join', () => {
       let groupId: string
       let administratorId: string
+      let administratorEmail: string
 
       beforeEach(
         async () =>
           ({
             id: groupId,
-            administrator: { id: administratorId },
+            administrator: { id: administratorId, email: administratorEmail },
           } = await createGroup({
             agent,
             group: {
@@ -158,8 +153,9 @@ describe('Given a NGC user', () => {
 
       test('Then it does not update group administrator in brevo', async () => {
         await agent
-          .delete(
-            url.replace(':groupId', groupId).replace(':userId', administratorId)
+          .delete(url.replace(':groupId', groupId))
+          .set(
+            authHeaders({ userId: administratorId, email: administratorEmail })
           )
           .expect(StatusCodes.NO_CONTENT)
       })
@@ -167,10 +163,8 @@ describe('Given a NGC user', () => {
 
     describe('And not group administrator', () => {
       let groupId: string
-      let userId: string
 
       beforeEach(async () => {
-        userId = faker.string.uuid()
         ;({ id: groupId } = await createGroup({
           agent,
         }))
@@ -178,7 +172,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.NOT_FOUND} response`, async () => {
         await agent
-          .delete(url.replace(':userId', userId!).replace(':groupId', groupId!))
+          .delete(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.NOT_FOUND)
       })
     })
@@ -198,21 +193,15 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
-          .delete(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
+          .delete(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
       test('Then it logs the exception', async () => {
         await agent
-          .delete(
-            url
-              .replace(':userId', faker.string.uuid())
-              .replace(':groupId', faker.database.mongodbObjectId())
-          )
+          .delete(url.replace(':groupId', faker.database.mongodbObjectId()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
         expect(logger.error).toHaveBeenCalledWith(

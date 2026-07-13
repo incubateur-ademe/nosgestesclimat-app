@@ -9,11 +9,10 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -34,7 +33,7 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
+  describe('And no authentication', () => {
     describe('When deleting one of his organisation poll', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -51,7 +50,7 @@ describe('Given a NGC user', () => {
     })
   })
 
-  describe('And invalid cookie', () => {
+  describe('And not a verified user', () => {
     describe('When deleting one of his organisation poll', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -63,19 +62,19 @@ describe('Given a NGC user', () => {
               )
               .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
           )
-          .set('cookie', `${COOKIE_NAME}=invalid cookie`)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.UNAUTHORIZED)
       })
     })
   })
 
-  describe('And logged in', () => {
-    let cookie: string
+  describe('And a verified user', () => {
     let email: string
     let userId: string
 
-    beforeEach(async () => {
-      ;({ cookie, email, userId } = await login({ agent }))
+    beforeEach(() => {
+      userId = faker.string.uuid()
+      email = faker.internet.email()
     })
 
     describe('When deleting one of his organisation poll', () => {
@@ -90,7 +89,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NOT_FOUND)
         })
       })
@@ -112,12 +111,14 @@ describe('Given a NGC user', () => {
             type: organisationType,
           } = await createOrganisation({
             agent,
-            cookie,
+            userId,
+            email,
           }))
 
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId,
+            email,
             organisationId,
           })
           ;({ id: pollId, slug: pollSlug } = poll)
@@ -132,7 +133,7 @@ describe('Given a NGC user', () => {
                 .replace(':organisationIdOrSlug', organisationId)
                 .replace(':pollIdOrSlug', pollId)
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NO_CONTENT)
         })
 
@@ -161,7 +162,7 @@ describe('Given a NGC user', () => {
                 .replace(':organisationIdOrSlug', organisationId)
                 .replace(':pollIdOrSlug', pollId)
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NO_CONTENT)
 
           await EventBus.flush()
@@ -177,7 +178,7 @@ describe('Given a NGC user', () => {
                   .replace(':organisationIdOrSlug', organisationSlug)
                   .replace(':pollIdOrSlug', pollSlug)
               )
-              .set('cookie', cookie)
+              .set(authHeaders({ userId, email }))
               .expect(StatusCodes.NO_CONTENT)
           })
         })
@@ -199,7 +200,8 @@ describe('Given a NGC user', () => {
             type: organisationType,
           } = await createOrganisation({
             agent,
-            cookie,
+            userId,
+            email,
             organisation: {
               administrators: [
                 {
@@ -211,7 +213,8 @@ describe('Given a NGC user', () => {
 
           poll = await createOrganisationPoll({
             agent,
-            cookie,
+            userId,
+            email,
             organisationId,
           })
           ;({ id: pollId } = poll)
@@ -242,7 +245,7 @@ describe('Given a NGC user', () => {
                 .replace(':organisationIdOrSlug', organisationId)
                 .replace(':pollIdOrSlug', pollId)
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NO_CONTENT)
 
           await EventBus.flush()
@@ -273,7 +276,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
         })
 
@@ -287,7 +290,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
           expect(logger.error).toHaveBeenCalledWith(

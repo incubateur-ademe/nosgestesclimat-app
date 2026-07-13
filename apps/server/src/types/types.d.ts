@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type { NodeValue } from '@incubateur-ademe/nosgestesclimat'
+import type { PartialUser } from '../core/types/user.ts'
 import type { CustomAdditionalQuestionType } from '../schemas/PollSchema.ts'
 
 declare global {
   namespace Express {
     export interface Request {
-      user?: { userId: string; email: string }
+      user?: PartialUser
       apiUser?: { scopes: Set<string>; email: string }
       clientIp: string
       requestParams: string

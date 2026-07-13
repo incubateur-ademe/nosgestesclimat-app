@@ -9,7 +9,7 @@ export const deleteSimulation = async (simulationId: string) => {
   const session = await getUserSession()
   if (!session) throw new UnauthorizedError()
 
-  await fetchServer(`${SIMULATION_URL}/${session.id}/${simulationId}`, {
+  await fetchServer(`${SIMULATION_URL}/${simulationId}`, {
     method: 'DELETE',
   })
 }

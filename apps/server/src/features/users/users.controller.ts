@@ -7,16 +7,11 @@ import { EventBus } from '../../core/event-bus/event-bus.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import {
-  COOKIE_NAME,
-  getCookieOptions,
-} from '../authentication/authentication.service.ts'
 import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
 import { addOrUpdateBrevoContact } from './handlers/add-or-update-brevo-contact.ts'
 import { removePreviousBrevoContact } from './handlers/remove-previous-brevo-contact.ts'
 import { fetchUserContact, updateUserAndContact } from './users.service.ts'
 import {
-  FetchMeValidator,
   FetchUserContactValidator,
   UpdateUserValidator,
 } from './users.validator.ts'
@@ -48,22 +43,6 @@ router
     }
   )
 
-/**
- * Returns current user data
- */
-router
-  .route('/v1/me')
-  .get(
-    authentificationMiddleware(),
-    validateRequest(FetchMeValidator),
-    (req, res) => {
-      return res.status(StatusCodes.OK).json({
-        id: req.user!.userId,
-        email: req.user!.email,
-      })
-    }
-  )
-
 EventBus.on(UserUpdatedEvent, addOrUpdateBrevoContact)
 EventBus.on(UserUpdatedEvent, removePreviousBrevoContact)
 
@@ -71,28 +50,20 @@ EventBus.on(UserUpdatedEvent, removePreviousBrevoContact)
  * Upserts user for given user id
  */
 router
-  .route('/v1/:userId')
+  .route('/v1')
   .put(
-    authentificationMiddleware({ passIfUnauthorized: true }),
+    authentificationMiddleware(),
     validateRequest(UpdateUserValidator),
     async (req, res) => {
       try {
-        if (req.user && req.user.userId !== req.params.userId) {
-          throw new ForbiddenException('Different user ids found')
-        }
-
         const origin = req.get('origin') || config.app.origin
 
-        const { user, verified, token } = await updateUserAndContact({
-          params: req.user || req.params,
+        const { user, verified } = await updateUserAndContact({
+          user: req.user!,
           code: req.query.code,
-          userDto: req.body,
+          newUserData: req.body,
           origin,
         })
-
-        if (token) {
-          res.cookie(COOKIE_NAME, token, getCookieOptions(origin))
-        }
 
         return verified
           ? res.status(StatusCodes.OK).json(user)

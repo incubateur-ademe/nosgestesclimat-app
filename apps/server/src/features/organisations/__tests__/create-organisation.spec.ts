@@ -13,12 +13,11 @@ import { connectUpdateContact } from '../../../adapters/connect/__tests__/fixtur
 import { OrganisationType } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import type { OrganisationCreateDto } from '../organisations.validator.ts'
 import {
   CREATE_ORGANISATION_ROUTE,
@@ -40,7 +39,7 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
+  describe('And no authentication', () => {
     describe('When creating his organisation', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent.post(url).expect(StatusCodes.UNAUTHORIZED)
@@ -48,24 +47,28 @@ describe('Given a NGC user', () => {
     })
   })
 
-  describe('And invalid cookie', () => {
+  describe('And not a verified user', () => {
     describe('When creating his organisation', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
           .post(url)
-          .set('cookie', `${COOKIE_NAME}=invalid cookie`)
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .send({
+            name: faker.company.name(),
+            type: randomOrganisationType(),
+          })
           .expect(StatusCodes.UNAUTHORIZED)
       })
     })
   })
 
-  describe('And logged in', () => {
-    let cookie: string
+  describe('And a verified user', () => {
     let userId: string
     let email: string
 
-    beforeEach(async () => {
-      ;({ cookie, email, userId } = await login({ agent }))
+    beforeEach(() => {
+      userId = faker.string.uuid()
+      email = faker.internet.email()
     })
 
     describe('When creating his organisation', () => {
@@ -73,7 +76,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.BAD_REQUEST)
         })
       })
@@ -82,7 +85,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: '',
               type: randomOrganisationType(),
@@ -91,7 +94,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.string.alpha(101),
               type: randomOrganisationType(),
@@ -104,7 +107,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.name(),
               type: 'my-invalid-organisationType',
@@ -127,7 +130,7 @@ describe('Given a NGC user', () => {
 
         const response = await agent
           .post(url)
-          .set('cookie', cookie)
+          .set(authHeaders({ userId, email }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -181,7 +184,7 @@ describe('Given a NGC user', () => {
           body: { id },
         } = await agent
           .post(url)
-          .set('cookie', cookie)
+          .set(authHeaders({ userId, email }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -266,7 +269,7 @@ describe('Given a NGC user', () => {
 
         await agent
           .post(url)
-          .set('cookie', cookie)
+          .set(authHeaders({ userId, email }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -307,7 +310,7 @@ describe('Given a NGC user', () => {
 
         await agent
           .post(url)
-          .set('cookie', cookie)
+          .set(authHeaders({ userId, email }))
           .send(payload)
           .expect(StatusCodes.CREATED)
 
@@ -349,7 +352,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .set('origin', 'https://preprod.nosgestesclimat.fr')
             .expect(StatusCodes.CREATED)
@@ -393,7 +396,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .query({
               locale: Locales.en,
@@ -441,7 +444,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -490,7 +493,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -543,7 +546,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -553,13 +556,13 @@ describe('Given a NGC user', () => {
 
       describe('And an organisation already does exist for the user', () => {
         beforeEach(async () => {
-          await createOrganisation({ agent, cookie })
+          await createOrganisation({ agent, userId, email })
         })
 
         test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
           const response = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.name(),
               type: randomOrganisationType(),
@@ -577,10 +580,7 @@ describe('Given a NGC user', () => {
 
         beforeEach(async () => {
           name = faker.company.name()
-          const { cookie } = await login({
-            agent,
-          })
-          await createOrganisation({ agent, cookie, organisation: { name } })
+          await createOrganisation({ agent, organisation: { name } })
         })
 
         test(`Then it returns a ${StatusCodes.CREATED} response with the created organisation and an incremented slug`, async () => {
@@ -602,7 +602,7 @@ describe('Given a NGC user', () => {
 
           const response = await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send(payload)
             .expect(StatusCodes.CREATED)
 
@@ -649,7 +649,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
           await agent
             .post(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .send({
               name: faker.company.name(),
               type: randomOrganisationType(),
@@ -658,7 +658,7 @@ describe('Given a NGC user', () => {
         })
 
         test('Then it logs the exception', async () => {
-          await agent.post(url).set('cookie', cookie).send({
+          await agent.post(url).set(authHeaders({ userId, email })).send({
             name: faker.company.name(),
             type: randomOrganisationType(),
           })

@@ -5,9 +5,8 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -32,7 +31,7 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
+  describe('And no authentication', () => {
     describe('When fetching one of his organisation poll', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -49,7 +48,7 @@ describe('Given a NGC user', () => {
     })
   })
 
-  describe('And invalid cookie', () => {
+  describe('And not a verified user', () => {
     describe('When fetching one of his organisation poll', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
@@ -61,17 +60,19 @@ describe('Given a NGC user', () => {
               )
               .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
           )
-          .set('cookie', `${COOKIE_NAME}=invalid cookie`)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.UNAUTHORIZED)
       })
     })
   })
 
-  describe('And logged in', () => {
-    let cookie: string
+  describe('And a verified user', () => {
+    let userId: string
+    let email: string
 
-    beforeEach(async () => {
-      ;({ cookie } = await login({ agent }))
+    beforeEach(() => {
+      userId = faker.string.uuid()
+      email = faker.internet.email()
     })
 
     describe('When fetching one of his organisation poll', () => {
@@ -86,7 +87,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NOT_FOUND)
         })
       })
@@ -100,7 +101,8 @@ describe('Given a NGC user', () => {
             ({ id: organisationId, slug: organisationSlug } =
               await createOrganisation({
                 agent,
-                cookie,
+                userId,
+                email,
               }))
         )
 
@@ -112,7 +114,7 @@ describe('Given a NGC user', () => {
                   .replace(':organisationIdOrSlug', organisationId)
                   .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
               )
-              .set('cookie', cookie)
+              .set(authHeaders({ userId, email }))
               .expect(StatusCodes.NOT_FOUND)
           })
         })
@@ -125,7 +127,8 @@ describe('Given a NGC user', () => {
           beforeEach(async () => {
             poll = await createOrganisationPoll({
               agent,
-              cookie,
+              userId,
+              email,
               organisationId,
             })
             ;({ id: pollId, slug: pollSlug } = poll)
@@ -138,7 +141,7 @@ describe('Given a NGC user', () => {
                   .replace(':organisationIdOrSlug', organisationId)
                   .replace(':pollIdOrSlug', pollId)
               )
-              .set('cookie', cookie)
+              .set(authHeaders({ userId, email }))
               .expect(StatusCodes.OK)
 
             expect(response.body).toEqual(poll)
@@ -152,7 +155,7 @@ describe('Given a NGC user', () => {
                     .replace(':organisationIdOrSlug', organisationSlug)
                     .replace(':pollIdOrSlug', pollSlug)
                 )
-                .set('cookie', cookie)
+                .set(authHeaders({ userId, email }))
                 .expect(StatusCodes.OK)
 
               expect(response.body).toEqual(poll)
@@ -185,7 +188,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
         })
 
@@ -199,7 +202,7 @@ describe('Given a NGC user', () => {
                 )
                 .replace(':pollIdOrSlug', faker.database.mongodbObjectId())
             )
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
 
           expect(logger.error).toHaveBeenCalledWith(
             'Poll fetch failed',
