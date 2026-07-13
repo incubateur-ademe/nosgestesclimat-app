@@ -48,7 +48,7 @@ export default function EmailConfirmation({ organisationName }: Props) {
         transition={{ duration: 0.4, ease: 'easeOut', delay: 1.5 }}
         className="text-primary-700 mb-2 text-center text-lg leading-7 font-bold">
         <Trans i18nKey="emailConfirmation.title">Jeu concours -</Trans>{' '}
-        {organisationName}{' '}
+        {organisationName}
       </motion.h1>
 
       <motion.div
