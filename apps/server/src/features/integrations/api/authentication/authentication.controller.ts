@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../../../config.ts'
 import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
 import { asyncValidateRequestBody } from '../../../../core/middlewares/asyncValidateRequestBody.ts'
 import { tsRestServer } from '../../../../core/ts-rest.ts'
@@ -15,11 +14,10 @@ import {
 } from './authentication.service.ts'
 
 const router = tsRestServer.router(authenticationContract, {
-  generateApiToken: async ({ body, req }) => {
+  generateApiToken: async ({ body }) => {
     try {
       await generateApiToken({
         generateApiTokenDto: body,
-        origin: req.get('origin') || config.app.origin,
       })
 
       return {

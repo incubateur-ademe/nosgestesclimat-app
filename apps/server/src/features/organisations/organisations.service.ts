@@ -120,12 +120,10 @@ const organisationToDto = (
 export const createOrganisation = async ({
   organisationDto,
   locale,
-  origin,
   user,
 }: {
   organisationDto: OrganisationCreateDto
   locale: Locales
-  origin: string
   user: PartialVerifiedUser
 }) => {
   try {
@@ -137,7 +135,6 @@ export const createOrganisation = async ({
       administrator,
       organisation,
       locale,
-      origin,
     })
 
     EventBus.emit(organisationCreatedEvent)
@@ -315,11 +312,9 @@ const pollToDto = ({
 export const createPoll = async ({
   user,
   locale,
-  origin,
   params,
   pollDto,
 }: {
-  origin: string
   params: OrganisationParams
   pollDto: OrganisationPollCreateDto
   user: PartialVerifiedUser
@@ -333,7 +328,6 @@ export const createPoll = async ({
     const pollCreatedEvent = new PollCreatedEvent({
       organisation,
       locale,
-      origin,
       poll,
     })
 

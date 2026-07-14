@@ -458,8 +458,8 @@ describe('Given a NGC user', () => {
             .expect(StatusCodes.CREATED)
         })
 
-        describe('And custom user origin (preprod)', () => {
-          test('Then it sends a creation email', async () => {
+        describe('And a spoofed origin header', () => {
+          test('Then it ignores it and sends a creation email using the configured app origin', async () => {
             const payload = {
               name: faker.company.buzzNoun(),
             }
@@ -490,9 +490,9 @@ describe('Given a NGC user', () => {
                   templateId: 126,
                   params: {
                     ADMINISTRATOR_NAME: null,
-                    DASHBOARD_URL: `https://preprod.nosgestesclimat.fr/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
+                    DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
                     POLL_NAME: payload.name,
-                    POLL_URL: `https://preprod.nosgestesclimat.fr/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
+                    POLL_URL: `https://nosgestesclimat.test/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
                   },
                 },
               }),
@@ -504,7 +504,7 @@ describe('Given a NGC user', () => {
               .post(url.replace(':organisationIdOrSlug', organisationId))
               .set(authHeaders({ userId, email }))
               .send(payload)
-              .set('origin', 'https://preprod.nosgestesclimat.fr')
+              .set('origin', 'https://evil.example.com')
               .expect(StatusCodes.CREATED)
           })
         })

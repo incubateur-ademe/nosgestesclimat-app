@@ -5,7 +5,6 @@ import type { VerificationCodeCreateDto } from '../verification-codes.validator.
 export class VerificationCodeCreatedEvent extends EventBusEvent<{
   verificationCode: VerificationCodeCreateDto & { code: string }
   locale: Locales
-  origin: string
 }> {
   name = 'VerificationCodeCreatedEvent'
 }
