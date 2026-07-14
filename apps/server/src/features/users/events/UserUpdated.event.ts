@@ -4,7 +4,6 @@ import { EventBusEvent } from '../../../core/event-bus/event.ts'
 
 export class UserUpdatedEvent extends EventBusEvent<{
   user: Pick<User, 'id' | 'name' | 'email'>
-  origin: string
   previousContact?: BrevoContact
   nextEmail?: string | null
   verified?: boolean

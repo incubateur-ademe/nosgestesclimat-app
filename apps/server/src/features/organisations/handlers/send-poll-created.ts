@@ -1,4 +1,5 @@
 import { sendPollCreatedEmail } from '../../../adapters/brevo/client.ts'
+import { config } from '../../../config.ts'
 import type { Handler } from '../../../core/event-bus/handler.ts'
 import type { PollCreatedEvent } from '../events/PollCreated.event.ts'
 
@@ -7,7 +8,6 @@ export const sendPollCreated: Handler<PollCreatedEvent> = (event) => {
     attributes: {
       poll,
       locale,
-      origin,
       organisation,
       organisation: {
         administrators: [{ user: administrator }],
@@ -18,7 +18,7 @@ export const sendPollCreated: Handler<PollCreatedEvent> = (event) => {
   return sendPollCreatedEmail({
     administrator,
     organisation,
-    origin,
+    origin: config.app.origin,
     locale,
     poll,
   })

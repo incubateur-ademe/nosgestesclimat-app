@@ -77,6 +77,30 @@ describe('NewsletterConfirmationPage', () => {
     )
   })
 
+  it('should render the invalid message when success=false and status=400', async () => {
+    // Given
+    const props = {
+      params: Promise.resolve({ locale: i18nConfig.defaultLocale as Locale }),
+      searchParams: Promise.resolve({
+        success: 'false' as const,
+        status: '400' as const,
+      }),
+    }
+
+    // When
+    await act(async () => {
+      renderWithWrapper(await NewsletterConfirmationPage(props))
+    })
+
+    // Then
+    expect(NewsletterSuccessMessage).not.toHaveBeenCalled()
+    expect(NewsletterErrorMessage).not.toHaveBeenCalled()
+    expect(NewsletterInvalidMessage).toHaveBeenCalledWith(
+      { locale: i18nConfig.defaultLocale },
+      undefined
+    )
+  })
+
   it('should render the error message when success=false and status=500', async () => {
     // Given
     const props = {
