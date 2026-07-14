@@ -94,7 +94,7 @@ export default function VerificationCodeForm({
           defaultInputStyleClassNames,
           inputError ? 'border-red-200! bg-red-50! ring-2 ring-red-700!' : '',
           isSuccessValidate ? 'border-green-700! ring-2 ring-green-700!' : '',
-          isDisabled ? 'cursor-not-allowed opacity-50' : '',
+          isDisabled ? 'cursor-not-allowed' : '',
           'focus:ring-primary-700 focus:ring-2 focus:ring-offset-3 focus:outline-hidden'
         )}
       />
