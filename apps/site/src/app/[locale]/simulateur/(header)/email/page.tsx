@@ -6,12 +6,12 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { notFound } from 'next/navigation'
-import { getEmailPageData } from './_helpers/getEmailPageData'
 import EmailConfirmation from './_components/EmailConfirmation'
+import { getEmailPageData } from './_helpers/getEmailPageData'
 
 export default async function Email({
   params,
@@ -124,7 +124,11 @@ export default async function Email({
                 </Trans>
               </ButtonLink>
             }
-            redirectPathname={`${EMAIL_SIMULATOR_PATH}?confirm=true`}
+            redirectPathname={
+              hasContest
+                ? `${EMAIL_SIMULATOR_PATH}?confirm=true`
+                : END_PAGE_PATH
+            }
           />
         </QueryClientProviderWrapper>
       </UserProvider>
