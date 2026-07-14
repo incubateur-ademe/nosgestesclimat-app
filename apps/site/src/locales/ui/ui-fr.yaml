@@ -915,6 +915,10 @@ entries:
   signIn.verificationForm.email.verificationCode.prefix: Entrez le
   signIn.verificationForm.email.verificationCode.strong: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'envoyé à '
+  signIn.verificationForm.codeInput.label: Entrez les 6 chiffres du code de vérification
+  signIn.verificationForm.submitButton: Valider mon code
+  signIn.verificationForm.pending: Nous vérifions votre code...
+  signIn.verificationForm.success: Votre code est valide !
   signIn.verificationForm.notReceived.backButton: Retour à la connexion
   signIn.verificationForm.notReceived.error: Oups, une erreur s'est produite au moment de l'envoi de votre code...
   signIn.verificationForm.notReceived.reloadPage: Recharger la page

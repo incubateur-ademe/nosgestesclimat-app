@@ -1,14 +1,14 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import VerificationCodeInput from './verificationContent/VerificationCodeInput'
+import VerificationCodeForm from './verificationContent/VerificationCodeForm'
 
 interface Props {
   email: string
   inputError: string | undefined
   isSuccessValidate: boolean
   isPendingValidate: boolean
-  handleValidateVerificationCode: (verificationCode: string) => Promise<void>
+  handleValidateVerificationCode: (verificationCode: string) => void
   isInputDisabled: boolean
   onInputChange?: (code: string) => void
 }
@@ -43,20 +43,14 @@ export default function VerificationContent({
         <span>{email}</span>.
       </p>
 
-      <form>
-        <label htmlFor="code" className="mb-4 block font-bold">
-          <Trans>Entrez votre code de vérification pour continuer</Trans>
-        </label>
-
-        <VerificationCodeInput
-          inputError={inputError}
-          isSuccessValidate={isSuccessValidate}
-          isPendingValidate={isPendingValidate}
-          handleValidateVerificationCode={handleValidateVerificationCode}
-          isInputDisabled={isInputDisabled}
-          onInputChange={onInputChange}
-        />
-      </form>
+      <VerificationCodeForm
+        inputError={inputError}
+        isSuccessValidate={isSuccessValidate}
+        isPendingValidate={isPendingValidate}
+        handleValidateVerificationCode={handleValidateVerificationCode}
+        isInputDisabled={isInputDisabled}
+        onInputChange={onInputChange}
+      />
     </>
   )
 }

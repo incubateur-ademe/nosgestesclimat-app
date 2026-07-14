@@ -66,7 +66,7 @@ describe('VerifyCodeForm', () => {
     expect(screen.getByTestId('verification-code-input')).toBeInTheDocument()
   })
 
-  it('calls verifyCode with the 6-digit code when fully entered', async () => {
+  it('calls verifyCode with the 6-digit code when the submit button is clicked', async () => {
     render(
       <Wrapper>
         <VerifyCodeForm email="user@example.com" />
@@ -76,9 +76,24 @@ describe('VerifyCodeForm', () => {
     const input = screen.getByTestId('verification-code-input')
     await userEvent.type(input, '123456')
 
+    await userEvent.click(screen.getByTestId('verification-code-submit-button'))
+
     await waitFor(() => {
-      expect(mockVerifyCode).toHaveBeenCalledWith('123456', 'user@example.com')
+      expect(mockVerifyCode).toHaveBeenCalledWith('123456')
     })
+  })
+
+  it('does not call verifyCode when only typing the code without submitting', async () => {
+    render(
+      <Wrapper>
+        <VerifyCodeForm email="user@example.com" />
+      </Wrapper>
+    )
+
+    const input = screen.getByTestId('verification-code-input')
+    await userEvent.type(input, '123456')
+
+    expect(mockVerifyCode).not.toHaveBeenCalled()
   })
 
   it('shows an error message when loginError is an AxiosError with invalid code', () => {

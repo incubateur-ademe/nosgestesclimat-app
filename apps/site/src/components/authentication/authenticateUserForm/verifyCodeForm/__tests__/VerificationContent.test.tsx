@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import VerificationContent from '../VerificationContent'
 
 describe('VerificationContent', () => {
@@ -35,6 +36,9 @@ describe('VerificationContent', () => {
 
   it('displays the pending state when isPendingValidate is true', () => {
     renderComponent({ isPendingValidate: true })
+    expect(
+      screen.getByTestId('verification-code-submit-button')
+    ).toHaveAttribute('aria-disabled', 'true')
     expect(screen.getByText('Nous vérifions votre code...')).toBeInTheDocument()
   })
 
@@ -43,9 +47,19 @@ describe('VerificationContent', () => {
     expect(screen.getByText('Votre code est valide !')).toBeInTheDocument()
   })
 
-  it('disables the input when isInputDisabled is true', () => {
-    renderComponent({ isInputDisabled: true })
-    const input = screen.getByTestId('verification-code-input')
-    expect(input).toBeDisabled()
+  it('disables the submit button until 6 digits are entered', async () => {
+    renderComponent()
+
+    expect(screen.getByTestId('verification-code-submit-button')).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
+
+    await userEvent.type(screen.getByTestId('verification-code-input'), '123456')
+
+    expect(screen.getByTestId('verification-code-submit-button')).not.toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 })

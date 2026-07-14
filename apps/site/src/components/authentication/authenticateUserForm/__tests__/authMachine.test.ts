@@ -25,6 +25,7 @@ describe('authReducer', () => {
       {
         phase: 'verifying_code',
         email: 'a@b.com',
+        code: '123456',
         pendingVerification: {
           email: 'a@b.com',
           expirationDate: new Date(),
@@ -129,8 +130,25 @@ describe('authReducer', () => {
       expect(result).toEqual({
         phase: 'verifying_code',
         email: 'user@example.com',
+        code: '123456',
         pendingVerification,
       })
+    })
+
+    it('ignores a second SUBMIT_CODE while already verifying', () => {
+      const verifyingState: AuthPhase = {
+        phase: 'verifying_code',
+        email: 'user@example.com',
+        code: '123456',
+        pendingVerification,
+      }
+
+      const result = authReducer(verifyingState, {
+        type: 'SUBMIT_CODE',
+        code: '654321',
+      })
+
+      expect(result).toEqual(verifyingState)
     })
 
     it('transitions to resending_code on RESEND_CODE', () => {
@@ -238,6 +256,7 @@ describe('authReducer', () => {
     const state: AuthPhase = {
       phase: 'verifying_code',
       email: 'user@example.com',
+      code: '123456',
       pendingVerification,
     }
 

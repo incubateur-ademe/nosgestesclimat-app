@@ -16,6 +16,7 @@ export type AuthPhase =
   | {
       phase: 'verifying_code'
       email: string
+      code: string
       pendingVerification: PendingVerification
     }
   | { phase: 'authenticated'; email: string; userId: string }
@@ -78,6 +79,7 @@ export function authReducer(state: AuthPhase, event: AuthEvent): AuthPhase {
           return {
             phase: 'verifying_code',
             email: state.email,
+            code: event.code,
             pendingVerification: state.pendingVerification,
           }
         case 'RESEND_CODE':

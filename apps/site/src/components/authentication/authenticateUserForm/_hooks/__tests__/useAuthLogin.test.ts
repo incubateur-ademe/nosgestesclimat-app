@@ -1,6 +1,6 @@
-import { act, renderHook } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { AuthEvent } from '../../authMachine'
+import type { AuthEvent, AuthPhase } from '../../authMachine'
 import { useAuthLogin } from '../useAuthLogin'
 
 vi.mock('../useLogin', () => ({
@@ -13,6 +13,24 @@ describe('useAuthLogin', () => {
   const mockDispatch = vi.fn() as React.Dispatch<AuthEvent>
   const mockCompleteVerification = vi.fn().mockResolvedValue(undefined)
   const mockResetCodeCreation = vi.fn()
+
+  const pendingVerification = {
+    email: 'user@example.com',
+    expirationDate: new Date('2025-01-01'),
+  }
+
+  const codeSentState: AuthPhase = {
+    phase: 'code_sent',
+    email: 'user@example.com',
+    pendingVerification,
+  }
+
+  const verifyingCodeState: AuthPhase = {
+    phase: 'verifying_code',
+    email: 'user@example.com',
+    code: '123456',
+    pendingVerification,
+  }
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -32,64 +50,121 @@ describe('useAuthLogin', () => {
     return defaultReturn
   }
 
-  it('dispatches SUBMIT_CODE, then CODE_VALID and calls completeVerification on success', async () => {
-    const login = setupMock()
+  it('dispatches SUBMIT_CODE when verifyCode is called', () => {
+    setupMock()
+
     const { result } = renderHook(() =>
       useAuthLogin({
+        state: codeSentState,
         dispatch: mockDispatch,
         completeVerification: mockCompleteVerification,
         resetCodeCreation: mockResetCodeCreation,
       })
     )
 
-    await act(async () => {
-      await result.current.verifyCode('123456', 'user@example.com')
+    act(() => {
+      result.current.verifyCode('123456')
     })
 
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'SUBMIT_CODE',
-      code: '123456',
-    })
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'CODE_VALID',
-      userId: 'user-123',
-    })
-    expect(mockCompleteVerification).toHaveBeenCalledWith('user-123')
-    expect(login.mutateAsync).toHaveBeenCalledWith({
-      email: 'user@example.com',
       code: '123456',
     })
   })
 
-  it('dispatches SUBMIT_CODE, then CODE_INVALID on login failure', async () => {
-    setupMock({
-      mutateAsync: vi.fn().mockRejectedValue(new Error('Invalid code')),
-    })
+  it('calls login and dispatches CODE_VALID when entering verifying_code', async () => {
+    const login = setupMock()
 
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useAuthLogin({
+        state: verifyingCodeState,
         dispatch: mockDispatch,
         completeVerification: mockCompleteVerification,
         resetCodeCreation: mockResetCodeCreation,
       })
     )
 
-    await act(async () => {
-      await result.current.verifyCode('000000', 'user@example.com')
+    await waitFor(() => {
+      expect(login.mutateAsync).toHaveBeenCalledWith({
+        email: 'user@example.com',
+        code: '123456',
+      })
     })
 
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'SUBMIT_CODE',
-      code: '000000',
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'CODE_VALID',
+        userId: 'user-123',
+      })
     })
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'CODE_INVALID' })
+
     expect(mockCompleteVerification).not.toHaveBeenCalled()
+  })
+
+  it('calls completeVerification when entering authenticated', async () => {
+    setupMock()
+
+    renderHook(() =>
+      useAuthLogin({
+        state: {
+          phase: 'authenticated',
+          email: 'user@example.com',
+          userId: 'user-123',
+        },
+        dispatch: mockDispatch,
+        completeVerification: mockCompleteVerification,
+        resetCodeCreation: mockResetCodeCreation,
+      })
+    )
+
+    await waitFor(() => {
+      expect(mockCompleteVerification).toHaveBeenCalledWith('user-123')
+    })
+  })
+
+  it('dispatches CODE_INVALID when login fails in verifying_code', async () => {
+    setupMock({
+      mutateAsync: vi.fn().mockRejectedValue(new Error('Invalid code')),
+    })
+
+    renderHook(() =>
+      useAuthLogin({
+        state: verifyingCodeState,
+        dispatch: mockDispatch,
+        completeVerification: mockCompleteVerification,
+        resetCodeCreation: mockResetCodeCreation,
+      })
+    )
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith({ type: 'CODE_INVALID' })
+    })
+
+    expect(mockCompleteVerification).not.toHaveBeenCalled()
+  })
+
+  it('does not call login when not in verifying_code', async () => {
+    const login = setupMock()
+
+    renderHook(() =>
+      useAuthLogin({
+        state: codeSentState,
+        dispatch: mockDispatch,
+        completeVerification: mockCompleteVerification,
+        resetCodeCreation: mockResetCodeCreation,
+      })
+    )
+
+    await waitFor(() => {
+      expect(login.mutateAsync).not.toHaveBeenCalled()
+    })
   })
 
   it('resets the login mutation, resets code creation and dispatches GO_BACK on goBack', () => {
     const login = setupMock()
     const { result } = renderHook(() =>
       useAuthLogin({
+        state: codeSentState,
         dispatch: mockDispatch,
         completeVerification: mockCompleteVerification,
         resetCodeCreation: mockResetCodeCreation,
@@ -108,6 +183,7 @@ describe('useAuthLogin', () => {
   it('dispatches RESET on reset', () => {
     const { result } = renderHook(() =>
       useAuthLogin({
+        state: codeSentState,
         dispatch: mockDispatch,
         completeVerification: mockCompleteVerification,
         resetCodeCreation: mockResetCodeCreation,
@@ -125,6 +201,7 @@ describe('useAuthLogin', () => {
     const login = setupMock()
     const { result } = renderHook(() =>
       useAuthLogin({
+        state: codeSentState,
         dispatch: mockDispatch,
         completeVerification: mockCompleteVerification,
         resetCodeCreation: mockResetCodeCreation,
@@ -144,6 +221,7 @@ describe('useAuthLogin', () => {
 
     const { result } = renderHook(() =>
       useAuthLogin({
+        state: codeSentState,
         dispatch: mockDispatch,
         completeVerification: mockCompleteVerification,
         resetCodeCreation: mockResetCodeCreation,

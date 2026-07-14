@@ -64,11 +64,11 @@ export default function VerificationForm({ email }: Props) {
       : undefined
 
   const handleValidateVerificationCode = useCallback(
-    async (code: string) => {
+    (code: string) => {
       if (isValidationDisabled) return
-      await verifyCode(code, email)
+      verifyCode(code)
     },
-    [isValidationDisabled, verifyCode, email]
+    [isValidationDisabled, verifyCode]
   )
 
   const handleInputChange = useCallback(

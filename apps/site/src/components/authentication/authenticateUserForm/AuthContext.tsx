@@ -12,7 +12,7 @@ import { authReducer, initialAuthPhase, type AuthPhase } from './authMachine'
 export interface AuthContextValue {
   state: AuthPhase
   sendEmail: (email: string) => Promise<void>
-  verifyCode: (code: string, email: string) => Promise<void>
+  verifyCode: (code: string) => void
   resendCode: (email: string) => Promise<void>
   goBack: () => void
   reset: () => void
@@ -77,6 +77,7 @@ export function AuthProvider({
   // Code verification (login mutation)
   const { verifyCode, goBack, reset, loginError, clearLoginError } =
     useAuthLogin({
+      state,
       dispatch,
       completeVerification,
       resetCodeCreation,

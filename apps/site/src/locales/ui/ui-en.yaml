@@ -1102,6 +1102,10 @@ entries:
   signIn.verificationForm.email.verificationCode.strong.lock: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'sent to '
   signIn.verificationForm.email.verificationCode.suffix.lock: 'envoyé à '
+  signIn.verificationForm.codeInput.label: Enter the 6 digits of the verification code
+  signIn.verificationForm.submitButton: Validate my code
+  signIn.verificationForm.pending: Verifying your code...
+  signIn.verificationForm.success: Your code is valid!
   signIn.verificationForm.notReceived.resendButton: Resend code
   signIn.verificationForm.notReceived.resendButton.lock: Renvoyer le code
   signIn.verificationForm.notReceived.reloadPage: Reload page
