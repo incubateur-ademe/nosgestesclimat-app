@@ -9,7 +9,6 @@ export class LoginEvent extends EventBusEvent<{
   previousUserId: string
   mode: VerificationCodeMode
   locale: Locales
-  origin: string
 }> {
   name = 'LoginEvent'
 }

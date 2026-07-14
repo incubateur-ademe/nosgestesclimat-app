@@ -123,11 +123,9 @@ const findGroupAndParticipant = async (
 
 export const createGroup = async ({
   groupDto,
-  origin,
   user,
 }: {
   groupDto: GroupCreateDto
-  origin: string
   user: PartialUser
 }) => {
   const {
@@ -155,7 +153,6 @@ export const createGroup = async ({
   if (simulation) {
     const simulationUpsertedEvent = new SimulationUpsertedEvent({
       group,
-      origin,
       simulation,
       administrator,
       sendEmail: true,
@@ -204,12 +201,10 @@ export const updateGroup = async (
 }
 
 export const createParticipant = async ({
-  origin,
   params,
   participantDto,
   user,
 }: {
-  origin: string
   params: GroupParams
   participantDto: ParticipantCreateDto
   user: PartialUser
@@ -240,7 +235,6 @@ export const createParticipant = async ({
       locale: Locales.fr,
       administrator,
       simulation,
-      origin,
       group,
       user: participantUser,
     })

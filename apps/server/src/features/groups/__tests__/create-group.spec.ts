@@ -629,8 +629,8 @@ describe('Given a NGC user', () => {
           await EventBus.flush()
         })
 
-        describe('And custom user origin (preprod)', () => {
-          test('Then it sends a creation email', async () => {
+        describe('And a spoofed origin header', () => {
+          test('Then it ignores it and sends a creation email using the configured app origin', async () => {
             const email = faker.internet.email().toLocaleLowerCase()
             const userId = faker.string.uuid()
             const name = faker.person.fullName()
@@ -661,12 +661,12 @@ describe('Given a NGC user', () => {
                   params: {
                     GROUP_URL: expect.stringMatching(
                       new RegExp(
-                        '^https:\\/\\/preprod\\.nosgestesclimat\\.fr\\/amis\\/resultats\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-voir-classement$'
+                        '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/resultats\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-voir-classement$'
                       )
                     ),
                     SHARE_URL: expect.stringMatching(
                       new RegExp(
-                        '^https:\\/\\/preprod\\.nosgestesclimat\\.fr\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage$'
+                        '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage$'
                       )
                     ),
 
@@ -681,7 +681,7 @@ describe('Given a NGC user', () => {
             await agent
               .post(url)
               .set(authHeaders({ userId, email }))
-              .set('origin', 'https://preprod.nosgestesclimat.fr')
+              .set('origin', 'https://evil.example.com')
               .send(payload)
               .expect(StatusCodes.CREATED)
 

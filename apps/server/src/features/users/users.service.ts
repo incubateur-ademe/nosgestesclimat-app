@@ -131,12 +131,10 @@ export const updateUserAndContact = async ({
   code,
   user: userToUpdate,
   newUserData,
-  origin,
 }: {
   user: PartialUser
   code?: string
   newUserData: UserUpdateDto
-  origin: string
 }) => {
   const { user, contact, nextEmail, verified, previousContact } =
     await transaction(async (session) => {
@@ -242,7 +240,6 @@ export const updateUserAndContact = async ({
     previousContact,
     nextEmail,
     verified,
-    origin,
     user,
   })
 

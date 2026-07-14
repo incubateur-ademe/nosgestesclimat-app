@@ -8,7 +8,6 @@ import { simulationSelection } from '../../../adapters/prisma/selection.ts'
 import { redis } from '../../../adapters/redis/client.ts'
 import { KEYS } from '../../../adapters/redis/constant.ts'
 import app from '../../../app.ts'
-import { config } from '../../../config.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
 import logger from '../../../logger.ts'
@@ -92,7 +91,6 @@ describe('Given a poll participation', () => {
       })
 
       event = new SimulationUpsertedAsyncEvent({
-        origin: config.app.origin,
         locale: Locales.fr,
         sendEmail: false,
         updated: false,

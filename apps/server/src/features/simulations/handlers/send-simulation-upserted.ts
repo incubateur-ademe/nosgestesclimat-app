@@ -4,13 +4,13 @@ import {
   sendPollSimulationUpsertedEmail,
   sendSimulationUpsertedEmail,
 } from '../../../adapters/brevo/client.ts'
+import { config } from '../../../config.ts'
 import type { Handler } from '../../../core/event-bus/handler.ts'
 import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event.ts'
 
 export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
   attributes,
   attributes: {
-    origin,
     user,
     organisation,
     simulation,
@@ -25,6 +25,7 @@ export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
   }
 
   const { email } = user
+  const origin = config.app.origin
 
   if (simulation?.progression === 1) {
     if (organisation) {
