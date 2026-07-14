@@ -274,8 +274,8 @@ describe('Given a NGC user', () => {
           await EventBus.flush()
         })
 
-        describe('And custom user origin (preprod)', () => {
-          test('Then it sends a welcome email', async () => {
+        describe('And a spoofed origin header', () => {
+          test('Then it ignores it and sends a welcome email using the configured app origin', async () => {
             const { email, code } = await createVerificationCode({
               agent,
               mode: VerificationCodeMode.signUp,
@@ -307,8 +307,7 @@ describe('Given a NGC user', () => {
                   ],
                   templateId: 137,
                   params: {
-                    DASHBOARD_URL:
-                      'https://preprod.nosgestesclimat.fr/mon-espace',
+                    DASHBOARD_URL: 'https://nosgestesclimat.test/mon-espace',
                   },
                 },
               })
@@ -316,7 +315,7 @@ describe('Given a NGC user', () => {
 
             await agent
               .post(url)
-              .set('origin', 'https://preprod.nosgestesclimat.fr')
+              .set('origin', 'https://evil.example.com')
               .send(payload)
               .expect(StatusCodes.OK)
           })

@@ -111,12 +111,10 @@ const simulationToDto = (
 export const createSimulation = async ({
   simulationDto,
   query,
-  origin,
   user,
 }: {
   simulationDto: SimulationCreateDto
   query: SimulationCreateQuery
-  origin: string
   user: PartialUser
 }) => {
   const verifiedUser = isVerifiedUser(user) ? user : undefined
@@ -184,7 +182,6 @@ export const createSimulation = async ({
     simulation,
     sendEmail: query.sendEmail,
     locale: query.locale,
-    origin,
   })
 
   EventBus.emit(simulationUpsertedEvent)
@@ -261,12 +258,10 @@ export const softDeleteSimulation = async ({
 
 export const createPollSimulation = async ({
   locale,
-  origin,
   params,
   simulationDto,
   user: requestUser,
 }: {
-  origin: string
   locale: Locales
   params: PublicPollParams
   simulationDto: SimulationCreateDto
@@ -333,7 +328,6 @@ export const createPollSimulation = async ({
       created,
       updated,
       locale,
-      origin,
       poll,
     })
 

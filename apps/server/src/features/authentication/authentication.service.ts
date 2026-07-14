@@ -69,11 +69,9 @@ export const verifyCode = async (
 export const login = async ({
   loginDto,
   locale,
-  origin,
 }: {
   loginDto: LoginDto
   locale: Locales
-  origin: string
 }) => {
   const { user, mode, token } = await createAccountOrSignin(loginDto)
 
@@ -82,7 +80,6 @@ export const login = async ({
     previousUserId: loginDto.userId,
     mode,
     locale,
-    origin,
   })
 
   EventBus.emit(loginEvent)

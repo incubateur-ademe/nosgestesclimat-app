@@ -274,8 +274,8 @@ describe('Given a NGC user', () => {
       })
     })
 
-    describe('And custom origin (preprod)', () => {
-      test(`Then it sends a confirmation email with correct origin and returns a ${StatusCodes.OK} response`, async () => {
+    describe('And a spoofed origin header', () => {
+      test(`Then it ignores it and sends a confirmation email using the configured app origin, returning a ${StatusCodes.OK} response`, async () => {
         const email = faker.internet.email().toLocaleLowerCase()
 
         mswServer.use(
@@ -290,7 +290,7 @@ describe('Given a NGC user', () => {
               templateId: 118,
               params: {
                 NEWSLETTER_CONFIRMATION_URL: expect.stringContaining(
-                  encodeURIComponent('https://preprod.nosgestesclimat.fr')
+                  encodeURIComponent('https://nosgestesclimat.test')
                 ),
               },
             },
@@ -299,7 +299,7 @@ describe('Given a NGC user', () => {
 
         const { body } = await agent
           .post(url)
-          .set('origin', 'https://preprod.nosgestesclimat.fr')
+          .set('origin', 'https://evil.example.com')
           .send({
             email,
             listIds: [ListIds.MAIN_NEWSLETTER],
