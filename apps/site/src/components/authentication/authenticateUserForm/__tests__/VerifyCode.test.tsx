@@ -5,7 +5,7 @@ import { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthContextValue } from '../AuthContext'
 import { useAuthContext } from '../AuthContext'
-import VerifyCodeForm from '../VerifyCodeForm'
+import VerifyCode from '../VerifyCode'
 
 vi.mock('@/hooks/organisations/useTimeleft', () => ({
   default: vi.fn(() => ({ timeLeft: 0, setTimeLeft: vi.fn() })),
@@ -15,7 +15,7 @@ vi.mock('../AuthContext', () => ({
   useAuthContext: vi.fn(),
 }))
 
-describe('VerifyCodeForm', () => {
+describe('VerifyCode', () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -58,7 +58,7 @@ describe('VerifyCodeForm', () => {
   it('renders the email and the verification code input', () => {
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 
@@ -69,7 +69,7 @@ describe('VerifyCodeForm', () => {
   it('calls verifyCode with the 6-digit code when the submit button is clicked', async () => {
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 
@@ -86,7 +86,7 @@ describe('VerifyCodeForm', () => {
   it('does not call verifyCode when only typing the code without submitting', async () => {
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 
@@ -124,7 +124,7 @@ describe('VerifyCodeForm', () => {
 
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 
@@ -159,7 +159,7 @@ describe('VerifyCodeForm', () => {
 
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 
@@ -169,7 +169,7 @@ describe('VerifyCodeForm', () => {
   it('calls clearLoginError when the input has fewer than 6 characters', async () => {
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 
@@ -184,7 +184,7 @@ describe('VerifyCodeForm', () => {
   it('calls resendCode when the resend button is clicked', async () => {
     render(
       <Wrapper>
-        <VerifyCodeForm email="user@example.com" />
+        <VerifyCode email="user@example.com" />
       </Wrapper>
     )
 

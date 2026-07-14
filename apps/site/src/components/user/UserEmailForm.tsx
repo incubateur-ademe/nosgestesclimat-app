@@ -4,7 +4,7 @@ import {
   AuthProvider,
   useAuthContext,
 } from '@/components/authentication/authenticateUserForm/AuthContext'
-import VerifyCodeForm from '@/components/authentication/authenticateUserForm/VerifyCodeForm'
+import VerifyCode from '@/components/authentication/authenticateUserForm/VerifyCode'
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
 import { captureClickUpdateUserEmail } from '@/constants/tracking/posthogTrackers'
@@ -120,7 +120,7 @@ function UserEmailFormContent({
             isOpen
             closeModal={onCloseVerification}
             hasAbortCross={false}>
-            <VerifyCodeForm email={pendingEmail} />
+            <VerifyCode email={pendingEmail} />
           </Modal>
         )}
 

@@ -11,7 +11,7 @@ import {
   useAuthContext,
 } from './authenticateUserForm/AuthContext'
 import SendVerificationCodeForm from './authenticateUserForm/SendVerificationCodeForm'
-import VerifyCodeForm from './authenticateUserForm/VerifyCodeForm'
+import VerifyCode from './authenticateUserForm/VerifyCode'
 
 interface Props {
   buttonLabel?: string | ReactNode
@@ -106,7 +106,7 @@ function AuthenticateUserFormContent({
             'dark:bg-primary-700 mb-8 rounded-xl bg-[#F4F5FB] p-4 md:p-8 dark:text-white',
             verificationClassName
           )}>
-          <VerifyCodeForm email={email} />
+          <VerifyCode email={email} />
 
           <Button
             onClick={goBack}

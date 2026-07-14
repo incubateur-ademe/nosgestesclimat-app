@@ -34,7 +34,7 @@ const getErrorMessage = ({ error, t }: { error: Error; t: TFunction }) => {
   )
 }
 
-export default function VerificationForm({ email }: Props) {
+export default function VerifyCode({ email }: Props) {
   const { timeLeft: resendTimeLeft, setTimeLeft: setResendTimeLeft } =
     useTimeLeft(NUM_SECONDS)
 
