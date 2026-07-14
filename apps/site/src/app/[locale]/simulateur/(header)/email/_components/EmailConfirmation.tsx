@@ -42,20 +42,12 @@ export default function EmailConfirmation({ organisationName }: Props) {
         </motion.div>
       </div>
 
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut', delay: 1.5 }}
-        className="text-primary-700 mb-2 text-center text-lg leading-7 font-bold">
+      <h1 className="text-primary-700 mb-2 text-center text-lg leading-7 font-bold">
         <Trans i18nKey="emailConfirmation.title">Jeu concours -</Trans>{' '}
         {organisationName}
-      </motion.h1>
+      </h1>
 
-      <motion.div
-        className="text-center"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut', delay: 2.5 }}>
+      <div className="text-center">
         <p className="mb-6! text-center text-2xl font-medium">
           <Trans i18nKey="emailConfirmation.subtitle">
             Votre participation a bien été prise en compte
@@ -74,7 +66,7 @@ export default function EmailConfirmation({ organisationName }: Props) {
             →
           </span>
         </AutoRedirectButton>
-      </motion.div>
+      </div>
     </div>
   )
 }
