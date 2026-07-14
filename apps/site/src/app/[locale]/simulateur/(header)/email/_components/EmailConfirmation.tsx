@@ -3,7 +3,7 @@
 import AnimatedCheckIcon from '@/components/icons/status/AnimatedCheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import { END_PAGE_PATH } from '@/constants/urls/paths'
-import AutoRedirectButton from '@/design-system/buttons/AutoRedirectButton'
+import AutoRedirectButtonLink from '@/design-system/buttons/AutoRedirectButtonLink'
 import { motion } from 'framer-motion'
 
 interface Props {
@@ -60,12 +60,15 @@ export default function EmailConfirmation({ organisationName }: Props) {
           </Trans>
         </p>
 
-        <AutoRedirectButton duration={10} startDelay={3} href={END_PAGE_PATH}>
+        <AutoRedirectButtonLink
+          duration={10}
+          startDelay={3}
+          href={END_PAGE_PATH}>
           <Trans i18nKey="common.seeResults">Voir mes résultats</Trans>
           <span aria-hidden="true" className="ml-1">
             →
           </span>
-        </AutoRedirectButton>
+        </AutoRedirectButtonLink>
       </div>
     </div>
   )

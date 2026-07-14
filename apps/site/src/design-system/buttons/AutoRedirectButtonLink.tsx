@@ -24,7 +24,7 @@ import { useButtonState } from './useButtonState'
 
 const HALO_DURATION = 1
 
-interface AutoRedirectButtonProps {
+interface AutoRedirectButtonLinkProps {
   href: string
   /** Duration of the progress animation in seconds (default: 3) */
   duration?: number
@@ -39,7 +39,7 @@ interface AutoRedirectButtonProps {
   haloClassName?: string
 }
 
-export default function AutoRedirectButton({
+export default function AutoRedirectButtonLink({
   href,
   children,
   duration = 3,
@@ -49,7 +49,7 @@ export default function AutoRedirectButton({
   size = 'md',
   progressBarClassName = 'bg-primary-900',
   haloClassName = 'bg-primary-700/20',
-}: PropsWithChildren<AutoRedirectButtonProps>) {
+}: PropsWithChildren<AutoRedirectButtonLinkProps>) {
   const router = useRouter()
   const { t } = useClientTranslation()
   const [showProgress, setShowProgress] = useState(false)
