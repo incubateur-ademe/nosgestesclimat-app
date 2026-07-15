@@ -1,6 +1,5 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
@@ -61,11 +60,9 @@ router.route('/v1').post(
   validateRequest(SimulationCreateValidator),
   async (req, res) => {
     try {
-      const origin = req.get('origin') || config.app.origin
       const { simulation } = await createSimulation({
         simulationDto: req.body,
         query: req.query,
-        origin,
         user: req.user!,
       })
 

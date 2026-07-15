@@ -230,30 +230,6 @@ export const sendVerificationCodeEmail = ({
   })
 }
 
-export const sendAPITokenLinkEmail = ({
-  origin,
-  email,
-  code,
-}: Readonly<{
-  origin: string
-  email: string
-  code: string
-  locale: Locales
-}>) => {
-  const apiTokenUrl = new URL(`${origin}/integrations-api/v1/tokens`)
-  const { searchParams } = apiTokenUrl
-  searchParams.append('code', code)
-  searchParams.append('email', email)
-
-  return sendEmail({
-    email,
-    templateId: TemplateIds[Locales.fr].API_VERIFICATION_CODE,
-    params: {
-      API_TOKEN_URL: apiTokenUrl.toString(),
-    },
-  })
-}
-
 export const sendWelcomeEmail = ({
   email,
   locale,

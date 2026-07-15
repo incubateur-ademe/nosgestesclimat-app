@@ -317,8 +317,8 @@ describe('Given a NGC user', () => {
         await EventBus.flush()
       })
 
-      describe('And custom user origin (preprod)', () => {
-        test('Then it sends a creation email', async () => {
+      describe('And a spoofed origin header', () => {
+        test('Then it ignores it and sends a creation email using the configured app origin', async () => {
           const administratorPayload = {
             optedInForCommunications: true,
             name: faker.person.fullName(),
@@ -342,7 +342,7 @@ describe('Given a NGC user', () => {
                 params: {
                   ADMINISTRATOR_NAME: administratorPayload.name,
                   ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://preprod.nosgestesclimat.fr/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
                 },
               },
             }),
@@ -354,7 +354,7 @@ describe('Given a NGC user', () => {
             .post(url)
             .set(authHeaders({ userId, email }))
             .send(payload)
-            .set('origin', 'https://preprod.nosgestesclimat.fr')
+            .set('origin', 'https://evil.example.com')
             .expect(StatusCodes.CREATED)
 
           await EventBus.flush()
