@@ -36,6 +36,12 @@ export default async function RootLayout({
 
         <meta name="theme-color" content="#4949ba" />
 
+        {/* Prevent iOS Safari from auto-linking dates/phones in SSR text (hydration mismatch) */}
+        <meta
+          name="format-detection"
+          content="telephone=no, date=no, email=no, address=no"
+        />
+
         <MatomoScript__deprecated />
         <Suspense>
           <Trackers locale={locale} />
