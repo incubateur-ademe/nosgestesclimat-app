@@ -1,14 +1,17 @@
-import { getShouldBeLocalised } from '@/helpers/language/getShouldBeLocalised'
+import {
+  getShouldBeLocalised,
+  type LanguageSwitchParams,
+} from '@/helpers/language/getShouldBeLocalised'
 import LanguageSwitchButtonClient from './LanguageSwitchButtonClient'
 
 export default async function LanguageSwitchButton({
   size = 'sm',
   className,
-  params,
+  params = {},
 }: {
   size?: 'xs' | 'sm'
   className?: string
-  params?: { category?: string; article?: string; landingPageSlug?: string }
+  params?: LanguageSwitchParams
 }) {
   const shouldDisplayLangButtons = await getShouldBeLocalised(params)
 

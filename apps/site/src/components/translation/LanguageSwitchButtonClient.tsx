@@ -1,10 +1,17 @@
 'use client'
 
+import ChevronRight from '@/components/icons/ChevronRight'
+import Link from '@/components/Link'
 import { footerClickLanguage } from '@/constants/tracking/layout'
 import { captureFooterClickLanguage } from '@/constants/tracking/posthogTrackers'
+import Button from '@/design-system/buttons/Button'
 import ButtonAnchor from '@/design-system/buttons/ButtonAnchor'
+import DropdownMenu, {
+  getDropdownMenuItemPosition,
+} from '@/design-system/layout/DropdownMenu'
 import Emoji from '@/design-system/utils/Emoji'
 import { updateLangCookie } from '@/helpers/language/updateLangCookie'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIsClient } from '@/hooks/useIsClient'
 import i18nConfig, { type Locale } from '@/i18nConfig'
 import {
@@ -12,8 +19,9 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { useCurrentLocale } from 'next-i18n-router/client'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { twMerge } from 'tailwind-merge'
+
 interface Props {
   size?: 'xs' | 'sm'
   className?: string
@@ -25,11 +33,8 @@ const generateLanguageUrl = (newLocale: Locale): string => {
   }
 
   const url = new URL(window.location.href)
-
-  // Remove any existing locale prefix
   url.pathname = url.pathname.replace(/^\/en/, '')
 
-  // Add locale prefix if switching to non-default locale
   if (newLocale !== i18nConfig.defaultLocale) {
     url.pathname = `/${newLocale}${url.pathname}`
   }
@@ -50,8 +55,34 @@ export default function LanguageSwitchButtonClient({
   const currentLocale = useCurrentLocale(i18nConfig)
   const isClient = useIsClient()
 
+  const { t } = useClientTranslation()
+  const locales = useMemo(
+    () => [
+      {
+        locale: 'fr' as Locale,
+        label: 'FR',
+        emoji: '🇫🇷',
+        ariaLabel: t('Passer en français'),
+        activeTitle: t('FR - Langue active'),
+        inactiveTitle: t('FR - Sélectionner la langue française'),
+        openMenuLabel: t('FR - Langue active, ouvrir le menu de langue'),
+        closeMenuLabel: t('FR - Langue active, fermer le menu de langue'),
+      },
+      {
+        locale: 'en' as Locale,
+        label: 'EN',
+        emoji: '🇬🇧',
+        ariaLabel: t('Switch to english'),
+        activeTitle: t('EN - Active language'),
+        inactiveTitle: t('EN - Select English language'),
+        openMenuLabel: t('EN - Active language, open language menu'),
+        closeMenuLabel: t('EN - Active language, close language menu'),
+      },
+    ],
+    [t]
+  )
+
   useEffect(() => {
-    // If the current locale is different than the NEXT_LOCALE cookie, we update it
     if (
       currentLocale &&
       !document.cookie.includes(`NEXT_LOCALE=${currentLocale}`)
@@ -60,45 +91,121 @@ export default function LanguageSwitchButtonClient({
     }
   }, [currentLocale])
 
+  if (!currentLocale || !i18nConfig.locales.includes(currentLocale as Locale)) {
+    return null
+  }
+
+  const locale = currentLocale as Locale
+
+  const currentLanguage = locales.find(({ locale }) => locale === currentLocale)
+
   return (
     <div
-      className={twMerge(
-        'flex flex-wrap items-center gap-1 sm:gap-2',
-        className
-      )}>
-      <ButtonAnchor
-        href={isClient ? generateLanguageUrl('fr') : '#'}
-        color={currentLocale === 'fr' ? 'primary' : 'secondary'}
-        onClick={() => handleLanguageClick('fr')}
-        size={size}
-        aria-label="Passer en français"
-        lang="fr"
-        title={
-          currentLocale === 'fr'
-            ? 'FR - Langue active'
-            : 'FR - Sélectionner la langue française'
-        }
-        className="flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
-        data-testid="language-switch-button-fr">
-        <span>FR</span> <Emoji>🇫🇷</Emoji>
-      </ButtonAnchor>
+      className={twMerge('mr-2 flex items-center gap-1 sm:gap-2', className)}>
+      <div className="md:hidden">
+        <DropdownMenu
+          trigger={({ isOpen, buttonRef, buttonId, panelId, onToggle }) => {
+            const ariaLabel = isOpen
+              ? currentLanguage?.closeMenuLabel
+              : currentLanguage?.openMenuLabel
 
-      <ButtonAnchor
-        href={isClient ? generateLanguageUrl('en') : '#'}
-        color={currentLocale === 'en' ? 'primary' : 'secondary'}
-        onClick={() => handleLanguageClick('en')}
-        size={size}
-        aria-label="Switch to english"
-        lang="en"
-        title={
-          currentLocale === 'en'
-            ? 'EN - Active language'
-            : 'EN - Select English language'
-        }
-        className="flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
-        data-testid="language-switch-button-en">
-        <span>EN</span> <Emoji>🇬🇧</Emoji>
-      </ButtonAnchor>
+            return (
+              <Button
+                ref={buttonRef}
+                id={buttonId}
+                size={size}
+                color="primary"
+                className="inline-flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
+                data-testid="language-switch-dropdown-trigger"
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                aria-label={ariaLabel}
+                title={ariaLabel}
+                onClick={onToggle}>
+                <span>{currentLanguage?.label}</span>
+                <Emoji>{currentLanguage?.emoji}</Emoji>
+                <ChevronRight
+                  aria-hidden="true"
+                  className={twMerge(
+                    'ml-1 inline-block w-2 stroke-white transition-transform',
+                    isOpen ? 'rotate-[-90deg]' : 'rotate-90'
+                  )}
+                />
+              </Button>
+            )
+          }}>
+          {({ closeMenu, getItemClassName }) =>
+            locales.map(
+              (
+                {
+                  locale,
+                  label,
+                  emoji,
+                  ariaLabel: itemAriaLabel,
+                  activeTitle,
+                  inactiveTitle,
+                },
+                index
+              ) => {
+                const isActive = currentLocale === locale
+
+                return (
+                  <li key={locale}>
+                    <Link
+                      href={isClient ? generateLanguageUrl(locale) : '#'}
+                      aria-current={isActive ? 'true' : undefined}
+                      onClick={() => {
+                        handleLanguageClick(locale)
+                        closeMenu()
+                      }}
+                      aria-label={itemAriaLabel}
+                      lang={locale}
+                      title={isActive ? activeTitle : inactiveTitle}
+                      className={getItemClassName({
+                        isActive,
+                        position: getDropdownMenuItemPosition(
+                          index,
+                          locales.length
+                        ),
+                      })}
+                      data-testid={`language-switch-button-${locale}`}>
+                      <span>{label}</span>
+                      <Emoji>{emoji}</Emoji>
+                    </Link>
+                  </li>
+                )
+              }
+            )
+          }
+        </DropdownMenu>
+      </div>
+
+      <div className="hidden flex-wrap items-center gap-1 sm:gap-2 md:flex">
+        {locales.map(
+          ({
+            locale: localeOption,
+            label,
+            emoji,
+            ariaLabel,
+            activeTitle,
+            inactiveTitle,
+          }) => (
+            <ButtonAnchor
+              key={localeOption}
+              href={isClient ? generateLanguageUrl(localeOption) : '#'}
+              color={locale === localeOption ? 'primary' : 'secondary'}
+              onClick={() => handleLanguageClick(localeOption)}
+              size={size}
+              aria-label={ariaLabel}
+              lang={localeOption}
+              title={locale === localeOption ? activeTitle : inactiveTitle}
+              className="flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
+              data-testid={`language-switch-button-${localeOption}`}>
+              <span>{label}</span> <Emoji>{emoji}</Emoji>
+            </ButtonAnchor>
+          )
+        )}
+      </div>
     </div>
   )
 }

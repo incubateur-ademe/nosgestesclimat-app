@@ -1,6 +1,7 @@
 import HeaderServer from '@/components/layout/HeaderServer'
 import { PARTNER_KEY } from '@/constants/partners'
 import Main from '@/design-system/layout/Main'
+import { pickLanguageSwitchParams } from '@/helpers/language/pickLanguageSwitchParams'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { verifyPartner } from '@/services/partners/verifyPartner'
@@ -21,7 +22,7 @@ export default async function PartenairePage({
   searchParams,
   params,
 }: PageProps<'/[locale]/partenaire'>) {
-  const { locale } = await params
+  const { locale, ...routeParams } = await params
   const searchParamsObject = (await searchParams) ?? { partner: '' }
 
   const partner = (searchParamsObject[PARTNER_KEY] as string) ?? ''
@@ -38,7 +39,10 @@ export default async function PartenairePage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <HeaderServer
+        locale={locale}
+        params={pickLanguageSwitchParams(routeParams)}
+      />
 
       <Main>
         <div className="min-h-screen">

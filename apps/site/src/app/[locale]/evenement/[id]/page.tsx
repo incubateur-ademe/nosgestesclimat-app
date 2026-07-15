@@ -3,6 +3,7 @@ import HeaderServer from '@/components/layout/HeaderServer'
 import { noIndexObject } from '@/constants/metadata'
 import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { pickLanguageSwitchParams } from '@/helpers/language/pickLanguageSwitchParams'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import EventCTAs from './_components/EventCTAs'
@@ -39,7 +40,7 @@ export default async function EvenementPage({
   params,
   searchParams,
 }: PageProps<'/[locale]/evenement/[id]'>) {
-  const { locale: localeParam } = await params
+  const { locale: localeParam, ...routeParams } = await params
 
   const locale = localeParam as Locale
 
@@ -63,7 +64,10 @@ export default async function EvenementPage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <HeaderServer
+        locale={locale}
+        params={pickLanguageSwitchParams(routeParams)}
+      />
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">

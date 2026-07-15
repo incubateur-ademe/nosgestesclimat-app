@@ -3,7 +3,7 @@
 import { fetchArticlePageContent } from '@/services/cms/fetchArticlePageContent'
 import { fetchCategoryPageContent } from '@/services/cms/fetchCategoryPageContent'
 
-interface Props {
+export interface LanguageSwitchParams {
   category?: string
   article?: string
   landingPageSlug?: string
@@ -13,7 +13,7 @@ export async function getShouldBeLocalised({
   category,
   article,
   landingPageSlug,
-}: Props = {}) {
+}: LanguageSwitchParams = {}) {
   // Thematic landing pages aren't translated
   if (landingPageSlug) {
     return false

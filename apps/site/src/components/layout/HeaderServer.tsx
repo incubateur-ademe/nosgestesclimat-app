@@ -1,15 +1,22 @@
+import type { LanguageSwitchParams } from '@/helpers/language/getShouldBeLocalised'
 import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 import LogoLinkServer from '../misc/LogoLinkServer'
+import LanguageSwitchButton from '../translation/LanguageSwitchButton'
 import HideInIframe from './HideInIframe'
 import MySpaceButton from './headerServer/MySpaceButton'
 
 interface Props {
   isSticky?: boolean
   locale: string
+  params?: LanguageSwitchParams
 }
 
-export default function HeaderServer({ isSticky = true, locale }: Props) {
+export default function HeaderServer({
+  isSticky = true,
+  locale,
+  params = {},
+}: Props) {
   return (
     <header
       id="header-server-container"
@@ -27,6 +34,7 @@ export default function HeaderServer({ isSticky = true, locale }: Props) {
             <Suspense>
               {/*Suspense for enabling partial prerendering */}
               <HideInIframe hideIfNotFrenchRegion>
+                <LanguageSwitchButton params={params} />
                 <MySpaceButton locale={locale} />
               </HideInIframe>
             </Suspense>

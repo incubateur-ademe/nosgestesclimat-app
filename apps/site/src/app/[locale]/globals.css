@@ -782,3 +782,23 @@ a,
 button {
   @apply focus-visible:ring-primary-700 focus-visible:ring-2 focus-visible:ring-offset-3 focus-visible:outline-hidden;
 }
+
+/*
+** Dropdown panel items: inset outline for visible keyboard focus.
+**
+** Uses `:focus-visible` so links behave like normal tabbable links while
+** still showing a strong focus indicator that is not clipped by the panel's
+** `overflow-hidden`.
+**
+** Colors are hard-coded because the palette is defined in tailwind.config.js
+** (not an `@theme` block), so no `--color-primary-700` CSS variable exists.
+*/
+a.dropdown-menu-item:focus-visible {
+  box-shadow: none !important;
+  outline: 2px solid #4949ba !important; /* primary-700 */
+  outline-offset: -5px !important;
+}
+
+a.dropdown-menu-item[aria-current='true']:focus-visible {
+  outline-color: #fff !important;
+}

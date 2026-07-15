@@ -114,6 +114,7 @@ export default async function ThematicLandingPage({
 
       <LandingPage
         locale={locale}
+        languageSwitchParams={{ landingPageSlug }}
         heroTitle={block1?.title}
         heroDescription={
           <div className="flex flex-col items-start gap-4 md:gap-6">
