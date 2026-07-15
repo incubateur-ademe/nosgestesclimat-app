@@ -782,3 +782,30 @@ a,
 button {
   @apply focus-visible:ring-primary-700 focus-visible:ring-2 focus-visible:ring-offset-3 focus-visible:outline-hidden;
 }
+
+/*
+** Dropdown menu items: inset outline for visible keyboard focus.
+**
+** We gate on the `--focusable` class (added by the component only during keyboard
+** navigation) and use plain `:focus` — not `:focus-visible` — because the items
+** are focused programmatically via `.focus()` when navigating with arrow keys,
+** and `:focus-visible` is unreliable for programmatic focus.
+**
+** An inset outline (negative offset) is drawn INSIDE the item, so it is never
+** clipped by the panel's `overflow-hidden`, and the offset shows the item's
+** background on both sides of the line for strong contrast:
+**   - Inactive item (white bg)   → primary-700 outline
+**   - Active item   (primary bg) → white outline
+**
+** Colors are hard-coded because the palette is defined in tailwind.config.js
+** (not an `@theme` block), so no `--color-primary-700` CSS variable exists.
+*/
+a.dropdown-menu-item--focusable:focus {
+  box-shadow: none !important;
+  outline: 2px solid #4949ba !important; /* primary-700 */
+  outline-offset: -5px !important;
+}
+
+a.dropdown-menu-item--focusable[aria-current='true']:focus {
+  outline-color: #fff !important;
+}
