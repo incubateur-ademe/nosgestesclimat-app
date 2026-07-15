@@ -1,0 +1,203 @@
+'use client'
+
+import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
+import Trans from '@/components/translation/trans/TransClient'
+import { linkToGroupCreation } from '@/constants/group'
+import { ADMINISTRATOR_SEPARATOR } from '@/constants/organisations/administrator'
+import {
+  ORGANISATION_TYPES,
+  OrganisationTypeEnum,
+} from '@/constants/organisations/organisationTypes'
+import Button from '@/design-system/buttons/Button'
+import ButtonLink from '@/design-system/buttons/ButtonLink'
+import SelectInput from '@/design-system/inputs/SelectInput'
+import TextInput from '@/design-system/inputs/TextInput'
+import Separator from '@/design-system/layout/Separator'
+import { useCreateOrganisation } from '@/hooks/organisations/useCreateOrganisation'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { createPoll } from '@/services/organisations/create-poll'
+import { captureException } from '@sentry/nextjs'
+import { useForm as useReactHookForm, useWatch } from 'react-hook-form'
+import {
+  buildCreatePollPayload,
+  clearDraft,
+  readDraft,
+} from '../_services/pollDraftClient'
+
+interface Inputs {
+  name: string
+  organisationType: OrganisationTypeEnum
+  administratorFirstName: string
+  administratorLastName: string
+  administratorPosition: string
+}
+
+export default function OrganisationCreationForm() {
+  const { t } = useClientTranslation()
+
+  const { register, handleSubmit, formState, control } = useReactHookForm<Inputs>(
+    {
+      defaultValues: {},
+    }
+  )
+
+  const organisationType = useWatch({ control, name: 'organisationType' })
+
+  const {
+    mutateAsync: createOrganisation,
+    isPending,
+    isError: isErrorUpdateOrga,
+  } = useCreateOrganisation()
+
+  async function onSubmit({
+    name,
+    administratorFirstName,
+    administratorLastName,
+    administratorPosition,
+    organisationType,
+  }: Inputs) {
+    try {
+      const draft = readDraft()
+      const pollPayload = draft ? buildCreatePollPayload(draft) : null
+
+      if (!pollPayload) {
+        return
+      }
+
+      const organisationUpdated = await createOrganisation({
+        name,
+        type: organisationType,
+        administrators: [
+          {
+            name: `${administratorFirstName}${ADMINISTRATOR_SEPARATOR}${administratorLastName}`,
+            position: administratorPosition,
+            optedInForCommunications: false,
+          },
+        ],
+      })
+
+      await createPoll({
+        organisationIdOrSlug: organisationUpdated.slug,
+        poll: pollPayload,
+      })
+      clearDraft()
+    } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        error.message.includes('NEXT_REDIRECT')
+      ) {
+        throw error
+      }
+      captureException(error)
+    }
+  }
+
+  return (
+    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mb-12">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <TextInput
+          className="col-span-1"
+          label={<Trans>Votre organisation</Trans>}
+          autoComplete="organization"
+          data-testid="organisation-name-input"
+          error={formState.errors.name?.message}
+          {...register('name', {
+            required: t('Ce champ est requis'),
+          })}
+        />
+
+        <div>
+          <SelectInput
+            containerClassName="pt-[3px]"
+            label={<Trans>Type d'organisation</Trans>}
+            data-testid="organisation-type-select"
+            error={formState.errors.organisationType?.message}
+            {...register('organisationType', {
+              required: t('Ce champ est requis'),
+            })}>
+            {Object.entries(ORGANISATION_TYPES).map(([key, value]) => (
+              <option className="cursor-pointer" key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </SelectInput>
+
+          {organisationType === OrganisationTypeEnum.groupOfFriends && (
+            <div className="mt-4 rounded-xl bg-gray-100 p-4 text-sm">
+              <p className="mb-2">
+                <Trans>
+                  Le mode organisation est un mode <strong>100% anonyme</strong>{' '}
+                  pour les participants.
+                </Trans>
+              </p>
+
+              <p className="mb-4">
+                <Trans>
+                  Avez-vous essayé{' '}
+                  <strong>notre fonctionnalité “Groupes d’amis”</strong> ? Elle
+                  vous permettra de vous comparer dans un classement : que celui
+                  ou celle ayant la plus faible empreinte gagne !
+                </Trans>
+              </p>
+              <ButtonLink href={linkToGroupCreation} size="sm">
+                <Trans>Créer un groupe d'amis</Trans>
+              </ButtonLink>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <TextInput
+          className="col-span-1"
+          label={<Trans>Votre prénom</Trans>}
+          autoComplete="given-name"
+          data-testid="organisation-administrator-first-name-input"
+          error={formState.errors.administratorFirstName?.message}
+          {...register('administratorFirstName', {
+            required: t('Ce champ est requis'),
+          })}
+        />
+
+        <TextInput
+          className="col-span-1"
+          label={<Trans>Votre nom</Trans>}
+          autoComplete="family-name"
+          data-testid="organisation-administrator-last-name-input"
+          error={formState.errors.administratorLastName?.message}
+          {...register('administratorLastName', {
+            required: t('Ce champ est requis'),
+          })}
+        />
+
+        <TextInput
+          className="col-span-1"
+          autoComplete="organization-title"
+          data-testid="organisation-administrator-position-input"
+          label={
+            <p className="mb-0 flex items-center justify-between">
+              <Trans>Votre poste</Trans>
+              <span className="text-secondary-700 text-sm italic">
+                facultatif
+              </span>
+            </p>
+          }
+          {...register('administratorPosition')}
+        />
+      </div>
+
+      {isErrorUpdateOrga && <DefaultSubmitErrorMessage className="mt-4" />}
+
+      <div className="mt-8">
+        <Button
+          loading={isPending}
+          type="submit"
+          data-testid="create-organisation-button">
+          <Trans>Créer mon test collectif</Trans>
+        </Button>
+      </div>
+    </form>
+  )
+}

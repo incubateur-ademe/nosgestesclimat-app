@@ -25,5 +25,17 @@ export const ORGANISATION_CREATE_PATH = '/organisations/creer'
 export const ORGANISATION_SIGN_IN_PATH = '/organisations/connexion'
 export const ORGANISATION_SIGN_UP_PATH = '/organisations/inscription'
 
+export const COLLECTIVE_TEST_BASE_PATH = '/organisations/creer-campagne'
+export const COLLECTIVE_TEST_INFORMATIONS_PATH =
+  `${COLLECTIVE_TEST_BASE_PATH}/informations` as string
+export const COLLECTIVE_TEST_MODE_PATH =
+  `${COLLECTIVE_TEST_BASE_PATH}/mode` as string
+export const COLLECTIVE_TEST_CONNEXION_PATH =
+  `${COLLECTIVE_TEST_BASE_PATH}/connexion` as string
+export const COLLECTIVE_TEST_ORGANISATION_PATH =
+  `${COLLECTIVE_TEST_BASE_PATH}/organisation` as string
+export const COLLECTIVE_TEST_FINALISER_PATH =
+  `${COLLECTIVE_TEST_BASE_PATH}/finaliser` as string
+
 export const ACTION_DETAIL_PATH = (themeSlug: string, actionSlug: string) =>
   `/actions/${themeSlug}/${actionSlug}`
