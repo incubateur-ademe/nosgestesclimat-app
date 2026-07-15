@@ -104,14 +104,7 @@ export default function LanguageSwitchButtonClient({
       className={twMerge('mr-2 flex items-center gap-1 sm:gap-2', className)}>
       <div className="md:hidden">
         <DropdownMenu
-          trigger={({
-            isOpen,
-            buttonRef,
-            buttonId,
-            menuId,
-            onToggle,
-            onKeyDown,
-          }) => {
+          trigger={({ isOpen, buttonRef, buttonId, panelId, onToggle }) => {
             const ariaLabel = isOpen
               ? currentLanguage?.closeMenuLabel
               : currentLanguage?.openMenuLabel
@@ -125,12 +118,10 @@ export default function LanguageSwitchButtonClient({
                 className="inline-flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
                 data-testid="language-switch-dropdown-trigger"
                 aria-expanded={isOpen}
-                aria-haspopup="menu"
-                aria-controls={menuId}
+                aria-controls={panelId}
                 aria-label={ariaLabel}
                 title={ariaLabel}
-                onClick={onToggle}
-                onKeyDown={onKeyDown}>
+                onClick={onToggle}>
                 <span>{currentLanguage?.label}</span>
                 <Emoji>{currentLanguage?.emoji}</Emoji>
                 <ChevronRight
@@ -162,7 +153,6 @@ export default function LanguageSwitchButtonClient({
                   <li key={locale}>
                     <Link
                       href={isClient ? generateLanguageUrl(locale) : '#'}
-                      role="menuitem"
                       aria-current={isActive ? 'true' : undefined}
                       onClick={() => {
                         handleLanguageClick(locale)

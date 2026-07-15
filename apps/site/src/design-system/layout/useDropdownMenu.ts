@@ -1,13 +1,8 @@
 'use client'
 
-import {
-  type KeyboardEvent,
-  type RefObject,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from 'react'
+import { type RefObject, useEffect, useId, useRef, useState } from 'react'
+
+export type DropdownMenuButtonRef = RefObject<HTMLButtonElement | null>
 
 interface UseDropdownMenuOptions {
   onToggle?: (isOpen: boolean) => void
@@ -15,49 +10,27 @@ interface UseDropdownMenuOptions {
 
 export function useDropdownMenu({ onToggle }: UseDropdownMenuOptions = {}) {
   const [isOpen, setIsOpen] = useState(false)
-  const [isKeyboardNavigation, setIsKeyboardNavigation] = useState(false)
-  const openedWithKeyboardRef = useRef(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const buttonId = useId()
-  const menuId = useId()
-
-  const getMenuItems = () =>
-    menuRef.current
-      ? Array.from(
-          menuRef.current.querySelectorAll<HTMLElement>('[role="menuitem"]')
-        )
-      : []
+  const panelId = useId()
+  const onToggleRef = useRef(onToggle)
 
   useEffect(() => {
-    function handleKeyDown() {
-      setIsKeyboardNavigation(true)
-    }
-
-    function handleMouseDown() {
-      setIsKeyboardNavigation(false)
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('mousedown', handleMouseDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('mousedown', handleMouseDown)
-    }
-  }, [])
+    onToggleRef.current = onToggle
+  }, [onToggle])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         isOpen &&
-        menuRef.current &&
+        panelRef.current &&
         buttonRef.current &&
-        !menuRef.current.contains(event.target as Node) &&
+        !panelRef.current.contains(event.target as Node) &&
         !buttonRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false)
-        onToggle?.(false)
+        onToggleRef.current?.(false)
       }
     }
 
@@ -67,13 +40,13 @@ export function useDropdownMenu({ onToggle }: UseDropdownMenuOptions = {}) {
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }
-  }, [isOpen, onToggle])
+  }, [isOpen])
 
   useEffect(() => {
     function handleEscape(event: globalThis.KeyboardEvent) {
       if (event.key === 'Escape' && isOpen) {
         setIsOpen(false)
-        onToggle?.(false)
+        onToggleRef.current?.(false)
         buttonRef.current?.focus()
       }
     }
@@ -84,127 +57,56 @@ export function useDropdownMenu({ onToggle }: UseDropdownMenuOptions = {}) {
         document.removeEventListener('keydown', handleEscape)
       }
     }
-  }, [isOpen, onToggle])
-
-  useEffect(() => {
-    if (isOpen && isKeyboardNavigation) {
-      requestAnimationFrame(() => {
-        getMenuItems()[0]?.focus()
-      })
-    }
-  }, [isOpen, isKeyboardNavigation])
+  }, [isOpen])
 
   useEffect(() => {
     function handleFocusOut(event: FocusEvent) {
       if (
         isOpen &&
-        menuRef.current &&
+        panelRef.current &&
         buttonRef.current &&
-        !menuRef.current.contains(event.relatedTarget as Node) &&
+        !panelRef.current.contains(event.relatedTarget as Node) &&
         !buttonRef.current.contains(event.relatedTarget as Node)
       ) {
         setIsOpen(false)
-        onToggle?.(false)
+        onToggleRef.current?.(false)
       }
     }
 
     if (isOpen) {
-      const menu = menuRef.current
+      const panel = panelRef.current
       const button = buttonRef.current
 
-      if (menu && button) {
-        menu.addEventListener('focusout', handleFocusOut)
+      if (panel && button) {
+        panel.addEventListener('focusout', handleFocusOut)
         button.addEventListener('focusout', handleFocusOut)
 
         return () => {
-          menu.removeEventListener('focusout', handleFocusOut)
+          panel.removeEventListener('focusout', handleFocusOut)
           button.removeEventListener('focusout', handleFocusOut)
         }
       }
     }
-  }, [isOpen, onToggle])
+  }, [isOpen])
 
   const closeMenu = () => {
     setIsOpen(false)
-    onToggle?.(false)
-  }
-
-  const openMenu = () => {
-    setIsOpen(true)
-    onToggle?.(true)
+    onToggleRef.current?.(false)
   }
 
   const toggleMenu = () => {
-    setIsOpen((prev) => {
-      const willOpen = !prev
-      if (willOpen && !openedWithKeyboardRef.current) {
-        setIsKeyboardNavigation(false)
-      }
-      if (willOpen) {
-        openedWithKeyboardRef.current = false
-      }
-      onToggle?.(willOpen)
-      return willOpen
-    })
-  }
-
-  const handleButtonKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      openedWithKeyboardRef.current = true
-      setIsKeyboardNavigation(true)
-      toggleMenu()
-    } else if (event.key === 'ArrowDown' && !isOpen) {
-      event.preventDefault()
-      openedWithKeyboardRef.current = true
-      setIsKeyboardNavigation(true)
-      openMenu()
-    }
-  }
-
-  const handleMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const menuItems = getMenuItems()
-    const focusedIndex = menuItems.findIndex(
-      (item) => item === document.activeElement
-    )
-
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      closeMenu()
-      buttonRef.current?.focus()
-    } else if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      setIsKeyboardNavigation(true)
-      const nextIndex =
-        focusedIndex >= menuItems.length - 1 ? 0 : focusedIndex + 1
-      menuItems[nextIndex]?.focus()
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      setIsKeyboardNavigation(true)
-      const previousIndex =
-        focusedIndex <= 0 ? menuItems.length - 1 : focusedIndex - 1
-      menuItems[previousIndex]?.focus()
-    } else if (event.key === 'Home') {
-      event.preventDefault()
-      setIsKeyboardNavigation(true)
-      menuItems[0]?.focus()
-    } else if (event.key === 'End') {
-      event.preventDefault()
-      setIsKeyboardNavigation(true)
-      menuItems[menuItems.length - 1]?.focus()
-    }
+    const willOpen = !isOpen
+    setIsOpen(willOpen)
+    onToggleRef.current?.(willOpen)
   }
 
   return {
     isOpen,
-    isKeyboardNavigation,
     closeMenu,
     toggleMenu,
-    buttonRef: buttonRef as RefObject<HTMLButtonElement | null>,
-    menuRef,
+    buttonRef: buttonRef as DropdownMenuButtonRef,
+    panelRef,
     buttonId,
-    menuId,
-    handleButtonKeyDown,
-    handleMenuKeyDown,
+    panelId,
   }
 }
