@@ -1,3 +1,23 @@
+model Event {
+  id        String   @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("ngc")
+}
+
+view EventComputation {
+  eventId          String
+  organisationId   String
+  simulationsCount Int
+
+  @@map("event_computation")
+  @@schema("ngc")
+}
+
 model Answer {
   id         String   @id @db.Uuid
   survey     String

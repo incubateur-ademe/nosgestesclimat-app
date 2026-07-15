@@ -13,6 +13,7 @@
     "jobs:cleanupExpiredTokens": "node --experimental-strip-types ./src/jobs/cleanup-expired-tokens.ts",
     "jobs:computePollStats": "node --experimental-strip-types ./src/jobs/compute-poll-stats.ts",
     "jobs:recoverMatomoStats": "node --experimental-strip-types ./src/jobs/recover-matomo-stats.ts",
+    "jobs:refreshEventComputation": "node --experimental-strip-types ./src/jobs/refresh-event-computation.ts",
     "jobs:recoverNewsletterStats": "node --experimental-strip-types ./src/jobs/recover-newsletter-stats.ts",
     "jobs:syncBrevoContacts": "node --experimental-strip-types ./src/jobs/sync-brevo-contacts.ts",
     "jobs:syncNotionActions": "node --experimental-strip-types --env-file-if-exists=.env ./src/jobs/sync-notion-actions.ts",
