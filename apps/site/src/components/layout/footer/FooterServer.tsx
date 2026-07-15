@@ -3,7 +3,6 @@ import Marianne from '@/components/images/partners/Marianne'
 import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
 import Link from '@/components/Link'
 import Logo from '@/components/misc/Logo'
-import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Trans from '@/components/translation/trans/TransServer'
 
 import InlineLink from '@/design-system/inputs/InlineLink'
@@ -197,7 +196,6 @@ export default async function FooterServer({
             </div>
           ) : null}
         </div>
-        <LanguageSwitchButton params={params} />
 
         <div className="flex flex-wrap justify-between gap-8 md:flex-row md:flex-nowrap">
           <div>

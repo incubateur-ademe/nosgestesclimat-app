@@ -63,7 +63,7 @@ export default function LanguageSwitchButtonClient({
   return (
     <div
       className={twMerge(
-        'flex flex-wrap items-center gap-1 sm:gap-2',
+        'mr-1 flex flex-wrap items-center gap-1 sm:gap-2',
         className
       )}>
       <ButtonAnchor

@@ -1,4 +1,5 @@
 import HeaderServer from '@/components/layout/HeaderServer'
+import type { LanguageSwitchParams } from '@/helpers/language/getShouldBeLocalised'
 import type { ReactNode } from 'react'
 import Main from './Main'
 import DynamicCounter from './landingPage/DynamicCounter'
@@ -11,6 +12,7 @@ interface Props {
   heroPartners: ReactNode
   children: ReactNode
   locale: string
+  languageSwitchParams?: LanguageSwitchParams
 }
 
 export default function LandingPage({
@@ -20,10 +22,11 @@ export default function LandingPage({
   heroPartners,
   children,
   locale,
+  languageSwitchParams = {},
 }: Props) {
   return (
     <>
-      <HeaderServer locale={locale} />
+      <HeaderServer locale={locale} params={languageSwitchParams} />
 
       <Main>
         <Hero
