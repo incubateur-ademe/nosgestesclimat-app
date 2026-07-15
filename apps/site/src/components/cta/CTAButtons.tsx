@@ -1,5 +1,5 @@
 import {
-  ORGANISATION_CREATE_PATH,
+  COLLECTIVE_TEST_INFORMATIONS_PATH,
   START_SIMULATION_PATH,
 } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
@@ -90,7 +90,7 @@ async function ServerCTAButtons({
             color="secondary"
             className="group h-16 px-6"
             data-testid="organisation-link"
-            href={ORGANISATION_CREATE_PATH}>
+            href={COLLECTIVE_TEST_INFORMATIONS_PATH}>
             <span
               className={twMerge(
                 'leading-none',

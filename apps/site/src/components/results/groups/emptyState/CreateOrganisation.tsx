@@ -4,6 +4,7 @@ import Baseline from '@/components/organisations/Baseline'
 import Trans from '@/components/translation/trans/TransClient'
 import { captureClickDashboardGroupPageCreateOrganisation } from '@/constants/tracking/posthogTrackers'
 import { clickDashboardGroupPageCreateOrganisation } from '@/constants/tracking/user-account'
+import { COLLECTIVE_TEST_INFORMATIONS_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import {
@@ -29,7 +30,7 @@ export default function CreateOrganisation() {
 
       <ButtonLink
         className="font-bold"
-        href="/organisations/connexion"
+        href={COLLECTIVE_TEST_INFORMATIONS_PATH}
         onClick={() => {
           trackMatomoEvent__deprecated(
             clickDashboardGroupPageCreateOrganisation

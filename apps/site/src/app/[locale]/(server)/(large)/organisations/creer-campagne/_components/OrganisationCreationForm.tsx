@@ -10,15 +10,19 @@ import {
 } from '@/constants/organisations/organisationTypes'
 import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import CheckboxInput from '@/design-system/inputs/CheckboxInput'
 import SelectInput from '@/design-system/inputs/SelectInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import Separator from '@/design-system/layout/Separator'
 import { useCreateOrganisation } from '@/hooks/organisations/useCreateOrganisation'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { createPoll } from '@/services/organisations/create-poll'
 import { captureException } from '@sentry/nextjs'
-import { useRouter } from 'next/navigation'
-import { useForm as useReactHookForm } from 'react-hook-form'
+import { useForm as useReactHookForm, useWatch } from 'react-hook-form'
+import {
+  buildCreatePollPayload,
+  clearDraft,
+  readDraft,
+} from '../_services/pollDraftClient'
 
 interface Inputs {
   name: string
@@ -26,19 +30,18 @@ interface Inputs {
   administratorFirstName: string
   administratorLastName: string
   administratorPosition: string
-  hasOptedInForCommunications: boolean
 }
 
-export default function CreationForm() {
+export default function OrganisationCreationForm() {
   const { t } = useClientTranslation()
 
-  const router = useRouter()
-
-  const { register, handleSubmit, formState, watch } = useReactHookForm<Inputs>(
+  const { register, handleSubmit, formState, control } = useReactHookForm<Inputs>(
     {
       defaultValues: {},
     }
   )
+
+  const organisationType = useWatch({ control, name: 'organisationType' })
 
   const {
     mutateAsync: createOrganisation,
@@ -52,9 +55,15 @@ export default function CreationForm() {
     administratorLastName,
     administratorPosition,
     organisationType,
-    hasOptedInForCommunications,
   }: Inputs) {
     try {
+      const draft = readDraft()
+      const pollPayload = draft ? buildCreatePollPayload(draft) : null
+
+      if (!pollPayload) {
+        return
+      }
+
       const organisationUpdated = await createOrganisation({
         name,
         type: organisationType,
@@ -62,20 +71,26 @@ export default function CreationForm() {
           {
             name: `${administratorFirstName}${ADMINISTRATOR_SEPARATOR}${administratorLastName}`,
             position: administratorPosition,
-            optedInForCommunications: hasOptedInForCommunications,
+            optedInForCommunications: false,
           },
         ],
       })
 
-
-      router.push(
-        `/organisations/${organisationUpdated.slug}/creer-campagne/informations`
-      )
+      await createPoll({
+        organisationIdOrSlug: organisationUpdated.slug,
+        poll: pollPayload,
+      })
+      clearDraft()
     } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        error.message.includes('NEXT_REDIRECT')
+      ) {
+        throw error
+      }
       captureException(error)
     }
   }
-
 
   return (
     <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mb-12">
@@ -107,8 +122,7 @@ export default function CreationForm() {
             ))}
           </SelectInput>
 
-          {watch('organisationType') ===
-            OrganisationTypeEnum.groupOfFriends && (
+          {organisationType === OrganisationTypeEnum.groupOfFriends && (
             <div className="mt-4 rounded-xl bg-gray-100 p-4 text-sm">
               <p className="mb-2">
                 <Trans>
@@ -174,24 +188,6 @@ export default function CreationForm() {
         />
       </div>
 
-      <div className="mt-4 w-full md:w-1/2">
-        <CheckboxInput
-          size="xl"
-          label={
-            <span>
-              <strong>
-                <Trans>
-                  Recevoir ponctuellement par e-mail les nouveaux services Nos
-                  Gestes Climat aux organisations
-                </Trans>
-              </strong>{' '}
-              <Trans>(une fois par mois maximum !)</Trans>
-            </span>
-          }
-          {...register('hasOptedInForCommunications')}
-        />
-      </div>
-
       {isErrorUpdateOrga && <DefaultSubmitErrorMessage className="mt-4" />}
 
       <div className="mt-8">
@@ -199,7 +195,7 @@ export default function CreationForm() {
           loading={isPending}
           type="submit"
           data-testid="create-organisation-button">
-          <Trans>Créer mon premier test collectif</Trans>
+          <Trans>Créer mon test collectif</Trans>
         </Button>
       </div>
     </form>

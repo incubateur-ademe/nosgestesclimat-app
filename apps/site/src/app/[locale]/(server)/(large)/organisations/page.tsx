@@ -1,5 +1,6 @@
 import TheySpeakAboutUs from '@/app/[locale]/_components/TheySpeakAboutUs'
 import OrganisationFilAriane from '@/components/layout/FilAriane'
+import { COLLECTIVE_TEST_INFORMATIONS_PATH } from '@/constants/urls/paths'
 import Separator from '@/design-system/layout/Separator'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { DefaultPageProps } from '@/types'
@@ -13,7 +14,7 @@ export default async function Page({ params }: DefaultPageProps) {
   return (
     <>
       <OrganisationFilAriane t={t} />
-      <section className="w-full overflow-hidden bg-[#fff] md:mx-auto">
+      <section className="w-full overflow-hidden bg-white md:mx-auto">
         <div className="mx-4 lg:mx-0">
           <HeroSection />
 
@@ -23,7 +24,7 @@ export default async function Page({ params }: DefaultPageProps) {
         </div>
 
         <TheySpeakAboutUs
-          ctaHref="/organisations/creer"
+          ctaHref={COLLECTIVE_TEST_INFORMATIONS_PATH}
           className="mt-16"
           locale={locale}
         />

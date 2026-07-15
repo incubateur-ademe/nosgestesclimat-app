@@ -48,14 +48,15 @@ export default async function Page({
         <div className="max-w-5xl lg:px-0">
           <h1>
             <Trans i18nKey="organisations.inscription.title" locale={locale}>
-              Créez votre compte pour diffuser un lien collectif
+              Connectez-vous pour diffuser votre lien de test collectif
             </Trans>
           </h1>
           <p className="max-w-full md:w-160">
             <Trans i18nKey="organisations.inscription.subtitle" locale={locale}>
-              Pour diffuser un test collectif à vos élèves, vos étudiants, vos
-              collègues ou encore vos clients, il vous suffit de créer votre
-              espace personnel.
+              Pour diffuser votre test collectif à vos élèves, vos étudiants, vos
+              collègues ou vos clients, il vous suffit de créer votre espace
+              personnel sécurisé. Accédez ensuite aux résultats des participants
+              sous forme de graphiques comparatifs.
             </Trans>
           </p>
 

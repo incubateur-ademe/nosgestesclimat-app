@@ -3,20 +3,18 @@
 import NewItemCardLink from '@/components/cta/NewItemCardLink'
 import PlusIcon from '@/components/icons/PlusIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import { useParams } from 'next/navigation'
+import { COLLECTIVE_TEST_INFORMATIONS_PATH } from '@/constants/urls/paths'
 
 interface Props {
   hasNoPollsYet?: boolean
 }
 
 export default function AddPollCard({ hasNoPollsYet }: Props) {
-  const { orgaSlug } = useParams()
-
   return (
     <li>
       <NewItemCardLink
         data-testid="add-poll-card"
-        href={`/organisations/${orgaSlug as string}/creer-campagne/informations`}
+        href={COLLECTIVE_TEST_INFORMATIONS_PATH}
         highlight={!!hasNoPollsYet}
         color={hasNoPollsYet ? 'primary' : 'secondary'}
         imageSrc="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_people_raising_arm_fe915601cd.png"
