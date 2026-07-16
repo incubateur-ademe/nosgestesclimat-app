@@ -21,6 +21,21 @@ describe('getPublicActionsCatalogue', () => {
     expect(result.actions).toEqual([expect.objectContaining({ id: action.id })])
   })
 
+  it('returns actions ordered by title ascending', async () => {
+    await Promise.all([
+      actionFactory.published().params({ title: 'Zebra action' }).create(),
+      actionFactory.published().params({ title: 'Alpha action' }).create(),
+      actionFactory.published().params({ title: 'Middle action' }).create(),
+    ])
+
+    const result = await getPublicActionsCatalogue()
+    expect(result.actions.map((a) => a.title)).toEqual([
+      'Alpha action',
+      'Middle action',
+      'Zebra action',
+    ])
+  })
+
   describe('topActions', () => {
     it('returns the curated highlighted actions in their fixed order, regardless of creation order', async () => {
       const [viande, avion, trajets] = await Promise.all([

@@ -12,7 +12,7 @@ export const getPublicActionsCatalogue = async (): Promise<{
   actions: Action[]
   topActions: Action[]
 }> => {
-  const actions = await findVisibleActions()
+  const actions = await findVisibleActions({ orderBy: { title: 'asc' } })
 
   return {
     actions,

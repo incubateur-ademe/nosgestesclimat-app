@@ -43,9 +43,12 @@ export const findAllActions = async ({
   })
 }
 
-export const findVisibleActions = async (): Promise<Action[]> => {
+export const findVisibleActions = async ({
+  orderBy,
+}: { orderBy?: { title?: 'asc' | 'desc' } } = {}): Promise<Action[]> => {
   const dbActions = await prisma.action.findMany({
     where: getVisibleFilter(),
+    orderBy: orderBy ? { title: orderBy.title } : undefined,
     include: {
       seoMetadata: true,
     },
