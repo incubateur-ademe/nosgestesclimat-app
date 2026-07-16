@@ -1,7 +1,7 @@
 import Carousel from '@/design-system/carousel/Carousel'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -51,7 +51,7 @@ export default function ThemeSection({
   assessmentStatus,
 }: {
   theme: Theme
-  actions: PersonalizedAction[]
+  actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: SimulationComputationStatus | null
 }) {

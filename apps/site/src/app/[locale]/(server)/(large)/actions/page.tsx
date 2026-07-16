@@ -1,9 +1,10 @@
 import ActionsPage from '@/components/actions/pages/ActionsPage'
 import CTAButtons from '@/components/cta/CTAButtons'
+import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
+import { START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import { getUser } from '@/helpers/server/dal/user'
 import { getPublicActionsCatalogue } from '@/services/actions/get-public-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
 import type { DefaultPageProps } from '@/types'
@@ -20,10 +21,8 @@ export default async function PublicActionsCatalogue({
   params,
 }: DefaultPageProps) {
   const { locale } = await params
-  const user = await getUser()
-
   const [actionsCatalogue, themes] = await Promise.all([
-    getPublicActionsCatalogue(user.id),
+    getPublicActionsCatalogue(),
     getThemes(),
   ])
 
@@ -37,9 +36,9 @@ export default async function PublicActionsCatalogue({
       description={
         <Trans locale={locale} i18nKey="actions.publicListPage.description">
           Retrouvez ci-dessous toutes les actions, individuelles ou collectives,
-          qui comptent pour le climat. Pour le moment, elles sont génériques.
-          Pour personnaliser ces recommandations d’actions (pertinence et calcul
-          d’impact selon votre situation), il suffit de faire le test !
+          qui comptent pour le climat. Pour personnaliser ces actions à votre
+          situation, il suffit de{' '}
+          <Link href={START_SIMULATION_PATH}>faire le test</Link>&nbsp;!
         </Trans>
       }
       cta={

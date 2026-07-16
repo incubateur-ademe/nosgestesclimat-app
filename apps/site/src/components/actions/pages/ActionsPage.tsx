@@ -1,7 +1,7 @@
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import { twMerge } from 'tailwind-merge'
 import BetaBanner from '../BetaBanner'
@@ -15,9 +15,9 @@ interface ActionsPageProps extends Omit<
   title: React.ReactNode
   description: React.ReactNode
   cta?: React.ReactNode
-  topActions?: PersonalizedAction[]
+  topActions?: MaybePersonalizedAction[]
   themes: Theme[]
-  actions: PersonalizedAction[]
+  actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: SimulationComputationStatus | null
 }

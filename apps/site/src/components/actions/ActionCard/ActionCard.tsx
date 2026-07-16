@@ -2,7 +2,7 @@ import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -24,7 +24,7 @@ const classesByTheme: Record<Theme['key'], string> = {
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
-  action: PersonalizedAction
+  action: MaybePersonalizedAction
   locale: Locale
   withThemeBadge?: boolean
   assessmentStatus?: SimulationComputationStatus | null

@@ -92,3 +92,11 @@ export interface PersonalizedAction extends Action {
   choice: ActionChoice | null
   assessment: ActionAssessment | null
 }
+
+/** An action optionally enriched with user-specific data, when available */
+export type MaybePersonalizedAction =
+  | (Action & {
+      assessment?: null
+      choice?: null
+    })
+  | PersonalizedAction
