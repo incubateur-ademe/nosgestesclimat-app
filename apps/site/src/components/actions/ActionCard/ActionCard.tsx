@@ -29,6 +29,7 @@ interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   withThemeBadge?: boolean
   assessmentStatus?: SimulationComputationStatus | null
   rank?: number
+  from?: 'fin' | 'mon-espace' | 'index'
 }
 
 export default function ActionCard({
@@ -38,9 +39,13 @@ export default function ActionCard({
   withThemeBadge = true,
   assessmentStatus,
   rank,
+  from,
   ...props
 }: ActionCardProps) {
   const rankEmoji = rankToEmoji(rank)
+  const href = from
+    ? `${ACTION_DETAIL_PATH(action.theme.slug, action.slug)}?from=${from}`
+    : ACTION_DETAIL_PATH(action.theme.slug, action.slug)
   return (
     <article
       {...props}
@@ -70,7 +75,7 @@ export default function ActionCard({
         ) : null}
       </div>
       <Link
-        href={ACTION_DETAIL_PATH(action.theme.slug, action.slug)}
+        href={href}
         className={twMerge(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink

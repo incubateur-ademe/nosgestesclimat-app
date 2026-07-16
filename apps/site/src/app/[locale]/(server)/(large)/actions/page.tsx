@@ -49,6 +49,7 @@ export default async function PublicActionsCatalogue({
         actions={actionsCatalogue.actions}
         themes={themes}
         locale={locale}
+        from="index"
       />
       <CallToAction
         locale={locale}

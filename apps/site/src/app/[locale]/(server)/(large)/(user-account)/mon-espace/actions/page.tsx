@@ -63,6 +63,7 @@ export default async function MonEspaceActionsPage({
             }
             themes={themes}
             locale={locale}
+            from="mon-espace"
           />
         </div>
       ) : (

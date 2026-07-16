@@ -49,11 +49,13 @@ export default function ThemeSection({
   actions,
   locale,
   assessmentStatus,
+  from,
 }: {
   theme: Theme
   actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: SimulationComputationStatus | null
+  from?: 'fin' | 'mon-espace' | 'index'
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -95,6 +97,7 @@ export default function ThemeSection({
             withThemeBadge={false}
             assessmentStatus={assessmentStatus}
             className="h-full"
+            from={from}
           />
         ))}
       </Carousel>

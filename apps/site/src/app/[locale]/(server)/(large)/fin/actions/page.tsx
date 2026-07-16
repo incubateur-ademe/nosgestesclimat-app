@@ -52,6 +52,7 @@ export default async function ResultatsActionsPage({
       assessmentStatus={actionsCatalogue.assessmentStatus}
       themes={themes}
       locale={locale}
+      from="fin"
     />
   )
 }

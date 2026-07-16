@@ -20,6 +20,7 @@ interface ActionsPageProps extends Omit<
   actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: SimulationComputationStatus | null
+  from?: 'fin' | 'mon-espace' | 'index'
 }
 
 export default function ActionsPage({
@@ -32,6 +33,7 @@ export default function ActionsPage({
   locale,
   className,
   assessmentStatus,
+  from,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -54,6 +56,7 @@ export default function ActionsPage({
               className="mb-10"
               locale={locale}
               assessmentStatus={assessmentStatus}
+              from={from}
             />
             <Separator variant="full" className="my-10 hidden md:block" />
           </>
@@ -84,6 +87,7 @@ export default function ActionsPage({
                   locale={locale}
                   assessmentStatus={assessmentStatus}
                   actions={actionsByTheme[theme.key] ?? []}
+                  from={from}
                 />
               )
             })}

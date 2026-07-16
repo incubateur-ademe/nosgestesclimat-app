@@ -4,6 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import {
   ACTION_DETAIL_PATH,
+  ACTIONS_PATH,
   END_PAGE_ACTIONS_PATH,
   MON_ESPACE_ACTIONS_PATH,
 } from '@/constants/urls/paths'
@@ -30,8 +31,15 @@ const SECTION_ID_I_ACT = 'j-agis'
 const SECTION_ID_I_BENEFIT = 'j-y-gagne'
 const SECTION_ID_FURTHER_READING = 'a-decouvrir-aussi'
 
+const FROM_PATH_MAP: Record<'fin' | 'mon-espace' | 'index', string> = {
+  fin: END_PAGE_ACTIONS_PATH,
+  'mon-espace': MON_ESPACE_ACTIONS_PATH,
+  index: ACTIONS_PATH,
+}
+
 type Props = DefaultPageProps<{
   params: { themeSlug: string; actionSlug: string }
+  searchParams: { from?: 'fin' | 'mon-espace' | 'index' }
 }>
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -59,8 +67,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   })
 }
 
-export default async function ActionPage({ params }: Props) {
+export default async function ActionPage({ params, searchParams }: Props) {
   const { locale, themeSlug, actionSlug } = await params
+  const resolvedSearchParams = await searchParams
+  const from = resolvedSearchParams?.from
   const user = await getUserSession()
   const action = await getPersonalizedActionDetails(actionSlug, user?.id)
 
@@ -73,7 +83,11 @@ export default async function ActionPage({ params }: Props) {
       <BetaBanner locale={locale} />
       <ActionTracker eventName="consulted" action={action} />
       <GoBackLink
-        href={user?.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
+        href={
+          from && from in FROM_PATH_MAP
+            ? FROM_PATH_MAP[from]
+            : FROM_PATH_MAP.index
+        }
         className="mb-10"
       />
       <header

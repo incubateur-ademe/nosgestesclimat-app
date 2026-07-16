@@ -12,6 +12,7 @@ interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRe
   actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: SimulationComputationStatus | null
+  from?: 'fin' | 'mon-espace' | 'index'
 }
 
 export default function HighestImpactActionsSection({
@@ -19,6 +20,7 @@ export default function HighestImpactActionsSection({
   locale,
   className,
   assessmentStatus,
+  from,
   ...props
 }: HighestImpactActionsSectionProps) {
   const carouselLabelId = useId()
@@ -69,6 +71,7 @@ export default function HighestImpactActionsSection({
             assessmentStatus={assessmentStatus}
             className="h-full"
             rank={index + 1}
+            from={from}
           />
         ))}
       </Carousel>
