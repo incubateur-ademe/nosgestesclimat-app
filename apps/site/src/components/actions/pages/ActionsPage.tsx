@@ -60,10 +60,10 @@ export default function ActionsPage({
         )}
 
         {cta && (
-          <section className="mb-10">
+          <>
             {cta}
-            <Separator variant="full" className="mt-10 hidden md:block" />
-          </section>
+            <Separator variant="full" className="my-10 hidden md:block" />
+          </>
         )}
 
         <div className="relative flex flex-col gap-5 md:gap-10">
