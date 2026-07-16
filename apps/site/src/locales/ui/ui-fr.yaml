@@ -1098,6 +1098,7 @@ entries:
   footer.wantToAct.button: Je choisis mes infolettres
   footer.wantToAct.description: Recevez nos infolettres pour comprendre, apprendre et passer à l'action simplement.
   footer.wantToAct.title: Envie d'agir, pas à pas ?
+  footer.resources.actions: Actions
   ui.emailInput.error.invalid: 'Veuillez entrer une adresse e-mail valide (format attendu : nom@exemple.org)'
   ui.emailInput.error.required: Veuillez entrer une adresse e-mail
   ui.emailInput.label: Votre adresse e-mail

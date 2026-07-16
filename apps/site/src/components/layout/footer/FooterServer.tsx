@@ -6,6 +6,7 @@ import Logo from '@/components/misc/Logo'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Trans from '@/components/translation/trans/TransServer'
 
+import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
@@ -152,6 +153,15 @@ export default async function FooterServer({
                     href="/blog"
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Blog</Trans>
+                  </InlineLink>
+                </li>
+                <li>
+                  <InlineLink
+                    href={ACTIONS_PATH}
+                    className="text-default text-sm no-underline hover:underline">
+                    <Trans locale={locale} i18nKey="footer.resources.actions">
+                      Actions
+                    </Trans>
                   </InlineLink>
                 </li>
                 <li>
