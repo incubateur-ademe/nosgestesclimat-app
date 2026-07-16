@@ -852,7 +852,7 @@ entries:
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
   actions.publicListPage.title: J’agis pour le climat
-  actions.publicListPage.description: Retrouvez ci-dessous toutes les actions, individuelles ou collectives, qui comptent pour le climat. Pour le moment, elles sont génériques. Pour personnaliser ces recommandations d’actions (pertinence et calcul d’impact selon votre situation), il suffit de faire le test !
+  actions.publicListPage.description: Retrouvez ci-dessous toutes les actions, individuelles ou collectives, qui comptent pour le climat. Pour personnaliser ces actions à votre situation, il suffit de <2>faire le test</2> !
   actions.publicListPage.metaTitle: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat
   actions.publicListPage.metaDescription: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
   actions.publicListPage.cta.title: Connaissez-vous votre empreinte carbone ?
@@ -865,7 +865,7 @@ entries:
   actions.detailPage.sections.furtherReading: À découvrir aussi
   actions.detailPage.impact.title: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
-  actions.components.highestImpactActionsSection.title: Le trio gagnant
+  actions.components.highestImpactActionsSection.title: Les actions les plus impactantes pour limiter son empreinte sur le climat
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
@@ -1475,7 +1475,7 @@ entries:
   common.hours: heures
   common.minutes: Minutes
   common.seconds: seconds
-  event.testimonies.4.author.job: Test collectif réalisé par l'organisation Pass Culture
+  event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
   reuseSimulationForPoll.attachedToPoll: 'Rattachée au test collectif :'

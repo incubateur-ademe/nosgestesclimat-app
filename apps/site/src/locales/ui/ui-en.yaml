@@ -1948,8 +1948,8 @@ entries:
   actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
   actions.components.actionCard.link: View the "{{actionTitle}}" action
   actions.components.actionCard.link.lock: Voir l'action "{{actionTitle}}"
-  actions.components.highestImpactActionsSection.title: The winning trio
-  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
+  actions.components.highestImpactActionsSection.title: The most effective steps you can take to reduce your carbon footprint
+  actions.components.highestImpactActionsSection.title.lock: Les actions les plus impactantes pour limiter son empreinte sur le climat
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
   simulator.tutorial.letsGoButton.label: Start now!
@@ -2191,8 +2191,8 @@ entries:
   poll.shareSection.sendByEmail.lock: Envoyer par e-mail
   poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
   poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
-  actions.publicListPage.description: Below you’ll find a list of all the actions – whether individual or collective – that make a difference to the climate. At the moment, these are general suggestions. To personalise these recommendations (tailoring them to your situation and calculating their impact), simply take the quiz!
-  actions.publicListPage.description.lock: Retrouvez ci-dessous toutes les actions, individuelles ou collectives, qui comptent pour le climat. Pour le moment, elles sont génériques. Pour personnaliser ces recommandations d’actions (pertinence et calcul d’impact selon votre situation), il suffit de faire le test !
+  actions.publicListPage.description: Below you’ll find all the actions – whether individual or collective – that make a difference to the climate. To tailor these actions to your situation, simply <2>take the quiz</2>!
+  actions.publicListPage.description.lock: Retrouvez ci-dessous toutes les actions, individuelles ou collectives, qui comptent pour le climat. Pour personnaliser ces actions à votre situation, il suffit de <2>faire le test</2> !
   actions.publicListPage.metaDescription: 'Discover practical steps you can take to reduce your carbon footprint: transport, food, energy efficiency, sustainable consumption, housing… Solutions for a sustainable future!'
   actions.publicListPage.metaDescription.lock: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
   actions.publicListPage.title: I’m taking action on climate change
