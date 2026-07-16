@@ -1,4 +1,5 @@
 import {
+  ACTIONS_PATH,
   MON_ESPACE_ACTIONS_PATH,
   MON_ESPACE_GROUPS_PATH,
   MON_ESPACE_PATH,
@@ -9,6 +10,7 @@ import { fetchAllArticleTitlesAndSlugs } from '@/services/cms/fetchAllArticleTit
 import { fetchThematicLandingPages } from '@/services/cms/fetchThematicLandingPages'
 import type { NGCRule } from '@incubateur-ademe/nosgestesclimat'
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr-opti.json'
+import { findVisibleActionSlugs } from '@nosgestesclimat/core/features/actions/repositories/actions.repository'
 import type { MetadataRoute } from 'next'
 import { utils } from 'publicodes'
 
@@ -39,10 +41,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     MON_ESPACE_GROUPS_PATH,
     MON_ESPACE_ACTIONS_PATH,
     MON_ESPACE_SETTINGS_PATH,
+    ACTIONS_PATH,
   ])
 
   const staticUrls = Array.from(staticPages).map((page) => ({
-    url: `https://nosgestesclimat.fr/${page}`,
+    url: new URL(page, 'https://nosgestesclimat.fr/').toString(),
     lastModified: new Date(),
     priority: 0.8,
   }))
@@ -88,11 +91,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })) || []
 
+  const visibleActionSlugs = await findVisibleActionSlugs()
+  const actionDetailUrls = visibleActionSlugs.map((action) => ({
+    url: `https://nosgestesclimat.fr/actions/${action.themeSlug}/${action.slug}`,
+    lastModified: new Date(),
+    priority: 1,
+  }))
+
   return [
     ...staticUrls,
     ...blogUrls,
     ...releaseUrls,
     ...documentationUrls,
     ...thematicLandingUrls,
+    ...actionDetailUrls,
   ]
 }

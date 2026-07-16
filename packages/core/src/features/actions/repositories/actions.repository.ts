@@ -60,6 +60,26 @@ export const findVisibleActions = async ({
   })
 }
 
+export const findVisibleActionSlugs = async (): Promise<
+  { slug: string; themeSlug: string }[]
+> => {
+  const dbActions = await prisma.action.findMany({
+    where: getVisibleFilter(),
+    select: {
+      slug: true,
+      themeId: true,
+    },
+  })
+
+  return dbActions.map((dbAction) => {
+    const theme = themesById[dbAction.themeId]
+    return {
+      slug: dbAction.slug,
+      themeSlug: theme.slug,
+    }
+  })
+}
+
 export const findVisibleActionBySlug = async (
   slug: string
 ): Promise<Action | null> => {
