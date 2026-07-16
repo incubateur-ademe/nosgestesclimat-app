@@ -1948,8 +1948,8 @@ entries:
   actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
   actions.components.actionCard.link: View the "{{actionTitle}}" action
   actions.components.actionCard.link.lock: Voir l'action "{{actionTitle}}"
-  actions.components.highestImpactActionsSection.title: The most effective steps you can take to reduce your carbon footprint
-  actions.components.highestImpactActionsSection.title.lock: Les actions les plus impactantes pour limiter son empreinte sur le climat
+  actions.components.highestImpactActionsSection.title: The winning trio
+  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
   actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
   simulator.tutorial.letsGoButton.label: Start now!

@@ -865,7 +865,7 @@ entries:
   actions.detailPage.sections.furtherReading: À découvrir aussi
   actions.detailPage.impact.title: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
-  actions.components.highestImpactActionsSection.title: Les actions les plus impactantes pour limiter son empreinte sur le climat
+  actions.components.highestImpactActionsSection.title: Le trio gagnant
   actions.components.highestImpactActionsSection.description: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.components.actionCard.link: Voir l'action "{{actionTitle}}"
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
