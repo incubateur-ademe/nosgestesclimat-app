@@ -1,28 +1,39 @@
-import Trans from '@/components/translation/trans/TransServer'
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import { twMerge } from 'tailwind-merge'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
-interface ActionsPageProps extends React.ComponentPropsWithoutRef<'div'> {
-  topActions?: PersonalizedAction[]
+
+interface ActionsPageProps extends Omit<
+  React.ComponentPropsWithoutRef<'div'>,
+  'title'
+> {
+  title: React.ReactNode
+  description: React.ReactNode
+  cta?: React.ReactNode
+  topActions?: MaybePersonalizedAction[]
   themes: Theme[]
-  actions: PersonalizedAction[]
+  actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: SimulationComputationStatus | null
+  from?: 'fin' | 'mon-espace' | 'index'
 }
 
 export default function ActionsPage({
+  title,
+  description,
+  cta,
   topActions,
   actions,
   themes,
   locale,
   className,
   assessmentStatus,
+  from,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -32,16 +43,9 @@ export default function ActionsPage({
 
       <div {...props} className={twMerge('pb-24', className)}>
         <div className="mb-10">
-          <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
-            <Trans locale={locale} i18nKey="actions.listPage.title">
-              Vos actions personnalisées pour diminuer votre empreinte
-            </Trans>
-          </h1>
+          <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">{title}</h1>
           <p className="text-base/normal text-slate-500 md:text-lg/normal">
-            <Trans locale={locale} i18nKey="actions.listPage.description">
-              Ces actions sont personnalisées selon vos réponses au test.
-              Choisissez celles qui vous semblent atteignables et lancez-vous !
-            </Trans>
+            {description}
           </p>
         </div>
 
@@ -52,7 +56,15 @@ export default function ActionsPage({
               className="mb-10"
               locale={locale}
               assessmentStatus={assessmentStatus}
+              from={from}
             />
+            <Separator variant="full" className="my-10 hidden md:block" />
+          </>
+        )}
+
+        {cta && (
+          <>
+            {cta}
             <Separator variant="full" className="my-10 hidden md:block" />
           </>
         )}
@@ -75,6 +87,7 @@ export default function ActionsPage({
                   locale={locale}
                   assessmentStatus={assessmentStatus}
                   actions={actionsByTheme[theme.key] ?? []}
+                  from={from}
                 />
               )
             })}

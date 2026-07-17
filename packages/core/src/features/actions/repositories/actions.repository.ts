@@ -43,9 +43,12 @@ export const findAllActions = async ({
   })
 }
 
-export const findVisibleActions = async (): Promise<Action[]> => {
+export const findVisibleActions = async ({
+  orderBy,
+}: { orderBy?: { title?: 'asc' | 'desc' } } = {}): Promise<Action[]> => {
   const dbActions = await prisma.action.findMany({
     where: getVisibleFilter(),
+    orderBy: orderBy ? { title: orderBy.title } : undefined,
     include: {
       seoMetadata: true,
     },
@@ -54,6 +57,26 @@ export const findVisibleActions = async (): Promise<Action[]> => {
   return dbActions.map((dbAction) => {
     const theme = themesById[dbAction.themeId]
     return mapAction(dbAction, theme)
+  })
+}
+
+export const findVisibleActionSlugs = async (): Promise<
+  { slug: string; themeSlug: string }[]
+> => {
+  const dbActions = await prisma.action.findMany({
+    where: getVisibleFilter(),
+    select: {
+      slug: true,
+      themeId: true,
+    },
+  })
+
+  return dbActions.map((dbAction) => {
+    const theme = themesById[dbAction.themeId]
+    return {
+      slug: dbAction.slug,
+      themeSlug: theme.slug,
+    }
   })
 }
 

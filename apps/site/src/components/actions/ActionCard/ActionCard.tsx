@@ -2,7 +2,7 @@ import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -24,11 +24,12 @@ const classesByTheme: Record<Theme['key'], string> = {
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
-  action: PersonalizedAction
+  action: MaybePersonalizedAction
   locale: Locale
   withThemeBadge?: boolean
   assessmentStatus?: SimulationComputationStatus | null
   rank?: number
+  from?: 'fin' | 'mon-espace' | 'index'
 }
 
 export default function ActionCard({
@@ -38,9 +39,13 @@ export default function ActionCard({
   withThemeBadge = true,
   assessmentStatus,
   rank,
+  from,
   ...props
 }: ActionCardProps) {
   const rankEmoji = rankToEmoji(rank)
+  const href = from
+    ? `${ACTION_DETAIL_PATH(action.theme.slug, action.slug)}?from=${from}`
+    : ACTION_DETAIL_PATH(action.theme.slug, action.slug)
   return (
     <article
       {...props}
@@ -70,7 +75,7 @@ export default function ActionCard({
         ) : null}
       </div>
       <Link
-        href={ACTION_DETAIL_PATH(action.theme.slug, action.slug)}
+        href={href}
         className={twMerge(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink

@@ -2191,3 +2191,17 @@ entries:
   poll.shareSection.sendByEmail.lock: Envoyer par e-mail
   poll.results.communicationKit.text1: We are providing you with <2>a</2> <4>ready-to-use</4> <2>ADEME communications pack</2> for all the key events of the year, to encourage as many people as possible to <7>take part in the challenge</7> and come and <10>calculate their carbon footprint</10>.
   poll.results.communicationKit.text1.lock: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
+  actions.publicListPage.description: Below you’ll find all the actions – whether individual or collective – that make a difference to the climate. To tailor these actions to your situation, simply <2>take the quiz</2>!
+  actions.publicListPage.description.lock: Retrouvez ci-dessous toutes les actions, individuelles ou collectives, qui comptent pour le climat. Pour personnaliser ces actions à votre situation, il suffit de <2>faire le test</2> !
+  actions.publicListPage.metaDescription: 'Discover practical steps you can take to reduce your carbon footprint: transport, food, energy efficiency, sustainable consumption, housing… Solutions for a sustainable future!'
+  actions.publicListPage.metaDescription.lock: 'Découvrez des actions concrètes pour réduire votre empreinte carbone : transports, alimentation, efficacité énergétique, consommation durable, logement… Des solutions pour un avenir durable !'
+  actions.publicListPage.title: I’m taking action on climate change
+  actions.publicListPage.title.lock: J’agis pour le climat
+  actions.publicListPage.metaTitle: What I’m doing to reduce my carbon footprint - Nos Gestes Climat
+  actions.publicListPage.metaTitle.lock: Mes actions pour réduire mon empreinte carbone - Nos Gestes Climat
+  actions.publicListPage.cta.title: Do you know what your carbon footprint is?
+  actions.publicListPage.cta.title.lock: Connaissez-vous votre empreinte carbone ?
+  actions.publicListPage.cta.description: Take the 10-minute simulator and discover the personalised actions that will have the greatest impact on your carbon footprint.
+  actions.publicListPage.cta.description.lock: Passez le simulateur en 10 minutes et découvrez les actions personnalisées qui auront le plus d'impact sur votre empreinte.
+  footer.resources.actions: Shares
+  footer.resources.actions.lock: Actions

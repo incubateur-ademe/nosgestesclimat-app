@@ -15,11 +15,6 @@ const redirects = [
     permanent: true,
   },
   {
-    source: '/actions',
-    destination: '/mon-espace/actions',
-    permanent: true,
-  },
-  {
     source: '/documentation/guide',
     destination: '/documentation',
     permanent: true,
