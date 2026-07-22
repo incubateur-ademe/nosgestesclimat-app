@@ -11,6 +11,7 @@ import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
+import { useRouter } from 'next/navigation'
 import { useCallback, useState, type ReactNode } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm as useReactHookForm } from 'react-hook-form'
@@ -32,6 +33,7 @@ export default function UserEmailForm({
   defaultEmail,
   resetLocalState,
 }: Props) {
+  const router = useRouter()
   const { mutateAsync: updateEmail, isSuccess } = useUpdateUserSettings()
 
   const [showVerificationModal, setShowVerificationModal] = useState(false)
@@ -49,7 +51,8 @@ export default function UserEmailForm({
   const handleOnComplete = useCallback(() => {
     setShowVerificationModal(false)
     setShowSuccess(true)
-  }, [])
+    setTimeout(() => router.refresh(), 100)
+  }, [router])
 
   return (
     <AuthProvider verify={verify} onComplete={handleOnComplete}>
