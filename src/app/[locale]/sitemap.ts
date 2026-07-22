@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ])
 
   const staticUrls = Array.from(staticPages).map((page) => ({
-    url: `https://nosgestesclimat.fr/${page}`,
+    url: `https://nosgestesclimat.fr/${page.replace(/^\//, '')}`,
     lastModified: new Date(),
     priority: 0.8,
   }))
