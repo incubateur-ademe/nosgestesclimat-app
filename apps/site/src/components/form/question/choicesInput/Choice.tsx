@@ -29,13 +29,13 @@ export default function Choice({
     <ChoiceInput
       label={
         <>
-          <span className="inline-flex">{title}</span>
           {icons ? (
             <>
               {' '}
               <Emoji className="inline-flex items-center">{icons}</Emoji>
             </>
           ) : null}
+          <span className="inline-flex">{title}</span>
         </>
       }
       labelText={title ?? ''}
