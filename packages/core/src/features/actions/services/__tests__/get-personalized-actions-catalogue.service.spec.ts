@@ -265,14 +265,20 @@ describe('getPersonalizedActionsCatalogue', () => {
   })
 
   describe('when locale is "en"', () => {
-    it('hides actions with no English translation', async () => {
-      await actionFactory.published().create()
+    it('falls back to French content for actions with no English translation', async () => {
+      const action = await actionFactory.published().create()
       const user = await userFactory.create()
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'en')
 
-      expect(result.actions).toEqual([])
-      expect(result.topActions).toEqual([])
+      expect(result.actions).toEqual([
+        expect.objectContaining({
+          id: action.id,
+          title: action.title,
+          slug: action.slug,
+          language: 'fr',
+        }),
+      ])
     })
 
     it('includes actions with an English translation, using its content', async () => {
@@ -302,7 +308,6 @@ describe('getPersonalizedActionsCatalogue', () => {
           },
         })
         .create()
-      await actionFactory.published().create() // untranslated, must be excluded
 
       const user = await userFactory.create()
       const simulation = await simulationFactory

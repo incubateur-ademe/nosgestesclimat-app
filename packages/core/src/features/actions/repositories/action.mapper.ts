@@ -27,13 +27,6 @@ interface DbActionTranslationWithSeoMetadata
   seoMetadata: Prisma.SeoMetadataModel | null
 }
 
-/**
- * Resolves an action's translatable content solely from the matching
- * ActionTranslation row for the requested locale - never from the legacy
- * flat columns on Action. Callers must guarantee `translation` is the row
- * for `locale` (repository functions filter out actions with no matching
- * translation before calling this).
- */
 export const mapAction = (
   dbAction: DbActionIdentity,
   translation: DbActionTranslationWithSeoMetadata,

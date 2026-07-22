@@ -14,6 +14,8 @@ import {
   mapUpdatedActionToPrisma,
 } from './action.mapper.ts'
 
+const defaultLocale = 'fr' satisfies ISOSupportedLanguage
+
 const getVisibleFilter = () => {
   const now = new Date()
   return {
@@ -56,26 +58,42 @@ export const findActionRuleIds = async (): Promise<
   })
 }
 
-export const findVisibleActions = async ({
-  locale,
-  orderBy,
-}: {
-  locale: ISOSupportedLanguage
-  orderBy?: { title?: 'asc' | 'desc' }
-}): Promise<Action[]> => {
+export const findVisibleActions = async (
+  locale: ISOSupportedLanguage,
+  {
+    orderBy,
+    fallbackToDefaultLocale = false,
+  }: {
+    orderBy?: { title?: 'asc' | 'desc' }
+    /**
+     * When true, actions missing a translation for `locale` fall back to their
+     * french content instead of being hidden.
+     */
+    fallbackToDefaultLocale?: boolean
+  }
+): Promise<Action[]> => {
+  const locales = fallbackToDefaultLocale
+    ? { in: [locale, defaultLocale] }
+    : locale
   const dbActions = await prisma.action.findMany({
     where: getVisibleFilter(),
     include: {
-      translations: { where: { locale }, include: { seoMetadata: true } },
+      translations: {
+        where: { locale: locales },
+        include: { seoMetadata: true },
+      },
     },
   })
 
-  const actions = dbActions
-    .filter((dbAction) => dbAction.translations.length > 0)
-    .map((dbAction) => {
-      const theme = themesById[dbAction.themeId]
-      return mapAction(dbAction, dbAction.translations[0], theme)
-    })
+  const actions = dbActions.flatMap((dbAction) => {
+    const translation = fallbackToDefaultLocale
+      ? (dbAction.translations.find((t) => t.locale === locale) ??
+        dbAction.translations.find((t) => t.locale === defaultLocale))
+      : dbAction.translations[0]
+    if (!translation) return []
+    const theme = themesById[dbAction.themeId]
+    return mapAction(dbAction, translation, theme)
+  })
 
   if (orderBy?.title) {
     actions.sort((a, b) =>
@@ -197,10 +215,13 @@ export const findVisiblePersonalizedActionBySlug = async (
 
 export const findAllVisiblePersonalizedActions = async (
   userId: string | undefined,
-  locale: ISOSupportedLanguage
+  locale: ISOSupportedLanguage,
+  options: { fallbackToDefaultLocale?: boolean }
 ): Promise<PersonalizedAction[]> => {
   const [actions, simulation] = await Promise.all([
-    findVisibleActions({ locale }),
+    findVisibleActions(locale, {
+      fallbackToDefaultLocale: options.fallbackToDefaultLocale,
+    }),
     findLastCompletedSimulationByUserId(userId),
   ])
 

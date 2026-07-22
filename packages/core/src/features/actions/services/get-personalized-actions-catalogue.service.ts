@@ -13,7 +13,9 @@ export const getPersonalizedActionsCatalogue = async (
   topActions: PersonalizedAction[]
 }> => {
   const [personalizedActions, lastComputation] = await Promise.all([
-    findAllVisiblePersonalizedActions(userId, locale),
+    findAllVisiblePersonalizedActions(userId, locale, {
+      fallbackToDefaultLocale: true,
+    }),
     findLastSimulationComputationByUserId(userId),
   ])
 

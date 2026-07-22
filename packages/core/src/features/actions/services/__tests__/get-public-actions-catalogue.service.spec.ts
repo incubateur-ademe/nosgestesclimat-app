@@ -85,13 +85,19 @@ describe('getPublicActionsCatalogue', () => {
   })
 
   describe('when locale is "en"', () => {
-    it('hides actions with no English translation', async () => {
-      await actionFactory.published().create()
+    it('falls back to French content for actions with no English translation', async () => {
+      const action = await actionFactory.published().create()
 
       const result = await getPublicActionsCatalogue('en')
 
-      expect(result.actions).toEqual([])
-      expect(result.topActions).toEqual([])
+      expect(result.actions).toEqual([
+        expect.objectContaining({
+          id: action.id,
+          title: action.title,
+          slug: action.slug,
+          language: 'fr',
+        }),
+      ])
     })
 
     it('includes actions with an English translation, using its content', async () => {
@@ -121,7 +127,6 @@ describe('getPublicActionsCatalogue', () => {
           },
         })
         .create()
-      await actionFactory.published().create() // untranslated, must be excluded
 
       const result = await getPublicActionsCatalogue('en')
 
@@ -151,9 +156,9 @@ describe('getPublicActionsCatalogue', () => {
           },
         })
         .create()
-      // highlighted but untranslated: hidden from the English catalogue,
-      // including its top actions
-      await actionFactory
+      // highlighted but untranslated: falls back to French content, and is
+      // still highlighted via its French slug
+      const viande = await actionFactory
         .published()
         .params({ slug: 'limiter-viande' })
         .create()
@@ -162,6 +167,7 @@ describe('getPublicActionsCatalogue', () => {
 
       expect(result.topActions).toEqual([
         expect.objectContaining({ id: avion.id, title: 'Limit flying' }),
+        expect.objectContaining({ id: viande.id, title: viande.title }),
       ])
     })
   })
