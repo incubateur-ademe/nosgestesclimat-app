@@ -1,3 +1,4 @@
+import type { Locale } from '@/i18nConfig'
 import type { DefaultPageProps } from '@/types'
 import { getServerTranslation } from '../getServerTranslation'
 import { getMetadataObject } from './getMetadataObject'
@@ -28,9 +29,11 @@ export const getCommonMetadata = <T extends DefaultPageProps>({
   alternates?:
     | {
         canonical: string
+        languages?: Partial<Record<Locale, string>>
       }
     | ((params: Awaited<DefaultPageProps<T>['params']>) => {
         canonical: string
+        languages?: Partial<Record<Locale, string>>
       })
 }) => {
   return async (props: DefaultPageProps<T>) => {
@@ -39,6 +42,12 @@ export const getCommonMetadata = <T extends DefaultPageProps>({
     const { locale } = awaitedParams
 
     const { t } = await getServerTranslation({ locale })
+
+    const resolvedAlternates = alternates
+      ? typeof alternates === 'function'
+        ? alternates(awaitedParams)
+        : alternates
+      : undefined
 
     return getMetadataObject({
       locale,
@@ -49,14 +58,7 @@ export const getCommonMetadata = <T extends DefaultPageProps>({
         : t(
             'Comprenez comment calculer votre empreinte sur le climat en 10min chrono.'
           ),
-      ...(alternates
-        ? {
-            alternates:
-              typeof alternates === 'function'
-                ? alternates(awaitedParams)
-                : alternates,
-          }
-        : {}),
+      ...(resolvedAlternates ? { alternates: resolvedAlternates } : {}),
       ...(robots ? { robots } : {}),
     })
   }

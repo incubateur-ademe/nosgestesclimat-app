@@ -25,9 +25,22 @@ interface Props {
   }
   alternates?: {
     canonical: string
+    /**
+     * Per-locale relative path for each hreflang alternate to emit.
+     * A locale absent from this map gets no hreflang tag.
+     * Defaults to auto generation based on locales and canonical path
+     */
+    languages?: Partial<Record<Locale, string>>
   }
   locales?: Locale[]
 }
+
+/** Builds an `alternates.languages` map that points every given locale at the same relative path. */
+export const buildLanguagesForLocales = (
+  locales: Locale[],
+  path: string
+): Partial<Record<Locale, string>> =>
+  Object.fromEntries(locales.map((locale) => [locale, path]))
 
 const BASE_URL =
   process.env.NODE_ENV === 'development'
@@ -71,7 +84,7 @@ export function getMetadataObject({
   image,
   alternates,
   locale,
-  locales: localesProp,
+  locales = i18nConfig.locales,
   ...props
 }: Props): Metadata {
   const url = buildURL({
@@ -80,31 +93,31 @@ export function getMetadataObject({
     locale: locale ?? i18nConfig.defaultLocale,
   })
 
-  const locales = localesProp ?? i18nConfig.locales
-
   const definitiveAlternates: {
     canonical?: string
     languages?: Record<string, string>
   } = {}
 
-  // Form canonical URL
   if (alternates) {
     definitiveAlternates.canonical = buildAlternateUrl(
       alternates.canonical,
       locale
     )
 
-    // Only create hreflang if the page has an english version
-    if (locales.length > 1) {
-      // We set the alternates url for each language
-      const languages: Record<string, string> = {}
+    const languagesInput =
+      alternates.languages ??
+      buildLanguagesForLocales(locales, alternates.canonical)
 
-      locales.map((locale) => {
-        languages[locale] = buildAlternateUrl(alternates.canonical, locale)
-      })
+    const builtLanguages = Object.fromEntries(
+      Object.entries(languagesInput).map(([lang, path]) => [
+        lang,
+        buildAlternateUrl(path, lang),
+      ])
+    )
 
-      // We return the alternates object with the canonical url and the languages alternates
-      definitiveAlternates.languages = languages
+    definitiveAlternates.languages = {
+      ...builtLanguages,
+      'x-default': builtLanguages[i18nConfig.defaultLocale],
     }
   }
 

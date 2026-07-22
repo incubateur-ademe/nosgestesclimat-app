@@ -155,6 +155,44 @@ export const findVisibleActionBySlug = async (
   return mapAction(dbAction, translation, theme)
 }
 
+export const findVisibleActionAlternateLocalesBySlug = async (
+  slug: string,
+  locale: ISOSupportedLanguage
+): Promise<
+  Partial<
+    Record<ISOSupportedLanguage, { actionSlug: string; themeSlug: string }>
+  >
+> => {
+  const dbAction = await prisma.action.findFirst({
+    where: {
+      ...getVisibleFilter(),
+      translations: { some: { locale, slug } },
+    },
+    select: {
+      themeId: true,
+      translations: { select: { locale: true, slug: true } },
+    },
+  })
+
+  if (!dbAction) {
+    return {}
+  }
+
+  const theme = themesById[dbAction.themeId]
+
+  return Object.fromEntries(
+    dbAction.translations.map((translation) => [
+      translation.locale,
+      {
+        actionSlug: translation.slug,
+        themeSlug: translation.locale === 'en' ? theme.slugEn : theme.slug,
+      },
+    ])
+  ) as Partial<
+    Record<ISOSupportedLanguage, { actionSlug: string; themeSlug: string }>
+  >
+}
+
 export const createManyActions = async (
   actions: NewAction[]
 ): Promise<void> => {
