@@ -46,6 +46,8 @@ test.describe('Email change', () => {
     const code = await new UserMailbox(newEmail).getVerificationCode()
     await codeInput.fill(code)
 
+    await page.getByTestId('verification-code-submit-button').click()
+
     await expect(page.getByTestId('success-message')).toBeVisible({
       timeout: 10_000,
     })
