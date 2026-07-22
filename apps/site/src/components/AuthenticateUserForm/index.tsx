@@ -2,7 +2,15 @@
 
 import type { AuthenticationMode } from '@/types/authentication'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState, type ReactNode } from 'react'
+import {
+  cloneElement,
+  isValidElement,
+  useCallback,
+  useState,
+  useTransition,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
@@ -62,6 +70,7 @@ export default function AuthenticateUserForm({
 }: Props) {
   const router = useRouter()
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const [isNavigatingPending, startNavigateTransition] = useTransition()
 
   // Called upon code verification
   const complete = useCallback(
@@ -126,8 +135,28 @@ export default function AuthenticateUserForm({
   return (
     <SendVerificationCodeForm
       buttonLabel={buttonLabel}
-      additionnalButton={additionnalButton}
+      additionnalButton={
+        additionnalButton && isValidElement(additionnalButton)
+          ? cloneElement(
+              additionnalButton as ReactElement<{
+                onClick?: (e: MouseEvent) => void
+              }>,
+              {
+                onClick: (e: MouseEvent) => {
+                  startNavigateTransition(() => {
+                    ;(
+                      additionnalButton.props as {
+                        onClick?: (e: MouseEvent) => void
+                      }
+                    ).onClick?.(e)
+                  })
+                },
+              }
+            )
+          : additionnalButton
+      }
       buttonColor={buttonColor}
+      disabled={isNavigatingPending}
       onCodeSent={(pendingVerification) => {
         registerVerification(pendingVerification)
         trackMatomoEvent__deprecated(signinTrackEvent(mode))
