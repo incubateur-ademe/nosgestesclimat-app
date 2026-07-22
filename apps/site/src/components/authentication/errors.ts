@@ -4,17 +4,19 @@
 // Next.js server action serialization to the client.
 import type { CodeError, EmailError } from './types'
 
+function getErrorMessage(error: unknown): string | undefined {
+  if (error instanceof Error) return error.message
+  return (error as Record<string, unknown>)?.message as string | undefined
+}
+
 export function mapLoginError(error: unknown): CodeError {
-  if (error instanceof Error) {
-    if (error.message === 'Unauthorized') return 'invalid'
-    if (error.message === 'Too Many Requests') return 'rate_limited'
-  }
+  const msg = getErrorMessage(error)
+  if (msg === 'Unauthorized') return 'invalid'
+  if (msg === 'Too Many Requests') return 'rate_limited'
   return 'unknown'
 }
 
 export function mapEmailError(error: unknown): EmailError {
-  if (error instanceof Error && error.message === 'Too Many Requests') {
-    return 'rate_limited'
-  }
+  if (getErrorMessage(error) === 'Too Many Requests') return 'rate_limited'
   return 'unknown'
 }
