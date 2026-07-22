@@ -8,7 +8,7 @@ export const generateMetadata = getCommonMetadata({
   description: t(
     'Comprenez comment calculer votre empreinte sur le climat en 10min chrono.'
   ),
-  alternates: { canonical: '/tutoriel' },
+  alternates: { canonical: '/simulateur/tutoriel' },
   robots: noIndexObject,
 })
 

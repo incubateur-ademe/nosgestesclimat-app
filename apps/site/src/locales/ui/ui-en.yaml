@@ -1102,6 +1102,10 @@ entries:
   signIn.verificationForm.email.verificationCode.strong.lock: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'sent to '
   signIn.verificationForm.email.verificationCode.suffix.lock: 'envoyé à '
+  signIn.verificationForm.codeInput.label: Enter the 6 digits of the verification code
+  signIn.verificationForm.submitButton: Validate my code
+  signIn.verificationForm.pending: Verifying your code...
+  signIn.verificationForm.success: Your code is valid!
   signIn.verificationForm.notReceived.resendButton: Resend code
   signIn.verificationForm.notReceived.resendButton.lock: Renvoyer le code
   signIn.verificationForm.notReceived.reloadPage: Reload page
@@ -1488,6 +1492,12 @@ entries:
   results.objective.reduction.over4.description.lock: Votre rythme indicatif pour parvenir à <2>{{secondObjectiveNumber}}T en {{year}}</2>
   results.objective.description: France's objective to achieve carbon neutrality by 2050 and help limit global warming to +2°C.
   results.objective.description.lock: L'objectif de la France pour atteindre la neutralité carbone en 2050 et aider à limiter le réchauffement mondial à + 2 °C.
+  signIn.emailForm.inputLabel: Your email address
+  signIn.emailForm.buttonLabel: Log in to my account
+  signIn.emailForm.error.required: Please enter your email address
+  signIn.emailForm.error.invalid: The email address is invalid
+  signIn.emailForm.error.rateLimited: A code has already been sent to this address. Please wait before requesting a new one.
+  signIn.code.rateLimited: Please wait a moment before trying again.
   results.objective.under4.description.body: With the work of the government and society as a whole over the coming years, your footprint should naturally fall to around 2 tonnes.
   results.objective.under4.description.body.lock: Avec le travail de l’État et toute la société dans les années à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des 2 tonnes.
   Part de la sous-catégorie {{percentage}}: Share of sub-category {{percentage}}

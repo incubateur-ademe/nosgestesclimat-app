@@ -1,27 +1,17 @@
 'use client'
 
-import VerifyCodeForm from '@/components/AuthenticateUserForm/VerifyCodeForm'
-import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
+import { AuthProvider, useAuth } from '@/components/authentication/AuthProvider'
+import VerifyCodeForm from '@/components/authentication/authenticateUserForm/VerifyCodeForm'
 import Trans from '@/components/translation/trans/TransClient'
 import { captureClickUpdateUserEmail } from '@/constants/tracking/posthogTrackers'
-import { clickUpdateUserEmail } from '@/constants/tracking/user-account'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
-import Loader from '@/design-system/layout/Loader'
 import Modal from '@/design-system/modals/Modal'
-import { useCreateVerificationCode } from '@/hooks/authentication/useCreateVerificationCode'
-import { usePendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
-import { captureException } from '@sentry/nextjs'
-import type { UseMutationResult } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
-import { type ReactNode } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
@@ -33,46 +23,89 @@ interface Props {
   submitLabel?: string | ReactNode
   className?: string
   defaultEmail: string
+  resetLocalState: () => void
 }
 
 export default function UserEmailForm({
   submitLabel,
   className,
   defaultEmail,
+  resetLocalState,
 }: Props) {
+  const { mutateAsync: updateEmail, isSuccess } = useUpdateUserSettings()
+
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const verify = useCallback(
+    async (email: string, code: string) => {
+      const r = await updateEmail({ email, code })
+      return { userId: r.userId }
+    },
+    [updateEmail]
+  )
+
+  const handleOnComplete = useCallback(() => {
+    setShowVerificationModal(false)
+    setShowSuccess(true)
+  }, [])
+
+  return (
+    <AuthProvider verify={verify} onComplete={handleOnComplete}>
+      <UserEmailFormContent
+        submitLabel={submitLabel}
+        className={className}
+        defaultEmail={defaultEmail}
+        showVerificationModal={showVerificationModal}
+        pendingEmail={pendingEmail}
+        showSuccess={showSuccess || isSuccess}
+        onOpenVerification={(email: string) => {
+          setPendingEmail(email)
+          setShowVerificationModal(true)
+        }}
+        onCloseVerification={() => {
+          setShowVerificationModal(false)
+          resetLocalState()
+        }}
+      />
+    </AuthProvider>
+  )
+}
+
+function UserEmailFormContent({
+  submitLabel,
+  className,
+  defaultEmail,
+  showVerificationModal,
+  pendingEmail,
+  showSuccess,
+  onOpenVerification,
+  onCloseVerification,
+}: {
+  submitLabel?: string | ReactNode
+  className?: string
+  defaultEmail: string
+  showVerificationModal: boolean
+  pendingEmail: string
+  showSuccess: boolean
+  onOpenVerification: (email: string) => void
+  onCloseVerification: () => void
+}) {
   const { t } = useClientTranslation()
+  const { sendEmail, reset } = useAuth()
 
   const { register, handleSubmit } = useReactHookForm<Inputs>({
     defaultValues: { email: defaultEmail },
   })
 
-  const updateUserSettings = useUpdateUserSettings()
-  const router = useRouter()
-  const {
-    pendingVerification,
-    registerVerification,
-    resetVerification,
-    completeVerification,
-  } = usePendingVerification({
-    onComplete: () => {
-      router.refresh()
-    },
-  })
-
-  const { createVerificationCode, createVerificationCodeError } =
-    useCreateVerificationCode({ onComplete: registerVerification })
-
-  const createCodeIfEmailChanged: SubmitHandler<Inputs> = async (data) => {
-    trackMatomoEvent__deprecated(clickUpdateUserEmail)
+  const createCodeIfEmailChanged: SubmitHandler<Inputs> = (data) => {
     trackPosthogEvent(captureClickUpdateUserEmail)
-    try {
-      const nextEmail = formatEmail(data.email)
+    const nextEmail = formatEmail(data.email)
 
-      if (nextEmail && nextEmail !== defaultEmail) {
-        await createVerificationCode(nextEmail)
-      }
-    } catch (error) {
-      captureException(error)
+    if (nextEmail && nextEmail !== defaultEmail) {
+      onOpenVerification(nextEmail)
+      void sendEmail(nextEmail)
     }
   }
 
@@ -81,29 +114,19 @@ export default function UserEmailForm({
       <form
         onSubmit={handleSubmit(createCodeIfEmailChanged)}
         className="flex w-full flex-col items-start gap-4">
-        {pendingVerification && (
+        {showVerificationModal && pendingEmail && (
           <Modal
             ariaLabel={t(
               'organisations.emailVerificationModal.title',
               "Fenêtre modale de confirmation d'e-mail"
             )}
             isOpen
-            closeModal={() => resetVerification()}
+            closeModal={() => {
+              reset()
+              onCloseVerification()
+            }}
             hasAbortCross={false}>
-            <VerifyCodeForm
-              key={pendingVerification.email}
-              onRegisterNewVerification={registerVerification}
-              email={pendingVerification.email}
-              onVerificationCompleted={completeVerification}
-              verificationMutation={
-                updateUserSettings as UseMutationResult<
-                  { userId: string },
-                  Error,
-                  { email: string; code: string },
-                  unknown
-                >
-              }
-            />
+            <VerifyCodeForm />
           </Modal>
         )}
 
@@ -114,7 +137,7 @@ export default function UserEmailForm({
           {...register('email')}
         />
 
-        {updateUserSettings.isSuccess && (
+        {showSuccess && (
           <p
             data-testid="success-message"
             role="status"
@@ -125,24 +148,15 @@ export default function UserEmailForm({
           </p>
         )}
 
-        {createVerificationCodeError && (
-          <div data-testid="error-message">
-            <DefaultSubmitErrorMessage />
-          </div>
-        )}
-
         <div>
-          <Button
-            data-testid="submit-button"
-            type="submit"
-            className="mt-6 gap-2 self-start"
-            disabled={updateUserSettings.isPending}>
-            {updateUserSettings.isPending && <Loader size="sm" color="light" />}
+          <Button data-testid="submit-button" type="submit" className="mt-6 gap-2 self-start">
             {submitLabel ? (
               <span data-testid="custom-submit-label">{submitLabel}</span>
             ) : (
               <span data-testid="default-submit-label">
-                <Trans>Mettre à jour mes coordonnées</Trans>
+                <Trans i18nKey="userParams.updateInfo">
+                  Mettre à jour mes coordonnées
+                </Trans>
               </span>
             )}
           </Button>

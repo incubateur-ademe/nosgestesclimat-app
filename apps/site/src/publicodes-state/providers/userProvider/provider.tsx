@@ -7,7 +7,6 @@ import { generateSimulation } from '@/helpers/simulation/generateSimulation'
 import type { UserSession } from '@/services/auth/get-user-session'
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import UserContext from './context'
-import usePersistentPendingVerification from './hooks/usePersistentPendingVerification'
 import usePersistentTutorials from './hooks/usePersistentTutorials'
 import usePersistentUser from './hooks/usePersistentUser'
 
@@ -26,9 +25,6 @@ export default function UserProvider({
 }: PropsWithChildren<Props>) {
   const { user, setUser } = usePersistentUser(userSession)
 
-  const { pendingVerification, setPendingVerification } =
-    usePersistentPendingVerification()
-
   const { tutorials, setTutorials } = usePersistentTutorials()
 
   const initSimulation = serverSimulations?.at(0)
@@ -44,8 +40,6 @@ export default function UserProvider({
       value={{
         user,
         setUser,
-        pendingVerification,
-        setPendingVerification,
         tutorials,
         setTutorials,
         simulations,

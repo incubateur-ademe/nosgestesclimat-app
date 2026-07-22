@@ -1,10 +1,10 @@
 'use client'
 
+import { useLocale } from '@/hooks/useLocale'
 import { login } from '@/services/auth/login'
 import { useMutation } from '@tanstack/react-query'
-import { useLocale } from '../useLocale'
 
-export default function useLogin() {
+export function useLogin() {
   const locale = useLocale()
 
   return useMutation({
