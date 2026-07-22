@@ -5,18 +5,20 @@ import UserEmailForm from '@/components/user/UserEmailForm'
 import Button from '@/design-system/buttons/Button'
 import { UserProvider } from '@/publicodes-state'
 import type { AuthUser } from '@/services/auth/get-user-session'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 interface Props {
   user: AuthUser
 }
 export default function UserEmail({ user }: Props) {
   const [isEditing, setIsEditing] = useState(false)
+  const resetLocalState = useCallback(() => setIsEditing(false), [])
 
   if (isEditing) {
     return (
       <UserProvider userSession={user}>
         <UserEmailForm
           defaultEmail={user.email}
+          resetLocalState={resetLocalState}
           submitLabel={
             <Trans i18nKey="mon-espace.settings.userInfos.submitLabel">
               Mettre à jour mes informations

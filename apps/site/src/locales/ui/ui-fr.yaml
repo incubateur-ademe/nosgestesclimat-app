@@ -921,6 +921,10 @@ entries:
   signIn.verificationForm.email.verificationCode.prefix: Entrez le
   signIn.verificationForm.email.verificationCode.strong: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'envoyé à '
+  signIn.verificationForm.codeInput.label: Entrez les 6 chiffres du code de vérification
+  signIn.verificationForm.submitButton: Valider mon code
+  signIn.verificationForm.pending: Nous vérifions votre code...
+  signIn.verificationForm.success: Votre code est valide !
   signIn.verificationForm.notReceived.backButton: Retour à la connexion
   signIn.verificationForm.notReceived.error: Oups, une erreur s'est produite au moment de l'envoi de votre code...
   signIn.verificationForm.notReceived.reloadPage: Recharger la page
@@ -1491,3 +1495,11 @@ entries:
   poll.results.communicationKit.text2: Des e-mails type, post Linkedin, visuels…
   poll.results.communicationKit.title: Besoin d'inspiration pour diffuser votre test collectif ?
   poll.shareSection.sendByEmail: Envoyer par e-mail
+  signIn.emailForm.inputLabel: Votre adresse e-mail
+  signIn.emailForm.buttonLabel: Accéder à mon espace
+  signIn.emailForm.error.required: Merci de renseigner votre adresse e-mail
+  signIn.emailForm.error.invalid: L'adresse e-mail est invalide
+  signIn.emailForm.error.rateLimited: Un code vient d'être envoyé à cette adresse. Veuillez patienter avant d'en demander un nouveau.
+  signIn.code.rateLimited: Veuillez patienter un instant avant de réessayer.
+  common.errors.errorHappened: Une erreur est survenue. Veuillez réessayer.
+  signIn.code.invalid: Le code est invalide

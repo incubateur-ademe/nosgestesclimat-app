@@ -1,6 +1,6 @@
 'use client'
 
-import AuthenticateUserForm from '@/components/AuthenticateUserForm'
+import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import Trans from '@/components/translation/trans/TransClient'
 import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'

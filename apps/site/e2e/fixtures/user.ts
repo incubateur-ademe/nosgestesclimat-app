@@ -54,15 +54,16 @@ export class User {
   }
 
   async fillEmailAndCompleteVerification() {
-    const emailInput = 'verification-code-email-input'
-    await this.page.getByTestId(emailInput).scrollIntoViewIfNeeded()
-    await this.page.getByTestId(emailInput).fill(this.email)
+    const emailInput = this.page.getByTestId('verification-code-email-input')
+    await emailInput.scrollIntoViewIfNeeded()
+    await emailInput.fill(this.email)
     await this.page.waitForTimeout(500)
-    await this.page.getByTestId(emailInput).press('Enter')
+    await emailInput.press('Enter')
     const codeInput = this.page.getByTestId('verification-code-input')
     await expect(codeInput).toBeInViewport()
     const code = await this.mailbox.getVerificationCode()
     await codeInput.fill(code)
+    await codeInput.press('Enter')
   }
 
   async saveInContext() {

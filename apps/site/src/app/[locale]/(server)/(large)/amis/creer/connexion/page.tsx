@@ -1,8 +1,7 @@
-import AuthenticateUserForm from '@/components/AuthenticateUserForm'
+import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import StepsDisplay from '@/components/groups/StepsDisplay'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
 import {
-  amisCreationConnexionComplete,
   amisCreationConnexionRetour,
   captureAmisCreationConnexionComplete,
 } from '@/constants/tracking/pages/amisCreation'
@@ -49,10 +48,7 @@ export default async function GroupConnexionPage({ params }: DefaultPageProps) {
       <AuthenticateUserForm
         redirectPathname={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
         buttonLabel={t('auth.verifyemail', 'Vérifier mon adresse email')}
-        trackers={{
-          matomo: amisCreationConnexionComplete,
-          posthog: captureAmisCreationConnexionComplete,
-        }}
+        tracker={captureAmisCreationConnexionComplete}
       />
     </div>
   )
