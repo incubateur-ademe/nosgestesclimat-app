@@ -28,7 +28,6 @@ const nextConfig = withMDX({
         (r) =>
           !r.source.startsWith('/en/') &&
           !r.source.startsWith('/fr/') &&
-          !r.source.startsWith('/es/') &&
           !r.source.includes('%')
       )
       .map((r) => ({
