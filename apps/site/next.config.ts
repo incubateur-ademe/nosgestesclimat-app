@@ -23,7 +23,23 @@ const nextConfig = withMDX({
   },
   // eslint-disable-next-line @typescript-eslint/require-await
   async redirects() {
-    return redirects
+    const enRedirects = redirects
+      .filter(
+        (r) =>
+          !r.source.startsWith('/en/') &&
+          !r.source.startsWith('/fr/') &&
+          !r.source.startsWith('/es/') &&
+          !r.source.includes('%')
+      )
+      .map((r) => ({
+        ...r,
+        source: `/en${r.source}`,
+        destination: r.destination.startsWith('http')
+          ? r.destination
+          : `/en${r.destination}`,
+      }))
+
+    return [...redirects, ...enRedirects]
   },
   productionBrowserSourceMaps: true,
   turbopack: {
