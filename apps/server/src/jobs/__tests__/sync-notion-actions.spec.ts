@@ -5,6 +5,7 @@ import { findThemes } from '@nosgestesclimat/core/features/actions/repositories/
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import logger from '../../logger.ts'
 import { syncNotionActions, type NotionRawRow } from '../sync-notion-actions.ts'
 
 let validTheme: Action['theme']
@@ -30,7 +31,7 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    const actions = await findAllActions()
+    const actions = await findAllActions('fr')
     expect(sorted(actions)).toEqual(
       sorted([row1, row2]).map((row) => {
         return {
@@ -75,7 +76,7 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    const actions = await findAllActions()
+    const actions = await findAllActions('fr')
     expect(actions).toEqual([
       {
         ...existing,
@@ -146,7 +147,7 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    const actions = await findAllActions()
+    const actions = await findAllActions('fr')
     expect(actions).toEqual([
       {
         ...existing,
@@ -189,7 +190,7 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    expect(await findAllActions()).toEqual([])
+    expect(await findAllActions('fr')).toEqual([])
   })
 
   it('skips rows with unknown theme', async () => {
@@ -198,7 +199,7 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    expect(await findAllActions()).toEqual([])
+    expect(await findAllActions('fr')).toEqual([])
   })
 
   it('does not soft-delete an existing action when an invalid row shares its slug', async () => {
@@ -213,7 +214,7 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    expect(await findAllActions()).toEqual([existing])
+    expect(await findAllActions('fr')).toEqual([existing])
   })
 
   it('handles mixed create, update and soft-delete in one sync', async () => {
@@ -274,7 +275,249 @@ describe('syncNotionActions', () => {
 
     await syncNotionActions({ fetchAllPages, actionDatabaseId })
 
-    expect(await findAllActions()).toEqual([existing])
+    expect(await findAllActions('fr')).toEqual([existing])
+  })
+
+  describe('English translations', () => {
+    it('always creates a French translation row alongside the legacy columns', async () => {
+      const row = buildNotionRow({
+        front_title_en: 'English title',
+        slug_en: 'english-slug',
+        long_description_en: 'English description',
+      })
+      const fetchAllPages = vi.fn().mockResolvedValue([row])
+
+      await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+      const [action] = await findAllActions('fr')
+      const translation = await findActionTranslation(action.id, 'fr')
+      expect(translation).toMatchObject({
+        title: row.front_title_fr,
+        longDescription: row.long_description_fr,
+      })
+    })
+
+    it('creates an English translation when all required fields are present', async () => {
+      const row = buildNotionRow({
+        front_title_en: 'English title',
+        slug_en: 'english-slug',
+        long_description_en: 'English description',
+        tips_en: 'English tips',
+      })
+      const fetchAllPages = vi.fn().mockResolvedValue([row])
+
+      await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+      const [action] = await findAllActions('fr')
+      const translation = await findActionTranslation(action.id, 'en')
+      expect(translation).toMatchObject({
+        title: 'English title',
+        longDescription: 'English description',
+        tips: 'English tips',
+      })
+    })
+
+    it('does not create an English translation when some of the required fields is missing, and warns', async () => {
+      const warnSpy = vi.spyOn(logger, 'warn')
+      const row = buildNotionRow({
+        front_title_en: 'English title',
+        slug_en: 'english-slug',
+        long_description_en: undefined,
+      })
+      const fetchAllPages = vi.fn().mockResolvedValue([row])
+
+      await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+      const [action] = await findAllActions('fr')
+      expect(await findActionTranslation(action.id, 'en')).toBeNull()
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('partial English translation'),
+        expect.objectContaining({ missing: 'long_description_en' })
+      )
+    })
+
+    it('does not create an English translation all required fields are missing', async () => {
+      const row = buildNotionRow()
+      const fetchAllPages = vi.fn().mockResolvedValue([row])
+
+      await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+      const [action] = await findAllActions('fr')
+      expect(await findActionTranslation(action.id, 'en')).toBeNull()
+    })
+
+    it('updates an existing English translation on subsequent syncs (upsert, not duplicate)', async () => {
+      const row = buildNotionRow({
+        slug: 'my-slug',
+        front_title_en: 'First English title',
+        slug_en: 'english-slug',
+        long_description_en: 'First English description',
+      })
+      const fetchAllPages = vi.fn().mockResolvedValue([row])
+      await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+      const updatedRow = {
+        ...row,
+        front_title_en: 'Second English title',
+        long_description_en: 'Second English description',
+      }
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([updatedRow]),
+        actionDatabaseId,
+      })
+
+      const [action] = await findAllActions('fr')
+      const translations = await prisma.actionTranslation.findMany({
+        where: { actionId: action.id, locale: 'en' },
+      })
+      expect(translations).toHaveLength(1)
+      expect(translations[0]).toMatchObject({
+        title: 'Second English title',
+        longDescription: 'Second English description',
+      })
+    })
+
+    it('deletes the English translation when Notion clears the _en fields', async () => {
+      const row = buildNotionRow({
+        slug: 'my-slug',
+        front_title_en: 'English title',
+        slug_en: 'english-slug',
+        long_description_en: 'English description',
+      })
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([row]),
+        actionDatabaseId,
+      })
+      const [createdAction] = await findAllActions('fr')
+      expect(await findActionTranslation(createdAction.id, 'en')).not.toBeNull()
+
+      const clearedRow = {
+        ...row,
+        front_title_en: '',
+        slug_en: '',
+        long_description_en: '',
+      }
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([clearedRow]),
+        actionDatabaseId,
+      })
+
+      const [action] = await findAllActions('fr')
+      expect(await findActionTranslation(action.id, 'en')).toBeNull()
+      // French translation is untouched
+      expect(await findActionTranslation(action.id, 'fr')).not.toBeNull()
+    })
+
+    it('only deletes the English translation when all required fields are missing, not when it is merely partial', async () => {
+      const warnSpy = vi.spyOn(logger, 'warn')
+      const row = buildNotionRow({
+        slug: 'my-slug',
+        front_title_en: 'English title',
+        slug_en: 'english-slug',
+        long_description_en: 'English description',
+      })
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([row]),
+        actionDatabaseId,
+      })
+      const [createdAction] = await findAllActions('fr')
+      const original = await findActionTranslation(createdAction.id, 'en')
+      expect(original).not.toBeNull()
+
+      const partiallyClearedRow = {
+        ...row,
+        long_description_en: '',
+      }
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([partiallyClearedRow]),
+        actionDatabaseId,
+      })
+
+      const [action] = await findAllActions('fr')
+      expect(await findActionTranslation(action.id, 'en')).toEqual(original)
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('partial English translation'),
+        expect.objectContaining({ missing: 'long_description_en' })
+      )
+    })
+
+    it('does not delete the French or English translations when the row fails schema validation', async () => {
+      const row = buildNotionRow({
+        slug: 'my-slug',
+        front_title_en: 'English title',
+        slug_en: 'english-slug',
+        long_description_en: 'English description',
+      })
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([row]),
+        actionDatabaseId,
+      })
+      const [createdAction] = await findAllActions('fr')
+      const [originalFr, originalEn] = await Promise.all([
+        findActionTranslation(createdAction.id, 'fr'),
+        findActionTranslation(createdAction.id, 'en'),
+      ])
+      expect(originalFr).not.toBeNull()
+      expect(originalEn).not.toBeNull()
+
+      // media_fr fails schema validation, invalidating the whole row
+      const rowWithInvalidFrenchMedia = {
+        ...row,
+        media_fr: 'not a valid impact co2 script',
+      }
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([rowWithInvalidFrenchMedia]),
+        actionDatabaseId,
+      })
+
+      let [action] = await findAllActions('fr')
+      expect(await findActionTranslation(action.id, 'fr')).toEqual(originalFr)
+      expect(await findActionTranslation(action.id, 'en')).toEqual(originalEn)
+
+      // media_en fails schema validation, invalidating the whole row
+      const rowWithInvalidEnglishMedia = {
+        ...row,
+        media_en: 'not a valid impact co2 script',
+      }
+      await syncNotionActions({
+        fetchAllPages: vi.fn().mockResolvedValue([rowWithInvalidEnglishMedia]),
+        actionDatabaseId,
+      })
+      ;[action] = await findAllActions('fr')
+      expect(await findActionTranslation(action.id, 'fr')).toEqual(originalFr)
+      expect(await findActionTranslation(action.id, 'en')).toEqual(originalEn)
+    })
+
+    it('treats rows sharing the same English slug as untranslated, and warns', async () => {
+      const warnSpy = vi.spyOn(logger, 'warn')
+      const row1 = buildNotionRow({
+        slug: 'slug-one',
+        front_title_en: 'English title one',
+        slug_en: 'shared-english-slug',
+        long_description_en: 'English description one',
+      })
+      const row2 = buildNotionRow({
+        slug: 'slug-two',
+        front_title_en: 'English title two',
+        slug_en: 'shared-english-slug',
+        long_description_en: 'English description two',
+      })
+      const fetchAllPages = vi.fn().mockResolvedValue([row1, row2])
+
+      await syncNotionActions({ fetchAllPages, actionDatabaseId })
+
+      const actions = await findAllActions('fr')
+      expect(actions).toHaveLength(2)
+      const results = await Promise.all(
+        actions.map((action) => findActionTranslation(action.id, 'en'))
+      )
+      expect(results).toEqual([null, null])
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('shares its English slug'),
+        expect.objectContaining({ slugEn: 'shared-english-slug' })
+      )
+    })
   })
 })
 
@@ -310,9 +553,15 @@ function sorted<T extends { slug: string }>(arr: T[]): T[] {
 }
 
 async function findAllActionsGroupedByStatus() {
-  const allActions = await findAllActions({ includeDeleted: true })
+  const allActions = await findAllActions('fr', { includeDeleted: true })
   const grouped = Object.groupBy(allActions, (a) =>
     a.deletedAt ? 'deleted' : 'active'
   )
   return { active: grouped.active ?? [], deleted: grouped.deleted ?? [] }
+}
+
+function findActionTranslation(actionId: string, locale: 'fr' | 'en') {
+  return prisma.actionTranslation.findUnique({
+    where: { actionId_locale: { actionId, locale } },
+  })
 }

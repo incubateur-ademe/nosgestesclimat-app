@@ -46,7 +46,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { params } = props
   const { locale, actionSlug } = await params
 
-  const action = await getAction(actionSlug)
+  const action = await getAction(actionSlug, locale)
 
   if (!action) {
     return getMetadataObject({
@@ -72,7 +72,11 @@ export default async function ActionPage({ params, searchParams }: Props) {
   const resolvedSearchParams = await searchParams
   const from = resolvedSearchParams?.from
   const user = await getUserSession()
-  const action = await getPersonalizedActionDetails(actionSlug, user?.id)
+  const action = await getPersonalizedActionDetails(
+    actionSlug,
+    locale,
+    user?.id
+  )
 
   if (action?.theme.slug !== themeSlug) notFound()
 

@@ -35,20 +35,35 @@ export interface Action {
   deletedAt: Date | null
 }
 
-export interface NewAction {
+/** Translatable content for a single non-canonical locale */
+export interface ActionTranslationInput {
   title: string
   slug: string
-  trackingId: string
   longDescription: string
-  ruleId: string
-  themeId: string
   media?: ActionMedia | null
   tips?: string | null
   financialIncentives?: string | null
   furtherExplore?: string | null
   metadata?: SeoMetadata | null
+}
+
+export interface NewAction {
+  trackingId: string
+  ruleId: string
+  themeId: string
   publishedAt?: Date | null
   deletedAt?: Date | null
+  /**
+   * Translations for the action. French ('fr') is always required.
+   * - non nullish value is upserted
+   * - absent / `undefined` translation keeps the existing untouched
+   * - `null` deletes the translation
+   */
+  translations: Partial<
+    Record<ISOSupportedLanguage, ActionTranslationInput | null>
+  > & {
+    fr: ActionTranslationInput
+  }
 }
 
 export type UpdatedAction = Partial<NewAction>

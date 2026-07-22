@@ -11,7 +11,7 @@ export const themeFactory = Factory.define<Theme>(() => {
     slug: theme.slug,
     trackingId: theme.trackingId,
     title: theme.title,
-    language: theme.language,
+    locale: 'fr',
     emoji: theme.emoji,
   }
 })

@@ -9,7 +9,7 @@ describe('getPublicActionsCatalogue', () => {
   })
 
   it('returns no actions and no top actions when there are no actions', async () => {
-    const result = await getPublicActionsCatalogue()
+    const result = await getPublicActionsCatalogue('fr')
     expect(result.actions).toEqual([])
     expect(result.topActions).toEqual([])
   })
@@ -17,7 +17,7 @@ describe('getPublicActionsCatalogue', () => {
   it('returns all visible actions, without any personalization', async () => {
     const action = await actionFactory.published().create()
 
-    const result = await getPublicActionsCatalogue()
+    const result = await getPublicActionsCatalogue('fr')
     expect(result.actions).toEqual([expect.objectContaining({ id: action.id })])
   })
 
@@ -28,7 +28,7 @@ describe('getPublicActionsCatalogue', () => {
       actionFactory.published().params({ title: 'Middle action' }).create(),
     ])
 
-    const result = await getPublicActionsCatalogue()
+    const result = await getPublicActionsCatalogue('fr')
     expect(result.actions.map((a) => a.title)).toEqual([
       'Alpha action',
       'Middle action',
@@ -47,7 +47,7 @@ describe('getPublicActionsCatalogue', () => {
           .create(),
       ])
 
-      const result = await getPublicActionsCatalogue()
+      const result = await getPublicActionsCatalogue('fr')
 
       expect(result.topActions).toEqual([
         expect.objectContaining({ id: avion.id }),
@@ -62,7 +62,7 @@ describe('getPublicActionsCatalogue', () => {
         .params({ slug: 'limiter-avion' })
         .create()
 
-      const result = await getPublicActionsCatalogue()
+      const result = await getPublicActionsCatalogue('fr')
 
       expect(result.topActions).toEqual([
         expect.objectContaining({ id: avion.id }),
@@ -77,10 +77,92 @@ describe('getPublicActionsCatalogue', () => {
       actionFactory.published().deleted().create(),
     ])
 
-    const result = await getPublicActionsCatalogue()
+    const result = await getPublicActionsCatalogue('fr')
     expect(result).toEqual({
       actions: [],
       topActions: [],
+    })
+  })
+
+  describe('when locale is "en"', () => {
+    it('hides actions with no English translation', async () => {
+      await actionFactory.published().create()
+
+      const result = await getPublicActionsCatalogue('en')
+
+      expect(result.actions).toEqual([])
+      expect(result.topActions).toEqual([])
+    })
+
+    it('includes actions with an English translation, using its content', async () => {
+      const media = {
+        type: 'image',
+        title: 'English media title',
+        src: 'https://example.com/image.jpg',
+        alt: 'alt text',
+      } as const
+      const metadata = {
+        title: 'English SEO title',
+        description: 'English SEO description',
+        jsonLd: { '@context': 'https://schema.org', '@graph': [] },
+      } as const
+      const action = await actionFactory
+        .published()
+        .withTranslations({
+          en: {
+            title: 'English title',
+            slug: 'english-slug',
+            longDescription: 'English description',
+            tips: 'English tips',
+            financialIncentives: 'English financial incentives',
+            furtherExplore: 'English further explore',
+            media,
+            metadata,
+          },
+        })
+        .create()
+      await actionFactory.published().create() // untranslated, must be excluded
+
+      const result = await getPublicActionsCatalogue('en')
+
+      expect(result.actions).toEqual([
+        expect.objectContaining({
+          id: action.id,
+          title: 'English title',
+          longDescription: 'English description',
+          tips: 'English tips',
+          financialIncentives: 'English financial incentives',
+          furtherExplore: 'English further explore',
+          media,
+          metadata,
+        }),
+      ])
+    })
+
+    it('highlights curated actions by their English slug', async () => {
+      const avion = await actionFactory
+        .published()
+        .params({ slug: 'limiter-avion' })
+        .withTranslations({
+          en: {
+            title: 'Limit flying',
+            slug: 'reduce-flying',
+            longDescription: 'English description',
+          },
+        })
+        .create()
+      // highlighted but untranslated: hidden from the English catalogue,
+      // including its top actions
+      await actionFactory
+        .published()
+        .params({ slug: 'limiter-viande' })
+        .create()
+
+      const result = await getPublicActionsCatalogue('en')
+
+      expect(result.topActions).toEqual([
+        expect.objectContaining({ id: avion.id, title: 'Limit flying' }),
+      ])
     })
   })
 })

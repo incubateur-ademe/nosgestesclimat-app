@@ -16,7 +16,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
   it('returns null status, no actions and no top actions when there are no actions', async () => {
     const user = await userFactory.create()
-    const result = await getPersonalizedActionsCatalogue(user.id)
+    const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
     expect(result.assessmentStatus).toBeNull()
     expect(result.actions).toEqual([])
     expect(result.topActions).toEqual([])
@@ -27,7 +27,7 @@ describe('getPersonalizedActionsCatalogue', () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
 
-      const result = await getPersonalizedActionsCatalogue(user.id)
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
         assessmentStatus: null,
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
@@ -42,7 +42,7 @@ describe('getPersonalizedActionsCatalogue', () => {
       const user = await userFactory.create()
       await simulationFactory.completed().params({ userId: user.id }).create()
 
-      const result = await getPersonalizedActionsCatalogue(user.id)
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
         assessmentStatus: null,
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
@@ -63,7 +63,7 @@ describe('getPersonalizedActionsCatalogue', () => {
           .withComputationStatus(status)
           .create()
 
-        const result = await getPersonalizedActionsCatalogue(user.id)
+        const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
         expect(result).toEqual({
           assessmentStatus: status,
           actions: [
@@ -109,7 +109,7 @@ describe('getPersonalizedActionsCatalogue', () => {
           .create(),
       ])
 
-      const result = await getPersonalizedActionsCatalogue(user.id)
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
         assessmentStatus: null,
         actions: expect.arrayContaining([
@@ -166,7 +166,7 @@ describe('getPersonalizedActionsCatalogue', () => {
             .create(),
         ])
 
-      const result = await getPersonalizedActionsCatalogue(user.id)
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
 
       expect(result).toEqual({
         assessmentStatus: 'completed',
@@ -217,7 +217,7 @@ describe('getPersonalizedActionsCatalogue', () => {
             .create(),
         ])
 
-      const result = await getPersonalizedActionsCatalogue(user.id)
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
 
       expect(result.topActions).toEqual([
         { ...first, assessment: firstAssessment, choice: null },
@@ -255,12 +255,80 @@ describe('getPersonalizedActionsCatalogue', () => {
           .create(),
       ])
 
-      const result = await getPersonalizedActionsCatalogue(user.id)
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
         assessmentStatus: 'completed',
         actions: [],
         topActions: [],
       })
+    })
+  })
+
+  describe('when locale is "en"', () => {
+    it('hides actions with no English translation', async () => {
+      await actionFactory.published().create()
+      const user = await userFactory.create()
+
+      const result = await getPersonalizedActionsCatalogue(user.id, 'en')
+
+      expect(result.actions).toEqual([])
+      expect(result.topActions).toEqual([])
+    })
+
+    it('includes actions with an English translation, using its content', async () => {
+      const media = {
+        type: 'image',
+        title: 'English media title',
+        src: 'https://example.com/image.jpg',
+        alt: 'alt text',
+      } as const
+      const metadata = {
+        title: 'English SEO title',
+        description: 'English SEO description',
+        jsonLd: { '@context': 'https://schema.org', '@graph': [] },
+      } as const
+      const action = await actionFactory
+        .published()
+        .withTranslations({
+          en: {
+            title: 'English title',
+            slug: 'english-slug',
+            longDescription: 'English description',
+            tips: 'English tips',
+            financialIncentives: 'English financial incentives',
+            furtherExplore: 'English further explore',
+            media,
+            metadata,
+          },
+        })
+        .create()
+      await actionFactory.published().create() // untranslated, must be excluded
+
+      const user = await userFactory.create()
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: user.id })
+        .create()
+      const assessment = await actionAssessmentFactory
+        .params({ simulationId: simulation.id, actionId: action.id })
+        .applicable({ impact: 500 })
+        .create()
+
+      const result = await getPersonalizedActionsCatalogue(user.id, 'en')
+
+      expect(result.actions).toEqual([
+        expect.objectContaining({
+          id: action.id,
+          title: 'English title',
+          longDescription: 'English description',
+          tips: 'English tips',
+          financialIncentives: 'English financial incentives',
+          furtherExplore: 'English further explore',
+          media,
+          metadata,
+          assessment,
+        }),
+      ])
     })
   })
 })

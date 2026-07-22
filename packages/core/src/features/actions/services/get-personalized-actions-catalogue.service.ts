@@ -1,17 +1,19 @@
+import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import { findLastSimulationComputationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import type { SimulationComputationStatus } from '../../simulation-computation/types/computation.ts'
 import { findAllVisiblePersonalizedActions } from '../repositories/actions.repository.ts'
 import type { PersonalizedAction } from '../types/action.ts'
 
 export const getPersonalizedActionsCatalogue = async (
-  userId: string | undefined
+  userId: string | undefined,
+  locale: ISOSupportedLanguage
 ): Promise<{
   assessmentStatus: SimulationComputationStatus | null
   actions: PersonalizedAction[]
   topActions: PersonalizedAction[]
 }> => {
   const [personalizedActions, lastComputation] = await Promise.all([
-    findAllVisiblePersonalizedActions(userId),
+    findAllVisiblePersonalizedActions(userId, locale),
     findLastSimulationComputationByUserId(userId),
   ])
 

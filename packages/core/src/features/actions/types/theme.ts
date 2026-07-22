@@ -14,6 +14,18 @@ export interface Theme {
   /** Human readable id for tracking purposes */
   trackingId: string
   title: string
-  language: ISOSupportedLanguage
+  locale: ISOSupportedLanguage
+  emoji: string
+}
+
+/** Persisted theme row, carrying every locale's title/slug as their own columns */
+export interface ThemeRow {
+  id: string
+  key: ThemeKey
+  slug: string
+  slugEn: string
+  trackingId: string
+  title: string
+  titleEn: string
   emoji: string
 }
