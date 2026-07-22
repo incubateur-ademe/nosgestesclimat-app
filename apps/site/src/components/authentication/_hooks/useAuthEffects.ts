@@ -37,9 +37,18 @@ function useVerifyEffect(
       .then(({ userId }) => {
         if (!cancelled) dispatch({ type: 'CODE_VALID', userId })
       })
-      .catch((error) => {
-        if (!cancelled)
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          // eslint-disable-next-line no-console
+          console.error(
+            '[useAuthEffects] verify error:',
+            error,
+            typeof error,
+            error instanceof Error ? error.message : '',
+            error && typeof error === 'object' ? Object.keys(error) : ''
+          )
           dispatch({ type: 'CODE_INVALID', reason: mapLoginError(error) })
+        }
       })
 
     return () => {
