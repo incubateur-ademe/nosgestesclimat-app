@@ -12,16 +12,18 @@ import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import { getActionAlternateLocales } from '@/services/actions/get-action-alternate-locales'
 import { getPersonalizedActionDetails } from '@/services/actions/get-personalized-action-details'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
-import { getActionAlternateLocales } from '@nosgestesclimat/core/features/actions/services/get-action-alternate-locales.service'
+import { toSearchParams } from '@/utils/nextjs/toSearchParams'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
@@ -49,7 +51,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const user = await getUserSession()
   const [action, alternateLocales] = await Promise.all([
     getPersonalizedActionDetails(actionSlug, locale, user?.id),
-    getActionAlternateLocales(actionSlug, locale),
+    getActionAlternateLocales(actionSlug),
   ])
 
   if (!action) {
@@ -85,13 +87,32 @@ export default async function ActionPage({ params, searchParams }: Props) {
   const resolvedSearchParams = await searchParams
   const from = resolvedSearchParams?.from
   const user = await getUserSession()
-  const action = await getPersonalizedActionDetails(
-    actionSlug,
-    locale,
-    user?.id
-  )
+  const [action, alternateLocales] = await Promise.all([
+    getPersonalizedActionDetails(actionSlug, locale, user?.id),
+    getActionAlternateLocales(actionSlug),
+  ])
 
-  if (action?.theme.slug !== themeSlug) notFound()
+  if (!action) {
+    // The slug may belong to another locale (e.g. a shared URL with the wrong
+    // language prefix): redirect to the localized path when a translation
+    // exists for the page locale
+    const alternate = alternateLocales[locale]
+
+    if (alternate) {
+      const search = toSearchParams(resolvedSearchParams).toString()
+
+      redirect(
+        getLocalizedPath(
+          locale,
+          `${ACTION_DETAIL_PATH(alternate.themeSlug, alternate.actionSlug)}${search ? `?${search}` : ''}`
+        )
+      )
+    }
+
+    notFound()
+  }
+
+  if (action.theme.slug !== themeSlug) notFound()
 
   const themeClasses = classNames[action.theme.key]
 

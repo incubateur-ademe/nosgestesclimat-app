@@ -156,8 +156,7 @@ export const findVisibleActionBySlug = async (
 }
 
 export const findVisibleActionAlternateLocalesBySlug = async (
-  slug: string,
-  locale: ISOSupportedLanguage
+  slug: string
 ): Promise<
   Partial<
     Record<ISOSupportedLanguage, { actionSlug: string; themeSlug: string }>
@@ -166,7 +165,9 @@ export const findVisibleActionAlternateLocalesBySlug = async (
   const dbAction = await prisma.action.findFirst({
     where: {
       ...getVisibleFilter(),
-      translations: { some: { locale, slug } },
+      // The slug is matched against every locale so callers can resolve an
+      // action from any language
+      translations: { some: { slug } },
     },
     select: {
       themeId: true,

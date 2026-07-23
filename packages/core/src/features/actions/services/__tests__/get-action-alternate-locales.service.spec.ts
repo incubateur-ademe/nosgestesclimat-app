@@ -12,7 +12,7 @@ describe('getActionAlternateLocales', () => {
   it('returns only the locales the action has a translation for', async () => {
     const action = await actionFactory.published().create()
 
-    const result = await getActionAlternateLocales(action.slug, 'fr')
+    const result = await getActionAlternateLocales(action.slug)
 
     expect(result).toEqual({
       fr: { actionSlug: action.slug, themeSlug: action.theme.slug },
@@ -31,7 +31,7 @@ describe('getActionAlternateLocales', () => {
       })
       .create()
 
-    const result = await getActionAlternateLocales(action.slug, 'fr')
+    const result = await getActionAlternateLocales(action.slug)
 
     const theme = themesById[action.theme.id]
 
@@ -53,7 +53,7 @@ describe('getActionAlternateLocales', () => {
       })
       .create()
 
-    const result = await getActionAlternateLocales('english-slug', 'en')
+    const result = await getActionAlternateLocales('english-slug')
 
     const theme = themesById[action.theme.id]
 
@@ -64,7 +64,7 @@ describe('getActionAlternateLocales', () => {
   })
 
   it('returns an empty object when no visible action matches the slug', async () => {
-    const result = await getActionAlternateLocales('does-not-exist', 'fr')
+    const result = await getActionAlternateLocales('does-not-exist')
 
     expect(result).toEqual({})
   })
@@ -76,7 +76,7 @@ describe('getActionAlternateLocales', () => {
   ])('returns an empty object when the action is %s', async (_, factory) => {
     const action = await factory().create()
 
-    const result = await getActionAlternateLocales(action.slug, 'fr')
+    const result = await getActionAlternateLocales(action.slug)
 
     expect(result).toEqual({})
   })
