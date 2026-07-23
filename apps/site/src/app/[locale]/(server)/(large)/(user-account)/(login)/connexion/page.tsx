@@ -18,6 +18,9 @@ export const generateMetadata = getCommonMetadata({
   description: t(
     'Connectez-vous à votre espace Nos Gestes Climat pour accéder à vos résultats et comparer vos empreintes carbone avec vos proches.'
   ),
+  alternates: {
+    canonical: '/connexion',
+  },
 })
 
 export default async function Connexion({ params }: DefaultPageProps) {

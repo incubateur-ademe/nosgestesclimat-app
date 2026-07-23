@@ -25,6 +25,9 @@ export async function generateMetadata({ params }: DefaultPageProps) {
     description: t(
       "Vos résultats de tests de notre calculateur d'empreinte carbone."
     ),
+    alternates: {
+      canonical: '/fin/eau',
+    },
     robots: noIndexObject,
   })
 }

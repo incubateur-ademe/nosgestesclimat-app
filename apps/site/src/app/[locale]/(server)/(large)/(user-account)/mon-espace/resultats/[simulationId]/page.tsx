@@ -6,10 +6,27 @@ import {
 } from '@/constants/urls/paths'
 import Breadcrumbs from '@/design-system/layout/Breadcrumbs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import { throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
 import { getSimulation } from '@/services/simulations/get-simulation'
 import type { DefaultPageProps } from '@/types'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: DefaultPageProps<{
+  params: { locale: string; simulationId: string }
+}>): Promise<Metadata> {
+  const { locale, simulationId } = await params
+
+  return {
+    alternates: buildAlternates({
+      locale,
+      canonical: `/mon-espace/resultats/${simulationId}`,
+    }),
+  }
+}
 
 export default async function DetailledResultsPage({
   params,

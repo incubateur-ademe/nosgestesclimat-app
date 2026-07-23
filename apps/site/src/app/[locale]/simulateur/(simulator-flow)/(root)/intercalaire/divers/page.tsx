@@ -23,6 +23,9 @@ export async function generateMetadata({
       'simulator.intercalaire.divers.meta.description',
       'Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.'
     ),
+    alternates: {
+      canonical: '/simulateur/intercalaire/divers',
+    },
     robots: noIndexObject,
   })
 }

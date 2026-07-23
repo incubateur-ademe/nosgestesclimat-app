@@ -23,6 +23,9 @@ export async function generateMetadata({
       'simulator.intercalaire.transport.meta.description',
       'Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.'
     ),
+    alternates: {
+      canonical: '/simulateur/intercalaire/transport',
+    },
     robots: noIndexObject,
   })
 }

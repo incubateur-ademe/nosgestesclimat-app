@@ -74,6 +74,48 @@ const buildURL = ({
 const buildAlternateUrl = (path: string, locale: Locale) =>
   `${BASE_URL}${getLocalizedPath(locale, path)}`
 
+/**
+ * Absolute-URL `alternates` metadata: canonical + hreflang languages
+ * (including x-default, derived from the default locale entry).
+ *
+ * Exported for pages that only need to declare alternates on top of
+ * metadata inherited from a parent layout.
+ */
+export const buildAlternates = ({
+  locale,
+  canonical,
+  languages,
+  locales = i18nConfig.locales,
+}: {
+  locale: Locale
+  canonical: string
+  /**
+   * Per-locale relative path for each hreflang alternate to emit.
+   * A locale absent from this map gets no hreflang tag.
+   * Defaults to auto generation based on locales and canonical path
+   */
+  languages?: Partial<Record<Locale, string>>
+  locales?: Locale[]
+}): NonNullable<Metadata['alternates']> => {
+  const languagesInput =
+    languages ?? buildLanguagesForLocales(locales, canonical)
+
+  const builtLanguages = Object.fromEntries(
+    Object.entries(languagesInput).map(([lang, path]) => [
+      lang,
+      buildAlternateUrl(path, lang as Locale),
+    ])
+  )
+
+  return {
+    canonical: buildAlternateUrl(canonical, locale),
+    languages: {
+      ...builtLanguages,
+      'x-default': builtLanguages[i18nConfig.defaultLocale],
+    },
+  }
+}
+
 export function getMetadataObject({
   title,
   description,
@@ -91,33 +133,14 @@ export function getMetadataObject({
     locale: locale ?? i18nConfig.defaultLocale,
   })
 
-  const definitiveAlternates: {
-    canonical?: string
-    languages?: Record<string, string>
-  } = {}
-
-  if (alternates) {
-    definitiveAlternates.canonical = buildAlternateUrl(
-      alternates.canonical,
-      locale
-    )
-
-    const languagesInput =
-      alternates.languages ??
-      buildLanguagesForLocales(locales, alternates.canonical)
-
-    const builtLanguages = Object.fromEntries(
-      Object.entries(languagesInput).map(([lang, path]) => [
-        lang,
-        buildAlternateUrl(path, lang as Locale),
-      ])
-    )
-
-    definitiveAlternates.languages = {
-      ...builtLanguages,
-      'x-default': builtLanguages[i18nConfig.defaultLocale],
-    }
-  }
+  const definitiveAlternates = alternates
+    ? buildAlternates({
+        locale,
+        canonical: alternates.canonical,
+        languages: alternates.languages,
+        locales,
+      })
+    : {}
 
   return {
     title,

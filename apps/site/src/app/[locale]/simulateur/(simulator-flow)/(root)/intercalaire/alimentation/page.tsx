@@ -23,6 +23,9 @@ export async function generateMetadata({
       'simulator.intercalaire.alimentation.meta.description',
       'Bravo, tu as terminé la section alimentation. Découvre l’impact carbone de différents repas.'
     ),
+    alternates: {
+      canonical: '/simulateur/intercalaire/alimentation',
+    },
     robots: noIndexObject,
   })
 }
