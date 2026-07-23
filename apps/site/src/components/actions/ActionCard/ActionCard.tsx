@@ -1,5 +1,6 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
@@ -43,9 +44,11 @@ export default function ActionCard({
   ...props
 }: ActionCardProps) {
   const rankEmoji = rankToEmoji(rank)
-  const href = from
-    ? `${ACTION_DETAIL_PATH(action.theme.slug, action.slug)}?from=${from}`
-    : ACTION_DETAIL_PATH(action.theme.slug, action.slug)
+  const actionPath = getLocalizedPath(
+    action.language,
+    ACTION_DETAIL_PATH(action.theme.slug, action.slug)
+  )
+  const href = from ? `${actionPath}?from=${from}` : actionPath
   return (
     <article
       {...props}

@@ -1,10 +1,11 @@
 import { noIndexObject } from '@/constants/metadata'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import type { Metadata } from 'next'
 
 interface Props {
-  locale: string
+  locale: Locale
   title?: string
   description: string
   params?: Record<string, string>
@@ -47,14 +48,11 @@ const BASE_URL =
     ? 'http://localhost:3000'
     : 'https://nosgestesclimat.fr'
 
-const getLocalePrefix = (locale: string) =>
-  locale === 'fr' ? '' : `/${locale}`
-
 const buildURL = ({
   params,
   searchParams,
   locale,
-}: Pick<Props, 'params' | 'searchParams'> & { locale: string }) => {
+}: Pick<Props, 'params' | 'searchParams'> & { locale: Locale }) => {
   const paramsPart =
     params && Object.values(params).length > 0
       ? Object.values(params).map((value) => `/${value}`)
@@ -70,11 +68,11 @@ const buildURL = ({
         )}`
       : ''
 
-  return `${BASE_URL}${getLocalePrefix(locale)}${paramsPart}${searchParamsPart}`
+  return `${BASE_URL}${getLocalizedPath(locale, `${paramsPart}${searchParamsPart}`)}`
 }
 
-const buildAlternateUrl = (path: string, locale: string) =>
-  `${BASE_URL}${getLocalePrefix(locale)}${path}`
+const buildAlternateUrl = (path: string, locale: Locale) =>
+  `${BASE_URL}${getLocalizedPath(locale, path)}`
 
 export function getMetadataObject({
   title,
@@ -111,7 +109,7 @@ export function getMetadataObject({
     const builtLanguages = Object.fromEntries(
       Object.entries(languagesInput).map(([lang, path]) => [
         lang,
-        buildAlternateUrl(path, lang),
+        buildAlternateUrl(path, lang as Locale),
       ])
     )
 

@@ -15,7 +15,7 @@ export async function generateMetadata({
   const { t } = await getServerTranslation({ locale })
 
   return getMetadataObject({
-    locale,
+    locale: locale as Locale,
     title: t(
       'simulator.intercalaire.logement.meta.title',
       'Section logement terminée - Nos Gestes Climat'
