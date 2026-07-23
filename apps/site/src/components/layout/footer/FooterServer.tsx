@@ -20,14 +20,12 @@ interface Props {
   backgroundColor?: 'default' | 'white'
   locale: Locale
   className?: string
-  params?: Record<string, string>
 }
 
 export default async function FooterServer({
   backgroundColor = 'default',
   locale,
   className = '',
-  params,
 }: Props) {
   'use cache'
   cacheLife('days')
@@ -207,7 +205,7 @@ export default async function FooterServer({
             </div>
           ) : null}
         </div>
-        <LanguageSwitchButton params={params} />
+        <LanguageSwitchButton />
 
         <div className="flex flex-wrap justify-between gap-8 md:flex-row md:flex-nowrap">
           <div>

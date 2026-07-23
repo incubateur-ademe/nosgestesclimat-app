@@ -1,10 +1,11 @@
 import { noIndexObject } from '@/constants/metadata'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import type { Metadata } from 'next'
 
 interface Props {
-  locale: string
+  locale: Locale
   title?: string
   description: string
   params?: Record<string, string>
@@ -25,23 +26,33 @@ interface Props {
   }
   alternates?: {
     canonical: string
+    /**
+     * Per-locale relative path for each hreflang alternate to emit.
+     * A locale absent from this map gets no hreflang tag.
+     * Defaults to auto generation based on locales and canonical path
+     */
+    languages?: Partial<Record<Locale, string>>
   }
   locales?: Locale[]
 }
+
+/** Builds an `alternates.languages` map that points every given locale at the same relative path. */
+export const buildLanguagesForLocales = (
+  locales: Locale[],
+  path: string
+): Partial<Record<Locale, string>> =>
+  Object.fromEntries(locales.map((locale) => [locale, path]))
 
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : 'https://nosgestesclimat.fr'
 
-const getLocalePrefix = (locale: string) =>
-  locale === 'fr' ? '' : `/${locale}`
-
 const buildURL = ({
   params,
   searchParams,
   locale,
-}: Pick<Props, 'params' | 'searchParams'> & { locale: string }) => {
+}: Pick<Props, 'params' | 'searchParams'> & { locale: Locale }) => {
   const paramsPart =
     params && Object.values(params).length > 0
       ? Object.values(params).map((value) => `/${value}`)
@@ -57,11 +68,53 @@ const buildURL = ({
         )}`
       : ''
 
-  return `${BASE_URL}${getLocalePrefix(locale)}${paramsPart}${searchParamsPart}`
+  return `${BASE_URL}${getLocalizedPath(locale, `${paramsPart}${searchParamsPart}`)}`
 }
 
-const buildAlternateUrl = (path: string, locale: string) =>
-  `${BASE_URL}${getLocalePrefix(locale)}${path}`
+const buildAlternateUrl = (path: string, locale: Locale) =>
+  `${BASE_URL}${getLocalizedPath(locale, path)}`
+
+/**
+ * Absolute-URL `alternates` metadata: canonical + hreflang languages
+ * (including x-default, derived from the default locale entry).
+ *
+ * Exported for pages that only need to declare alternates on top of
+ * metadata inherited from a parent layout.
+ */
+export const buildAlternates = ({
+  locale,
+  canonical,
+  languages,
+  locales = i18nConfig.locales,
+}: {
+  locale: Locale
+  canonical: string
+  /**
+   * Per-locale relative path for each hreflang alternate to emit.
+   * A locale absent from this map gets no hreflang tag.
+   * Defaults to auto generation based on locales and canonical path
+   */
+  languages?: Partial<Record<Locale, string>>
+  locales?: Locale[]
+}): NonNullable<Metadata['alternates']> => {
+  const languagesInput =
+    languages ?? buildLanguagesForLocales(locales, canonical)
+
+  const builtLanguages = Object.fromEntries(
+    Object.entries(languagesInput).map(([lang, path]) => [
+      lang,
+      buildAlternateUrl(path, lang as Locale),
+    ])
+  )
+
+  return {
+    canonical: buildAlternateUrl(canonical, locale),
+    languages: {
+      ...builtLanguages,
+      'x-default': builtLanguages[i18nConfig.defaultLocale],
+    },
+  }
+}
 
 export function getMetadataObject({
   title,
@@ -71,7 +124,7 @@ export function getMetadataObject({
   image,
   alternates,
   locale,
-  locales: localesProp,
+  locales = i18nConfig.locales,
   ...props
 }: Props): Metadata {
   const url = buildURL({
@@ -80,33 +133,14 @@ export function getMetadataObject({
     locale: locale ?? i18nConfig.defaultLocale,
   })
 
-  const locales = localesProp ?? i18nConfig.locales
-
-  const definitiveAlternates: {
-    canonical?: string
-    languages?: Record<string, string>
-  } = {}
-
-  // Form canonical URL
-  if (alternates) {
-    definitiveAlternates.canonical = buildAlternateUrl(
-      alternates.canonical,
-      locale
-    )
-
-    // Only create hreflang if the page has an english version
-    if (locales.length > 1) {
-      // We set the alternates url for each language
-      const languages: Record<string, string> = {}
-
-      locales.map((locale) => {
-        languages[locale] = buildAlternateUrl(alternates.canonical, locale)
+  const definitiveAlternates = alternates
+    ? buildAlternates({
+        locale,
+        canonical: alternates.canonical,
+        languages: alternates.languages,
+        locales,
       })
-
-      // We return the alternates object with the canonical url and the languages alternates
-      definitiveAlternates.languages = languages
-    }
-  }
+    : {}
 
   return {
     title,

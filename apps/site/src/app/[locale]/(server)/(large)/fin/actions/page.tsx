@@ -23,15 +23,15 @@ export default async function ResultatsActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await getUserSession()
-  const flag = user && (await hasActionV2Rollout(user.id))
+  const flag = user && (await hasActionV2Rollout(user.id, locale))
 
   if (!flag) {
     return <LegacyResultatsActionsPage locale={locale} />
   }
 
   const [actionsCatalogue, themes] = await Promise.all([
-    getPersonalizedActionsCatalogue(user.id),
-    getThemes(),
+    getPersonalizedActionsCatalogue(user.id, locale),
+    getThemes(locale),
   ])
 
   return (
@@ -57,11 +57,7 @@ export default async function ResultatsActionsPage({
   )
 }
 
-async function LegacyResultatsActionsPage({
-  locale,
-}: {
-  locale: Locale
-}) {
+async function LegacyResultatsActionsPage({ locale }: { locale: Locale }) {
   const simulations = await getCompletedSimulations({ pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />

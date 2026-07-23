@@ -24,8 +24,8 @@ export default async function PublicActionsCatalogue({
 }: DefaultPageProps) {
   const { locale } = await params
   const [actionsCatalogue, themes] = await Promise.all([
-    getPublicActionsCatalogue(),
-    getThemes(),
+    getPublicActionsCatalogue(locale),
+    getThemes(locale),
   ])
 
   return (

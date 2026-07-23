@@ -22,6 +22,9 @@ export async function generateMetadata({
     )}, ${t('nouveautés - Nos Gestes Climat')}`,
     description: t('Découvrez les nouveautés du site Nos Gestes Climat.'),
     params: { slug },
+    alternates: {
+      canonical: `/nouveautes/${slug}`,
+    },
   })
 }
 

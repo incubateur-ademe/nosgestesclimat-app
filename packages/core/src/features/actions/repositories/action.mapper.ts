@@ -1,4 +1,5 @@
 import type { Prisma } from '../../../prisma/generated/client.ts'
+import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type {
   Action,
   ActionAssessment,
@@ -6,43 +7,53 @@ import type {
   PersonalizedAction,
   UpdatedAction,
 } from '../types/action.ts'
-import type { Theme } from '../types/theme.ts'
+import type { ThemeRow } from '../types/theme.ts'
 import {
-  mapSeoMetadata,
-  mapSeoMetadataToPrismaCreate,
-  mapSeoMetadataToPrismaUpsert,
-} from './seo-metadata.mapper.ts'
+  mapActionTranslationsToPrismaCreate,
+  mapActionTranslationsToPrismaUpdate,
+} from './action-translation.mapper.ts'
+import { mapSeoMetadata } from './seo-metadata.mapper.ts'
 
-interface DbActionWithRelations extends Prisma.ActionModel {
+interface DbActionIdentity {
+  id: string
+  trackingId: string
+  ruleId: string
+  publishedAt: Date | null
+  deletedAt: Date | null
+}
+
+interface DbActionTranslationWithSeoMetadata
+  extends Prisma.ActionTranslationModel {
   seoMetadata: Prisma.SeoMetadataModel | null
 }
 
 export const mapAction = (
-  dbAction: DbActionWithRelations,
-  theme: Theme
+  dbAction: DbActionIdentity,
+  translation: DbActionTranslationWithSeoMetadata,
+  theme: ThemeRow
 ): Action => ({
   id: dbAction.id,
-  title: dbAction.title,
-  slug: dbAction.slug,
+  title: translation.title,
+  slug: translation.slug,
   trackingId: dbAction.trackingId,
-  language: 'fr',
-  longDescription: dbAction.longDescription,
+  language: translation.locale as ISOSupportedLanguage,
+  longDescription: translation.longDescription,
   theme: {
     id: theme.id,
     key: theme.key,
-    slug: theme.slug,
+    slug: translation.locale === 'en' ? theme.slugEn : theme.slug,
     trackingId: theme.trackingId,
-    title: theme.title,
+    title: translation.locale === 'en' ? theme.titleEn : theme.title,
     emoji: theme.emoji,
   },
   ruleId: dbAction.ruleId,
-  media: dbAction.media
-    ? (dbAction.media as unknown as Action['media'])
+  media: translation.media
+    ? (translation.media as unknown as Action['media'])
     : undefined,
-  tips: dbAction.tips ?? undefined,
-  financialIncentives: dbAction.financialIncentives ?? undefined,
-  furtherExplore: dbAction.furtherExplore ?? undefined,
-  metadata: mapSeoMetadata(dbAction.seoMetadata),
+  tips: translation.tips ?? undefined,
+  financialIncentives: translation.financialIncentives ?? undefined,
+  furtherExplore: translation.furtherExplore ?? undefined,
+  metadata: mapSeoMetadata(translation.seoMetadata),
   publishedAt: dbAction.publishedAt,
   deletedAt: dbAction.deletedAt,
 })
@@ -50,39 +61,38 @@ export const mapAction = (
 export const mapNewActionToPrisma = (
   action: NewAction
 ): Prisma.ActionCreateInput => ({
-  title: action.title,
-  slug: action.slug,
+  title: action.translations.fr.title,
+  slug: action.translations.fr.slug,
   trackingId: action.trackingId,
-  longDescription: action.longDescription,
+  longDescription: action.translations.fr.longDescription,
   ruleId: action.ruleId,
   themeId: action.themeId,
-  media: action.media as Prisma.InputJsonValue | undefined,
-  tips: action.tips,
-  financialIncentives: action.financialIncentives,
-  furtherExplore: action.furtherExplore,
+  media: action.translations.fr.media as Prisma.InputJsonValue | undefined,
+  tips: action.translations.fr.tips,
+  financialIncentives: action.translations.fr.financialIncentives,
+  furtherExplore: action.translations.fr.furtherExplore,
   publishedAt: action.publishedAt,
   deletedAt: action.deletedAt,
-  seoMetadata: mapSeoMetadataToPrismaCreate(action.metadata),
+  translations: mapActionTranslationsToPrismaCreate(action.translations),
 })
 
 export const mapUpdatedActionToPrisma = (
+  id: string,
   data: UpdatedAction
 ): Prisma.ActionUpdateInput => ({
-  title: data.title,
-  slug: data.slug,
+  title: data.translations?.fr.title,
+  slug: data.translations?.fr.slug,
   trackingId: data.trackingId,
-  longDescription: data.longDescription,
+  longDescription: data.translations?.fr.longDescription,
   ruleId: data.ruleId,
   themeId: data.themeId,
-  media: data.media as unknown as Prisma.InputJsonValue,
-  tips: data.tips,
-  financialIncentives: data.financialIncentives,
-  furtherExplore: data.furtherExplore,
+  media: data.translations?.fr.media as unknown as Prisma.InputJsonValue,
+  tips: data.translations?.fr.tips,
+  financialIncentives: data.translations?.fr.financialIncentives,
+  furtherExplore: data.translations?.fr.furtherExplore,
   publishedAt: data.publishedAt,
   deletedAt: data.deletedAt,
-  seoMetadata: data.metadata
-    ? mapSeoMetadataToPrismaUpsert(data.metadata)
-    : undefined,
+  translations: mapActionTranslationsToPrismaUpdate(id, data.translations),
 })
 
 export const mapPersonalizedAction = (

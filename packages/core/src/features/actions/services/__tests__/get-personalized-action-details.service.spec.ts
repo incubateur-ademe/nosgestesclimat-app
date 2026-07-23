@@ -18,7 +18,7 @@ describe('getPersonalizedActionDetails', () => {
     it('returns null when no action matches the slug', async () => {
       const user = await userFactory.create()
       expect(
-        await getPersonalizedActionDetails('non-existent', user.id)
+        await getPersonalizedActionDetails('non-existent', 'fr', user.id)
       ).toBeNull()
     })
 
@@ -30,7 +30,7 @@ describe('getPersonalizedActionDetails', () => {
       const user = await userFactory.create()
       const action = await factory().create()
       expect(
-        await getPersonalizedActionDetails(action.slug, user.id)
+        await getPersonalizedActionDetails(action.slug, 'fr', user.id)
       ).toBeNull()
     })
   })
@@ -39,7 +39,11 @@ describe('getPersonalizedActionDetails', () => {
     it('returns a PersonalizedAction without assessment when userId is undefined', async () => {
       const action = await actionFactory.published().create()
 
-      const result = await getPersonalizedActionDetails(action.slug, undefined)
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        undefined
+      )
 
       expect.assert(result)
       expect(result.assessment).toBeNull()
@@ -49,7 +53,11 @@ describe('getPersonalizedActionDetails', () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
 
-      const result = await getPersonalizedActionDetails(action.slug, user.id)
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
 
       expect.assert(result)
       expect(result.assessment).toBeNull()
@@ -60,7 +68,11 @@ describe('getPersonalizedActionDetails', () => {
       const user = await userFactory.create()
       await simulationFactory.completed().params({ userId: user.id }).create()
 
-      const result = await getPersonalizedActionDetails(action.slug, user.id)
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
 
       expect.assert(result)
       expect(result.assessment).toBeNull()
@@ -87,7 +99,11 @@ describe('getPersonalizedActionDetails', () => {
           .withComputationStatus(status)
           .create()
 
-        const result = await getPersonalizedActionDetails(action.slug, user.id)
+        const result = await getPersonalizedActionDetails(
+          action.slug,
+          'fr',
+          user.id
+        )
 
         expect.assert(result)
         expect(result.assessment).toBeNull()
@@ -108,7 +124,11 @@ describe('getPersonalizedActionDetails', () => {
         .params({ simulationId: simulation.id, actionId: action.id })
         .create()
 
-      const result = await getPersonalizedActionDetails(action.slug, user.id)
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
 
       expect(result).toEqual({
         ...action,
@@ -154,7 +174,11 @@ describe('getPersonalizedActionDetails', () => {
           .create(),
       ])
 
-      const result = await getPersonalizedActionDetails(action.slug, user.id)
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
 
       expect.assert(result)
       expect(result.assessment?.id).toBe(newerAssessment.id)
@@ -173,10 +197,87 @@ describe('getPersonalizedActionDetails', () => {
         .applicable({ impact: 500 })
         .create()
 
-      const result = await getPersonalizedActionDetails(action.slug, user.id)
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
 
       expect.assert(result)
       expect(result.assessment?.id).toBe(assessment.id)
+    })
+  })
+
+  describe('when locale is "en"', () => {
+    it('returns null when the action has no English translation', async () => {
+      const action = await actionFactory.published().create()
+      const user = await userFactory.create()
+
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'en',
+        user.id
+      )
+
+      expect(result).toBeNull()
+    })
+
+    it('returns the English content resolved from the translation, with assessment', async () => {
+      const media = {
+        type: 'image',
+        title: 'English media title',
+        src: 'https://example.com/image.jpg',
+        alt: 'alt text',
+      } as const
+      const metadata = {
+        title: 'English SEO title',
+        description: 'English SEO description',
+        jsonLd: { '@context': 'https://schema.org', '@graph': [] },
+      } as const
+      const action = await actionFactory
+        .published()
+        .withTranslations({
+          en: {
+            title: 'English title',
+            slug: 'english-slug',
+            longDescription: 'English description',
+            tips: 'English tips',
+            financialIncentives: 'English financial incentives',
+            furtherExplore: 'English further explore',
+            media,
+            metadata,
+          },
+        })
+        .create()
+
+      const user = await userFactory.create()
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: user.id })
+        .create()
+      const assessment = await actionAssessmentFactory
+        .params({ simulationId: simulation.id, actionId: action.id })
+        .applicable({ impact: 500 })
+        .create()
+
+      const result = await getPersonalizedActionDetails(
+        'english-slug',
+        'en',
+        user.id
+      )
+
+      expect(result).toMatchObject({
+        title: 'English title',
+        slug: 'english-slug',
+        longDescription: 'English description',
+        tips: 'English tips',
+        financialIncentives: 'English financial incentives',
+        furtherExplore: 'English further explore',
+        media,
+        metadata,
+        language: 'en',
+        assessment,
+      })
     })
   })
 })

@@ -91,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })) || []
 
-  const visibleActionSlugs = await findVisibleActionSlugs()
+  const visibleActionSlugs = await findVisibleActionSlugs('fr')
   const actionDetailUrls = visibleActionSlugs.map((action) => ({
     url: `https://nosgestesclimat.fr/actions/${action.themeSlug}/${action.slug}`,
     lastModified: new Date(),

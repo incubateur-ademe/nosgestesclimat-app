@@ -1,6 +1,7 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import type { Locale } from '@/i18nConfig'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
+import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
@@ -43,9 +44,15 @@ export default function ActionCard({
   ...props
 }: ActionCardProps) {
   const rankEmoji = rankToEmoji(rank)
-  const href = from
-    ? `${ACTION_DETAIL_PATH(action.theme.slug, action.slug)}?from=${from}`
-    : ACTION_DETAIL_PATH(action.theme.slug, action.slug)
+  const actionDetailPath = ACTION_DETAIL_PATH(action.theme.slug, action.slug)
+  // On an /en page, an unprefixed (fr) path would be redirected to /en by the
+  // locale middleware, so force the /fr prefix instead of relying on
+  // getLocalizedPath's "no prefix for the default locale" behavior.
+  const actionPath =
+    locale === LOCALE_EN_KEY && action.language === LOCALE_FR_KEY
+      ? `/${LOCALE_FR_KEY}${actionDetailPath}`
+      : getLocalizedPath(action.language, actionDetailPath)
+  const href = from ? `${actionPath}?from=${from}` : actionPath
   return (
     <article
       {...props}

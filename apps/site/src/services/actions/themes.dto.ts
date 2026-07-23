@@ -2,13 +2,13 @@ import type { Theme } from '@/types/themes'
 import type { Theme as ThemeEntity } from '@nosgestesclimat/core/features/actions/types/theme'
 
 export function toThemeDto(theme: ThemeEntity): Theme {
-  const { id, key, trackingId, title, language, emoji } = theme
+  const { id, key, trackingId, title, locale, emoji } = theme
   return {
     id,
     key,
     trackingId,
     title,
-    language,
+    locale,
     emoji,
   }
 }

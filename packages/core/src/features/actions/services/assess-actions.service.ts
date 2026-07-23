@@ -2,7 +2,7 @@ import type Engine from 'publicodes'
 import { log } from '../../logger/index.ts'
 import { ActionAssessmentPublicodesException } from '../exceptions/action-assessment.exception.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
-import { findAllActions } from '../repositories/actions.repository.ts'
+import { findActionRuleIds } from '../repositories/actions.repository.ts'
 import type { NewActionAssessment } from '../types/action.ts'
 
 const buildRuleIdToDottedName = (engine: Engine): Map<string, string> => {
@@ -22,7 +22,7 @@ export const assessActions = async (
   engine: Engine,
   simulationId: string
 ): Promise<void> => {
-  const actions = await findAllActions()
+  const actions = await findActionRuleIds()
 
   if (actions.length === 0) {
     throw new ActionAssessmentPublicodesException({

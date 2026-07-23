@@ -12,7 +12,7 @@ describe('toThemeDto', () => {
       key: theme.key,
       trackingId: theme.trackingId,
       title: theme.title,
-      language: theme.language,
+      locale: theme.locale,
       emoji: theme.emoji,
     })
   })
@@ -25,7 +25,6 @@ describe('toThemeDto', () => {
     expect(result.key).toBe(theme.key)
     expect(result.trackingId).toBe(theme.trackingId)
     expect(result.title).toBe(theme.title)
-    expect(result.language).toBe(theme.language)
-    expect(result.emoji).toBe(theme.emoji)
+    expect(result.locale).toBe(theme.locale)
   })
 })

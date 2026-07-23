@@ -12,16 +12,18 @@ import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { t } from '@/helpers/metadata/fakeMetadataT'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import { getActionAlternateLocales } from '@/services/actions/get-action-alternate-locales'
+import { getPersonalizedActionDetails } from '@/services/actions/get-personalized-action-details'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
-import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
-import { getPersonalizedActionDetails } from '@nosgestesclimat/core/features/actions/services/get-personalized-action-details.service'
+import { toSearchParams } from '@/utils/nextjs/toSearchParams'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
@@ -46,7 +48,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { params } = props
   const { locale, actionSlug } = await params
 
-  const action = await getAction(actionSlug)
+  const user = await getUserSession()
+  const { t } = await getServerTranslation({ locale })
+  const [action, alternateLocales] = await Promise.all([
+    getPersonalizedActionDetails(actionSlug, locale, user?.id),
+    getActionAlternateLocales(actionSlug),
+  ])
 
   if (!action) {
     return getMetadataObject({
@@ -57,12 +64,21 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     })
   }
 
+  const languages: Partial<Record<Locale, string>> = {}
+  for (const [loc, alternate] of Object.entries(alternateLocales)) {
+    languages[loc as Locale] = ACTION_DETAIL_PATH(
+      alternate.themeSlug,
+      alternate.actionSlug
+    )
+  }
+
   return getMetadataObject({
     locale,
     title: action.metadata.title ?? action.title,
     description: action.metadata.description ?? action.longDescription,
     alternates: {
       canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
+      languages,
     },
   })
 }
@@ -72,9 +88,32 @@ export default async function ActionPage({ params, searchParams }: Props) {
   const resolvedSearchParams = await searchParams
   const from = resolvedSearchParams?.from
   const user = await getUserSession()
-  const action = await getPersonalizedActionDetails(actionSlug, user?.id)
+  const [action, alternateLocales] = await Promise.all([
+    getPersonalizedActionDetails(actionSlug, locale, user?.id),
+    getActionAlternateLocales(actionSlug),
+  ])
 
-  if (action?.theme.slug !== themeSlug) notFound()
+  if (!action) {
+    // The slug may belong to another locale (e.g. a shared URL with the wrong
+    // language prefix): redirect to the localized path when a translation
+    // exists for the page locale
+    const alternate = alternateLocales[locale]
+
+    if (alternate) {
+      const search = toSearchParams(resolvedSearchParams).toString()
+
+      redirect(
+        getLocalizedPath(
+          locale,
+          `${ACTION_DETAIL_PATH(alternate.themeSlug, alternate.actionSlug)}${search ? `?${search}` : ''}`
+        )
+      )
+    }
+
+    notFound()
+  }
+
+  if (action.theme.slug !== themeSlug) notFound()
 
   const themeClasses = classNames[action.theme.key]
 

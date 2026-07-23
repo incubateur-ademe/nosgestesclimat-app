@@ -12,17 +12,7 @@ export const mapSeoMetadata = (
 
 export const mapSeoMetadataToPrismaCreate = (
   metadata?: SeoMetadata | null
-): { create: Prisma.SeoMetadataCreateWithoutActionInput } => ({
-  create: {
-    title: metadata?.title ?? null,
-    description: metadata?.description ?? null,
-    jsonLd: (metadata?.jsonLd as unknown as Prisma.InputJsonValue) ?? null,
-  },
-})
-
-export const mapSeoMetadataToPrismaUpdate = (
-  metadata?: SeoMetadata | null
-): { create: Prisma.SeoMetadataCreateWithoutActionInput } => ({
+): { create: Prisma.SeoMetadataCreateWithoutActionTranslationInput } => ({
   create: {
     title: metadata?.title ?? null,
     description: metadata?.description ?? null,
@@ -32,7 +22,7 @@ export const mapSeoMetadataToPrismaUpdate = (
 
 export const mapSeoMetadataToPrismaUpsert = (
   metadata?: SeoMetadata | null
-): { upsert: Prisma.SeoMetadataUpsertWithoutActionInput } => ({
+): { upsert: Prisma.SeoMetadataUpsertWithoutActionTranslationInput } => ({
   upsert: {
     ...mapSeoMetadataToPrismaCreate(metadata),
     update: {

@@ -1,4 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
+import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import { themesById } from '../data/themes/index.ts'
 import type {
   Action,
@@ -12,6 +13,8 @@ import {
   mapPersonalizedAction,
   mapUpdatedActionToPrisma,
 } from './action.mapper.ts'
+
+const defaultLocale = 'fr' satisfies ISOSupportedLanguage
 
 const getVisibleFilter = () => {
   const now = new Date()
@@ -27,69 +30,115 @@ const getVisibleFilter = () => {
   }
 }
 
-export const findAllActions = async ({
-  includeDeleted = false,
-}: { includeDeleted?: boolean } = {}): Promise<Action[]> => {
+export const findAllActions = async (
+  locale: ISOSupportedLanguage,
+  { includeDeleted = false }: { includeDeleted?: boolean } = {}
+): Promise<Action[]> => {
   const dbActions = await prisma.action.findMany({
     where: includeDeleted ? undefined : { deletedAt: null },
     include: {
-      seoMetadata: true,
+      translations: { where: { locale }, include: { seoMetadata: true } },
     },
   })
 
-  return dbActions.map((dbAction) => {
-    const theme = themesById[dbAction.themeId]
-    return mapAction(dbAction, theme)
+  return dbActions
+    .filter((dbAction) => dbAction.translations.length > 0)
+    .map((dbAction) => {
+      const theme = themesById[dbAction.themeId]
+      return mapAction(dbAction, dbAction.translations[0], theme)
+    })
+}
+
+export const findActionRuleIds = async (): Promise<
+  { id: string; ruleId: string }[]
+> => {
+  return prisma.action.findMany({
+    where: { deletedAt: null },
+    select: { id: true, ruleId: true },
   })
 }
 
-export const findVisibleActions = async ({
-  orderBy,
-}: { orderBy?: { title?: 'asc' | 'desc' } } = {}): Promise<Action[]> => {
+export const findVisibleActions = async (
+  locale: ISOSupportedLanguage,
+  {
+    orderBy,
+    fallbackToDefaultLocale = false,
+  }: {
+    orderBy?: { title?: 'asc' | 'desc' }
+    /**
+     * When true, actions missing a translation for `locale` fall back to their
+     * french content instead of being hidden.
+     */
+    fallbackToDefaultLocale?: boolean
+  }
+): Promise<Action[]> => {
+  const locales = fallbackToDefaultLocale
+    ? { in: [locale, defaultLocale] }
+    : locale
   const dbActions = await prisma.action.findMany({
     where: getVisibleFilter(),
-    orderBy: orderBy ? { title: orderBy.title } : undefined,
     include: {
-      seoMetadata: true,
+      translations: {
+        where: { locale: locales },
+        include: { seoMetadata: true },
+      },
     },
   })
 
-  return dbActions.map((dbAction) => {
+  const actions = dbActions.flatMap((dbAction) => {
+    const translation = fallbackToDefaultLocale
+      ? (dbAction.translations.find((t) => t.locale === locale) ??
+        dbAction.translations.find((t) => t.locale === defaultLocale))
+      : dbAction.translations[0]
+    if (!translation) return []
     const theme = themesById[dbAction.themeId]
-    return mapAction(dbAction, theme)
+    return mapAction(dbAction, translation, theme)
   })
+
+  if (orderBy?.title) {
+    actions.sort((a, b) =>
+      orderBy.title === 'desc'
+        ? b.title.localeCompare(a.title, locale)
+        : a.title.localeCompare(b.title, locale)
+    )
+  }
+
+  return actions
 }
 
-export const findVisibleActionSlugs = async (): Promise<
-  { slug: string; themeSlug: string }[]
-> => {
+export const findVisibleActionSlugs = async (
+  locale: ISOSupportedLanguage
+): Promise<{ slug: string; themeSlug: string }[]> => {
   const dbActions = await prisma.action.findMany({
     where: getVisibleFilter(),
     select: {
-      slug: true,
       themeId: true,
+      translations: { where: { locale }, select: { slug: true } },
     },
   })
 
-  return dbActions.map((dbAction) => {
-    const theme = themesById[dbAction.themeId]
-    return {
-      slug: dbAction.slug,
-      themeSlug: theme.slug,
-    }
-  })
+  return dbActions
+    .filter((dbAction) => dbAction.translations.length > 0)
+    .map((dbAction) => {
+      const theme = themesById[dbAction.themeId]
+      return {
+        slug: dbAction.translations[0].slug,
+        themeSlug: locale === 'en' ? theme.slugEn : theme.slug,
+      }
+    })
 }
 
 export const findVisibleActionBySlug = async (
-  slug: string
+  slug: string,
+  locale: ISOSupportedLanguage
 ): Promise<Action | null> => {
-  const dbAction = await prisma.action.findUnique({
+  const dbAction = await prisma.action.findFirst({
     where: {
-      slug,
       ...getVisibleFilter(),
+      translations: { some: { locale, slug } },
     },
     include: {
-      seoMetadata: true,
+      translations: { where: { locale }, include: { seoMetadata: true } },
     },
   })
 
@@ -97,8 +146,52 @@ export const findVisibleActionBySlug = async (
     return null
   }
 
+  const translation = dbAction.translations[0]
+  if (!translation) {
+    return null
+  }
+
   const theme = themesById[dbAction.themeId]
-  return mapAction(dbAction, theme)
+  return mapAction(dbAction, translation, theme)
+}
+
+export const findVisibleActionAlternateLocalesBySlug = async (
+  slug: string
+): Promise<
+  Partial<
+    Record<ISOSupportedLanguage, { actionSlug: string; themeSlug: string }>
+  >
+> => {
+  const dbAction = await prisma.action.findFirst({
+    where: {
+      ...getVisibleFilter(),
+      // The slug is matched against every locale so callers can resolve an
+      // action from any language
+      translations: { some: { slug } },
+    },
+    select: {
+      themeId: true,
+      translations: { select: { locale: true, slug: true } },
+    },
+  })
+
+  if (!dbAction) {
+    return {}
+  }
+
+  const theme = themesById[dbAction.themeId]
+
+  return Object.fromEntries(
+    dbAction.translations.map((translation) => [
+      translation.locale,
+      {
+        actionSlug: translation.slug,
+        themeSlug: translation.locale === 'en' ? theme.slugEn : theme.slug,
+      },
+    ])
+  ) as Partial<
+    Record<ISOSupportedLanguage, { actionSlug: string; themeSlug: string }>
+  >
 }
 
 export const createManyActions = async (
@@ -118,7 +211,7 @@ export const updateAction = async (
 ): Promise<void> => {
   await prisma.action.update({
     where: { id },
-    data: mapUpdatedActionToPrisma(data),
+    data: mapUpdatedActionToPrisma(id, data),
   })
 }
 
@@ -136,10 +229,11 @@ export const deleteManyActions = async (ids: string[]): Promise<number> => {
 
 export const findVisiblePersonalizedActionBySlug = async (
   slug: string,
+  locale: ISOSupportedLanguage,
   userId: string | undefined
 ): Promise<PersonalizedAction | null> => {
   const [action, simulation] = await Promise.all([
-    findVisibleActionBySlug(slug),
+    findVisibleActionBySlug(slug, locale),
     findLastCompletedSimulationByUserId(userId),
   ])
 
@@ -159,10 +253,14 @@ export const findVisiblePersonalizedActionBySlug = async (
 }
 
 export const findAllVisiblePersonalizedActions = async (
-  userId: string | undefined
+  userId: string | undefined,
+  locale: ISOSupportedLanguage,
+  options: { fallbackToDefaultLocale?: boolean }
 ): Promise<PersonalizedAction[]> => {
   const [actions, simulation] = await Promise.all([
-    findVisibleActions(),
+    findVisibleActions(locale, {
+      fallbackToDefaultLocale: options.fallbackToDefaultLocale,
+    }),
     findLastCompletedSimulationByUserId(userId),
   ])
 
