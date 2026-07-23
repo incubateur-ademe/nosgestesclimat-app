@@ -24,10 +24,19 @@ export class UnknownCodeError extends Error {
 
 export type CodeError = InvalidCodeError | RateLimitedError | UnknownCodeError
 
+export type EmailError = RateLimitedError | UnknownCodeError
+
 export function isCodeError(error: unknown): error is CodeError {
   if (typeof error !== 'object' || error === null) return false
   const tag = (error as Record<string, unknown>)._tag
   return tag === 'invalid' || tag === 'rate_limited' || tag === 'unknown'
 }
 
-export type EmailError = { _tag: 'rate_limited' } | { _tag: 'unknown' }
+export function matchError<E extends { _tag: string }, R>(
+  error: E,
+  cases: { [K in E['_tag']]: (error: Extract<E, { _tag: K }>) => R }
+): R {
+  return (cases as unknown as Record<string, (error: E) => R>)[error._tag](
+    error
+  )
+}

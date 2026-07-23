@@ -1,8 +1,15 @@
 'use server'
 
 import { VERIFICATION_CODE_URL } from '@/constants/urls/main'
+import { TooManyRequestsError } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
+import {
+  RateLimitedError,
+  UnknownCodeError,
+  type EmailError,
+} from '@/types/auth-errors'
 import type { AuthenticationMode } from '@/types/authentication'
+import { err, ok, type Result } from 'neverthrow'
 
 export const createVerificationCode = async ({
   email,
@@ -12,14 +19,21 @@ export const createVerificationCode = async ({
   email: string
   mode?: AuthenticationMode
   locale?: string
-}) => {
+}): Promise<Result<{ expirationDate: string }, EmailError>> => {
   const params = new URLSearchParams()
   if (mode) params.set('mode', mode)
   if (locale) params.set('locale', locale)
   const qs = params.toString()
 
-  return await fetchServer<{ expirationDate: string }>(
-    `${VERIFICATION_CODE_URL}${qs ? `?${qs}` : ''}`,
-    { method: 'POST', body: { email } }
-  )
+  try {
+    const data = await fetchServer<{ expirationDate: string }>(
+      `${VERIFICATION_CODE_URL}${qs ? `?${qs}` : ''}`,
+      { method: 'POST', body: { email } }
+    )
+    return ok(data)
+  } catch (error) {
+    if (error instanceof TooManyRequestsError)
+      return err(new RateLimitedError())
+    return err(new UnknownCodeError())
+  }
 }

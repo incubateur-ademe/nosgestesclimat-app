@@ -1,3 +1,4 @@
+import { matchError } from '@/types/auth-errors'
 import type { AuthEvent, AuthPhase } from './types'
 
 export const initialAuthPhase: AuthPhase = { phase: 'idle', emailError: null }
@@ -69,11 +70,13 @@ export function authReducer(state: AuthPhase, event: AuthEvent): AuthPhase {
             ...state,
             isResending: false,
             resendError: event.reason,
-            cooldownUntil:
-              event.reason._tag === 'rate_limited' &&
-              event.cooldownUntil != null
-                ? event.cooldownUntil
-                : state.cooldownUntil,
+            cooldownUntil: matchError(event.reason, {
+              rate_limited: () =>
+                event.cooldownUntil != null
+                  ? event.cooldownUntil
+                  : state.cooldownUntil,
+              unknown: () => state.cooldownUntil,
+            }),
           }
         case 'GO_BACK':
           return { phase: 'idle', emailError: null }

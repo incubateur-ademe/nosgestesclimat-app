@@ -7,6 +7,7 @@ import { captureClickSubmitEmail } from '@/constants/tracking/pages/signin'
 import type { ButtonColor } from '@/design-system/buttons/Button'
 import Form from '@/design-system/form/Form'
 import EmailInput from '@/design-system/inputs/EmailInput'
+import { matchError } from '@/types/auth-errors'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
@@ -103,17 +104,18 @@ export default function SendVerificationCodeForm({
         error={formErrors.email?.message}
       />
 
-      {state.phase === 'idle' && state.emailError?._tag === 'rate_limited' && (
-        <p className="mt-4 text-sm text-red-800 dark:text-white" role="alert">
-          <Trans i18nKey="signIn.emailForm.error.rateLimited">
-            Un code vient d'être envoyé à cette adresse. Veuillez patienter avant
-            d'en demander un nouveau.
-          </Trans>
-        </p>
-      )}
-
-      {state.phase === 'idle' && state.emailError?._tag === 'unknown' && (
-        <DefaultSubmitErrorMessage className="mt-4 max-w-120" />
+      {state.phase === 'idle' && state.emailError && (
+        matchError(state.emailError, {
+          rate_limited: () => (
+            <p className="mt-4 text-sm text-red-800 dark:text-white" role="alert">
+              <Trans i18nKey="signIn.emailForm.error.rateLimited">
+                Un code vient d'être envoyé à cette adresse. Veuillez patienter avant
+                d'en demander un nouveau.
+              </Trans>
+            </p>
+          ),
+          unknown: () => <DefaultSubmitErrorMessage className="mt-4 max-w-120" />,
+        })
       )}
     </Form>
   )
