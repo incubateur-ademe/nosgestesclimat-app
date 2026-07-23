@@ -22,7 +22,7 @@
     "build:analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
     "start": "next start",
-    "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./worker/worker.ts",
+    "start:worker": "node --experimental-strip-types ./worker/worker.ts",
     "lint": "eslint",
     "typegen": "next typegen",
     "generate": "pnpm typegen",
