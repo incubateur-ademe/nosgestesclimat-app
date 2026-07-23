@@ -1,10 +1,6 @@
-import {
-  InvalidCodeError,
-  RateLimitedError,
-  UnknownCodeError,
-} from '@/types/auth-errors'
 import { describe, expect, it } from 'vitest'
 import { authReducer } from '../authMachine'
+import { InvalidCodeError, RateLimitedError, UnknownCodeError } from '../errors'
 import type { AuthEvent, AuthPhase } from '../types'
 
 const pending = {

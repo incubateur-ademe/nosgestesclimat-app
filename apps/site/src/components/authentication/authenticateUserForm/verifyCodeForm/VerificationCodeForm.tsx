@@ -7,7 +7,7 @@ import { defaultInputStyleClassNames } from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import { type ChangeEvent, type FormEvent, useCallback, useId, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { matchError } from '@/types/auth-errors'
+import { matchError } from '@/components/authentication/errors'
 import { useAuth } from '@/components/authentication/AuthProvider'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 

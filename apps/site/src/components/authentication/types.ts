@@ -1,6 +1,6 @@
-import type { CodeError, EmailError } from '@/types/auth-errors'
 import type { PosthogEvent } from '@/utils/analytics/trackEvent'
 import type { Result } from 'neverthrow'
+import type { CodeError, EmailError } from './errors'
 
 export type { CodeError, EmailError }
 

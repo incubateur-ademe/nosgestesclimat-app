@@ -5,10 +5,10 @@ import { useCallback, type Dispatch } from 'react'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import { useLocale } from '@/hooks/useLocale'
 import { createVerificationCode } from '@/services/auth/create-verification-code'
-import { matchError } from '@/types/auth-errors'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { formatEmail } from '@/utils/format/formatEmail'
 import { useMutation } from '@tanstack/react-query'
+import { matchError } from '../errors'
 
 import type { AuthEvent } from '../types'
 

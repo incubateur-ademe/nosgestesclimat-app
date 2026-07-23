@@ -1,5 +1,11 @@
 'use server'
 
+import {
+  InvalidCodeError,
+  RateLimitedError,
+  UnknownCodeError,
+  type CodeError,
+} from '@/components/authentication/errors'
 import { AUTHENTICATION_URL } from '@/constants/urls/main'
 import {
   ForbiddenError,
@@ -7,12 +13,6 @@ import {
   UnauthorizedError,
 } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
-import {
-  InvalidCodeError,
-  RateLimitedError,
-  UnknownCodeError,
-  type CodeError,
-} from '@/types/auth-errors'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import { err, ok, type Result } from 'neverthrow'
 import { revalidatePath } from 'next/cache'

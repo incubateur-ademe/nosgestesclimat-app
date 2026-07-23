@@ -1,13 +1,13 @@
 'use server'
 
-import { VERIFICATION_CODE_URL } from '@/constants/urls/main'
-import { TooManyRequestsError } from '@/helpers/server/error'
-import { fetchServer } from '@/helpers/server/fetchServer'
 import {
   RateLimitedError,
   UnknownCodeError,
   type EmailError,
-} from '@/types/auth-errors'
+} from '@/components/authentication/errors'
+import { VERIFICATION_CODE_URL } from '@/constants/urls/main'
+import { TooManyRequestsError } from '@/helpers/server/error'
+import { fetchServer } from '@/helpers/server/fetchServer'
 import type { AuthenticationMode } from '@/types/authentication'
 import { err, ok, type Result } from 'neverthrow'
 

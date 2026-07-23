@@ -1,4 +1,4 @@
-import { matchError } from '@/types/auth-errors'
+import { matchError } from './errors'
 import type { AuthEvent, AuthPhase } from './types'
 
 export const initialAuthPhase: AuthPhase = { phase: 'idle', emailError: null }

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAuth } from '@/components/authentication/AuthProvider'
 import type { AuthContextValue } from '@/components/authentication/AuthProvider'
-import { UnknownCodeError } from '@/types/auth-errors'
+import { UnknownCodeError } from '@/components/authentication/errors'
 import NotReceived from '../NotReceived'
 
 vi.mock('@/components/authentication/AuthProvider', async () => {
