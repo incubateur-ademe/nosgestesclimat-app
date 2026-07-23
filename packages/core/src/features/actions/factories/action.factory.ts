@@ -97,16 +97,9 @@ export const actionFactory = ActionFactory.define(
       await prisma.action.create({
         data: {
           id: data.id,
-          title: data.title,
-          slug: data.slug,
           trackingId: data.trackingId,
-          longDescription: data.longDescription,
           themeId: data.theme.id,
           ruleId: data.ruleId,
-          media: data.media as unknown as object,
-          tips: data.tips ?? null,
-          financialIncentives: data.financialIncentives ?? null,
-          furtherExplore: data.furtherExplore ?? null,
           publishedAt: data.publishedAt,
           deletedAt: data.deletedAt,
           translations: mapActionTranslationsToPrismaCreate(translations),
