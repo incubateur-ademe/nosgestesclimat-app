@@ -16,6 +16,10 @@ const seed = async () => {
     Array.from({ length: 5 }, (_, i) =>
       actionFactory
         .published()
+        .params({
+          title: `Action en français ${i + 1}`,
+          slug: `action-francais-${i + 1}`,
+        })
         .withTranslations({
           en: {
             title: `English action ${i + 1}`,
