@@ -42,7 +42,7 @@ export default function AuthenticateUserForm({
   const { mutateAsync } = useLogin()
 
   const verify = useCallback(
-    async (email: string, code: string) => mutateAsync({ email, code }),
+    (email: string, code: string) => mutateAsync({ email, code }),
     [mutateAsync]
   )
 
