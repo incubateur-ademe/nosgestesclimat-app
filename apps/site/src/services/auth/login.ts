@@ -7,7 +7,12 @@ import {
   UnauthorizedError,
 } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
-import type { CodeError } from '@/types/auth-errors'
+import {
+  InvalidCodeError,
+  RateLimitedError,
+  UnknownCodeError,
+  type CodeError,
+} from '@/types/auth-errors'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import { err, ok, type Result } from 'neverthrow'
 import { revalidatePath } from 'next/cache'
@@ -44,10 +49,10 @@ export const login = async ({
 
     return ok({ ...data, userId: data.id })
   } catch (error) {
-    if (error instanceof UnauthorizedError) return err({ _tag: 'invalid' })
-    if (error instanceof ForbiddenError) return err({ _tag: 'invalid' })
+    if (error instanceof UnauthorizedError) return err(new InvalidCodeError())
+    if (error instanceof ForbiddenError) return err(new InvalidCodeError())
     if (error instanceof TooManyRequestsError)
-      return err({ _tag: 'rate_limited' })
-    return err({ _tag: 'unknown' })
+      return err(new RateLimitedError())
+    return err(new UnknownCodeError())
   }
 }

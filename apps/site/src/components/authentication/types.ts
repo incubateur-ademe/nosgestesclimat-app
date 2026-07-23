@@ -1,5 +1,6 @@
 import type { CodeError, EmailError } from '@/types/auth-errors'
 import type { PosthogEvent } from '@/utils/analytics/trackEvent'
+import type { Result } from 'neverthrow'
 
 export type { CodeError, EmailError }
 
@@ -66,4 +67,4 @@ export type Tracker = PosthogEvent
 export type VerifyStrategy = (
   email: string,
   code: string
-) => Promise<{ userId: string }>
+) => Promise<Result<{ userId: string; id: string }, CodeError>>

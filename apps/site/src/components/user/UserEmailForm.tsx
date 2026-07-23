@@ -11,6 +11,7 @@ import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
+import { ok } from 'neverthrow'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState, type ReactNode } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
@@ -43,7 +44,7 @@ export default function UserEmailForm({
   const verify = useCallback(
     async (email: string, code: string) => {
       const r = await updateEmail({ email, code })
-      return { userId: r.userId }
+      return ok({ userId: r.userId, id: r.userId })
     },
     [updateEmail]
   )

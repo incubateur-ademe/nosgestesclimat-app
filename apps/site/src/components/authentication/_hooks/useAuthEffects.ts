@@ -10,7 +10,6 @@ import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
-import type { CodeError } from '@/types/auth-errors'
 import type {
   AuthEvent,
   AuthPhase,
@@ -33,18 +32,14 @@ function useVerifyEffect(
 
     let cancelled = false
 
-    void verify(verificationEmail, verificationCode)
-      .then(({ userId }) => {
-        if (!cancelled) dispatch({ type: 'CODE_VALID', userId })
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return
-        const reason: CodeError =
-          error && typeof error === 'object' && '_tag' in error
-            ? (error as CodeError)
-            : { _tag: 'unknown' }
-        dispatch({ type: 'CODE_INVALID', reason })
-      })
+    void verify(verificationEmail, verificationCode).then((result) => {
+      if (cancelled) return
+      if (result.isOk()) {
+        dispatch({ type: 'CODE_VALID', userId: result.value.userId })
+      } else {
+        dispatch({ type: 'CODE_INVALID', reason: result.error })
+      }
+    })
 
     return () => {
       cancelled = true
