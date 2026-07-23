@@ -332,7 +332,9 @@ describe('syncNotionActions', () => {
       expect(await findActionTranslation(action.id, 'en')).toBeNull()
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('partial English translation'),
-        expect.objectContaining({ missing: 'long_description_en' })
+        expect.objectContaining({
+          missing: 'front_title_en, slug_en',
+        })
       )
     })
 
@@ -437,7 +439,9 @@ describe('syncNotionActions', () => {
       expect(await findActionTranslation(action.id, 'en')).toEqual(original)
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('partial English translation'),
-        expect.objectContaining({ missing: 'long_description_en' })
+        expect.objectContaining({
+          missing: 'front_title_en, slug_en',
+        })
       )
     })
 

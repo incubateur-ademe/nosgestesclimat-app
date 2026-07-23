@@ -460,6 +460,13 @@ function findDuplicatedEnglishSlugs(rows: NotionActionRow[]): Set<string> {
   return duplicated
 }
 
+/**
+ * When:
+ * 1. all required fields are present, return the english translation
+ * 2. some required fields are missing, return `undefined` to keep previous translation untouched
+ * 3. all required fields are missing, return `null` to remove previous translation
+ * 4. some slug is duplicated, return `undefined` to keep everything untouched and fix it manually
+ */
 function extractEnglishTranslation(
   row: NotionActionRow,
   duplicatedEnglishSlugs: Set<string>
@@ -477,8 +484,6 @@ function extractEnglishTranslation(
       `Row "${row.slug}" shares its English slug "${slug}" with another row and will be treated as untranslated`,
       { slug: row.slug, slugEn: slug }
     )
-    // Undefined (not null) leaves any previously synced English translation
-    // untouched, see the partial-translation case below.
     return undefined
   }
 
@@ -487,16 +492,16 @@ function extractEnglishTranslation(
       `Row "${row.slug}" has a partial English translation and will be treated as untranslated`,
       {
         slug: row.slug,
-        missing: !title
-          ? 'front_title_en'
-          : !slug
-            ? 'slug_en'
-            : 'long_description_en',
+        missing: [
+          ['front_title_en', title],
+          ['slug_en', slug],
+          ['long_description_en', longDescription],
+        ]
+          .filter(([_, v]) => !!v)
+          .map(([k]) => k)
+          .join(', '),
       }
     )
-    // Undefined (not null) leaves any previously synced English translation
-    // untouched: a partial row is likely mid-edit in Notion, not an
-    // intentional clear, so it shouldn't delete existing data.
     return undefined
   }
 
