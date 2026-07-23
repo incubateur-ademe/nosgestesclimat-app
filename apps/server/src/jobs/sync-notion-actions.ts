@@ -72,6 +72,20 @@ const themeIdByNotionOption = {
   Divers: misc.id,
 } as const satisfies Record<ThemeNotionOption, string>
 
+const MediaNotionRowSchema = v.pipe(
+  v.string(),
+  v.rawTransform((ctx) => {
+    const result = parseMedia(ctx.dataset.value)
+    if (!result.success) {
+      ctx.addIssue({
+        message: `Invalid media: ${result.error}`,
+      })
+      return ctx.NEVER
+    }
+    return result.data
+  })
+)
+
 export const NotionActionRowSchema = v.pipe(
   v.object({
     ID: v.union([v.number(), v.pipe(v.string(), v.toNumber())]),
@@ -86,21 +100,7 @@ export const NotionActionRowSchema = v.pipe(
     tracking_id: v.pipe(trimmedLowercaseString, trackingIdSchema),
     front_title_fr: trimmedString,
     long_description_fr: trimmedString,
-    media_fr: nullishString(
-      v.pipe(
-        v.string(),
-        v.rawTransform((ctx) => {
-          const result = parseMedia(ctx.dataset.value)
-          if (!result.success) {
-            ctx.addIssue({
-              message: `Invalid media: ${result.error}`,
-            })
-            return ctx.NEVER
-          }
-          return result.data
-        })
-      )
-    ),
+    media_fr: nullishString(MediaNotionRowSchema),
     media_title_fr: nullishTrimmedString,
     tips_fr: nullishTrimmedString,
     financial_incentives_fr: nullishTrimmedString,
@@ -111,21 +111,7 @@ export const NotionActionRowSchema = v.pipe(
     front_title_en: nullishTrimmedString,
     slug_en: nullishString(v.pipe(trimmedLowercaseString, v.slug())),
     long_description_en: nullishTrimmedString,
-    media_en: nullishString(
-      v.pipe(
-        v.string(),
-        v.rawTransform((ctx) => {
-          const result = parseMedia(ctx.dataset.value)
-          if (!result.success) {
-            ctx.addIssue({
-              message: `Invalid media: ${result.error}`,
-            })
-            return ctx.NEVER
-          }
-          return result.data
-        })
-      )
-    ),
+    media_en: nullishString(MediaNotionRowSchema),
     media_title_en: nullishTrimmedString,
     tips_en: nullishTrimmedString,
     financial_incentives_en: nullishTrimmedString,
