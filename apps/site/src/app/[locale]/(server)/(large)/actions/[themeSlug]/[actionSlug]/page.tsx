@@ -12,8 +12,8 @@ import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
-import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import { getActionAlternateLocales } from '@/services/actions/get-action-alternate-locales'
@@ -49,6 +49,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { locale, actionSlug } = await params
 
   const user = await getUserSession()
+  const { t } = await getServerTranslation({ locale })
   const [action, alternateLocales] = await Promise.all([
     getPersonalizedActionDetails(actionSlug, locale, user?.id),
     getActionAlternateLocales(actionSlug),
