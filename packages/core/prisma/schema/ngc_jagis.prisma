@@ -42,6 +42,7 @@ model ActionTranslation {
 
   @@unique([actionId, locale])
   @@unique([locale, slug])
+  @@index([slug])
   @@schema("ngc")
 }
 
