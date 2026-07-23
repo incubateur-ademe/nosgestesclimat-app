@@ -82,12 +82,12 @@ describe('authReducer', () => {
     it('ignores all non-SUBMIT_EMAIL events and stays idle', () => {
       const ignoredEvents: AuthEvent[] = [
         { type: 'EMAIL_SENT', pending, cooldownUntil: cooldown },
-        { type: 'EMAIL_ERROR', reason: 'unknown' },
+        { type: 'EMAIL_ERROR', reason: { _tag: 'unknown' } },
         { type: 'CODE_VALID', userId: 'u1' },
-        { type: 'CODE_INVALID', reason: 'invalid' },
+        { type: 'CODE_INVALID', reason: { _tag: 'invalid' } },
         { type: 'RESEND_CODE' },
         { type: 'CODE_RESENT', pending, cooldownUntil: cooldown },
-        { type: 'CODE_RESEND_ERROR', reason: 'unknown' },
+        { type: 'CODE_RESEND_ERROR', reason: { _tag: 'unknown' } },
         { type: 'GO_BACK' },
         { type: 'CLEAR_CODE_ERROR' },
       ]
@@ -123,9 +123,12 @@ describe('authReducer', () => {
     it('returns to idle on EMAIL_ERROR', () => {
       const result = authReducer(state, {
         type: 'EMAIL_ERROR',
-        reason: 'rate_limited',
+        reason: { _tag: 'rate_limited' },
       })
-      expect(result).toEqual({ phase: 'idle', emailError: 'rate_limited' })
+      expect(result).toEqual({
+        phase: 'idle',
+        emailError: { _tag: 'rate_limited' },
+      })
     })
 
     it('returns to idle on GO_BACK', () => {
@@ -168,13 +171,15 @@ describe('authReducer', () => {
     it('sets isResending on RESEND_CODE and clears resendError', () => {
       const withError = {
         ...state,
-        resendError: 'unknown' as const,
-        codeError: 'invalid' as const,
+        resendError: { _tag: 'unknown' } as const,
+        codeError: { _tag: 'invalid' } as const,
       }
       const result = authReducer(withError, { type: 'RESEND_CODE' })
       expect((result as typeof withError).isResending).toBe(true)
       expect((result as typeof withError).resendError).toBeNull()
-      expect((result as typeof withError).codeError).toBe('invalid')
+      expect((result as typeof withError).codeError).toEqual({
+        _tag: 'invalid',
+      })
     })
 
     it('returns to code_sent with new pending on CODE_RESENT', () => {
@@ -202,10 +207,12 @@ describe('authReducer', () => {
       const resending = { ...state, isResending: true }
       const result = authReducer(resending, {
         type: 'CODE_RESEND_ERROR',
-        reason: 'rate_limited',
+        reason: { _tag: 'rate_limited' },
       })
       expect((result as typeof resending).isResending).toBe(false)
-      expect((result as typeof resending).resendError).toBe('rate_limited')
+      expect((result as typeof resending).resendError).toEqual({
+        _tag: 'rate_limited',
+      })
     })
 
     it('re-arms cooldown on CODE_RESEND_ERROR with rate_limited', () => {
@@ -213,14 +220,14 @@ describe('authReducer', () => {
       const newCooldown = Date.now() + 30000
       const result = authReducer(resending, {
         type: 'CODE_RESEND_ERROR',
-        reason: 'rate_limited',
+        reason: { _tag: 'rate_limited' },
         cooldownUntil: newCooldown,
       })
       expect((result as typeof resending).cooldownUntil).toBe(newCooldown)
     })
 
     it('clears codeError on CLEAR_CODE_ERROR', () => {
-      const withError = { ...state, codeError: 'invalid' as const }
+      const withError = { ...state, codeError: { _tag: 'invalid' } as const }
       const result = authReducer(withError, { type: 'CLEAR_CODE_ERROR' })
       expect((result as typeof withError).codeError).toBeNull()
     })
@@ -274,7 +281,7 @@ describe('authReducer', () => {
     it('returns to code_sent with codeError on CODE_INVALID', () => {
       const result = authReducer(state, {
         type: 'CODE_INVALID',
-        reason: 'invalid',
+        reason: { _tag: 'invalid' },
       })
       expect(result).toEqual({
         phase: 'code_sent',
@@ -282,7 +289,7 @@ describe('authReducer', () => {
         pending,
         cooldownUntil: cooldown,
         isResending: false,
-        codeError: 'invalid',
+        codeError: { _tag: 'invalid' },
         resendError: null,
       })
     })

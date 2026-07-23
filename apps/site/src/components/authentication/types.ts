@@ -1,13 +1,12 @@
+import type { CodeError, EmailError } from '@/types/auth-errors'
 import type { PosthogEvent } from '@/utils/analytics/trackEvent'
+
+export type { CodeError, EmailError }
 
 export interface PendingVerification {
   expirationDate: Date
   email: string
 }
-
-export type CodeError = 'invalid' | 'rate_limited' | 'unknown'
-
-export type EmailError = 'unknown' | 'rate_limited'
 
 export type AuthPhase =
   | { phase: 'idle'; emailError: EmailError | null }

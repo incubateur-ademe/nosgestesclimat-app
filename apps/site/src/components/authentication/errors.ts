@@ -2,19 +2,15 @@
 // from server actions once proper error handling is in place (Either monad,
 // discriminated union return types, etc.). instanceof doesn't survive
 // Next.js server action serialization to the client.
-import type { CodeError, EmailError } from './types'
+import type { EmailError } from '@/types/auth-errors'
 
-export function mapLoginError(error: unknown): CodeError {
-  if (error instanceof Error) {
-    if (error.message === 'Unauthorized') return 'invalid'
-    if (error.message === 'Too Many Requests') return 'rate_limited'
-  }
-  return 'unknown'
+function getErrorMessage(error: unknown): string | undefined {
+  if (error instanceof Error) return error.message
+  return (error as Record<string, unknown>)?.message as string | undefined
 }
 
 export function mapEmailError(error: unknown): EmailError {
-  if (error instanceof Error && error.message === 'Too Many Requests') {
-    return 'rate_limited'
-  }
-  return 'unknown'
+  if (getErrorMessage(error) === 'Too Many Requests')
+    return { _tag: 'rate_limited' }
+  return { _tag: 'unknown' }
 }

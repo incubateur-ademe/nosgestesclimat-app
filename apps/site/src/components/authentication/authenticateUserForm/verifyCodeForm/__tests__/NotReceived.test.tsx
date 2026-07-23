@@ -63,7 +63,7 @@ describe('NotReceived', () => {
         cooldownUntil: 0,
         isResending: false,
         codeError: null,
-        resendError: 'unknown',
+        resendError: { _tag: 'unknown' },
       },
     } as AuthContextValue)
 

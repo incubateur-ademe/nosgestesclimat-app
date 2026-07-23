@@ -69,7 +69,7 @@ export function useAuthCodeCreation({ dispatch }: UseAuthCodeCreationOptions) {
           type: 'CODE_RESEND_ERROR',
           reason,
           cooldownUntil:
-            reason === 'rate_limited' ? cooldownDeadline() : undefined,
+            reason._tag === 'rate_limited' ? cooldownDeadline() : undefined,
         })
       }
     },

@@ -76,9 +76,9 @@ export default function VerificationCodeForm() {
 
       {state.phase === 'code_sent' && state.codeError && (
         <p id="verification-error" className="mt-2 text-sm text-red-800 dark:text-white">
-          {state.codeError === 'invalid'
+          {state.codeError._tag === 'invalid'
             ? t('signIn.code.invalid', 'Le code est invalide')
-            : state.codeError === 'rate_limited'
+            : state.codeError._tag === 'rate_limited'
             ? t('signIn.code.rateLimited', 'Veuillez patienter un instant avant de réessayer.')
             : t('common.errors.errorHappened', 'Une erreur est survenue. Veuillez réessayer.')}
         </p>

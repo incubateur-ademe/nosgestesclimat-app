@@ -70,7 +70,8 @@ export function authReducer(state: AuthPhase, event: AuthEvent): AuthPhase {
             isResending: false,
             resendError: event.reason,
             cooldownUntil:
-              event.reason === 'rate_limited' && event.cooldownUntil != null
+              event.reason._tag === 'rate_limited' &&
+              event.cooldownUntil != null
                 ? event.cooldownUntil
                 : state.cooldownUntil,
           }

@@ -10,7 +10,7 @@ import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
-import { mapLoginError } from '../errors'
+import type { CodeError } from '@/types/auth-errors'
 import type {
   AuthEvent,
   AuthPhase,
@@ -37,9 +37,13 @@ function useVerifyEffect(
       .then(({ userId }) => {
         if (!cancelled) dispatch({ type: 'CODE_VALID', userId })
       })
-      .catch((error) => {
-        if (!cancelled)
-          dispatch({ type: 'CODE_INVALID', reason: mapLoginError(error) })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        const reason: CodeError =
+          error && typeof error === 'object' && '_tag' in error
+            ? (error as CodeError)
+            : { _tag: 'unknown' }
+        dispatch({ type: 'CODE_INVALID', reason })
       })
 
     return () => {

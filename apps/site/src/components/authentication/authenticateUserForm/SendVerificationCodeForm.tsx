@@ -103,7 +103,7 @@ export default function SendVerificationCodeForm({
         error={formErrors.email?.message}
       />
 
-      {state.phase === 'idle' && state.emailError === 'rate_limited' && (
+      {state.phase === 'idle' && state.emailError?._tag === 'rate_limited' && (
         <p className="mt-4 text-sm text-red-800 dark:text-white" role="alert">
           <Trans i18nKey="signIn.emailForm.error.rateLimited">
             Un code vient d'être envoyé à cette adresse. Veuillez patienter avant
@@ -112,7 +112,7 @@ export default function SendVerificationCodeForm({
         </p>
       )}
 
-      {state.phase === 'idle' && state.emailError === 'unknown' && (
+      {state.phase === 'idle' && state.emailError?._tag === 'unknown' && (
         <DefaultSubmitErrorMessage className="mt-4 max-w-120" />
       )}
     </Form>
