@@ -61,16 +61,9 @@ export const mapAction = (
 export const mapNewActionToPrisma = (
   action: NewAction
 ): Prisma.ActionCreateInput => ({
-  title: action.translations.fr.title,
-  slug: action.translations.fr.slug,
   trackingId: action.trackingId,
-  longDescription: action.translations.fr.longDescription,
   ruleId: action.ruleId,
   themeId: action.themeId,
-  media: action.translations.fr.media as Prisma.InputJsonValue | undefined,
-  tips: action.translations.fr.tips,
-  financialIncentives: action.translations.fr.financialIncentives,
-  furtherExplore: action.translations.fr.furtherExplore,
   publishedAt: action.publishedAt,
   deletedAt: action.deletedAt,
   translations: mapActionTranslationsToPrismaCreate(action.translations),
@@ -80,16 +73,9 @@ export const mapUpdatedActionToPrisma = (
   id: string,
   data: UpdatedAction
 ): Prisma.ActionUpdateInput => ({
-  title: data.translations?.fr.title,
-  slug: data.translations?.fr.slug,
   trackingId: data.trackingId,
-  longDescription: data.translations?.fr.longDescription,
   ruleId: data.ruleId,
   themeId: data.themeId,
-  media: data.translations?.fr.media as unknown as Prisma.InputJsonValue,
-  tips: data.translations?.fr.tips,
-  financialIncentives: data.translations?.fr.financialIncentives,
-  furtherExplore: data.translations?.fr.furtherExplore,
   publishedAt: data.publishedAt,
   deletedAt: data.deletedAt,
   translations: mapActionTranslationsToPrismaUpdate(id, data.translations),
