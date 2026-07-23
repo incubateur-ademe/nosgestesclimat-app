@@ -1,0 +1,100 @@
+#cloud-config
+# ⚠️  Ne pas éditer directement. Généré par ./generate-cloud-init.sh
+#     Template : cloud-init.tpl.yaml
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - nginx
+  - certbot
+  - python3-certbot-nginx
+
+write_files:
+  - path: /etc/nginx/sites-available/nosgestesclimat
+    permissions: '0644'
+    content: |
+      limit_req_zone $binary_remote_addr zone=web:10m rate=30r/s;
+      limit_req_status 429;
+
+      proxy_cache_path /var/cache/nginx levels=1:2
+                       keys_zone=ngc_cache:500m
+                       max_size=30g inactive=1d use_temp_path=off;
+
+      map $cookie_ngc_session $ngc_auth {
+          ""       "anon";
+          default  "auth";
+      }
+
+      upstream scalingo {
+          server __UPSTREAM__:443;
+          keepalive 64;
+      }
+
+      server {
+          listen 80 default_server;
+          listen [::]:80 default_server;
+          server_name _;
+
+          return 301 https://$host$request_uri;
+      }
+
+      server {
+          listen 443 ssl;
+          listen [::]:443 ssl;
+          server_name www.__DOMAIN__;
+
+          http2 on;
+
+          ssl_certificate     /etc/letsencrypt/live/__DOMAIN__/fullchain.pem;
+          ssl_certificate_key /etc/letsencrypt/live/__DOMAIN__/privkey.pem;
+
+          return 301 https://__DOMAIN__$request_uri;
+      }
+
+      server {
+          listen 443 ssl;
+          listen [::]:443 ssl;
+          server_name __DOMAIN__;
+
+          http2 on;
+
+          ssl_certificate     /etc/letsencrypt/live/__DOMAIN__/fullchain.pem;
+          ssl_certificate_key /etc/letsencrypt/live/__DOMAIN__/privkey.pem;
+
+          add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+          add_header X-Cache-Status $upstream_cache_status;
+
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto https;
+          proxy_cache ngc_cache;
+          proxy_cache_use_stale error timeout updating
+                              http_500 http_502 http_503 http_504;
+
+          location /_next/static/ {
+              proxy_pass https://scalingo;
+              proxy_cache_key "$scheme$request_method$host$request_uri";
+              proxy_cache_valid 200 365d;
+          }
+
+          location / {
+              proxy_pass https://scalingo;
+              limit_req zone=web burst=20 nodelay;
+
+              proxy_cache_key "$scheme$request_method$host$request_uri$ngc_auth";
+              proxy_cache_valid 200 60s;
+              proxy_cache_lock on;
+              proxy_cache_background_update on;
+          }
+      }
+
+runcmd:
+  - mkdir -p /var/cache/nginx
+  - chown -R www-data:www-data /var/cache/nginx
+  - ln -sf /etc/nginx/sites-available/nosgestesclimat /etc/nginx/sites-enabled/
+  - rm -f /etc/nginx/sites-enabled/default
+  - ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw --force enable
+  - echo "✅ Nginx config prête (Nginx à l'arrêt — certificat manquant)."
+  - echo "   certbot certonly --manual --preferred-challenges dns -d __DOMAIN__ -d www.__DOMAIN__"
