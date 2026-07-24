@@ -13,8 +13,8 @@ import {
   UnauthorizedError,
 } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
+import { err, ok, type Result } from '@/utils/result'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
-import { err, ok, type Result } from 'neverthrow'
 import { revalidatePath } from 'next/cache'
 import { v4 } from 'uuid'
 import { createAppSession } from './create-app-session'

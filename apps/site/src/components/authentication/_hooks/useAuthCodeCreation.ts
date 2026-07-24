@@ -34,8 +34,8 @@ export function useAuthCodeCreation({ dispatch }: UseAuthCodeCreationOptions) {
       email = formatEmail(email)
       dispatch({ type: 'SUBMIT_EMAIL', email })
       const result = await postVerificationCode({ email })
-      if (result.isOk()) {
-        const { expirationDate } = result.value
+      if (result.success) {
+        const { expirationDate } = result.output
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
         dispatch({
           type: 'EMAIL_SENT',
@@ -57,8 +57,8 @@ export function useAuthCodeCreation({ dispatch }: UseAuthCodeCreationOptions) {
     async (email: string) => {
       dispatch({ type: 'RESEND_CODE' })
       const result = await postVerificationCode({ email })
-      if (result.isOk()) {
-        const { expirationDate } = result.value
+      if (result.success) {
+        const { expirationDate } = result.output
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
         dispatch({
           type: 'CODE_RESENT',
