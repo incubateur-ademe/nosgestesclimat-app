@@ -9,7 +9,7 @@ import { VERIFICATION_CODE_URL } from '@/constants/urls/main'
 import { TooManyRequestsError } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import type { AuthenticationMode } from '@/types/authentication'
-import { err, ok, type Result } from '@/utils/result'
+import { err, ok, type Result } from '@nosgestesclimat/core/lib/result'
 
 export const createVerificationCode = async ({
   email,

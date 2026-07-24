@@ -1,5 +1,5 @@
 import type { PosthogEvent } from '@/utils/analytics/trackEvent'
-import type { Result } from '@/utils/result'
+import type { Result } from '@nosgestesclimat/core/lib/result'
 import type { CodeError, EmailError } from './errors'
 
 export type { CodeError, EmailError }
