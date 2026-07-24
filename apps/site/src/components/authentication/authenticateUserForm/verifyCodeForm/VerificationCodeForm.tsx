@@ -7,6 +7,7 @@ import { defaultInputStyleClassNames } from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import { type ChangeEvent, type FormEvent, useCallback, useId, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { matchError } from '@/components/authentication/errors'
 import { useAuth } from '@/components/authentication/AuthProvider'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 
@@ -76,11 +77,11 @@ export default function VerificationCodeForm() {
 
       {state.phase === 'code_sent' && state.codeError && (
         <p id="verification-error" className="mt-2 text-sm text-red-800 dark:text-white">
-          {state.codeError === 'invalid'
-            ? t('signIn.code.invalid', 'Le code est invalide')
-            : state.codeError === 'rate_limited'
-            ? t('signIn.code.rateLimited', 'Veuillez patienter un instant avant de réessayer.')
-            : t('common.errors.errorHappened', 'Une erreur est survenue. Veuillez réessayer.')}
+          {matchError(state.codeError, {
+            invalid: () => t('signIn.code.invalid', 'Le code est invalide'),
+            rate_limited: () => t('signIn.code.rateLimited', 'Veuillez patienter un instant avant de réessayer.'),
+            unknown: () => t('common.errors.errorHappening', 'Une erreur est survenue. Veuillez réessayer.'),
+          })}
         </p>
       )}
 

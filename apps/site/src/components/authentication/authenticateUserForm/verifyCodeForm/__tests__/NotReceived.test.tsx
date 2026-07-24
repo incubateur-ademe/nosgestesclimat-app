@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAuth } from '@/components/authentication/AuthProvider'
 import type { AuthContextValue } from '@/components/authentication/AuthProvider'
+import { UnknownCodeError } from '@/components/authentication/errors'
 import NotReceived from '../NotReceived'
 
 vi.mock('@/components/authentication/AuthProvider', async () => {
@@ -63,7 +64,7 @@ describe('NotReceived', () => {
         cooldownUntil: 0,
         isResending: false,
         codeError: null,
-        resendError: 'unknown',
+        resendError: new UnknownCodeError(),
       },
     } as AuthContextValue)
 

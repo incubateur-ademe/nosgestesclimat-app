@@ -10,7 +10,6 @@ import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
-import { mapLoginError } from '../errors'
 import type {
   AuthEvent,
   AuthPhase,
@@ -33,14 +32,14 @@ function useVerifyEffect(
 
     let cancelled = false
 
-    void verify(verificationEmail, verificationCode)
-      .then(({ userId }) => {
-        if (!cancelled) dispatch({ type: 'CODE_VALID', userId })
-      })
-      .catch((error) => {
-        if (!cancelled)
-          dispatch({ type: 'CODE_INVALID', reason: mapLoginError(error) })
-      })
+    void verify(verificationEmail, verificationCode).then((result) => {
+      if (cancelled) return
+      if (result.success) {
+        dispatch({ type: 'CODE_VALID', userId: result.output.userId })
+      } else {
+        dispatch({ type: 'CODE_INVALID', reason: result.error })
+      }
+    })
 
     return () => {
       cancelled = true

@@ -8,8 +8,8 @@ import { createVerificationCode } from '@/services/auth/create-verification-code
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { formatEmail } from '@/utils/format/formatEmail'
 import { useMutation } from '@tanstack/react-query'
+import { matchError } from '../errors'
 
-import { mapEmailError } from '../errors'
 import type { AuthEvent } from '../types'
 
 const COOLDOWN_MS = 30000
@@ -33,18 +33,19 @@ export function useAuthCodeCreation({ dispatch }: UseAuthCodeCreationOptions) {
     async (email: string) => {
       email = formatEmail(email)
       dispatch({ type: 'SUBMIT_EMAIL', email })
-      try {
-        const { expirationDate } = await postVerificationCode({ email })
+      const result = await postVerificationCode({ email })
+      if (result.success) {
+        const { expirationDate } = result.output
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
         dispatch({
           type: 'EMAIL_SENT',
           pending: { email, expirationDate: new Date(expirationDate) },
           cooldownUntil: cooldownDeadline(),
         })
-      } catch (error) {
+      } else {
         dispatch({
           type: 'EMAIL_ERROR',
-          reason: mapEmailError(error),
+          reason: result.error,
           cooldownUntil: cooldownDeadline(),
         })
       }
@@ -55,21 +56,23 @@ export function useAuthCodeCreation({ dispatch }: UseAuthCodeCreationOptions) {
   const resendCode = useCallback(
     async (email: string) => {
       dispatch({ type: 'RESEND_CODE' })
-      try {
-        const { expirationDate } = await postVerificationCode({ email })
+      const result = await postVerificationCode({ email })
+      if (result.success) {
+        const { expirationDate } = result.output
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
         dispatch({
           type: 'CODE_RESENT',
           pending: { email, expirationDate: new Date(expirationDate) },
           cooldownUntil: cooldownDeadline(),
         })
-      } catch (error) {
-        const reason = mapEmailError(error)
+      } else {
         dispatch({
           type: 'CODE_RESEND_ERROR',
-          reason,
-          cooldownUntil:
-            reason === 'rate_limited' ? cooldownDeadline() : undefined,
+          reason: result.error,
+          cooldownUntil: matchError(result.error, {
+            rate_limited: () => cooldownDeadline(),
+            unknown: () => undefined,
+          }),
         })
       }
     },

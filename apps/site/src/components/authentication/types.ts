@@ -1,13 +1,13 @@
 import type { PosthogEvent } from '@/utils/analytics/trackEvent'
+import type { Result } from '@nosgestesclimat/core/lib/result'
+import type { CodeError, EmailError } from './errors'
+
+export type { CodeError, EmailError }
 
 export interface PendingVerification {
   expirationDate: Date
   email: string
 }
-
-export type CodeError = 'invalid' | 'rate_limited' | 'unknown'
-
-export type EmailError = 'unknown' | 'rate_limited'
 
 export type AuthPhase =
   | { phase: 'idle'; emailError: EmailError | null }
@@ -67,4 +67,4 @@ export type Tracker = PosthogEvent
 export type VerifyStrategy = (
   email: string,
   code: string
-) => Promise<{ userId: string }>
+) => Promise<Result<{ userId: string; id: string }, CodeError>>

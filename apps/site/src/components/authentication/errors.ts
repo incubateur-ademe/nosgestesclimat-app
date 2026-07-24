@@ -1,20 +1,36 @@
-// TODO: replace error.message string matching with typed error results
-// from server actions once proper error handling is in place (Either monad,
-// discriminated union return types, etc.). instanceof doesn't survive
-// Next.js server action serialization to the client.
-import type { CodeError, EmailError } from './types'
-
-export function mapLoginError(error: unknown): CodeError {
-  if (error instanceof Error) {
-    if (error.message === 'Unauthorized') return 'invalid'
-    if (error.message === 'Too Many Requests') return 'rate_limited'
+export class InvalidCodeError extends Error {
+  readonly _tag = 'invalid'
+  constructor(message?: string) {
+    super(message ?? 'Code invalide')
+    this.name = 'InvalidCodeError'
   }
-  return 'unknown'
 }
 
-export function mapEmailError(error: unknown): EmailError {
-  if (error instanceof Error && error.message === 'Too Many Requests') {
-    return 'rate_limited'
+export class RateLimitedError extends Error {
+  readonly _tag = 'rate_limited'
+  constructor(message?: string) {
+    super(message ?? 'Trop de requêtes')
+    this.name = 'RateLimitedError'
   }
-  return 'unknown'
+}
+
+export class UnknownCodeError extends Error {
+  readonly _tag = 'unknown'
+  constructor(message?: string) {
+    super(message ?? 'Erreur inconnue')
+    this.name = 'UnknownCodeError'
+  }
+}
+
+export type CodeError = InvalidCodeError | RateLimitedError | UnknownCodeError
+
+export type EmailError = RateLimitedError | UnknownCodeError
+
+export function matchError<E extends { _tag: string }, R>(
+  error: E,
+  cases: { [K in E['_tag']]: (error: Extract<E, { _tag: K }>) => R }
+): R {
+  return (cases as unknown as Record<string, (error: E) => R>)[error._tag](
+    error
+  )
 }
