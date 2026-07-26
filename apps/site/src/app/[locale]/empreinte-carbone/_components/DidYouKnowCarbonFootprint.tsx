@@ -9,7 +9,7 @@ export default function DidYouKnowCarbon({ locale }: { locale: string }) {
       slides={[
         {
           illustration:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_trophee_32ee5f6d9a.svg',
+            '/_static/cms/icone_trophee_32ee5f6d9a.svg',
           content: (
             <Trans locale={locale}>
               L'empreinte carbone moyenne d'un français est de{' '}
@@ -23,7 +23,7 @@ export default function DidYouKnowCarbon({ locale }: { locale: string }) {
         },
         {
           illustration:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_avion_39cf1c300c.svg',
+            '/_static/cms/icone_avion_39cf1c300c.svg',
           content: (
             <Trans locale={locale}>
               Un aller-retour Paris-Athènes en avion représente{' '}

@@ -106,7 +106,7 @@ export default async function OurPartners({
           alt={t(
             'Un grand-père et sa petite-fille au cinéma, mangeant du pop-corn.'
           )}
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/at_the_cinema_b2d25b4202.svg"
+          src="/_static/cms/at_the_cinema_b2d25b4202.svg"
         />
       </div>
 

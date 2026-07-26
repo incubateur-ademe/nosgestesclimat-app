@@ -37,16 +37,4 @@ export const remoteImagesPatterns: RemotePattern[] = [
     port: '',
     pathname: '/cms/**',
   },
-  {
-    protocol: 'https',
-    hostname: 'nosgestesclimat-prod.s3.fr-par.scw.cloud',
-    port: '',
-    pathname: '/cms/**',
-  },
-  {
-    protocol: 'https',
-    hostname: 's3.fr-par.scw.cloud',
-    port: '',
-    pathname: '/nosgestesclimat-prod/cms/**',
-  },
 ]

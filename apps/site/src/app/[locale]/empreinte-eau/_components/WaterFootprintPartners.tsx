@@ -10,7 +10,7 @@ export default function WaterFootprintPartners() {
       <Ademe className="h-auto w-10 md:w-auto" />
 
       <Image
-        src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/logo_agences_eau_8f0e7f34cb.svg"
+        src="/_static/cms/logo_agences_eau_8f0e7f34cb.svg"
         alt="Les agences de l'eau"
         width="200"
         height="200"

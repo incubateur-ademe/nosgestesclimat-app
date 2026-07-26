@@ -11,7 +11,7 @@ const TwoGraphsIllustration = dynamic(
   {
     loading: () => (
       <Image
-        src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_graphiques_empreinte_carbone_eau_fr_7df50f7102.png"
+        src="/_static/cms/medium_graphiques_empreinte_carbone_eau_fr_7df50f7102.png"
         className="hidden md:block"
         alt="Deux représentations graphiques de l'empreinte carbone et eau"
         width={600}
@@ -26,7 +26,7 @@ const CarbonGraphIllustration = dynamic(
   {
     loading: () => (
       <Image
-        src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_graphique_empreinte_carbone_fr_5077492f48.png"
+        src="/_static/cms/medium_graphique_empreinte_carbone_fr_5077492f48.png"
         alt="Graphique de l'empreinte carbone"
         width={300}
         height={300}
@@ -40,7 +40,7 @@ const WaterGraphIllustration = dynamic(
   {
     loading: () => (
       <Image
-        src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_graphique_empreinte_eau_fr_de3e685ba4.png"
+        src="/_static/cms/medium_graphique_empreinte_eau_fr_de3e685ba4.png"
         alt="Graphique de l'empreinte eau"
         width={300}
         height={300}

@@ -7,7 +7,7 @@
   "theme_color": "#4949ba",
   "icons": [
     {
-      "src": "https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/logo_c5817128a3.svg",
+      "src": "/_static/cms/logo_c5817128a3.svg",
       "sizes": "144x144",
       "type": "image/svg+xml"
     }
