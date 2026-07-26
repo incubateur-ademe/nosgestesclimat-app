@@ -24,7 +24,7 @@ import TwoFootprints from './_components/TwoFootprints'
 export const generateMetadata = getCommonMetadata({
   title: t('Calculez votre empreinte carbone et eau avec Nos Gestes Climat'),
   image:
-    'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',
+    '/_static/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',
   description: t(
     'Comme 2 millions de personnes, mesurez votre empreinte écologique en 10 minutes. Un outil gratuit pour faire le bilan et réduire vos émissions de CO2.'
   ),
@@ -52,7 +52,7 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
             '@type': 'Organization',
             url: 'https://nosgestesclimat.fr',
             name: 'Nos Gestes Climat',
-            logo: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+            logo: '/_static/cms/petit_logo_006dd01955.png',
           },
         ]}
       />

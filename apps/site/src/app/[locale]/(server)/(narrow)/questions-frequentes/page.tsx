@@ -45,7 +45,7 @@ export default async function FAQPage({
             '@type': 'Organization',
             url: 'https://nosgestesclimat.fr',
             name: 'Nos Gestes Climat',
-            logo: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+            logo: '/_static/cms/petit_logo_006dd01955.png',
           },
           {
             '@context': 'https://schema.org',
@@ -88,7 +88,7 @@ export default async function FAQPage({
 
         <Image
           className="-mt-4 ml-auto w-48 self-start md:w-full"
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_children_holding_hand_6951392e78.png"
+          src="/_static/cms/medium_children_holding_hand_6951392e78.png"
           width="300"
           height="400"
           alt={t("Des enfants sortant de l'école en se tenant la main.")}

@@ -18,7 +18,7 @@ export default async function WhatDoWeMeasureWaterFootprint({
       listItems={[
         {
           icon: {
-            url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_alimentation_b6c20e8522.svg',
+            url: '/_static/cms/icone_alimentation_b6c20e8522.svg',
             alternativeText: t(
               'Une pomme, symbolisant le lien entre eau et agriculture'
             ),
@@ -30,7 +30,7 @@ export default async function WhatDoWeMeasureWaterFootprint({
         },
         {
           icon: {
-            url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_textile_f789f577aa.svg',
+            url: '/_static/cms/icone_textile_f789f577aa.svg',
             alternativeText: t(
               "Un tee-shirt, symbolisant la consommation d'eau pour l'industrie textile"
             ),
@@ -42,7 +42,7 @@ export default async function WhatDoWeMeasureWaterFootprint({
         },
         {
           icon: {
-            url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_agriculture_fe3f833cc4.svg',
+            url: '/_static/cms/icone_agriculture_fe3f833cc4.svg',
             alternativeText: t('Un mouton, liant empreinte eau et élevage'),
           },
           title: t(
@@ -52,7 +52,7 @@ export default async function WhatDoWeMeasureWaterFootprint({
         },
         {
           icon: {
-            url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_ordinateur_392d915ff0.svg',
+            url: '/_static/cms/icone_ordinateur_392d915ff0.svg',
             alternativeText: t(
               "Un ordinateur, illustrant la consommation d'eau par le numérique"
             ),
@@ -64,7 +64,7 @@ export default async function WhatDoWeMeasureWaterFootprint({
         },
         {
           icon: {
-            url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_electricite_d62b8b8914.svg',
+            url: '/_static/cms/icone_electricite_d62b8b8914.svg',
             alternativeText: t(
               "Un éclair, symbolisant la production d'électricité"
             ),

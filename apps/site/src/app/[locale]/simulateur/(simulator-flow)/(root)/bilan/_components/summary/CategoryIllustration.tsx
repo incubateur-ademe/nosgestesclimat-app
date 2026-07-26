@@ -16,31 +16,31 @@ export default function CategoryIllustration({
     switch (category) {
       case 'transport':
         return {
-          src: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_mother_and_son_on_bike_5883583982.png',
+          src: '/_static/cms/medium_mother_and_son_on_bike_5883583982.png',
           alt: '',
           className: '',
         }
       case 'alimentation':
         return {
-          src: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_girl_cooking_fa71604f8d.png',
+          src: '/_static/cms/medium_girl_cooking_fa71604f8d.png',
           alt: '',
           className: '',
         }
       case 'logement':
         return {
-          src: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_girl_reading_newspaper_d171290d3d.png',
+          src: '/_static/cms/medium_girl_reading_newspaper_d171290d3d.png',
           alt: '',
           className: 'min-w-[200px]',
         }
       case 'divers':
         return {
-          src: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_at_the_cinema_00898dd691.png',
+          src: '/_static/cms/medium_at_the_cinema_00898dd691.png',
           alt: '',
           className: '',
         }
       case 'services sociétaux':
         return {
-          src: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_children_holding_hand_6951392e78.png',
+          src: '/_static/cms/medium_children_holding_hand_6951392e78.png',
           alt: '',
           className: '',
         }

@@ -58,7 +58,7 @@ export default function ShareSection({ poll, className, title }: Props) {
 
         <Card className="bg-primary-100 flex w-full flex-col items-center justify-center border-0 p-8 shadow-none">
           <Image
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/bb1a673c20064abdd0ccd02c73467f2f30c128f5_adc1e8558e.png"
+            src="/_static/cms/bb1a673c20064abdd0ccd02c73467f2f30c128f5_adc1e8558e.png"
             width="48"
             height="48"
             className="mb-6"

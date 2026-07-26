@@ -50,7 +50,7 @@ export default async function WaterActions({ locale }: Props) {
             className="border-primary-50 hover:bg-primary-100 relative flex flex-1 flex-col justify-between overflow-hidden rounded-xl border-2 bg-gray-100 pb-4 no-underline lg:p-4">
             <div>
               <Image
-                src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_priscilla_du_preez_9d7a6e02a2.jpg"
+                src="/_static/cms/medium_priscilla_du_preez_9d7a6e02a2.jpg"
                 width="400"
                 height="200"
                 className="mx-auto mb-3 h-24 w-full object-cover lg:h-36"
@@ -86,7 +86,7 @@ export default async function WaterActions({ locale }: Props) {
             className="border-primary-50 hover:bg-primary-100 relative flex flex-1 flex-col justify-between overflow-hidden rounded-xl border-2 bg-gray-100 pb-4 no-underline lg:p-4">
             <div>
               <Image
-                src="https://s3.fr-par.scw.cloud/nosgestesclimat-prod/cms/medium_lumin_osity_arrosage_champ_eeafa85606.jpg"
+                src="/_static/cms/medium_lumin_osity_arrosage_champ_eeafa85606.jpg"
                 width="400"
                 height="200"
                 className="mx-auto mb-3 h-24 w-full object-cover lg:h-36"

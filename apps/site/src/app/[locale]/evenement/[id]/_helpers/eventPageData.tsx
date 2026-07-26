@@ -73,7 +73,7 @@ export function getEventPageData({
 
   return {
     detailImageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/VIGNETTE_SEDD_f711b1d37b.svg',
+      '/_static/cms/VIGNETTE_SEDD_f711b1d37b.svg',
     startDate: '2026-09-01T00:00:00+02:00',
     endDate: '2026-09-30T23:59:59+02:00',
     dynamicCounter: {
@@ -118,7 +118,7 @@ export function getEventPageData({
             'Impact Officer chez HomeExchange'
           ),
           avatarSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/elisa_papin_big_a21e5928cf.png',
+            '/_static/cms/elisa_papin_big_a21e5928cf.png',
         },
       },
       {
@@ -133,7 +133,7 @@ export function getEventPageData({
             'Responsable des relations avec les publics du Pass Culture'
           ),
           avatarSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/theo_gasquet_big_780f9fce63.png',
+            '/_static/cms/theo_gasquet_big_780f9fce63.png',
         },
       },
       {
@@ -233,7 +233,7 @@ export function getEventPageData({
       ],
     },
     ctaImageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ILLUSTRATION_SEDD_e1a82fa2e2.svg',
+      '/_static/cms/ILLUSTRATION_SEDD_e1a82fa2e2.svg',
     ctaHeading: t('event.ctas.heading', "Prêt·e à rejoindre l'aventure ?"),
     ctaDescription: t(
       'event.ctas.description',

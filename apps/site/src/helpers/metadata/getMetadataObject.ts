@@ -151,9 +151,7 @@ export function getMetadataObject({
       description,
       url,
       type: 'website',
-      images: image
-        ? image
-        : 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/metadata_1749c11cdc.png',
+      images: image ? image : '/_static/cms/metadata_1749c11cdc.png',
     },
     alternates: definitiveAlternates,
     ...props,

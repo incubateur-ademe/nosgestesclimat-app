@@ -49,7 +49,7 @@ export default function HeroSection() {
       <div>
         <Image
           className="self-start"
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_people_with_paperboard_9c8d47f4b3.png"
+          src="/_static/cms/medium_people_with_paperboard_9c8d47f4b3.png"
           width="400"
           height="400"
           alt=""
