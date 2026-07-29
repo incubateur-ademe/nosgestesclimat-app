@@ -19,7 +19,7 @@ export default function TestimonyCard({ testimony }: { testimony: Testimony }) {
           <Image
             src={
               testimony.author.avatarSrc ??
-              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/user_28130c4ba4.png'
+              '/_static/cms/user_28130c4ba4.png'
             }
             alt={testimony.author.name}
             fill

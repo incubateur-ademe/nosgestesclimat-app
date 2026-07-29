@@ -51,7 +51,7 @@ type Story = StoryObj<typeof ImageWithCategory>
 export const Default: Story = {
   args: {
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     imageAlt: 'Example image',
     category: 'Écologie',
   },
@@ -60,7 +60,7 @@ export const Default: Story = {
 export const LargeImage: Story = {
   args: {
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     imageAlt: 'Large example image',
     width: 640,
     height: 480,
@@ -71,7 +71,7 @@ export const LargeImage: Story = {
 export const WithCustomClasses: Story = {
   args: {
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     imageAlt: 'Custom styled image',
     imageClassName: 'border-4 border-blue-500',
     containerClassName: 'p-4 bg-gray-100 rounded-lg',
@@ -82,7 +82,7 @@ export const WithCustomClasses: Story = {
 export const BadgeAlwaysVisible: Story = {
   args: {
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     imageAlt: 'Image with always visible badge',
     category: 'Urgent',
     hideBadgeOnMobile: false,
@@ -92,7 +92,7 @@ export const BadgeAlwaysVisible: Story = {
 export const LongCategoryText: Story = {
   args: {
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     imageAlt: 'Image with long category',
     category: 'Développement durable et écologie',
   },

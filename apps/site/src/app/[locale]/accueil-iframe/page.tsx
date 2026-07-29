@@ -23,7 +23,7 @@ export const generateMetadata = getCommonMetadata({
   },
   robots: noIndexObject,
   image:
-    'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',
+    '/_static/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',
 })
 
 export default async function Homepage({ params }: DefaultPageProps) {

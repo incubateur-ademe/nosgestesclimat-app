@@ -23,7 +23,7 @@ export default function DidYouKnowMainLanding({
         slides={[
           {
             illustration:
-              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_ordinateur_392d915ff0.svg',
+              '/_static/cms/icone_ordinateur_392d915ff0.svg',
             content: (
               <Trans locale={locale}>
                 L'empreinte moyenne d'un Français est de{' '}
@@ -37,7 +37,7 @@ export default function DidYouKnowMainLanding({
           },
           {
             illustration:
-              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_jeans_7373ebf3c3.svg',
+              '/_static/cms/icone_jeans_7373ebf3c3.svg',
             content: (
               <Trans locale={locale}>
                 La production d'un jean nécessite près de{' '}
@@ -51,7 +51,7 @@ export default function DidYouKnowMainLanding({
           },
           {
             illustration:
-              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_goutte_eau_e6a89fd5e0.svg',
+              '/_static/cms/icone_goutte_eau_e6a89fd5e0.svg',
             content: (
               <Trans locale={locale}>
                 L'empreinte eau moyenne d'un français se compte{' '}
@@ -65,7 +65,7 @@ export default function DidYouKnowMainLanding({
           },
           {
             illustration:
-              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/icone_avion_39cf1c300c.svg',
+              '/_static/cms/icone_avion_39cf1c300c.svg',
             content: (
               <Trans locale={locale}>
                 Un aller-retour Paris-Athènes en avion représente{' '}

@@ -157,7 +157,7 @@ export default function Actions({
           className="bg-primary-700 inline-flex items-center rounded-full px-4 text-sm font-medium text-white"
           aria-describedby="engagement-actions-description">
           <Image
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/270_A_cc8d6cb2b7.svg"
+            src="/_static/cms/270_A_cc8d6cb2b7.svg"
             className="mr-2 align-middle invert"
             height={36}
             width={36}
@@ -205,7 +205,7 @@ export default function Actions({
           className="bg-primary-700 inline-flex items-center rounded-full px-4 text-sm font-medium text-white"
           aria-describedby="negative-actions-description">
           <Image
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/26_D4_0bb5aeaf38.svg"
+            src="/_static/cms/26_D4_0bb5aeaf38.svg"
             className="mr-2 invert"
             height={36}
             width={36}

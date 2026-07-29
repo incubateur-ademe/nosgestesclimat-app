@@ -41,7 +41,7 @@ export default async function WhatItIsCarbon({ locale }: { locale: string }) {
         </div>
       }
       illustration={{
-        url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/expliquer_empreinte_carbone_7698ed628b.svg',
+        url: '/_static/cms/expliquer_empreinte_carbone_7698ed628b.svg',
         alternativeText: t(
           "Deux personnes accolées levant le bras en signe de succès, illustrant l'importance du collectif dans la réduction de nos empreintes carbone"
         ),
