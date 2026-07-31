@@ -20,6 +20,7 @@ export async function fetchAllArticleTitlesAndSlugs({
         locale: locale ?? i18nConfig.defaultLocale,
         'fields[0]': 'title',
         'fields[1]': 'slug',
+        'fields[2]': 'updatedAt',
         'populate[0]': 'blogCategory',
         'pagination[page]': currentPage.toString(),
         'pagination[pageSize]': PAGE_SIZE.toString(),

@@ -2,13 +2,30 @@ import FAQ from '@/components/landing-pages/FAQ'
 import Partners from '@/components/landing-pages/Partners'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Markdown from '@/design-system/utils/Markdown'
+import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { fetchPartnerCampaign } from '@/services/cms/fetchPartnerCampaign'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ClientLayout } from '../../../../components/layout/ClientLayout'
 import PartnerCampaignContent from './_components/PartnerCampaignContent'
 import PartnerCampaignHeader from './_components/PartnerCampaignHeader'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ pollSlug: string; locale: Locale }>
+}): Promise<Metadata> {
+  const { locale, pollSlug } = await params
+
+  return {
+    alternates: buildAlternates({
+      locale,
+      canonical: `/campagne-partenaire/${pollSlug}`,
+    }),
+  }
+}
 
 export default async function PartnerCampaignPage({
   params,

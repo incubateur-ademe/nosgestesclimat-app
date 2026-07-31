@@ -11,7 +11,7 @@ export const uploadLocalSimulations = async (simulations: Simulation[]) => {
 
   return await Promise.allSettled(
     simulations.map((simulation) =>
-      fetchServer(`${SIMULATION_URL}/${session.id}`, {
+      fetchServer(SIMULATION_URL, {
         method: 'POST',
         body: simulation,
       })

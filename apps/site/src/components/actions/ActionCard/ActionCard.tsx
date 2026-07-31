@@ -1,8 +1,9 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import type { Locale } from '@/i18nConfig'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
+import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -24,11 +25,12 @@ const classesByTheme: Record<Theme['key'], string> = {
 }
 
 interface ActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
-  action: PersonalizedAction
+  action: MaybePersonalizedAction
   locale: Locale
   withThemeBadge?: boolean
   assessmentStatus?: SimulationComputationStatus | null
   rank?: number
+  from?: 'fin' | 'mon-espace' | 'index'
 }
 
 export default function ActionCard({
@@ -38,9 +40,19 @@ export default function ActionCard({
   withThemeBadge = true,
   assessmentStatus,
   rank,
+  from,
   ...props
 }: ActionCardProps) {
   const rankEmoji = rankToEmoji(rank)
+  const actionDetailPath = ACTION_DETAIL_PATH(action.theme.slug, action.slug)
+  // On an /en page, an unprefixed (fr) path would be redirected to /en by the
+  // locale middleware, so force the /fr prefix instead of relying on
+  // getLocalizedPath's "no prefix for the default locale" behavior.
+  const actionPath =
+    locale === LOCALE_EN_KEY && action.language === LOCALE_FR_KEY
+      ? `/${LOCALE_FR_KEY}${actionDetailPath}`
+      : getLocalizedPath(action.language, actionDetailPath)
+  const href = from ? `${actionPath}?from=${from}` : actionPath
   return (
     <article
       {...props}
@@ -70,7 +82,7 @@ export default function ActionCard({
         ) : null}
       </div>
       <Link
-        href={ACTION_DETAIL_PATH(action.theme.slug, action.slug)}
+        href={href}
         className={twMerge(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink

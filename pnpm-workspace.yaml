@@ -20,6 +20,7 @@ minimumReleaseAgeExclude:
   - 'posthog-js'
   - '@posthog/core'
   - '@posthog/types'
+  - '@posthog/browser-common'
 
 onlyBuiltDependencies:
   - '@incubateur-ademe/nosgestesclimat'

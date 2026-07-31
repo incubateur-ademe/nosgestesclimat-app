@@ -5,6 +5,16 @@ const redirects = [
     permanent: true,
   },
   {
+    source: '/en/tutoriel',
+    destination: '/en/simulateur/tutoriel',
+    permanent: true,
+  },
+  {
+    source: '/fr/tutoriel',
+    destination: '/fr/simulateur/tutoriel',
+    permanent: true,
+  },
+  {
     source: '/modele',
     destination: '/documentation',
     permanent: true,
@@ -12,11 +22,6 @@ const redirects = [
   {
     source: '/actions/liste',
     destination: '/actions',
-    permanent: true,
-  },
-  {
-    source: '/actions',
-    destination: '/mon-espace/actions',
     permanent: true,
   },
   {

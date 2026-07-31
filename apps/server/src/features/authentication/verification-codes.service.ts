@@ -36,41 +36,47 @@ export const generateVerificationCode = async (
   return { code, verificationCode }
 }
 
-export const createVerificationCode = (
+export const createVerificationCode = async (
   {
     verificationCodeDto,
-    origin,
     locale,
   }: {
     verificationCodeDto: Pick<VerificationCodeCreateDto, 'email'>
-    origin: string
     locale: Locales
   },
   { session: parentSession }: { session?: Session } = {}
 ): Promise<{ email: string; expirationDate: Date }> => {
   const expirationDate = dayjs().add(1, 'hour').toDate()
-  return transaction(async (session) => {
-    const { verificationCode, code } = await generateVerificationCode(
-      { verificationCodeDto, expirationDate },
-      { session }
-    )
 
-    const verificationCodeCreatedEvent = new VerificationCodeCreatedEvent({
-      verificationCode: {
-        ...verificationCode,
-        code,
-      },
-      locale,
-      origin,
-    })
+  // The code must be committed *before* the email is handed to Brevo. Sending
+  // inside the transaction means any later failure (a Brevo timeout, or the
+  // call simply outliving the interactive transaction budget) rolls the row
+  // back after Brevo has already accepted — and delivered — the message. The
+  // user then holds a legitimate-looking code that does not exist in database,
+  // and every attempt to use it comes back as "invalid".
+  const { verificationCode, code } = await transaction(
+    (session) =>
+      generateVerificationCode(
+        { verificationCodeDto, expirationDate },
+        { session }
+      ),
+    parentSession
+  )
 
-    EventBus.emit(verificationCodeCreatedEvent)
+  const verificationCodeCreatedEvent = new VerificationCodeCreatedEvent({
+    verificationCode: {
+      ...verificationCode,
+      code,
+    },
+    locale,
+  })
 
-    await EventBus.once(verificationCodeCreatedEvent)
+  EventBus.emit(verificationCodeCreatedEvent)
 
-    return {
-      email: verificationCode.email,
-      expirationDate: verificationCode.expirationDate,
-    }
-  }, parentSession)
+  await EventBus.once(verificationCodeCreatedEvent)
+
+  return {
+    email: verificationCode.email,
+    expirationDate: verificationCode.expirationDate,
+  }
 }

@@ -25,10 +25,13 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await requireAuthUser()
-  const flag = await hasActionV2Rollout(user.id)
+  const flag = await hasActionV2Rollout(user.id, locale)
 
   const [maybePersonalizedActionsCatalogue, themes] = flag
-    ? await Promise.all([getPersonalizedActionsCatalogue(user.id), getThemes()])
+    ? await Promise.all([
+        getPersonalizedActionsCatalogue(user.id, locale),
+        getThemes(locale),
+      ])
     : [undefined, undefined]
 
   return (
@@ -44,6 +47,18 @@ export default async function MonEspaceActionsPage({
       {flag && maybePersonalizedActionsCatalogue ? (
         <div>
           <ActionsPage
+            title={
+              <Trans locale={locale} i18nKey="actions.listPage.title">
+                Vos actions personnalisées pour diminuer votre empreinte
+              </Trans>
+            }
+            description={
+              <Trans locale={locale} i18nKey="actions.listPage.description">
+                Ces actions sont personnalisées selon vos réponses au test.
+                Choisissez celles qui vous semblent atteignables et lancez-vous
+                !
+              </Trans>
+            }
             topActions={maybePersonalizedActionsCatalogue.topActions}
             actions={maybePersonalizedActionsCatalogue.actions}
             assessmentStatus={
@@ -51,6 +66,7 @@ export default async function MonEspaceActionsPage({
             }
             themes={themes}
             locale={locale}
+            from="mon-espace"
           />
         </div>
       ) : (
@@ -60,11 +76,7 @@ export default async function MonEspaceActionsPage({
   )
 }
 
-async function LegacyMonEspaceActionsPage({
-  locale,
-}: {
-  locale: Locale
-}) {
+async function LegacyMonEspaceActionsPage({ locale }: { locale: Locale }) {
   const simulations = await getCompletedSimulations({ pageSize: 1 })
 
   return <LegacyActionPage simulations={simulations} locale={locale} />

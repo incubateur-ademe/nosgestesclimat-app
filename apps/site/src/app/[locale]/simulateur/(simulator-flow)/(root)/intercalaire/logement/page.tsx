@@ -15,7 +15,7 @@ export async function generateMetadata({
   const { t } = await getServerTranslation({ locale })
 
   return getMetadataObject({
-    locale,
+    locale: locale as Locale,
     title: t(
       'simulator.intercalaire.logement.meta.title',
       'Section logement terminée - Nos Gestes Climat'
@@ -24,6 +24,9 @@ export async function generateMetadata({
       'simulator.intercalaire.logement.meta.description',
       'Bravo, tu as terminé la section logement. Découvre l’impact des différents modes de chauffage sur le climat.'
     ),
+    alternates: {
+      canonical: '/simulateur/intercalaire/logement',
+    },
     robots: noIndexObject,
   })
 }

@@ -2,5 +2,5 @@ import type { Theme as ThemeEntity } from '@nosgestesclimat/core/features/action
 
 export type Theme = Pick<
   ThemeEntity,
-  'id' | 'key' | 'trackingId' | 'title' | 'language' | 'emoji'
+  'id' | 'key' | 'trackingId' | 'title' | 'locale' | 'emoji'
 >

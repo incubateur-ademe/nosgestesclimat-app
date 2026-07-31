@@ -26,6 +26,7 @@ export default async function BetaBanner({ locale }: { locale: string }) {
               </a>
             </Trans>
           ),
+          id: 'beta-banner',
         }}
       />
     </div>

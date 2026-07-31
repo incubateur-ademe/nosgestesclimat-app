@@ -6,7 +6,6 @@ import {
 import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 import { PaginationQuery } from '../../core/pagination.ts'
-import { UserParams } from '../users/users.validator.ts'
 
 const OrganisationParams = v.strictObject({
   organisationIdOrSlug: v.string(),
@@ -30,7 +29,6 @@ export type OrganisationPollParams = v.InferOutput<
 >
 
 export const PublicPollParams = v.strictObject({
-  ...UserParams.entries,
   ...PollParams.entries,
 })
 
@@ -208,12 +206,6 @@ export const OrganisationPollSimulationsDownloadValidator = {
 }
 
 export const OrganisationPublicPollFetchValidator = {
-  body: v.optional(v.strictObject({})),
-  params: PublicPollParams,
-  query: LocaleQuery,
-}
-
-export const OrganisationPublicPollSimulationsFetchValidator = {
   body: v.optional(v.strictObject({})),
   params: PublicPollParams,
   query: LocaleQuery,

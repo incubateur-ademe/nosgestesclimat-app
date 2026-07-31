@@ -5,28 +5,31 @@ import {
   simulationSelectionWithPolls,
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
+import type { PartialUser } from '../../core/types/user.ts'
 import { createParticipantSimulation } from '../simulations/simulations.repository.ts'
 import { createOrUpdateUser } from '../users/users.repository.ts'
-import type { UserParams } from '../users/users.validator.ts'
 import type {
   GroupCreateDto,
   GroupParams,
+  GroupParticipantParams,
   GroupsFetchQuery,
   GroupUpdateDto,
   ParticipantCreateDto,
-  UserGroupParams,
-  UserGroupParticipantParams,
 } from './groups.validator.ts'
 
 export const createGroupAndUser = async (
   {
     name: groupName,
     emoji,
-    administrator: { userId, name, email },
+    administrator: { name },
     participants,
   }: GroupCreateDto,
+  { user }: { user: PartialUser },
   { session }: { session: Session }
 ) => {
+  const { id: userId } = user
+  const email = 'email' in user ? user.email : undefined
+
   // upsert administrator
   const { user: administrator } = await createOrUpdateUser(
     {
@@ -105,7 +108,7 @@ export const createGroupAndUser = async (
 }
 
 export const updateUserGroup = (
-  { groupId, userId }: UserGroupParams,
+  { groupId, userId }: { groupId: string; userId: string },
   update: GroupUpdateDto,
   { session }: { session: Session }
 ) => {
@@ -135,9 +138,12 @@ export const updateUserGroup = (
 
 export const createParticipantAndUser = async (
   { groupId }: GroupParams,
-  { userId, name, simulation: simulationDto }: ParticipantCreateDto,
+  { name, simulation: simulationDto }: ParticipantCreateDto,
+  { user }: { user: PartialUser },
   { session }: { session: Session }
 ) => {
+  const { id: userId } = user
+
   const existingParticipant = await session.groupParticipant.findUnique({
     where: {
       groupId_userId: {
@@ -207,7 +213,7 @@ export const createParticipantAndUser = async (
 }
 
 export const findGroupAndParticipantById = (
-  { groupId, participantId }: UserGroupParticipantParams,
+  { groupId, participantId }: GroupParticipantParams,
   { session }: { session: Session }
 ) => {
   return session.groupParticipant.findUniqueOrThrow({
@@ -253,7 +259,7 @@ export const deleteParticipantById = (
 }
 
 export const fetchUserGroups = (
-  { userId }: UserParams,
+  { userId }: { userId: string },
   { groupIds }: GroupsFetchQuery,
   { session }: { session: Session }
 ) => {

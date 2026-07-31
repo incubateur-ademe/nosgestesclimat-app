@@ -1,0 +1,12 @@
+[Unit]
+Description=Pull and apply Nginx config from GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/nginx-config-pull.sh
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

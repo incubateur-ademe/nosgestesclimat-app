@@ -8,6 +8,8 @@ export type IframeInformation =
       iframe: true
       $referrer: string | undefined
       $referring_domain: string | undefined
+      // This property is included for backward compatibility with PostHog's property naming conventions used earlier.
+      $referringDomain: string | undefined
     }
 
 /**
@@ -35,8 +37,9 @@ export function getIframeInformation(): IframeInformation {
     //
   }
   return {
-    iframe,
+    iframe: true,
     $referrer: referrer,
     $referring_domain: referringDomain,
+    $referringDomain: referringDomain,
   }
 }

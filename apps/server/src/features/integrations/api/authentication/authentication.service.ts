@@ -114,10 +114,8 @@ const signTokens = async (email: string) => {
 
 export const generateApiToken = async ({
   generateApiTokenDto: { email },
-  origin,
 }: {
   generateApiTokenDto: GenerateAPITokenRequestDto
-  origin: string
 }) => {
   await transaction(async (session) => {
     const emailWhitelist = await fetchWhitelists(
@@ -132,7 +130,6 @@ export const generateApiToken = async ({
             email,
           },
           locale: Locales.fr,
-          origin,
         },
         { session }
       )

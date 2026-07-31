@@ -57,10 +57,8 @@ export const confirmNewsletterSubscriptions = async ({
 
 export const sendNewsletterConfirmationEmail = async ({
   inscriptionDto: { email, listIds },
-  origin,
 }: {
   inscriptionDto: NewsletterInscriptionDto
-  origin: string
 }) => {
   const { code } = await generateVerificationCode({
     verificationCodeDto: { email },
@@ -69,8 +67,8 @@ export const sendNewsletterConfirmationEmail = async ({
 
   return sendNewsLetterConfirmationEmail({
     newsLetterConfirmationBaseUrl: config.app.serverUrl,
+    origin: config.app.origin,
     listIds,
-    origin,
     email,
     code,
   })

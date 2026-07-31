@@ -1,4 +1,4 @@
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
+import { SIMULATOR_PATH, TUTORIAL_PATH } from '@/constants/urls/paths'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 interface Props {
@@ -43,7 +43,7 @@ export const getLinkToTutoriel = ({
   searchParams,
 }: TutorielProps = {}) => {
   const basePath = locale ? `/${locale}` : ''
-  const pathname = `${basePath}/tutoriel`
+  const pathname = `${basePath}${TUTORIAL_PATH}`
 
   if (searchParams) {
     return `${pathname}${searchParams.size > 0 ? `?${searchParams.toString()}` : ''}`

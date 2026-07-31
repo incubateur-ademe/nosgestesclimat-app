@@ -1,6 +1,5 @@
 'use client'
 
-import type { PendingVerification } from '@/hooks/authentication/usePendingVerification'
 import { useCallback, useContext } from 'react'
 import userContext from '../../providers/userProvider/context'
 import type { User } from '../../types'
@@ -15,8 +14,6 @@ export default function useUser() {
   const {
     user,
     setUser,
-    pendingVerification,
-    setPendingVerification,
     tutorials,
     setTutorials,
     simulations,
@@ -30,12 +27,6 @@ export default function useUser() {
     (name: string) =>
       setUser((prevUser: User | null) => prevUser && { ...prevUser, name }),
     [setUser]
-  )
-
-  const updatePendingVerification = useCallback(
-    (value: PendingVerification | undefined) =>
-      setPendingVerification(value ?? null),
-    [setPendingVerification]
   )
 
   const {
@@ -72,14 +63,6 @@ export default function useUser() {
      * A setter for updating the user name (not used for now)
      */
     updateName,
-    /**
-     * The pending verification state (email + expiration date), set when a verification code is sent
-     */
-    pendingVerification,
-    /**
-     * A setter for updating the user pending verification information
-     */
-    updatePendingVerification,
     /**
      * A list of all tutorials seen by the user (that we do not need to show)
      */

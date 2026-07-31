@@ -5,8 +5,8 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import { createGroup } from '../../groups/__tests__/fixtures/groups.fixture.ts'
 import {
   createSimulation,
@@ -40,137 +40,66 @@ describe('Given a NGC user', () => {
     describe('And user is not authenticated', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
-          .delete(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', faker.string.uuid())
-          )
+          .delete(url.replace(':simulationId', faker.string.uuid()))
           .expect(StatusCodes.UNAUTHORIZED)
-      })
-    })
-
-    describe('And invalid userId', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        const { cookie } = await login({ agent })
-
-        await agent
-          .delete(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', faker.string.alpha(34))
-          )
-          .set('cookie', cookie)
-          .expect(StatusCodes.BAD_REQUEST)
       })
     })
 
     describe('And invalid simulationId', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        const { cookie, userId } = await login({ agent })
-
         await agent
-          .delete(
-            url
-              .replace(':simulationId', faker.string.alpha(34))
-              .replace(':userId', userId)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', faker.string.alpha(34)))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.BAD_REQUEST)
       })
     })
 
     describe('And simulation does not exist', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
-        const { cookie, userId } = await login({ agent })
-
         await agent
-          .delete(
-            url
-              .replace(':simulationId', faker.string.uuid())
-              .replace(':userId', userId)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', faker.string.uuid()))
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.NOT_FOUND)
       })
     })
 
     describe('And simulation was created by another user', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
-        const { cookie, userId } = await login({ agent })
-        const { cookie: otherCookie } = await login({
-          agent,
-        })
         const simulation = await createSimulation({
           agent,
-          cookie,
+          userId: faker.string.uuid(),
         })
         simulationIds.push(simulation.id)
-        await agent
-          .delete(
-            url
-              .replace(':simulationId', simulation.id)
-              .replace(':userId', userId)
-          )
-          .set('cookie', otherCookie)
-          .expect(StatusCodes.NOT_FOUND)
-      })
-    })
 
-    describe('And a wrong userId is passed in the query params', () => {
-      test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
-        const { cookie } = await login({ agent })
-        const { userId: otherUserId } = await login({
-          agent,
-        })
-        const simulation = await createSimulation({
-          agent,
-          cookie,
-        })
-        simulationIds.push(simulation.id)
         await agent
-          .delete(
-            url
-              .replace(':simulationId', simulation.id)
-              .replace(':userId', otherUserId)
-          )
-          .set('cookie', cookie)
-          .expect(StatusCodes.FORBIDDEN)
+          .delete(url.replace(':simulationId', simulation.id))
+          .set(authHeaders({ userId: faker.string.uuid() }))
+          .expect(StatusCodes.NOT_FOUND)
       })
     })
 
     describe('And simulation does exist and belongs to user', () => {
       let simulationId: string
       let userId: string
-      let cookie: string
 
       beforeEach(async () => {
-        const result = await login({ agent })
-        cookie = result.cookie
-        userId = result.userId
-        const simulation = await createSimulation({ agent, cookie })
+        userId = faker.string.uuid()
+        const simulation = await createSimulation({ agent, userId })
         simulationId = simulation.id
         simulationIds.push(simulation.id)
       })
 
       test(`Then it returns a ${StatusCodes.ACCEPTED} response`, async () => {
         await agent
-          .delete(
-            url
-              .replace(':simulationId', simulationId)
-              .replace(':userId', userId)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', simulationId))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.ACCEPTED)
       })
 
       test('Then the simulation userId is null', async () => {
         await agent
-          .delete(
-            url
-              .replace(':simulationId', simulationId)
-              .replace(':userId', userId)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', simulationId))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.ACCEPTED)
 
         const simulation = await prisma.simulation.findUniqueOrThrow({
@@ -210,12 +139,8 @@ describe('Given a NGC user', () => {
         expect(participantsBefore.length).toBe(1)
 
         await agent
-          .delete(
-            url
-              .replace(':simulationId', simulationId)
-              .replace(':userId', userId)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', simulationId))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.ACCEPTED)
 
         const groupParticipants = await prisma.groupParticipant.findMany({
@@ -237,8 +162,8 @@ describe('Given a NGC user', () => {
       })
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
-        const { cookie } = await login({ agent })
-        const simulation = await createSimulation({ agent, cookie })
+        const userId = faker.string.uuid()
+        const simulation = await createSimulation({ agent, userId })
         simulationIds.push(simulation.id)
 
         vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
@@ -246,18 +171,14 @@ describe('Given a NGC user', () => {
         )
 
         await agent
-          .delete(
-            url
-              .replace(':simulationId', simulation.id)
-              .replace(':userId', simulation.user.id)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', simulation.id))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
       test('Then it logs the exception', async () => {
-        const { cookie } = await login({ agent })
-        const simulation = await createSimulation({ agent, cookie })
+        const userId = faker.string.uuid()
+        const simulation = await createSimulation({ agent, userId })
         simulationIds.push(simulation.id)
 
         vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
@@ -265,12 +186,8 @@ describe('Given a NGC user', () => {
         )
 
         await agent
-          .delete(
-            url
-              .replace(':simulationId', simulation.id)
-              .replace(':userId', simulation.user.id)
-          )
-          .set('cookie', cookie)
+          .delete(url.replace(':simulationId', simulation.id))
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
         expect(logger.error).toHaveBeenCalledWith(

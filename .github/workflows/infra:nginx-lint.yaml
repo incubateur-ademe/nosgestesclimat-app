@@ -1,0 +1,51 @@
+name: Nginx config lint
+
+on:
+  pull_request:
+    paths:
+      - 'infra/nginx/**'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/nginx/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate nginx.conf.tpl syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install nginx and gettext
+        run: sudo apt-get update && sudo apt-get install -y nginx gettext-base
+
+      - name: Render template with dummy values
+        run: |
+          mkdir -p /tmp/nginx-test
+          DOMAIN=example.com UPSTREAM=example.com \
+            envsubst '${DOMAIN} ${UPSTREAM}' \
+            < infra/nginx/nginx.conf.tpl \
+            > /tmp/nginx-test/site.conf
+
+      - name: Create dummy SSL certs
+        run: |
+          sudo mkdir -p /etc/letsencrypt/live/example.com
+          sudo openssl req -x509 -newkey rsa:2048 -nodes \
+            -keyout /etc/letsencrypt/live/example.com/privkey.pem \
+            -out /etc/letsencrypt/live/example.com/fullchain.pem \
+            -days 1 -subj "/CN=localhost" 2>/dev/null
+
+      - name: Validate nginx config
+        run: |
+          cat > /tmp/nginx-test/nginx.conf <<'EOF'
+          events {}
+          http {
+              include /tmp/nginx-test/site.conf;
+          }
+          EOF
+          sudo nginx -t -c /tmp/nginx-test/nginx.conf

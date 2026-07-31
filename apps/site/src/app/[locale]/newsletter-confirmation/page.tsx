@@ -10,7 +10,7 @@ import NewsletterSuccessMessage from './_components/NewsletterSuccessMessage'
 
 interface SearchParams {
   success: 'true' | 'false'
-  status?: '404' | '500'
+  status?: '400' | '404' | '500'
 }
 
 export const generateMetadata = getCommonMetadata({
@@ -30,7 +30,13 @@ const shouldRedirect404 = ({ success, status }: Partial<SearchParams>) => {
 
   if (success !== 'true' && success !== 'false') return true
 
-  if (success === 'false' && status !== '404' && status !== '500') return true
+  if (
+    success === 'false' &&
+    status !== '400' &&
+    status !== '404' &&
+    status !== '500'
+  )
+    return true
 
   return false
 }
@@ -53,7 +59,7 @@ export default async function NewsletterConfirmationPage({
           <div className="mt-36 text-center">
             {success === 'true' && <NewsletterSuccessMessage locale={locale} />}
 
-            {success === 'false' && status === '404' && (
+            {success === 'false' && (status === '400' || status === '404') && (
               <NewsletterInvalidMessage locale={locale} />
             )}
 

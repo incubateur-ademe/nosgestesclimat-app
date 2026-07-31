@@ -15,6 +15,7 @@ import {
 import { findThemes } from '@nosgestesclimat/core/features/actions/repositories/themes.repository'
 import type {
   Action,
+  ActionTranslationInput,
   NewAction,
   UpdatedAction,
 } from '@nosgestesclimat/core/features/actions/types/action'
@@ -71,6 +72,20 @@ const themeIdByNotionOption = {
   Divers: misc.id,
 } as const satisfies Record<ThemeNotionOption, string>
 
+const MediaNotionRowSchema = v.pipe(
+  v.string(),
+  v.rawTransform((ctx) => {
+    const result = parseMedia(ctx.dataset.value)
+    if (!result.success) {
+      ctx.addIssue({
+        message: `Invalid media: ${result.error}`,
+      })
+      return ctx.NEVER
+    }
+    return result.data
+  })
+)
+
 export const NotionActionRowSchema = v.pipe(
   v.object({
     ID: v.union([v.number(), v.pipe(v.string(), v.toNumber())]),
@@ -85,21 +100,7 @@ export const NotionActionRowSchema = v.pipe(
     tracking_id: v.pipe(trimmedLowercaseString, trackingIdSchema),
     front_title_fr: trimmedString,
     long_description_fr: trimmedString,
-    media_fr: nullishString(
-      v.pipe(
-        v.string(),
-        v.rawTransform((ctx) => {
-          const result = parseMedia(ctx.dataset.value)
-          if (!result.success) {
-            ctx.addIssue({
-              message: `Invalid media: ${result.error}`,
-            })
-            return ctx.NEVER
-          }
-          return result.data
-        })
-      )
-    ),
+    media_fr: nullishString(MediaNotionRowSchema),
     media_title_fr: nullishTrimmedString,
     tips_fr: nullishTrimmedString,
     financial_incentives_fr: nullishTrimmedString,
@@ -107,6 +108,17 @@ export const NotionActionRowSchema = v.pipe(
     seo_title_fr: nullishTrimmedString,
     seo_description_fr: nullishTrimmedString,
     seo_json_ld: nullishString(v.pipe(v.string(), v.parseJson())),
+    front_title_en: nullishTrimmedString,
+    slug_en: nullishString(v.pipe(trimmedLowercaseString, v.slug())),
+    long_description_en: nullishTrimmedString,
+    media_en: nullishString(MediaNotionRowSchema),
+    media_title_en: nullishTrimmedString,
+    tips_en: nullishTrimmedString,
+    financial_incentives_en: nullishTrimmedString,
+    further_explore_en: nullishTrimmedString,
+    seo_title_en: nullishTrimmedString,
+    seo_description_en: nullishTrimmedString,
+    seo_json_ld_en: nullishString(v.pipe(v.string(), v.parseJson())),
   })
 )
 
@@ -129,6 +141,17 @@ export interface NotionRawRow {
   seo_title_fr?: string | null
   seo_description_fr?: string | null
   seo_json_ld?: string | null
+  front_title_en?: string | null
+  slug_en?: string | null
+  long_description_en?: string | null
+  media_en?: string | null
+  media_title_en?: string | null
+  tips_en?: string | null
+  financial_incentives_en?: string | null
+  further_explore_en?: string | null
+  seo_title_en?: string | null
+  seo_description_en?: string | null
+  seo_json_ld_en?: string | null
   [key: string]: unknown
 }
 
@@ -148,7 +171,7 @@ export async function syncNotionActions({
   const [rows, themes, existingDbActions] = await Promise.all([
     fetchAllPages(actionDatabaseId),
     findThemes(),
-    findAllActions(),
+    findAllActions('fr'),
   ])
 
   logger.info(`Fetched ${rows.length} rows from Notion action database`)
@@ -194,7 +217,7 @@ export async function syncNotionActions({
 
   logger.info('Notion actions sync completed successfully')
   toCreate.forEach((action) => {
-    logger.info(`Created action "${action.slug}"`)
+    logger.info(`Created action "${action.translations.fr.slug}"`)
   })
   toDelete.forEach((id) => {
     logger.info(`Deleted action with id "${id}"`)
@@ -261,8 +284,10 @@ function categorizeNotionRows(
   const toUpdate: { id: string; data: UpdatedAction }[] = []
   const toDelete: string[] = []
 
+  const duplicatedEnglishSlugs = findDuplicatedEnglishSlugs(validRows)
+
   for (const row of validRows) {
-    const action = mapNotionRowToAction(row)
+    const action = mapNotionRowToAction(row, duplicatedEnglishSlugs)
     const existing = existingActionsBySlug[row.slug]
 
     if (existing) {
@@ -414,13 +439,98 @@ function parseMedia(
   }
 }
 
-function mapNotionRowToAction(row: NotionActionRow): NewAction {
-  const metadata: SeoMetadata = {
-    title: row.seo_title_fr,
-    description: row.seo_description_fr,
-    jsonLd: row.seo_json_ld as SeoMetadata['jsonLd'],
+/**
+ * The `[locale, slug]` unique constraint on ActionTranslation would make the
+ * sync fail if two Notion rows shared the same `slug_en`. Detect them upfront
+ * so the affected rows can be treated as untranslated instead.
+ */
+function findDuplicatedEnglishSlugs(rows: NotionActionRow[]): Set<string> {
+  const seen = new Set<string>()
+  const duplicated = new Set<string>()
+
+  for (const row of rows) {
+    if (!row.slug_en) continue
+    if (seen.has(row.slug_en)) {
+      duplicated.add(row.slug_en)
+    } else {
+      seen.add(row.slug_en)
+    }
   }
 
+  return duplicated
+}
+
+/**
+ * When:
+ * 1. all required fields are present, return the english translation
+ * 2. some required fields are missing, return `undefined` to keep previous translation untouched
+ * 3. all required fields are missing, return `null` to remove previous translation
+ * 4. some slug is duplicated, return `undefined` to keep everything untouched and fix it manually
+ */
+function extractEnglishTranslation(
+  row: NotionActionRow,
+  duplicatedEnglishSlugs: Set<string>
+): ActionTranslationInput | null | undefined {
+  const title = row.front_title_en
+  const slug = row.slug_en
+  const longDescription = row.long_description_en
+
+  if (!title && !slug && !longDescription) {
+    return null
+  }
+
+  if (slug && duplicatedEnglishSlugs.has(slug)) {
+    logger.warn(
+      `Row "${row.slug}" shares its English slug "${slug}" with another row and will be treated as untranslated`,
+      { slug: row.slug, slugEn: slug }
+    )
+    return undefined
+  }
+
+  if (!title || !slug || !longDescription) {
+    logger.warn(
+      `Row "${row.slug}" has a partial English translation and will be treated as untranslated`,
+      {
+        slug: row.slug,
+        missing: [
+          ['front_title_en', title],
+          ['slug_en', slug],
+          ['long_description_en', longDescription],
+        ]
+          .filter(([_, v]) => !!v)
+          .map(([k]) => k)
+          .join(', '),
+      }
+    )
+    return undefined
+  }
+
+  const media = row.media_en
+
+  if (media && row.media_title_en) {
+    media.title = row.media_title_en
+  }
+
+  return {
+    title,
+    slug,
+    longDescription,
+    media,
+    tips: row.tips_en,
+    financialIncentives: row.financial_incentives_en,
+    furtherExplore: row.further_explore_en,
+    metadata: {
+      title: row.seo_title_en,
+      description: row.seo_description_en,
+      jsonLd: row.seo_json_ld_en as SeoMetadata['jsonLd'],
+    },
+  }
+}
+
+function mapNotionRowToAction(
+  row: NotionActionRow,
+  duplicatedEnglishSlugs: Set<string>
+): NewAction {
   const media = row.media_fr
 
   if (media && row.media_title_fr) {
@@ -428,19 +538,28 @@ function mapNotionRowToAction(row: NotionActionRow): NewAction {
   }
 
   return {
-    title: row.front_title_fr,
-    slug: row.slug,
     trackingId: row.tracking_id,
-    longDescription: row.long_description_fr,
     ruleId: row.rule_id,
     themeId: row.theme,
-    media,
-    tips: row.tips_fr,
-    financialIncentives: row.financial_incentives_fr,
-    furtherExplore: row.further_explore_fr,
-    metadata,
     publishedAt: row.published_at ?? null,
     deletedAt: null, // Actions from Notion are active
+    translations: {
+      fr: {
+        title: row.front_title_fr,
+        slug: row.slug,
+        longDescription: row.long_description_fr,
+        media,
+        tips: row.tips_fr,
+        financialIncentives: row.financial_incentives_fr,
+        furtherExplore: row.further_explore_fr,
+        metadata: {
+          title: row.seo_title_fr,
+          description: row.seo_description_fr,
+          jsonLd: row.seo_json_ld as SeoMetadata['jsonLd'],
+        },
+      },
+      en: extractEnglishTranslation(row, duplicatedEnglishSlugs),
+    },
   }
 }
 

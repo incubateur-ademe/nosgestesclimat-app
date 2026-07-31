@@ -1,6 +1,5 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { ComputedResults } from '@/publicodes-state/types'
-import type { AppUser } from '@/services/auth/get-user-session'
 import { getPublicPoll } from '@/services/organisations/get-public-poll'
 import { getGroup } from './groups'
 
@@ -11,16 +10,13 @@ export interface SimulationResult {
 
 export async function getSimulationResult({
   simulation,
-  user,
 }: {
   simulation: Simulation
-  user: AppUser
 }): Promise<SimulationResult> {
   let group: { name: string; href: string } | null = null
   if (simulation.groups?.length) {
     const groupId = simulation.groups[0].id
     const groupData = await getGroup({
-      user,
       groupId,
     })
     group = {

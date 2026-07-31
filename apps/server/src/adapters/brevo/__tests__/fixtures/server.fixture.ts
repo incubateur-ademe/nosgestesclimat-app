@@ -10,8 +10,10 @@ type CustomResponse = {
 
 export const brevoSendEmail = ({
   expectBody,
+  networkError,
 }: {
   expectBody?: unknown
+  networkError?: true
 } = {}) =>
   http.post(`${process.env.BREVO_URL}/v3/smtp/email`, async ({ request }) => {
     if (request.headers.get('api-key') !== process.env.BREVO_API_KEY) {
@@ -20,6 +22,10 @@ export const brevoSendEmail = ({
 
     if (expectBody) {
       expect(await request.json()).toEqual(expectBody)
+    }
+
+    if (networkError) {
+      return HttpResponse.error()
     }
 
     return HttpResponse.json()

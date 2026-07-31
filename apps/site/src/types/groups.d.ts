@@ -1,10 +1,15 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
+export type ParticipantSimulationSummary = Pick<
+  Simulation,
+  'computedResults' | 'progression'
+>
+
 export interface Participant {
   id: string
   name?: string
-  simulation: Simulation
+  simulation: Simulation | ParticipantSimulationSummary
   userId?: string
   email?: string
 }

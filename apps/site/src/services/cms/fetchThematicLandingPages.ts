@@ -7,6 +7,7 @@ interface ThematicLandingPageSummary {
   id: string
   title: string
   slug: string
+  updatedAt: string
 }
 
 export async function fetchThematicLandingPages(): Promise<
@@ -21,6 +22,7 @@ export async function fetchThematicLandingPages(): Promise<
       'fields[0]': 'id',
       'fields[1]': 'title',
       'fields[2]': 'slug',
+      'fields[3]': 'updatedAt',
       sort: 'publishedAt:desc',
     })
 

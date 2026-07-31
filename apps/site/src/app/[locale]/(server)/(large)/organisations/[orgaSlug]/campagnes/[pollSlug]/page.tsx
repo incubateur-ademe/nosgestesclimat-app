@@ -126,7 +126,7 @@ export default function CampagnePage() {
             />
           )}
 
-          <CommunicationKit />
+          {isAdmin && simulations?.count === 0 && <CommunicationKit />}
 
           <PollStatistics
             simulationsCount={simulations?.finished ?? 0}
@@ -145,7 +145,10 @@ export default function CampagnePage() {
           />
 
           {isAdmin && simulations && simulations.count > 0 && (
-            <ShareSection poll={poll} />
+            <>
+              <ShareSection poll={poll} />
+              <CommunicationKit />
+            </>
           )}
         </div>
       </div>

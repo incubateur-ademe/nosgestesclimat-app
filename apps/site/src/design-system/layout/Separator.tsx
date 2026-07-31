@@ -20,6 +20,6 @@ export default function Separator({
 }
 
 const classNamesByVariant: Record<SeparatorVariant, string> = {
-  short: 'bg-secondary-500 my-8 h-[3px] w-12 rounded-full md:w-20',
+  short: 'bg-secondary-700 my-8 h-[3px] w-12 rounded-full md:w-20',
   full: 'h-px bg-slate-200',
 }

@@ -20,7 +20,7 @@ export const getSimulations = async ({
   if (!session) return []
 
   const serverSimulations = await fetchServer<Simulation[]>(
-    `${SIMULATION_URL}/${session.id}?completedOnly=${completedOnly}&pageSize=${pageSize}`
+    `${SIMULATION_URL}?completedOnly=${completedOnly}&pageSize=${pageSize}`
   )
 
   const simulations = serverSimulations.map((simulation) => {

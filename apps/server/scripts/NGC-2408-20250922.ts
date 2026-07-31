@@ -71,7 +71,7 @@ if (deleteOrganisations) {
 
     while (true) {
       const { organisations } = await fetchOrganisations({
-        user: { userId, email },
+        user: { id: userId, email },
         query,
       })
 
@@ -84,7 +84,7 @@ if (deleteOrganisations) {
 
         const polls = await fetchPolls({
           params: { organisationIdOrSlug },
-          user: { userId, email },
+          user: { id: userId, email },
         })
 
         for (const poll of polls) {
@@ -95,7 +95,7 @@ if (deleteOrganisations) {
           if (!dry) {
             await deletePoll({
               params: { organisationIdOrSlug, pollIdOrSlug },
-              user: { userId, email },
+              user: { id: userId, email },
             })
           }
         }
@@ -148,7 +148,7 @@ if (deleteUser) {
 
       const { id: userId } = user
 
-      const groups = await fetchGroups({ userId }, { locale: Locales.fr })
+      const groups = await fetchGroups({ id: userId }, { locale: Locales.fr })
 
       for (const group of groups) {
         logger.info('Found group. Looking if administrator or participant', {
@@ -174,7 +174,11 @@ if (deleteUser) {
             })
 
             if (!dry) {
-              await removeParticipant({ userId, groupId, participantId })
+              await removeParticipant({
+                groupId,
+                participantId,
+                user: { id: userId },
+              })
             }
           }
         }
@@ -187,7 +191,7 @@ if (deleteUser) {
 
       while (true) {
         const { simulations } = await fetchSimulations({
-          params: { userId },
+          user: { id: userId },
           query,
         })
 

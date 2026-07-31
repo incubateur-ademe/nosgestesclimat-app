@@ -59,11 +59,12 @@ export const config = {
      * - misc (public misc directory)
      * - videos (public videos directory)
      * - robots.txt (robots file)
+     * - sitemap.xml (root sitemap file)
      * - datashare (iframe datashare modal)
      */
     {
       source:
-        '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|datashare).*)',
+        '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|sitemap.xml|datashare).*)',
     },
   ],
 }

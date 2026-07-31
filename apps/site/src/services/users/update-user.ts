@@ -27,16 +27,15 @@ export const updateUser = async ({
   if (!session.isAuth) {
     throw new ForbiddenError()
   }
-  const params = code ? `?code=${code}` : ''
 
-  const data = await fetchServer<{ id: string }>(
-    `${USER_URL}/${session.id}${params}`,
-    {
-      method: 'PUT',
-      body: { email, name, ageRange },
-    }
-  )
-  if (email !== session.email) {
+  const url = new URL(USER_URL)
+  if (code) url.searchParams.set('code', code)
+
+  const data = await fetchServer<{ id: string }>(url.toString(), {
+    method: 'PUT',
+    body: { email, name, ageRange },
+  })
+  if (email !== undefined && email !== session.email) {
     await revokeAllSessions(session.id)
     await createAppSession(session.id, email)
   }

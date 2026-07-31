@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import type { SimulationCreateInputDto } from '../simulations.validator.ts'
 import {
   CREATE_SIMULATION_ROUTE,
@@ -55,7 +56,8 @@ describe('Given a completed simulation (progression = 1)', () => {
       }
 
       const response = await agent
-        .post(url.replace(':userId', userId))
+        .post(url)
+        .set(authHeaders({ userId }))
         .send(payload)
         .expect(StatusCodes.BAD_REQUEST)
 
@@ -74,7 +76,8 @@ describe('Given a completed simulation (progression = 1)', () => {
       }
 
       await agent
-        .post(url.replace(':userId', userId))
+        .post(url)
+        .set(authHeaders({ userId }))
         .send(payload)
         .expect(StatusCodes.CREATED)
     })

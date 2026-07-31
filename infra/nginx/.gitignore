@@ -1,0 +1,3 @@
+# Ignore cloud-init files for specific environments, except the template
+cloud-init.prod.yaml
+cloud-init.preprod.yaml

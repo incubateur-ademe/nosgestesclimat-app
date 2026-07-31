@@ -48,7 +48,7 @@ export default function PartnerCampaignContent({
         description={
           <>
             <div
-              className="text-left"
+              className="markdown text-left"
               dangerouslySetInnerHTML={{
                 __html: partnerCampaign.htmlContent,
               }}

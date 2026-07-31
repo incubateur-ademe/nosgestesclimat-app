@@ -91,8 +91,8 @@ describe('Given a NGC user', () => {
 
   describe('When confirming newsletter subscription', () => {
     describe('And invalid code', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
+      test(`Then it redirects to an error page with 400 status`, async () => {
+        const response = await agent
           .get(url)
           .query({
             code: 'invalid',
@@ -100,13 +100,17 @@ describe('Given a NGC user', () => {
             origin: 'https://nosgestesclimat.test',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=400'
+        )
       })
     })
 
     describe('And invalid email', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
+      test(`Then it redirects to an error page with 400 status`, async () => {
+        const response = await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
@@ -114,13 +118,17 @@ describe('Given a NGC user', () => {
             origin: 'https://nosgestesclimat.test',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=400'
+        )
       })
     })
 
     describe('And invalid origin (not a valid URL)', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
+      test('Then it never redirects to the attacker origin, falling back to the default origin', async () => {
+        const response = await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
@@ -128,13 +136,17 @@ describe('Given a NGC user', () => {
             origin: 'invalid-origin',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
+        )
       })
     })
 
     describe('And invalid origin (not in allowed origins list)', () => {
-      test('Then it returns a 400 error for malicious domain', async () => {
-        await agent
+      test('Then it never redirects to the malicious domain, falling back to the default origin', async () => {
+        const response = await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
@@ -142,11 +154,15 @@ describe('Given a NGC user', () => {
             origin: 'https://malicious-site.com',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
+        )
       })
 
-      test('Then it returns a 400 error for subdomain attack', async () => {
-        await agent
+      test('Then it never redirects to the subdomain attack origin, falling back to the default origin', async () => {
+        const response = await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
@@ -154,11 +170,15 @@ describe('Given a NGC user', () => {
             origin: 'https://attacker.nosgestesclimat.test',
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
+        )
       })
 
-      test('Then it returns a 400 error for similar domain', async () => {
-        await agent
+      test('Then it never redirects to the similar-looking domain, falling back to the default origin', async () => {
+        const response = await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
@@ -166,13 +186,17 @@ describe('Given a NGC user', () => {
             origin: 'https://nosgestesclimat.com', // instead of https://nosgestesclimat.test
             listIds: [ListIds.MAIN_NEWSLETTER],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
+        )
       })
     })
 
     describe('And invalid listIds (not in allowed newsletters)', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
+      test(`Then it redirects to an error page with 400 status`, async () => {
+        const response = await agent
           .get(url)
           .query({
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
@@ -180,7 +204,62 @@ describe('Given a NGC user', () => {
             origin: 'https://nosgestesclimat.test',
             listIds: [999],
           })
-          .expect(StatusCodes.BAD_REQUEST)
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=400'
+        )
+      })
+    })
+
+    describe('And missing listIds (0 newsletters selected)', () => {
+      let email: string
+      let code: string
+
+      beforeEach(async () => {
+        ;({ email, code } = await createNewsletterSubscriptionRequest({
+          agent,
+          listIds: [],
+        }))
+      })
+
+      describe('When clicking the confirmation email link', () => {
+        test('Then it redirects to a success page', async () => {
+          mswServer.use(
+            brevoGetContact(email, {
+              customResponses: [
+                {
+                  body: {
+                    code: 'document_not_found',
+                    message: 'Contact does not exist',
+                  },
+                  status: StatusCodes.NOT_FOUND,
+                },
+              ],
+            }),
+            brevoUpdateContact({
+              expectBody: {
+                email,
+                listIds: [],
+                attributes: {},
+                updateEnabled: true,
+              },
+            })
+          )
+
+          const response = await agent
+            .get(url)
+            .query({
+              code,
+              email,
+              origin: 'https://nosgestesclimat.test',
+            })
+            .expect(StatusCodes.MOVED_TEMPORARILY)
+
+          expect(response.get('location')).toBe(
+            'https://nosgestesclimat.test/newsletter-confirmation?success=true'
+          )
+        })
       })
     })
 

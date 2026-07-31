@@ -64,6 +64,51 @@ export const findVerificationCode = (
   }) as Promise<UserVerificationCode>
 }
 
+export const findVerificationCodeIgnoringExpiration = (
+  { email, code }: Pick<VerificationCode, 'email' | 'code'>,
+  { session }: { session: Session }
+) => {
+  return session.verificationCode.findFirst({
+    where: { email, code },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      createdAt: true,
+      expirationDate: true,
+    },
+  })
+}
+
+export const findLatestVerificationCodeForEmail = (
+  { email }: Pick<VerificationCode, 'email'>,
+  { session }: { session: Session }
+) => {
+  return session.verificationCode.findFirst({
+    where: { email },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      createdAt: true,
+      expirationDate: true,
+    },
+  })
+}
+
+export const findValidVerificationCodesForEmail = (
+  { email }: Pick<VerificationCode, 'email'>,
+  { session }: { session: Session }
+) => {
+  return session.verificationCode.findMany({
+    where: { email, expirationDate: { gte: new Date() } },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      createdAt: true,
+      expirationDate: true,
+    },
+  })
+}
+
 export const invalidateVerificationCode = (
   { id }: Pick<VerificationCode, 'id'>,
   { session }: { session: Session }

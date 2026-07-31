@@ -1,6 +1,7 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type {
   CategoriesAndSubcategoriesFootprintsType,
+  ParticipantSimulationSummary,
   ValueObject,
 } from '@/types/groups'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
@@ -10,7 +11,7 @@ export function getCategoriesObject({
   isCurrentMember,
   groupAccumulator,
 }: {
-  simulation: Simulation
+  simulation: Simulation | ParticipantSimulationSummary
   isCurrentMember: boolean
   groupAccumulator: CategoriesAndSubcategoriesFootprintsType
 }): {

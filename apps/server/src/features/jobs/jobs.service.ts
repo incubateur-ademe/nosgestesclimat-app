@@ -1,6 +1,5 @@
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import crypto from 'crypto'
-import type { Request } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import type { InputJsonValue } from '../../adapters/prisma/generated.ts'
 import { JobStatus } from '../../adapters/prisma/generated.ts'
@@ -9,6 +8,7 @@ import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
+import type { PartialUser } from '../../core/types/user.ts'
 import logger from '../../logger.ts'
 import { JobCreatedEvent } from './events/JobCreated.event.ts'
 import { publishRedisEvent } from './handlers/publish-redis-event.ts'
@@ -33,7 +33,7 @@ export const getJobId = <T extends JobKind>({
   user,
 }: {
   params: JobParams<T>
-  user?: NonNullable<Request['user']>
+  user?: PartialUser
 }) => {
   const key = new URLSearchParams(
     Object.entries({
@@ -49,10 +49,7 @@ export const getJobId = <T extends JobKind>({
 }
 
 export const bootstrapJob = async <T extends JobKind>(
-  {
-    params,
-    user,
-  }: { params: JobParams<T>; user?: NonNullable<Request['user']> },
+  { params, user }: { params: JobParams<T>; user?: PartialUser },
   session: { session: Session }
 ) => {
   const id = getJobId({ params, user })
@@ -93,7 +90,7 @@ export const getPendingJobStatus = async <T extends JobKind>(
   }: {
     id: string
     params: JobParams<T>
-    user?: NonNullable<Request['user']>
+    user?: PartialUser
   },
   session: { session: Session }
 ) => {

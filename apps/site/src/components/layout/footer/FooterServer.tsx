@@ -6,6 +6,7 @@ import Logo from '@/components/misc/Logo'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Trans from '@/components/translation/trans/TransServer'
 
+import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
@@ -19,14 +20,12 @@ interface Props {
   backgroundColor?: 'default' | 'white'
   locale: Locale
   className?: string
-  params?: Record<string, string>
 }
 
 export default async function FooterServer({
   backgroundColor = 'default',
   locale,
   className = '',
-  params,
 }: Props) {
   'use cache'
   cacheLife('days')
@@ -156,6 +155,15 @@ export default async function FooterServer({
                 </li>
                 <li>
                   <InlineLink
+                    href={ACTIONS_PATH}
+                    className="text-default text-sm no-underline hover:underline">
+                    <Trans locale={locale} i18nKey="footer.resources.actions">
+                      Actions
+                    </Trans>
+                  </InlineLink>
+                </li>
+                <li>
+                  <InlineLink
                     href="/documentation"
                     className="text-default text-sm no-underline hover:underline">
                     <Trans locale={locale}>Documentation</Trans>
@@ -197,7 +205,7 @@ export default async function FooterServer({
             </div>
           ) : null}
         </div>
-        <LanguageSwitchButton params={params} />
+        <LanguageSwitchButton />
 
         <div className="flex flex-wrap justify-between gap-8 md:flex-row md:flex-nowrap">
           <div>

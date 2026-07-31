@@ -171,6 +171,7 @@ export type ArticleItemType = Pick<
   | 'slug'
   | 'image'
   | 'blogCategory'
+  | 'updatedAt'
 >
 
 export type BannerType = {

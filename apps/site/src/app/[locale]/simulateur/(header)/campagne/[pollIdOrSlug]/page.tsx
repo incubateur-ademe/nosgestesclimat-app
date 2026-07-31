@@ -1,6 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
+import Emoji from '@/design-system/utils/Emoji'
 import { throwNextError } from '@/helpers/server/error'
 import type { Locale } from '@/i18nConfig'
 import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
@@ -76,7 +77,8 @@ export default async function CampagnePage({
 
   const disclaimer = (
     <div className="relative pl-8">
-      <p className="overflow-visible before:absolute before:left-0 before:content-['🏢']">
+      <Emoji className="absolute left-0">🏢</Emoji>
+      <p>
         <Trans locale={locale}>Ce test vous est proposé par</Trans>{' '}
         <strong>{poll.organisation.name}</strong>.{' '}
         <Trans locale={locale}>
@@ -96,6 +98,7 @@ export default async function CampagnePage({
         reuseSimulation={reuseSimulation}
         locale={locale}
         disclaimer={disclaimer}
+        simulation={lastCompletedSimulation}
       />
     )
   }

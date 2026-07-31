@@ -9,7 +9,6 @@ import {
   isPrismaErrorNotFound,
   isPrismaErrorUniqueConstraintFailed,
 } from '@nosgestesclimat/core/prisma/utils'
-import type { Request } from 'express'
 import * as v from 'valibot'
 import { utils, write } from 'xlsx'
 import type { Organisation } from '../../adapters/prisma/generated.ts'
@@ -23,6 +22,8 @@ import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
+import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
+import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
 import logger from '../../logger.ts'
 import { createToken } from '../authentication/authentication.service.ts'
 import type { JobParams } from '../jobs/jobs.repository.ts'
@@ -74,7 +75,7 @@ const { bucket, rootPath } = config.thirdParty.scaleway
 const organisationToDto = (
   organisation: Organisation &
     Partial<Awaited<ReturnType<typeof fetchUserOrganisation>>>,
-  connectedUserEmail: string
+  connectedUserEmail?: string
 ) => ({
   ...organisation,
   hasCustomQuestionEnabled:
@@ -119,13 +120,11 @@ const organisationToDto = (
 export const createOrganisation = async ({
   organisationDto,
   locale,
-  origin,
   user,
 }: {
   organisationDto: OrganisationCreateDto
   locale: Locales
-  origin: string
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     const { organisation, administrator } = await transaction((session) =>
@@ -136,7 +135,6 @@ export const createOrganisation = async ({
       administrator,
       organisation,
       locale,
-      origin,
     })
 
     EventBus.emit(organisationCreatedEvent)
@@ -161,7 +159,7 @@ export const updateOrganisation = async ({
 }: {
   params: OrganisationParams
   organisationDto: OrganisationUpdateDto
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   let token: string | undefined
   const { administrators: [{ email }] = [{}] } = organisationDto
@@ -210,7 +208,7 @@ export const fetchOrganisations = async ({
   user,
   query,
 }: {
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
   query: PaginationQuery
 }) => {
   const { organisations, count } = await transaction(
@@ -231,7 +229,7 @@ export const fetchOrganisation = async ({
   user,
 }: {
   params: OrganisationParams
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     const organisation = await transaction(
@@ -255,9 +253,10 @@ type PollPopulated = PollData['poll']
 
 const isOrganisationAdmin = (
   organisation: PollOrganisation,
-  connectedUser?: NonNullable<Request['user']> | string
-): connectedUser is NonNullable<Request['user']> =>
+  connectedUser?: PartialUser
+): connectedUser is PartialVerifiedUser =>
   typeof connectedUser === 'object' &&
+  isVerifiedUser(connectedUser) &&
   organisation.administrators.some(
     ({ user }) => user.email === connectedUser.email
   )
@@ -272,7 +271,7 @@ const pollToDto = ({
   poll: PollPopulated
   simulationsInfos: PollSimulationsInfos
   organisation: PollOrganisation
-  user?: NonNullable<Request['user']> | string
+  user?: PartialUser
 }) => ({
   ...poll,
   ...(organisation
@@ -313,14 +312,12 @@ const pollToDto = ({
 export const createPoll = async ({
   user,
   locale,
-  origin,
   params,
   pollDto,
 }: {
-  origin: string
   params: OrganisationParams
   pollDto: OrganisationPollCreateDto
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
   locale: Locales
 }) => {
   try {
@@ -331,7 +328,6 @@ export const createPoll = async ({
     const pollCreatedEvent = new PollCreatedEvent({
       organisation,
       locale,
-      origin,
       poll,
     })
 
@@ -355,7 +351,7 @@ export const updatePoll = async ({
 }: {
   params: OrganisationPollParams
   pollDto: OrganisationPollUpdateDto
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     const { poll, organisation, simulationsInfos } = await transaction(
@@ -382,7 +378,7 @@ export const deletePoll = async ({
   user,
 }: {
   params: OrganisationPollParams
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     const { organisation } = await transaction((session) =>
@@ -407,7 +403,7 @@ export const fetchPolls = async ({
   user,
 }: {
   params: OrganisationParams
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     const { organisation, polls } = await transaction(
@@ -431,7 +427,7 @@ export const fetchPoll = async ({
   user,
 }: {
   params: OrganisationPollParams
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     const { poll, organisation, simulationsInfos } = await transaction(
@@ -453,7 +449,7 @@ export const fetchPublicPoll = async ({
   user,
 }: {
   params: PublicPollParams
-  user?: NonNullable<Request['user']>
+  user?: PartialUser
 }) => {
   try {
     const { poll, organisation, simulationsInfos } = await transaction(
@@ -472,7 +468,7 @@ export const fetchPublicPoll = async ({
       poll,
       organisation,
       simulationsInfos,
-      user: user || params.userId,
+      user,
     })
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
@@ -526,7 +522,7 @@ export const startDownloadPollSimulationResultJob = async ({
   user,
 }: {
   params: OrganisationPollParams
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
 }) => {
   try {
     return await transaction(async (session) => {
@@ -570,7 +566,7 @@ export const getDownloadPollSimulationResultJob = async ({
   jobId,
   user,
 }: {
-  user: NonNullable<Request['user']>
+  user: PartialVerifiedUser
   params: OrganisationPollParams
   jobId: string
 }) => {

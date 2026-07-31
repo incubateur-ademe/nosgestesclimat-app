@@ -14,7 +14,7 @@ export const getSimulation = async (
   if (!session) throw new UnauthorizedError()
 
   const simulation = await fetchServer<Simulation>(
-    `${SIMULATION_URL}/${session.id}/${simulationId}`
+    `${SIMULATION_URL}/${simulationId}`
   )
 
   const updatedSimulation = setDefaultExtendedSituation(simulation)

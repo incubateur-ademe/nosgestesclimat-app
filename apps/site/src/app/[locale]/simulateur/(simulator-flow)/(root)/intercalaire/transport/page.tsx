@@ -14,7 +14,7 @@ export async function generateMetadata({
   const { t } = await getServerTranslation({ locale })
 
   return getMetadataObject({
-    locale,
+    locale: locale as Locale,
     title: t(
       'simulator.intercalaire.transport.meta.title',
       'Section transport terminée - Nos Gestes Climat'
@@ -23,6 +23,9 @@ export async function generateMetadata({
       'simulator.intercalaire.transport.meta.description',
       'Bravo, tu as terminé la section transport. Découvre l’impact carbone de différents moyens de transport.'
     ),
+    alternates: {
+      canonical: '/simulateur/intercalaire/transport',
+    },
     robots: noIndexObject,
   })
 }

@@ -544,4 +544,147 @@ describe('NotionActionRowSchema', () => {
       expect(result.output.media_title_fr).toBeNull()
     })
   })
+
+  describe('front_title_en and long_description_en fields', () => {
+    it('should be undefined when not provided (unlike the required _fr fields)', () => {
+      const row = generateValidRow()
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.front_title_en).toBeUndefined()
+      expect(result.output.long_description_en).toBeUndefined()
+    })
+
+    it('should trim whitespace from front_title_en', () => {
+      const row = generateValidRow({ front_title_en: '  Test Title  ' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.front_title_en).toBe('Test Title')
+    })
+
+    it('should convert empty string front_title_en to null', () => {
+      const row = generateValidRow({ front_title_en: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.front_title_en).toBeNull()
+    })
+
+    it('should trim whitespace from long_description_en', () => {
+      const row = generateValidRow({
+        long_description_en: '  Test Description  ',
+      })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.long_description_en).toBe('Test Description')
+    })
+
+    it('should convert empty string long_description_en to null', () => {
+      const row = generateValidRow({ long_description_en: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.long_description_en).toBeNull()
+    })
+  })
+
+  describe('slug_en field', () => {
+    it('should be undefined when not provided', () => {
+      const row = generateValidRow()
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.slug_en).toBeUndefined()
+    })
+
+    it('should trim and lowercase slug_en', () => {
+      const row = generateValidRow({ slug_en: ' TEST-SLUG ' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.slug_en).toBe('test-slug')
+    })
+
+    it('should convert empty string slug_en to null', () => {
+      const row = generateValidRow({ slug_en: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.slug_en).toBeNull()
+    })
+
+    it('should fail if slug_en has special characters', () => {
+      const row = generateValidRow({ slug_en: 'test@slug' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect(result.success).toBe(false)
+    })
+  })
+
+  describe('optional _en fields', () => {
+    it.each([
+      'tips_en',
+      'financial_incentives_en',
+      'further_explore_en',
+      'seo_title_en',
+      'seo_description_en',
+      'media_title_en',
+    ] as const)('should handle %s', (field) => {
+      const row = generateValidRow({ [field]: `Test ${field}` })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output[field]).toBe(`Test ${field}`)
+    })
+
+    it.each([
+      'tips_en',
+      'financial_incentives_en',
+      'further_explore_en',
+      'seo_title_en',
+      'seo_description_en',
+      'media_title_en',
+    ] as const)('should convert empty string %s to null', (field) => {
+      const row = generateValidRow({ [field]: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output[field]).toBeNull()
+    })
+  })
+
+  describe('media_en field', () => {
+    it('should handle valid media_en with simulation script', () => {
+      const row = generateValidRow({
+        media_en:
+          '<script data-name="impact-co2" src="https://example.com/script.js" data-type="simulation" data-search="mode=test"/>',
+      })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect.assert(result.output.media_en)
+      expect(result.output.media_en).toEqual({
+        type: 'impact_co2',
+        title: '',
+        data: {
+          type: 'simulation',
+          options: {
+            mode: 'test',
+          },
+        },
+      })
+    })
+
+    it('should fail if media_en is invalid script', () => {
+      const row = generateValidRow({
+        media_en: '<script>invalid</script>',
+      })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect(result.success).toBe(false)
+    })
+
+    it('should accept undefined media_en', () => {
+      const row = generateValidRow()
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_en).toBeUndefined()
+    })
+
+    it('should convert empty string media_en to null', () => {
+      const row = generateValidRow({ media_en: '' })
+      const result = v.safeParse(NotionActionRowSchema, row)
+      expect.assert(result.success)
+      expect(result.output.media_en).toBeNull()
+    })
+  })
 })

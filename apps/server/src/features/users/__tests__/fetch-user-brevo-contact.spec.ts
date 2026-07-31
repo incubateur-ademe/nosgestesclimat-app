@@ -7,6 +7,7 @@ import * as v from 'valibot'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { brevoGetContact } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
@@ -35,10 +36,9 @@ describe('Given a NGC user', () => {
     describe('And user is authenticated', () => {
       let email: string
       let userId: string
-      let cookie: string
 
       beforeEach(async () => {
-        ;({ cookie, email, userId } = await login({
+        ;({ email, userId } = await login({
           agent,
         }))
       })
@@ -66,7 +66,7 @@ describe('Given a NGC user', () => {
 
         const { body } = await agent
           .get(url)
-          .set('Cookie', cookie)
+          .set(authHeaders({ userId, email }))
           .expect(StatusCodes.OK)
 
         await EventBus.flush()
@@ -96,7 +96,7 @@ describe('Given a NGC user', () => {
 
           await agent
             .get(url)
-            .set('Cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.NOT_FOUND)
 
           await EventBus.flush()
@@ -109,7 +109,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .get(url)
-            .set('Cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
           await EventBus.flush()
@@ -133,7 +133,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .get(url)
-            .set('Cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
           await EventBus.flush()
@@ -154,7 +154,7 @@ describe('Given a NGC user', () => {
 
           const { body } = await agent
             .get(url)
-            .set('Cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
           await EventBus.flush()

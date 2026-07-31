@@ -36,7 +36,10 @@ const brevo = axios.create({
   headers: {
     'api-key': config.thirdParty.brevo.apiKey,
   },
-  timeout: 1000,
+  timeout: 5_000,
+  'axios-retry': {
+    retries: 2,
+  },
 })
 
 axiosRetry(brevo, {
@@ -147,16 +150,30 @@ const sendEmail = ({
   templateId: TemplateId
   params: { [key: string]: unknown }
 }) => {
-  return brevo.post('/v3/smtp/email', {
-    to: [
-      {
-        name: email,
-        email,
+  return brevo.post(
+    '/v3/smtp/email',
+    {
+      to: [
+        {
+          name: email,
+          email,
+        },
+      ],
+      templateId,
+      params,
+    },
+    {
+      // A client-side timeout only aborts our socket: Brevo has already received
+      // the request and will still deliver the email. Setting a timeout below Brevo's
+      // response time, turns single sends into timeouts and with retries, into duplicate emails.
+      timeout: 10_000,
+      'axios-retry': {
+        // Lower than the library default of 3 for the same reason: a retried send
+        // is a duplicate email whenever the previous attempt actually got through.
+        retries: 1,
       },
-    ],
-    templateId,
-    params,
-  })
+    }
+  )
 }
 
 const lastSimulationResult = ({
@@ -230,30 +247,6 @@ export const sendVerificationCodeEmail = ({
   })
 }
 
-export const sendAPITokenLinkEmail = ({
-  origin,
-  email,
-  code,
-}: Readonly<{
-  origin: string
-  email: string
-  code: string
-  locale: Locales
-}>) => {
-  const apiTokenUrl = new URL(`${origin}/integrations-api/v1/tokens`)
-  const { searchParams } = apiTokenUrl
-  searchParams.append('code', code)
-  searchParams.append('email', email)
-
-  return sendEmail({
-    email,
-    templateId: TemplateIds[Locales.fr].API_VERIFICATION_CODE,
-    params: {
-      API_TOKEN_URL: apiTokenUrl.toString(),
-    },
-  })
-}
-
 export const sendWelcomeEmail = ({
   email,
   locale,
@@ -278,7 +271,7 @@ const sendGroupEmail = ({
   origin,
   templateId,
   group: { id: groupId, name: groupName },
-  user: { id: userId, email, name: userName },
+  user: { email, name: userName },
 }: Readonly<{
   origin: string
   group: Pick<Group, 'id' | 'name'>
@@ -297,20 +290,12 @@ const sendGroupEmail = ({
   shareSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
   shareSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].SHARE_URL)
 
-  const deleteUrl = new URL(`${origin}/amis/supprimer`)
-  const { searchParams: deleteSp } = deleteUrl
-  deleteSp.append('groupId', groupId)
-  deleteSp.append('userId', userId)
-  deleteSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  deleteSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].DELETE_URL)
-
   return sendEmail({
     email,
     templateId,
     params: {
       GROUP_URL: groupUrl.toString(),
       SHARE_URL: shareUrl.toString(),
-      DELETE_URL: deleteUrl.toString(),
       GROUP_NAME: groupName,
       NAME: userName,
     },

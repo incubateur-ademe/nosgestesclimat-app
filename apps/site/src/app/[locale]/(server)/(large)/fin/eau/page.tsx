@@ -6,9 +6,9 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import { throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { notFound } from 'next/navigation'
 
@@ -25,6 +25,9 @@ export async function generateMetadata({ params }: DefaultPageProps) {
     description: t(
       "Vos résultats de tests de notre calculateur d'empreinte carbone."
     ),
+    alternates: {
+      canonical: '/fin/eau',
+    },
     robots: noIndexObject,
   })
 }
@@ -40,7 +43,6 @@ export default async function SimulationPage({
   }
   const simulationResult = await throwNextError(async () => {
     return await getSimulationResult({
-      user,
       simulation,
     })
   })

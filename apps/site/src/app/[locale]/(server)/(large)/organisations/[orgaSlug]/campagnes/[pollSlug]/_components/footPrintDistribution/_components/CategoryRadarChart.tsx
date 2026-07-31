@@ -60,8 +60,8 @@ export default function CategoryRadarChart({
 
     return {
       category,
-      name: categoryLabels[category],
-      nameFull: categoryLabelsFull[category],
+      name: categoryLabels[category as keyof typeof categoryLabels],
+      nameFull: categoryLabelsFull[category as keyof typeof categoryLabelsFull],
       user: userValue,
       average: averageValue,
       userFormatted: formatFootprint(userValue, {

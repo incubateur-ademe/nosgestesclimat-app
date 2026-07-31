@@ -1,8 +1,8 @@
+import { captureException } from '@sentry/node'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import logger from '../../logger.ts'
+import logger, { errorMeta, maskEmail } from '../../logger.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import { VerificationCodeCreatedEvent } from './events/VerificationCodeCreated.event.ts'
@@ -29,18 +29,39 @@ router.route('/v1/').post(
   }),
   validateRequest(VerificationCodeCreateValidator),
   async (req, res) => {
+    const startedAt = Date.now()
+    const context = {
+      email: maskEmail(req.body.email),
+      locale: req.query.locale,
+    }
+
     try {
       const verificationCode = await createVerificationCode({
         verificationCodeDto: req.body,
-        origin: req.get('origin') || config.app.origin,
         ...req.query,
       })
+
+      logger.info('VerificationCode created', {
+        ...context,
+        expirationDate: verificationCode.expirationDate,
+        durationMs: Date.now() - startedAt,
+      })
+
       return res.status(StatusCodes.CREATED).json({
         email: verificationCode.email,
         expirationDate: verificationCode.expirationDate,
       })
     } catch (err) {
-      logger.error('VerificationCode creation failed', err)
+      const outcome = { ...context, durationMs: Date.now() - startedAt }
+
+      logger.error('VerificationCode creation failed', {
+        ...outcome,
+        ...errorMeta(err),
+      })
+
+      captureException(err, {
+        extra: outcome,
+      })
 
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
     }

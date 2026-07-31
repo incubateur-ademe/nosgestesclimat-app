@@ -22,7 +22,7 @@ export const generateMetadata = getCommonMetadata({
 
 export default async function Releases({ params }: DefaultPageProps) {
   const { locale } = await params
-  const releases = getPosts(`src/locales/nouveautes/${locale}/`)
+  const releases = await getPosts(`src/locales/nouveautes/${locale}/`)
 
   const { t } = await getServerTranslation({ locale })
 

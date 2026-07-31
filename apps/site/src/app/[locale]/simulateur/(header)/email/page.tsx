@@ -1,17 +1,15 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
-import AuthenticateUserForm from '@/components/AuthenticateUserForm'
+import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import Trans from '@/components/translation/trans/TransServer'
 import { END_PAGE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import {
-  getSimulationMode,
-} from '@/helpers/server/model/simulations'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { notFound } from 'next/navigation'
 
 export default async function Email({

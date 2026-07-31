@@ -23,7 +23,6 @@ export type SimulationEvent = Pick<
 export type SimulationAsyncEvent = SimulationEvent | ModelToDto<SimulationEvent>
 
 type BaseSimulationUpsertedEventAttributes = {
-  origin: string
   locale: Locales
   user: Pick<User, 'id' | 'name' | 'email'>
   simulation: SimulationEvent

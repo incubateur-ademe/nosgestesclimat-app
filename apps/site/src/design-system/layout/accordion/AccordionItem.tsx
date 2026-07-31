@@ -14,6 +14,9 @@ export interface AccordionItemType {
   isReadOnly?: boolean
   onClick?: () => void
   ariaLabel?: string
+  tracker?: (
+    enhancer: (props?: Record<string, string>) => Record<string, string>
+  ) => void
 }
 
 export default function AccordionItem({
@@ -23,6 +26,7 @@ export default function AccordionItem({
   isReadOnly = false,
   onClick,
   ariaLabel,
+  tracker,
 }: AccordionItemType) {
   const { t } = useClientTranslation()
   const [isOpen, setIsOpen] = useState(false)
@@ -42,6 +46,11 @@ export default function AccordionItem({
           if (isReadOnly) return
 
           setIsOpen((prevState) => !prevState)
+
+          tracker?.((props) => ({
+            ...props,
+            action: isOpen ? 'close' : 'open',
+          }))
 
           if (onClick) {
             onClick()

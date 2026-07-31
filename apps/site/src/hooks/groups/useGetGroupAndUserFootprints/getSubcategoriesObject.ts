@@ -1,6 +1,6 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { ComputedResultsSubcategories } from '@/publicodes-state/types'
-import type { ValueObject } from '@/types/groups'
+import type { ParticipantSimulationSummary, ValueObject } from '@/types/groups'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 export function getSubcategoriesObject({
@@ -8,7 +8,7 @@ export function getSubcategoriesObject({
   isCurrentMember,
   groupAccumulator,
 }: {
-  simulation: Simulation
+  simulation: Simulation | ParticipantSimulationSummary
   isCurrentMember: boolean
   groupAccumulator: Record<DottedName, ValueObject>
 }): {

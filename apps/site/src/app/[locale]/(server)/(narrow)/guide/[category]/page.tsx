@@ -13,15 +13,16 @@ import type { DefaultPageProps } from '@/types'
 import type { MDXProps } from 'mdx/types'
 import { notFound } from 'next/navigation'
 import type { JSX } from 'react'
+import { isGuideCategory, type GuideCategory } from '../guideCategories'
 
-const categories: Record<string, (props: MDXProps) => JSX.Element> = {
+const categories = {
   alimentation: guideAlimentation,
   divers: guideDivers,
   logement: guideLogement,
   numerique: guideNumerique,
   'services-societaux': guideServicesSocietaux,
   transport: guideTransport,
-}
+} satisfies Record<GuideCategory, (props: MDXProps) => JSX.Element>
 
 export async function generateMetadata({
   params,
@@ -46,9 +47,11 @@ export default async function CategoryGuidePage({
 }: DefaultPageProps<{ params: { category: string } }>) {
   const { category, locale } = await params
 
-  if (!categories[category]) {
+  if (!isGuideCategory(category)) {
     notFound()
   }
+
+  const contentFr = categories[category]
 
   return (
     <div className="mx-auto my-4 flex flex-col items-start justify-center">
@@ -56,7 +59,7 @@ export default async function CategoryGuidePage({
         <span className="mr-2 inline-block">◀</span>
         <Trans locale={locale}>Retour</Trans>
       </ButtonLink>
-      <MDXContent locale={locale} contentFr={categories[category]} />
+      <MDXContent locale={locale} contentFr={contentFr} />
     </div>
   )
 }

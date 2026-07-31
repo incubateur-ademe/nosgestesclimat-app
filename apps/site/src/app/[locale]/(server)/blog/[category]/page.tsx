@@ -9,7 +9,6 @@ import MainArticle from '@/design-system/cms/MainArticle'
 import { getDynamicPageTitleWithPagination } from '@/helpers/blog/getDynamicPageTitleWithPagination'
 import { getPageNumber } from '@/helpers/blog/getPageNumber'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { getShouldBeLocalised } from '@/helpers/language/getShouldBeLocalised'
 import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import { fetchCategoryPageContent } from '@/services/cms/fetchCategoryPageContent'
@@ -66,7 +65,7 @@ export async function generateMetadata({
     alternates: {
       canonical: `/blog/${category}`,
     },
-    locales: (await getShouldBeLocalised({ category }))
+    locales: (await isLocalizedInEnglish(category))
       ? [...i18nConfig.locales]
       : [i18nConfig.defaultLocale],
   })
@@ -189,7 +188,18 @@ export default async function CategoryPage({
         />
       </div>
 
-      <Footer backgroundColor="white" locale={locale} params={{ category }} />
+      <Footer backgroundColor="white" locale={locale} />
     </>
   )
+}
+
+/** A category only gets an `en` hreflang alternate if it is translated in the CMS. */
+const isLocalizedInEnglish = async (category: string) => {
+  const content = await fetchCategoryPageContent({
+    slug: category,
+    locale: 'en',
+    page: 1,
+  })
+
+  return !!(content?.title && content?.description)
 }

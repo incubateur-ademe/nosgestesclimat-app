@@ -408,8 +408,8 @@ AC-source:
   formule:
     variations:
       - si:
-          est défini: logement . climatisation . présent
-        alors: logement . climatisation . présent
+          est défini: logement . climatisation . usage
+        alors: logement . climatisation . usage
       - sinon: "'YES'"
 ELECTRICITY-source:
   formule:

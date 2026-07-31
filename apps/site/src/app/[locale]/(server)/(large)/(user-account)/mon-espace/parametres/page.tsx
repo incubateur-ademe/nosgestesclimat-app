@@ -2,6 +2,7 @@ import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutPro
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
+import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import { throwNextError } from '@/helpers/server/error'
 import type { Region } from '@/helpers/server/model/models'
 import {
@@ -11,10 +12,24 @@ import {
 import { requireAuthUser } from '@/services/auth/require-auth-user'
 import { getRegion, setRegion } from '@/services/users/region'
 import type { DefaultPageProps } from '@/types'
+import type { Metadata } from 'next'
 import ProfileTab from '../_components/ProfileTabs'
 import Localisation from './_components/Localisation'
 import NewsletterSettings from './_components/NewsletterSettings'
 import UserEmail from './_components/UserEmail'
+
+export async function generateMetadata({
+  params,
+}: DefaultPageProps): Promise<Metadata> {
+  const { locale } = await params
+
+  return {
+    alternates: buildAlternates({
+      locale,
+      canonical: '/mon-espace/parametres',
+    }),
+  }
+}
 
 export async function updateRegion(region: Region) {
   'use server'

@@ -29,9 +29,7 @@ export const createGroup = async ({
       name,
       emoji,
       administrator: {
-        userId: session.id,
         name: administratorName,
-        email: session.email,
       },
       participants,
     },

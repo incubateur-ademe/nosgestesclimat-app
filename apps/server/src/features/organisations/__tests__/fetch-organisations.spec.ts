@@ -1,12 +1,12 @@
+import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import { COOKIE_NAME } from '../../authentication/authentication.service.ts'
 import {
   createOrganisation,
   FETCH_ORGANISATIONS_ROUTE,
@@ -30,7 +30,7 @@ describe('Given a NGC user', () => {
     ])
   })
 
-  describe('And logged out', () => {
+  describe('And no authentication', () => {
     describe('When fetching his organisations', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent.get(url).expect(StatusCodes.UNAUTHORIZED)
@@ -38,22 +38,24 @@ describe('Given a NGC user', () => {
     })
   })
 
-  describe('And invalid cookie', () => {
+  describe('And not a verified user', () => {
     describe('When fetching his organisations', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
           .get(url)
-          .set('cookie', `${COOKIE_NAME}=invalid cookie`)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.UNAUTHORIZED)
       })
     })
   })
 
-  describe('And logged in', () => {
-    let cookie: string
+  describe('And a verified user', () => {
+    let userId: string
+    let email: string
 
-    beforeEach(async () => {
-      ;({ cookie } = await login({ agent }))
+    beforeEach(() => {
+      userId = faker.string.uuid()
+      email = faker.internet.email()
     })
 
     describe('When fetching his organisations', () => {
@@ -61,7 +63,7 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.OK} response with an empty list`, async () => {
           const response = await agent
             .get(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual([])
@@ -82,13 +84,13 @@ describe('Given a NGC user', () => {
 
         beforeEach(
           async () =>
-            (organisation = await createOrganisation({ agent, cookie }))
+            (organisation = await createOrganisation({ agent, userId, email }))
         )
 
         test(`Then it returns a ${StatusCodes.OK} response with a list containing the organisation`, async () => {
           const response = await agent
             .get(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual([organisation])
@@ -121,12 +123,12 @@ describe('Given a NGC user', () => {
         test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
           await agent
             .get(url)
-            .set('cookie', cookie)
+            .set(authHeaders({ userId, email }))
             .expect(StatusCodes.INTERNAL_SERVER_ERROR)
         })
 
         test('Then it logs the exception', async () => {
-          await agent.get(url).set('cookie', cookie)
+          await agent.get(url).set(authHeaders({ userId, email }))
 
           expect(logger.error).toHaveBeenCalledWith(
             'Organisations fetch failed',

@@ -76,9 +76,3 @@ export const WithLongLink: Story = {
     },
   },
 }
-
-export const NoBanner: Story = {
-  args: {
-    banner: null,
-  },
-}

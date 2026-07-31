@@ -5,6 +5,7 @@ import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import logger from '../../../logger.ts'
 import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import {
@@ -30,18 +31,17 @@ describe('Given a NGC user', () => {
   })
 
   describe('When fetching his simulations', () => {
-    describe('And invalid userId', () => {
-      test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent
-          .get(url.replace(':userId', faker.string.alpha(34)))
-          .expect(StatusCodes.BAD_REQUEST)
+    describe('And user is not authenticated', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+        await agent.get(url).expect(StatusCodes.UNAUTHORIZED)
       })
     })
 
     describe('And invalid page queryParam', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .query({
             page: 0,
           })
@@ -52,7 +52,8 @@ describe('Given a NGC user', () => {
     describe('And invalid pageSize queryParam', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .query({
             pageSize: 500,
           })
@@ -63,7 +64,8 @@ describe('Given a NGC user', () => {
     describe('And invalid completedOnly queryParam', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .query({
             completedOnly: 'not-a-boolean',
           })
@@ -74,7 +76,8 @@ describe('Given a NGC user', () => {
     describe('And no simulation exist', () => {
       test(`Then it returns a ${StatusCodes.OK} response with an empty list`, async () => {
         const response = await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([])
@@ -94,7 +97,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.OK} response with a list containing the simulation`, async () => {
         const response = await agent
-          .get(url.replace(':userId', userId))
+          .get(url)
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([simulation])
@@ -134,7 +138,8 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.OK} response with simulations ordered by date descending`, async () => {
         const response = await agent
-          .get(url.replace(':userId', userId))
+          .get(url)
+          .set(authHeaders({ userId }))
           .expect(StatusCodes.OK)
 
         expect(response.body.map((s: { id: string }) => s.id)).toEqual(
@@ -163,7 +168,8 @@ describe('Given a NGC user', () => {
       describe('And page 1', () => {
         test(`Then it returns a ${StatusCodes.OK} response with a list containing the simulations and paginated headers`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
+            .get(url)
+            .set(authHeaders({ userId }))
             .query({
               page: 1,
               pageSize: 2,
@@ -187,7 +193,8 @@ describe('Given a NGC user', () => {
       describe('And page 2', () => {
         test(`Then it returns a ${StatusCodes.OK} response with a list containing the simulations and paginated headers`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
+            .get(url)
+            .set(authHeaders({ userId }))
             .query({
               page: 2,
               pageSize: 2,
@@ -211,7 +218,8 @@ describe('Given a NGC user', () => {
       describe('And page 3', () => {
         test(`Then it returns a ${StatusCodes.OK} response with an empty list and paginated headers`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
+            .get(url)
+            .set(authHeaders({ userId }))
             .query({
               page: 3,
               pageSize: 2,
@@ -256,7 +264,8 @@ describe('Given a NGC user', () => {
       describe('And completedOnly is true', () => {
         test(`Then it returns a ${StatusCodes.OK} response with only completed simulations`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
+            .get(url)
+            .set(authHeaders({ userId }))
             .query({ completedOnly: true })
             .expect(StatusCodes.OK)
 
@@ -269,7 +278,8 @@ describe('Given a NGC user', () => {
       describe('And completedOnly is false', () => {
         test(`Then it returns a ${StatusCodes.OK} response with all simulations`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
+            .get(url)
+            .set(authHeaders({ userId }))
             .query({ completedOnly: false })
             .expect(StatusCodes.OK)
 
@@ -280,7 +290,8 @@ describe('Given a NGC user', () => {
       describe('And completedOnly is not provided', () => {
         test(`Then it returns a ${StatusCodes.OK} response with all simulations`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
+            .get(url)
+            .set(authHeaders({ userId }))
             .expect(StatusCodes.OK)
 
           expect(response.body).toHaveLength(2)
@@ -303,13 +314,15 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
 
       test('Then it logs the exception', async () => {
         await agent
-          .get(url.replace(':userId', faker.string.uuid()))
+          .get(url)
+          .set(authHeaders({ userId: faker.string.uuid() }))
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 
         expect(logger.error).toHaveBeenCalledWith(
@@ -321,18 +334,18 @@ describe('Given a NGC user', () => {
   })
 
   describe('And logged in', () => {
-    let cookie: string
+    let email: string
     let userId: string
 
     beforeEach(async () => {
-      ;({ cookie, userId } = await login({ agent }))
+      ;({ email, userId } = await login({ agent }))
     })
 
     describe('And no simulation exist', () => {
       test(`Then it returns a ${StatusCodes.OK} response with an empty list`, async () => {
         const response = await agent
-          .get(url.replace(':userId', userId))
-          .set('cookie', cookie)
+          .get(url)
+          .set(authHeaders({ userId, email }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([])
@@ -343,13 +356,13 @@ describe('Given a NGC user', () => {
       let simulation: Awaited<ReturnType<typeof createSimulation>>
 
       beforeEach(async () => {
-        simulation = await createSimulation({ agent, cookie })
+        simulation = await createSimulation({ agent, userId, email })
       })
 
       test(`Then it returns a ${StatusCodes.OK} response with a list containing the simulation`, async () => {
         const response = await agent
-          .get(url.replace(':userId', userId))
-          .set('cookie', cookie)
+          .get(url)
+          .set(authHeaders({ userId, email }))
           .expect(StatusCodes.OK)
 
         expect(response.body).toEqual([simulation])
@@ -365,7 +378,8 @@ describe('Given a NGC user', () => {
         while (simulations.length < 3) {
           const simulation = await createSimulation({
             agent,
-            cookie,
+            userId,
+            email,
           })
 
           userLastUpdatedAt = simulation.user.updatedAt
@@ -377,8 +391,8 @@ describe('Given a NGC user', () => {
       describe('And page 1', () => {
         test(`Then it returns a ${StatusCodes.OK} response with a list containing the simulations and paginated headers`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
-            .set('cookie', cookie)
+            .get(url)
+            .set(authHeaders({ userId, email }))
             .query({
               page: 1,
               pageSize: 2,
@@ -410,8 +424,8 @@ describe('Given a NGC user', () => {
       describe('And page 2', () => {
         test(`Then it returns a ${StatusCodes.OK} response with a list containing the simulations and paginated headers`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
-            .set('cookie', cookie)
+            .get(url)
+            .set(authHeaders({ userId, email }))
             .query({
               page: 2,
               pageSize: 2,
@@ -443,8 +457,8 @@ describe('Given a NGC user', () => {
       describe('And page 3', () => {
         test(`Then it returns a ${StatusCodes.OK} response with an empty list and paginated headers`, async () => {
           const response = await agent
-            .get(url.replace(':userId', userId))
-            .set('cookie', cookie)
+            .get(url)
+            .set(authHeaders({ userId, email }))
             .query({
               page: 3,
               pageSize: 2,

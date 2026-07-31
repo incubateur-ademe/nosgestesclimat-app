@@ -10,7 +10,7 @@ export const deleteGroup = async (groupId: string) => {
   if (!session) {
     throw new UnauthorizedError()
   }
-  return await fetchServer<void>(`${GROUP_URL}/${session.id}/${groupId}`, {
+  return await fetchServer<void>(`${GROUP_URL}/${groupId}`, {
     method: 'DELETE',
     session,
   })

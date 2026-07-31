@@ -37,6 +37,7 @@ export async function fetchServer<T = unknown>(
   const reqHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
+    'x-forwarded-origin': nextHeaders.get('origin') ?? '',
     'x-internal-key': INTERNAL_API_KEY,
   }
 

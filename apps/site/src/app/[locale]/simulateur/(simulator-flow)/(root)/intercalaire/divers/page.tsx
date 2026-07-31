@@ -14,7 +14,7 @@ export async function generateMetadata({
   const { t } = await getServerTranslation({ locale })
 
   return getMetadataObject({
-    locale,
+    locale: locale as Locale,
     title: t(
       'simulator.intercalaire.divers.meta.title',
       'Section consommation terminée - Nos Gestes Climat'
@@ -23,6 +23,9 @@ export async function generateMetadata({
       'simulator.intercalaire.divers.meta.description',
       'Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.'
     ),
+    alternates: {
+      canonical: '/simulateur/intercalaire/divers',
+    },
     robots: noIndexObject,
   })
 }

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { captureException } from '@sentry/node'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import {
@@ -18,10 +19,15 @@ import app from '../../../app.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
-import logger from '../../../logger.ts'
+import logger, { maskEmail } from '../../../logger.ts'
 import * as authenticationService from '../authentication.service.ts'
 import type { VerificationCodeCreateDto } from '../verification-codes.validator.ts'
 import { CREATE_VERIFICATION_CODE_ROUTE } from './fixtures/verification-codes.fixture.ts'
+
+vi.mock('@sentry/node', async () => ({
+  ...(await vi.importActual('@sentry/node')),
+  captureException: vi.fn(),
+}))
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)
@@ -273,6 +279,29 @@ describe('Given a NGC user', () => {
           .expect(StatusCodes.TOO_MANY_REQUESTS)
       })
     })
+    describe('And the email delivery fails', () => {
+      test('Then it still persists the verification code', async () => {
+        const email = faker.internet.email().toLocaleLowerCase()
+
+        mswServer.use(brevoSendEmail({ networkError: true }))
+
+        await agent
+          .post(url)
+          .send({ email })
+          .expect(StatusCodes.INTERNAL_SERVER_ERROR)
+
+        // Brevo may well have delivered the message before failing us: rolling
+        // the code back here is what hands users a code that can never work.
+        const createdVerificationCode = await prisma.verificationCode.findFirst(
+          {
+            where: { email },
+          }
+        )
+
+        expect(createdVerificationCode).toMatchObject({ email, code })
+      })
+    })
+
     describe('And database failure', () => {
       const databaseError = new Error('Something went wrong')
 
@@ -296,13 +325,30 @@ describe('Given a NGC user', () => {
       })
 
       test('Then it logs the exception', async () => {
-        await agent.post(url).send({
-          email: faker.internet.email(),
-        })
+        const email = faker.internet.email().toLocaleLowerCase()
+
+        await agent.post(url).send({ email })
 
         expect(logger.error).toHaveBeenCalledWith(
           'VerificationCode creation failed',
-          databaseError
+          expect.objectContaining({
+            email: maskEmail(email),
+            message: databaseError.message,
+            stack: databaseError.stack,
+          })
+        )
+      })
+
+      test('Then it captures the exception', async () => {
+        const email = faker.internet.email().toLocaleLowerCase()
+
+        await agent.post(url).send({ email })
+
+        expect(captureException).toHaveBeenCalledWith(
+          databaseError,
+          expect.objectContaining({
+            extra: expect.objectContaining({ email: maskEmail(email) }),
+          })
         )
       })
     })

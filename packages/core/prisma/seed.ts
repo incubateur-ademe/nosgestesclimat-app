@@ -23,7 +23,31 @@ const seed = async () => {
     })
   }
   // Actions
+  // No English translation on purpose, to exercise the French fallback
+  // on catalogue / detail pages when a locale is missing.
   const publishedActions = await actionFactory.published().createList(15)
+
+  // Fully translated actions, to exercise locale switching on catalogue /
+  // detail pages.
+  const translatedActions = await Promise.all(
+    Array.from({ length: 5 }, (_, i) =>
+      actionFactory
+        .published()
+        .params({
+          title: `Action en français ${i + 1}`,
+          slug: `action-francais-${i + 1}`,
+        })
+        .withTranslations({
+          en: {
+            title: `English action ${i + 1}`,
+            slug: `english-action-${i + 1}`,
+            longDescription: `### English action ${i + 1}\n\nSome english content.`,
+          },
+        })
+        .create()
+    )
+  )
+
   await actionFactory.draft().createList(5)
   await actionFactory.scheduled().createList(5)
   const pendingDeletionActions = await actionFactory
@@ -69,6 +93,12 @@ const seed = async () => {
         .create()
     ),
     ...deletedActions.map((action) =>
+      actionAssessmentFactory
+        .params({ simulationId: sim1.id, actionId: action.id })
+        .applicable()
+        .create()
+    ),
+    ...translatedActions.map((action) =>
       actionAssessmentFactory
         .params({ simulationId: sim1.id, actionId: action.id })
         .applicable()

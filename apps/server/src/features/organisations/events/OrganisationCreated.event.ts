@@ -12,7 +12,6 @@ export type OrganisationCreatedEventAttributes = {
   }
   administrator: VerifiedUser
   locale: Locales
-  origin: string
 }
 
 export class OrganisationCreatedEvent extends EventBusEvent<OrganisationCreatedEventAttributes> {

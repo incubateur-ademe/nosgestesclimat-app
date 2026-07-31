@@ -34,6 +34,9 @@ export async function generateMetadata({ params }: DefaultPageProps) {
     description: t(
       "Vos résultats de tests de notre calculateur d'empreinte carbone."
     ),
+    alternates: {
+      canonical: '/fin',
+    },
     robots: noIndexObject,
   })
 }
@@ -69,7 +72,6 @@ export default async function FinPage({
 
   const simulationResult = await throwNextError(async () => {
     return await getSimulationResult({
-      user,
       simulation,
     })
   })

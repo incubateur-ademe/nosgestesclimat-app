@@ -4,7 +4,6 @@ import { FILTER_SEARCH_PARAM_KEY } from '@/constants/filtering'
 
 import { captureTrackingCategoryFilter } from '@/constants/tracking/posthogTrackers'
 import { baseClassNames } from '@/design-system/buttons/Button'
-import { getCategoryTitle } from '@/helpers/formatters/getCategoryTitle'
 import {
   getBackgroundColor,
   getBackgroundLightColor,
@@ -99,7 +98,7 @@ export default function CategoryFilter({
       onClick={handleClick}
       onKeyDown={handleKeyDown}>
       <span className={getTextDarkColor(dottedName)}>
-        {getCategoryTitle({ dottedName, ruleTitle: title, t })}{' '}
+        {title}{' '}
         <span
           className={`ml-2 inline-block w-4 rounded-full bg-white ${getTextDarkColor(dottedName)}`}>
           {count ?? 0}

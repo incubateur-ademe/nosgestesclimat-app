@@ -8,5 +8,6 @@ export default function FunFactsPlusCategoryTitle({
   category: DottedName
 }) {
   const { title } = useRule(category)
+
   return <Title tag="h3">{title}</Title>
 }

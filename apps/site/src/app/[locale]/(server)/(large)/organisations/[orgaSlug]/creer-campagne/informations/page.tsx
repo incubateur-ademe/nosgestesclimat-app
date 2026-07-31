@@ -2,11 +2,27 @@ import StepsDisplay from '@/components/groups/StepsDisplay'
 import Trans from '@/components/translation/trans/TransServer'
 import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Title from '@/design-system/layout/Title'
+import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
+import type { Locale } from '@/i18nConfig'
+import type { Metadata } from 'next'
 import { organisationAdminGuard } from '../../guard'
 import CloseButton from '../_components/CloseButton'
 import PollNameForm from '../_components/PollNameForm'
 
 /* global PageProps */
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/organisations/[orgaSlug]/creer-campagne/informations'>): Promise<Metadata> {
+  const { orgaSlug, locale } = await params
+
+  return {
+    alternates: buildAlternates({
+      locale: locale as Locale,
+      canonical: `/organisations/${orgaSlug}/creer-campagne/informations`,
+    }),
+  }
+}
+
 export default async function CreerCampagneInformationsPage({
   params,
 }: PageProps<'/[locale]/organisations/[orgaSlug]/creer-campagne/informations'>) {

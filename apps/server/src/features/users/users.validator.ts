@@ -4,12 +4,6 @@ import * as v from 'valibot'
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
-export const UserParams = v.strictObject({
-  userId: v.pipe(v.string(), v.uuid()),
-})
-
-export type UserParams = v.InferOutput<typeof UserParams>
-
 export const FetchUserContactValidator = {
   body: v.optional(v.strictObject({})),
   params: v.strictObject({}),
@@ -46,6 +40,6 @@ const UserUpdateQuery = v.strictObject({
 
 export const UpdateUserValidator = {
   body: UserUpdateDto,
-  params: UserParams,
+  params: v.optional(v.strictObject({})),
   query: UserUpdateQuery,
 }

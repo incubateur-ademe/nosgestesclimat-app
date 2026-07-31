@@ -11,8 +11,8 @@ import { defaultVerifiedUserSelection } from '../../adapters/prisma/selection.ts
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
 import { config } from '../../config.ts'
-import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
+import { InvalidVerificationCodeException } from '../../core/errors/InvalidVerificationCodeException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import type { Locales } from '../../core/i18n/constant.ts'
 import {
@@ -23,7 +23,10 @@ import type { LoginDto } from './authentication.validator.ts'
 import { AccountCreatedEvent } from './events/AccountCreated.event.ts'
 import { LoginEvent } from './events/Login.event.ts'
 import {
+  findLatestVerificationCodeForEmail,
+  findValidVerificationCodesForEmail,
   findVerificationCode,
+  findVerificationCodeIgnoringExpiration,
   invalidateVerificationCode,
 } from './verification-codes.repository.ts'
 
@@ -49,6 +52,64 @@ export const generateRandomVerificationCode = () =>
     Math.pow(10, 5) + Math.random() * (Math.pow(10, 6) - Math.pow(10, 5) - 1)
   ).toString()
 
+/**
+ * Reads back the codes stored for that email to tell *why* the lookup missed.
+ *
+ * Runs on the rejection path only, and never throws: a failed diagnosis must not
+ * replace the rejection the caller is about to answer with.
+ */
+const diagnoseVerificationCodeRejection = async (
+  { email, code }: Pick<VerificationCode, 'email' | 'code'>,
+  { session }: { session?: Session } = {}
+): Promise<InvalidVerificationCodeException> => {
+  try {
+    const diagnosisStartedAt = new Date()
+
+    const [submittedCode, latestCode, validCodes] = await transaction(
+      (session) =>
+        Promise.all([
+          findVerificationCodeIgnoringExpiration({ email, code }, { session }),
+          findLatestVerificationCodeForEmail({ email }, { session }),
+          findValidVerificationCodesForEmail({ email }, { session }),
+        ]),
+      session || prisma
+    )
+    const validVerificationCodeIds = validCodes.map(({ id }) => id)
+
+    // Given code exists for this email but expired
+    if (submittedCode) {
+      return new InvalidVerificationCodeException('expired', {
+        verificationCodeId: submittedCode.id,
+        createdAt: submittedCode.createdAt,
+        expirationDate: submittedCode.expirationDate,
+        latestExpired: submittedCode.expirationDate < diagnosisStartedAt,
+        validVerificationCodeIds,
+      })
+    }
+
+    // Given code doesn't exist, compare with latest code for debugging purpose.
+    // The latest code may itself be expired: it only tells us a code was
+    // requested at some point, not that the user had a valid one to use -
+    // validVerificationCodeIds carries that second, more actionable signal.
+    if (latestCode) {
+      return new InvalidVerificationCodeException('mismatch', {
+        latestVerificationCodeId: latestCode.id,
+        latestCreatedAt: latestCode.createdAt,
+        latestExpirationDate: latestCode.expirationDate,
+        latestExpired: latestCode.expirationDate < diagnosisStartedAt,
+        validVerificationCodeIds,
+      })
+    }
+
+    // No code was ever issued for this email, not even one that already expired
+    return new InvalidVerificationCodeException('never_requested')
+  } catch (e) {
+    return new InvalidVerificationCodeException('unknown', {
+      diagnosisError: e instanceof Error ? e.message : String(e),
+    })
+  }
+}
+
 export const verifyCode = async (
   verificationCode: Pick<VerificationCode, 'email' | 'code'>,
   { session }: { session?: Session } = {}
@@ -60,7 +121,9 @@ export const verifyCode = async (
     )
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('VerificationCode not found')
+      throw await diagnoseVerificationCodeRejection(verificationCode, {
+        session,
+      })
     }
     throw e
   }
@@ -69,11 +132,9 @@ export const verifyCode = async (
 export const login = async ({
   loginDto,
   locale,
-  origin,
 }: {
   loginDto: LoginDto
   locale: Locales
-  origin: string
 }) => {
   const { user, mode, token } = await createAccountOrSignin(loginDto)
 
@@ -82,14 +143,13 @@ export const login = async ({
     previousUserId: loginDto.userId,
     mode,
     locale,
-    origin,
   })
 
   EventBus.emit(loginEvent)
 
   await EventBus.once(loginEvent)
 
-  return { token, user }
+  return { token, user, mode }
 }
 
 export function createToken(user: Pick<VerifiedUser, 'id' | 'email'>) {
@@ -140,7 +200,7 @@ export async function createAccountOrSignin(loginDto: LoginDto) {
     // SignUp if user doesn't exist
     const { user: newUser } = await createOrUpdateVerifiedUser(
       {
-        id: loginDto,
+        id: { id: loginDto.userId, email: loginDto.email },
         user: loginDto,
         select: defaultVerifiedUserSelection,
       },

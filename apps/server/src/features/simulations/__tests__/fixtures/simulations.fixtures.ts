@@ -4,8 +4,6 @@ import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with {
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
 import { StatusCodes } from 'http-status-codes'
-import type { JwtPayload } from 'jsonwebtoken'
-import jwt from 'jsonwebtoken'
 import type { PublicodesExpression } from 'publicodes'
 import Engine, { utils } from 'publicodes'
 import type supertest from 'supertest'
@@ -16,13 +14,13 @@ import {
   brevoRemoveFromList,
   brevoUpdateContact,
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
 } from '../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../core/event-bus/event-bus.ts'
 import type { Metric } from '../../../../types/types.ts'
-import { COOKIE_NAME } from '../../../authentication/authentication.service.ts'
 import type {
   ExtendedSituationSchema,
   SimulationCreateInputDto,
@@ -32,14 +30,13 @@ import { SituationSchema } from '../../simulations.validator.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 
-export const CREATE_SIMULATION_ROUTE = '/simulations/v1/:userId'
+export const CREATE_SIMULATION_ROUTE = '/simulations/v1'
 
-export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1/:userId'
+export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1'
 
-export const FETCH_USER_SIMULATION_ROUTE =
-  '/simulations/v1/:userId/:simulationId'
+export const FETCH_USER_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
-export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:userId/:simulationId'
+export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
 const defaultModelVersion = modelPackage.version
   .match(/^(\d+\.\d+\.\d+)/)!
@@ -218,35 +215,18 @@ export const getSimulationPayload = ({
 export const createSimulation = async ({
   agent,
   userId,
-  cookie,
+  email,
   simulation = {},
-}:
-  | {
-      agent: TestAgent
-      userId?: string
-      simulation?: Partial<SimulationCreateInputDto>
-      cookie?: undefined
-    }
-  | {
-      agent: TestAgent
-      userId?: undefined
-      simulation?: Partial<SimulationCreateInputDto>
-      cookie?: string
-    }) => {
-  if (cookie) {
-    ;({ userId } = jwt.decode(
-      cookie.split(';').shift()!.replace(`${COOKIE_NAME}=`, '')!
-    ) as JwtPayload)
-  }
-
+}: {
+  agent: TestAgent
+  userId?: string
+  email?: string
+  simulation?: Partial<SimulationCreateInputDto>
+}) => {
   userId = userId ?? faker.string.uuid()
-  const { user } = simulation
-  const payload: SimulationCreateInputDto = {
-    ...getSimulationPayload(simulation),
-    user,
-  }
+  const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
 
-  if (payload.user?.email || cookie) {
+  if (email) {
     mswServer.use(
       brevoUpdateContact(),
       brevoRemoveFromList(22, { invalid: true }),
@@ -258,11 +238,9 @@ export const createSimulation = async ({
     )
   }
 
-  const request = agent.post(CREATE_SIMULATION_ROUTE.replace(':userId', userId))
-
-  if (cookie) {
-    request.set('cookie', cookie)
-  }
+  const request = agent
+    .post(CREATE_SIMULATION_ROUTE)
+    .set(authHeaders({ userId, email }))
 
   const response = await request.send(payload).expect(StatusCodes.CREATED)
 

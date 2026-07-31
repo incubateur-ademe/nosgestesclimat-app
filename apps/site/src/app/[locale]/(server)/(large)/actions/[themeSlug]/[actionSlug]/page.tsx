@@ -4,6 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { noIndexObject } from '@/constants/metadata'
 import {
   ACTION_DETAIL_PATH,
+  ACTIONS_PATH,
   END_PAGE_ACTIONS_PATH,
   MON_ESPACE_ACTIONS_PATH,
 } from '@/constants/urls/paths'
@@ -11,17 +12,18 @@ import GoBackLink from '@/design-system/inputs/GoBackLink'
 import Emoji from '@/design-system/utils/Emoji'
 import Markdown from '@/design-system/utils/Markdown'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
-import { t } from '@/helpers/metadata/fakeMetadataT'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import { getActionAlternateLocales } from '@/services/actions/get-action-alternate-locales'
+import { getPersonalizedActionDetails } from '@/services/actions/get-personalized-action-details'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getFeatureFlag } from '@/services/feature-flags/getFeatureFlag'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
-import { getAction } from '@nosgestesclimat/core/features/actions/services/get-action.service'
-import { getPersonalizedActionDetails } from '@nosgestesclimat/core/features/actions/services/get-personalized-action-details.service'
+import { toSearchParams } from '@/utils/nextjs/toSearchParams'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
@@ -31,15 +33,27 @@ const SECTION_ID_I_ACT = 'j-agis'
 const SECTION_ID_I_BENEFIT = 'j-y-gagne'
 const SECTION_ID_FURTHER_READING = 'a-decouvrir-aussi'
 
+const FROM_PATH_MAP: Record<'fin' | 'mon-espace' | 'index', string> = {
+  fin: END_PAGE_ACTIONS_PATH,
+  'mon-espace': MON_ESPACE_ACTIONS_PATH,
+  index: ACTIONS_PATH,
+}
+
 type Props = DefaultPageProps<{
   params: { themeSlug: string; actionSlug: string }
+  searchParams: { from?: 'fin' | 'mon-espace' | 'index' }
 }>
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { params } = props
   const { locale, actionSlug } = await params
 
-  const action = await getAction(actionSlug)
+  const user = await getUserSession()
+  const { t } = await getServerTranslation({ locale })
+  const [action, alternateLocales] = await Promise.all([
+    getPersonalizedActionDetails(actionSlug, locale, user?.id),
+    getActionAlternateLocales(actionSlug),
+  ])
 
   if (!action) {
     return getMetadataObject({
@@ -50,26 +64,56 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     })
   }
 
+  const languages: Partial<Record<Locale, string>> = {}
+  for (const [loc, alternate] of Object.entries(alternateLocales)) {
+    languages[loc as Locale] = ACTION_DETAIL_PATH(
+      alternate.themeSlug,
+      alternate.actionSlug
+    )
+  }
+
   return getMetadataObject({
     locale,
     title: action.metadata.title ?? action.title,
     description: action.metadata.description ?? action.longDescription,
     alternates: {
       canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
+      languages,
     },
   })
 }
 
-export default async function ActionPage({ params }: Props) {
+export default async function ActionPage({ params, searchParams }: Props) {
   const { locale, themeSlug, actionSlug } = await params
+  const resolvedSearchParams = await searchParams
+  const from = resolvedSearchParams?.from
   const user = await getUserSession()
-  const flag = user?.id ? await getFeatureFlag('actions-v2', user.id) : true
+  const [action, alternateLocales] = await Promise.all([
+    getPersonalizedActionDetails(actionSlug, locale, user?.id),
+    getActionAlternateLocales(actionSlug),
+  ])
 
-  if (!flag) notFound()
+  if (!action) {
+    // The slug may belong to another locale (e.g. a shared URL with the wrong
+    // language prefix): redirect to the localized path when a translation
+    // exists for the page locale
+    const alternate = alternateLocales[locale]
 
-  const action = await getPersonalizedActionDetails(actionSlug, user?.id)
+    if (alternate) {
+      const search = toSearchParams(resolvedSearchParams).toString()
 
-  if (action?.theme.slug !== themeSlug) notFound()
+      redirect(
+        getLocalizedPath(
+          locale,
+          `${ACTION_DETAIL_PATH(alternate.themeSlug, alternate.actionSlug)}${search ? `?${search}` : ''}`
+        )
+      )
+    }
+
+    notFound()
+  }
+
+  if (action.theme.slug !== themeSlug) notFound()
 
   const themeClasses = classNames[action.theme.key]
 
@@ -78,7 +122,11 @@ export default async function ActionPage({ params }: Props) {
       <BetaBanner locale={locale} />
       <ActionTracker eventName="consulted" action={action} />
       <GoBackLink
-        href={user?.isAuth ? MON_ESPACE_ACTIONS_PATH : END_PAGE_ACTIONS_PATH}
+        href={
+          from && from in FROM_PATH_MAP
+            ? FROM_PATH_MAP[from]
+            : FROM_PATH_MAP.index
+        }
         className="mb-10"
       />
       <header

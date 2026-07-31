@@ -1,6 +1,6 @@
 import * as v from 'valibot'
 import { ListIds } from '../../adapters/brevo/constant.ts'
-import { allowedRedirectUrls } from '../../config.ts'
+import { allowedRedirectUrls, config } from '../../config.ts'
 import { isSafeRedirectUrl } from '../../core/allowed-urls.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
@@ -49,16 +49,19 @@ export type NewsletterInscriptionDto = v.InferOutput<
 const NewsletterConfirmationQuery = v.strictObject({
   ...LocaleQuery.entries,
   code: v.pipe(v.string(), v.regex(/^\d{6}$/)),
-  origin: v.pipe(
-    v.string(),
-    v.check((url: string) => isSafeRedirectUrl(url, allowedRedirectUrls))
+  origin: v.fallback(
+    v.pipe(
+      v.string(),
+      v.check((url: string) => isSafeRedirectUrl(url, allowedRedirectUrls))
+    ),
+    config.app.origin
   ),
   email: v.pipe(
     v.string(),
     v.email(),
     v.transform((email: string) => email.toLocaleLowerCase())
   ),
-  listIds: ReachableNewsletterListId,
+  listIds: v.optional(ReachableNewsletterListId, []),
 })
 
 export type NewsletterConfirmationQuery = v.InferOutput<

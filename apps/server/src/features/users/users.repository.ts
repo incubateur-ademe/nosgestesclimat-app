@@ -1,4 +1,3 @@
-import type { Request } from 'express'
 import type { Prisma, User } from '../../adapters/prisma/generated.ts'
 import { defaultUserSelection } from '../../adapters/prisma/selection.ts'
 import type {
@@ -7,6 +6,7 @@ import type {
   RequestOptionsOrNull,
   Session,
 } from '../../adapters/prisma/transaction.ts'
+import type { PartialVerifiedUser } from '../../core/types/user.ts'
 
 /**
  * Legacy migration function. Finds all anonymous users sharing the same
@@ -305,7 +305,7 @@ export const fetchVerifiedUser = <
 }
 
 export const fetchUsersForEmail = (
-  { email }: Pick<NonNullable<Request['user']>, 'email'>,
+  { email }: Pick<PartialVerifiedUser, 'email'>,
   { session }: { session: Session }
 ) => {
   return session.user.findMany({
@@ -378,7 +378,7 @@ export const createOrUpdateVerifiedUser = async <
   Select extends Prisma.VerifiedUserSelect = { id: true },
 >(
   {
-    id: { userId, email },
+    id: { id, email },
     user: {
       email: newEmail,
       name,
@@ -389,7 +389,7 @@ export const createOrUpdateVerifiedUser = async <
     },
     select = { email: true } as Select,
   }: {
-    id: NonNullable<Request['user']>
+    id: PartialVerifiedUser
     user: VerifiedUserPayload
     select?: Select
   },
@@ -404,7 +404,7 @@ export const createOrUpdateVerifiedUser = async <
             email,
           },
           data: {
-            id: userId,
+            id,
             ...userData,
             ...(newEmail ? { email: newEmail } : {}),
           },
@@ -412,7 +412,7 @@ export const createOrUpdateVerifiedUser = async <
         })
       : session.verifiedUser.create({
           data: {
-            id: userId,
+            id,
             email: newEmail || email,
             ...userData,
           },
@@ -421,7 +421,7 @@ export const createOrUpdateVerifiedUser = async <
 
     createOrUpdateUser(
       {
-        id: userId,
+        id,
         user: {
           email: newEmail || email,
           name: userData.name,

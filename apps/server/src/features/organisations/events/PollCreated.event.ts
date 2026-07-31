@@ -12,7 +12,6 @@ export type PollCreatedEventAttributes = {
     administrators: Array<{ user: VerifiedUser }>
   }
   locale: Locales
-  origin: string
   poll: Poll
 }
 

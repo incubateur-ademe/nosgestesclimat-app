@@ -17,7 +17,7 @@ import { getEventPageData } from './_helpers/eventPageData'
 export async function generateMetadata({
   params,
 }: PageProps<'/[locale]/evenement/[id]'>) {
-  const { locale: localeParam } = await params
+  const { locale: localeParam, id } = await params
   const locale = localeParam as Locale
   const { t } = await getServerTranslation({ locale })
 
@@ -31,6 +31,9 @@ export async function generateMetadata({
       'event.meta.description',
       "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
     ),
+    alternates: {
+      canonical: `/evenement/${id}`,
+    },
     robots: noIndexObject,
   })
 }
