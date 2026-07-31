@@ -2,6 +2,7 @@ export const SIMULATOR_PATH = '/simulateur/bilan'
 export const TUTORIAL_PATH = '/simulateur/tutoriel'
 export const SIMULATOR_INTERCALAIRE_PATH = '/simulateur/intercalaire'
 export const START_SIMULATION_PATH = '/simulateur/commencer'
+export const EMAIL_SIMULATOR_PATH = '/simulateur/email'
 
 export const MON_ESPACE_PATH = '/mon-espace'
 
