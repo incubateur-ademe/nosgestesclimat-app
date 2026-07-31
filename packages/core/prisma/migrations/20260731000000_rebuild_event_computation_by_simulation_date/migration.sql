@@ -7,9 +7,13 @@
 ALTER TABLE "ngc"."Event" ADD COLUMN "slug" TEXT;
 CREATE UNIQUE INDEX "Event_slug_key" ON "ngc"."Event"("slug");
 
+-- Backfill the slug for the seeded SEDD 2026 event (idempotent).
+UPDATE "ngc"."Event" SET "slug" = 'sedd' WHERE "name" = 'SEDD 2026' AND "slug" IS NULL;
+
 -- Drop the previous materialized view.
 DROP MATERIALIZED VIEW IF EXISTS "ngc"."event_computation";
 DROP INDEX IF EXISTS "ngc"."event_computation_eventId_idx";
+DROP INDEX IF EXISTS "ngc"."event_computation_eventId_organisationId_key";
 
 -- Total row (organisationId = NULL) + per-organisation rows.
 -- Both are computed from this single materialized view (same refresh cadence),
@@ -41,7 +45,10 @@ LEFT JOIN "ngc"."Poll" p ON p.id = sp."pollId"
 WHERE p."organisationId" IS NOT NULL
 GROUP BY e.id, p."organisationId";
 
-CREATE INDEX IF NOT EXISTS "event_computation_eventId_idx" ON "ngc"."event_computation" ("eventId");
+-- Unique index required for REFRESH MATERIALIZED VIEW CONCURRENTLY:
+-- each (eventId, organisationId) pair is unique (total row has organisationId NULL).
+CREATE UNIQUE INDEX "event_computation_eventId_organisationId_key"
+  ON "ngc"."event_computation" ("eventId", "organisationId");
 
 -- Index Simulation.createdAt and Simulation.progression for the counter query.
 CREATE INDEX IF NOT EXISTS "Simulation_createdAt_idx" ON "ngc"."Simulation"("createdAt");

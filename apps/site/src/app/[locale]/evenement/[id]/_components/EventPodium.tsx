@@ -1,7 +1,8 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumCategory, PodiumItem } from '../_helpers/eventPageData'
+import type { PodiumItem } from '../_helpers/eventPageData'
+import { filterAndRankPodiumItems } from '../_helpers/podiumItems'
 import type { FilterValue } from './eventPodium/EventTabs'
 import EventTabs, { FILTER_KEY, FILTER_VALUES } from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
@@ -56,12 +57,7 @@ export default async function EventPodium({
   const prevHref = prevFilter ? buildFilterHref(params, prevFilter) : undefined
   const nextHref = nextFilter ? buildFilterHref(params, nextFilter) : undefined
 
-  const filteredItems =
-    activeFilter === 'all'
-      ? items
-      : items.filter(
-          (item) => item.category === (activeFilter as PodiumCategory)
-        )
+  const filteredItems = filterAndRankPodiumItems(items, activeFilter)
 
   return (
     <div className="mb-16">

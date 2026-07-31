@@ -21,8 +21,8 @@ export interface EventInfo {
 // organisations count), but its simulations still count for the counter.
 const ADEME_SEDD_SLUG = 'ademe-sedd'
 
-// Podium size per organisation type (kanban card: "15 par type d'orga").
-const PODIUM_LIMIT_PER_TYPE = 15
+// Podium size: the 15 best organisations overall, whatever their type.
+const PODIUM_LIMIT = 15
 
 export async function getEventInfo(eventIdOrSlug: string): Promise<EventInfo> {
   const event = await prisma.event.findFirst({
@@ -41,31 +41,21 @@ export async function getEventInfo(eventIdOrSlug: string): Promise<EventInfo> {
   }
 
   const [rows, totalResult, orgCountResult] = await Promise.all([
-    // Top 15 per organisation type, ADEME excluded.
+    // Top 15 organisations overall, ADEME excluded.
     prisma.$queryRawUnsafe<
       { organisationId: string; simulationsCount: number }[]
     >(
-      `WITH ranked AS (
-         SELECT
-           ec."organisationId",
-           ec."simulationsCount",
-           ROW_NUMBER() OVER (
-             PARTITION BY o."type"
-             ORDER BY ec."simulationsCount" DESC, o."name" ASC
-           ) AS rn
-         FROM "ngc"."event_computation" ec
-         JOIN "ngc"."Organisation" o ON o.id = ec."organisationId"
-         WHERE ec."eventId" = $1
-           AND ec."organisationId" IS NOT NULL
-           AND o."slug" <> $2
-       )
-       SELECT "organisationId", "simulationsCount"
-       FROM ranked
-       WHERE rn <= $3
-       ORDER BY "simulationsCount" DESC`,
+      `SELECT ec."organisationId", ec."simulationsCount"
+       FROM "ngc"."event_computation" ec
+       JOIN "ngc"."Organisation" o ON o.id = ec."organisationId"
+       WHERE ec."eventId" = $1
+         AND ec."organisationId" IS NOT NULL
+         AND o."slug" <> $2
+       ORDER BY ec."simulationsCount" DESC, ec."organisationId" ASC
+       LIMIT $3`,
       event.id,
       ADEME_SEDD_SLUG,
-      PODIUM_LIMIT_PER_TYPE
+      PODIUM_LIMIT
     ),
     // Total counter comes from the total row (organisationId IS NULL) of the
     // materialized view, which already filters completed simulations in the

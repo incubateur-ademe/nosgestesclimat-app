@@ -12,7 +12,7 @@ const seed = async () => {
         { slug: 'sedd' },
         {
           name: 'SEDD 2026',
-          startDate: new Date('2026-09-18T00:00:00Z'),
+          startDate: new Date('2026-09-18T00:00:00+02:00'),
         },
       ],
     },
@@ -23,8 +23,8 @@ const seed = async () => {
       data: {
         name: 'SEDD 2026',
         slug: 'sedd',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
+        startDate: new Date('2026-09-18T00:00:00+02:00'),
+        endDate: new Date('2026-10-08T23:59:59+02:00'),
       },
     })
   } else if (existing && existing.slug !== 'sedd') {

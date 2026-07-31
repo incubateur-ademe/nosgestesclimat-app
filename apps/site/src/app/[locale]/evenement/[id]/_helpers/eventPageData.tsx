@@ -137,7 +137,7 @@ export async function getEventPageData({
     dynamicCounter: {
       currentValue,
       targetValue: TARGET_VALUE,
-      progressPercentage: (currentValue / TARGET_VALUE) * 100,
+      progressPercentage: Math.min((currentValue / TARGET_VALUE) * 100, 100),
       primaryCtaHref: ORGANISATION_HOME_PAGE,
       secondaryCtaHref:
         'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',

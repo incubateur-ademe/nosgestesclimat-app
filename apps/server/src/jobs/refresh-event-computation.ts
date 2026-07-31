@@ -16,6 +16,7 @@ const main = async () => {
 
   if (!activeEvent) {
     logger.info('Outside event period, skipping refresh')
+    await prisma.$disconnect()
     process.exit(0)
   }
 
@@ -24,7 +25,7 @@ const main = async () => {
       `Refreshing event_computation materialized view for event "${activeEvent.name}"...`
     )
     await prisma.$executeRawUnsafe(
-      'REFRESH MATERIALIZED VIEW "ngc"."event_computation"'
+      'REFRESH MATERIALIZED VIEW CONCURRENTLY "ngc"."event_computation"'
     )
     logger.info('Materialized view refreshed successfully')
     process.exit(0)

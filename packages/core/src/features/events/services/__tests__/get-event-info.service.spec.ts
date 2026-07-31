@@ -358,13 +358,13 @@ describe('getEventInfo', () => {
     expect(result.totalSimulations).toBe(0)
   })
 
-  it('caps the podium at 15 per organisation type', async () => {
+  it('returns the top 15 organisations overall, whatever their type', async () => {
     const event = await createEvent()
 
-    const ORGS_PER_TYPE = 20
-
+    // 20 companies (3 simulations each) + 20 associations (1 simulation each).
+    // The podium must return the 15 best overall (all companies), not 15 per type.
     const companyOrgs = await Promise.all(
-      Array.from({ length: ORGS_PER_TYPE }, (_, i) =>
+      Array.from({ length: 20 }, (_, i) =>
         createOrganisation({
           name: `Company ${i}`,
           slug: `company-${i}`,
@@ -373,7 +373,7 @@ describe('getEventInfo', () => {
       )
     )
     const associationOrgs = await Promise.all(
-      Array.from({ length: ORGS_PER_TYPE }, (_, i) =>
+      Array.from({ length: 20 }, (_, i) =>
         createOrganisation({
           name: `Association ${i}`,
           slug: `association-${i}`,
@@ -383,18 +383,18 @@ describe('getEventInfo', () => {
     )
 
     await Promise.all([
-      ...companyOrgs.map((org) => seedPoll(event, org.id, 2)),
-      ...associationOrgs.map((org) => seedPoll(event, org.id, 2)),
+      ...companyOrgs.map((org) => seedPoll(event, org.id, 3)),
+      ...associationOrgs.map((org) => seedPoll(event, org.id, 1)),
     ])
 
     await refreshMV()
 
     const result = await getEventInfo(event.id)
 
-    // 15 per type: 15 companies + 15 associations = 30 podium entries
-    expect(result.organisations).toHaveLength(30)
-    // organisationCount is not capped by the podium limit
-    expect(result.organisationCount).toBe(40)
+    expect(result.organisations).toHaveLength(15)
+    expect(result.organisations.every((o) => o.type === 'company')).toBe(true)
+    // organisationCount counts every mobilised organisation (>= 2 simulations)
+    expect(result.organisationCount).toBe(20)
   })
 
   it('organisationCount is not capped by the podium limit', async () => {
@@ -415,5 +415,25 @@ describe('getEventInfo', () => {
 
     expect(result.organisations).toHaveLength(15)
     expect(result.organisationCount).toBe(ORG_COUNT)
+  })
+
+  it('orders equal scores deterministically by organisation id', async () => {
+    const event = await createEvent()
+
+    const orgB = await createOrganisation({ name: 'B', slug: 'b' })
+    const orgA = await createOrganisation({ name: 'A', slug: 'a' })
+
+    await Promise.all([
+      seedPoll(event, orgB.id, 2),
+      seedPoll(event, orgA.id, 2),
+    ])
+
+    await refreshMV()
+
+    const result = await getEventInfo(event.id)
+
+    // Same score: sorted by organisationId ASC (deterministic tie-break).
+    const ids = result.organisations.map((o) => o.id)
+    expect(ids).toEqual([...ids].sort())
   })
 })
