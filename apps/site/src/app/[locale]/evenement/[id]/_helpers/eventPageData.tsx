@@ -117,7 +117,7 @@ export async function getEventPageData({
             score: 0,
             category: 'all' as const,
           },
-          ...Array.from({ length: 9 }, (_, index) => ({
+          ...Array.from({ length: 14 }, (_, index) => ({
             rank: index + 2,
             label: t(
               `event.podium.competitor${index + 2}`,
@@ -131,8 +131,9 @@ export async function getEventPageData({
   return {
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/VIGNETTE_SEDD_f711b1d37b.svg',
-    startDate: '2026-09-01T00:00:00+02:00',
-    endDate: '2026-09-30T23:59:59+02:00',
+    startDate:
+      eventInfo.startDate?.toISOString() ?? '2026-09-18T00:00:00+02:00',
+    endDate: eventInfo.endDate?.toISOString() ?? '2026-10-08T23:59:59+02:00',
     dynamicCounter: {
       currentValue,
       targetValue: TARGET_VALUE,

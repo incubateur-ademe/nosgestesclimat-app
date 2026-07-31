@@ -10,7 +10,7 @@ router.route('/v1/:id/info').get(async (req, res) => {
     const info = await getEventInfo(eventId)
 
     return res.status(StatusCodes.OK).json(info)
-  } catch (e) {
+  } catch {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: 'Failed to fetch event info',
     })

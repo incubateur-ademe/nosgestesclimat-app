@@ -1,18 +1,28 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import logger from '../logger.ts'
 
-const EVENT_START = new Date('2026-09-18T00:00:00Z')
-const EVENT_END = new Date('2026-10-08T23:59:59Z')
-
 const main = async () => {
   const now = new Date()
-  if (now < EVENT_START || now > EVENT_END) {
+
+  // The event period is stored on the Event row (seeded SEDD 2026 event), so
+  // the refresh only runs while at least one event is active.
+  const activeEvent = await prisma.event.findFirst({
+    where: {
+      startDate: { lte: now },
+      endDate: { gte: now },
+    },
+    select: { id: true, name: true },
+  })
+
+  if (!activeEvent) {
     logger.info('Outside event period, skipping refresh')
     process.exit(0)
   }
 
   try {
-    logger.info('Refreshing event_computation materialized view...')
+    logger.info(
+      `Refreshing event_computation materialized view for event "${activeEvent.name}"...`
+    )
     await prisma.$executeRawUnsafe(
       'REFRESH MATERIALIZED VIEW "ngc"."event_computation"'
     )

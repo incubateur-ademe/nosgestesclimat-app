@@ -31,7 +31,7 @@ export default async function PodiumVisual({
   hasStarted,
 }: Props) {
   const podiumItems = items.slice(0, 3)
-  const remainingItems = items.slice(3, 10)
+  const remainingItems = items.slice(3, 15)
 
   const { t } = await getServerTranslation({ locale })
 

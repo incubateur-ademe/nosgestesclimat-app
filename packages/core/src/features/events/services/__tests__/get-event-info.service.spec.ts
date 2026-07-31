@@ -33,29 +33,51 @@ const createOrganisation = (data: {
     data: { ...data, type: data.type ?? 'company' },
   })
 
+const createEvent = (
+  startDate = '2026-09-18T00:00:00Z',
+  endDate = '2026-10-08T23:59:59Z'
+) =>
+  prisma.event.create({
+    data: {
+      name: 'SEDD 2026',
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+    },
+  })
+
 const seedPoll = async (
   event: { startDate: Date; endDate: Date },
   organisationId: string,
-  simulationCount: number
+  simulationCount: number,
+  options: {
+    pollCreatedAt?: Date
+    simulationProgression?: number
+    simulationDates?: Date[]
+  } = {}
 ) => {
   const poll = await prisma.poll.create({
     data: {
       name: `Poll ${organisationId}`,
-      slug: `poll-${organisationId}`,
+      slug: `poll-${organisationId}-${Math.random().toString(36).slice(2, 8)}`,
       organisationId,
       customAdditionalQuestions: {},
-      createdAt: new Date(
-        event.startDate.getTime() +
-          (event.endDate.getTime() - event.startDate.getTime()) / 2
-      ),
+      createdAt:
+        options.pollCreatedAt ??
+        new Date(
+          event.startDate.getTime() +
+            (event.endDate.getTime() - event.startDate.getTime()) / 2
+        ),
     },
   })
 
+  const simulationCreatedAt = (i: number) =>
+    options.simulationDates?.[i] ??
+    new Date(poll.createdAt.getTime() + i * 1_000) // 1s apart to avoid duplicates
+
   for (let i = 0; i < simulationCount; i++) {
     const sim = await createSimulation({
-      createdAt: new Date(
-        poll.createdAt.getTime() + i * 1_000 // 1s apart to avoid duplicates
-      ),
+      createdAt: simulationCreatedAt(i),
+      progression: options.simulationProgression,
     })
     await prisma.simulationPoll.create({
       data: { pollId: poll.id, simulationId: sim.id },
@@ -80,17 +102,30 @@ describe('getEventInfo', () => {
       organisations: [],
       totalSimulations: 0,
       organisationCount: 0,
+      startDate: null,
+      endDate: null,
     })
   })
 
-  it('returns zeroes when event has no polls and no simulations', async () => {
+  it('resolves the event by slug', async () => {
     const event = await prisma.event.create({
       data: {
-        name: 'Empty Event',
+        name: 'SEDD 2026',
+        slug: 'sedd',
         startDate: new Date('2026-09-18T00:00:00Z'),
         endDate: new Date('2026-10-08T23:59:59Z'),
       },
     })
+
+    const result = await getEventInfo('sedd')
+
+    expect(result.startDate?.toISOString()).toBe('2026-09-18T00:00:00.000Z')
+    expect(result.endDate?.toISOString()).toBe('2026-10-08T23:59:59.000Z')
+    expect(event.id).toBeTruthy()
+  })
+
+  it('returns zeroes when event has no polls and no simulations', async () => {
+    const event = await createEvent()
 
     const result = await getEventInfo(event.id)
 
@@ -98,20 +133,17 @@ describe('getEventInfo', () => {
       organisations: [],
       totalSimulations: 0,
       organisationCount: 0,
+      startDate: event.startDate,
+      endDate: event.endDate,
     })
   })
 
   it('returns totalSimulations even when event has no polls', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'No Poll Event',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+    const event = await createEvent()
 
     // Simulation in the date range, but no poll — should still be counted
     await createSimulation({ createdAt: new Date('2026-09-25T12:00:00Z') })
+    await refreshMV()
 
     const result = await getEventInfo(event.id)
 
@@ -121,13 +153,7 @@ describe('getEventInfo', () => {
   })
 
   it('returns organisation with correct fields and simulationsCount', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'SEDD 2026',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+    const event = await createEvent()
 
     const org = await createOrganisation({
       name: 'Org Alpha',
@@ -153,13 +179,7 @@ describe('getEventInfo', () => {
   })
 
   it('returns organisations ordered by simulationsCount DESC', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'SEDD 2026',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+    const event = await createEvent()
 
     const [orgA, orgB, orgC] = await Promise.all([
       createOrganisation({ name: 'A', slug: 'a' }),
@@ -181,46 +201,84 @@ describe('getEventInfo', () => {
     expect(result.organisations.map((o) => o.slug)).toEqual(['b', 'c', 'a'])
   })
 
-  it('excludes organisations with zero simulations from organisationCount', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'SEDD 2026',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
+  it('counts only organisations with at least 2 simulations as mobilised', async () => {
+    const event = await createEvent()
+
+    const orgWithOneSim = await createOrganisation({
+      name: 'One Sim',
+      slug: 'one-sim',
+    })
+    const orgWithTwoSims = await createOrganisation({
+      name: 'Two Sims',
+      slug: 'two-sims',
     })
 
-    const orgWithSims = await createOrganisation({
-      name: 'With Sims',
-      slug: 'with-sims',
-    })
-    const orgWithoutSims = await createOrganisation({
-      name: 'No Sims',
-      slug: 'no-sims',
-    })
-
-    await seedPoll(event, orgWithSims.id, 1)
-    await seedPoll(event, orgWithoutSims.id, 0)
+    await seedPoll(event, orgWithOneSim.id, 1)
+    await seedPoll(event, orgWithTwoSims.id, 2)
 
     await refreshMV()
 
     const result = await getEventInfo(event.id)
 
+    // 1 simulation is not enough to be counted as "mobilised" (>= 2 required)
     expect(result.organisationCount).toBe(1)
   })
 
-  it('excludes ademe-SEDD organisation from both list and count', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'SEDD 2026',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
+  it('counts simulations from old polls created before the event window (Exemple 1)', async () => {
+    const event = await createEvent()
+
+    const oldOrg = await createOrganisation({
+      name: 'Old Org',
+      slug: 'old-org',
     })
+
+    // The poll was created in June 2026, before the event window,
+    // but the simulations are done during the event window.
+    await seedPoll(event, oldOrg.id, 2, {
+      pollCreatedAt: new Date('2026-06-10T00:00:00Z'),
+      simulationDates: [
+        new Date('2026-09-20T10:00:00Z'),
+        new Date('2026-09-21T10:00:00Z'),
+      ],
+    })
+
+    await refreshMV()
+
+    const result = await getEventInfo(event.id)
+
+    expect(result.organisations).toHaveLength(1)
+    expect(result.organisations[0].slug).toBe('old-org')
+    expect(result.organisations[0].simulationsCount).toBe(2)
+    expect(result.totalSimulations).toBe(2)
+    expect(result.organisationCount).toBe(1)
+  })
+
+  it('does not count incomplete simulations (progression < 1)', async () => {
+    const event = await createEvent()
+
+    const org = await createOrganisation({
+      name: 'Org',
+      slug: 'org',
+    })
+
+    // 1 completed + 1 in progress (progression = 0.5)
+    await seedPoll(event, org.id, 1)
+    await seedPoll(event, org.id, 1, { simulationProgression: 0.5 })
+
+    await refreshMV()
+
+    const result = await getEventInfo(event.id)
+
+    expect(result.organisations[0].simulationsCount).toBe(1)
+    expect(result.totalSimulations).toBe(1)
+  })
+
+  it('excludes ademe-sedd organisation from both list and count', async () => {
+    const event = await createEvent()
 
     const seddOrg = await createOrganisation({
       name: 'ADEME SEDD',
-      slug: 'ademe-SEDD',
+      slug: 'ademe-sedd',
     })
     const otherOrg = await createOrganisation({
       name: 'Other',
@@ -236,23 +294,17 @@ describe('getEventInfo', () => {
 
     const result = await getEventInfo(event.id)
 
-    // The ademe-SEDD org has 5 simulations but must not appear in the list
+    // The ademe-sedd org has 5 simulations but must not appear in the list
     expect(result.organisations.map((o) => o.slug)).toEqual(['other'])
     expect(result.organisationCount).toBe(1)
   })
 
-  it('still counts ademe-SEDD simulations in totalSimulations', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'SEDD 2026',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+  it('still counts ademe-sedd simulations in totalSimulations', async () => {
+    const event = await createEvent()
 
     const seddOrg = await createOrganisation({
       name: 'ADEME SEDD',
-      slug: 'ademe-SEDD',
+      slug: 'ademe-sedd',
     })
     const otherOrg = await createOrganisation({
       name: 'Other',
@@ -268,20 +320,15 @@ describe('getEventInfo', () => {
 
     const result = await getEventInfo(event.id)
 
-    // totalSimulations comes from Simulation table (7 sims total) — includes everyone
+    // totalSimulations counts every completed simulation in the window, ADEME included
     expect(result.totalSimulations).toBe(7)
   })
 
   it('includes simulation exactly at startDate in totalSimulations', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'Boundary Event',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+    const event = await createEvent()
 
     await createSimulation({ createdAt: new Date('2026-09-18T00:00:00Z') })
+    await refreshMV()
 
     const result = await getEventInfo(event.id)
 
@@ -289,15 +336,10 @@ describe('getEventInfo', () => {
   })
 
   it('includes simulation exactly at endDate in totalSimulations', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'Boundary Event',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+    const event = await createEvent()
 
     await createSimulation({ createdAt: new Date('2026-10-08T23:59:59Z') })
+    await refreshMV()
 
     const result = await getEventInfo(event.id)
 
@@ -305,30 +347,58 @@ describe('getEventInfo', () => {
   })
 
   it('excludes simulation outside date range from totalSimulations', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'Boundary Event',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+    const event = await createEvent()
 
     await createSimulation({ createdAt: new Date('2026-09-17T23:59:59Z') }) // 1s before
     await createSimulation({ createdAt: new Date('2026-10-09T00:00:00Z') }) // 1s after
+    await refreshMV()
 
     const result = await getEventInfo(event.id)
 
     expect(result.totalSimulations).toBe(0)
   })
 
-  it('organisationCount is not capped by LIMIT 15', async () => {
-    const event = await prisma.event.create({
-      data: {
-        name: 'SEDD 2026',
-        startDate: new Date('2026-09-18T00:00:00Z'),
-        endDate: new Date('2026-10-08T23:59:59Z'),
-      },
-    })
+  it('caps the podium at 15 per organisation type', async () => {
+    const event = await createEvent()
+
+    const ORGS_PER_TYPE = 20
+
+    const companyOrgs = await Promise.all(
+      Array.from({ length: ORGS_PER_TYPE }, (_, i) =>
+        createOrganisation({
+          name: `Company ${i}`,
+          slug: `company-${i}`,
+          type: 'company',
+        })
+      )
+    )
+    const associationOrgs = await Promise.all(
+      Array.from({ length: ORGS_PER_TYPE }, (_, i) =>
+        createOrganisation({
+          name: `Association ${i}`,
+          slug: `association-${i}`,
+          type: 'association',
+        })
+      )
+    )
+
+    await Promise.all([
+      ...companyOrgs.map((org) => seedPoll(event, org.id, 2)),
+      ...associationOrgs.map((org) => seedPoll(event, org.id, 2)),
+    ])
+
+    await refreshMV()
+
+    const result = await getEventInfo(event.id)
+
+    // 15 per type: 15 companies + 15 associations = 30 podium entries
+    expect(result.organisations).toHaveLength(30)
+    // organisationCount is not capped by the podium limit
+    expect(result.organisationCount).toBe(40)
+  })
+
+  it('organisationCount is not capped by the podium limit', async () => {
+    const event = await createEvent()
 
     const ORG_COUNT = 20
 
@@ -338,7 +408,7 @@ describe('getEventInfo', () => {
       )
     )
 
-    await Promise.all(orgs.map((org) => seedPoll(event, org.id, 1)))
+    await Promise.all(orgs.map((org) => seedPoll(event, org.id, 2)))
     await refreshMV()
 
     const result = await getEventInfo(event.id)

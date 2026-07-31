@@ -1,5 +1,6 @@
 model Event {
   id        String   @id @default(cuid())
+  slug      String?  @unique
   name      String
   startDate DateTime
   endDate   DateTime
@@ -11,7 +12,7 @@ model Event {
 
 view EventComputation {
   eventId          String
-  organisationId   String
+  organisationId   String?
   simulationsCount Int
 
   @@map("event_computation")
@@ -355,6 +356,8 @@ model Simulation {
 
   @@index([userId])
   @@index([userEmail])
+  @@index([createdAt])
+  @@index([progression])
   @@schema("ngc")
 }
 

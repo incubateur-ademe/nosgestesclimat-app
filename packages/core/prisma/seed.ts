@@ -8,8 +8,13 @@ const seed = async () => {
   // Default event — créé une seule fois, idempotent
   const existing = await prisma.event.findFirst({
     where: {
-      name: 'SEDD 2026',
-      startDate: new Date('2026-09-18T00:00:00Z'),
+      OR: [
+        { slug: 'sedd' },
+        {
+          name: 'SEDD 2026',
+          startDate: new Date('2026-09-18T00:00:00Z'),
+        },
+      ],
     },
   })
 
@@ -17,9 +22,16 @@ const seed = async () => {
     await prisma.event.create({
       data: {
         name: 'SEDD 2026',
+        slug: 'sedd',
         startDate: new Date('2026-09-18T00:00:00Z'),
         endDate: new Date('2026-10-08T23:59:59Z'),
       },
+    })
+  } else if (existing && existing.slug !== 'sedd') {
+    // Backfill the slug on an event created by an earlier seed version.
+    await prisma.event.update({
+      where: { id: existing.id },
+      data: { slug: 'sedd' },
     })
   }
   // Actions
