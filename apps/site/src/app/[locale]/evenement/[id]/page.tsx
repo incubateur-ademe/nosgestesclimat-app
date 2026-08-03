@@ -49,6 +49,7 @@ export default async function EvenementPage({
   const {
     detailImageSrc,
     startDate,
+    endDate,
     dynamicCounter,
     statisticsValues,
     podiumItems,
@@ -68,7 +69,12 @@ export default async function EvenementPage({
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
-          <EventDetail locale={locale} imageSrc={detailImageSrc} />
+          <EventDetail
+            locale={locale}
+            imageSrc={detailImageSrc}
+            startDate={startDate}
+            endDate={endDate}
+          />
 
           <EventHero
             locale={locale}

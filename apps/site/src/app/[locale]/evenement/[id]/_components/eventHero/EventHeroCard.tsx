@@ -1,4 +1,5 @@
 import type { Locale } from '@/i18nConfig'
+import { formatEventDate } from '../../_helpers/formatEventDate'
 import AnimatedCounterBlock from './eventHeroCard/AnimatedCounterBlock'
 import EventCountdown from './eventHeroCard/EventCountdown'
 import EventDynamicCounter from './eventHeroCard/EventDynamicCounter'
@@ -24,6 +25,12 @@ export default function EventHeroCard({
 }: Props) {
   const hasEventStarted = new Date() >= new Date(startDate)
 
+  const launchDateLabel = formatEventDate(startDate, locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+
   const content = hasEventStarted ? (
     <AnimatedCounterBlock>
       <EventDynamicCounter
@@ -38,6 +45,7 @@ export default function EventHeroCard({
   ) : (
     <EventCountdown
       targetDate={startDate}
+      launchDateLabel={launchDateLabel}
       primaryCtaHref={primaryCtaHref}
       secondaryCtaHref={secondaryCtaHref}
     />

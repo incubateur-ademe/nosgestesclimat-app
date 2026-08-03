@@ -2065,8 +2065,8 @@ entries:
   event.dynamicCounter.promise.lock: Résultats en 10 minutes — 100% gratuit
   event.dynamicCounter.primaryCta: Mobilise my organisation
   event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
-  event.detail.dates: From 18 September to 8 October 2026
-  event.detail.dates.lock: Du 18 septembre au 8 octobre 2026
+  event.detail.dates: From {{startDate}} to {{endDate}}
+  event.detail.dates.lock: Du {{startDate}} au {{endDate}}
   event.tutorial.org.1.description: <0>Set up your campaign</0> in just a few clicks and define your objectives.
   event.tutorial.org.1.description.lock: <0>Configurez votre campagne</0> en quelques clics et définissez vos objectifs.
   event.ctas.description: There are two ways to take part in the challenge.
@@ -2081,8 +2081,8 @@ entries:
   event.ctas.card1.description.lock: Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés.
   event.tutorial.individual.3.description: Get personalised tips on how to reduce your environmental impact in your day-to-day life.
   event.tutorial.individual.3.description.lock: Recevez des actions personnalisées pour réduire votre impact au quotidien.
-  event.detail.alt: 'From 18 September to 8 October: European Sustainable Development Week on nosgestesclimat.fr'
-  event.detail.alt.lock: Du 18 septembre au 8 octobre, Semaine européenne du Développement Durable sur nosgestesclimat.fr
+  event.detail.alt: 'From {{startDate}} to {{endDate}}: European Sustainable Development Week on nosgestesclimat.fr'
+  event.detail.alt.lock: Du {{startDate}} au {{endDate}}, Semaine européenne du Développement Durable sur nosgestesclimat.fr
   event.ctas.card2.description: Create a dedicated space to engage your colleagues, pupils or students, or stakeholders.
   event.ctas.card2.description.lock: Créez un espace dédié pour mobiliser vos collègues, élèves / étudiants, ou parties prenantes.
   event.tutorial.individual.1.description: Browse the topics (food, transport, housing, etc.) in just a few minutes.
@@ -2119,8 +2119,8 @@ entries:
   event.countdown.label.lock: Début dans
   event.statistics.title: Live data will appear on launch
   event.statistics.title.lock: Les données en direct apparaîtront au lancement
-  event.countdown.date: Launch on 1 September 2026
-  event.countdown.date.lock: Lancement le 1er septembre 2026
+  event.countdown.date: Launch on {{date}}
+  event.countdown.date.lock: Lancement le {{date}}
   event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
   event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   Éducation: Education
