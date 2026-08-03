@@ -1,6 +1,14 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
+import { createPortal } from 'react-dom'
 import { twMerge } from 'tailwind-merge'
 import { type DropdownMenuButtonRef, useDropdownMenu } from './useDropdownMenu'
 
@@ -44,6 +52,8 @@ export function getDropdownMenuItemPosition(
   return 'middle'
 }
 
+const PANEL_OFFSET = 8
+
 export default function DropdownMenu({
   trigger,
   children,
@@ -61,8 +71,60 @@ export default function DropdownMenu({
     panelId,
   } = useDropdownMenu({ onToggle })
 
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [panelPosition, setPanelPosition] = useState<{
+    top: number
+    left?: number
+    right?: number
+  } | null>(null)
+
+  const measurePanelPosition = useCallback(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+
+    const rect = wrapper.getBoundingClientRect()
+    const next = {
+      top: rect.bottom + PANEL_OFFSET,
+      ...(align === 'right'
+        ? { right: window.innerWidth - rect.right }
+        : { left: rect.left }),
+    }
+
+    setPanelPosition((prev) => {
+      if (!prev) return next
+
+      return prev.top === next.top &&
+        prev.right === next.right &&
+        prev.left === next.left
+        ? prev
+        : next
+    })
+  }, [align])
+
+  // Position the panel when it opens. The panel is portaled to <body> with
+  // fixed positioning, so it can never be clipped by an ancestor (header,
+  // overflow containers...). It is measured on open and repositioned on
+  // scroll/resize to stay attached to its trigger.
+  useLayoutEffect(() => {
+    if (isOpen) {
+      measurePanelPosition()
+    }
+  }, [isOpen, measurePanelPosition])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    window.addEventListener('resize', measurePanelPosition)
+    window.addEventListener('scroll', measurePanelPosition, true)
+
+    return () => {
+      window.removeEventListener('resize', measurePanelPosition)
+      window.removeEventListener('scroll', measurePanelPosition, true)
+    }
+  }, [isOpen, measurePanelPosition])
+
   return (
-    <div className="relative inline-block">
+    <div ref={wrapperRef} className="relative inline-block">
       {trigger({
         isOpen,
         buttonRef,
@@ -71,21 +133,34 @@ export default function DropdownMenu({
         onToggle: toggleMenu,
       })}
 
-      {isOpen && (
-        <div
-          ref={panelRef}
-          id={panelId}
-          aria-labelledby={buttonId}
-          className={twMerge(
-            'absolute top-full z-50 mt-2 min-w-[8.75rem] overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
-            align === 'right' ? 'right-0' : 'left-0',
-            panelClassName
-          )}>
-          <ul className="m-0 list-none p-0">
-            {children({ closeMenu, getItemClassName: getDropdownMenuItemClassName })}
-          </ul>
-        </div>
-      )}
+      {isOpen &&
+        panelPosition &&
+        createPortal(
+          <div
+            ref={panelRef}
+            id={panelId}
+            aria-labelledby={buttonId}
+            style={{
+              position: 'fixed',
+              top: panelPosition.top,
+              ...(align === 'right'
+                ? { right: panelPosition.right }
+                : { left: panelPosition.left }),
+              zIndex: 1000,
+            }}
+            className={twMerge(
+              'min-w-[8.75rem] overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
+              panelClassName
+            )}>
+            <ul className="m-0 list-none p-0">
+              {children({
+                closeMenu,
+                getItemClassName: getDropdownMenuItemClassName,
+              })}
+            </ul>
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
