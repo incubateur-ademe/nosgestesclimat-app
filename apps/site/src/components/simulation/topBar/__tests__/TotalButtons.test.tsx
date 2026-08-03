@@ -15,6 +15,12 @@ vi.mock('@/components/icons/ListIcon', () => ({
   default: () => <svg data-testid="list-icon" />,
 }))
 
+// The language switch reads the browser URL and DOM hreflang tags, so we
+// isolate it and only assert on what TotalButtons is responsible for.
+vi.mock('@/components/translation/LanguageSwitchButton', () => ({
+  default: () => <div data-testid="language-switch-button" />,
+}))
+
 describe('TotalButtons', () => {
   const toggleQuestionList = vi.fn()
 
@@ -34,14 +40,15 @@ describe('TotalButtons', () => {
       expect(screen.getByTestId('list-icon')).toBeInTheDocument()
     })
 
-    it('should not render anything if isDebug is false', () => {
+    it('should render the language switch but not the question list button if isDebug is false', () => {
       mockUseDebug.mockReturnValue(false)
 
-      const { container } = renderWithWrapper(
+      renderWithWrapper(
         <TotalButtons toggleQuestionList={toggleQuestionList} />
       )
 
-      expect(container.firstChild).toBeNull()
+      expect(screen.getByTestId('language-switch-button')).toBeInTheDocument()
+      expect(screen.queryByText('Liste des questions')).not.toBeInTheDocument()
     })
 
     it('should call toggleQuestionList when the button is clicked', async () => {
