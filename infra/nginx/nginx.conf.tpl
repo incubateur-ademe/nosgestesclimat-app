@@ -10,8 +10,11 @@ map $cookie_ngc_session $ngc_is_auth {
     default  1;
 }
 
+resolver 1.1.1.1 8.8.8.8 valid=30s;
+
 upstream scalingo {
-    server ${UPSTREAM}:443;
+    zone scalingo 64k;
+    server ${UPSTREAM}:443 resolve;
     keepalive 64;
 }
 
