@@ -5,9 +5,18 @@ import { createTestEngine } from '../../../simulation-computation/factories/engi
 import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
 import { ActionAssessmentPublicodesException } from '../../exceptions/action-assessment.exception.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
-import { assessActions } from '../assess-actions.service.ts'
+import { createAssessActions } from '../assess-actions.service.ts'
 
-vi.mock('../../../logger/index.ts', () => ({ log: vi.fn() }))
+const noopLogger = {
+  error: () => {},
+  warn: () => {},
+  info: () => {},
+  debug: () => {},
+}
+const assessActions = createAssessActions({
+  logger: noopLogger,
+  captureException: () => {},
+})
 
 const APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000001'
 const NOT_APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000002'

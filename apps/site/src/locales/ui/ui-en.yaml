@@ -2,10 +2,6 @@ entries:
   404.action: Return to a safe place
   404.action.lock: Revenir en lieu sûr
   'Accessibilité : partiellement conforme': 'Accessibility: partially compliant'
-  Actions d'engagement: Commitment actions
-  Actions négatives: Negative actions
-  'Actions écartées :': 'Discarded actions:'
-  Choisir le type de tri des actions: Choose the type of action sort
   Choisir une autre région: Choose another region
   Choisissez une région parmi celles disponibles !: Choose a region among those available!
   Commencer: Start
@@ -13,61 +9,30 @@ entries:
   Copier le lien: Copy the link
   Distance: Distance
   Documentation: Documentation
-  Démarrer: Start
   Envie de contribuer à une version pour votre région ?: Want to contribute to a version for your region?
   Faire le test: Take the test
   Fermer: Close
-  Fermer les options de tri: Close sorting options
   Fréquence: Frequency
   J'ai compris: I understand
   Label: Label
   Le test: The test
   Non: No
-  Non applicable: Not applicable
   Nouveautés: News
   Oui: Yes
-  Ouvrir les options de tri: Open the sorting options
-  Passer à l'action !: Take action!
   Personnalisez cette estimation: Customize this estimate
   Précédent: Previous
   'Quelques suggestions ': 'A few suggestions '
   Questions fréquentes: Frequently asked questions
-  Rejeter l'action: Reject the action
   Suivez le guide !: Follow the guide!
   Sur le même sujet: On the same subject
-  'Tri :': 'Sorting:'
-  'Triées par :': 'Sorted by:'
   Voir toutes les actions: See all actions
-  actions choisies: selected actions
   components.localisation.LocalisationMessage.betaMsg: It is currently in <1>beta</1> version.
   components.localisation.LocalisationMessage.betaMsg.lock: Elle est actuellement en version <1>bêta</1>.
   et: and
-  le + d'impact climat: highest climate impact
-  le - d'impact climat: lowest climate impact
   minutes: minutes
   participant: participant
-  plus d'1 kg: more than 1 kg
-  plus d'1 tonne: more than 1 tonne
-  plus de 10 kg: more than 10 kg
-  plus de 10 tonnes: more than 10 tonnes
-  plus de 100 kg: over 100 kg
-  publicodes.ActionTutorial.félicitation: You have completed your simulation
-  bravo !: well done!
-  publicodes.ActionTutorial.félicitation.lock: Vous avez terminé votre simulation
-  bravo !.lock: well done!
-  publicodes.ActionTutorial.msgEstimation: You now know your footprint, estimated at {{value}} {{unit}}, and you probably already have ideas for reducing it...
-  publicodes.ActionTutorial.msgEstimation.lock: Vous connaissez maintenant votre empreinte, estimée à {{value}} {{unit}}, et vous avez sûrement déjà des idées pour la réduire...
-  publicodes.ActionTutorial.msgPrécision: To improve accuracy, some actions will ask you a few extra questions.
-  publicodes.ActionTutorial.msgPrécision.lock: Pour améliorer la précision, certaines actions vous poseront quelques questions en plus.
-  publicodes.ActionTutorial.msgPrésentation: 'To help you, we will present you with <2>a list of actions</2>:'
-  publicodes.ActionTutorial.msgPrésentation.lock: "Pour vous aider, nous vous présenterons <2>une liste d'actions</2> :"
-  publicodes.ActionVignette.questionsRestantesText: '{{nbRemainingQuestions}} remaining question{{pluralSuffix}}'
-  publicodes.ActionVignette.questionsRestantesText.lock: '{{nbRemainingQuestions}} question{{pluralSuffix}} restante{{pluralSuffix}}'
-  publicodes.AllActions.msgPlusActions: <0>We don't have any more high-impact quantified actions to offer you 🤷</0><1>Discover below some tracks to act differently ⏬</1>
-  publicodes.AllActions.msgPlusActions.lock: <0>Nous n'avons plus d'actions chiffrées très impactantes à vous proposer 🤷</0><1>Découvrez plus bas quelques pistes pour agir autrement ⏬</1>
   sites.publicodes.Tutorial.questionE: 💡 But what does that little <1>e</1> mean?
   sites.publicodes.Tutorial.questionE.lock: 💡 Mais que veut dire ce petit <1>e</1> ?
-  sélectionnées: selected
   tonne: ton
   tonne.lock: ton
   tonnes: tons
@@ -186,8 +151,6 @@ entries:
   Retour à la liste des groupes: Back to the list of groups
   Ce groupe n'existe pas ou a été supprimé.: This group does not exist or has been deleted.
   Oups ! Nous n'avons pas trouvé votre groupe: Oops! We couldn't find your group
-  publicodes.ActionsOptionsBar.actionsRecap: '{{numberOfAvailableFinalActions}} actions available, '
-  publicodes.ActionsOptionsBar.actionsRecap.lock: '{{numberOfAvailableFinalActions}} actions disponibles, '
   Lien personnalisé & iframes: Custom links & iframes
   Plus que quelques petites questions: Just a few more questions
   Nous vérifions votre code...: Verifying your code...
@@ -235,13 +198,9 @@ entries:
   Partage de vos résultats à {{ parent }} ?: 'Share your results with {{ parent }} '
   (Données consultables à partir de 3 participants, dans un souci d'anonymat): (Data can be consulted for 3 or more participants, to ensure anonymity)
   En cliquant sur le bouton Accepter, vous autorisez {{ parent }} à récupérer le bilan de votre empreinte climat.: By clicking on the Accept button, you authorise {{ parent }} to retrieve your climate footprint.
-  Aller plus loin: Go further
-  Découvrez les conseils de l'ADEME, ouvrir dans un nouvel onglet: Find out more about ADEME's advice, open in a new tab
-  Découvrez les conseils de l'ADEME: Find out more about ADEME's advice
   Découvrir le calculateur: Discover the simulator
   'Je ne trouve pas réponse à ma question ': "I can't find the answer to my question "
   Les nouveautés: What's new?
-  sélectionnez celles qui vous intéressent: select those that interest you
   Empreinte: Footprint
   Annuler: Cancel
   Supprimer le groupe: Delete group
@@ -293,7 +252,6 @@ entries:
   Calculez votre empreinte sur le climat en 10 minutes chrono. Découvrez les gestes qui comptent vraiment pour le climat.: Calculate your climate footprint in just 10 minutes. Discover the actions that really matter for the climate.
   Ce test vous est proposé par: This test is brought to you by
   Reprendre mon test: Resume my test
-  écartez celles qui vous semblent trop ambitieuses ou déplacées.: discard those that seem too ambitious or inappropriate.
   Votre empreinte: Your footprint
   'Logo, affiches et présentations : retrouvez tous les outils pour partager Nos Gestes Climat dans ce kit.': 'Logo, posters and presentations: find all the tools you need to share Nos Gestes Climat in this kit.'
   Simulation terminée: Completed simulation
@@ -804,8 +762,6 @@ entries:
   Carbone, évaluer la métrique carbone: Carbon, assessing the carbon metric
   Connexion: Sign in
   Visiter cette page: Visit this page
-  actions.engagementIcon.ariaLabel: The actions are below
-  actions.engagementIcon.ariaLabel.lock: Les actions se trouvent en dessous
   endPage.waterActions.lireArticle: 9 ways to improve the water footprint of my food, open article in new window
   endPage.waterActions.lireArticle.lock: Les 9 manières d'améliorer l'empreinte eau de mon assiette, ouvrir l'article dans une nouvelle fenêtre
   organisations.ourTools.newTab: Open in a new window
@@ -821,20 +777,8 @@ entries:
   common.marianne.ariaLabel: French Republic
   common.marianne.ariaLabel.lock: République Française
   Permettez à vos cibles (clients, étudiants, participants, habitants..) de calculer et réduire leur empreinte carbone directement depuis vos plateformes web et mobile, avec un lien dédié ou d'autres modes d'intégration prêts à l'emploi.: Allow your target audiences (customers, students, participants, residents, etc.) to calculate and reduce their carbon footprint directly from your web and mobile platforms, using a dedicated link or other ready-to-use integration methods.
-  actions.buttons.reject: Reject the action
-  actions.buttons.reject.lock: Rejeter l'action
-  actions.buttons.select: Select action
-  actions.buttons.select.lock: Sélectionner l'action
   empreinte-carbone.heroTitle: The carbon footprint, a first step towards action
   empreinte-carbone.heroTitle.lock: L'empreinte carbone, une première étape pour passer à l'action
-  actions.chooseAction.ariaLabel.unselected: Select this action
-  actions.chooseAction.ariaLabel.unselected.lock: Sélectionner cette action
-  actions.rejectAction.ariaLabel.selected: Action dismissed
-  actions.rejectAction.ariaLabel.selected.lock: Action rejetée
-  actions.rejectAction.ariaLabel.unselected: Reject this action
-  actions.rejectAction.ariaLabel.unselected.lock: Rejeter cette action
-  actions.chooseAction.ariaLabel.selected: Action selected, cancel selection
-  actions.chooseAction.ariaLabel.selected.lock: Action sélectionnée, annuler la sélection
   documentation.search.results_one: '{{count}} result(s) found'
   documentation.search.results_one.lock: '{{count}} résultat(s) trouvé(s)'
   documentation.search.input.label: Enter keywords
@@ -870,8 +814,6 @@ entries:
   Ouvrir le menu: Open the menu
   simulator.customQuestions.voiture.deleteItem: Delete this route
   simulator.customQuestions.voiture.deleteItem.lock: Supprimer ce trajet
-  actions.form.modal.ariaLabel: Action form modal window
-  actions.form.modal.ariaLabel.lock: Fenêtre modale du formulaire d'action
   common.navigation.nextQuestion.finish.label: Complete the test and go to the results page
   common.navigation.nextQuestion.finish.label.lock: Terminer le test et accéder à la page de résultats
   simulator.customQuestions.voiture.open: Detail my journeys
@@ -1004,29 +946,15 @@ entries:
   L'empreinte carbone du transport: The carbon footprint of transport
   common.slider.slide.ariaLabel: Slide {{index}} sur {{length}}
   common.slider.slide.ariaLabel.lock: Diapositive {{index}} sur {{length}}
-  actions.negativeIcon.ariaLabel: The actions are below
-  actions.negativeIcon.ariaLabel.lock: Les actions se trouvent en dessous
   common.slider.buttons.pagination: Go to slide number {{number}}
   common.slider.buttons.pagination.lock: Aller à la diapositive numéro {{number}}
   C'est quoi mon empreinte carbone ?: What's my carbon footprint?
   (page actuelle): (current page)
-  actions.negativeIcon.alt: Icon representing negative actions
-  actions.negativeIcon.alt.lock: Icône représentant les actions négatives
   Comment on la mesure ?: How is it measured?
   Page {{page}} (page actuelle): Page {{page}} (current page)
-  actions.engagementIcon.alt: Icon representing commitment actions
-  actions.engagementIcon.alt.lock: Icône représentant les actions d'engagement
-  actions.thresholdIcon.ariaLabel: The actions are below
-  actions.thresholdIcon.ariaLabel.lock: Les actions se trouvent en dessous
-  actions.engagementDescription: Committed actions to reduce your carbon footprint
-  actions.engagementDescription.lock: Actions d'engagement pour réduire votre empreinte carbone
   Pourquoi avons-nous ajouté l'empreinte eau ?: Why have we added the water footprint?
-  actions.negativeDescription: Actions that increase your carbon footprint
-  actions.negativeDescription.lock: Actions qui augmentent votre empreinte carbone
   D'où vient mon empreinte ?: Where does my footprint come from?
   Cliquez pour ouvrir la liste des régions disponibles: Click to open the list of available regions
-  actions.thresholdDescription: Actions with an impact of {{label}} or more
-  actions.thresholdDescription.lock: Actions avec un impact de {{label}} ou plus
   Option sélectionnée: Selected option
   Sélectionner cette option: Select this option
   simulator.mosaicNumberInput.add: 'Add an item : {{title}}'
@@ -1038,18 +966,11 @@ entries:
   simulator.car.addTravel: Add a journey
   simulator.car.addTravel.lock: Ajouter un trajet
   Sélectionné: Selected
-  actions.actionCard.actionValue.answerButton.label: Reply
-  actions.actionCard.actionValue.answerButton.label.lock: Répondre
-  actions.actionCard.actionValue.answerButton.title: Answer the remaining questions
-  actions.actionCard.actionValue.answerButton.title.lock: Répondre aux questions restantes
   Cliquez pour afficher la réponse: Click to display the answer
   simulator.navigation.nextButton.finished: Finish
   simulator.navigation.nextButton.finished.lock: Terminer
   simulator.navigation.nextButton.next: Next
   simulator.navigation.nextButton.next.lock: Suivant
-  Choisir l'action: Choose action
-  Annuler la sélection: Cancel selection
-  Choisir l'action - désactivé: Choose action - disabled
   common.navigation.nextQuestion.dontKnow.title: I don't know, skip to the next question
   common.navigation.nextQuestion.dontKnow.title.lock: Je ne sais pas répondre, passer et aller à la question suivante
   signup.colourBlock.highlight3.title.strong1: Launch
@@ -1884,12 +1805,6 @@ entries:
   simulator.intercalaire.goToAlimentation.lock: Passer à l'alimentation
   simulator.intercalaire.goToTransport: Switching to transport
   simulator.intercalaire.goToTransport.lock: Passer au transport
-  actions.mTaTerre.button: Explore M ta Terre
-  actions.mTaTerre.button.lock: Explorer M ta Terre
-  actions.mTaTerre.title: Want to understand AND do something for the planet?
-  actions.mTaTerre.title.lock: Tu veux comprendre ET agir pour la planète ?
-  actions.mTaTerre.text: 'Climate, biodiversity, energy, food.<2>..</2><1></1><2></2> M<2>ta Terre</2> is the website for you: <5>articles</5>, <7>videos</7>, <10>podcasts</10> and <12>practical tips</12> to take action on a daily basis.'
-  actions.mTaTerre.text.lock: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
   common.skip: Skip
   common.skip.lock: Passer
   tutorial.email.title.youth: Your e-mail address

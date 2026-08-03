@@ -2,9 +2,7 @@ export type FlagDefinition =
   | { kind: 'boolean' }
   | { kind: 'variant'; variants: readonly string[] }
 
-export const FLAGS = {
-  'actions-v2': { kind: 'boolean' },
-} as const satisfies Record<string, FlagDefinition>
+export const FLAGS = {} as const satisfies Record<string, FlagDefinition>
 
 export type FeatureFlagName = keyof typeof FLAGS
 
