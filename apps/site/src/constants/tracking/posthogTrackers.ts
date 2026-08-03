@@ -144,10 +144,6 @@ export const captureFooterClickLanguage = ({ locale }: PosthogProps) => ({
 })
 // Actions
 
-export const captureActionClickSortingButton = {
-  eventName: 'Actions click bouton tri',
-}
-
 export const captureTrackingCategoryFilter = ({ category }: PosthogProps) => ({
   // /!\ This event is also sent for "relais"
   eventName: 'Actions click category filter',
@@ -156,34 +152,12 @@ export const captureTrackingCategoryFilter = ({ category }: PosthogProps) => ({
   },
 })
 
-export const captureActionsClickStart = {
-  eventName: 'Actions click Démarrer',
-}
-
 export const captureActionsClickYes = ({ action }: PosthogProps) => ({
   eventName: 'Actions click Yes',
   properties: {
     action,
   },
 })
-
-export const captureActionsClickNo = ({ action }: PosthogProps) => ({
-  eventName: 'Actions click No',
-  properties: {
-    action,
-  },
-})
-
-export const captureActionsOpenAction = ({ action }: PosthogProps) => ({
-  eventName: 'Actions click open stats',
-  properties: {
-    action,
-  },
-})
-
-export const captureActionsClickAdeme = {
-  eventName: 'Actions click Agir ADEME',
-}
 
 export const captureActionsClickUnderstandCalculation = ({
   action,
