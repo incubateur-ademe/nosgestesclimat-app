@@ -1,8 +1,12 @@
 'use client'
 
+import ChevronRight from '@/components/icons/ChevronRight'
 import { footerClickLanguage } from '@/constants/tracking/layout'
 import { captureFooterClickLanguage } from '@/constants/tracking/posthogTrackers'
-import ButtonAnchor from '@/design-system/buttons/ButtonAnchor'
+import Button from '@/design-system/buttons/Button'
+import DropdownMenu, {
+  getDropdownMenuItemPosition,
+} from '@/design-system/layout/DropdownMenu'
 import Emoji from '@/design-system/utils/Emoji'
 import { updateLangCookie } from '@/helpers/language/updateLangCookie'
 import { useAlternateLanguagePaths } from '@/hooks/useAlternateLanguagePaths'
@@ -12,12 +16,32 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { useCurrentLocale } from 'next-i18n-router/client'
+import Link from 'next/link'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
   size?: 'xs' | 'sm'
   className?: string
+}
+
+const LANGUAGES: readonly {
+  locale: Locale
+  label: string
+  flag: string
+}[] = [
+  { locale: 'fr', label: 'FR', flag: '🇫🇷' },
+  { locale: 'en', label: 'EN', flag: '🇬🇧' },
+]
+
+const getLanguageTitle = (locale: Locale, isActive: boolean): string => {
+  if (locale === 'fr') {
+    return isActive
+      ? 'FR - Langue active'
+      : 'FR - Sélectionner la langue française'
+  }
+
+  return isActive ? 'EN - Active language' : 'EN - Select English language'
 }
 
 // Keep the current origin and search params, swap only the pathname for
@@ -54,48 +78,80 @@ export default function LanguageSwitchButton({
     }
   }, [currentLocale])
 
-  return (
-    <div
-      className={twMerge(
-        'flex flex-wrap items-center gap-1 sm:gap-2',
-        className
-      )}>
-      {/* Always rendered, even before the alternates are read, to prevent layout shift */}
-      <ButtonAnchor
-        href={alternatePaths.fr ? generateLanguageUrl(alternatePaths.fr) : '#'}
-        color={currentLocale === 'fr' ? 'primary' : 'secondary'}
-        onClick={() => handleLanguageClick('fr')}
-        size={size}
-        aria-label="Passer en français"
-        lang="fr"
-        title={
-          currentLocale === 'fr'
-            ? 'FR - Langue active'
-            : 'FR - Sélectionner la langue française'
-        }
-        className="flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
-        data-testid="language-switch-button-fr">
-        <span>FR</span> <Emoji>🇫🇷</Emoji>
-      </ButtonAnchor>
+  const currentLanguage =
+    LANGUAGES.find((language) => language.locale === currentLocale) ??
+    LANGUAGES[0]
 
-      {alternatePaths.en ? (
-        <ButtonAnchor
-          href={generateLanguageUrl(alternatePaths.en)}
-          color={currentLocale === 'en' ? 'primary' : 'secondary'}
-          onClick={() => handleLanguageClick('en')}
-          size={size}
-          aria-label="Switch to english"
-          lang="en"
-          title={
-            currentLocale === 'en'
-              ? 'EN - Active language'
-              : 'EN - Select English language'
-          }
-          className="flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
-          data-testid="language-switch-button-en">
-          <span>EN</span> <Emoji>🇬🇧</Emoji>
-        </ButtonAnchor>
-      ) : null}
+  const activeLocale: Locale =
+    currentLocale === 'fr' || currentLocale === 'en'
+      ? currentLocale
+      : i18nConfig.defaultLocale
+
+  return (
+    <div className={twMerge('mr-2', className)}>
+      <DropdownMenu
+        trigger={({ isOpen, buttonRef, buttonId, panelId, onToggle }) => (
+          <Button
+            ref={buttonRef}
+            id={buttonId}
+            size={size}
+            color="secondary"
+            aria-expanded={isOpen}
+            aria-controls={panelId}
+            aria-label={
+              activeLocale === 'en'
+                ? 'Select language'
+                : 'Sélectionner la langue'
+            }
+            lang={activeLocale}
+            title={getLanguageTitle(activeLocale, true)}
+            data-testid="language-switch-button"
+            className="inline-flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
+            onClick={onToggle}>
+            <span>{currentLanguage.label}</span>{' '}
+            <Emoji>{currentLanguage.flag}</Emoji>
+            <ChevronRight
+              className={twMerge(
+                'ml-2 inline-block w-2 transition-transform',
+                isOpen ? 'rotate-[-90deg]' : 'rotate-90'
+              )}
+            />
+          </Button>
+        )}>
+        {({ closeMenu, getItemClassName }) => {
+          const availableLanguages = LANGUAGES.filter(
+            (language) => alternatePaths[language.locale]
+          )
+
+          return availableLanguages.map((language, index) => {
+            const isActive = currentLocale === language.locale
+
+            return (
+              <li key={language.locale}>
+                <Link
+                  href={generateLanguageUrl(alternatePaths[language.locale]!)}
+                  lang={language.locale}
+                  aria-current={isActive ? 'true' : undefined}
+                  data-testid={`language-switch-button-${language.locale}`}
+                  title={getLanguageTitle(language.locale, isActive)}
+                  onClick={() => {
+                    handleLanguageClick(language.locale)
+                    closeMenu()
+                  }}
+                  className={getItemClassName({
+                    isActive,
+                    position: getDropdownMenuItemPosition(
+                      index,
+                      availableLanguages.length
+                    ),
+                  })}>
+                  <span>{language.label}</span> <Emoji>{language.flag}</Emoji>
+                </Link>
+              </li>
+            )
+          })
+        }}
+      </DropdownMenu>
     </div>
   )
 }
