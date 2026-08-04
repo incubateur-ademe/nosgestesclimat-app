@@ -934,6 +934,16 @@ entries:
   copyButton.copiedAriaLabel.lock: Lien copié dans le presse-papiers
   pollResults.radarChart.title: Your footprint in relation to other participants
   pollResults.radarChart.title.lock: Votre empreinte par rapport aux autres participants
+  pollResults.waterFootprint.title: And what about water footprint?
+  pollResults.waterFootprint.title.lock: Et à propos de l'empreinte eau ?
+  pollResults.waterFootprint.unit: litres / day
+  pollResults.waterFootprint.unit.lock: litres / jour
+  pollResults.waterFootprint.averageLabel: average water footprint of participants
+  pollResults.waterFootprint.averageLabel.lock: empreinte eau moyenne des participants
+  pollResults.waterFootprint.body: It's the water needed to produce and distribute your <2>goods and services</2>. Generally, water footprints range from <4>3,000</4> to <7>9,000</7> litres per day. Domestic water (shower, toilets, kitchen…) is not counted.
+  pollResults.waterFootprint.body.lock: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
+  pollResults.waterFootprint.learnMore: Learn more
+  pollResults.waterFootprint.learnMore.lock: En savoir plus
   pollResults.footprintBarChart.targetLabelMobile: 'Target 2050:'
   pollResults.footprintBarChart.targetLabelMobile.lock: 'Objectif 2050 :'
   common.category.alimentationShort: Food

@@ -25,6 +25,7 @@ import CommunicationKit from './_components/CommunicationKit'
 import PollNotFound from './_components/PollNotFound'
 import ShareSection from './_components/ShareSection'
 import FootprintDistribution from './_components/footPrintDistribution/FootprintDistribution'
+import WaterFootprintSection from './_components/waterFootprint/WaterFootprintSection'
 
 export default function CampagnePage() {
   const { orgaSlug, pollSlug } = useParams()
@@ -142,6 +143,16 @@ export default function CampagnePage() {
             userComputedResults={userComputedResults}
             simulationsCount={simulations?.finished ?? 0}
             organisationName={pollOrganisation?.name}
+          />
+
+          {/* bilan eau est exprimé en litres/an : moyenne annuelle → litres/jour */}
+          <WaterFootprintSection
+            meanWaterFootprintLitresPerDay={
+              (computedResults?.eau?.bilan ?? 0) /
+              Math.max(simulations?.finished ?? 0, 1) /
+              365
+            }
+            simulationsCount={simulations?.finished ?? 0}
           />
 
           {isAdmin && simulations && simulations.count > 0 && (
