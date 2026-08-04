@@ -18,6 +18,10 @@ interface Data {
 }
 
 export class Poll {
+  static readonly CREATE_URL = '/organisations/creer-campagne/informations'
+
+  readonly createUrl = Poll.CREATE_URL
+
   constructor(
     public readonly page: Page,
     private organisation: Organisation,
@@ -38,32 +42,33 @@ export class Poll {
     return this.data.inviteLink!
   }
 
-  get createUrl() {
-    return `${this.organisation.url}/creer-campagne/informations`
-  }
-
   async goto() {
     await this.page.goto(this.url)
   }
 
   async create(mode: SimulationMode = 'standard') {
-    // Step 1: Fill poll name and go to step 2
     await expect(this.page).toHaveURL(this.createUrl)
     await this.page.getByTestId('poll-name-input').fill(this.name)
     await this.page.getByTestId('poll-form-name-button').click()
 
-    // Step 2: Select mode and create the poll
-    await expect(this.page).toHaveURL(/\/creer-campagne\/mode/)
+    await expect(this.page).toHaveURL(/\/organisations\/creer-campagne\/mode/)
     const modeLabel = this.page.getByTestId(`poll-mode-${mode}`)
     await modeLabel.click()
 
-    await this.page.waitForTimeout(100)
     const submitButton = this.page.getByTestId('poll-form-type-button')
+    await expect(submitButton).toBeEnabled()
     await submitButton.click()
 
-    // Retrieve the poll slug (allow more time for the API call)
     const pollUrl = /\/campagnes\/([a-z0-9-]+)/
-    await expect(this.page).toHaveURL(pollUrl)
+
+    await expect(this.page).toHaveURL(
+      /\/campagnes\/([a-z0-9-]+)|\/organisations\/creer-campagne\/connexion/
+    )
+
+    if (this.page.url().includes('/organisations/creer-campagne/connexion')) {
+      return
+    }
+
     this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 

@@ -78,9 +78,9 @@ setup(
     await page.goto('/')
     await cookieBanner.dismiss()
     await organisation.goFromLandingPage()
+    await poll.create()
     await organisation.admin.fillEmailAndCompleteVerification()
     await organisation.create()
-    await poll.create()
     await poll.copyInviteLink()
 
     await organisation.saveInContext()

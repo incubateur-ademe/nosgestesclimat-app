@@ -3,19 +3,13 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Badge from '@/design-system/layout/Badge'
-import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
-import { useCreatePollStep2 } from '../_hooks/useCreatePollStep2'
+import { useCreatePollStep2 } from '../_hooks/createPoll'
 
-interface Props {
-  organisation: Organisation
-}
-
-export default function PollModeForm({ organisation }: Props) {
-  const { handleSubmit, isPending, isError, modes } = useCreatePollStep2({
-    organisationSlug: organisation.slug,
-  })
+export default function PollModeForm() {
+  const { handleSubmit, isPending, isError, modes, isLastStep } =
+    useCreatePollStep2()
 
   return (
     <form className="mt-2" action={handleSubmit} id="poll-form">
@@ -44,7 +38,6 @@ export default function PollModeForm({ organisation }: Props) {
                 </Badge>
               )}
 
-              {/* Mobile radio dot */}
               <span className="group-has-checked:border-primary-700 mx-auto flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 md:hidden">
                 <span className="bg-primary-700 hidden h-3 w-3 rounded-full group-has-checked:block" />
               </span>
@@ -78,7 +71,6 @@ export default function PollModeForm({ organisation }: Props) {
               <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
                 <Trans>Sélectionner</Trans>
 
-                {/* Desktop radio dot */}
                 <span className="group-has-checked:border-primary-700 hidden h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 md:flex">
                   <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
                 </span>
@@ -103,7 +95,11 @@ export default function PollModeForm({ organisation }: Props) {
         data-testid="poll-form-type-button"
         form="poll-form"
         className="mt-8 w-full sm:w-auto md:self-start">
-        <Trans>Créer mon lien de test</Trans>
+        {isLastStep ? (
+          <Trans>Créer mon lien de test</Trans>
+        ) : (
+          <Trans i18nKey="common.suivant">Suivant</Trans>
+        )}
 
         <span aria-hidden className="ml-2 inline-block">
           →

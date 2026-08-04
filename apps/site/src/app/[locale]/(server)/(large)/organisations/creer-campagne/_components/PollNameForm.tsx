@@ -4,18 +4,11 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import type { Organisation } from '@/types/organisations'
-import { useCreatePollStep1 } from '../_hooks/useCreatePollStep1'
+import { useCreatePollStep1 } from '../_hooks/createPoll'
 
-interface Props {
-  organisation: Organisation
-}
-
-export default function PollNameForm({ organisation }: Props) {
+export default function PollNameForm() {
   const { t } = useClientTranslation()
-  const { register, errors, onSubmit, isPending } = useCreatePollStep1({
-    organisationSlug: organisation.slug,
-  })
+  const { register, errors, onSubmit, isPending } = useCreatePollStep1()
 
   return (
     <form

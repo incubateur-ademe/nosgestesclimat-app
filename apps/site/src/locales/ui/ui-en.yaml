@@ -1023,9 +1023,9 @@ entries:
   signIn.verificationForm.email.verificationCode.strong.lock: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'sent to '
   signIn.verificationForm.email.verificationCode.suffix.lock: 'envoyé à '
-  signIn.verificationForm.codeInput.label: Enter the 6 digits of the verification code
-  signIn.verificationForm.submitButton: Validate my code
-  signIn.verificationForm.pending: Verifying your code...
+  signIn.verificationForm.codeInput.label: Please enter the 6-digit verification code
+  signIn.verificationForm.submitButton: Verify my code
+  signIn.verificationForm.pending: We’re checking your code...
   signIn.verificationForm.success: Your code is valid!
   signIn.verificationForm.notReceived.resendButton: Resend code
   signIn.verificationForm.notReceived.resendButton.lock: Renvoyer le code
@@ -1255,8 +1255,8 @@ entries:
   Mobilisez votre entourage: Involve those around you
   Invitez vos proches à passer le test: Invite your friends and family to take the test
   Créez un groupe avec vos proches et <2>lancez-vous dans un défi collectif</2> pour réduire votre empreinte. Suivez vos progrès et voyez qui parvient à réduire le plus ses émissions de carbone ou sa consommation d’eau.: Create a group with friends and family and <2>embark on a collective challenge</2> to reduce your footprint. Track your progress and see who manages to reduce their carbon emissions or water consumption the most.
-  mon-espace.groups.organisation.create.button: Create my organisation
-  mon-espace.groups.organisation.create.button.lock: Créer mon organisation
+  mon-espace.groups.organisation.create.button: Create a group test
+  mon-espace.groups.organisation.create.button.lock: Créer un test collectif
   mon-espace.groups.organisation.create.title: Mobilising my organisation
   mon-espace.groups.organisation.create.title.lock: Mobiliser mon organisation
   header.monEspace.openMenuButton.open.title: My space ({{email}}), open the menu
@@ -1417,7 +1417,7 @@ entries:
   signIn.emailForm.buttonLabel: Log in to my account
   signIn.emailForm.error.required: Please enter your email address
   signIn.emailForm.error.invalid: The email address is invalid
-  signIn.emailForm.error.rateLimited: A code has already been sent to this address. Please wait before requesting a new one.
+  signIn.emailForm.error.rateLimited: A code has just been sent to this address. Please wait before requesting a new one.
   signIn.code.rateLimited: Please wait a moment before trying again.
   results.objective.under4.description.body: With the work of the government and society as a whole over the coming years, your footprint should naturally fall to around 2 tonnes.
   results.objective.under4.description.body.lock: Avec le travail de l’État et toute la société dans les années à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des 2 tonnes.
@@ -1600,6 +1600,14 @@ entries:
   Test collectif personnalisé: Personalised collective test
   collectiveTest.mode.title: Choose the test mode
   collectiveTest.mode.title.lock: Choisissez le mode du test
+  collectiveTest.mode.standard.title: Standard mode
+  collectiveTest.mode.standard.title.lock: Mode standard
+  collectiveTest.mode.standard.description: The classic test, for all citizens
+  collectiveTest.mode.standard.description.lock: Le test classique, pour tous les citoyennes et citoyens
+  collectiveTest.mode.scolaire.title: School mode
+  collectiveTest.mode.scolaire.title.lock: Mode scolaire
+  collectiveTest.mode.scolaire.description: The test adapted to young people (middle school, high school)
+  collectiveTest.mode.scolaire.description.lock: Le test adapté aux jeunes (collège, lycée)
   Choisissez le mode du test: Choose the test mode
   Créer mon premier test collectif: Creating my first collective test
   Créer mon lien de test: Create my test link
@@ -1617,13 +1625,13 @@ entries:
   collectiveTest.form.name.required: Please enter a name
   collectiveTest.form.name.required.lock: Veuillez renseigner un nom
   Supprimer ce test collectif ?: Delete this collective test?
-  organisations.connexion.title: Log in to distribute a collective link
-  organisations.connexion.title.lock: Connectez-vous pour diffuser un lien collectif
+  organisations.connexion.title: Log in to distribute your collective test link
+  organisations.connexion.title.lock: Connectez-vous pour diffuser votre lien de test collectif
   collectiveTest.text1: Create a personalised link <2>to share within your organisation</2>.
   collectiveTest.text1.lock: Créez un lien personnalisé <2>à partager dans votre organisation</2>.
   Lancez un test collectif dans votre organisation: Launch a collective test in your organisation
-  organisations.inscription.title: Create your account to distribute a collective link
-  organisations.inscription.title.lock: Créez votre compte pour diffuser un lien collectif
+  organisations.inscription.title: Log in to distribute your collective test link
+  organisations.inscription.title.lock: Connectez-vous pour diffuser votre lien de test collectif
   Paramètres de mon test collectif - Nos Gestes Climat: Parameters for my collective test - Nos Gestes Climat
   Test collectif créé par: Collective test created by
   Supprimer ce test collectif: Delete this collective test
@@ -1637,21 +1645,21 @@ entries:
   Une erreur est survenue lors de la suppression du test.: An error occurred while deleting the test.
   collectiveTest.text2: Participants take the test <1>anonymously</1> and you can access a <3>summary of the results</3>.
   collectiveTest.text2.lock: Les participants passent le test <1>anonymement</1> et vous accédez à une <3>synthèse des résultats</3>.
-  organisations.createPoll.type.closeButton.aria: Abort the collective test creation process and return to your organisation's home page
-  organisations.createPoll.type.closeButton.aria.lock: Abandonner le processus de création de test collectif et revenir à la page d'accueil de votre organisation
+  organisations.createPoll.type.closeButton.aria: Abort the collective test creation process
+  organisations.createPoll.type.closeButton.aria.lock: Abandonner le processus de création de test collectif
   Lancez un test collectif Nos Gestes Climat personnalisé: Launch a personalised Nos Gestes Climat collective test
-  organisations.createPoll.type.closeButton.title: Abort the creation of the collective test and return to your organisation's home page
-  organisations.createPoll.type.closeButton.title.lock: Abandonner la création du test collectif et revenir à la page d'accueil de votre organisation
+  organisations.createPoll.type.closeButton.title: Abort the creation of the collective test
+  organisations.createPoll.type.closeButton.title.lock: Abandonner la création du test collectif
   vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !: you would like to launch a Nos Gestes Climat collective test and raise awareness among all your stakeholders? Discover our 100% free tools!
   Retrouvez vos tests collectifs et suivez leurs statistiques.: Find your group tests and track their statistics.
   (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.): (This may take a few tens of seconds for tests with a large number of participants! Thank you for your patience)
   Résultats de mon test collectif - Nos Gestes Climat: Results of my collective test - Nos Gestes Climat
-  organisations.inscription.subtitle: To share a collective test with your pupils, students, colleagues or customers, simply create your personal space.
-  organisations.inscription.subtitle.lock: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de créer votre espace personnel.
+  organisations.inscription.subtitle: To share your collective test with your pupils, students, colleagues or customers, simply create your secure personal space. You can then access participants' results in comparative graphs.
+  organisations.inscription.subtitle.lock: Pour diffuser votre test collectif à vos élèves, vos étudiants, vos collègues ou vos clients, il vous suffit de créer votre espace personnel sécurisé. Accédez ensuite aux résultats des participants sous forme de graphiques comparatifs.
   Nous récupérons les données du test collectif...: We are retrieving the data from the collective test...
   Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oops! An error has occurred while retrieving the collective test information. Please try again later.
-  organisations.connexion.subtitle: To share a collective test with your pupils, students, colleagues or customers, simply log in to your personal area.
-  organisations.connexion.subtitle.lock: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de vous connecter à votre espace personnel.
+  organisations.connexion.subtitle: To share your collective test with your pupils, students, colleagues or customers, simply create your secure personal space. You can then access participants' results in comparative graphs.
+  organisations.connexion.subtitle.lock: Pour diffuser votre test collectif à vos élèves, vos étudiants, vos collègues ou vos clients, il vous suffit de créer votre espace personnel sécurisé. Accédez ensuite aux résultats des participants sous forme de graphiques comparatifs.
   Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oops, we couldn't find the results of this collective test
   Créez un test collectif Nos Gestes Climat personnalisé au sein de votre organisation et accédez à un kit clé en main pour sensibiliser vos partenaires au sein de votre organisation.: Create a personalised Nos Gestes Climat collective test within your organisation and access a turnkey kit to raise awareness among your partners.
   'Entreprises, collectivités, associations, écoles ou festivals : <2>engagez votre organisation dans une démarche durable</2> avec un test collectif Nos Gestes Climat. Sensibilisez vos parties prenantes à l’empreinte carbone et à l’empreinte eau <6>grâce à nos outils clés en main</6>.': "Businesses, local authorities, associations, schools or festivals: <2>get your organisation involved in a sustainable approach</2> with a Nos Gestes Climat collective test. Raise your stakeholders' awareness of your carbon and water footprints <6>using our tools</6>."
@@ -2130,3 +2138,30 @@ entries:
   actions.publicListPage.cta.description.lock: Passez le simulateur en 10 minutes et découvrez les actions personnalisées qui auront le plus d'impact sur votre empreinte.
   footer.resources.actions: Shares
   footer.resources.actions.lock: Actions
+  Création de votre test collectif en cours…: Creating your collective test...
+  Créer mon test collectif: Create my collective test
+  Pour finir, donnez un nom à votre organisation: To finish, give a name to your organisation
+  signIn.verificationForm.submitButton.lock: Valider mon code
+  signIn.verificationForm.codeInput.label.lock: Entrez les 6 chiffres du code de vérification
+  signIn.verificationForm.success.lock: Votre code est valide !
+  banner.close: Close the banner
+  banner.close.lock: Fermer la bannière
+  signIn.emailForm.inputLabel.lock: Votre adresse e-mail
+  signIn.emailForm.error.required.lock: Merci de renseigner votre adresse e-mail
+  signIn.code.rateLimited.lock: Veuillez patienter un instant avant de réessayer.
+  signIn.emailForm.buttonLabel.lock: Accéder à mon espace
+  signIn.emailForm.error.invalid.lock: L'adresse e-mail est invalide
+  common.errors.errorHappening: An error has occurred. Please try again.
+  common.errors.errorHappening.lock: Une erreur est survenue. Veuillez réessayer.
+  signIn.emailForm.error.rateLimited.lock: Un code vient d'être envoyé à cette adresse. Veuillez patienter avant d'en demander un nouveau.
+  common.errors.errorHappened: An error has occurred. Please try again.
+  common.errors.errorHappened.lock: Une erreur est survenue. Veuillez réessayer.
+  signIn.code.invalid: The code is invalid
+  signIn.code.invalid.lock: Le code est invalide
+  Gestion des infolettres - Nos Gestes Climat: Newsletter Management – Nos Gestes Climat
+  Mentions légales Base Empreinte - Nos Gestes Climat: 'Legal Notice: Base Empreinte – Nos Gestes Climat'
+  Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.: Manage your subscriptions to the ‘Nos Gestes Climat’ newsletters. Select the newsletters that interest you to receive personalised advice on reducing your carbon footprint.
+  userParams.updateInfo: Update my contact details
+  userParams.updateInfo.lock: Mettre à jour mes coordonnées
+  Mentions légales de la Base Empreinte.: Legal notices for the Empreinte database.
+  signIn.verificationForm.pending.lock: Nous vérifions votre code...

@@ -13,8 +13,8 @@ interface Data {
 }
 
 export class Organisation {
-  static CONNEXION_URL = '/organisations/connexion'
-  static CREATION_URL = '/organisations/creer'
+  static CONNEXION_URL = '/organisations/creer-campagne/connexion'
+  static CREATION_URL = '/organisations/creer-campagne/organisation'
   constructor(
     public readonly page: Page,
     public admin: User,
@@ -56,10 +56,9 @@ export class Organisation {
 
     await this.page.getByTestId('create-organisation-button').click()
 
-    // Retrieve the organization slug
-    const orgaUrl = /\/organisations\/([a-z0-9-]*)\/.*/
-    await expect(this.page).toHaveURL(orgaUrl)
-    this.data.slug = orgaUrl.exec(this.page.url())![1]
+    const pollUrl = /\/organisations\/([a-z0-9-]*)\/campagnes\/([a-z0-9-]+)/
+    await expect(this.page).toHaveURL(pollUrl)
+    this.data.slug = pollUrl.exec(this.page.url())![1]
   }
 
   async goFromLandingPage() {
@@ -67,6 +66,7 @@ export class Organisation {
     await this.page.getByTestId('organisations-link').click()
     await this.page.waitForURL(/organisations/)
     await this.page.getByTestId('start-link').click()
+    await this.page.waitForURL(/\/organisations\/creer-campagne\/informations/)
   }
 
   async saveInContext() {

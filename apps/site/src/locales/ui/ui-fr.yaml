@@ -992,7 +992,7 @@ entries:
   Mobilisez votre entourage: Mobilisez votre entourage
   header.monEspace.openMenuButton.close.title: Mon espace ({{email}}), fermer le menu
   header.monEspace.openMenuButton.open.title: Mon espace ({{email}}), ouvrir le menu
-  mon-espace.groups.organisation.create.button: Créer mon organisation
+  mon-espace.groups.organisation.create.button: Créer un test collectif
   mon-espace.groups.organisation.create.title: Mobiliser mon organisation
   Créer: Créer
   Merci de renseigner votre adresse e-mail: Merci de renseigner votre adresse e-mail
@@ -1179,6 +1179,10 @@ entries:
   collectiveTest.form.name.placeholder: 'ex : Défi climat équipe RH, Classe 5ème A…'
   collectiveTest.form.name.required: Veuillez renseigner un nom
   collectiveTest.mode.title: Choisissez le mode du test
+  collectiveTest.mode.standard.title: Mode standard
+  collectiveTest.mode.standard.description: Le test classique, pour tous les citoyennes et citoyens
+  collectiveTest.mode.scolaire.title: Mode scolaire
+  collectiveTest.mode.scolaire.description: Le test adapté aux jeunes (collège, lycée)
   collectiveTest.text1: Créez un lien personnalisé <2>à partager dans votre organisation</2>.
   collectiveTest.text2: Les participants passent le test <1>anonymement</1> et vous accédez à une <3>synthèse des résultats</3>.
   collectiveTest.title: Choisissez un nom pour votre test collectif
@@ -1197,14 +1201,14 @@ entries:
   Mes tests collectifs: Mes tests collectifs
   Nom du test collectif: Nom du test collectif
   Nous récupérons les données du test collectif...: Nous récupérons les données du test collectif...
-  organisations.connexion.subtitle: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de vous connecter à votre espace personnel.
-  organisations.connexion.title: Connectez-vous pour diffuser un lien collectif
-  organisations.createPoll.type.closeButton.aria: Abandonner le processus de création de test collectif et revenir à la page d'accueil de votre organisation
-  organisations.createPoll.type.closeButton.title: Abandonner la création du test collectif et revenir à la page d'accueil de votre organisation
+  organisations.connexion.subtitle: Pour diffuser votre test collectif à vos élèves, vos étudiants, vos collègues ou vos clients, il vous suffit de créer votre espace personnel sécurisé. Accédez ensuite aux résultats des participants sous forme de graphiques comparatifs.
+  organisations.connexion.title: Connectez-vous pour diffuser votre lien de test collectif
+  organisations.createPoll.type.closeButton.aria: Abandonner le processus de création de test collectif
+  organisations.createPoll.type.closeButton.title: Abandonner la création du test collectif
   organisations.inscription.breadcrumb: Inscription
   organisations.inscription.cta: Créer mon compte
-  organisations.inscription.subtitle: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de créer votre espace personnel.
-  organisations.inscription.title: Créez votre compte pour diffuser un lien collectif
+  organisations.inscription.subtitle: Pour diffuser votre test collectif à vos élèves, vos étudiants, vos collègues ou vos clients, il vous suffit de créer votre espace personnel sécurisé. Accédez ensuite aux résultats des participants sous forme de graphiques comparatifs.
+  organisations.inscription.title: Connectez-vous pour diffuser votre lien de test collectif
   Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.
   Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oups, nous n'avons pas trouvé les résultats de ce test collectif
   Paramètres de mon test collectif - Nos Gestes Climat: Paramètres de mon test collectif - Nos Gestes Climat
@@ -1446,3 +1450,13 @@ entries:
   signIn.code.rateLimited: Veuillez patienter un instant avant de réessayer.
   common.errors.errorHappened: Une erreur est survenue. Veuillez réessayer.
   signIn.code.invalid: Le code est invalide
+  Création de votre test collectif en cours…: Création de votre test collectif en cours…
+  Créer mon test collectif: Créer mon test collectif
+  Pour finir, donnez un nom à votre organisation: Pour finir, donnez un nom à votre organisation
+  banner.close: Fermer la bannière
+  common.errors.errorHappening: Une erreur est survenue. Veuillez réessayer.
+  Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.: Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.
+  Gestion des infolettres - Nos Gestes Climat: Gestion des infolettres - Nos Gestes Climat
+  Mentions légales Base Empreinte - Nos Gestes Climat: Mentions légales Base Empreinte - Nos Gestes Climat
+  Mentions légales de la Base Empreinte.: Mentions légales de la Base Empreinte.
+  userParams.updateInfo: Mettre à jour mes coordonnées
