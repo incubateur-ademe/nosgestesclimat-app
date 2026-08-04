@@ -1,5 +1,7 @@
 'use client'
 
+import { getExternalLinkProps } from '@/helpers/navigation/externalLink'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import NextLink from 'next/link'
 import type { MouseEventHandler } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -19,8 +21,26 @@ export default function Link({
   onClick,
   title,
   target,
+  rel,
+  'aria-label': ariaLabel,
   ...props
 }: LinkProps) {
+  const { t } = useClientTranslation()
+
+  const {
+    target: resolvedTarget,
+    rel: resolvedRel,
+    ariaLabel: resolvedAriaLabel,
+  } = getExternalLinkProps({
+    href,
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL!,
+    target,
+    rel,
+    explicitAriaLabel: ariaLabel,
+    children,
+    t,
+  })
+
   return (
     <NextLink
       href={href}
@@ -30,7 +50,9 @@ export default function Link({
       )}
       onClick={onClick}
       title={title}
-      target={target}
+      target={resolvedTarget}
+      rel={resolvedRel}
+      aria-label={resolvedAriaLabel}
       {...props}>
       {children}
     </NextLink>
