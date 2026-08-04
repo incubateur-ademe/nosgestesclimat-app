@@ -5,23 +5,16 @@ import Trans from '@/components/translation/trans/TransServer'
 import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import { PODIUM_LIMIT_PER_TYPE } from '@nosgestesclimat/core/features/events/constants/podium'
 import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
+import { organisationTypeToCategory } from '@nosgestesclimat/core/features/events/services/podium.service'
+import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
+import type {
+  PodiumCategory,
+  PodiumItem,
+} from '@nosgestesclimat/core/features/events/types/podium'
 import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
-
-export type PodiumCategory =
-  | 'all'
-  | 'companies'
-  | 'associations'
-  | 'education'
-  | 'public-services'
-
-export interface PodiumItem {
-  rank: number
-  label: string
-  score: number
-  category: PodiumCategory
-}
 
 export interface Testimony {
   text: string
@@ -72,18 +65,34 @@ export interface EventPageData {
   ctaCards: CtaCard[]
 }
 
-const ORGANISATION_TYPE_TO_CATEGORY: Record<string, PodiumCategory> = {
-  company: 'companies',
-  association: 'associations',
-  universityOrSchool: 'education',
-  publicOrRegionalAuthority: 'public-services',
-}
-
-function organisationTypeToCategory(type: string): PodiumCategory {
-  return ORGANISATION_TYPE_TO_CATEGORY[type] ?? 'all'
-}
-
 const TARGET_VALUE = 50000
+
+// Build the podium items from the top-per-type organisations returned by the
+// service, keeping at most PODIUM_LIMIT_PER_TYPE items per category.
+function buildPodiumItems(organisations: EventOrganisation[]): PodiumItem[] {
+  const countByCategory: Record<PodiumCategory, number> = {
+    all: 0,
+    companies: 0,
+    associations: 0,
+    education: 0,
+    'public-services': 0,
+  }
+
+  const items: PodiumItem[] = []
+  for (const org of organisations) {
+    const category = organisationTypeToCategory(org.type)
+    if (countByCategory[category] >= PODIUM_LIMIT_PER_TYPE) continue
+    countByCategory[category] += 1
+    items.push({
+      rank: 0,
+      label: org.name,
+      score: org.simulationsCount,
+      category,
+    })
+  }
+
+  return items.map((item, index) => ({ ...item, rank: index + 1 }))
+}
 
 export async function getEventPageData({
   eventId,
@@ -92,7 +101,7 @@ export async function getEventPageData({
 }: {
   eventId: string
   locale: Locale
-}): Promise<EventPageData> {
+}): Promise<EventPageData | null> {
   'use cache'
   cacheLife({ stale: 600, revalidate: 600, expire: 600 })
 
@@ -100,16 +109,13 @@ export async function getEventPageData({
 
   const eventInfo = await getEventInfo(eventId)
 
+  if (!eventInfo) return null
+
   const currentValue = eventInfo.totalSimulations
 
   const podiumItems =
     eventInfo.organisations.length > 0
-      ? eventInfo.organisations.map((org, index) => ({
-          rank: index + 1,
-          label: org.name,
-          score: org.simulationsCount,
-          category: organisationTypeToCategory(org.type),
-        }))
+      ? buildPodiumItems(eventInfo.organisations)
       : [
           {
             rank: 1,
@@ -131,9 +137,8 @@ export async function getEventPageData({
   return {
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/VIGNETTE_SEDD_f711b1d37b.svg',
-    startDate:
-      eventInfo.startDate?.toISOString() ?? '2026-09-18T00:00:00+02:00',
-    endDate: eventInfo.endDate?.toISOString() ?? '2026-10-08T23:59:59+02:00',
+    startDate: eventInfo.startDate.toISOString(),
+    endDate: eventInfo.endDate.toISOString(),
     dynamicCounter: {
       currentValue,
       targetValue: TARGET_VALUE,

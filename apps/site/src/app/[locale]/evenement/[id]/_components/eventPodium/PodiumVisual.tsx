@@ -3,7 +3,7 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { twMerge } from 'tailwind-merge'
-import type { PodiumItem } from '../../_helpers/eventPageData'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import ListItem from './ListItem'
 import PodiumBlock from './PodiumBlock'
 

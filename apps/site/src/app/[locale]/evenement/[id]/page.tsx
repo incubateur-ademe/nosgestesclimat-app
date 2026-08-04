@@ -5,6 +5,7 @@ import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import { notFound } from 'next/navigation'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
@@ -46,6 +47,10 @@ export default async function EvenementPage({
 
   const locale = localeParam as Locale
 
+  const data = await getEventPageData({ eventId, locale })
+
+  if (!data) notFound()
+
   const {
     detailImageSrc,
     startDate,
@@ -59,7 +64,7 @@ export default async function EvenementPage({
     ctaHeading,
     ctaDescription,
     ctaCards,
-  } = await getEventPageData({ eventId, locale })
+  } = data
 
   const hasStarted = new Date() >= new Date(startDate)
 
