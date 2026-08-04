@@ -3,8 +3,8 @@ CREATE TABLE "ngc"."Event" (
     "id" TEXT NOT NULL,
     "slug" TEXT,
     "name" TEXT NOT NULL,
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "endDate" TIMESTAMP(3) NOT NULL,
+    "startDate" TIMESTAMPTZ(3) NOT NULL,
+    "endDate" TIMESTAMPTZ(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
