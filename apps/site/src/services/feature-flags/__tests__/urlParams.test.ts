@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('../flags', () => ({
   FLAGS: {
-    'actions-v2': { kind: 'boolean' },
+    'boolean-flag': { kind: 'boolean' },
     variant: { kind: 'variant', variants: ['control', 'test'] },
   },
 }))
@@ -20,14 +20,14 @@ describe('parseFeatureFlagParams', () => {
 
   it('parses a single truthy flag', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=true'))
-    ).toEqual({ 'actions-v2': true })
+      parseFeatureFlagParams(new URLSearchParams('?ff_boolean-flag=true'))
+    ).toEqual({ 'boolean-flag': true })
   })
 
   it('parses a single falsy flag', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=false'))
-    ).toEqual({ 'actions-v2': false })
+      parseFeatureFlagParams(new URLSearchParams('?ff_boolean-flag=false'))
+    ).toEqual({ 'boolean-flag': false })
   })
 
   it('parses a known variant value', () => {
@@ -44,7 +44,7 @@ describe('parseFeatureFlagParams', () => {
 
   it('ignores non-boolean values on boolean flags', () => {
     expect(
-      parseFeatureFlagParams(new URLSearchParams('?ff_actions-v2=test'))
+      parseFeatureFlagParams(new URLSearchParams('?ff_boolean-flag=test'))
     ).toBeNull()
   })
 
@@ -67,8 +67,8 @@ describe('stripFeatureFlagParams', () => {
 
 describe('parseFeatureFlagCookie', () => {
   it('parses a valid JSON cookie value', () => {
-    expect(parseFeatureFlagCookie('{"actions-v2":true}')).toEqual({
-      'actions-v2': true,
+    expect(parseFeatureFlagCookie('{"boolean-flag":true}')).toEqual({
+      'boolean-flag': true,
     })
   })
 

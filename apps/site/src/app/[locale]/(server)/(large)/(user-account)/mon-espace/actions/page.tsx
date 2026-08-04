@@ -1,15 +1,12 @@
 import ActionsPage from '@/components/actions/pages/ActionsPage'
-import { LegacyActionPage } from '@/components/results/LegacyActionPage'
+import NoResultsBlock from '@/components/dashboard/NoResultsBlock'
 import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_ACTIONS_PATH } from '@/constants/urls/paths'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import type { Locale } from '@/i18nConfig'
 import { getPersonalizedActionsCatalogue } from '@/services/actions/get-personalized-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
-import { hasActionV2Rollout } from '@/services/actions/has-action-v2-rollout'
 import { requireAuthUser } from '@/services/auth/require-auth-user'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import ProfileTab from '../_components/ProfileTabs'
 
@@ -25,14 +22,11 @@ export default async function MonEspaceActionsPage({
 }: DefaultPageProps) {
   const { locale } = await params
   const user = await requireAuthUser()
-  const flag = await hasActionV2Rollout(user.id, locale)
 
-  const [maybePersonalizedActionsCatalogue, themes] = flag
-    ? await Promise.all([
-        getPersonalizedActionsCatalogue(user.id, locale),
-        getThemes(locale),
-      ])
-    : [undefined, undefined]
+  const [personalizedActionsCatalogue, themes] = await Promise.all([
+    getPersonalizedActionsCatalogue(user.id, locale),
+    getThemes(locale),
+  ])
 
   return (
     <div className="flex flex-col">
@@ -44,7 +38,11 @@ export default async function MonEspaceActionsPage({
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
-      {flag && maybePersonalizedActionsCatalogue ? (
+      {/* No computation for the latest simulation: no simulation at all, or one
+          the model no longer supports. Nothing can be personalized. */}
+      {personalizedActionsCatalogue.assessmentStatus === null ? (
+        <NoResultsBlock locale={locale} />
+      ) : (
         <div>
           <ActionsPage
             title={
@@ -59,25 +57,15 @@ export default async function MonEspaceActionsPage({
                 !
               </Trans>
             }
-            topActions={maybePersonalizedActionsCatalogue.topActions}
-            actions={maybePersonalizedActionsCatalogue.actions}
-            assessmentStatus={
-              maybePersonalizedActionsCatalogue.assessmentStatus
-            }
+            topActions={personalizedActionsCatalogue.topActions}
+            actions={personalizedActionsCatalogue.actions}
+            assessmentStatus={personalizedActionsCatalogue.assessmentStatus}
             themes={themes}
             locale={locale}
             from="mon-espace"
           />
         </div>
-      ) : (
-        <LegacyMonEspaceActionsPage locale={locale} />
       )}
     </div>
   )
-}
-
-async function LegacyMonEspaceActionsPage({ locale }: { locale: Locale }) {
-  const simulations = await getCompletedSimulations({ pageSize: 1 })
-
-  return <LegacyActionPage simulations={simulations} locale={locale} />
 }

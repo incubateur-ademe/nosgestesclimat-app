@@ -25,6 +25,14 @@
     "NEXT_PUBLIC_MATOMO_DOMAIN": {
       "value": "*.osc-fr1.scalingo.io",
       "description": "Matomo domain for Scalingo review apps"
+    },
+    "ENGINE_HOT_KEYS": {
+      "value": "FR:current",
+      "description": "Worker: rule engines kept warm at all times. Review apps only fit the single busiest combination on their S container (see apps/site/scripts/memory-usage)"
+    },
+    "ENGINE_CACHE_MAX_SIZE": {
+      "value": "1",
+      "description": "Worker: max non-hot engines cached beyond ENGINE_HOT_KEYS. 0 on review apps (S container) - there's no memory budget left after the hot set"
     }
   }
 }

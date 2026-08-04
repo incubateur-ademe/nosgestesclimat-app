@@ -1,61 +1,32 @@
 entries:
   404.action: Revenir en lieu sûr
   'Accessibilité : partiellement conforme': 'Accessibilité : partiellement conforme'
-  Actions d'engagement: Actions d'engagement
-  Actions négatives: Actions négatives
-  'Actions écartées :': 'Actions écartées :'
-  Choisir le type de tri des actions: Choisir le type de tri des actions
   Choisir une autre région: Choisir une autre région
   Choisissez une région parmi celles disponibles !: Choisissez une région parmi celles disponibles !
   Commencer: Commencer
   Comprendre le calcul: Comprendre le calcul
   Copier le lien: Copier le lien
   Documentation: Documentation
-  Démarrer: Démarrer
   Envie de contribuer à une version pour votre région ?: Envie de contribuer à une version pour votre région ?
   Faire le test: Faire le test
   Fermer: Fermer
-  Fermer les options de tri: Fermer les options de tri
   J'ai compris: J'ai compris
   Le test: Le test
   Non: Non
-  Non applicable: Non applicable
   Nouveautés: Nouveautés
   Oui: Oui
-  Ouvrir les options de tri: Ouvrir les options de tri
-  Passer à l'action !: Passer à l'action !
   Personnalisez cette estimation: Personnalisez cette estimation
   Précédent: Précédent
   'Quelques suggestions ': 'Quelques suggestions '
   Questions fréquentes: Questions fréquentes
-  Rejeter l'action: Rejeter l'action
   Suivez le guide !: Suivez le guide !
   Sur le même sujet: Sur le même sujet
-  'Tri :': 'Tri :'
-  'Triées par :': 'Triées par :'
-  actions choisies: actions choisies
   components.localisation.LocalisationMessage.betaMsg: Elle est actuellement en version <1>bêta</1>.
   et: et
-  le + d'impact climat: le + d'impact climat
-  le - d'impact climat: le - d'impact climat
   participant: participant
-  plus d'1 kg: plus d'1 kg
-  plus d'1 tonne: plus d'1 tonne
-  plus de 10 kg: plus de 10 kg
-  plus de 10 tonnes: plus de 10 tonnes
-  plus de 100 kg: plus de 100 kg
-  publicodes.ActionTutorial.félicitation: Vous avez terminé votre simulation
-  bravo !: bravo !
-  publicodes.ActionTutorial.msgEstimation: Vous connaissez maintenant votre empreinte, estimée à {{value}} {{unit}}, et vous avez sûrement déjà des idées pour la réduire...
-  publicodes.ActionTutorial.msgPrécision: Pour améliorer la précision, certaines actions vous poseront quelques questions en plus.
-  publicodes.ActionTutorial.msgPrésentation: "Pour vous aider, nous vous présenterons <2>une liste d'actions</2> :"
-  publicodes.ActionVignette.questionsRestantesText: '{{nbRemainingQuestions}} question{{pluralSuffix}} restante{{pluralSuffix}}'
-  publicodes.ActionsOptionsBar.actionsRecap: '{{numberOfAvailableFinalActions}} actions disponibles, '
-  publicodes.AllActions.msgPlusActions: <0>Nous n'avons plus d'actions chiffrées très impactantes à vous proposer 🤷</0><1>Découvrez plus bas quelques pistes pour agir autrement ⏬</1>
   publicodes.planDuSite.title: Plan du site
   publicodes.planDuSite.actionsPlus: Les actions
   sites.publicodes.Tutorial.questionE: 💡 Mais que veut dire ce petit <1>e</1> ?
-  sélectionnées: sélectionnées
   tonne: tonne
   tonnes: tonnes
   '{unit}': '{unit}'
@@ -199,15 +170,10 @@ entries:
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.: Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.
   Oups ! Une erreur est survenue: Oups ! Une erreur est survenue
   Partage de vos résultats à {{ parent }} ?: Partage de vos résultats à {{ parent }} ?
-  Aller plus loin: Aller plus loin
-  Découvrez les conseils de l'ADEME: Découvrez les conseils de l'ADEME
-  Découvrez les conseils de l'ADEME, ouvrir dans un nouvel onglet: Découvrez les conseils de l'ADEME, ouvrir dans un nouvel onglet
   Découvrir le calculateur: Découvrir le calculateur
-  écartez celles qui vous semblent trop ambitieuses ou déplacées.: écartez celles qui vous semblent trop ambitieuses ou déplacées.
   Empreinte: Empreinte
   'Je ne trouve pas réponse à ma question ': 'Je ne trouve pas réponse à ma question '
   Les nouveautés: Les nouveautés
-  sélectionnez celles qui vous intéressent: sélectionnez celles qui vous intéressent
   Annuler: Annuler
   Invitez d'autres personnes à rejoindre votre groupe: Invitez d'autres personnes à rejoindre votre groupe
   l’équipe de nosgestesclimat.fr: l’équipe de nosgestesclimat.fr
@@ -729,7 +695,6 @@ entries:
   Eau, évaluer la métrique eau: Eau, évaluer la métrique eau
   Page active: Page active
   Visiter cette page: Visiter cette page
-  actions.engagementIcon.ariaLabel: Les actions se trouvent en dessous
   authorBlock.defaultAlt: Photo de l'auteur ou de l'autrice
   common.marianne.ariaLabel: République Française
   common.partners.abc.ariaLabel: Association pour la transition Bas Carbone
@@ -739,13 +704,7 @@ entries:
   international.electricityMaps.ariaLabel: Visiter le site Electricity Maps (s'ouvre dans un nouvel onglet)
   organisations.ourTools.newTab: Ouvrir dans une nouvelle fenêtre
   Permettez à vos cibles (clients, étudiants, participants, habitants..) de calculer et réduire leur empreinte carbone directement depuis vos plateformes web et mobile, avec un lien dédié ou d'autres modes d'intégration prêts à l'emploi.: Permettez à vos cibles (clients, étudiants, participants, habitants..) de calculer et réduire leur empreinte carbone directement depuis vos plateformes web et mobile, avec un lien dédié ou d'autres modes d'intégration prêts à l'emploi.
-  actions.buttons.reject: Rejeter l'action
-  actions.buttons.select: Sélectionner l'action
   empreinte-carbone.heroTitle: L'empreinte carbone, une première étape pour passer à l'action
-  actions.chooseAction.ariaLabel.selected: Action sélectionnée, annuler la sélection
-  actions.chooseAction.ariaLabel.unselected: Sélectionner cette action
-  actions.rejectAction.ariaLabel.selected: Action rejetée
-  actions.rejectAction.ariaLabel.unselected: Rejeter cette action
   documentation.noresults: Aucun résultat ne correspond à cette recherche
   documentation.search.h2: Explorez nos modèles
   documentation.search.input.label: Entrez des mots clefs
@@ -765,7 +724,6 @@ entries:
   Statistiques d'usage du mode "Organisations": Statistiques d'usage du mode "Organisations"
   Statistiques détaillées sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants, et d'actions réalisées.: Statistiques détaillées sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants, et d'actions réalisées.
   Statistiques sur l'utilisation du mode Challenge, incluant le nombre de défis créés, de participants, et de résultats partagés.: Statistiques sur l'utilisation du mode Challenge, incluant le nombre de défis créés, de participants, et de résultats partagés.
-  actions.form.modal.ariaLabel: Fenêtre modale du formulaire d'action
   common.burgerMenu.title: Fermer le menu de navigation
   common.buttons.close: Fermer
   common.interactiveIllustration.item.car: Voiture
@@ -841,13 +799,6 @@ entries:
   L'empreinte carbone du transport: L'empreinte carbone du transport
   pollResults.footprintBarChart.targetLabelUnit: tonnes
   (page actuelle): (page actuelle)
-  actions.engagementDescription: Actions d'engagement pour réduire votre empreinte carbone
-  actions.engagementIcon.alt: Icône représentant les actions d'engagement
-  actions.negativeDescription: Actions qui augmentent votre empreinte carbone
-  actions.negativeIcon.alt: Icône représentant les actions négatives
-  actions.negativeIcon.ariaLabel: Les actions se trouvent en dessous
-  actions.thresholdDescription: Actions avec un impact de {{label}} ou plus
-  actions.thresholdIcon.ariaLabel: Les actions se trouvent en dessous
   actions.listPage.title: Vos actions personnalisées pour diminuer votre empreinte
   actions.listPage.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et lancez-vous !
   actions.listPage.metaTitle: Mes actions - Nos Gestes Climat
@@ -887,14 +838,9 @@ entries:
   simulator.inputs.choice.questionButton.title: Plus d'informations - {{label}}
   simulator.mosaicNumberInput.add: 'Ajouter un élément : {{title}}'
   simulator.mosaicNumberInput.remove: 'Retirer un élément : {{title}}'
-  actions.actionCard.actionValue.answerButton.label: Répondre
-  actions.actionCard.actionValue.answerButton.title: Répondre aux questions restantes
   Cliquez pour afficher la réponse: Cliquez pour afficher la réponse
   simulator.navigation.nextButton.finished: Terminer
   simulator.navigation.nextButton.next: Suivant
-  Annuler la sélection: Annuler la sélection
-  Choisir l'action: Choisir l'action
-  Choisir l'action - désactivé: Choisir l'action - désactivé
   common.navigation.nextQuestion.dontKnow.title: Je ne sais pas répondre, passer et aller à la question suivante
   login.colourBlock.highlight1.title.prefix: Visualisez
   login.colourBlock.highlight1.title.strong: vos derniers résultats
@@ -1351,9 +1297,6 @@ entries:
   simulator.intercalaire.goToConsommation: Passer à la consommation
   simulator.intercalaire.goToLogement: Passer au logement
   simulator.intercalaire.goToTransport: Passer au transport
-  actions.mTaTerre.button: Explorer M ta Terre
-  actions.mTaTerre.text: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
-  actions.mTaTerre.title: Tu veux comprendre ET agir pour la planète ?
   common.authentication.verifyEmail: Vérifier mon adresse électronique
   common.optional: facultatif
   common.skip: Passer

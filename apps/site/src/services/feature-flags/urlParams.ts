@@ -5,7 +5,7 @@ import { FLAGS } from './flags'
 /**
  * Extracts feature flag overrides from URL search parameters.
  *
- * Recognises params with the `FF_PARAM_PREFIX` prefix (e.g. `?ff_actions-v2=true`).
+ * Recognises params with the `FF_PARAM_PREFIX` prefix (e.g. `?ff_my-flag=true`).
  * Values `true` / `false` are parsed as booleans; variant values are validated against
  * the flag definition. Unknown flags or invalid values are silently ignored.
  * Returns `null` when no valid overrides are present.
