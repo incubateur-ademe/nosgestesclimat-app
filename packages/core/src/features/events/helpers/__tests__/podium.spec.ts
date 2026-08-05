@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PodiumItem } from '../../types/podium.ts'
-import { filterAndRankPodiumItems } from '../podium.service.ts'
+import { filterAndRankPodiumItems } from '../podium.ts'
 
 const makeItem = (rank: number, category: PodiumItem['category']): PodiumItem => ({
   rank,

@@ -6,8 +6,8 @@ import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { PODIUM_LIMIT_PER_TYPE } from '@nosgestesclimat/core/features/events/constants/podium'
+import { organisationTypeToCategory } from '@nosgestesclimat/core/features/events/helpers/podium'
 import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
-import { organisationTypeToCategory } from '@nosgestesclimat/core/features/events/services/podium.service'
 import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
 import type {
   PodiumCategory,

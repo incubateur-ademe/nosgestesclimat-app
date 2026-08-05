@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
-import { filterAndRankPodiumItems } from '@nosgestesclimat/core/features/events/services/podium.service'
+import { filterAndRankPodiumItems } from '@nosgestesclimat/core/features/events/helpers/podium'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import type { FilterValue } from './eventPodium/EventTabs'
 import EventTabs, { FILTER_KEY, FILTER_VALUES } from './eventPodium/EventTabs'
