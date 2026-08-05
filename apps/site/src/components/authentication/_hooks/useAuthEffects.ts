@@ -1,13 +1,19 @@
 'use client'
 
-import { useEffect, type Dispatch } from 'react'
+import { useEffect, useRef, type Dispatch } from 'react'
 
 import { useCookieManagement } from '@/components/cookies/useCookieManagement'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import { reconcileUserOnAuth } from '@/helpers/user/reconcileOnAuth'
+import { hasSessionCookie } from '@/services/auth/has-session-cookie'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-import { captureException } from '@sentry/nextjs'
+import { maskEmail, truncateUserId } from '@/utils/maskEmail'
+import {
+  addBreadcrumb,
+  captureException,
+  captureMessage,
+} from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
@@ -39,6 +45,22 @@ function useVerifyEffect(
         if (result.success) {
           dispatch({ type: 'CODE_VALID', userId: result.data.userId })
         } else {
+          // Records what the user actually saw: rejected codes (mistyped,
+          // rate-limited) are breadcrumbs, only the silent "unknown" failures
+          // raise a Sentry warning.
+          const { code } = result.error
+          addBreadcrumb({
+            category: 'auth',
+            message: 'Verification code rejected',
+            level: 'warning',
+            data: { code, email: maskEmail(verificationEmail) },
+          })
+          if (code === 'unknown') {
+            captureMessage('Verification code rejected with an unknown error', {
+              level: 'warning',
+              extra: { email: maskEmail(verificationEmail) },
+            })
+          }
           dispatch({ type: 'CODE_INVALID', reason: result.error })
         }
       })
@@ -63,6 +85,7 @@ function useCompletionEffect(
 ) {
   const router = useRouter()
   const { cookieState } = useCookieManagement()
+  const hasSessionCookieChecked = useRef(false)
 
   const authenticatedUserId =
     state.phase === 'authenticated' ? state.userId : null
@@ -87,6 +110,23 @@ function useCompletionEffect(
           email: authenticatedEmail,
           userId: authenticatedUserId,
         })
+
+        if (!hasSessionCookieChecked.current) {
+          hasSessionCookieChecked.current = true
+          const hasCookie = await hasSessionCookie()
+          if (!hasCookie) {
+            // The user just logged in but the session cookie is not coming
+            // back on the next request: typically a browser-side persistence
+            // issue (partitioning, iframe, domain) that silently logs them out.
+            captureMessage('Authenticated user has no session cookie', {
+              level: 'warning',
+              extra: {
+                email: maskEmail(authenticatedEmail),
+                userId: truncateUserId(authenticatedUserId),
+              },
+            })
+          }
+        }
 
         if (options.redirectPathname) {
           router.push(options.redirectPathname)

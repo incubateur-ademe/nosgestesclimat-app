@@ -2,11 +2,13 @@ import {
   buildSessionCookies,
   SESSION_COOKIE,
 } from '@/helpers/server/cookie/auth.cookie'
+import { maskEmail, truncateUserId } from '@/utils/maskEmail'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { migrateLegacySessions } from '@nosgestesclimat/core/features/auth/services/migrate-legacy-sessions.service'
 import { getIronSession } from 'iron-session'
 import type { NextRequest } from 'next/server'
 import { InternalError } from '../error'
+import { siteLogger } from '../logger'
 import type { MiddlewareResult } from './types'
 
 const ANON_SESSION_COOKIE = 'ngc_anon_user'
@@ -45,8 +47,22 @@ export async function middlewareMigrateLegacySessions(
     }
   }
 
+  const legacyContext = {
+    hadLegacyJwt: !!jwt,
+    hadAnonCookie: !!anonCookie,
+    requestId: request.headers.get('x-request-id') ?? undefined,
+  }
+
   const tokens = await migrateLegacySessions({ jwt, ironUserId })
   if (!tokens) {
+    // Steady-state requests carry no legacy cookie and must stay silent; a
+    // legacy cookie that fails to migrate is exactly the kind of silent login
+    // dead-end we need to see.
+    if (jwt) {
+      siteLogger.warn('Legacy session migration returned no tokens', {
+        ...legacyContext,
+      })
+    }
     return { redirect: null, cookies: [] }
   }
 
@@ -57,10 +73,19 @@ export async function middlewareMigrateLegacySessions(
     userId = payload.userId
     email = payload.email
   } catch {
+    siteLogger.warn('Legacy session migration: decrypt of issued tokens failed', {
+      ...legacyContext,
+    })
     return { redirect: null, cookies: [] }
   }
 
   request.headers.set('x-session', JSON.stringify({ userId, email }))
+
+  siteLogger.info('Session issued from legacy migration', {
+    ...legacyContext,
+    email: maskEmail(email),
+    userId: truncateUserId(userId),
+  })
 
   return {
     redirect: null,

@@ -19,6 +19,12 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     return NextResponse.next()
   }
 
+  // Correlates every leg of a request: proxy decisions (rotation, legacy
+  // migration), the server actions and the Express logs all share this id.
+  if (!request.headers.get('x-request-id')) {
+    request.headers.set('x-request-id', crypto.randomUUID())
+  }
+
   // Phase 1 — Interceptors
   const ff = middlewareFeatureFlags(request)
   if (ff.redirect) return ff.redirect

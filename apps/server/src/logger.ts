@@ -20,6 +20,11 @@ if (config.thirdParty.sentry.dsn) {
   )
 }
 
+export const truncateUserId = (userId: unknown) =>
+  typeof userId === 'string'
+    ? `${userId.slice(0, 8)}***`
+    : '[REDACTED]'
+
 export const redactBody = <T = unknown>(body: T) => {
   if (typeof body === 'object' && !!body) {
     if ('actionChoices' in body) {
@@ -39,6 +44,17 @@ export const redactBody = <T = unknown>(body: T) => {
     }
     if ('situation' in body) {
       body.situation = '[REDACTED]'
+    }
+    // Auth payloads must never land verbatim in access logs: the email is PII
+    // and the verification code is a valid credential for that email.
+    if ('email' in body) {
+      body.email = maskEmail(body.email)
+    }
+    if ('code' in body) {
+      body.code = '[REDACTED]'
+    }
+    if ('userId' in body) {
+      body.userId = truncateUserId(body.userId)
     }
   }
 
