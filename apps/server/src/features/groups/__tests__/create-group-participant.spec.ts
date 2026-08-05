@@ -209,6 +209,7 @@ describe('Given a NGC user', () => {
       test('Then it does not overwrite an existing participant name with an empty name', async () => {
         const userId = faker.string.uuid()
         const participantName = faker.person.fullName()
+        const updatedName = faker.person.fullName()
 
         await agent
           .post(url.replace(':groupId', groupId))
@@ -248,6 +249,34 @@ describe('Given a NGC user', () => {
         })
 
         expect(createdParticipant?.user.name).toBe(participantName)
+
+        // A non-empty name must still update the participant name.
+        await agent
+          .post(url.replace(':groupId', groupId))
+          .set(authHeaders({ userId }))
+          .send({
+            name: updatedName,
+            simulation: getSimulationPayload(),
+          })
+          .expect(StatusCodes.CREATED)
+
+        const updatedParticipant = await prisma.groupParticipant.findUnique({
+          where: {
+            groupId_userId: {
+              groupId,
+              userId,
+            },
+          },
+          select: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        })
+
+        expect(updatedParticipant?.user.name).toBe(updatedName)
       })
 
       test('Then it stores the participant simulation in database', async () => {

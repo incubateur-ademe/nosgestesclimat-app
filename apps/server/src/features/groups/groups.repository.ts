@@ -7,7 +7,7 @@ import {
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PartialUser } from '../../core/types/user.ts'
 import { createParticipantSimulation } from '../simulations/simulations.repository.ts'
-import { createOrUpdateUser, fetchUser } from '../users/users.repository.ts'
+import { createOrUpdateUser } from '../users/users.repository.ts'
 import type {
   GroupCreateDto,
   GroupParams,
@@ -153,21 +153,13 @@ export const createParticipantAndUser = async (
     },
   })
 
-  // An anonymous participant completing its test sends an empty `name`
-  // (its session holds no display name). Keep the previously saved name
-  // instead of overwriting it with an empty string.
-  const existingUser = await fetchUser(
-    { id: userId, select: { name: true } },
-    { session }
-  )
-
-  // upsert user
+  // upsert user. An anonymous participant completing its test sends an empty
+  // `name` (its session holds no display name); skip the `name` field in that
+  // case so Prisma does not overwrite the previously saved name.
   await createOrUpdateUser(
     {
       id: userId,
-      user: {
-        name: name || existingUser?.name,
-      },
+      user: name ? { name } : {},
     },
     { session }
   )
