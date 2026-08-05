@@ -5,6 +5,7 @@ import { organisationFactory } from '../../factories/organisation.factory.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { getEventInfo } from '../get-event-info.service.ts'
+import type { EventInfo } from '../../types/event-info.ts'
 
 /** Refresh the materialized view so it reflects newly inserted test data. */
 const refreshMV = () =>
@@ -50,6 +51,13 @@ const seedPoll = async (
   }
 }
 
+/** Assert the result is not null and narrow its type for the compiler. */
+const expectEventInfo = (result: EventInfo | null): EventInfo => {
+  expect(result).not.toBeNull()
+  if (!result) throw new Error('getEventInfo should return event info')
+  return result
+}
+
 describe('getEventInfo', () => {
   afterEach(async () => {
     await prisma.simulationPoll.deleteMany()
@@ -69,18 +77,17 @@ describe('getEventInfo', () => {
   it('resolves the event by slug', async () => {
     const event = await eventFactory.create({ slug: 'sedd' })
 
-    const result = await getEventInfo('sedd')
+    const result = expectEventInfo(await getEventInfo('sedd'))
 
-    expect(result).not.toBeNull()
-    expect(result?.startDate.toISOString()).toBe('2026-09-18T00:00:00.000Z')
-    expect(result?.endDate.toISOString()).toBe('2026-10-08T23:59:59.000Z')
+    expect(result.startDate.toISOString()).toBe('2026-09-18T00:00:00.000Z')
+    expect(result.endDate.toISOString()).toBe('2026-10-08T23:59:59.000Z')
     expect(event.id).toBeTruthy()
   })
 
   it('returns zeroes when event has no polls and no simulations', async () => {
     const event = await eventFactory.create()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result).toEqual({
       organisations: [],
@@ -98,7 +105,7 @@ describe('getEventInfo', () => {
     await simulationFactory.create({ createdAt: new Date('2026-09-25T12:00:00Z') })
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations).toEqual([])
     expect(result.totalSimulations).toBe(1)
@@ -117,7 +124,7 @@ describe('getEventInfo', () => {
     await seedPoll(event, org.id, 3)
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations).toHaveLength(1)
     expect(result.organisations[0]).toEqual({
@@ -148,7 +155,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations).toHaveLength(3)
     expect(result.organisations.map((o) => o.slug)).toEqual(['b', 'c', 'a'])
@@ -171,7 +178,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     // 1 simulation is not enough to be counted as "mobilised" (>= 2 required)
     expect(result.organisationCount).toBe(1)
@@ -197,7 +204,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations).toHaveLength(1)
     expect(result.organisations[0].slug).toBe('old-org')
@@ -220,7 +227,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations[0].simulationsCount).toBe(1)
     expect(result.totalSimulations).toBe(1)
@@ -245,7 +252,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     // The ademe-sedd org has 5 simulations but must not appear in the list
     expect(result.organisations.map((o) => o.slug)).toEqual(['other'])
@@ -272,7 +279,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     // totalSimulations counts every completed simulation in the window, ADEME included
     expect(result.totalSimulations).toBe(7)
@@ -284,7 +291,7 @@ describe('getEventInfo', () => {
     await simulationFactory.create({ createdAt: new Date('2026-09-18T00:00:00Z') })
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.totalSimulations).toBe(1)
   })
@@ -295,7 +302,7 @@ describe('getEventInfo', () => {
     await simulationFactory.create({ createdAt: new Date('2026-10-08T23:59:59Z') })
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.totalSimulations).toBe(1)
   })
@@ -307,7 +314,7 @@ describe('getEventInfo', () => {
     await simulationFactory.create({ createdAt: new Date('2026-10-09T00:00:00Z') }) // 1s after
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.totalSimulations).toBe(0)
   })
@@ -343,7 +350,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations).toHaveLength(30)
     expect(
@@ -373,7 +380,7 @@ describe('getEventInfo', () => {
     await Promise.all(orgs.map((org) => seedPoll(event, org.id, 2)))
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisations).toHaveLength(15)
     expect(result.organisationCount).toBe(ORG_COUNT)
@@ -392,7 +399,7 @@ describe('getEventInfo', () => {
 
     await refreshMV()
 
-    const result = await getEventInfo(event.id)
+    const result = expectEventInfo(await getEventInfo(event.id))
 
     // Same score: sorted by organisationId ASC (deterministic tie-break).
     const ids = result.organisations.map((o) => o.id)
