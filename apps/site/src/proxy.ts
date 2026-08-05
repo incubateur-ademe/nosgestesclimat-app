@@ -21,9 +21,9 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   // Correlates every leg of a request: proxy decisions (rotation, legacy
   // migration), the server actions and the Express logs all share this id.
-  if (!request.headers.get('x-request-id')) {
-    request.headers.set('x-request-id', crypto.randomUUID())
-  }
+  // Always regenerated on the main pass: the incoming value is client-controlled
+  // and must not be trusted (it is only ever used for log correlation).
+  request.headers.set('x-request-id', crypto.randomUUID())
 
   // Phase 1 — Interceptors
   const ff = middlewareFeatureFlags(request)

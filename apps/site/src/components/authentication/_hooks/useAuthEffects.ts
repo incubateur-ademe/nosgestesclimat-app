@@ -9,11 +9,7 @@ import { hasSessionCookie } from '@/services/auth/has-session-cookie'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { maskEmail, truncateUserId } from '@/utils/maskEmail'
-import {
-  addBreadcrumb,
-  captureException,
-  captureMessage,
-} from '@sentry/nextjs'
+import { addBreadcrumb, captureException, captureMessage } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
@@ -45,10 +41,12 @@ function useVerifyEffect(
         if (result.success) {
           dispatch({ type: 'CODE_VALID', userId: result.data.userId })
         } else {
+          const { code } = result.error
+          dispatch({ type: 'CODE_INVALID', reason: result.error })
           // Records what the user actually saw: rejected codes (mistyped,
           // rate-limited) are breadcrumbs, only the silent "unknown" failures
-          // raise a Sentry warning.
-          const { code } = result.error
+          // raise a Sentry warning. Dispatch comes first so logging can never
+          // delay or block the error feedback.
           addBreadcrumb({
             category: 'auth',
             message: 'Verification code rejected',
@@ -61,7 +59,6 @@ function useVerifyEffect(
               extra: { email: maskEmail(verificationEmail) },
             })
           }
-          dispatch({ type: 'CODE_INVALID', reason: result.error })
         }
       })
       .catch((error) => {
@@ -111,26 +108,30 @@ function useCompletionEffect(
           userId: authenticatedUserId,
         })
 
-        if (!hasSessionCookieChecked.current) {
-          hasSessionCookieChecked.current = true
-          const hasCookie = await hasSessionCookie()
-          if (!hasCookie) {
-            // The user just logged in but the session cookie is not coming
-            // back on the next request: typically a browser-side persistence
-            // issue (partitioning, iframe, domain) that silently logs them out.
-            captureMessage('Authenticated user has no session cookie', {
-              level: 'warning',
-              extra: {
-                email: maskEmail(authenticatedEmail),
-                userId: truncateUserId(authenticatedUserId),
-              },
-            })
-          }
-        }
-
         if (options.redirectPathname) {
           router.push(options.redirectPathname)
           router.refresh()
+        }
+
+        // Best-effort diagnostic: must never block or delay the login redirect.
+        if (!hasSessionCookieChecked.current) {
+          hasSessionCookieChecked.current = true
+          void hasSessionCookie()
+            .then((hasCookie) => {
+              if (!hasCookie) {
+                // The user just logged in but the session cookie is not coming
+                // back on the next request: typically a browser-side persistence
+                // issue (partitioning, iframe, domain) that silently logs them out.
+                captureMessage('Authenticated user has no session cookie', {
+                  level: 'warning',
+                  extra: {
+                    email: maskEmail(authenticatedEmail),
+                    userId: truncateUserId(authenticatedUserId),
+                  },
+                })
+              }
+            })
+            .catch((error) => captureException(error))
         }
       } catch (error) {
         captureException(error)
