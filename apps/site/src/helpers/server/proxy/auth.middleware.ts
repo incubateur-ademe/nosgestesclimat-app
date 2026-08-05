@@ -16,7 +16,7 @@ import type {
 } from '@nosgestesclimat/core/features/auth/types/session'
 import { captureException } from '@sentry/nextjs'
 import { type NextRequest, NextResponse } from 'next/server'
-import { siteLogger } from '../logger'
+import logger from '../../../logger.ts'
 import type { MiddlewareResult } from './types'
 
 /**
@@ -84,10 +84,10 @@ export async function middlewareAuth(
   } catch (err) {
     if (err instanceof TokenExpiredException) {
       // (E) Refresh token exists but is past its expiration. Expected for
-      // accounts returning after 180 days: they must sign in again. Console
-      // only — this is a high-volume, non-anomalous event that would flood
-      // Sentry.
-      siteLogger.warn('Session refresh token expired; user must sign in again', {
+      // accounts returning after 180 days: they must sign in again. Logged
+      // through the pino logger only — this is a high-volume, non-anomalous
+      // event that would flood Sentry.
+      logger.warn('[auth] Session refresh token expired; user must sign in again', {
         ...userContext,
       })
       return { redirect: null, cookies: [] }

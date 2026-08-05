@@ -8,7 +8,7 @@ import { migrateLegacySessions } from '@nosgestesclimat/core/features/auth/servi
 import { getIronSession } from 'iron-session'
 import type { NextRequest } from 'next/server'
 import { InternalError } from '../error'
-import { siteLogger } from '../logger'
+import logger from '../../../logger.ts'
 import type { MiddlewareResult } from './types'
 
 const ANON_SESSION_COOKIE = 'ngc_anon_user'
@@ -59,7 +59,7 @@ export async function middlewareMigrateLegacySessions(
     // legacy cookie that fails to migrate is exactly the kind of silent login
     // dead-end we need to see.
     if (jwt) {
-      siteLogger.warn('Legacy session migration returned no tokens', {
+      logger.warn('[auth] Legacy session migration returned no tokens', {
         ...legacyContext,
       })
     }
@@ -73,7 +73,7 @@ export async function middlewareMigrateLegacySessions(
     userId = payload.userId
     email = payload.email
   } catch {
-    siteLogger.warn('Legacy session migration: decrypt of issued tokens failed', {
+    logger.warn('[auth] Legacy session migration: decrypt of issued tokens failed', {
       ...legacyContext,
     })
     return { redirect: null, cookies: [] }
@@ -81,7 +81,7 @@ export async function middlewareMigrateLegacySessions(
 
   request.headers.set('x-session', JSON.stringify({ userId, email }))
 
-  siteLogger.info('Session issued from legacy migration', {
+  logger.info('[auth] Session issued from legacy migration', {
     ...legacyContext,
     email: maskEmail(email),
     userId: truncateUserId(userId),
