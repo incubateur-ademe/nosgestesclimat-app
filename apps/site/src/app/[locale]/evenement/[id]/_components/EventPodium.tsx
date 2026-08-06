@@ -57,7 +57,11 @@ export default async function EventPodium({
   const prevHref = prevFilter ? buildFilterHref(params, prevFilter) : undefined
   const nextHref = nextFilter ? buildFilterHref(params, nextFilter) : undefined
 
-  const filteredItems = filterAndRankPodiumItems(items, activeFilter)
+  // Before the event starts, all tabs show the same placeholder list.
+  const filteredItems = filterAndRankPodiumItems(
+    items,
+    hasStarted ? activeFilter : 'all'
+  )
 
   return (
     <div className="mb-16">
