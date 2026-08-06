@@ -1405,6 +1405,12 @@ entries:
   event.podium.remainingList.ariaLabel: Suite du classement
   event.podium.block.score.text1: calculs d'empreinte
   event.podium.block.score.text2: En attente du lancement
+  event.podium.empty: "Aucune {{organisationType}} n'a participé pour le moment"
+  event.podium.empty.type.all: organisation
+  event.podium.empty.type.companies: entreprise
+  event.podium.empty.type.associations: association
+  event.podium.empty.type.education: école ou université
+  event.podium.empty.type.public-services: collectivité
   results.footprintBlock.actionsBlock.link: Découvrir mes actions
   results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
   common.co2eAn.title: CO₂e / an

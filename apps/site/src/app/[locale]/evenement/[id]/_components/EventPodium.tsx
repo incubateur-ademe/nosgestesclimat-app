@@ -87,6 +87,7 @@ export default async function EventPodium({
         prevHref={prevHref}
         nextHref={nextHref}
         hasStarted={hasStarted}
+        activeFilter={activeFilter}
       />
     </div>
   )

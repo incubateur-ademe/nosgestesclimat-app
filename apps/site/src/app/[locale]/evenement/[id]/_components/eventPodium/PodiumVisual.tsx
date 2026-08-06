@@ -2,8 +2,9 @@ import ChevronLeft from '@/components/icons/ChevronLeft'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import { twMerge } from 'tailwind-merge'
+import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
 import PodiumBlock from './PodiumBlock'
 
@@ -14,6 +15,7 @@ interface Props {
   prevHref?: string
   nextHref?: string
   hasStarted: boolean
+  activeFilter: FilterValue
 }
 
 const orderClasses = {
@@ -29,11 +31,23 @@ export default async function PodiumVisual({
   prevHref,
   nextHref,
   hasStarted,
+  activeFilter,
 }: Props) {
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 15)
 
   const { t } = await getServerTranslation({ locale })
+
+  const organisationType = {
+    all: t('event.podium.empty.type.all', 'organisation'),
+    companies: t('event.podium.empty.type.companies', 'entreprise'),
+    associations: t('event.podium.empty.type.associations', 'association'),
+    education: t('event.podium.empty.type.education', 'école ou université'),
+    'public-services': t(
+      'event.podium.empty.type.public-services',
+      'collectivité'
+    ),
+  }[activeFilter]
 
   return (
     <>
@@ -51,22 +65,40 @@ export default async function PodiumVisual({
             <ChevronLeft />
           </ButtonLink>
         ) : null}
-        <ol
-          className={twMerge(
-            'mt-8 mb-12 flex w-full max-w-80 list-none flex-col items-stretch gap-3 md:mx-14 md:min-h-80 md:max-w-none md:flex-1 md:flex-row md:items-end md:justify-center md:gap-0 lg:mx-20',
-            className
-          )}>
-          {podiumItems.map((item) => (
-            <li
-              key={item.rank}
-              className={twMerge(
-                'w-full md:flex-1',
-                orderClasses[item.rank as 1 | 2 | 3]
-              )}>
-              <PodiumBlock hasStarted={hasStarted} locale={locale} {...item} />
-            </li>
-          ))}
-        </ol>
+        {podiumItems.length > 0 && (
+          <ol
+            className={twMerge(
+              'mt-8 mb-12 flex w-full max-w-80 list-none flex-col items-stretch gap-3 md:mx-14 md:min-h-80 md:max-w-none md:flex-1 md:flex-row md:items-end md:justify-center md:gap-0 lg:mx-20',
+              className
+            )}>
+            {podiumItems.map((item) => (
+              <li
+                key={item.rank}
+                className={twMerge(
+                  'w-full md:flex-1',
+                  orderClasses[item.rank as 1 | 2 | 3]
+                )}>
+                <PodiumBlock
+                  hasStarted={hasStarted}
+                  locale={locale}
+                  {...item}
+                />
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {podiumItems.length === 0 && (
+          <p className="text-primary-700 mt-8 mb-12 flex w-full items-center justify-center px-4 text-center text-base font-medium md:min-h-80">
+            {t(
+              'event.podium.empty',
+              "Aucune {{organisationType}} n'a participé pour le moment",
+              {
+                organisationType,
+              }
+            )}
+          </p>
+        )}
         {nextHref ? (
           <ButtonLink
             href={nextHref}

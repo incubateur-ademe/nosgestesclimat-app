@@ -2050,6 +2050,18 @@ entries:
   event.podium.block.score.text1.lock: calculs d'empreinte
   event.podium.block.score.text2: Awaiting launch
   event.podium.block.score.text2.lock: En attente du lancement
+  event.podium.empty: No {{organisationType}} has participated yet
+  event.podium.empty.lock: "Aucune {{organisationType}} n'a participé pour le moment"
+  event.podium.empty.type.all: organisation
+  event.podium.empty.type.all.lock: organisation
+  event.podium.empty.type.companies: company
+  event.podium.empty.type.companies.lock: entreprise
+  event.podium.empty.type.associations: association
+  event.podium.empty.type.associations.lock: association
+  event.podium.empty.type.education: school or university
+  event.podium.empty.type.education.lock: école ou université
+  event.podium.empty.type.public-services: local authority
+  event.podium.empty.type.public-services.lock: collectivité
   event.podium.remainingList.ariaLabel.lock: Suite du classement
   results.footprintBlock.actionsBlock.link: Find out about my activities
   results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
