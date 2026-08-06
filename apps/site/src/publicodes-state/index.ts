@@ -3,7 +3,13 @@ export { default as FormProvider } from './providers/formProvider/provider'
 export { default as UserProvider } from './providers/userProvider/provider'
 
 export { default as useActions } from './hooks/useActions/useActions'
-export { default as useCurrentSimulation } from './hooks/useCurrentSimulation/useCurrentSimulation'
+export {
+  EMPTY_ACTION_CHOICES,
+  EMPTY_FOLDED_STEPS,
+  EMPTY_SITUATION,
+  default as useCurrentSimulation,
+  useOptionalSimulation,
+} from './hooks/useCurrentSimulation/useCurrentSimulation'
 export { default as useDisposableEngine } from './hooks/useDisposableEngine/useDisposableEngine'
 export { default as useEngine } from './hooks/useEngine/useEngine'
 export { default as useFormState } from './hooks/useFormState/useFormState'

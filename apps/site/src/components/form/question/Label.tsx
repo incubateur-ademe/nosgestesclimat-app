@@ -11,7 +11,7 @@ import Button from '@/design-system/buttons/Button'
 import Markdown from '@/design-system/utils/Markdown'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useCurrentSimulation } from '@/publicodes-state'
+import { useOptionalSimulation } from '@/publicodes-state'
 import { MUST_SHOW_DESCRIPTION } from '@/publicodes-state/constants/questions'
 import type { QuestionSize } from '@/types/values'
 import {
@@ -53,8 +53,9 @@ export default function Label({
 
   const { t } = useClientTranslation()
 
+  const maybeSimulation = useOptionalSimulation()
   const mustShowDescription =
-    getSimulationMode(useCurrentSimulation()) === 'scolaire' ||
+    getSimulationMode(maybeSimulation) === 'scolaire' ||
     MUST_SHOW_DESCRIPTION.has(question)
 
   if (!label) return

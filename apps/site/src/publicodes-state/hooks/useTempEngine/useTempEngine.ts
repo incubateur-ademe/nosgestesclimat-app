@@ -6,7 +6,10 @@ import type {
 
 import { useEngine } from '@/publicodes-state'
 import type { EvaluatedNode } from 'publicodes'
-import useCurrentSimulation from '../useCurrentSimulation/useCurrentSimulation'
+import {
+  EMPTY_FOLDED_STEPS,
+  useOptionalSimulation,
+} from '../useCurrentSimulation/useCurrentSimulation'
 /**
  * This is temporary and should be put to death as soon as possible
  */
@@ -18,7 +21,7 @@ export default function useTempEngine(): {
   const { safeEvaluate, rules, safeGetRule, everyMosaicChildrenWithParent } =
     useEngine()
 
-  const { foldedSteps } = useCurrentSimulation()
+  const foldedSteps = useOptionalSimulation()?.foldedSteps ?? EMPTY_FOLDED_STEPS
 
   const getSpecialRuleObject = (
     dottedName: DottedName

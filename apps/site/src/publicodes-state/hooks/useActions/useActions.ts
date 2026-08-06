@@ -1,6 +1,10 @@
 'use client'
 
-import { useCurrentSimulation, useEngine } from '@/publicodes-state'
+import {
+  EMPTY_ACTION_CHOICES,
+  useEngine,
+  useOptionalSimulation,
+} from '@/publicodes-state'
 import getSomme from '@/publicodes-state/helpers/getSomme'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { captureException } from '@sentry/nextjs'
@@ -18,7 +22,8 @@ interface ActionObject {
 export default function useActions() {
   const { getNumericValue, engine } = useEngine()
 
-  const { actionChoices } = useCurrentSimulation()
+  const actionChoices =
+    useOptionalSimulation()?.actionChoices ?? EMPTY_ACTION_CHOICES
 
   const actions = useMemo(() => {
     if (!engine) return []

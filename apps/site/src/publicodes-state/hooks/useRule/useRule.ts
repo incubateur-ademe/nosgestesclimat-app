@@ -10,7 +10,12 @@ import type {
 import { utils } from 'publicodes'
 import { useMemo } from 'react'
 import type { Metric, PublicodesValue } from '../../types'
-import useCurrentSimulation from '../useCurrentSimulation/useCurrentSimulation'
+import {
+  EMPTY_FOLDED_STEPS,
+  EMPTY_SITUATION,
+  useOptionalSimulation,
+} from '../useCurrentSimulation/useCurrentSimulation'
+import useUser from '../useUser/useUser'
 import useChoices from './hooks/useChoices'
 import useContent from './hooks/useContent'
 import useDisplayValue from './hooks/useDisplayValue'
@@ -42,8 +47,10 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
     rawMissingVariables,
   } = useEngine()
 
-  const { situation, foldedSteps, updateCurrentSimulation } =
-    useCurrentSimulation()
+  const simulation = useOptionalSimulation()
+  const situation = simulation?.situation ?? EMPTY_SITUATION
+  const foldedSteps = simulation?.foldedSteps ?? EMPTY_FOLDED_STEPS
+  const { updateCurrentSimulation } = useUser()
 
   const evaluation = useMemo(
     () => safeEvaluate<T>(dottedName, metric),

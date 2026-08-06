@@ -71,9 +71,6 @@ export interface UpdateCurrentSimulationProps {
   customAdditionalQuestionsAnswers?: Record<string, string>
   computedResults?: ComputedResults
   progression?: number
-  pollToAdd?: { id: string; slug: string } | null
-  pollToDelete?: string | null
-  groupToAdd?: string | null
   groupToDelete?: string | null
 }
 export interface LocalStorage {

@@ -8,9 +8,9 @@ import { createPollSimulation } from '@/services/organisations/create-poll-simul
 import { getPublicPoll } from '@/services/organisations/get-public-poll'
 import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
-import { getNewSimulationModelService } from '../../../_service/getNewSimulationModelService'
 import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
 import Tutorial from '../../_components/Tutorial'
@@ -47,7 +47,7 @@ export default async function CampagnePage({
     await createPollSimulation({
       poll,
       locale,
-      model: await getNewSimulationModelService({
+      model: await resolveNewSimulationModel({
         searchParams,
         locale,
         mode: poll.mode,

@@ -16,7 +16,8 @@ import Markdown from '@/design-system/utils/Markdown'
 import { filterRelevantMissingVariables } from '@/helpers/actions/filterRelevantMissingVariables'
 import {
   FormProvider,
-  useCurrentSimulation,
+  EMPTY_ACTION_CHOICES,
+  useOptionalSimulation,
   useEngine,
   useRule,
   useTempEngine,
@@ -55,7 +56,8 @@ export default function ActionDetail({
 
   const { toggleActionChoice } = useUser()
 
-  const { actionChoices } = useCurrentSimulation()
+  const actionChoices =
+    useOptionalSimulation()?.actionChoices ?? EMPTY_ACTION_CHOICES
 
   const dottedName = decodeRuleName(formattedDottedName) as DottedName
 
