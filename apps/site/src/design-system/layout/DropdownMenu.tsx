@@ -83,7 +83,7 @@ export default function DropdownMenu({
     if (!wrapper) return
 
     const rect = wrapper.getBoundingClientRect()
-    const next = {
+    const next: { top: number; left?: number; right?: number } = {
       top: rect.bottom + PANEL_OFFSET,
       ...(align === 'right'
         ? { right: window.innerWidth - rect.right }
