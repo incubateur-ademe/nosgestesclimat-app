@@ -87,7 +87,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
             id={buttonId}
             size="sm"
             color="secondary"
-            className="inline-flex gap-1 align-baseline"
+            className="inline-flex gap-1 align-baseline max-tiny:px-2 max-tiny:py-2"
             data-testid="my-space-button"
             aria-expanded={isOpen}
             aria-controls={panelId}
@@ -101,7 +101,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
             <span className="hidden md:inline">({displayEmail})</span>
             <ChevronRight
               className={twMerge(
-                'ml-3 inline-block w-2 transition-transform',
+                'ml-3 max-tiny:ml-1.5 inline-block w-2 transition-transform',
                 isOpen ? 'rotate-[-90deg]' : 'rotate-90'
               )}
             />

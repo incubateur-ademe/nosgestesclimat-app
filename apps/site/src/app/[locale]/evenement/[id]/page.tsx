@@ -1,5 +1,5 @@
 import Footer from '@/components/layout/Footer'
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 import { noIndexObject } from '@/constants/metadata'
 import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -66,7 +66,7 @@ export default async function EvenementPage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <Header locale={locale} />
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">

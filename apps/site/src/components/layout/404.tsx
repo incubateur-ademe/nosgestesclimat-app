@@ -5,7 +5,7 @@ import type { Locale } from '@/i18nConfig'
 import Image from 'next/image'
 import Wave from 'react-wavify'
 import Trans from '../translation/trans/TransServer'
-import HeaderServer from './HeaderServer'
+import HeaderServer from './Header'
 
 export default async function Route404({ locale }: { locale: Locale }) {
   const { t } = await getServerTranslation({ locale })

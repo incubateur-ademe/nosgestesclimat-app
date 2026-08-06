@@ -11,6 +11,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Very small screens (below 360px): compact header layout */
+@custom-variant max-tiny (@media (max-width: 360px));
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still

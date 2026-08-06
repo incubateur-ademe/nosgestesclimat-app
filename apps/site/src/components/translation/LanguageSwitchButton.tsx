@@ -88,7 +88,7 @@ export default function LanguageSwitchButton({
       : i18nConfig.defaultLocale
 
   return (
-    <div className={twMerge('mr-2', className)}>
+    <div className={twMerge('mr-2 max-tiny:mr-1', className)}>
       <DropdownMenu
         trigger={({ isOpen, buttonRef, buttonId, panelId, onToggle }) => (
           <Button
@@ -106,13 +106,13 @@ export default function LanguageSwitchButton({
             lang={activeLocale}
             title={getLanguageTitle(activeLocale, true)}
             data-testid="language-switch-button"
-            className="inline-flex items-center gap-2 px-2 py-2 sm:px-4 sm:py-3"
+            className="inline-flex items-center gap-2 px-2 py-2 max-tiny:px-1.5 max-tiny:py-1.5 sm:px-4 sm:py-3"
             onClick={onToggle}>
             <span>{currentLanguage.label}</span>{' '}
             <Emoji>{currentLanguage.flag}</Emoji>
             <ChevronRight
               className={twMerge(
-                'ml-2 inline-block w-2 transition-transform',
+                'ml-2 max-tiny:ml-1 inline-block w-2 transition-transform',
                 isOpen ? 'rotate-[-90deg]' : 'rotate-90'
               )}
             />
