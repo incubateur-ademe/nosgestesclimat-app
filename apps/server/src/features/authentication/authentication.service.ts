@@ -175,25 +175,28 @@ export async function createAccountOrSignin(loginDto: LoginDto) {
       { session }
     )
 
-    if (existingUser) {
-      // Reject login if the anonymous session userId is already attached
-      // to a different verified account
-      if (existingUser.id !== loginDto.userId) {
-        const conflictingUser = await session.verifiedUser.findFirst({
-          where: {
-            id: loginDto.userId,
-            NOT: { email: loginDto.email },
-          },
-          select: { email: true },
-        })
+    // A session userId must map to at most one verified account. Reusing a
+    // userId already attached to a different verified account would silently
+    // create duplicate accounts sharing the same id on signup (the `id`
+    // column of VerifiedUser is not unique), and is already rejected on
+    // signin. Enforce the invariant on both paths.
+    if (existingUser?.id !== loginDto.userId) {
+      const conflictingUser = await session.verifiedUser.findFirst({
+        where: {
+          id: loginDto.userId,
+          NOT: { email: loginDto.email },
+        },
+        select: { email: true },
+      })
 
-        if (conflictingUser) {
-          throw new ForbiddenException(
-            'userId is already attached to another verified account'
-          )
-        }
+      if (conflictingUser) {
+        throw new ForbiddenException(
+          'userId is already attached to another verified account'
+        )
       }
+    }
 
+    if (existingUser) {
       return [existingUser, VerificationCodeMode.signIn] as const
     }
 

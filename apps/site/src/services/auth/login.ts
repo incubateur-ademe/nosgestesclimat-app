@@ -31,12 +31,22 @@ export const login = async ({
 }): Promise<Result<{ userId: string; id: string }, CodeError>> => {
   try {
     const session = await getUserSession()
+    // Reusing the current session's userId for a *different* account is what
+    // ends up attaching one id to several verified accounts (the server only
+    // rejects it on signin, after the damage is done on signup). Starting a
+    // fresh identity here keeps the 1 session id = 1 account invariant.
+    const isSwitchingAccount =
+      session?.isAuth === true && session.email !== email
     const params = locale ? `?locale=${locale}` : ''
     const data = await fetchServer<{ id: string }>(
       `${AUTHENTICATION_URL}/login${params}`,
       {
         method: 'POST',
-        body: { email, code, userId: session?.id ?? v4() },
+        body: {
+          email,
+          code,
+          userId: isSwitchingAccount ? v4() : (session?.id ?? v4()),
+        },
       }
     )
 

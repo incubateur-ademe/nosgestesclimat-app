@@ -602,6 +602,30 @@ describe('Given a NGC user', () => {
             })
           )
         })
+
+        test(`Then signing up a new email with the same userId returns a ${StatusCodes.FORBIDDEN} error and does not create an account`, async () => {
+          const emailC = faker.internet.email().toLocaleLowerCase()
+          const signUpCodeC = await createVerificationCode({
+            agent,
+            verificationCode: { email: emailC },
+            mode: VerificationCodeMode.signUp,
+          })
+
+          await agent
+            .post(url)
+            .send({
+              userId: userIdA,
+              email: signUpCodeC.email,
+              code: signUpCodeC.code,
+            })
+            .expect(StatusCodes.FORBIDDEN)
+
+          const createdUser = await prisma.verifiedUser.findUnique({
+            where: { email: emailC },
+          })
+
+          expect(createdUser).toBeNull()
+        })
       })
     })
 
