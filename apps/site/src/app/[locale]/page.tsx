@@ -7,7 +7,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
-import i18nConfig, { type Locale } from '@/i18nConfig'
+import { type Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import Partners from '../../components/landing-pages/Partners'
 import CollectivelyCommit from './_components/CollectivelyCommit'
@@ -32,12 +32,6 @@ export const generateMetadata = getCommonMetadata({
     canonical: '',
   },
 })
-
-export function generateStaticParams() {
-  return i18nConfig.locales.map((locale: string) => ({
-    locale,
-  }))
-}
 
 export default async function Homepage({ params }: PageProps<'/[locale]'>) {
   const locale = (await params).locale as Locale

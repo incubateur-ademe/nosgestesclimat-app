@@ -43,7 +43,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@incubateur-ademe/nosgestesclimat": "4.14.1",
+    "@incubateur-ademe/nosgestesclimat": "4.14.2",
     "@next/mdx": "^16.2.2",
     "@nosgestesclimat/core": "workspace:*",
     "@publicodes/react-ui": "^1.10.0",
@@ -65,7 +65,7 @@
     "is-mobile": "^5.0.0",
     "jszip": "^3.10.1",
     "markdown-to-jsx": "^7.7.17",
-    "next": "16.1.5",
+    "next": "16.2.10",
     "next-i18n-router": "^5.5.6",
     "pino": "^10.3.1",
     "posthog-js": "^1.406.1",

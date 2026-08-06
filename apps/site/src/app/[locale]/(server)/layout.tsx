@@ -4,6 +4,7 @@ import HeaderServer from '@/components/layout/HeaderServer'
 import SkipToMainContentLink from '@/design-system/accessibility/SkipToMainContentLink'
 import Banner from '@/design-system/cms/Banner'
 import type { Locale } from '@/i18nConfig'
+import { Suspense } from 'react'
 
 export default async function LargeLayout({
   children,
@@ -13,7 +14,9 @@ export default async function LargeLayout({
   return (
     <>
       <SkipToMainContentLink />
-      <Banner locale={locale as Locale} />
+      <Suspense fallback={null}>
+        <Banner locale={locale as Locale} />
+      </Suspense>
       <HeaderServer locale={locale} />
       {children}
       <GoogleTagScript />

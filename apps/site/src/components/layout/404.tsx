@@ -3,16 +3,21 @@ import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import Image from 'next/image'
+import { cacheLife } from 'next/cache'
 import Wave from 'react-wavify'
 import Trans from '../translation/trans/TransServer'
-import HeaderServer from './HeaderServer'
+import LogoHeader from './headerServer/LogoHeader'
 
 export default async function Route404({ locale }: { locale: Locale }) {
+  'use cache'
+  cacheLife('days')
   const { t } = await getServerTranslation({ locale })
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <header className="h-20 items-center bg-white shadow-xs">
+        <LogoHeader />
+      </header>
 
       <Main>
         <div className="relative h-svh" data-testid="404">

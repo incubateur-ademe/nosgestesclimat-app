@@ -5,11 +5,9 @@ test.describe('Locale persistence via cookie', () => {
     page,
   }) => {
     await page.goto('/fr')
-
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
 
     await page.goto('/en')
-
     await expect(page).toHaveURL(/\/en/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   })
@@ -18,12 +16,10 @@ test.describe('Locale persistence via cookie', () => {
     page,
   }) => {
     await page.goto('/en')
-
     await expect(page).toHaveURL(/\/en/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
     await page.goto('/fr')
-
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
   })
 })

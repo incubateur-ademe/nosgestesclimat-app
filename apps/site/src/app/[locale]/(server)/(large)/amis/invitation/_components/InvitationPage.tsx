@@ -11,7 +11,7 @@ export default async function InvitationPage({
   group,
   locale,
 }: {
-  currentSimulation: Simulation
+  currentSimulation?: Simulation
   group: Group
   locale: string
 }) {

@@ -42,7 +42,9 @@ test.describe('A group admin', () => {
       await newGroup.delete()
       await page.waitForTimeout(2200)
       await expect(page).toHaveURL('/mon-espace/groupes')
-      await expect(page.getByText(newGroup.name)).toBeHidden()
+      await expect(
+        page.getByText(newGroup.name).filter({ visible: true })
+      ).toHaveCount(0)
     })
   })
 
@@ -61,7 +63,7 @@ test.describe('The group result page, when accessed by an admin', () => {
   })
 
   test('displays group name in h1', async ({ group, page }) => {
-    await expect(page.locator('h1')).toHaveText(group.name)
+    await expect(page.getByTestId('group-name')).toHaveText(group.name)
   })
 
   test('has an invite link that can be copied with good utm', async ({
@@ -100,9 +102,9 @@ test.describe('A new user', () => {
   }) => {
     await page.goto(group.url)
     await expect(
-      page.getByText(
-        `${group.admin.firstName} vous a invité à rejoindre le groupe`
-      )
+      page.getByRole('heading', {
+        name: `${group.admin.firstName} vous a invité à rejoindre le groupe`,
+      })
     ).toBeInViewport()
   })
 
@@ -212,13 +214,13 @@ test.describe('A user with a completed test that joined a group', () => {
 
   test('see the group result page after joining', async ({ group }) => {
     await expect(page).toHaveURL(group.url)
-    await expect(page.locator('h1')).toContainText(group.name)
+    await expect(page.getByTestId('group-name')).toContainText(group.name)
   })
 
   test('can access the group result page directly', async ({ group }) => {
     await page.goto(group.url)
     await expect(page).toHaveURL(group.url)
-    await expect(page.locator('h1')).toContainText(group.name)
+    await expect(page.getByTestId('group-name')).toContainText(group.name)
   })
 
   test('can go to the group from the end page of his test', async ({
@@ -227,14 +229,14 @@ test.describe('A user with a completed test that joined a group', () => {
     await page.goto('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(group.url)
-    await expect(page.locator('h1')).toContainText(group.name)
+    await expect(page.getByTestId('group-name')).toContainText(group.name)
   })
 
   test('can see the group in the « mes groupes » tab', async ({ group }) => {
     await page.goto('/fin')
     await group.goFromGroupTabs(page)
     await expect(page).toHaveURL(group.url)
-    await expect(page.locator('h1')).toContainText(group.name)
+    await expect(page.getByTestId('group-name')).toContainText(group.name)
   })
 
   test('when he reuses the invite link, lands directly on the result page', async ({
@@ -242,14 +244,16 @@ test.describe('A user with a completed test that joined a group', () => {
   }) => {
     await page.goto(group.inviteLink)
     await expect(page).toHaveURL(group.url)
-    await expect(page.locator('h1')).toContainText(group.name)
+    await expect(page.getByTestId('group-name')).toContainText(group.name)
   })
 
   test('can leave a group', async ({ group }) => {
-    await page.goto(group.url)
+    await expect(page.getByTestId('button-leave-group')).toBeVisible()
     await group.leave(page)
     await page.goto('/fin')
     await page.getByTestId('my-groups-tab').click()
-    await expect(page.getByText(group.name)).toBeHidden()
+    await expect(
+      page.getByText(group.name).filter({ visible: true })
+    ).toHaveCount(0)
   })
 })

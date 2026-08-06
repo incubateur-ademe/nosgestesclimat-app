@@ -8,9 +8,17 @@ import Script from 'next/script'
 import { Suspense } from 'react'
 
 import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
+import i18nConfig from '@/i18nConfig'
 import { BODY_ID } from './_components/mainLayoutProviders/IframeOptionsContext'
 import './globals.css'
 import { marianne } from './marianne'
+
+
+export function generateStaticParams() {
+  return i18nConfig.locales.map((locale: string) => ({
+    locale,
+  }))
+}
 
 export default async function RootLayout({
   children,
@@ -37,7 +45,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#4949ba" />
 
         <MatomoScript__deprecated />
-        <Suspense>
+        <Suspense fallback={null}>
           <Trackers locale={locale} />
         </Suspense>
 

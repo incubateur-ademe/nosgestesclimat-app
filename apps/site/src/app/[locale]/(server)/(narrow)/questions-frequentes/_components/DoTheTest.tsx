@@ -1,17 +1,19 @@
-'use client'
-
-import Trans from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransServer'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
-import { useCurrentSimulation } from '@/publicodes-state'
+import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 
-export default function DoTheTest() {
-  const { progression } = useCurrentSimulation()
+/**
+ * Server component: this page mounts no `UserProvider`, so the simulation has
+ * to be resolved here rather than read from the client context.
+ */
+export default async function DoTheTest({ locale }: { locale: string }) {
+  const currentSimulation = await getCurrentSimulation()
 
-  if (progression === 0) {
+  if (!currentSimulation?.progression) {
     return (
       <div>
-        <Trans i18nKey="faq.doTheTest.notStarted">
+        <Trans i18nKey="faq.doTheTest.notStarted" locale={locale}>
           Vous n'avez pas encore débuté votre test,{' '}
           <InlineLink href={getLinkToSimulateur()}>
             <strong>lancez-vous !</strong>
@@ -23,7 +25,7 @@ export default function DoTheTest() {
 
   return (
     <div>
-      <Trans i18nKey="faq.doTheTest.started">
+      <Trans i18nKey="faq.doTheTest.started" locale={locale}>
         Vous avez commencé votre test,{' '}
         <InlineLink href={getLinkToSimulateur()}>
           <strong>cliquez ici pour le reprendre !</strong>

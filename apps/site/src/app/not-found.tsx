@@ -3,6 +3,7 @@ import { noIndexObject } from '@/constants/metadata'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import i18nConfig from '@/i18nConfig'
 import './[locale]/globals.css'
+import { Suspense } from 'react'
 import { marianne } from './[locale]/marianne'
 
 export function generateMetadata() {
@@ -19,7 +20,9 @@ export default function NotFound() {
   return (
     <html lang="fr">
       <body className={`${marianne.className} text-default bg-white`}>
-        <Route404 locale={i18nConfig.defaultLocale} />
+        <Suspense fallback={null}>
+          <Route404 locale={i18nConfig.defaultLocale} />
+        </Suspense>
       </body>
     </html>
   )

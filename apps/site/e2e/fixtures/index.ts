@@ -8,6 +8,7 @@ import { test as pollTest } from '../fixtures/polls'
 import { test as scolairePollTest } from '../fixtures/scolaire-poll'
 
 import { test as userAccountTest } from '../fixtures/user-account'
+import { test as visibleTestIdTest } from '../fixtures/visible-testid'
 
 export const test = mergeTests(
   groupTest,
@@ -17,6 +18,8 @@ export const test = mergeTests(
   organisationTest,
   userAccountTest,
   pollTest,
-  scolairePollTest
+  scolairePollTest,
+  visibleTestIdTest
 )
 export { expect } from '@playwright/test'
+export type { Locator, Page } from '@playwright/test'

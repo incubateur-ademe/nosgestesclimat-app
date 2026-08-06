@@ -24,7 +24,8 @@ export default function InvitationForm({
   currentSimulation,
 }: {
   group: Group
-  currentSimulation: Simulation
+  /** Absent until the visitor has taken the test */
+  currentSimulation?: Simulation
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -37,7 +38,7 @@ export default function InvitationForm({
     formState: { errors },
   } = useReactHookForm<Inputs>()
 
-  const hasCompletedTest = currentSimulation.progression === 1
+  const hasCompletedTest = currentSimulation?.progression === 1
 
   const router = useRouter()
 
@@ -47,7 +48,6 @@ export default function InvitationForm({
 
       await updateGroupParticipant({
         groupId: group.id,
-        simulation: currentSimulation,
         name: guestName,
       })
 

@@ -58,12 +58,12 @@ const nextConfig = withMDX({
       },
     },
   },
+  cacheComponents: true,
   experimental: {
     optimizePackageImports: ['@incubateur-ademe/nosgestesclimat'],
     webpackBuildWorker: true,
     authInterrupts: true,
     mdxRs: true,
-    useCache: true,
   },
 
   webpack(config) {

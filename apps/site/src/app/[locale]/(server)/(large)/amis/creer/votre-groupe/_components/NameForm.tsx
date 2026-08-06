@@ -48,7 +48,7 @@ export default function NameForm({
 
   const router = useRouter()
 
-  const { updateName, updateCurrentSimulation, currentSimulation } = useUser()
+  const { updateName } = useUser()
 
   async function onSubmit({ name, emoji, administratorName }: Inputs) {
     try {
@@ -68,16 +68,12 @@ export default function NameForm({
       } else {
         updateName(administratorName)
 
-        updateCurrentSimulation({ groupToAdd: group.id })
-
-        // Save simulation and create the participant server-side
-        // so the link between the group and the simulation is persistant between User contexts
         await updateGroupParticipant({
           groupId: group.id,
-          simulation: currentSimulation,
           name: administratorName,
         })
 
+        router.refresh()
         router.push(TUTORIAL_PATH)
       }
     } catch (e) {

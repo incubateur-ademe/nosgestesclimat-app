@@ -1,4 +1,10 @@
 import { getPersonalizedActionDetails as _getPersonalizedActionDetails } from '@nosgestesclimat/core/features/actions/services/get-personalized-action-details.service'
-import { cache } from 'react'
+import { cacheLife } from 'next/cache'
 
-export const getPersonalizedActionDetails = cache(_getPersonalizedActionDetails)
+export async function getPersonalizedActionDetails(
+  ...args: Parameters<typeof _getPersonalizedActionDetails>
+) {
+  'use cache'
+  cacheLife('minutes')
+  return await _getPersonalizedActionDetails(...args)
+}

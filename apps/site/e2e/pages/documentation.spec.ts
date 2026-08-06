@@ -6,7 +6,9 @@ export const DOCUMENTATION_LAUNCH_BUTTON = 'documentation-launch-button'
 test('/documentation', async ({ page }) => {
   await page.goto('/documentation')
 
-  expect(page.locator('h1').getByText('Documentation')).toBeDefined()
+  expect(
+    page.getByRole('heading', { level: 1, name: 'Documentation' })
+  ).toBeDefined()
 })
 
 test.describe('/documentation/bilan', () => {
