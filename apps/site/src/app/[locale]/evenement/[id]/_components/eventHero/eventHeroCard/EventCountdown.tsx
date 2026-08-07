@@ -15,6 +15,7 @@ interface TimeLeft {
 
 interface Props {
   targetDate: string
+  launchDateLabel: string
   primaryCtaHref: string
   secondaryCtaHref: string
 }
@@ -61,6 +62,7 @@ function AnimatedNumber({ value, label }: { value: number; label: string }) {
 
 export default function EventCountdown({
   targetDate,
+  launchDateLabel,
   primaryCtaHref,
   secondaryCtaHref,
 }: Props) {
@@ -153,9 +155,9 @@ export default function EventCountdown({
       </div>
 
       <p className="text-center text-xs text-slate-600">
-        <Trans i18nKey="event.countdown.date">
-          Lancement le 1er septembre 2026
-        </Trans>
+        {t('event.countdown.date', 'Lancement le {{date}}', {
+          date: launchDateLabel,
+        })}
       </p>
     </div>
   )

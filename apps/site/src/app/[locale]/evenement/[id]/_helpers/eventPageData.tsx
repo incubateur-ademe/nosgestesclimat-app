@@ -1,16 +1,20 @@
-/** Event page data — centralized mock content before CMS integration. */
+/** Event page data — feeds real-time data from the materialized view, falls back to mock content before CMS integration. */
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import { PODIUM_LIMIT_PER_TYPE } from '@nosgestesclimat/core/features/events/constants/podium'
+import { organisationTypeToCategory } from '@nosgestesclimat/core/features/events/helpers/podium'
+import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
+import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
+import type {
+  PodiumCategory,
+  PodiumItem,
+} from '@nosgestesclimat/core/features/events/types/podium'
+import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
-
-export interface PodiumItem {
-  rank: number
-  label: string
-  score: number
-}
 
 export interface Testimony {
   text: string
@@ -61,50 +65,94 @@ export interface EventPageData {
   ctaCards: CtaCard[]
 }
 
-export function getEventPageData({
-  t,
+const TARGET_VALUE = 50000
+
+// Build the podium items from the top-per-type organisations returned by the
+// service, keeping at most PODIUM_LIMIT_PER_TYPE items per category.
+function buildPodiumItems(organisations: EventOrganisation[]): PodiumItem[] {
+  const countByCategory: Record<PodiumCategory, number> = {
+    all: 0,
+    companies: 0,
+    associations: 0,
+    education: 0,
+    'public-services': 0,
+  }
+
+  const items: PodiumItem[] = []
+  for (const org of organisations) {
+    const category = organisationTypeToCategory(org.type)
+    if (countByCategory[category] >= PODIUM_LIMIT_PER_TYPE) continue
+    countByCategory[category] += 1
+    items.push({
+      rank: 0,
+      label: org.name,
+      score: org.simulationsCount,
+      category,
+    })
+  }
+
+  return items.map((item, index) => ({ ...item, rank: index + 1 }))
+}
+
+export async function getEventPageData({
+  eventId,
+
   locale,
 }: {
-  t: (key: string, defaultValue: string) => string
+  eventId: string
   locale: Locale
-}): EventPageData {
-  const currentValue = 0
-  const targetValue = 50000
+}): Promise<EventPageData | null> {
+  'use cache'
+  cacheLife({ stale: 600, revalidate: 600, expire: 600 })
+
+  const { t } = await getServerTranslation({ locale })
+
+  const eventInfo = await getEventInfo(eventId)
+
+  if (!eventInfo) return null
+
+  const currentValue = eventInfo.totalSimulations
+
+  const podiumItems =
+    eventInfo.organisations.length > 0
+      ? buildPodiumItems(eventInfo.organisations)
+      : [
+          {
+            rank: 1,
+            label: t('event.podium.yourOrg', 'Organisation 1'),
+            score: 0,
+            category: 'all' as const,
+          },
+          ...Array.from({ length: 14 }, (_, index) => ({
+            rank: index + 2,
+            label: t(
+              `event.podium.competitor${index + 2}`,
+              `Organisation ${index + 2}`
+            ),
+            score: 0,
+            category: 'companies' as const,
+          })),
+        ]
 
   return {
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/VIGNETTE_SEDD_f711b1d37b.svg',
-    startDate: '2026-09-01T00:00:00+02:00',
-    endDate: '2026-09-30T23:59:59+02:00',
+    startDate: eventInfo.startDate.toISOString(),
+    endDate: eventInfo.endDate.toISOString(),
     dynamicCounter: {
       currentValue,
-      targetValue,
-      progressPercentage:
-        targetValue > 0 ? (currentValue / targetValue) * 100 : 0,
+      targetValue: TARGET_VALUE,
+      progressPercentage: Math.min((currentValue / TARGET_VALUE) * 100, 100),
       primaryCtaHref: ORGANISATION_HOME_PAGE,
       secondaryCtaHref:
         'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
     },
     statisticsValues: {
-      simulations: 0,
+      simulations: eventInfo.totalSimulations,
       actions: 0,
-      organisations: 0,
+      organisations: eventInfo.organisationCount,
     },
-    podiumItems: [
-      {
-        rank: 1,
-        label: t('event.podium.yourOrg', 'Organisation 1'),
-        score: 0,
-      },
-      ...Array.from({ length: 9 }, (_, index) => ({
-        rank: index + 2,
-        label: t(
-          `event.podium.competitor${index + 2}`,
-          `Organisation ${index + 2}`
-        ),
-        score: 0,
-      })),
-    ],
+    podiumItems,
     testimonies: [
       {
         text: t(

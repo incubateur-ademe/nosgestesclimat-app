@@ -1,3 +1,4 @@
+import { formatLocalizedDate } from '@nosgestesclimat/core/lib/format-localized-date'
 import type { Locale } from '@/i18nConfig'
 import AnimatedCounterBlock from './eventHeroCard/AnimatedCounterBlock'
 import EventCountdown from './eventHeroCard/EventCountdown'
@@ -24,6 +25,12 @@ export default function EventHeroCard({
 }: Props) {
   const hasEventStarted = new Date() >= new Date(startDate)
 
+  const launchDateLabel = formatLocalizedDate(startDate, locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+
   const content = hasEventStarted ? (
     <AnimatedCounterBlock>
       <EventDynamicCounter
@@ -38,6 +45,7 @@ export default function EventHeroCard({
   ) : (
     <EventCountdown
       targetDate={startDate}
+      launchDateLabel={launchDateLabel}
       primaryCtaHref={primaryCtaHref}
       secondaryCtaHref={secondaryCtaHref}
     />

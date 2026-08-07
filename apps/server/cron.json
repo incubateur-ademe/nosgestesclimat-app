@@ -12,6 +12,10 @@
     {
       "command": "0 3 * * * pnpm jobs:syncNotionActions; pnpm jobs:cleanupExpiredTokens; pnpm jobs:syncBrevoContacts ; pnpm jobs:recoverNewsletterStats",
       "size": "M"
+    },
+    {
+      "command": "*/15 * * * * pnpm jobs:refreshEventComputation",
+      "size": "S"
     }
   ]
 }

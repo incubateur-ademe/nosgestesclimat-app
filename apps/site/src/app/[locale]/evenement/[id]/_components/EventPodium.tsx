@@ -1,7 +1,8 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '../_helpers/eventPageData'
+import { filterAndRankPodiumItems } from '@nosgestesclimat/core/features/events/helpers/podium'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import type { FilterValue } from './eventPodium/EventTabs'
 import EventTabs, { FILTER_KEY, FILTER_VALUES } from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
@@ -56,6 +57,12 @@ export default async function EventPodium({
   const prevHref = prevFilter ? buildFilterHref(params, prevFilter) : undefined
   const nextHref = nextFilter ? buildFilterHref(params, nextFilter) : undefined
 
+  // Before the event starts, all tabs show the same placeholder list.
+  const filteredItems = filterAndRankPodiumItems(
+    items,
+    hasStarted ? activeFilter : 'all'
+  )
+
   return (
     <div className="mb-16">
       <p className="text-secondary-700 pt-16 text-center text-base font-bold uppercase">
@@ -76,10 +83,11 @@ export default async function EventPodium({
         // Trigger animation on each change
         key={`podium-visual-${activeFilter}`}
         locale={locale}
-        items={items}
+        items={filteredItems}
         prevHref={prevHref}
         nextHref={nextHref}
         hasStarted={hasStarted}
+        activeFilter={activeFilter}
       />
     </div>
   )
