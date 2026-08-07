@@ -12,6 +12,7 @@ import {
   test,
   vi,
 } from 'vitest'
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { brevoSendEmail } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import type { VerifiedUser } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
@@ -19,7 +20,7 @@ import app from '../../../app.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
-import logger, { maskEmail } from '../../../logger.ts'
+import logger from '../../../logger.ts'
 import * as authenticationService from '../authentication.service.ts'
 import type { VerificationCodeCreateDto } from '../verification-codes.validator.ts'
 import { CREATE_VERIFICATION_CODE_ROUTE } from './fixtures/verification-codes.fixture.ts'

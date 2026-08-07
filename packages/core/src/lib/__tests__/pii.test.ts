@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { maskEmail, truncateUserId } from './maskEmail'
+import { maskEmail, maskUserId } from '../pii.ts'
 
 describe('maskEmail', () => {
   it('keeps enough of the address to correlate without storing it', () => {
@@ -12,14 +12,14 @@ describe('maskEmail', () => {
   })
 })
 
-describe('truncateUserId', () => {
+describe('maskUserId', () => {
   it('keeps only the first 8 characters of a session id', () => {
-    expect(truncateUserId('01234567-89ab-cdef-0123-456789abcdef')).toBe(
+    expect(maskUserId('01234567-89ab-cdef-0123-456789abcdef')).toBe(
       '01234567***'
     )
   })
 
   it('returns a placeholder for non-string values', () => {
-    expect(truncateUserId(undefined)).toBe('[REDACTED]')
+    expect(maskUserId(undefined)).toBe('[REDACTED]')
   })
 })

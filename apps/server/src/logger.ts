@@ -1,9 +1,7 @@
-import { maskEmail, truncateUserId } from '@nosgestesclimat/core/lib/pii'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import winston from 'winston'
 import SentryTransport from 'winston-transport-sentry-node'
 import { config } from './config.ts'
-
-export { maskEmail, truncateUserId }
 
 const { combine, timestamp, json, errors } = winston.format
 
@@ -52,7 +50,7 @@ export const redactBody = <T = unknown>(body: T) => {
       body.code = '[REDACTED]'
     }
     if ('userId' in body) {
-      body.userId = truncateUserId(body.userId)
+      body.userId = maskUserId(body.userId)
     }
   }
 

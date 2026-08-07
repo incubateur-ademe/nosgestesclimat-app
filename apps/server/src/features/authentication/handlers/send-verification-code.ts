@@ -1,6 +1,7 @@
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { sendVerificationCodeEmail } from '../../../adapters/brevo/client.ts'
 import type { Handler } from '../../../core/event-bus/handler.ts'
-import logger, { maskEmail } from '../../../logger.ts'
+import logger from '../../../logger.ts'
 import type { VerificationCodeCreatedEvent } from '../events/VerificationCodeCreated.event.ts'
 
 export const sendVerificationCode: Handler<VerificationCodeCreatedEvent> =

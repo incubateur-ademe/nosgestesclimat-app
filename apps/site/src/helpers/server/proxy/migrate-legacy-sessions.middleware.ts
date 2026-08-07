@@ -2,7 +2,7 @@ import {
   buildSessionCookies,
   SESSION_COOKIE,
 } from '@/helpers/server/cookie/auth.cookie'
-import { maskEmail, truncateUserId } from '@/utils/maskEmail'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { migrateLegacySessions } from '@nosgestesclimat/core/features/auth/services/migrate-legacy-sessions.service'
 import { getIronSession } from 'iron-session'
@@ -84,7 +84,7 @@ export async function middlewareMigrateLegacySessions(
   logger.info('[auth] Session issued from legacy migration', {
     ...legacyContext,
     email: maskEmail(email),
-    userId: truncateUserId(userId),
+    userId: maskUserId(userId),
   })
 
   return {

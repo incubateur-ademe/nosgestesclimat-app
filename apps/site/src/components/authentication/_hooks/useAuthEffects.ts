@@ -8,7 +8,7 @@ import { reconcileUserOnAuth } from '@/helpers/user/reconcileOnAuth'
 import { hasSessionCookie } from '@/services/auth/has-session-cookie'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-import { maskEmail, truncateUserId } from '@/utils/maskEmail'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import { addBreadcrumb, captureException, captureMessage } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
@@ -108,12 +108,11 @@ function useCompletionEffect(
           userId: authenticatedUserId,
         })
 
-        if (options.redirectPathname) {
-          router.push(options.redirectPathname)
-          router.refresh()
-        }
-
         // Best-effort diagnostic: must never block or delay the login redirect.
+        // It runs before the redirect so it happens while this component is
+        // still mounted (after router.push the navigation can unmount it), but
+        // stays fire-and-forget with its own error capture: a failing server
+        // action must never swallow the redirect (see commit b228e6e).
         if (!hasSessionCookieChecked.current) {
           hasSessionCookieChecked.current = true
           void hasSessionCookie()
@@ -126,12 +125,17 @@ function useCompletionEffect(
                   level: 'warning',
                   extra: {
                     email: maskEmail(authenticatedEmail),
-                    userId: truncateUserId(authenticatedUserId),
+                    userId: maskUserId(authenticatedUserId),
                   },
                 })
               }
             })
             .catch((error) => captureException(error))
+        }
+
+        if (options.redirectPathname) {
+          router.push(options.redirectPathname)
+          router.refresh()
         }
       } catch (error) {
         captureException(error)

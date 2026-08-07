@@ -4,7 +4,7 @@ import {
   REFRESH_COOKIE,
   SESSION_COOKIE,
 } from '@/helpers/server/cookie/auth.cookie'
-import { maskEmail, truncateUserId } from '@/utils/maskEmail'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
@@ -64,7 +64,7 @@ export async function middlewareAuth(
   const userContext = {
     ...requestContext,
     email: maskEmail(payload.email),
-    userId: truncateUserId(payload.userId),
+    userId: maskUserId(payload.userId),
   }
 
   const refreshCookie = request.cookies.get(REFRESH_COOKIE)
