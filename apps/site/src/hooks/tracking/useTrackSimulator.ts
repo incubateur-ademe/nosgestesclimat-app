@@ -23,32 +23,16 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import { trackGTMEvent } from '@/utils/analytics/trackGTMEvent'
-import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
+import {
+  getIsEventTracked,
+  markAsEventTracked,
+} from '@/utils/analytics/trackUniqueEvent'
 import { useEffect } from 'react'
 import { useTrackTimeOnSimulation } from './useTrackTimeOnSimulation'
 
 const FIRST_QUESTION_SEEN = 'first_question_seen'
 const FIRST_QUESTION_ANSWERED = 'first_question_answered'
 const TEST_COMPLETED = 'test_completed'
-
-const getTrackingKey = (simulationId: string, eventType: string): string => {
-  return `ngc_tracking_${eventType}_${simulationId}`
-}
-
-const getTrackingState = (simulationId: string, eventType: string): boolean => {
-  const key = getTrackingKey(simulationId, eventType)
-  return safeLocalStorage.getItem(key) === 'true'
-}
-
-const setTrackingState = (
-  simulationId: string,
-  eventType: string,
-  value: boolean
-): void => {
-  const key = getTrackingKey(simulationId, eventType)
-
-  safeLocalStorage.setItem(key, value.toString())
-}
 
 export function useTrackSimulator() {
   const currentSimulation = useCurrentSimulation()
@@ -75,7 +59,7 @@ export function useTrackSimulator() {
     if (
       progression === 0 &&
       foldedSteps.length === 0 &&
-      !getTrackingState(simulationId, FIRST_QUESTION_SEEN)
+      !getIsEventTracked(FIRST_QUESTION_SEEN, simulationId)
     ) {
       trackMatomoEvent__deprecated(simulationSimulationFirstQuestionSeen)
 
@@ -85,7 +69,7 @@ export function useTrackSimulator() {
         })
       )
 
-      setTrackingState(simulationId, FIRST_QUESTION_SEEN, true)
+      markAsEventTracked(FIRST_QUESTION_SEEN, simulationId)
     }
   }, [remainingQuestions, progression, foldedSteps, simulationId])
 
@@ -94,7 +78,7 @@ export function useTrackSimulator() {
     if (
       progression > 0 &&
       foldedSteps.length === 1 &&
-      !getTrackingState(simulationId, FIRST_QUESTION_ANSWERED)
+      !getIsEventTracked(FIRST_QUESTION_ANSWERED, simulationId)
     ) {
       trackMatomoEvent__deprecated(simulationSimulationStarted)
 
@@ -110,7 +94,7 @@ export function useTrackSimulator() {
         })
       )
 
-      setTrackingState(simulationId, FIRST_QUESTION_ANSWERED, true)
+      markAsEventTracked(FIRST_QUESTION_ANSWERED, simulationId)
     }
   }, [
     relevantAnsweredQuestions,
@@ -122,7 +106,7 @@ export function useTrackSimulator() {
   ])
 
   useEffect(() => {
-    if (progression === 1 && !getTrackingState(simulationId, TEST_COMPLETED)) {
+    if (progression === 1 && !getIsEventTracked(TEST_COMPLETED, simulationId)) {
       const timeSpentOnSimulation = trackTimeOnSimulation()
 
       const bilan = getNumericValue('bilan')
@@ -143,7 +127,7 @@ export function useTrackSimulator() {
         })
       )
 
-      setTrackingState(simulationId, TEST_COMPLETED, true)
+      markAsEventTracked(TEST_COMPLETED, simulationId)
     }
   }, [
     progression,

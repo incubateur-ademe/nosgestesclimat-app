@@ -1,8 +1,5 @@
 import type { CookieState } from '@/services/tracking/cookieStateStore'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
-import posthog from 'posthog-js'
-import { v5 as uuidv5 } from 'uuid'
 interface PosthogProps {
   question?: DottedName | null
   action?: DottedName
@@ -297,34 +294,3 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
     googleTagCookie: cookieState?.googleTag,
   },
 })
-
-// Actions v2
-
-export const captureAction = ({
-  actionTrackingId,
-  actionThemeTrackingId,
-  co2PotentialInKg,
-  eventName,
-}: {
-  actionTrackingId: string
-  actionThemeTrackingId: string
-  co2PotentialInKg?: number
-  eventName: 'action displayed' | 'action consulted'
-}) => {
-  // We deduplicate all action events, only one is processed per session
-  const sessionId = posthog.get_session_id()
-  const uuid = uuidv5(
-    `${eventName}:${actionTrackingId}:${sessionId}`,
-    uuidv5.DNS
-  )
-
-  trackPosthogEvent({
-    eventName,
-    properties: {
-      action_name: actionTrackingId,
-      action_theme: actionThemeTrackingId,
-      co2_potential_kg: co2PotentialInKg,
-    },
-    options: { uuid },
-  })
-}
