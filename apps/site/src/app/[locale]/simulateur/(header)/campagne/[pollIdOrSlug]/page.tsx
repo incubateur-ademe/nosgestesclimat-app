@@ -3,6 +3,7 @@ import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
 import Emoji from '@/design-system/utils/Emoji'
 import { throwNextError } from '@/helpers/server/error'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
 import { getPublicPoll } from '@/services/organisations/get-public-poll'
@@ -12,6 +13,7 @@ import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-si
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import PollTutorialButton from '../../_components/PollTutorialButton'
+import ReplaceSimulationForPoll from '../../_components/ReplaceSimulationForPoll'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
 import Tutorial from '../../_components/Tutorial'
 import YouthTutorial from '../../_components/YouthTutorial'
@@ -66,10 +68,19 @@ export default async function CampagnePage({
     redirect(SIMULATOR_PATH)
   }
 
+  // On a shared computer, the session may hold a previous user's completed
+  // simulation whose mode differs from this poll's. Such a simulation must be
+  // replaced (invisibly) instead of being reused or leaking as results.
+  const shouldReplaceSimulation =
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    !!lastCompletedSimulation &&
+    getSimulationMode(lastCompletedSimulation) !== poll.mode
+
   const allowToReuseExistingSimulation =
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     !!lastCompletedSimulation &&
     poll.mode === 'standard' &&
+    !shouldReplaceSimulation &&
     !poll.simulations.hasParticipated &&
     // eslint-disable-next-line react-hooks/purity
     Date.now() - new Date(lastCompletedSimulation.date as string).getTime() <
@@ -112,6 +123,7 @@ export default async function CampagnePage({
   )
   return (
     <>
+      {shouldReplaceSimulation && <ReplaceSimulationForPoll mode={poll.mode} />}
       <PollTracker poll={poll} />
 
       {poll.mode === 'scolaire' ? (

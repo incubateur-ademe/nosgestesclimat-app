@@ -19,6 +19,30 @@ test('should show youth tutorial when joining via the scolaire poll invite link'
   await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()
 })
 
+test('should invisibly replace a completed classic test when joining a scolaire poll', async ({
+  scolairePoll,
+  page,
+  ngcTest,
+}) => {
+  // A classic test was completed on this computer/session
+  await ngcTest.skipAll()
+  await page.waitForURL(/\/fin/)
+
+  // The home page keeps offering the previous user's results (unchanged behavior)
+  await page.goto('/')
+  await expect(page.getByTestId('main-cta').first()).toContainText(
+    'Voir mes résultats'
+  )
+
+  // Visiting the scolaire invite link must not send the user to the previous
+  // results: the completed classic test (different mode) is replaced invisibly
+  // and the youth tutorial starts a fresh test.
+  await page.goto(scolairePoll.inviteLink)
+  await expect(page.getByTestId('youth-tutorial')).toBeVisible()
+  await page.getByTestId('youth-tutorial-start-button').click()
+  await expect(page).toHaveURL(/\/simulateur\/bilan/)
+})
+
 test.describe('When a user completes the test via the scolaire poll invite link', () => {
   let page: Page
 
