@@ -153,13 +153,13 @@ export const createParticipantAndUser = async (
     },
   })
 
-  // upsert user
+  // upsert user. An anonymous participant completing its test sends an empty
+  // `name` (its session holds no display name); skip the `name` field in that
+  // case so Prisma does not overwrite the previously saved name.
   await createOrUpdateUser(
     {
       id: userId,
-      user: {
-        name,
-      },
+      user: name ? { name } : {},
     },
     { session }
   )

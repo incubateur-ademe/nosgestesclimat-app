@@ -147,9 +147,7 @@ test.describe('A new user', () => {
     await expect(page).toHaveURL(group.url)
   })
 
-  // TODO: Fails because updateGroupParticipant does not persist the participant name
-  // on the server side for non-admin users. The ranking displays empty names.
-  test.skip('sees its first name in the group ranking after joining', async ({
+  test('sees its first name in the group ranking after joining', async ({
     page,
     ngcTest,
     tutorialPage,
