@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "ngc"."Event" (
     "id" TEXT NOT NULL,
-    "slug" TEXT,
+    "slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "startDate" TIMESTAMPTZ(3) NOT NULL,
     "endDate" TIMESTAMPTZ(3) NOT NULL,
@@ -14,8 +14,10 @@ CREATE TABLE "ngc"."Event" (
 -- CreateIndex
 CREATE UNIQUE INDEX "Event_slug_key" ON "ngc"."Event"("slug");
 
--- Backfill the slug for the seeded SEDD 2026 event (idempotent).
-UPDATE "ngc"."Event" SET "slug" = 'sedd' WHERE "name" = 'SEDD 2026' AND "slug" IS NULL;
+-- Index Simulation.createdAt and Simulation.progression for the counter query,
+-- created before the materialized view so the initial build benefits from them.
+CREATE INDEX IF NOT EXISTS "Simulation_createdAt_idx" ON "ngc"."Simulation"("createdAt");
+CREATE INDEX IF NOT EXISTS "Simulation_progression_idx" ON "ngc"."Simulation"("progression");
 
 -- CreateMaterializedView
 -- Counts simulations by simulation date within the event window (not by poll
@@ -43,9 +45,9 @@ SELECT
     p."organisationId" AS "organisationId",
     COUNT(DISTINCT s.id)::INTEGER AS "simulationsCount"
 FROM "ngc"."Event" e
-LEFT JOIN "ngc"."Simulation" s ON s."createdAt" >= e."startDate" AND s."createdAt" <= e."endDate" AND s."progression" = 1
-LEFT JOIN "ngc"."SimulationPoll" sp ON sp."simulationId" = s.id
-LEFT JOIN "ngc"."Poll" p ON p.id = sp."pollId"
+INNER JOIN "ngc"."Simulation" s ON s."createdAt" >= e."startDate" AND s."createdAt" <= e."endDate" AND s."progression" = 1
+INNER JOIN "ngc"."SimulationPoll" sp ON sp."simulationId" = s.id
+INNER JOIN "ngc"."Poll" p ON p.id = sp."pollId"
 WHERE p."organisationId" IS NOT NULL
 GROUP BY e.id, p."organisationId";
 
@@ -53,7 +55,3 @@ GROUP BY e.id, p."organisationId";
 -- each (eventId, organisationId) pair is unique (total row has organisationId NULL).
 CREATE UNIQUE INDEX "event_computation_eventId_organisationId_key"
   ON "ngc"."event_computation" ("eventId", "organisationId");
-
--- Index Simulation.createdAt and Simulation.progression for the counter query.
-CREATE INDEX IF NOT EXISTS "Simulation_createdAt_idx" ON "ngc"."Simulation"("createdAt");
-CREATE INDEX IF NOT EXISTS "Simulation_progression_idx" ON "ngc"."Simulation"("progression");

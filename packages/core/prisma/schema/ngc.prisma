@@ -1,6 +1,6 @@
 model Event {
   id        String   @id @default(cuid())
-  slug      String?  @unique
+  slug      String   @unique
   // Known limitation: events are French-only for now, so `name` stays a plain
   // String. If multilingual events are ever needed, this should become a
   // translated field (JSON column or translation table).
