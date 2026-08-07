@@ -1,13 +1,18 @@
+import type { OrganisationType } from '../../../prisma/generated/enums.ts'
 import type { PodiumCategory, PodiumItem } from '../types/podium.ts'
 
-export const ORGANISATION_TYPE_TO_CATEGORY: Record<string, PodiumCategory> = {
+export const ORGANISATION_TYPE_TO_CATEGORY: Partial<
+  Record<OrganisationType, PodiumCategory>
+> = {
   company: 'companies',
   association: 'associations',
   universityOrSchool: 'education',
   publicOrRegionalAuthority: 'public-services',
 }
 
-export function organisationTypeToCategory(type: string): PodiumCategory {
+export function organisationTypeToCategory(
+  type: OrganisationType
+): PodiumCategory {
   return ORGANISATION_TYPE_TO_CATEGORY[type] ?? 'all'
 }
 

@@ -1,17 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
+import { refreshEventComputation } from '../../repositories/event.repository.ts'
 import { eventFactory } from '../../factories/event.factory.ts'
 import { organisationFactory } from '../../factories/organisation.factory.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
-import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { getEventInfo } from '../get-event-info.service.ts'
 import type { EventInfo } from '../../types/event-info.ts'
-
-/** Refresh the materialized view so it reflects newly inserted test data. */
-const refreshMV = () =>
-  prisma.$executeRawUnsafe(
-    'REFRESH MATERIALIZED VIEW "ngc"."event_computation"'
-  )
 
 const seedPoll = async (
   event: { startDate: Date; endDate: Date },
@@ -40,11 +35,12 @@ const seedPoll = async (
     new Date(poll.createdAt.getTime() + i * 1_000) // 1s apart to avoid duplicates
 
   for (let i = 0; i < simulationCount; i++) {
-    const sim = await simulationFactory.create(
-      options.simulationProgression === undefined
-        ? { createdAt: simulationCreatedAt(i) }
-        : { createdAt: simulationCreatedAt(i), progression: options.simulationProgression }
-    )
+    const sim = await simulationFactory.create({
+      createdAt: simulationCreatedAt(i),
+      // The shared factory randomizes progression by default: make it explicit
+      // so only the requested value ends up in the event window.
+      progression: options.simulationProgression ?? 1,
+    })
     await prisma.simulationPoll.create({
       data: { pollId: poll.id, simulationId: sim.id },
     })
@@ -65,7 +61,7 @@ describe('getEventInfo', () => {
     await prisma.poll.deleteMany()
     await prisma.organisation.deleteMany()
     await prisma.event.deleteMany()
-    await refreshMV()
+    await refreshEventComputation()
   })
 
   it('returns null when event does not exist', async () => {
@@ -102,8 +98,11 @@ describe('getEventInfo', () => {
     const event = await eventFactory.create()
 
     // Simulation in the date range, but no poll — should still be counted
-    await simulationFactory.create({ createdAt: new Date('2026-09-25T12:00:00Z') })
-    await refreshMV()
+    await simulationFactory.create({
+      createdAt: new Date('2026-09-25T12:00:00Z'),
+      progression: 1,
+    })
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -122,7 +121,7 @@ describe('getEventInfo', () => {
     })
 
     await seedPoll(event, org.id, 3)
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -153,7 +152,7 @@ describe('getEventInfo', () => {
       seedPoll(event, orgC.id, 2),
     ])
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -176,7 +175,7 @@ describe('getEventInfo', () => {
     await seedPoll(event, orgWithOneSim.id, 1)
     await seedPoll(event, orgWithTwoSims.id, 2)
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -202,7 +201,7 @@ describe('getEventInfo', () => {
       ],
     })
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -225,7 +224,7 @@ describe('getEventInfo', () => {
     await seedPoll(event, org.id, 1)
     await seedPoll(event, org.id, 1, { simulationProgression: 0.5 })
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -250,7 +249,7 @@ describe('getEventInfo', () => {
       seedPoll(event, otherOrg.id, 3),
     ])
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -277,7 +276,7 @@ describe('getEventInfo', () => {
       seedPoll(event, otherOrg.id, 2),
     ])
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -288,8 +287,11 @@ describe('getEventInfo', () => {
   it('includes simulation exactly at startDate in totalSimulations', async () => {
     const event = await eventFactory.create()
 
-    await simulationFactory.create({ createdAt: new Date('2026-09-18T00:00:00Z') })
-    await refreshMV()
+    await simulationFactory.create({
+      createdAt: new Date('2026-09-18T00:00:00Z'),
+      progression: 1,
+    })
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -299,8 +301,11 @@ describe('getEventInfo', () => {
   it('includes simulation exactly at endDate in totalSimulations', async () => {
     const event = await eventFactory.create()
 
-    await simulationFactory.create({ createdAt: new Date('2026-10-08T23:59:59Z') })
-    await refreshMV()
+    await simulationFactory.create({
+      createdAt: new Date('2026-10-08T23:59:59Z'),
+      progression: 1,
+    })
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -310,9 +315,15 @@ describe('getEventInfo', () => {
   it('excludes simulation outside date range from totalSimulations', async () => {
     const event = await eventFactory.create()
 
-    await simulationFactory.create({ createdAt: new Date('2026-09-17T23:59:59Z') }) // 1s before
-    await simulationFactory.create({ createdAt: new Date('2026-10-09T00:00:00Z') }) // 1s after
-    await refreshMV()
+    await simulationFactory.create({
+      createdAt: new Date('2026-09-17T23:59:59Z'),
+      progression: 1,
+    }) // 1s before
+    await simulationFactory.create({
+      createdAt: new Date('2026-10-09T00:00:00Z'),
+      progression: 1,
+    }) // 1s after
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -348,7 +359,7 @@ describe('getEventInfo', () => {
       ...associationOrgs.map((org) => seedPoll(event, org.id, 1)),
     ])
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -378,7 +389,7 @@ describe('getEventInfo', () => {
     )
 
     await Promise.all(orgs.map((org) => seedPoll(event, org.id, 2)))
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
@@ -397,7 +408,7 @@ describe('getEventInfo', () => {
       seedPoll(event, orgA.id, 2),
     ])
 
-    await refreshMV()
+    await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 

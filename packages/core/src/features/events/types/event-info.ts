@@ -1,8 +1,10 @@
+import type { OrganisationType } from '../../../prisma/generated/enums.ts'
+
 export interface EventOrganisation {
   id: string
   name: string
   slug: string
-  type: string
+  type: OrganisationType
   simulationsCount: number
 }
 

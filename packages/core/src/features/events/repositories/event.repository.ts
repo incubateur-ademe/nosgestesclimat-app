@@ -9,7 +9,7 @@ import type { EventOrganisation } from '../types/event-info.ts'
 export const findEvent = async (eventIdOrSlug: string) =>
   prisma.event.findFirst({
     where: { OR: [{ id: eventIdOrSlug }, { slug: eventIdOrSlug }] },
-    select: { id: true, startDate: true, endDate: true },
+    select: { id: true, name: true, startDate: true, endDate: true },
   })
 
 // Podium organisations: the PODIUM_LIMIT_PER_TYPE best organisations of each
@@ -54,7 +54,7 @@ export const findPodiumOrganisations = async (
 // Total counter comes from the total row (organisationId IS NULL) of the
 // materialized view, which already filters completed simulations in the event
 // window.
-export const findTotalSimulations = async (
+export const countEventSimulations = async (
   eventId: string
 ): Promise<number> => {
   const total = await prisma.eventComputation.findFirst({
@@ -75,3 +75,10 @@ export const countMobilisedOrganisations = async (
       organisationId: { not: null },
     },
   })
+
+// Refresh the materialized view so the counters reflect newly inserted data.
+// Shared by the cron job and the test suite.
+export const refreshEventComputation = () =>
+  prisma.$executeRawUnsafe(
+    'REFRESH MATERIALIZED VIEW CONCURRENTLY "ngc"."event_computation"'
+  )

@@ -24,4 +24,15 @@ describe('formatLocalizedDate', () => {
       })
     ).toBe('18 September 2026')
   })
+
+  it('accepts a Date and a custom timezone', () => {
+    expect(
+      formatLocalizedDate(
+        new Date(date),
+        'en',
+        { day: 'numeric', month: 'long', year: 'numeric' },
+        'America/New_York'
+      )
+    ).toBe('17 September 2026')
+  })
 })

@@ -1,8 +1,8 @@
 import {
+  countEventSimulations,
   countMobilisedOrganisations,
   findEvent,
   findPodiumOrganisations,
-  findTotalSimulations,
 } from '../repositories/event.repository.ts'
 import type { EventInfo } from '../types/event-info.ts'
 
@@ -16,7 +16,7 @@ export const getEventInfo = async (
   const [organisations, totalSimulations, organisationCount] =
     await Promise.all([
       findPodiumOrganisations(event.id),
-      findTotalSimulations(event.id),
+      countEventSimulations(event.id),
       countMobilisedOrganisations(event.id),
     ])
 

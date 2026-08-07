@@ -1,17 +1,9 @@
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import type { OrganisationType } from '../../../prisma/generated/enums.ts'
+import type { Organisation } from '../../../prisma/generated/client.ts'
 
-class OrganisationFactory extends Factory<{
-  id: string
-  name: string
-  slug: string
-  type: OrganisationType
-  numberOfCollaborators: number | null
-  createdAt: Date
-  updatedAt: Date
-}> {}
+class OrganisationFactory extends Factory<Organisation> {}
 
 export const organisationFactory = OrganisationFactory.define(({ onCreate }) => {
   onCreate(async (data) => {
