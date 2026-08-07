@@ -23,12 +23,12 @@ export default async function EventDetail({
   const end = new Date(endDate)
   const sameYear = start.getFullYear() === end.getFullYear()
 
-  const startDateLabel = formatLocalizedDate(startDate, locale, {
+  const startDateLabel = formatLocalizedDate(start, locale, {
     day: 'numeric',
     month: 'long',
     ...(sameYear ? {} : { year: 'numeric' }),
   })
-  const endDateLabel = formatLocalizedDate(endDate, locale, {
+  const endDateLabel = formatLocalizedDate(end, locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

@@ -1,3 +1,4 @@
+import { refreshEventComputation } from '@nosgestesclimat/core/features/events/repositories/event.repository'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import logger from '../logger.ts'
 
@@ -24,9 +25,7 @@ const main = async () => {
     logger.info(
       `Refreshing event_computation materialized view for event "${activeEvent.name}"...`
     )
-    await prisma.$executeRawUnsafe(
-      'REFRESH MATERIALIZED VIEW CONCURRENTLY "ngc"."event_computation"'
-    )
+    await refreshEventComputation()
     logger.info('Materialized view refreshed successfully')
     process.exit(0)
   } catch (e) {

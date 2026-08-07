@@ -5,6 +5,7 @@ import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import { findEvent } from '@nosgestesclimat/core/features/events/repositories/event.repository'
 import { notFound } from 'next/navigation'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
@@ -21,13 +22,16 @@ export async function generateMetadata({
   const { locale: localeParam, id } = await params
   const locale = localeParam as Locale
   const { t } = await getServerTranslation({ locale })
+  const event = await findEvent(id)
 
   return getMetadataObject({
     locale,
-    title: t(
-      'event.meta.title',
-      "Événement collectif d'empreinte carbone - Nos Gestes Climat"
-    ),
+    title:
+      event?.name ??
+      t(
+        'event.meta.title',
+        "Événement collectif d'empreinte carbone - Nos Gestes Climat"
+      ),
     description: t(
       'event.meta.description',
       "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
