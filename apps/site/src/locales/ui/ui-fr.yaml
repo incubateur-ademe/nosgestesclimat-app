@@ -784,6 +784,11 @@ entries:
   pollResults.radarChart.legend.average: Moyenne
   pollResults.radarChart.legend.userResults: Mes résultats
   pollResults.radarChart.title: Votre empreinte par rapport aux autres participants
+  pollResults.waterFootprint.title: Et à propos de l'empreinte eau ?
+  pollResults.waterFootprint.unit: litres / jour
+  pollResults.waterFootprint.averageLabel: empreinte eau moyenne des participants
+  pollResults.waterFootprint.body: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
+  pollResults.waterFootprint.learnMore: En savoir plus
   common.category.alimentationShort: Alim.
   pollResults.footprintBarChart.targetLabelMobile: 'Objectif 2050 :'
   Empreinte carbone moyenne: Empreinte carbone moyenne
