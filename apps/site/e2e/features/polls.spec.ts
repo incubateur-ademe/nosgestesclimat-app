@@ -128,6 +128,11 @@ test.describe('A user with a completed test that joined a poll', () => {
   let page: Page
 
   test.beforeAll(async ({ browser }) => {
+    // Skipping the whole test in the hook can exceed the 30s default hook
+    // timeout on a loaded preprod; the describe-level test.setTimeout() does
+    // not raise the hook budget.
+    test.setTimeout(120_000)
+
     page = await createPage(browser)
 
     const adminContext = await browser.newContext({

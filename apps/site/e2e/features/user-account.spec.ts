@@ -50,8 +50,15 @@ test.describe('Logout', () => {
 
     await expect(page).toHaveURL('/')
 
-    await page.goto('/mon-espace')
-    await expect(page).not.toHaveURL('/mon-espace')
+    // After logout, the personal space must redirect to the login page. This
+    // redirect is served through the PPR/RSC stream (the unauthorized
+    // boundary calls `redirect('/connexion')`), which can abort the document
+    // load in Chromium (net::ERR_ABORTED). Commit to the navigation first,
+    // then assert where the app actually lands.
+    await page
+      .goto('/mon-espace', { waitUntil: 'commit' })
+      .catch(() => undefined)
+    await expect(page).toHaveURL(/\/connexion/, { timeout: 15_000 })
   })
 })
 

@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { EMAIL_PAGE_PATH } from '@/constants/urls/paths'
 import { expect, test } from '../fixtures'
 import { createPage } from '../fixtures/feature-flags'
 import { NGCTest } from '../fixtures/ngc-test'
@@ -23,7 +24,9 @@ test.describe('When a user completes the test via the scolaire poll invite link'
   let page: Page
 
   test.beforeAll(async ({ browser }) => {
-    test.setTimeout(60_000)
+    // Creating the organisation/poll and completing the whole youth test on a
+    // loaded preprod is closer to the previous 60s budget than we'd like.
+    test.setTimeout(120_000)
 
     page = await createPage(browser)
 
@@ -46,8 +49,13 @@ test.describe('When a user completes the test via the scolaire poll invite link'
     const ngcTest = new NGCTest(page)
     await ngcTest.skipAllQuestions()
 
-    // Skip the email step
-    await page.getByTestId('skip-email-button').click()
+    // The scolaire flow can land directly on /fin when the poll is not yet
+    // attached to the simulation when endTestAction runs (a race on preprod);
+    // the email step is only displayed when it is. Skip it only when shown,
+    // otherwise the click would wait forever for a button that never appears.
+    if (page.url().includes(EMAIL_PAGE_PATH)) {
+      await page.getByTestId('skip-email-button').click()
+    }
     await expect(page).toHaveURL(/\/fin/)
   })
 

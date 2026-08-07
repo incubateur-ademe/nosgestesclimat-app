@@ -70,6 +70,11 @@ test.describe('Given an authenticated user that completed the test twice with di
 
     // 2. Restart and do a second simulation with different answers
     await page.goto('/')
+    // The home CTA can take a while to render on a loaded preprod; the click
+    // would otherwise wait for the link until the test timeout.
+    await expect(page.getByTestId('restart-link').first()).toBeVisible({
+      timeout: 15_000,
+    })
     await page.getByTestId('restart-link').first().click()
     const differentSituation: Situation = {
       'transport . voiture . utilisateur': "'propriétaire'",
