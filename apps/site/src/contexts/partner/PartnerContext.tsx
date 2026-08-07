@@ -11,7 +11,7 @@ import {
 } from '@/helpers/partners/storage'
 import { useExportSituation } from '@/hooks/partners/useExportSituation'
 import { useVerifyPartner } from '@/hooks/partners/useVerifyPartner'
-import { useCurrentSimulation } from '@/publicodes-state'
+import { EMPTY_SITUATION, useOptionalSimulation } from '@/publicodes-state'
 import { captureException } from '@sentry/nextjs'
 import { notFound, useRouter } from 'next/navigation'
 import {
@@ -51,7 +51,9 @@ export function PartnerProvider({ children }: PropsWithChildren) {
     typeof window !== 'undefined' ? window.location.search : ''
   )
 
-  const { progression, situation } = useCurrentSimulation()
+  const simulation = useOptionalSimulation()
+  const progression = simulation?.progression
+  const situation = simulation?.situation ?? EMPTY_SITUATION
 
   const { exportSituationAsync } = useExportSituation()
 

@@ -1,6 +1,8 @@
 import { SIMULATION_MODES } from '@/constants/model/simulationModes'
+import { getLocaleFromHeaders } from '@/helpers/server/getLocaleForNotFoundOrUnautorizedPage'
 import {
   getCurrentModel,
+  stringifyModel,
   supportedRegions,
   type Model,
   type Region,
@@ -11,15 +13,26 @@ import { getGeolocation } from '@/services/geolocation/get-geolocation'
 import { getRegion } from '@/services/users/region'
 import type { SearchParams } from 'next/dist/server/request/search-params'
 
-export async function getNewSimulationModelService({
-  searchParams,
-  locale = 'fr',
-  mode = 'standard',
-}: {
+interface ResolveNewSimulationModelOptions {
   searchParams?: Promise<SearchParams>
   locale?: Locale
   mode?: SimulationMode
-} = {}): Promise<Model> {
+}
+
+/**
+ * The single source of truth for the model a *new* simulation should use.
+ *
+ * The model can only be resolved server-side: the region lives in an httpOnly
+ * cookie (surfaced as the `x-region` header by the proxy), the fallback is a
+ * geolocation fetch, and the version is the build-time version of the
+ * `@incubateur-ademe/nosgestesclimat` package. Callable from server components
+ * and from server actions alike — `locale` defaults to the request headers.
+ */
+export async function resolveNewSimulationModel({
+  searchParams,
+  locale,
+  mode = 'standard',
+}: ResolveNewSimulationModelOptions = {}): Promise<Model> {
   const {
     region: regionParam,
     PR: PRNumberParam,
@@ -54,7 +67,17 @@ export async function getNewSimulationModelService({
   return getCurrentModel({
     userRegion,
     mode,
-    locale,
+    locale: locale ?? (await getLocaleFromHeaders()),
     PRNumber,
   })
+}
+
+/**
+ * {@link resolveNewSimulationModel}, serialized. Most consumers store the model
+ * on a simulation, which holds it as a string.
+ */
+export async function resolveNewSimulationModelString(
+  options: ResolveNewSimulationModelOptions = {}
+): Promise<string> {
+  return stringifyModel(await resolveNewSimulationModel(options))
 }

@@ -2,7 +2,7 @@ import { SIMULATOR_INTERCALAIRE_PATH } from '@/constants/urls/paths'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import useCurrentSimulation from '../useCurrentSimulation/useCurrentSimulation'
+import { useOptionalSimulation } from '../useCurrentSimulation/useCurrentSimulation'
 import useFormState from '../useFormState/useFormState'
 
 export function useGotoNextQuestion() {
@@ -14,8 +14,8 @@ export function useGotoNextQuestion() {
   } = useFormState()
   const router = useRouter()
 
-  const withIntercalaire =
-    getSimulationMode(useCurrentSimulation()) === 'scolaire'
+  const maybeSimulation = useOptionalSimulation()
+  const withIntercalaire = getSimulationMode(maybeSimulation) === 'scolaire'
 
   const isIntercalaireNext =
     withIntercalaire && isLastQuestionOfCategory && !nextQuestionAlreadySeen

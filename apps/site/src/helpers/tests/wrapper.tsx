@@ -137,7 +137,7 @@ const TestWrapper = ({
     wrapped = (
       <UserProvider
         userSession={userProviderProps?.userSession ?? null}
-        serverSimulations={userProviderProps?.serverSimulations}>
+        simulation={userProviderProps?.simulation}>
         {wrapped}
       </UserProvider>
     )
@@ -201,7 +201,7 @@ export const renderWithWrapper = (
   const userProviderProps: ComponentProps<typeof UserProvider> | undefined =
     providers.user
       ? {
-          serverSimulations: simulations,
+          simulation: simulations.at(0),
           userSession: null,
         }
       : undefined

@@ -25,7 +25,6 @@ export default async function SimulationLayout({
   }
 
   const currentSimulation = await getCurrentSimulation()
-  const serverSimulations = currentSimulation ? [currentSimulation] : []
   if (!currentSimulation) {
     captureException(new NotFoundError(), { level: 'warning' })
     redirect(START_SIMULATION_PATH)
@@ -41,7 +40,7 @@ export default async function SimulationLayout({
   const model = parseModelString(currentSimulation.model)
   return (
     <ClientLayout
-      serverSimulations={serverSimulations}
+      simulation={currentSimulation}
       skipLinksDisplayed={new Set(['main', 'footer'])}
       locale={locale}
       userSession={user}>

@@ -5,7 +5,7 @@ import { captureSubQuestion } from '@/constants/tracking/posthogTrackers'
 import { openSubQuestion } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useCurrentSimulation, useRule } from '@/publicodes-state'
+import { useRule, useUser } from '@/publicodes-state'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
@@ -41,7 +41,7 @@ export default function Textile({ question, ...props }: Props) {
     'divers . textile . empreinte précise'
   )
 
-  const { updateCurrentSimulation } = useCurrentSimulation()
+  const { updateCurrentSimulation } = useUser()
 
   useEffect(() => {
     // if mosaic answer is missing, we don't update question

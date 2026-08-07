@@ -1,4 +1,10 @@
-import { useCurrentSimulation, useEngine, useRule } from '@/publicodes-state'
+import {
+  EMPTY_FOLDED_STEPS,
+  useEngine,
+  useOptionalSimulation,
+  useRule,
+  useUser,
+} from '@/publicodes-state'
 import { safeEvaluateHelper } from '@/publicodes-state/helpers/safeEvaluateHelper'
 import type { PublicodesValue } from '@/publicodes-state/types'
 import { useDebounce } from '@/utils/debounce'
@@ -61,7 +67,8 @@ export const useNumberInputWithAssistanceState = ({
 
   const { engine, addToEngineSituation } = useEngine()
 
-  const { updateCurrentSimulation, foldedSteps } = useCurrentSimulation()
+  const foldedSteps = useOptionalSimulation()?.foldedSteps ?? EMPTY_FOLDED_STEPS
+  const { updateCurrentSimulation } = useUser()
 
   const { situationValue: situationValueQuestion } = useRule(question)
 

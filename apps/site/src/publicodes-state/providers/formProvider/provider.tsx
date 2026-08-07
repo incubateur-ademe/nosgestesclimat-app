@@ -1,6 +1,12 @@
 'use client'
 
-import { useCurrentSimulation, useEngine } from '@/publicodes-state'
+import {
+  EMPTY_FOLDED_STEPS,
+  EMPTY_SITUATION,
+  useEngine,
+  useOptionalSimulation,
+  useUser,
+} from '@/publicodes-state'
 
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { notFound } from 'next/navigation'
@@ -24,8 +30,12 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     everyMosaicChildrenWithParent,
   } = useEngine()
 
-  const { situation, foldedSteps, updateCurrentSimulation, progression } =
-    useCurrentSimulation()
+  // Also reached from the actions detail routes, where there may be no simulation.
+  const simulation = useOptionalSimulation()
+  const situation = simulation?.situation ?? EMPTY_SITUATION
+  const foldedSteps = simulation?.foldedSteps ?? EMPTY_FOLDED_STEPS
+  const progression = simulation?.progression
+  const { updateCurrentSimulation } = useUser()
 
   const {
     remainingQuestions,

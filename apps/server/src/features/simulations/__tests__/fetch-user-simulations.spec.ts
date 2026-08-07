@@ -105,6 +105,52 @@ describe('Given a NGC user', () => {
       })
     })
 
+    describe('And a legacy simulation (invalid computedResults shape) exists', () => {
+      let legacySimulationId: string
+      let userId: string
+
+      beforeEach(async () => {
+        userId = faker.string.uuid()
+
+        // Creates the user + a valid simulation through the API
+        await createSimulation({ agent, userId })
+
+        // Legacy simulations predate the current computedResults shape and were
+        // stored before the API validation existed, so they are inserted
+        // directly in the database (bypassing the POST validation).
+        legacySimulationId = faker.string.uuid()
+        await prisma.simulation.create({
+          data: {
+            id: legacySimulationId,
+            date: new Date('2024-02-01'),
+            progression: 1,
+            model: 'FR-fr-0.0.0',
+            computedResults: {
+              bilan: 1000,
+              categories: { transport: 1000 },
+            },
+            actionChoices: {},
+            situation: {},
+            extendedSituation: {},
+            foldedSteps: [],
+            userId,
+          },
+        })
+      })
+
+      test(`Then it is not returned, as if it did not exist`, async () => {
+        const response = await agent
+          .get(url)
+          .set(authHeaders({ userId }))
+          .expect(StatusCodes.OK)
+
+        expect(response.body).toHaveLength(1)
+        expect(response.body.map((s: { id: string }) => s.id)).not.toContain(
+          legacySimulationId
+        )
+      })
+    })
+
     describe('And several simulations exist with different dates', () => {
       let simulations: Awaited<ReturnType<typeof createSimulation>>[]
       let userId: string

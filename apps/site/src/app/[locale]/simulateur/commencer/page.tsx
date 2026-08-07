@@ -5,8 +5,8 @@ import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { createSimulation } from '@/services/simulations/create-simulation'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
 import { redirect } from 'next/navigation'
-import { getNewSimulationModelService } from '../_service/getNewSimulationModelService'
 
 export default async function Commencer({
   searchParams,
@@ -20,7 +20,7 @@ export default async function Commencer({
   const currentSimulation = await getCurrentSimulation()
 
   const locale = (await params).locale as Locale
-  const model = await getNewSimulationModelService({ searchParams, locale })
+  const model = await resolveNewSimulationModel({ searchParams, locale })
 
   if (
     !currentSimulation ||
