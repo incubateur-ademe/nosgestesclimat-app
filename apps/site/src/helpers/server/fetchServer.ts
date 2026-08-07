@@ -39,6 +39,7 @@ export async function fetchServer<T = unknown>(
     'x-forwarded-for': nextHeaders.get('x-forwarded-for') ?? '',
     'x-forwarded-origin': nextHeaders.get('origin') ?? '',
     'x-internal-key': INTERNAL_API_KEY,
+    'x-request-id': nextHeaders.get('x-request-id') ?? crypto.randomUUID(),
   }
 
   const effectiveSession = session ?? (await getUserSession())

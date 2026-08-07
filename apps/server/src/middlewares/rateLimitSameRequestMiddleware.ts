@@ -16,9 +16,11 @@ export const rateLimitSameRequestMiddleware =
     hashRequest = ({ method, url, requestParams }) =>
       `${method}_${url}_${requestParams}`,
     ttlInSeconds = 2,
+    logContext = () => ({}),
   }: {
     hashRequest?: (req: Request) => string | undefined
     ttlInSeconds?: number
+    logContext?: (req: Request) => Record<string, unknown>
   } = {}): RequestHandler<ReqParams, ResBody, ReqBody, ReqQuery> =>
   async (req, res, next) => {
     try {
@@ -35,6 +37,15 @@ export const rateLimitSameRequestMiddleware =
       const currentRequest = await redis.get(redisKey)
 
       if (currentRequest) {
+        // A 429 is currently invisible elsewhere: this is the only trace left
+        // of a legitimate user blocked by a retry burst (or of an attacker).
+        logger.warn('Request rate limited', {
+          ...logContext(req as Request),
+          method: req.method,
+          url: req.originalUrl,
+          requestId: req.requestId,
+        })
+
         return res.status(StatusCodes.TOO_MANY_REQUESTS).json({
           message: 'Too many requests',
         } as ResBody)

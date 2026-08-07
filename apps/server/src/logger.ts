@@ -1,3 +1,4 @@
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import winston from 'winston'
 import SentryTransport from 'winston-transport-sentry-node'
 import { config } from './config.ts'
@@ -40,25 +41,20 @@ export const redactBody = <T = unknown>(body: T) => {
     if ('situation' in body) {
       body.situation = '[REDACTED]'
     }
+    // Auth payloads must never land verbatim in access logs: the email is PII
+    // and the verification code is a valid credential for that email.
+    if ('email' in body) {
+      body.email = maskEmail(body.email)
+    }
+    if ('code' in body) {
+      body.code = '[REDACTED]'
+    }
+    if ('userId' in body) {
+      body.userId = maskUserId(body.userId)
+    }
   }
 
   return body
-}
-
-/**
- * Keeps a log line correlatable with a user report without storing the address:
- * `jo***@ex***.com` is enough to match an email a user gives us in support.
- */
-export const maskEmail = (email: unknown) => {
-  if (typeof email !== 'string') {
-    return '[REDACTED]'
-  }
-
-  const [local, domain] = email.split('@')
-
-  return domain
-    ? `${local.slice(0, 2)}***@${domain.slice(0, 2)}***`
-    : '[REDACTED]'
 }
 
 /**

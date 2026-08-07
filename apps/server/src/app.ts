@@ -1,6 +1,7 @@
 import { createExpressEndpoints } from '@ts-rest/express'
 import { generateOpenApi } from '@ts-rest/open-api'
 import cors from 'cors'
+import { randomUUID } from 'crypto'
 import type { Request } from 'express'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
@@ -29,6 +30,16 @@ const app = express()
 app.use(express.static(path.join(import.meta.dirname, 'public')))
 app.use(express.json())
 
+// Correlates a request across the Next proxy, Express and client-side Sentry
+// events. Forwarded by the proxy (`x-request-id`) or generated here.
+app.use((req, res, next) => {
+  const requestId =
+    (req.headers['x-request-id'] as string | undefined) ?? randomUUID()
+  req.requestId = requestId
+  res.setHeader('x-request-id', requestId)
+  return next()
+})
+
 app.use((req, _, next) => {
   req.requestParams = JSON.stringify({
     body: redactBody({ ...req.body }),
@@ -53,9 +64,11 @@ morgan.token('params', (req: Request) => req.requestParams)
 
 morgan.token('ip', (req: Request) => (req.clientIp ? '[REDACTED]' : ''))
 
+morgan.token('requestId', (req: Request) => req.requestId)
+
 app.use(
   morgan(
-    '{"method":":method","url":":url","ip"::ip,"params"::params,"status":":status","resContentLength":":res[content-length]","reponseTime":":response-time ms"}',
+    '{"method":":method","url":":url","ip"::ip,"requestId"::requestId,"params"::params,"status":":status","resContentLength":":res[content-length]","reponseTime":":response-time ms"}',
     {
       stream: {
         write: (message) => logger.info(message.trim()),

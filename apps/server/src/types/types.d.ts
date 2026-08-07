@@ -10,6 +10,7 @@ declare global {
       apiUser?: { scopes: Set<string>; email: string }
       clientIp: string
       requestParams: string
+      requestId: string
     }
   }
 }

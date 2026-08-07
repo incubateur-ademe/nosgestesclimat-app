@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { captureException } from '@sentry/node'
 import dayjs from 'dayjs'
@@ -16,7 +17,7 @@ import app from '../../../app.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
-import logger, { maskEmail } from '../../../logger.ts'
+import logger from '../../../logger.ts'
 import { LOGIN_ROUTE } from './fixtures/login.fixture.ts'
 import { createVerificationCode } from './fixtures/verification-codes.fixture.ts'
 
@@ -112,7 +113,7 @@ describe('Given a NGC user', () => {
         expect(logger.warn).toHaveBeenCalledWith(
           'Login rejected: invalid verification code',
           expect.objectContaining({
-            userId,
+            userId: maskUserId(userId),
             email: maskEmail(email),
             rejection: 'never_requested',
           })
@@ -597,7 +598,7 @@ describe('Given a NGC user', () => {
           expect(logger.warn).toHaveBeenCalledWith(
             'Login rejected: userId attached to another account',
             expect.objectContaining({
-              userId: userIdA,
+              userId: maskUserId(userIdA),
               email: maskEmail(emailB),
             })
           )
@@ -642,7 +643,7 @@ describe('Given a NGC user', () => {
         expect(logger.error).toHaveBeenCalledWith(
           'Login failed',
           expect.objectContaining({
-            userId,
+            userId: maskUserId(userId),
             email: maskEmail(email),
             message: databaseError.message,
             stack: databaseError.stack,
@@ -663,7 +664,10 @@ describe('Given a NGC user', () => {
         expect(captureException).toHaveBeenCalledWith(
           databaseError,
           expect.objectContaining({
-            extra: expect.objectContaining({ userId, email: maskEmail(email) }),
+            extra: expect.objectContaining({
+              userId: maskUserId(userId),
+              email: maskEmail(email),
+            }),
           })
         )
       })

@@ -4,6 +4,7 @@ import {
   REFRESH_COOKIE,
   SESSION_COOKIE,
 } from '@/helpers/server/cookie/auth.cookie'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import { TokenConsumedException } from '@nosgestesclimat/core/features/auth/exceptions/token-consumed.exception'
 import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/exceptions/token-expired.exception'
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
@@ -15,6 +16,7 @@ import type {
 } from '@nosgestesclimat/core/features/auth/types/session'
 import { captureException } from '@sentry/nextjs'
 import { type NextRequest, NextResponse } from 'next/server'
+import logger from '../../../logger.ts'
 import type { MiddlewareResult } from './types'
 
 /**
@@ -34,12 +36,17 @@ export async function middlewareAuth(
     return { redirect: null, cookies: [] }
   }
 
+  const requestContext = {
+    pathname: request.nextUrl.pathname,
+    requestId: request.headers.get('x-request-id') ?? undefined,
+  }
+
   let payload: Session
   try {
     payload = await decryptSession(sessionCookie.value)
   } catch (err) {
     // (B) Corrupted or tampered session cookie: log and treat as anonymous.
-    captureException(err)
+    captureException(err, { extra: requestContext })
     return { redirect: null, cookies: [] }
   }
 
@@ -54,13 +61,19 @@ export async function middlewareAuth(
     return stripRt(request)
   }
 
+  const userContext = {
+    ...requestContext,
+    email: maskEmail(payload.email),
+    userId: maskUserId(payload.userId),
+  }
+
   const refreshCookie = request.cookies.get(REFRESH_COOKIE)
   if (!refreshCookie) {
     // (D) Expired session without a refresh cookie.
     // The user must log in again; log the event and continue anonymously.
     captureException(
       new Error('Session expired but no refresh cookie present'),
-      { level: 'error' }
+      { level: 'error', extra: userContext }
     )
     return { redirect: null, cookies: [] }
   }
@@ -70,8 +83,13 @@ export async function middlewareAuth(
     tokens = await rotateSession(refreshCookie.value, payload.email)
   } catch (err) {
     if (err instanceof TokenExpiredException) {
-      // (E) Refresh token exists but is past its expiration.
-      // The user must log in again; continue anonymously.
+      // (E) Refresh token exists but is past its expiration. Expected for
+      // accounts returning after 180 days: they must sign in again. Logged
+      // through the pino logger only — this is a high-volume, non-anomalous
+      // event that would flood Sentry.
+      logger.warn('[auth] Session refresh token expired; user must sign in again', {
+        ...userContext,
+      })
       return { redirect: null, cookies: [] }
     }
 
@@ -98,7 +116,7 @@ export async function middlewareAuth(
         new Error(
           `Session rotation replay limit exceeded after ${rtCount} attempts`
         ),
-        { level: 'error' }
+        { level: 'error', extra: { ...userContext, attempts: rtCount } }
       )
       return {
         redirect: null,
@@ -107,7 +125,7 @@ export async function middlewareAuth(
     }
 
     // (G) Unknown error during rotation — log and continue anonymously.
-    captureException(err, { level: 'error' })
+    captureException(err, { level: 'error', extra: userContext })
     return { redirect: null, cookies: deleteSessionCookies() }
   }
 

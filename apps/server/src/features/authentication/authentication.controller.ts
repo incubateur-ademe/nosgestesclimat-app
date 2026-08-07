@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/node'
+import { maskEmail, maskUserId } from '@nosgestesclimat/core/lib/pii'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { config } from '../../config.ts'
@@ -7,7 +8,7 @@ import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { InvalidVerificationCodeException } from '../../core/errors/InvalidVerificationCodeException.ts'
 import { bestEffort } from '../../core/event-bus/best-effort.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import logger, { errorMeta, maskEmail } from '../../logger.ts'
+import logger, { errorMeta } from '../../logger.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import {
@@ -47,14 +48,16 @@ router
       hashRequest: ({ method, url, body }) => {
         return `${method}_${url}_${body.email}`
       },
+      logContext: (req) => ({ email: maskEmail(req.body.email) }),
     }),
     validateRequest(LoginValidator),
     async (req, res) => {
       const startedAt = Date.now()
       const context = {
-        userId: req.body.userId,
+        userId: maskUserId(req.body.userId),
         email: maskEmail(req.body.email),
         locale: req.query.locale,
+        requestId: req.requestId,
       }
 
       // Every branch below logs an outcome, so an attempt left without one is

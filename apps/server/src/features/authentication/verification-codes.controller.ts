@@ -1,8 +1,9 @@
 import { captureException } from '@sentry/node'
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import logger, { errorMeta, maskEmail } from '../../logger.ts'
+import logger, { errorMeta } from '../../logger.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import { VerificationCodeCreatedEvent } from './events/VerificationCodeCreated.event.ts'
@@ -26,6 +27,7 @@ router.route('/v1/').post(
       }
       return `${method}_${url}_${body.email}`
     },
+    logContext: (req) => ({ email: maskEmail(req.body.email) }),
   }),
   validateRequest(VerificationCodeCreateValidator),
   async (req, res) => {
@@ -33,6 +35,7 @@ router.route('/v1/').post(
     const context = {
       email: maskEmail(req.body.email),
       locale: req.query.locale,
+      requestId: req.requestId,
     }
 
     try {
@@ -43,6 +46,9 @@ router.route('/v1/').post(
 
       logger.info('VerificationCode created', {
         ...context,
+        // Lets us correlate "code created" with the "code rejected" diagnosis
+        // of /v1/login, which logs the same id.
+        verificationCodeId: verificationCode.id,
         expirationDate: verificationCode.expirationDate,
         durationMs: Date.now() - startedAt,
       })
