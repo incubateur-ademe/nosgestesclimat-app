@@ -75,8 +75,8 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo('sedd'))
 
-    expect(result.startDate.toISOString()).toBe('2026-09-18T00:00:00.000Z')
-    expect(result.endDate.toISOString()).toBe('2026-10-08T23:59:59.000Z')
+    expect(result.startDate.toISOString()).toBe(event.startDate.toISOString())
+    expect(result.endDate.toISOString()).toBe(event.endDate.toISOString())
     expect(event.id).toBeTruthy()
   })
 
@@ -99,7 +99,7 @@ describe('getEventInfo', () => {
 
     // Simulation in the date range, but no poll — should still be counted
     await simulationFactory.create({
-      createdAt: new Date('2026-09-25T12:00:00Z'),
+      createdAt: new Date(event.startDate.getTime() + 60 * 60 * 1000),
       progression: 1,
     })
     await refreshEventComputation()
@@ -196,14 +196,16 @@ describe('getEventInfo', () => {
       slug: 'old-org',
     })
 
-    // The poll was created in June 2026, before the event window,
-    // but the simulations are done during the event window.
+    // The poll was created before the event window, but the simulations are
+    // done during the event window.
     await seedPoll(event, oldOrg.id, 3, {
-      pollCreatedAt: new Date('2026-06-10T00:00:00Z'),
+      pollCreatedAt: new Date(
+        event.startDate.getTime() - 2 * 24 * 60 * 60 * 1000
+      ),
       simulationDates: [
-        new Date('2026-09-20T10:00:00Z'),
-        new Date('2026-09-21T10:00:00Z'),
-        new Date('2026-09-22T10:00:00Z'),
+        new Date(event.startDate.getTime() + 60 * 60 * 1000),
+        new Date(event.startDate.getTime() + 2 * 60 * 60 * 1000),
+        new Date(event.startDate.getTime() + 3 * 60 * 60 * 1000),
       ],
     })
 
@@ -295,7 +297,7 @@ describe('getEventInfo', () => {
     const event = await eventFactory.create()
 
     await simulationFactory.create({
-      createdAt: new Date('2026-09-18T00:00:00Z'),
+      createdAt: event.startDate,
       progression: 1,
     })
     await refreshEventComputation()
@@ -309,7 +311,7 @@ describe('getEventInfo', () => {
     const event = await eventFactory.create()
 
     await simulationFactory.create({
-      createdAt: new Date('2026-10-08T23:59:59Z'),
+      createdAt: event.endDate,
       progression: 1,
     })
     await refreshEventComputation()
@@ -323,11 +325,11 @@ describe('getEventInfo', () => {
     const event = await eventFactory.create()
 
     await simulationFactory.create({
-      createdAt: new Date('2026-09-17T23:59:59Z'),
+      createdAt: new Date(event.startDate.getTime() - 1000),
       progression: 1,
     }) // 1s before
     await simulationFactory.create({
-      createdAt: new Date('2026-10-09T00:00:00Z'),
+      createdAt: new Date(event.endDate.getTime() + 1000),
       progression: 1,
     }) // 1s after
     await refreshEventComputation()
