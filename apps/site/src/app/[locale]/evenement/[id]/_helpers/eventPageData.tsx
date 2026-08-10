@@ -13,7 +13,6 @@ import type {
   PodiumCategory,
   PodiumItem,
 } from '@nosgestesclimat/core/features/events/types/podium'
-import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
 
 export interface Testimony {
@@ -102,9 +101,6 @@ export async function getEventPageData({
   eventId: string
   locale: Locale
 }): Promise<EventPageData | null> {
-  'use cache'
-  cacheLife({ stale: 600, revalidate: 600, expire: 600 })
-
   const { t } = await getServerTranslation({ locale })
 
   const eventInfo = await getEventInfo(eventId)
