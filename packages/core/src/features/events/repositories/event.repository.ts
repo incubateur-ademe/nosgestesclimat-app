@@ -12,9 +12,10 @@ export const findEvent = async (eventIdOrSlug: string) =>
     select: { id: true, name: true, startDate: true, endDate: true },
   })
 
-// Podium organisations: the PODIUM_LIMIT_PER_TYPE best organisations of each
-// type, ADEME excluded. Rows are globally sorted so the "all" tab can show a
-// single ranking.
+// Podium organisations: the PODIUM_LIMIT_PER_TYPE best mobilised organisations
+// of each type, ADEME excluded. Only organisations with at least 2 completed
+// simulations make the podium, so it matches the "mobilised" counter. Rows are
+// globally sorted so the "all" tab can show a single ranking.
 export const findPodiumOrganisations = async (
   eventId: string
 ): Promise<EventOrganisation[]> => {
@@ -23,6 +24,7 @@ export const findPodiumOrganisations = async (
       prisma.eventComputation.findMany({
         where: {
           eventId,
+          simulationsCount: { gte: 2 },
           organisation: { slug: { not: ADEME_SEDD_SLUG }, type },
         },
         include: {
@@ -36,19 +38,22 @@ export const findPodiumOrganisations = async (
     )
   )
 
-  return perType
-    .flat()
-    // The where clause requires the organisation relation, so it is never null.
-    .map((row) => ({
-      id: row.organisation!.id,
-      name: row.organisation!.name,
-      slug: row.organisation!.slug,
-      type: row.organisation!.type,
-      simulationsCount: row.simulationsCount,
-    }))
-    .sort(
-      (a, b) => b.simulationsCount - a.simulationsCount || a.id.localeCompare(b.id)
-    )
+  return (
+    perType
+      .flat()
+      // The where clause requires the organisation relation, so it is never null.
+      .map((row) => ({
+        id: row.organisation!.id,
+        name: row.organisation!.name,
+        slug: row.organisation!.slug,
+        type: row.organisation!.type,
+        simulationsCount: row.simulationsCount,
+      }))
+      .sort(
+        (a, b) =>
+          b.simulationsCount - a.simulationsCount || a.id.localeCompare(b.id)
+      )
+  )
 }
 
 // Total counter comes from the total row (organisationId IS NULL) of the

@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
-import { refreshEventComputation } from '../../repositories/event.repository.ts'
 import { eventFactory } from '../../factories/event.factory.ts'
 import { organisationFactory } from '../../factories/organisation.factory.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
-import { getEventInfo } from '../get-event-info.service.ts'
+import { refreshEventComputation } from '../../repositories/event.repository.ts'
 import type { EventInfo } from '../../types/event-info.ts'
+import { getEventInfo } from '../get-event-info.service.ts'
 
 const seedPoll = async (
   event: { startDate: Date; endDate: Date },
@@ -137,7 +137,7 @@ describe('getEventInfo', () => {
     expect(result.organisationCount).toBe(1)
   })
 
-  it('returns organisations ordered by simulationsCount DESC', async () => {
+  it('returns only mobilised organisations ordered by simulationsCount DESC', async () => {
     const event = await eventFactory.create()
 
     const [orgA, orgB, orgC] = await Promise.all([
@@ -147,7 +147,7 @@ describe('getEventInfo', () => {
     ])
 
     await Promise.all([
-      seedPoll(event, orgA.id, 1),
+      seedPoll(event, orgA.id, 1), // 1 simulation: not mobilised, off the podium
       seedPoll(event, orgB.id, 3),
       seedPoll(event, orgC.id, 2),
     ])
@@ -156,8 +156,8 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toHaveLength(3)
-    expect(result.organisations.map((o) => o.slug)).toEqual(['b', 'c', 'a'])
+    expect(result.organisations.map((o) => o.slug)).toEqual(['b', 'c'])
+    expect(result.organisationCount).toBe(2)
   })
 
   it('counts only organisations with at least 2 simulations as mobilised', async () => {
@@ -181,6 +181,10 @@ describe('getEventInfo', () => {
 
     // 1 simulation is not enough to be counted as "mobilised" (>= 2 required)
     expect(result.organisationCount).toBe(1)
+
+    // ... and such an organisation does not make the podium either, so the
+    // podium always matches the mobilised counter.
+    expect(result.organisations.map((o) => o.slug)).toEqual(['two-sims'])
   })
 
   it('counts simulations from old polls created before the event window (Exemple 1)', async () => {
@@ -220,16 +224,16 @@ describe('getEventInfo', () => {
       slug: 'org',
     })
 
-    // 1 completed + 1 in progress (progression = 0.5)
-    await seedPoll(event, org.id, 1)
+    // 2 completed + 1 in progress (progression = 0.5)
+    await seedPoll(event, org.id, 2)
     await seedPoll(event, org.id, 1, { simulationProgression: 0.5 })
 
     await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations[0].simulationsCount).toBe(1)
-    expect(result.totalSimulations).toBe(1)
+    expect(result.organisations[0].simulationsCount).toBe(2)
+    expect(result.totalSimulations).toBe(2)
   })
 
   it('excludes ademe-sedd from the podium but counts it as mobilised', async () => {
@@ -333,7 +337,7 @@ describe('getEventInfo', () => {
   it('returns the top 15 organisations per type', async () => {
     const event = await eventFactory.create()
 
-    // 20 companies (3 simulations each) + 20 associations (1 simulation each).
+    // 20 companies (3 simulations each) + 20 associations (2 simulations each).
     // The podium must return the 15 best of each type, not a global top 15.
     const companyOrgs = await Promise.all(
       Array.from({ length: 20 }, (_, i) =>
@@ -356,7 +360,7 @@ describe('getEventInfo', () => {
 
     await Promise.all([
       ...companyOrgs.map((org) => seedPoll(event, org.id, 3)),
-      ...associationOrgs.map((org) => seedPoll(event, org.id, 1)),
+      ...associationOrgs.map((org) => seedPoll(event, org.id, 2)),
     ])
 
     await refreshEventComputation()
@@ -370,11 +374,12 @@ describe('getEventInfo', () => {
     expect(
       result.organisations.filter((o) => o.type === 'association')
     ).toHaveLength(15)
-    // Companies (3 simulations) rank above associations (1 simulation)
-    expect(result.organisations.slice(0, 15).every((o) => o.type === 'company'))
-      .toBe(true)
+    // Companies (3 simulations) rank above associations (2 simulations)
+    expect(
+      result.organisations.slice(0, 15).every((o) => o.type === 'company')
+    ).toBe(true)
     // organisationCount counts every mobilised organisation (>= 2 simulations)
-    expect(result.organisationCount).toBe(20)
+    expect(result.organisationCount).toBe(40)
   })
 
   it('organisationCount is not capped by the podium limit', async () => {
