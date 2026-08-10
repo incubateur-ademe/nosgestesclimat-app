@@ -1,5 +1,6 @@
-import { formatLocalizedDate } from '@nosgestesclimat/core/lib/format-localized-date'
+import { formatEventDate } from '@/helpers/date/formatEventDate'
 import type { Locale } from '@/i18nConfig'
+import { getUserTimeZone } from '@/services/date/getUserTimeZone'
 import AnimatedCounterBlock from './eventHeroCard/AnimatedCounterBlock'
 import EventCountdown from './eventHeroCard/EventCountdown'
 import EventDynamicCounter from './eventHeroCard/EventDynamicCounter'
@@ -14,7 +15,7 @@ interface Props {
   secondaryCtaHref: string
 }
 
-export default function EventHeroCard({
+export default async function EventHeroCard({
   locale,
   startDate,
   currentValue,
@@ -24,8 +25,9 @@ export default function EventHeroCard({
   secondaryCtaHref,
 }: Props) {
   const hasEventStarted = new Date() >= new Date(startDate)
+  const timeZone = await getUserTimeZone()
 
-  const launchDateLabel = formatLocalizedDate(startDate, locale, {
+  const launchDateLabel = formatEventDate(startDate, locale, timeZone, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
