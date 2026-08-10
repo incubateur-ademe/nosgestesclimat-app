@@ -14,7 +14,7 @@
       "size": "M"
     },
     {
-      "command": "*/2 * * * * bash scripts/refresh-event-computation-nonprod.sh",
+      "command": "*/10 * * * * bash scripts/refresh-event-computation-nonprod.sh",
       "size": "S"
     },
     {
