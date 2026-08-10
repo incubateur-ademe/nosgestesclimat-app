@@ -1,7 +1,8 @@
 import Trans from '@/components/translation/trans/TransServer'
+import { formatEventDate } from '@/helpers/date/formatEventDate'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { formatLocalizedDate } from '@nosgestesclimat/core/lib/format-localized-date'
+import { getUserTimeZone } from '@/services/date/getUserTimeZone'
 import Image from 'next/image'
 
 interface Props {
@@ -18,17 +19,18 @@ export default async function EventDetail({
   endDate,
 }: Props) {
   const { t } = await getServerTranslation({ locale })
+  const timeZone = await getUserTimeZone()
 
   const start = new Date(startDate)
   const end = new Date(endDate)
   const sameYear = start.getFullYear() === end.getFullYear()
 
-  const startDateLabel = formatLocalizedDate(start, locale, {
+  const startDateLabel = formatEventDate(start, locale, timeZone, {
     day: 'numeric',
     month: 'long',
     ...(sameYear ? {} : { year: 'numeric' }),
   })
-  const endDateLabel = formatLocalizedDate(end, locale, {
+  const endDateLabel = formatEventDate(end, locale, timeZone, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
