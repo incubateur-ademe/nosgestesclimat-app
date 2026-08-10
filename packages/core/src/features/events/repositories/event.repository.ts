@@ -1,6 +1,7 @@
 import { prisma } from '../../../prisma/client.ts'
 import {
   ADEME_SEDD_SLUG,
+  MOBILISED_ORGANISATION_MIN_SIMULATIONS,
   PODIUM_LIMIT_PER_TYPE,
   PODIUM_ORGANISATION_TYPES,
 } from '../constants/podium.ts'
@@ -13,9 +14,10 @@ export const findEvent = async (eventIdOrSlug: string) =>
   })
 
 // Podium organisations: the PODIUM_LIMIT_PER_TYPE best mobilised organisations
-// of each type, ADEME excluded. Only organisations with at least 2 completed
-// simulations make the podium, so it matches the "mobilised" counter. Rows are
-// globally sorted so the "all" tab can show a single ranking.
+// of each type, ADEME excluded. Only organisations reaching
+// MOBILISED_ORGANISATION_MIN_SIMULATIONS make the podium, so it matches the
+// "mobilised" counter. Rows are globally sorted so the "all" tab can show a
+// single ranking.
 export const findPodiumOrganisations = async (
   eventId: string
 ): Promise<EventOrganisation[]> => {
@@ -24,7 +26,7 @@ export const findPodiumOrganisations = async (
       prisma.eventComputation.findMany({
         where: {
           eventId,
-          simulationsCount: { gte: 2 },
+          simulationsCount: { gte: MOBILISED_ORGANISATION_MIN_SIMULATIONS },
           organisation: { slug: { not: ADEME_SEDD_SLUG }, type },
         },
         include: {
@@ -69,14 +71,15 @@ export const countEventSimulations = async (
   return total?.simulationsCount ?? 0
 }
 
-// Mobilised organisations: at least 2 completed simulations.
+// Mobilised organisations: at least MOBILISED_ORGANISATION_MIN_SIMULATIONS
+// completed simulations.
 export const countMobilisedOrganisations = async (
   eventId: string
 ): Promise<number> =>
   prisma.eventComputation.count({
     where: {
       eventId,
-      simulationsCount: { gte: 2 },
+      simulationsCount: { gte: MOBILISED_ORGANISATION_MIN_SIMULATIONS },
       organisationId: { not: null },
     },
   })

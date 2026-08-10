@@ -5,6 +5,11 @@ import type { OrganisationType } from '../../../prisma/generated/enums.ts'
 // the total counter.
 export const ADEME_SEDD_SLUG = 'ademe-sedd'
 
+// Minimum completed simulations for an organisation to be considered
+// "mobilised" (podium + counter). Matches the campaign results UI, which only
+// reveals stats from 3 participations (StatisticsBlocks.tsx).
+export const MOBILISED_ORGANISATION_MIN_SIMULATIONS = 3
+
 // Podium size: the best organisations per type.
 export const PODIUM_LIMIT_PER_TYPE = 15
 

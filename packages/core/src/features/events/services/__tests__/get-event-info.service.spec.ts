@@ -148,8 +148,8 @@ describe('getEventInfo', () => {
 
     await Promise.all([
       seedPoll(event, orgA.id, 1), // 1 simulation: not mobilised, off the podium
-      seedPoll(event, orgB.id, 3),
-      seedPoll(event, orgC.id, 2),
+      seedPoll(event, orgB.id, 5),
+      seedPoll(event, orgC.id, 3),
     ])
 
     await refreshEventComputation()
@@ -160,31 +160,32 @@ describe('getEventInfo', () => {
     expect(result.organisationCount).toBe(2)
   })
 
-  it('counts only organisations with at least 2 simulations as mobilised', async () => {
+  it('counts only organisations with at least 3 simulations as mobilised', async () => {
     const event = await eventFactory.create()
 
     const orgWithOneSim = await organisationFactory.create({
       name: 'One Sim',
       slug: 'one-sim',
     })
-    const orgWithTwoSims = await organisationFactory.create({
-      name: 'Two Sims',
-      slug: 'two-sims',
+    const orgWithThreeSims = await organisationFactory.create({
+      name: 'Three Sims',
+      slug: 'three-sims',
     })
 
     await seedPoll(event, orgWithOneSim.id, 1)
-    await seedPoll(event, orgWithTwoSims.id, 2)
+    await seedPoll(event, orgWithThreeSims.id, 3)
 
     await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    // 1 simulation is not enough to be counted as "mobilised" (>= 2 required)
+    // 1 simulation is not enough to be counted as "mobilised"
+    // (>= MOBILISED_ORGANISATION_MIN_SIMULATIONS required)
     expect(result.organisationCount).toBe(1)
 
     // ... and such an organisation does not make the podium either, so the
     // podium always matches the mobilised counter.
-    expect(result.organisations.map((o) => o.slug)).toEqual(['two-sims'])
+    expect(result.organisations.map((o) => o.slug)).toEqual(['three-sims'])
   })
 
   it('counts simulations from old polls created before the event window (Exemple 1)', async () => {
@@ -197,11 +198,12 @@ describe('getEventInfo', () => {
 
     // The poll was created in June 2026, before the event window,
     // but the simulations are done during the event window.
-    await seedPoll(event, oldOrg.id, 2, {
+    await seedPoll(event, oldOrg.id, 3, {
       pollCreatedAt: new Date('2026-06-10T00:00:00Z'),
       simulationDates: [
         new Date('2026-09-20T10:00:00Z'),
         new Date('2026-09-21T10:00:00Z'),
+        new Date('2026-09-22T10:00:00Z'),
       ],
     })
 
@@ -211,8 +213,8 @@ describe('getEventInfo', () => {
 
     expect(result.organisations).toHaveLength(1)
     expect(result.organisations[0].slug).toBe('old-org')
-    expect(result.organisations[0].simulationsCount).toBe(2)
-    expect(result.totalSimulations).toBe(2)
+    expect(result.organisations[0].simulationsCount).toBe(3)
+    expect(result.totalSimulations).toBe(3)
     expect(result.organisationCount).toBe(1)
   })
 
@@ -224,16 +226,16 @@ describe('getEventInfo', () => {
       slug: 'org',
     })
 
-    // 2 completed + 1 in progress (progression = 0.5)
-    await seedPoll(event, org.id, 2)
+    // 3 completed + 1 in progress (progression = 0.5)
+    await seedPoll(event, org.id, 3)
     await seedPoll(event, org.id, 1, { simulationProgression: 0.5 })
 
     await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations[0].simulationsCount).toBe(2)
-    expect(result.totalSimulations).toBe(2)
+    expect(result.organisations[0].simulationsCount).toBe(3)
+    expect(result.totalSimulations).toBe(3)
   })
 
   it('excludes ademe-sedd from the podium but counts it as mobilised', async () => {
@@ -259,7 +261,8 @@ describe('getEventInfo', () => {
 
     // The ademe-sedd org has 5 simulations but must not appear in the list
     expect(result.organisations.map((o) => o.slug)).toEqual(['other'])
-    // ADEME still counts as a mobilised organisation (rule 3: >= 2 simulations)
+    // ADEME still counts as a mobilised organisation
+    // (rule 3: >= MOBILISED_ORGANISATION_MIN_SIMULATIONS simulations)
     expect(result.organisationCount).toBe(2)
   })
 
@@ -337,7 +340,7 @@ describe('getEventInfo', () => {
   it('returns the top 15 organisations per type', async () => {
     const event = await eventFactory.create()
 
-    // 20 companies (3 simulations each) + 20 associations (2 simulations each).
+    // 20 companies (4 simulations each) + 20 associations (3 simulations each).
     // The podium must return the 15 best of each type, not a global top 15.
     const companyOrgs = await Promise.all(
       Array.from({ length: 20 }, (_, i) =>
@@ -359,8 +362,8 @@ describe('getEventInfo', () => {
     )
 
     await Promise.all([
-      ...companyOrgs.map((org) => seedPoll(event, org.id, 3)),
-      ...associationOrgs.map((org) => seedPoll(event, org.id, 2)),
+      ...companyOrgs.map((org) => seedPoll(event, org.id, 4)),
+      ...associationOrgs.map((org) => seedPoll(event, org.id, 3)),
     ])
 
     await refreshEventComputation()
@@ -374,11 +377,12 @@ describe('getEventInfo', () => {
     expect(
       result.organisations.filter((o) => o.type === 'association')
     ).toHaveLength(15)
-    // Companies (3 simulations) rank above associations (2 simulations)
+    // Companies (4 simulations) rank above associations (3 simulations)
     expect(
       result.organisations.slice(0, 15).every((o) => o.type === 'company')
     ).toBe(true)
-    // organisationCount counts every mobilised organisation (>= 2 simulations)
+    // organisationCount counts every mobilised organisation
+    // (>= MOBILISED_ORGANISATION_MIN_SIMULATIONS simulations)
     expect(result.organisationCount).toBe(40)
   })
 
@@ -393,7 +397,7 @@ describe('getEventInfo', () => {
       )
     )
 
-    await Promise.all(orgs.map((org) => seedPoll(event, org.id, 2)))
+    await Promise.all(orgs.map((org) => seedPoll(event, org.id, 3)))
     await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
@@ -409,8 +413,8 @@ describe('getEventInfo', () => {
     const orgA = await organisationFactory.create({ name: 'A', slug: 'a' })
 
     await Promise.all([
-      seedPoll(event, orgB.id, 2),
-      seedPoll(event, orgA.id, 2),
+      seedPoll(event, orgB.id, 3),
+      seedPoll(event, orgA.id, 3),
     ])
 
     await refreshEventComputation()
