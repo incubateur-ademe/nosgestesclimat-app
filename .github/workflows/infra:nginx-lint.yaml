@@ -15,7 +15,7 @@ permissions:
 jobs:
   validate:
     name: Validate nginx.conf.tpl syntax
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
 
     steps:

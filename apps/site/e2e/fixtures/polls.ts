@@ -49,6 +49,9 @@ export class Poll {
   async create(mode: SimulationMode = 'standard') {
     // Step 1: Fill poll name and go to step 2
     await expect(this.page).toHaveURL(this.createUrl)
+    // Clear first to avoid any default value from a previous poll's draft
+    // (the input is pre-filled from a previous draft via react-hook-form)
+    await this.page.getByTestId('poll-name-input').clear()
     await this.page.getByTestId('poll-name-input').fill(this.name)
     await this.page.getByTestId('poll-form-name-button').click()
 

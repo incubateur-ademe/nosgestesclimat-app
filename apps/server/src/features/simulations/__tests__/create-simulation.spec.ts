@@ -107,6 +107,25 @@ describe('Given a NGC user', () => {
           })
           .expect(StatusCodes.BAD_REQUEST)
       })
+
+      describe('And computedResults uses a legacy shape (before the carbone/eau format)', () => {
+        test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
+          await agent
+            .post(url)
+            .set(authHeaders({ userId: faker.string.uuid() }))
+            .send({
+              id: faker.string.uuid(),
+              situation,
+              progression: 1,
+              extendedSituation,
+              computedResults: {
+                bilan: 1000,
+                categories: {},
+              },
+            })
+            .expect(StatusCodes.BAD_REQUEST)
+        })
+      })
     })
 
     describe('And verified user does not exist in database', () => {

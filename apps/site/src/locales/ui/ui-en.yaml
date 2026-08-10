@@ -153,19 +153,13 @@ entries:
   Oups ! Nous n'avons pas trouvé votre groupe: Oops! We couldn't find your group
   Lien personnalisé & iframes: Custom links & iframes
   Plus que quelques petites questions: Just a few more questions
-  Nous vérifions votre code...: Verifying your code...
   Demander une démo: Request a demo
-  Le code est invalide: The code is invalid
   Créer un compte: Create an account
   Votre organisation: Your organisation
   Bienvenue: Welcome
-  Entrez votre code de vérification pour continuer: Enter your verification code to continue
   (une fois par mois maximum !): (once a month maximum!)
   Votre prénom: Your first name
-  Accéder à mon espace: Go to my dashboard
-  Accéder à mon espace.lock: Go to my dashboard
   Explorez, comparez et analysez vos données: Explore, compare and analyse your data
-  Votre code est valide !: Your code is valid!
   Renvoyer le code, désactivé pendant 30 secondes: Resend code, deactivated for 30 seconds
   Accueil: Home
   Exporter les données: Export data
@@ -274,7 +268,6 @@ entries:
   Enregistrer: Save
   2 tonnes: 2 tonnes
   Ce champ est requis: This field is required
-  Une erreur est survenue. Veuillez réessayer.: An error has occurred. Please try again.
   Paramètres de: Parameters of
   Nombre de collaborateurs: Number of employees
   Vos informations personnelles: Your personal details
@@ -648,7 +641,6 @@ entries:
   litre: liter
   Ferme: Farm
   Veuillez entrer un nombre inférieur à 100 millions: Please enter a number less than 100 million
-  L'adresse e-mail est invalide: The e-mail address is invalid
   nous contacter: contact us
   Oups ! Une erreur s'est produite. Veuillez recharger la page. Si le problème persiste, vous pouvez: Oops! An error has occurred. Please reload the page. If the problem persists, you can
   Oups ! Une erreur s'est produite. Veuillez réessayer plus tard. Si le problème persiste, vous pouvez: Oops! An error has occurred. Please try again later. If the problem persists, you can
@@ -1023,9 +1015,9 @@ entries:
   signIn.verificationForm.email.verificationCode.strong.lock: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'sent to '
   signIn.verificationForm.email.verificationCode.suffix.lock: 'envoyé à '
-  signIn.verificationForm.codeInput.label: Enter the 6 digits of the verification code
-  signIn.verificationForm.submitButton: Validate my code
-  signIn.verificationForm.pending: Verifying your code...
+  signIn.verificationForm.codeInput.label: Please enter the 6-digit verification code
+  signIn.verificationForm.submitButton: Verify my code
+  signIn.verificationForm.pending: We’re checking your code...
   signIn.verificationForm.success: Your code is valid!
   signIn.verificationForm.notReceived.resendButton: Resend code
   signIn.verificationForm.notReceived.resendButton.lock: Renvoyer le code
@@ -1152,7 +1144,6 @@ entries:
   fin.getResultsOnUserProfile.buttonLabel.lock: Sauvegarder mes résultats
   mon-espace.groups.create: Create a group
   mon-espace.groups.create.lock: Créer un groupe
-  Mettre à jour mes coordonnées: Update my details
   mon-espace.groups.empty.awareness: Raising awareness in my organisation
   mon-espace.groups.empty.awareness.lock: Sensibiliser mon organisation
   mon-espace.groups.empty.challenge1: Challenge my friends
@@ -1265,7 +1256,6 @@ entries:
   header.monEspace.openMenuButton.close.title.lock: Mon espace ({{email}}), fermer le menu
   Créer: Create
   Votre adresse e-mail: Your e-mail address
-  Merci de renseigner votre adresse e-mail: Please enter your e-mail address
   Oups ! Vous n'êtes pas autorisé à accéder à cette page. Si vous pensez que c'est une erreur, vous pouvez: Oops! You are not authorised to access this page. If you think this is a mistake, you can
   Recevoir ponctuellement par e-mail les nouveaux services Nos Gestes Climat aux organisations: Receive occasional e-mails about new Nos Gestes Climat services for organisations
   auth.verifyemail: Check my email address
@@ -1284,7 +1274,6 @@ entries:
   Nom du groupe: Group name
   Illustration du groupe: Illustration of the group
   Veuillez entrer votre nom.: Please enter your name.
-  Un compte avec cette adresse e-mail existe déjà: An account with this e-mail address already exists
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Compare your results with your family or a group of friends.
   newsletterManagement.logementNewsletter.title: Our Housing Gestures
   newsletterManagement.logementNewsletter.title.lock: Nos Gestes Logement
@@ -1417,7 +1406,7 @@ entries:
   signIn.emailForm.buttonLabel: Log in to my account
   signIn.emailForm.error.required: Please enter your email address
   signIn.emailForm.error.invalid: The email address is invalid
-  signIn.emailForm.error.rateLimited: A code has already been sent to this address. Please wait before requesting a new one.
+  signIn.emailForm.error.rateLimited: A code has just been sent to this address. Please wait before requesting a new one.
   signIn.code.rateLimited: Please wait a moment before trying again.
   results.objective.under4.description.body: With the work of the government and society as a whole over the coming years, your footprint should naturally fall to around 2 tonnes.
   results.objective.under4.description.body.lock: Avec le travail de l’État et toute la société dans les années à venir, votre empreinte devrait naturellement diminuer pour se rapprocher des 2 tonnes.
@@ -1715,8 +1704,6 @@ entries:
   simulator.transition.divers.funFact.line4.lock: fabrication
   simulator.intercalaire.seeResults: See my results
   simulator.intercalaire.seeResults.lock: Voir mes résultats
-  simulator.funFact.housing.text2: over the last 50 years, from 23 to 40 m² per inhabitant, i.e
-  simulator.funFact.housing.text2.lock: sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit
   simulator.intercalaire.title.default: Section {{category}} completed
   simulator.intercalaire.title.default.lock: Section {{category}} terminée
   simulator.transition.logement.funFact.line2: have
@@ -1727,8 +1714,6 @@ entries:
   simulator.transition.alimentation.funFact.line2.lock: n'ont pas
   simulator.transition.divers.funFact.line2: a digital camera
   simulator.transition.divers.funFact.line2.lock: d'un appareil numérique
-  simulator.funFact.housing.text1: The size of French homes has risen sharply
-  simulator.funFact.housing.text1.lock: La taille des logements français a très fortement augmenté
   simulator.intercalaire.subtitle.remaining.all: Only {{remainingCategories}} left!
   simulator.intercalaire.subtitle.remaining.all.lock: Plus que {{remainingCategories}} !
   simulator.transition.alimentation.funFact.line1: All meals
@@ -1740,22 +1725,14 @@ entries:
   simulator.transition.logement.funFact.line1: Not all types of <1>heating</1>
   simulator.transition.logement.funFact.line1.lock: Tous les modes de <1>chauffage</1>
   Créez une organisation afin de diffuser un ou plusieurs liens de test collectif: Create an organisation to distribute one or more group test links
-  simulator.funFact.clothing.title: Did you know?
-  simulator.funFact.clothing.title.lock: Le saviez-vous ?
   simulator.transition.transport.info.title: 'Transport <0>facts and figures</0> '
   simulator.transition.transport.info.title.lock: <0>À retenir</0> sur les transports
-  simulator.funFact.clothing.text1: On average, the French buy something every year,
-  simulator.funFact.clothing.text1.lock: En moyenne, les Français achètent chaque année,
   simulator.transition.divers.info.title: 'Digital <0>highlights</0> '
   simulator.transition.divers.info.title.lock: <0>À retenir</0> sur le numérique
   simulator.transition.transport.funFact.graphDescription: This graph allows you to compare the impact of different means of transport
   simulator.transition.transport.funFact.graphDescription.lock: Ce graphique te permet de comparer l'impact de différents moyens de transport
-  simulator.funFact.housing.text3: 90 m² on average for a household of 2.2 people.
-  simulator.funFact.housing.text3.lock: 90 m² en moyenne pour un foyer de 2,2 personnes.
   simulator.transition.alimentation.info.title: 'Food <0>facts</0> '
   simulator.transition.alimentation.info.title.lock: <0>À retenir</0> sur l'alimentation
-  simulator.funFact.housing.title: Did you know?
-  simulator.funFact.housing.title.lock: Le saviez-vous ?
   simulator.transition.logement.funFact.line3: <0>the same impact</0> on the climate
   simulator.transition.logement.funFact.line3.lock: <0>le même impact</0> sur le climat
   simulator.intercalaire.graphDefault: This graph gives you a better understanding of the different impacts
@@ -1788,8 +1765,6 @@ entries:
   simulator.intercalaire.divers.meta.description.lock: Bravo, tu as terminé la section consommation. Découvre l’impact du numérique et de la consommation.
   simulator.intercalaire.divers.iframe.title: Digital CO₂ impact comparator
   simulator.intercalaire.divers.iframe.title.lock: Comparateur d'impact CO₂ du numérique
-  simulator.funFact.clothing.text2: 9.5 kg of clothes... but only sort 3.4 kg!
-  simulator.funFact.clothing.text2.lock: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
   common.previousExtended: Back, return to the previous page
   common.previousExtended.lock: Précédent, revenir à la page précédente
   Calculez votre empreinte sur le climat<1> en 10 minutes </1>top chrono.: Calculate your climate footprint in just<1> 10 minutes </1>.
@@ -2116,8 +2091,6 @@ entries:
   reuseSimulationForPoll.yourFootprint.lock: 'Votre empreinte :'
   reuseSimulationForPoll.testDate.testDone: Test carried out on
   reuseSimulationForPoll.testDate.testDone.lock: Test réalisé le
-  category.divers: Consumption
-  category.divers.lock: Consommation
   poll.results.communicationKit.button: Access the kit
   poll.results.communicationKit.button.lock: Accéder au kit
   poll.results.communicationKit.title: Need some inspiration for sharing your group quiz?
@@ -2142,3 +2115,31 @@ entries:
   actions.publicListPage.cta.description.lock: Passez le simulateur en 10 minutes et découvrez les actions personnalisées qui auront le plus d'impact sur votre empreinte.
   footer.resources.actions: Shares
   footer.resources.actions.lock: Actions
+  signIn.code.rateLimited.lock: Veuillez patienter un instant avant de réessayer.
+  signIn.verificationForm.success.lock: Votre code est valide !
+  banner.close: Close the banner
+  banner.close.lock: Fermer la bannière
+  signIn.verificationForm.pending.lock: Nous vérifions votre code...
+  signIn.verificationForm.codeInput.label.lock: Entrez les 6 chiffres du code de vérification
+  userParams.updateInfo: Update my contact details
+  userParams.updateInfo.lock: Mettre à jour mes coordonnées
+  signIn.emailForm.buttonLabel.lock: Accéder à mon espace
+  common.errors.errorHappening: An error has occurred. Please try again.
+  common.errors.errorHappening.lock: Une erreur est survenue. Veuillez réessayer.
+  signIn.code.invalid: The code is invalid
+  signIn.code.invalid.lock: Le code est invalide
+  signIn.emailForm.error.rateLimited.lock: Un code vient d'être envoyé à cette adresse. Veuillez patienter avant d'en demander un nouveau.
+  signIn.emailForm.error.invalid.lock: L'adresse e-mail est invalide
+  signIn.verificationForm.submitButton.lock: Valider mon code
+  signIn.emailForm.error.required.lock: Merci de renseigner votre adresse e-mail
+  signIn.emailForm.inputLabel.lock: Votre adresse e-mail
+  Mentions légales Base Empreinte - Nos Gestes Climat: 'Legal Notice: Base Empreinte – Nos Gestes Climat'
+  simulator.funFact.housing: <0><0><0>💡</0> Did you know?</0><1><0>The size of French homes has increased significantly</0> over the last 50 years, rising from 23 to 40 m² per person, or <4>an average of 90 m² for a household of 2.2 people.</4></1></0>
+  simulator.funFact.housing.lock: <0><0><0>💡</0> Le saviez-vous ?</0><1><0>La taille des logements français a très fortement augmenté</0> sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit <4>90 m² en moyenne pour un foyer de 2,2 personnes.</4></1></0>
+  Mentions légales de la Base Empreinte.: Legal notices for the Empreinte database.
+  Gestion des infolettres - Nos Gestes Climat: Newsletter Management – Nos Gestes Climat
+  Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.: Manage your subscriptions to the ‘Nos Gestes Climat’ newsletters. Select the newsletters that interest you to receive personalised advice on reducing your carbon footprint.
+  simulator.funFact.clothing: <0><0><0>💡</0> Did you know?</0><1>On average, the French buy <2>9.5 kg of clothes</2> every <2>year… but only sort 3.4 kg of them!</2></1></0>
+  simulator.funFact.clothing.lock: <0><0><0>💡</0> Le saviez-vous ?</0><1>En moyenne, les Français achètent chaque année, <2>9,5 kg de vêtements... mais n'en trient que 3,4 kg !</2></1></0>
+  simulator.funFact.ia: <0><0><0>💡</0> A word on AI</0><1>The use of artificial intelligence leads <2>to increased consumption of electricity, water and space in data centres</2>. Studies are currently being carried out to gather reliable data on the impacts and keep you better informed.</1></0>
+  simulator.funFact.ia.lock: <0><0><0>💡</0> Un mot sur l'IA</0><1>Le recours à l'intelligence artificielle entraîne une <2>hausse de la consommation d'électricité, d'eau et d'espace pour les data centers</2>. Des études sont en cours pour disposer de données fiables sur les impacts et mieux vous informer.</1></0>

@@ -1,6 +1,7 @@
 import { PARTNER_JAGIS, PARTNER_KEY } from '@/constants/partners'
-import { generateSimulation } from '@/helpers/simulation/generateSimulation'
+import type { Simulation } from '@/helpers/server/model/simulations'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
+import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { faker } from '@faker-js/faker'
 import '@testing-library/jest-dom'
@@ -10,10 +11,18 @@ import { vi } from 'vitest'
 import PartnerPage from '../page'
 
 const mockVerifyPartner = vi.fn<(partner: string) => Promise<unknown>>()
+const mockGetCurrentSimulation =
+  vi.fn<() => Promise<Partial<Simulation> | undefined>>()
 const mockNotFound = vi.mocked(notFound)
 
 vi.mock('@/services/partners/verifyPartner', () => ({
   verifyPartner: (partner: string) => mockVerifyPartner(partner),
+}))
+
+// The page resolves the simulation server-side, so it cannot be driven from the
+// test wrapper's client-side user context.
+vi.mock('@/services/simulations/get-current-simulation', () => ({
+  getCurrentSimulation: () => mockGetCurrentSimulation(),
 }))
 
 vi.mock('@/components/layout/HeaderServer', () => ({
@@ -27,13 +36,15 @@ describe('PartnerPage', () => {
   })
   const defaultParams = Promise.resolve({ locale: 'fr' as const })
 
-  const defaultSimulation = generateSimulation({
+  const defaultSimulation = buildNewSimulationPayload({
     id: faker.string.uuid(),
     progression: 1,
+    model: 'FR-fr-1.2.3',
   })
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockGetCurrentSimulation.mockResolvedValue(undefined)
     safeLocalStorage.clear()
   })
 
@@ -41,6 +52,7 @@ describe('PartnerPage', () => {
     it('should display a message indicating the upcoming redirection', async () => {
       // Given
       mockVerifyPartner.mockResolvedValue({ name: 'Test Partner' })
+      mockGetCurrentSimulation.mockResolvedValue(defaultSimulation)
 
       // When
       await act(async () => {
@@ -102,6 +114,7 @@ describe('PartnerPage', () => {
     it('should redirect to /simulateur/bilan', async () => {
       // Given
       mockVerifyPartner.mockResolvedValue({ name: 'Test Partner' })
+      mockGetCurrentSimulation.mockResolvedValue({ progression: 0 })
 
       // When
       await act(async () =>

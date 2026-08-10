@@ -72,6 +72,8 @@ test.describe('When a user completes the test via the scolaire poll invite link'
     await page.goto(scolairePoll.inviteLink)
     await expect(page).toHaveURL(/\/simulateur\/campagne\//)
     await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()
-    await expect(page.locator(`a[href="${scolairePoll.url}"]`)).toBeVisible()
+    await expect(
+      page.locator(`a[href="${scolairePoll.url}"]`).filter({ visible: true })
+    ).toBeVisible()
   })
 })

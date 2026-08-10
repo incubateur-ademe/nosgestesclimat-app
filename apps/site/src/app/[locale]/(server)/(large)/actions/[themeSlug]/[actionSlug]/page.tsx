@@ -183,9 +183,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
                 Je comprends l'enjeu
               </Trans>
             </SectionTitle>
-            <Markdown
-              forceTargetBlankOnExternalLinks
-              omitMarginTopOnFirstElement>
+            <Markdown omitMarginTopOnFirstElement>
               {action.longDescription}
             </Markdown>
           </div>
@@ -204,11 +202,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
                 J'agis
               </Trans>
             </SectionTitle>
-            <Markdown
-              forceTargetBlankOnExternalLinks
-              omitMarginTopOnFirstElement>
-              {action.tips}
-            </Markdown>
+            <Markdown omitMarginTopOnFirstElement>{action.tips}</Markdown>
           </Section>
         ) : null}
         {action.financialIncentives ? (
@@ -220,9 +214,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
                 J'y gagne
               </Trans>
             </SectionTitle>
-            <Markdown
-              forceTargetBlankOnExternalLinks
-              omitMarginTopOnFirstElement>
+            <Markdown omitMarginTopOnFirstElement>
               {action.financialIncentives}
             </Markdown>
           </Section>
@@ -236,9 +228,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
                 À découvrir aussi
               </Trans>
             </SectionTitle>
-            <Markdown
-              forceTargetBlankOnExternalLinks
-              omitMarginTopOnFirstElement>
+            <Markdown omitMarginTopOnFirstElement>
               {action.furtherExplore}
             </Markdown>
           </Section>

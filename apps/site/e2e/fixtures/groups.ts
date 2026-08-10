@@ -75,7 +75,8 @@ export class Group {
   }
 
   async leave(page: Page) {
-    await page.getByTestId('button-leave-group').click()
+    await page.getByRole('button', { name: 'Quitter le groupe' }).click()
+    await expect(page.getByTestId('button-confirm-leave-group')).toBeVisible()
     await page.getByTestId('button-confirm-leave-group').click()
   }
 
@@ -91,7 +92,7 @@ export class Group {
   async goFromGroupTabs(page: Page) {
     await page.getByTestId('my-groups-tab').click()
     await page.waitForTimeout(500)
-    await page.getByText(this.name).click()
+    await page.getByText(this.name).filter({ visible: true }).click()
   }
 
   async saveInContext() {

@@ -46,7 +46,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
   const buttonId = useId()
   const menuId = useId()
 
-  const { setUser, updateSimulations } = useUser()
+  const { setUser, setSimulation } = useUser()
 
   const displayEmail =
     email.length > MAX_EMAIL_LENGTH
@@ -208,7 +208,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
     trackPosthogEvent(captureClickHeaderLogoutAuthenticatedServer)
     setIsOpen(false)
 
-    resetLocalState({ setUser, updateSimulations })
+    resetLocalState({ setUser, setSimulation })
 
     posthog.reset()
 

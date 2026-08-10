@@ -83,6 +83,8 @@ test.describe('Given an authenticated user that completed the test twice with di
     await expect(tendencyIndicator).toBeVisible()
 
     // Verify it shows the correct text (increase or decrease)
-    await expect(page.getByText(/votre dernier résultat/)).toBeVisible()
+    await expect(
+      page.getByText(/votre dernier résultat/).filter({ visible: true })
+    ).toBeVisible()
   })
 })

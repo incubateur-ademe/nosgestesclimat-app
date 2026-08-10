@@ -128,18 +128,13 @@ entries:
   Oups ! Nous n'avons pas trouvé votre groupe: Oups ! Nous n'avons pas trouvé votre groupe
   Retour à la liste des groupes: Retour à la liste des groupes
   (une fois par mois maximum !): (une fois par mois maximum !)
-  Accéder à mon espace: Accéder à mon espace
   Bienvenue: Bienvenue
   Créer un compte: Créer un compte
   Demander une démo: Demander une démo
-  Entrez votre code de vérification pour continuer: Entrez votre code de vérification pour continuer
   Explorez, comparez et analysez vos données: Explorez, comparez et analysez vos données
-  Le code est invalide: Le code est invalide
   Lien personnalisé & iframes: Lien personnalisé & iframes
-  Nous vérifions votre code...: Nous vérifions votre code...
   Plus que quelques petites questions: Plus que quelques petites questions
   Renvoyer le code, désactivé pendant 30 secondes: Renvoyer le code, désactivé pendant 30 secondes
-  Votre code est valide !: Votre code est valide !
   Votre organisation: Votre organisation
   Votre prénom: Votre prénom
   Accueil: Accueil
@@ -243,7 +238,6 @@ entries:
   Enregistrer: Enregistrer
   2 tonnes: 2 tonnes
   Ce champ est requis: Ce champ est requis
-  Une erreur est survenue. Veuillez réessayer.: Une erreur est survenue. Veuillez réessayer.
   Cette opération est définitive.: Cette opération est définitive.
   'Créée le ': 'Créée le '
   Données consultables à partir de 3 participants, dans un souci d'anonymat.: Données consultables à partir de 3 participants, dans un souci d'anonymat.
@@ -623,7 +617,6 @@ entries:
   litre: litre
   Ferme: Ferme
   Veuillez entrer un nombre inférieur à 100 millions: Veuillez entrer un nombre inférieur à 100 millions
-  L'adresse e-mail est invalide: L'adresse e-mail est invalide
   nous contacter: nous contacter
   Oups ! Une erreur s'est produite. Veuillez recharger la page. Si le problème persiste, vous pouvez: Oups ! Une erreur s'est produite. Veuillez recharger la page. Si le problème persiste, vous pouvez
   Oups ! Une erreur s'est produite. Veuillez réessayer plus tard. Si le problème persiste, vous pouvez: Oups ! Une erreur s'est produite. Veuillez réessayer plus tard. Si le problème persiste, vous pouvez
@@ -934,7 +927,6 @@ entries:
   mon-espace.organisations.title: Mes organisations
   fin.getResultsOnUserProfile.buttonLabel: Sauvegarder mes résultats
   Mettre à jour mes abonnements: Mettre à jour mes abonnements
-  Mettre à jour mes coordonnées: Mettre à jour mes coordonnées
   mon-espace.groups.create: Créer un groupe
   mon-espace.groups.empty.awareness: Sensibiliser mon organisation
   mon-espace.groups.empty.button: Créer un groupe
@@ -995,7 +987,6 @@ entries:
   mon-espace.groups.organisation.create.button: Créer mon organisation
   mon-espace.groups.organisation.create.title: Mobiliser mon organisation
   Créer: Créer
-  Merci de renseigner votre adresse e-mail: Merci de renseigner votre adresse e-mail
   Oups ! Vous n'êtes pas autorisé à accéder à cette page. Si vous pensez que c'est une erreur, vous pouvez: Oups ! Vous n'êtes pas autorisé à accéder à cette page. Si vous pensez que c'est une erreur, vous pouvez
   Votre adresse e-mail: Votre adresse e-mail
   Recevoir ponctuellement par e-mail les nouveaux services Nos Gestes Climat aux organisations: Recevoir ponctuellement par e-mail les nouveaux services Nos Gestes Climat aux organisations
@@ -1009,7 +1000,6 @@ entries:
   Illustration du groupe: Illustration du groupe
   mon-espace.settings.userInfos.editLabel: Modifier
   Nom du groupe: Nom du groupe
-  Un compte avec cette adresse e-mail existe déjà: Un compte avec cette adresse e-mail existe déjà
   Veuillez entrer votre nom.: Veuillez entrer votre nom.
   Comparez vos résultats avec votre famille ou un groupe d'amis.: Comparez vos résultats avec votre famille ou un groupe d'amis.
   newsletterManagement.alimentationNewsletter.description: 4 infolettres (sur 4 semaines), pour découvrir l'empreinte de notre alimentation, et comprendre comment aligner son assiette avec les enjeux planétaires.
@@ -1248,13 +1238,6 @@ entries:
   '{group.administrator.name} vous a invité à rejoindre le groupe <3>{group.name}</3>': '{group.administrator.name} vous a invité à rejoindre le groupe <3>{group.name}</3>'
   common.previous: Précédent
   Créez une organisation afin de diffuser un ou plusieurs liens de test collectif: Créez une organisation afin de diffuser un ou plusieurs liens de test collectif
-  simulator.funFact.clothing.text1: En moyenne, les Français achètent chaque année,
-  simulator.funFact.clothing.text2: 9,5 kg de vêtements... mais n'en trient que 3,4 kg !
-  simulator.funFact.clothing.title: Le saviez-vous ?
-  simulator.funFact.housing.text1: La taille des logements français a très fortement augmenté
-  simulator.funFact.housing.text2: sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit
-  simulator.funFact.housing.text3: 90 m² en moyenne pour un foyer de 2,2 personnes.
-  simulator.funFact.housing.title: Le saviez-vous ?
   simulator.intercalaire.graphDefault: Ce graphique te permet de mieux comprendre les différents impacts
   simulator.intercalaire.seeResults: Voir mes résultats
   simulator.intercalaire.subtitle.remaining.all: Plus que {{remainingCategories}} !
@@ -1438,7 +1421,6 @@ entries:
   reuseSimulationForPoll.title: Vous avez déjà réalisé un calcul d’empreinte sur notre site
   reuseSimulationForPoll.yourFootprint: 'Votre empreinte :'
   reuseSimulationForPoll.testDate.testDone: Test réalisé le
-  category.divers: Consommation
   poll.results.communicationKit.button: Accéder au kit
   poll.results.communicationKit.text1: Nous mettons à votre disposition <2>un kit de communication ADEME</2> <4>prêt à l’emploi</4> pour tous les temps forts de l’année, pour encourager le plus de personnes possibles à <7>rejoindre le challenge</7> et venir <10>calculer leur empreinte</10>.
   poll.results.communicationKit.text2: Des e-mails type, post Linkedin, visuels…
@@ -1450,5 +1432,14 @@ entries:
   signIn.emailForm.error.invalid: L'adresse e-mail est invalide
   signIn.emailForm.error.rateLimited: Un code vient d'être envoyé à cette adresse. Veuillez patienter avant d'en demander un nouveau.
   signIn.code.rateLimited: Veuillez patienter un instant avant de réessayer.
-  common.errors.errorHappened: Une erreur est survenue. Veuillez réessayer.
   signIn.code.invalid: Le code est invalide
+  banner.close: Fermer la bannière
+  common.errors.errorHappening: Une erreur est survenue. Veuillez réessayer.
+  Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.: Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.
+  Gestion des infolettres - Nos Gestes Climat: Gestion des infolettres - Nos Gestes Climat
+  Mentions légales Base Empreinte - Nos Gestes Climat: Mentions légales Base Empreinte - Nos Gestes Climat
+  Mentions légales de la Base Empreinte.: Mentions légales de la Base Empreinte.
+  simulator.funFact.housing: <0><0><0>💡</0> Le saviez-vous ?</0><1><0>La taille des logements français a très fortement augmenté</0> sur ces 50 dernières années, passant de 23 à 40 m² par habitant, soit <4>90 m² en moyenne pour un foyer de 2,2 personnes.</4></1></0>
+  userParams.updateInfo: Mettre à jour mes coordonnées
+  simulator.funFact.clothing: <0><0><0>💡</0> Le saviez-vous ?</0><1>En moyenne, les Français achètent chaque année, <2>9,5 kg de vêtements... mais n'en trient que 3,4 kg !</2></1></0>
+  simulator.funFact.ia: <0><0><0>💡</0> Un mot sur l'IA</0><1>Le recours à l'intelligence artificielle entraîne une <2>hausse de la consommation d'électricité, d'eau et d'espace pour les data centers</2>. Des études sont en cours pour disposer de données fiables sur les impacts et mieux vous informer.</1></0>

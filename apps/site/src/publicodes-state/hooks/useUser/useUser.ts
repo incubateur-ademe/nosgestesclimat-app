@@ -4,24 +4,15 @@ import { useCallback, useContext } from 'react'
 import userContext from '../../providers/userProvider/context'
 import type { User } from '../../types'
 import useActions from './hooks/useActions'
-import useSimulations from './hooks/useSimulations'
 import useTutorials from './hooks/useTutorials'
+import useUpdateCurrentSimulation from './hooks/useUpdateCurrentSimulation'
 
 /**
  * A hook to get and set every info about a user
  */
 export default function useUser() {
-  const {
-    user,
-    setUser,
-    tutorials,
-    setTutorials,
-    simulations,
-    setSimulations,
-    currentSimulationId,
-    setCurrentSimulationId,
-    migrationInstructions,
-  } = useContext(userContext)
+  const { user, setUser, tutorials, setTutorials, simulation, setSimulation } =
+    useContext(userContext)
 
   const updateName = useCallback(
     (name: string) =>
@@ -29,22 +20,10 @@ export default function useUser() {
     [setUser]
   )
 
-  const {
-    initSimulation,
-    deleteSimulation,
-    currentSimulation,
-    updateCurrentSimulation,
-    updateSimulations,
-  } = useSimulations({
-    simulations,
-    setSimulations,
-    currentSimulationId,
-    setCurrentSimulationId,
-    migrationInstructions,
-  })
+  const updateCurrentSimulation = useUpdateCurrentSimulation({ setSimulation })
 
   const { toggleActionChoice, rejectAction } = useActions({
-    currentSimulation,
+    currentSimulation: simulation,
     updateCurrentSimulation,
   })
 
@@ -76,37 +55,18 @@ export default function useUser() {
      */
     hideTutorial,
     /**
-     * A list of every simulations of the user (and their associated informations)
+     * The user's simulation, or `undefined` until one has been persisted
+     * server-side. Simulations are created by server actions only.
      */
-    simulations,
+    simulation,
     /**
-     * Delete a the specified simulation
+     * A setter for the simulation (used to clear it, e.g. on logout)
      */
-    deleteSimulation,
+    setSimulation,
     /**
-     * Return the current simulation ID (if there is one)
-     */
-    currentSimulationId,
-    /**
-     * Set the current simulation ID
-     */
-    setCurrentSimulationId,
-    /**
-     * Update the current simulation
+     * Update the current simulation — a no-op when there is none
      */
     updateCurrentSimulation,
-    /**
-     * The current simulation (or the first one of the list)
-     */
-    currentSimulation,
-    /**
-     * Create a new simulation (with the situation and the persona passed if applicable), set it as current and return its ID
-     */
-    initSimulation,
-    /**
-     * Update the list of simulations
-     */
-    updateSimulations,
     /**
      * Toggle the action choice of the current simulation
      */

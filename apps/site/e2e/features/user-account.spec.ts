@@ -2,7 +2,11 @@ import { START_SIMULATION_PATH } from '@/constants/urls/paths'
 import { faker } from '@faker-js/faker'
 import { expect, test } from '../fixtures'
 import { UserMailbox } from '../helpers/user-mailbox'
-import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE, USER_ACCOUNT_STATE } from '../state'
+import {
+  GROUP_ADMIN_STATE,
+  NEW_VISITOR_STATE,
+  USER_ACCOUNT_STATE,
+} from '../state'
 
 test.use({ storageState: USER_ACCOUNT_STATE })
 
@@ -98,7 +102,6 @@ test.describe('Simulation deletion', () => {
   }) => {
     await page.goto(START_SIMULATION_PATH)
     await ngcTest.skipAllQuestions()
-    await page.waitForURL('/fin')
 
     await page.goto('/mon-espace')
     await expect(page.getByTestId('results-list-title')).toBeVisible()

@@ -34,6 +34,7 @@ export default defineConfig([
     'apps/site/.storybook/**',
     'apps/site/playwright-report/**',
     'apps/site/storybook-static/**',
+    '.github/scripts/**/*',
   ]),
   {
     name: 'ngc/TypeScript configuration',

@@ -17,7 +17,9 @@ test.describe('A poll admin', () => {
     poll,
   }) => {
     await page.goto(organisation.url)
-    await expect(page.getByText(poll.name)).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: poll.name, level: 3, exact: true })
+    ).toBeVisible()
     await page.getByTestId('poll-card-see-details-button').first().click()
     await expect(page).toHaveURL(poll.url)
   })
@@ -37,7 +39,9 @@ test.describe('A poll admin', () => {
       await page.getByText('Supprimer cette campagne').click()
       await page.getByText('Confirmer').click()
       await expect(page).toHaveURL(organisation.url)
-      await expect(page.getByText(newPoll.name)).toBeHidden()
+      await expect(
+        page.getByRole('heading', { name: newPoll.name, level: 3, exact: true })
+      ).toBeHidden()
     })
   })
 })
@@ -48,7 +52,9 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
   })
 
   test('displays poll name', async ({ poll, page }) => {
-    await expect(page.locator('h1')).toHaveText(poll.name)
+    await expect(
+      page.getByRole('heading', { name: poll.name, level: 1, exact: true })
+    ).toBeVisible()
   })
 
   test('has an invite link that can be copied with good utm', async ({
@@ -165,6 +171,8 @@ test.describe('A user with a completed test that joined a poll', () => {
     await page.goto(poll.inviteLink)
     await expect(page).toHaveURL(/\/simulateur\/campagne\//)
     await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()
-    await expect(page.locator(`a[href="${poll.url}"]`)).toBeVisible()
+    await expect(
+      page.locator(`a[href="${poll.url}"]`).filter({ visible: true })
+    ).toBeVisible()
   })
 })

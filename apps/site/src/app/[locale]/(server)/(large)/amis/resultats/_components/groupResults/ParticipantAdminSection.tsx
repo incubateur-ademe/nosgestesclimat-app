@@ -41,6 +41,7 @@ export default function ParticipantAdminSection({ group }: Props) {
         await removePartipant({
           participantId: participant.id,
           groupId: group.id,
+          isCurrentUser: true,
         })
 
         timeoutRef.current = setTimeout(() => {

@@ -5,11 +5,9 @@
  */
 'use client'
 
-import { useInitSimulationParam } from '@/hooks/useInitSimulationParam'
 import { useRedirectIfInAppBrowser } from '@/hooks/useRedirectIfInAppBrowser'
 
 export default function MainHooks() {
-  useInitSimulationParam()
   useRedirectIfInAppBrowser()
 
   return null
