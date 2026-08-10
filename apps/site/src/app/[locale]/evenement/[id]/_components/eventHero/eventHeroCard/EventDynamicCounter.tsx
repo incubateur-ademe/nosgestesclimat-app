@@ -1,5 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import CircularProgressbar from '../CircularProgressbar'
 import { COUNTER_BLOCK_ANIMATION_TOTAL } from './AnimatedCounterBlock'
@@ -13,7 +14,7 @@ interface Props {
   secondaryCtaHref: string
 }
 
-export default function EventDynamicCounter({
+export default async function EventDynamicCounter({
   locale,
   currentValue,
   targetValue,
@@ -21,6 +22,7 @@ export default function EventDynamicCounter({
   primaryCtaHref,
   secondaryCtaHref,
 }: Props) {
+  const { t } = await getServerTranslation({ locale })
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
@@ -75,7 +77,12 @@ export default function EventDynamicCounter({
         <ButtonLink
           className="mb-3 w-full text-base lg:text-xl"
           size="xl"
-          href={primaryCtaHref}>
+          href={primaryCtaHref}
+          target="_blank"
+          aria-label={t(
+            'event.dynamicCounter.primaryCta.ariaLabel',
+            'Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre'
+          )}>
           <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
             Je mobilise mon organisation
           </Trans>
@@ -85,7 +92,12 @@ export default function EventDynamicCounter({
           className="w-full text-base lg:text-xl"
           href={secondaryCtaHref}
           size="xl"
-          color="secondary">
+          color="secondary"
+          target="_blank"
+          aria-label={t(
+            'event.dynamicCounter.secondaryCta.ariaLabel',
+            'Je participe individuellement, ouvrir dans une nouvelle fenêtre'
+          )}>
           <Trans i18nKey="event.dynamicCounter.secondaryCta" locale={locale}>
             Je participe individuellement
           </Trans>

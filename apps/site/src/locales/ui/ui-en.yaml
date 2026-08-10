@@ -1999,10 +1999,34 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
-  event.podium.list.item.score.big: footprint calculations
-  event.podium.list.item.score.big.lock: calculs d'empreinte
-  event.podium.list.item.score.small: tests
-  event.podium.list.item.score.small.lock: tests
+  event.podium.list.item.score.big: participations
+  event.podium.list.item.score.big.lock: participations
+  event.podium.list.item.score.small: participations
+  event.podium.list.item.score.small.lock: participations
+  event.podium.generalRankingLink: See the general rankings
+  event.podium.generalRankingLink.lock: Voir le classement général
+  event.podium.generalRankingLink.ariaLabel: See the general rankings, open in a new window
+  event.podium.generalRankingLink.ariaLabel.lock: Voir le classement général, ouvrir dans une nouvelle fenêtre
+  event.podium.updateNote: The podium updates about every 10 minutes
+  event.podium.updateNote.lock: Le podium se met à jour environ toutes les 10 minutes
+  event.dynamicCounter.primaryCta.ariaLabel: Mobilise my organisation, open in a new window
+  event.dynamicCounter.primaryCta.ariaLabel.lock: Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre
+  event.dynamicCounter.secondaryCta.ariaLabel: Participate as an individual, open in a new window
+  event.dynamicCounter.secondaryCta.ariaLabel.lock: Je participe individuellement, ouvrir dans une nouvelle fenêtre
+  event.ctas.card1.buttonAriaLabel: Take part, open in a new window
+  event.ctas.card1.buttonAriaLabel.lock: Je participe, ouvrir dans une nouvelle fenêtre
+  event.ctas.card2.buttonAriaLabel: Start a collective test, open in a new window
+  event.ctas.card2.buttonAriaLabel.lock: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
+  event.podium.categories.all: All
+  event.podium.categories.all.lock: Toutes
+  event.podium.categories.companies: Companies
+  event.podium.categories.companies.lock: Entreprises
+  event.podium.categories.associations: Associations
+  event.podium.categories.associations.lock: Associations
+  event.podium.categories.education: Education
+  event.podium.categories.education.lock: Éducation
+  event.podium.categories.publicServices: Public services
+  event.podium.categories.publicServices.lock: Services publics
   event.testimonies.4.text: I was surprised to find that the bulk of my carbon footprint doesn’t come from my direct actions, such as my journeys, but rather from more invisible aspects of daily life, such as public services or the production of the goods I buy. It made me realise that carbon impact is often indirect.
   event.testimonies.4.text.lock: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.countdown.label: Starting in
@@ -2021,12 +2045,12 @@ entries:
   event.podium.nextButton.label: Next organisation
   event.podium.remainingList.ariaLabel: Rest of the rankings
   event.podium.nextButton.label.lock: Organisation suivante
-  event.podium.block.score.text1: footprint calculations
-  event.podium.block.score.text1.lock: calculs d'empreinte
+  event.podium.block.score.text1: participations
+  event.podium.block.score.text1.lock: participations
   event.podium.block.score.text2: Awaiting launch
   event.podium.block.score.text2.lock: En attente du lancement
   event.podium.empty: No {{organisationType}} has participated yet
-  event.podium.empty.lock: "Aucune {{organisationType}} n'a participé pour le moment"
+  event.podium.empty.lock: Aucune {{organisationType}} n'a participé pour le moment
   event.podium.empty.type.all: organisation
   event.podium.empty.type.all.lock: organisation
   event.podium.empty.type.companies: company

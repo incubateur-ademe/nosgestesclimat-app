@@ -1372,8 +1372,20 @@ entries:
   event.statistics.second: actions disponibles pour réduire son empreinte
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
-  event.podium.list.item.score.big: calculs d'empreinte
-  event.podium.list.item.score.small: tests
+  event.podium.list.item.score.big: participations
+  event.podium.list.item.score.small: participations
+  event.podium.generalRankingLink: Voir le classement général
+  event.podium.generalRankingLink.ariaLabel: Voir le classement général, ouvrir dans une nouvelle fenêtre
+  event.podium.updateNote: Le podium se met à jour environ toutes les 10 minutes
+  event.dynamicCounter.primaryCta.ariaLabel: Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre
+  event.dynamicCounter.secondaryCta.ariaLabel: Je participe individuellement, ouvrir dans une nouvelle fenêtre
+  event.ctas.card1.buttonAriaLabel: Je participe, ouvrir dans une nouvelle fenêtre
+  event.ctas.card2.buttonAriaLabel: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
+  event.podium.categories.all: Toutes
+  event.podium.categories.companies: Entreprises
+  event.podium.categories.associations: Associations
+  event.podium.categories.education: Éducation
+  event.podium.categories.publicServices: Services publics
   event.testimonies.4.text: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.countdown.date: Lancement le {{date}}
   event.countdown.description: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
@@ -1386,9 +1398,9 @@ entries:
   Organisation: Organisation
   event.podium.nextButton.label: Organisation suivante
   event.podium.remainingList.ariaLabel: Suite du classement
-  event.podium.block.score.text1: calculs d'empreinte
+  event.podium.block.score.text1: participations
   event.podium.block.score.text2: En attente du lancement
-  event.podium.empty: "Aucune {{organisationType}} n'a participé pour le moment"
+  event.podium.empty: Aucune {{organisationType}} n'a participé pour le moment
   event.podium.empty.type.all: organisation
   event.podium.empty.type.companies: entreprise
   event.podium.empty.type.associations: association

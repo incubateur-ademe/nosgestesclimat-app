@@ -19,12 +19,12 @@ export default function ListItem({ rank, label, score, locale }: Props) {
         {score}{' '}
         <span className="hidden md:inline">
           <Trans locale={locale} i18nKey="event.podium.list.item.score.big">
-            calculs d'empreinte
+            participations
           </Trans>
         </span>
         <span className="md:hidden">
           <Trans locale={locale} i18nKey="event.podium.list.item.score.small">
-            tests
+            participations
           </Trans>
         </span>
       </span>

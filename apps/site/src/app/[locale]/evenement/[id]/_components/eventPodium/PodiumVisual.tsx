@@ -1,4 +1,6 @@
 import ChevronLeft from '@/components/icons/ChevronLeft'
+import Link from '@/components/Link'
+import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
@@ -7,6 +9,9 @@ import { twMerge } from 'tailwind-merge'
 import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
 import PodiumBlock from './PodiumBlock'
+
+const GENERAL_RANKING_URL =
+  'https://eu.posthog.com/shared/usl5nIC6qMxcL94bJI689dnZEGPidQ'
 
 interface Props {
   items: PodiumItem[]
@@ -130,6 +135,26 @@ export default async function PodiumVisual({
           ))}
         </ol>
       )}
+
+      <div className="-mt-2 flex justify-center">
+        <Link
+          href={GENERAL_RANKING_URL}
+          className="text-sm"
+          aria-label={t(
+            'event.podium.generalRankingLink.ariaLabel',
+            'Voir le classement général, ouvrir dans une nouvelle fenêtre'
+          )}>
+          <Trans i18nKey="event.podium.generalRankingLink" locale={locale}>
+            Voir le classement général
+          </Trans>
+        </Link>
+      </div>
+
+      <p className="text-primary-700 mt-4 text-right text-sm italic">
+        <Trans i18nKey="event.podium.updateNote" locale={locale}>
+          Le podium se met à jour environ toutes les 10 minutes
+        </Trans>
+      </p>
     </>
   )
 }

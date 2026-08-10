@@ -37,6 +37,7 @@ export interface CtaCard {
   description: string
   buttonLabel: string
   buttonHref: string
+  buttonAriaLabel: string
 }
 
 export interface EventPageData {
@@ -295,6 +296,10 @@ export async function getEventPageData({
         buttonLabel: t('event.ctas.card1.buttonLabel', 'Je participe'),
         buttonHref:
           'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
+        buttonAriaLabel: t(
+          'event.ctas.card1.buttonAriaLabel',
+          'Je participe, ouvrir dans une nouvelle fenêtre'
+        ),
       },
       {
         emoji: '🏛️',
@@ -309,6 +314,10 @@ export async function getEventPageData({
           'Je crée un test collectif'
         ),
         buttonHref: ORGANISATION_HOME_PAGE,
+        buttonAriaLabel: t(
+          'event.ctas.card2.buttonAriaLabel',
+          'Je crée un test collectif, ouvrir dans une nouvelle fenêtre'
+        ),
       },
     ],
   }

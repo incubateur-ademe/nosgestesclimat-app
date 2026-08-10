@@ -137,7 +137,12 @@ export default function EventCountdown({
         <ButtonLink
           className="mb-2 w-full text-sm sm:mb-3 sm:text-base lg:text-xl"
           size="xl"
-          href={primaryCtaHref}>
+          href={primaryCtaHref}
+          target="_blank"
+          aria-label={t(
+            'event.dynamicCounter.primaryCta.ariaLabel',
+            'Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre'
+          )}>
           <Trans i18nKey="event.dynamicCounter.primaryCta">
             Je mobilise mon organisation
           </Trans>
@@ -147,7 +152,12 @@ export default function EventCountdown({
           className="w-full text-sm sm:text-base lg:text-xl"
           href={secondaryCtaHref}
           size="xl"
-          color="secondary">
+          color="secondary"
+          target="_blank"
+          aria-label={t(
+            'event.dynamicCounter.secondaryCta.ariaLabel',
+            'Je participe individuellement, ouvrir dans une nouvelle fenêtre'
+          )}>
           <Trans i18nKey="event.dynamicCounter.secondaryCta">
             Je participe individuellement
           </Trans>
