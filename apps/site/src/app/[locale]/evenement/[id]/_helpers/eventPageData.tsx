@@ -63,6 +63,8 @@ export interface EventPageData {
 
 const TARGET_VALUE = 50000
 
+const ACTIONS_COUNT = 46
+
 // Build the podium items from the organisations returned by the service, which
 // already caps them at PODIUM_LIMIT_PER_TYPE per type server-side.
 function buildPodiumItems(organisations: EventOrganisation[]): PodiumItem[] {
@@ -126,7 +128,7 @@ export async function getEventPageData({
     },
     statisticsValues: {
       simulations: eventInfo.totalSimulations,
-      actions: 0,
+      actions: ACTIONS_COUNT,
       organisations: eventInfo.organisationCount,
     },
     podiumItems,
@@ -192,7 +194,7 @@ export async function getEventPageData({
           title: t('event.tutorial.org.1.title', 'Créez un test collectif'),
           description: (
             <Trans i18nKey="event.tutorial.org.1.description" locale={locale}>
-              <Link href={ORGANISATION_HOME_PAGE}>
+              <Link href={ORGANISATION_HOME_PAGE} target="_blank">
                 Configurez votre campagne
               </Link>{' '}
               en quelques clics et définissez vos objectifs.
