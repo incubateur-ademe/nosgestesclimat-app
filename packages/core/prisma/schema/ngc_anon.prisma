@@ -11,6 +11,7 @@ view AnonSimulation {
   user            AnonUser            @relation(fields: [userId], references: [id])
   userEmail       String?
   polls           AnonSimulationPoll[]
+  groups          AnonGroupParticipant[]
   createdAt       DateTime
   updatedAt       DateTime
 
@@ -19,12 +20,14 @@ view AnonSimulation {
 }
 
 view AnonUser {
-  id            String             @unique @db.Uuid
+  id            String                   @unique @db.Uuid
   ageRange      AgeRange?
   createdAt     DateTime
   updatedAt     DateTime
   simulations   AnonSimulation[]
   verifiedUsers AnonVerifiedUser[]
+  administrator AnonGroupAdministrator[]
+  member        AnonGroupParticipant[]
 
   @@map("User")
   @@schema("ngc_anon")
@@ -102,5 +105,45 @@ view AnonSimulationPoll {
   updatedAt    DateTime
 
   @@map("SimulationPoll")
+  @@schema("ngc_anon")
+}
+
+view AnonGroup {
+  id            String                  @unique
+  createdAt     DateTime
+  updatedAt     DateTime
+  administrator AnonGroupAdministrator?
+  participants  AnonGroupParticipant[]
+
+  @@map("Group")
+  @@schema("ngc_anon")
+}
+
+view AnonGroupAdministrator {
+  id        String    @unique @db.Uuid
+  userId    String    @db.Uuid
+  user      AnonUser  @relation(fields: [userId], references: [id])
+  group     AnonGroup @relation(fields: [groupId], references: [id])
+  groupId   String    @unique
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@map("GroupAdministrator")
+  @@schema("ngc_anon")
+}
+
+view AnonGroupParticipant {
+  id           String         @unique @db.Uuid
+  userId       String         @db.Uuid
+  user         AnonUser       @relation(fields: [userId], references: [id])
+  simulationId String         @db.Uuid
+  simulation   AnonSimulation @relation(fields: [simulationId], references: [id])
+  group        AnonGroup      @relation(fields: [groupId], references: [id])
+  groupId      String
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  @@unique([groupId, userId])
+  @@map("GroupParticipant")
   @@schema("ngc_anon")
 }

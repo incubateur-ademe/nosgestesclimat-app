@@ -48,7 +48,7 @@ export default function ChoiceInput({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex items-stretch gap-2">
         <label
           title={`${labelText} - ${active ? t('Option sélectionnée') : t('Sélectionner cette option')}`}
           className={`relative flex ${isWithinGrid ? 'w-full' : ''} cursor-pointer items-center gap-2 rounded-xl border bg-white px-4 py-2 text-left transition-colors ${buttonClassNames[status]} focus-within:ring-primary-700 focus-within:ring-2 focus-within:ring-offset-2`}
