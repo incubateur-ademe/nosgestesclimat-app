@@ -14,10 +14,6 @@
       "size": "M"
     },
     {
-      "command": "*/10 * * * * bash scripts/refresh-event-computation-nonprod.sh",
-      "size": "S"
-    },
-    {
       "command": "*/15 * * * * pnpm jobs:refreshEventComputation",
       "size": "S"
     }

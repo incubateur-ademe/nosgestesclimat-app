@@ -64,7 +64,7 @@ export default async function PodiumVisual({
             color="secondary"
             className="absolute top-1/2 left-0 z-10 hidden h-11 w-11 -translate-y-1/2 p-0! md:flex"
             aria-label={t(
-              'event.podium.nextButton.label',
+              'event.podium.previousButton.label',
               'Organisation précédente'
             )}>
             <ChevronLeft />
@@ -152,7 +152,7 @@ export default async function PodiumVisual({
 
       <p className="text-primary-700 mt-4 text-right text-sm italic">
         <Trans i18nKey="event.podium.updateNote" locale={locale}>
-          Le podium se met à jour environ toutes les 10 minutes
+          Le podium se met à jour environ toutes les 15 minutes
         </Trans>
       </p>
     </>

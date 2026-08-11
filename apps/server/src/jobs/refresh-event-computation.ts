@@ -1,8 +1,14 @@
 import { refreshEventComputation } from '@nosgestesclimat/core/features/events/repositories/event.repository'
+import { ensureSeddEvent } from '@nosgestesclimat/core/features/events/services/ensure-sedd-event.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import logger from '../logger.ts'
 
 const main = async () => {
+  // Ensure the default SEDD event exists so /evenement/sedd always has a row
+  // to read from, in every environment. Idempotent, so it is safe to run on
+  // every cron tick.
+  await ensureSeddEvent()
+
   const now = new Date()
 
   // The event period is stored on the Event row (seeded SEDD 2026 event), so

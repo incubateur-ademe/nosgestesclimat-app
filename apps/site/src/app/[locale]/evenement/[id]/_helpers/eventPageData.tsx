@@ -107,7 +107,7 @@ export async function getEventPageData({
               `Organisation ${index + 2}`
             ),
             score: 0,
-            category: 'companies' as const,
+            category: 'all' as const,
           })),
         ]
 

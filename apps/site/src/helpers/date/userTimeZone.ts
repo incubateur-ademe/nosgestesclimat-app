@@ -34,7 +34,7 @@ export function getBrowserTimeZone(): string {
 export function setUserTimeZoneCookie() {
   if (typeof document === 'undefined') return
   if (getClientCookie(USER_TIME_ZONE_COOKIE)) return
-  // IANA names contain '/', which cookie parsers decode on both sides.
-  const value = encodeURIComponent(getBrowserTimeZone())
-  document.cookie = `${USER_TIME_ZONE_COOKIE}=${value}; path=/; SameSite=None; Secure; max-age=31536000`
+  // IANA names only contain letters, digits, '/' and '_', all allowed in a
+  // cookie value (RFC 6265): no encoding needed.
+  document.cookie = `${USER_TIME_ZONE_COOKIE}=${getBrowserTimeZone()}; path=/; SameSite=None; Secure; max-age=31536000`
 }

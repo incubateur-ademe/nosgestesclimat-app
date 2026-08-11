@@ -1372,11 +1372,10 @@ entries:
   event.statistics.second: actions disponibles pour réduire son empreinte
   contact.iframe.title.en: Formulaire - give some feedback about Nos Gestes Climat
   contact.iframe.title.fr: Formulaire - nous faire part de vos remarques sur le site
-  event.podium.list.item.score.big: participations
-  event.podium.list.item.score.small: participations
+  event.podium.list.item.participations: participations
   event.podium.generalRankingLink: Voir le classement général
   event.podium.generalRankingLink.ariaLabel: Voir le classement général, ouvrir dans une nouvelle fenêtre
-  event.podium.updateNote: Le podium se met à jour environ toutes les 10 minutes
+  event.podium.updateNote: Le podium se met à jour environ toutes les 15 minutes
   event.dynamicCounter.primaryCta.ariaLabel: Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre
   event.dynamicCounter.secondaryCta.ariaLabel: Je participe individuellement, ouvrir dans une nouvelle fenêtre
   event.ctas.card1.buttonAriaLabel: Je participe, ouvrir dans une nouvelle fenêtre
@@ -1396,9 +1395,9 @@ entries:
   Services publics: Services publics
   Individu: Individu
   Organisation: Organisation
+  event.podium.previousButton.label: Organisation précédente
   event.podium.nextButton.label: Organisation suivante
   event.podium.remainingList.ariaLabel: Suite du classement
-  event.podium.block.score.text1: participations
   event.podium.block.score.text2: En attente du lancement
   event.podium.empty: Aucune {{organisationType}} n'a participé pour le moment
   event.podium.empty.type.all: organisation

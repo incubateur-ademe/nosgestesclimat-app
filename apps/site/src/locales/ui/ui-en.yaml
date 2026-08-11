@@ -1999,16 +1999,14 @@ entries:
   contact.iframe.title.en.lock: Formulaire - give some feedback about Nos Gestes Climat
   actions.listPage.metaTitle: My actions – Nos Gestes Climat
   actions.listPage.metaTitle.lock: Mes actions - Nos Gestes Climat
-  event.podium.list.item.score.big: participations
-  event.podium.list.item.score.big.lock: participations
-  event.podium.list.item.score.small: participations
-  event.podium.list.item.score.small.lock: participations
+  event.podium.list.item.participations: participations
+  event.podium.list.item.participations.lock: participations
   event.podium.generalRankingLink: See the general rankings
   event.podium.generalRankingLink.lock: Voir le classement général
   event.podium.generalRankingLink.ariaLabel: See the general rankings, open in a new window
   event.podium.generalRankingLink.ariaLabel.lock: Voir le classement général, ouvrir dans une nouvelle fenêtre
-  event.podium.updateNote: The podium updates about every 10 minutes
-  event.podium.updateNote.lock: Le podium se met à jour environ toutes les 10 minutes
+  event.podium.updateNote: The podium updates about every 15 minutes
+  event.podium.updateNote.lock: Le podium se met à jour environ toutes les 15 minutes
   event.dynamicCounter.primaryCta.ariaLabel: Mobilise my organisation, open in a new window
   event.dynamicCounter.primaryCta.ariaLabel.lock: Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre
   event.dynamicCounter.secondaryCta.ariaLabel: Participate as an individual, open in a new window
@@ -2042,11 +2040,11 @@ entries:
   Services publics: Public services
   Individu: Individual
   Organisation: Organisation
+  event.podium.previousButton.label: Previous organisation
+  event.podium.previousButton.label.lock: Organisation précédente
   event.podium.nextButton.label: Next organisation
   event.podium.remainingList.ariaLabel: Rest of the rankings
   event.podium.nextButton.label.lock: Organisation suivante
-  event.podium.block.score.text1: participations
-  event.podium.block.score.text1.lock: participations
   event.podium.block.score.text2: Awaiting launch
   event.podium.block.score.text2.lock: En attente du lancement
   event.podium.empty: No {{organisationType}} has participated yet

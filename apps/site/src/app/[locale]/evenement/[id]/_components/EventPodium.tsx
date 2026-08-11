@@ -4,25 +4,12 @@ import type { Locale } from '@/i18nConfig'
 import { filterAndRankPodiumItems } from '@nosgestesclimat/core/features/events/helpers/podium'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import type { FilterValue } from './eventPodium/EventTabs'
-import EventTabs, { FILTER_KEY, FILTER_VALUES } from './eventPodium/EventTabs'
+import EventTabs, {
+  FILTER_KEY,
+  FILTER_VALUES,
+  buildFilterHref,
+} from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
-
-function buildFilterHref(
-  existing: Record<string, string | string[] | undefined>,
-  filterValue: string
-) {
-  const next = new URLSearchParams()
-  for (const [key, value] of Object.entries(existing)) {
-    if (key === FILTER_KEY) continue
-    if (Array.isArray(value)) {
-      value.forEach((v) => next.append(key, v))
-    } else if (value != null) {
-      next.set(key, value)
-    }
-  }
-  next.set(FILTER_KEY, filterValue)
-  return `?${next.toString()}`
-}
 
 interface Props {
   locale: Locale
@@ -77,7 +64,7 @@ export default async function EventPodium({
         </Trans>
       </Title>
 
-      <EventTabs filter={filter} locale={locale} />
+      <EventTabs filter={filter} locale={locale} params={params} />
 
       <PodiumVisual
         // Trigger animation on each change
