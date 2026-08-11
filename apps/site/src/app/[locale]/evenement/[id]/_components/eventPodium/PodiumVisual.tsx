@@ -136,14 +136,14 @@ export default async function PodiumVisual({
         </ol>
       )}
 
-      <div className="-mt-2 flex justify-center">
+      <div className="mt-6 flex justify-center">
         <Link
           href={GENERAL_RANKING_URL}
-          className="text-sm"
           aria-label={t(
             'event.podium.generalRankingLink.ariaLabel',
             'Voir le classement général, ouvrir dans une nouvelle fenêtre'
-          )}>
+          )}
+          className="font-medium!">
           <Trans i18nKey="event.podium.generalRankingLink" locale={locale}>
             Voir le classement général
           </Trans>
