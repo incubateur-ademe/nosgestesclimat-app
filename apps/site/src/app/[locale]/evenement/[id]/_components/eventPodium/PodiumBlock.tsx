@@ -50,7 +50,9 @@ export default function PodiumBlock({
             !isFirst && 'text-primary-600 text-base'
           )}>
           {score}{' '}
-          <Trans locale={locale} i18nKey="event.podium.block.score.text1">
+          <Trans
+            locale={locale}
+            i18nKey="event.podium.list.item.participations">
             participations
           </Trans>
         </span>
