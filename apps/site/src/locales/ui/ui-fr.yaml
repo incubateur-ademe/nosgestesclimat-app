@@ -1280,6 +1280,9 @@ entries:
   simulator.intercalaire.goToConsommation: Passer à la consommation
   simulator.intercalaire.goToLogement: Passer au logement
   simulator.intercalaire.goToTransport: Passer au transport
+  actions.mTaTerre.button: Explorer M ta Terre
+  actions.mTaTerre.text: "Climat, biodiversité, énergie, alimentation…<1></1><2>M ta Terre</2>, c'est le site fait pour toi : des <5>articles</5>, <7>vidéos</7>, <10>podcasts</10> et des <12>gestes concrets</12> pour passer à l'action au quotidien."
+  actions.mTaTerre.title: Tu veux comprendre ET agir pour la planète ?
   common.authentication.verifyEmail: Vérifier mon adresse électronique
   common.optional: facultatif
   common.skip: Passer
@@ -1288,8 +1291,8 @@ entries:
   tutorial.email.seeMore: En savoir plus
   tutorial.email.subtitle.default: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
-  tutorial.email.title.default: Votre adresse électronique
-  tutorial.email.title.youth: Ton adresse électronique
+  tutorial.email.title.default: Votre adresse e-mail
+  tutorial.email.title.youth: Ton adresse e-mail
   actions.components.themeSection.description: '{{count}} actions recommandées'
   components.markdown.linkTargetBlankAriaLabel: (ouvrir dans une nouvelle fenêtre)
   components.carousel.prevSlideMessage: Diapo précédente
@@ -1444,6 +1447,10 @@ entries:
   signIn.emailForm.error.rateLimited: Un code vient d'être envoyé à cette adresse. Veuillez patienter avant d'en demander un nouveau.
   signIn.code.rateLimited: Veuillez patienter un instant avant de réessayer.
   signIn.code.invalid: Le code est invalide
+  emailConfirmation.title: Jeu concours -
+  emailConfirmation.subtitle: Votre participation a bien été prise en compte
+  emailConfirmation.text: Vos résultats d'empreinte sont prêts. Cliquez sur le bouton ci-dessous pour les consulter.
+  emailConfirmation.seeResults: Voir mes résultats
   banner.close: Fermer la bannière
   common.errors.errorHappening: Une erreur est survenue. Veuillez réessayer.
   Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.: Gérez vos abonnements aux infolettres Nos Gestes Climat. Sélectionnez les newsletters qui vous intéressent pour recevoir des conseils personnalisés sur la réduction de votre empreinte carbone.
