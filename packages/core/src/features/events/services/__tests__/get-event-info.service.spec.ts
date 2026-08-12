@@ -220,6 +220,48 @@ describe('getEventInfo', () => {
     expect(result.organisationCount).toBe(1)
   })
 
+  it('counts only simulations created during the event window for an organisation created before the event', async () => {
+    const event = await eventFactory.create()
+
+    const oldOrg = await organisationFactory.create({
+      name: 'Old Org',
+      slug: 'old-org',
+      createdAt: new Date(
+        event.startDate.getTime() - 30 * 24 * 60 * 60 * 1000
+      ),
+    })
+
+    // Simulations run before the event window: must not be counted.
+    await seedPoll(event, oldOrg.id, 2, {
+      pollCreatedAt: new Date(
+        event.startDate.getTime() - 2 * 24 * 60 * 60 * 1000
+      ),
+      simulationDates: [
+        new Date(event.startDate.getTime() - 2 * 24 * 60 * 60 * 1000),
+        new Date(event.startDate.getTime() - 24 * 60 * 60 * 1000),
+      ],
+    })
+
+    // Simulations run during the event window: these are the only ones counted.
+    await seedPoll(event, oldOrg.id, 3, {
+      simulationDates: [
+        new Date(event.startDate.getTime() + 60 * 60 * 1000),
+        new Date(event.startDate.getTime() + 2 * 60 * 60 * 1000),
+        new Date(event.startDate.getTime() + 3 * 60 * 60 * 1000),
+      ],
+    })
+
+    await refreshEventComputation()
+
+    const result = expectEventInfo(await getEventInfo(event.id))
+
+    expect(result.organisations).toHaveLength(1)
+    expect(result.organisations[0].slug).toBe('old-org')
+    expect(result.organisations[0].simulationsCount).toBe(3)
+    expect(result.totalSimulations).toBe(3)
+    expect(result.organisationCount).toBe(1)
+  })
+
   it('does not count incomplete simulations (progression < 1)', async () => {
     const event = await eventFactory.create()
 
