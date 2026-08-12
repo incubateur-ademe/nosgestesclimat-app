@@ -9,6 +9,7 @@ import { organisationTypeToCategory } from '@nosgestesclimat/core/features/event
 import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
 import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
 
 export interface Testimony {
@@ -84,13 +85,16 @@ export async function getEventPageData({
   eventId: string
   locale: Locale
 }): Promise<EventPageData | null> {
+  'use cache'
+  cacheLife({ stale: 600, revalidate: 600, expire: 600 })
+
   const { t } = await getServerTranslation({ locale })
 
   const eventInfo = await getEventInfo(eventId)
 
   if (!eventInfo) return null
 
-  const currentValue = eventInfo.totalSimulations
+  const currentValue = 76000 //meventInfo.totalSimulations
 
   const podiumItems =
     eventInfo.organisations.length > 0
@@ -121,7 +125,7 @@ export async function getEventPageData({
     dynamicCounter: {
       currentValue,
       targetValue: TARGET_VALUE,
-      progressPercentage: Math.min((currentValue / TARGET_VALUE) * 100, 100),
+      progressPercentage: (currentValue / TARGET_VALUE) * 100,
       primaryCtaHref: ORGANISATION_HOME_PAGE,
       secondaryCtaHref:
         'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',

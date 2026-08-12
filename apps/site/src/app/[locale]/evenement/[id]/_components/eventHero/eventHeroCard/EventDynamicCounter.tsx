@@ -1,5 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
+import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import CircularProgressbar from '../CircularProgressbar'
@@ -50,9 +51,31 @@ export default async function EventDynamicCounter({
 
         <div>
           <p className="mb-1! text-slate-600">
-            <Trans i18nKey="event.dynamicCounter.target.title" locale={locale}>
-              Objectif
-            </Trans>
+            {progressPercentage === 100 ? (
+              <span>
+                <Trans
+                  i18nKey="event.dynamicCounter.target.title.topped"
+                  locale={locale}>
+                  Objectif atteint
+                </Trans>{' '}
+                <Emoji>🚀</Emoji>
+              </span>
+            ) : progressPercentage > 100 ? (
+              <span>
+                <Trans
+                  i18nKey="event.dynamicCounter.target.title.over"
+                  locale={locale}>
+                  Objectif dépassé
+                </Trans>{' '}
+                <Emoji>🚀</Emoji>
+              </span>
+            ) : (
+              <Trans
+                i18nKey="event.dynamicCounter.target.title.default"
+                locale={locale}>
+                Objectif
+              </Trans>
+            )}
           </p>
           <p>
             <span className="mb-1 flex flex-wrap items-baseline gap-1 leading-none! lg:flex-nowrap">

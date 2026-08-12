@@ -64,7 +64,7 @@ export default async function EventStatistics({
                   <br />
 
                   <Link
-                    href="/"
+                    href="/organisations"
                     className="hover:text-secondary-100 text-white transition-colors">
                     <Trans
                       i18nKey="event.statistics.third.link"

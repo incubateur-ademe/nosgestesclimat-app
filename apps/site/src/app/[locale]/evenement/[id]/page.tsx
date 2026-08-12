@@ -7,7 +7,6 @@ import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import { findEvent } from '@nosgestesclimat/core/features/events/repositories/event.repository'
 import { notFound } from 'next/navigation'
-import { APP_ENV } from '../../../../../config/app-env'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
@@ -15,13 +14,7 @@ import EventPodium from './_components/EventPodium'
 import EventStatistics from './_components/EventStatistics'
 import EventTestimonies from './_components/EventTestimonies'
 import EventTutorial from './_components/EventTutorial'
-import { getEventPageData as getEventPageDataUncached } from './_helpers/eventPageData'
-import { getEventPageData as getEventPageDataCached } from './_helpers/eventPageData.cached'
-
-// Production-only 'use cache': preview apps and local development read live
-// data so participations appear without waiting for the cache to expire.
-const getEventPageData =
-  APP_ENV === 'production' ? getEventPageDataCached : getEventPageDataUncached
+import { getEventPageData } from './_helpers/eventPageData'
 
 export async function generateMetadata({
   params,
