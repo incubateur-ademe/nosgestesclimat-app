@@ -12,12 +12,16 @@ import {
   QUESTION_DESCRIPTION_BUTTON_ID,
 } from '@/constants/accessibility'
 import { questionChooseAnswer } from '@/constants/tracking/question'
+import { WARNING_MESSAGE_ID } from '@/constants/warning'
 import Button from '@/design-system/buttons/Button'
+import { getWarningId } from '@/helpers/accessibility/getWarningId'
 import { useUpdatePageTitle } from '@/hooks/simulation/useUpdatePageTitle'
+import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { AnimatePresence } from 'framer-motion'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -52,11 +56,10 @@ export default function Question({
     assistance,
     questionsOfMosaicFromParent,
     activeNotifications,
-    plancher,
-    plafond,
-    warning,
     category,
   } = useRule(question)
+
+  const { overLimitQuestions } = useIsDisabledByBounds(question)
 
   const { questionsByCategories } = useFormState()
 
@@ -182,29 +185,33 @@ export default function Question({
                 aria-labelledby="question-label"
                 firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
                 label={label || ''}
+                overLimitQuestions={overLimitQuestions}
               />
             )}
           </>
         )}
       </div>
 
-      {typeof situationValue === 'number' && (
-        <Warning
-          type={type}
-          plancher={plancher}
-          plafond={plafond}
-          warning={warning}
-          value={situationValue}
-          unit={unit}
-        />
-      )}
+      {/* AnimatePresence stays mounted so exit animations play when a warning is removed */}
+      <AnimatePresence>
+        {overLimitQuestions.map((overLimitQuestion) => (
+          <Warning
+            key={overLimitQuestion}
+            question={overLimitQuestion}
+            id={
+              overLimitQuestion === question
+                ? WARNING_MESSAGE_ID
+                : getWarningId(overLimitQuestion)
+            }
+          />
+        ))}
+      </AnimatePresence>
 
       {activeNotifications.length > 0 && (
         <Notification
           notification={activeNotifications[activeNotifications.length - 1]}
         />
       )}
-
       <DontKnowButton question={question} />
     </>
   )

@@ -138,7 +138,6 @@ entries:
   Voir les paramètres: Voir les paramètres
   Vous avez une question ?: Vous avez une question ?
   Voir mes résultats: Voir mes résultats
-  La valeur minimum pour ce champ est de: La valeur minimum pour ce champ est de
   Accéder au kit: Accéder au kit
   Administrateur·ice: Administrateur·ice
   Impact CO2: Impact CO2
@@ -469,8 +468,6 @@ entries:
   Lien copié: Lien copié
   Nos derniers articles: Nos derniers articles
   Partager l'article: Partager l'article
-  La valeur maximum pour ce champ est de: La valeur maximum pour ce champ est de
-  La valeur pour ce champ est comprise entre: La valeur pour ce champ est comprise entre
   En participant vous acceptez que vos résultats soient partagés anonymement avec cette organisation.: En participant vous acceptez que vos résultats soient partagés anonymement avec cette organisation.
   '{{signe}} {{value}} {{unit}} sur votre empreinte {{metric}}': '{{signe}} {{value}} {{unit}} sur votre empreinte {{metric}}'
   Il est question ici des modes "Organisations" et "Challenge tes amis". Cette section est générée via Metabase.: Il est question ici des modes "Organisations" et "Challenge tes amis". Cette section est générée via Metabase.
@@ -1442,4 +1439,7 @@ entries:
   actions.components.actionCard.highlighted.impactUnit: CO<1>2</1>e / an
   actions.components.themeSections.testWhiteBackground.title: Voici d’autres actions qui vous aideront à réduire votre empreinte
   actions.components.themeSections.testWhiteBackground.description: 'À impact variable : des gestes à fort impact aux petit pas.'
+  La valeur maximum pour ce champ est de: La valeur maximum pour ce champ est de
+  La valeur minimum pour ce champ est de: La valeur minimum pour ce champ est de
+  La valeur pour ce champ est comprise entre: La valeur pour ce champ est comprise entre
   actions.components.highestImpactActionsSection.publicDescription: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>

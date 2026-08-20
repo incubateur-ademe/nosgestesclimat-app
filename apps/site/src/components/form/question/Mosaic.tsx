@@ -1,3 +1,4 @@
+import { getWarningId } from '@/helpers/accessibility/getWarningId'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import MosaicQuestion from './mosaic/MosaicQuestion'
@@ -9,6 +10,8 @@ interface Props {
   questionsOfMosaic: DottedName[]
   firstInputId: string
   label: string
+  /** The questions whose bound is exceeded (used to link each field to its warning) */
+  overLimitQuestions?: DottedName[]
 }
 
 export default function Mosaic({
@@ -16,6 +19,7 @@ export default function Mosaic({
   questionsOfMosaic,
   firstInputId,
   label,
+  overLimitQuestions = [],
 }: Props) {
   const { values, setValue, aucunOption } = useMosaicState({
     questionsOfMosaic,
@@ -38,6 +42,11 @@ export default function Mosaic({
             firstInputId={firstInputId}
             value={values[questionOfMosaic]}
             setValue={setValue}
+            warningId={
+              overLimitQuestions.includes(questionOfMosaic)
+                ? getWarningId(questionOfMosaic)
+                : undefined
+            }
           />
         ))}
         {aucunOption && (

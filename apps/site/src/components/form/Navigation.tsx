@@ -15,18 +15,14 @@ import {
   questionClickPrevious,
   questionClickSuivant,
 } from '@/constants/tracking/question'
+import { WARNING_SHAKE_EVENT } from '@/constants/warning'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
+import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useMagicKey } from '@/hooks/useMagicKey'
-import {
-  useUser,
-  useEngine,
-  useFormState,
-  useRule,
-} from '@/publicodes-state'
-import getValueIsOverFloorOrCeiling from '@/publicodes-state/helpers/getValueIsOverFloorOrCeiling'
+import { useEngine, useFormState, useRule, useUser } from '@/publicodes-state'
 import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
 import {
   trackMatomoEvent__deprecated,
@@ -118,9 +114,6 @@ export default function Navigation({
   const {
     isMissing,
     isFolded,
-    plancher,
-    plafond,
-    situationValue,
     value,
     activeNotifications,
     questionsOfMosaicFromParent,
@@ -143,18 +136,8 @@ export default function Navigation({
 
   const { updateCurrentSimulation } = useUser()
 
-  // Check if the numeric value is out of bounds (floor/ceiling)
-  const isNextDisabled =
-    typeof situationValue === 'number'
-      ? (() => {
-          const { isBelowFloor, isOverCeiling } = getValueIsOverFloorOrCeiling({
-            value: situationValue,
-            plafond,
-            plancher,
-          })
-          return isBelowFloor || isOverCeiling
-        })()
-      : false
+  // Check if the numeric value or one of numeric mosaic children is out of bounds (floor/ceiling)
+  const { isNextDisabled } = useIsDisabledByBounds(question)
 
   // Disable "Précédent" only when there's truly no previous question
   const hasNoPreviousQuestion = isEmbedded
@@ -393,6 +376,13 @@ export default function Navigation({
           size="md"
           title={submitButtonTitle}
           onClick={handleGoToNextQuestion}
+          onClickDisabled={
+            isNextDisabled
+              ? () => {
+                  document.dispatchEvent(new Event(WARNING_SHAKE_EVENT))
+                }
+              : undefined
+          }
           className={twMerge(
             'p-3 text-sm',
             submitButtonKind === 'finish' &&

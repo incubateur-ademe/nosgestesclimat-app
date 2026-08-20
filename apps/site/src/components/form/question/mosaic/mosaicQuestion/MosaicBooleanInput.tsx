@@ -19,6 +19,7 @@ interface Props {
   value: boolean | undefined | null
   index: number
   isInactive?: boolean
+  warningId?: string
 }
 
 const buttonClassNames = {
@@ -42,6 +43,7 @@ export default function MosaicBooleanInput({
   index,
   value,
   isInactive,
+  warningId,
 }: Props) {
   const { t } = useClientTranslation()
 
@@ -74,7 +76,7 @@ export default function MosaicBooleanInput({
           type="checkbox"
           data-testid={`${question}-oui`}
           aria-disabled={isInactive}
-          aria-describedby={isInactive ? `${title}-soon-available` : undefined}
+          aria-describedby={isInactive ? `${title}-soon-available` : warningId}
           className="sr-only"
           onChange={() => {
             if (isInactive) return

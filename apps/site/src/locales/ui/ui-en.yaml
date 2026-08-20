@@ -162,7 +162,6 @@ entries:
   Vous avez une question ?: Do you have a question?
   Animez un atelier: Run a workshop
   Voir mes résultats: See my results
-  La valeur minimum pour ce champ est de: The minimum value for this field is
   Administrateur·ice: Administrator
   Valorisez vos données carbone: Make the most of your carbon data
   Vos données seront stockées de manière sécurisée et anonyme. Elles seront agrégées à des fins statistiques ; lesdites statistiques seront consultables sur la page "Rapport détaillé" de votre sondage en fin de parcours. Cette page restera exclusivement accessible aux participant·es ainsi qu'aux organisateur·ices.: Your data will be stored securely and anonymously. They will be aggregated for statistical purposes; these statistics will be available on the "Detailed report" page of your survey at the end of the course. This page will remain accessible exclusively to participants and organisers.
@@ -495,8 +494,6 @@ entries:
   Partager l'article: Share this article
   Lien copié: Copied link
   Nos derniers articles: Our latest articles
-  La valeur maximum pour ce champ est de: The maximum value for this field is
-  La valeur pour ce champ est comprise entre: The value for this field is between
   En participant vous acceptez que vos résultats soient partagés anonymement avec cette organisation.: By taking part, you agree to your results being shared anonymously with this organisation.
   Il est question ici des modes "Organisations" et "Challenge tes amis". Cette section est générée via Metabase.: We are talking here about the "Organisations" and "Challenge your friends" modes. This section is generated via Metabase.
   Ressources: Resources
@@ -2152,5 +2149,8 @@ entries:
   actions.components.themeSections.testWhiteBackground.description.lock: 'À impact variable : des gestes à fort impact aux petit pas.'
   actions.components.themeSections.testWhiteBackground.title: Here are some other things you can do to help reduce your carbon footprint
   actions.components.themeSections.testWhiteBackground.title.lock: Voici d’autres actions qui vous aideront à réduire votre empreinte
+  La valeur minimum pour ce champ est de: The minimum value for this field is
+  La valeur pour ce champ est comprise entre: The value for this field is between
+  La valeur maximum pour ce champ est de: The maximum value for this field is
   actions.components.highestImpactActionsSection.publicDescription: The top 3 actions you can take to limit or reduce your CO<1>2</1> emissions
   actions.components.highestImpactActionsSection.publicDescription.lock: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>

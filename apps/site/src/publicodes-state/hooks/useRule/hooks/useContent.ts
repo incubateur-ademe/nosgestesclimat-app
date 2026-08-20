@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_PLAFOND, DEFAULT_PLANCHER } from '@/constants/model/bounds'
 import getNamespace from '@/publicodes-state/helpers/getNamespace'
 import type { FormattedSuggestion } from '@/publicodes-state/types'
 import type {
@@ -56,10 +57,10 @@ export default function useContent({ dottedName, rule }: Props) {
 
     // TODO: Deal with the case where the plancher needs to be evaluated.
     if (typeof plancherValue === 'string') {
-      return 0
+      return DEFAULT_PLANCHER
     }
 
-    return plancherValue ?? 0
+    return plancherValue ?? DEFAULT_PLANCHER
   }, [rule])
 
   const plafond = useMemo<number>(() => {
@@ -68,9 +69,9 @@ export default function useContent({ dottedName, rule }: Props) {
 
     // TODO: Deal with the case where the plafond needs to be evaluated.
     if (typeof plafondValue === 'string') {
-      return 1_000_000
+      return DEFAULT_PLAFOND
     }
-    return plafondValue ?? 1_000_000
+    return plafondValue ?? DEFAULT_PLAFOND
   }, [rule])
 
   const warning = useMemo<string | undefined>(

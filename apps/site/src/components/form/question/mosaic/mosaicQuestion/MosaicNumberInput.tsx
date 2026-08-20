@@ -16,6 +16,7 @@ interface Props {
   index: number
   value: number | undefined | '' | null
   parentMosaic: string
+  warningId?: string
 }
 
 export default function MosaicNumberInput({
@@ -27,6 +28,7 @@ export default function MosaicNumberInput({
   index,
   value,
   parentMosaic,
+  warningId,
 }: Props) {
   const { plafond, unit } = useRule(question)
 
@@ -96,6 +98,7 @@ export default function MosaicNumberInput({
           }}
           data-testid={question}
           id={`${DEFAULT_FOCUS_ELEMENT_ID}-${index}`}
+          aria-describedby={warningId}
         />
         {!shouldNotContainButtons && (
           <Button

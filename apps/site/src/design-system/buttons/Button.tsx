@@ -20,6 +20,7 @@ import { useButtonState } from './useButtonState'
 
 export type ButtonProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>
+  onClickDisabled?: () => void
   className?: string
   size?: ButtonSize
   color?: ButtonColor
@@ -38,6 +39,7 @@ export type { ButtonColor }
 
 export default function Button({
   onClick,
+  onClickDisabled,
   children,
   className,
   size = 'md',
@@ -64,6 +66,7 @@ export default function Button({
         isDisabled
           ? (e) => {
               e.preventDefault()
+              onClickDisabled?.()
             }
           : showLoadingOnClickWhilePending
             ? (e) => {
