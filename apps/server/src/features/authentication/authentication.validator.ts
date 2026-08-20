@@ -2,7 +2,6 @@ import * as v from 'valibot'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
 
 export const LoginDto = v.strictObject({
-  userId: v.pipe(v.string(), v.uuid()),
   email: v.pipe(
     v.string(),
     v.email(),

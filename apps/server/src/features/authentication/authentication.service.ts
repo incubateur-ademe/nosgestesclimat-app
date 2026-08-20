@@ -1,5 +1,6 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
+import { randomUUID } from 'crypto'
 import type { CookieOptions } from 'express'
 import jwt from 'jsonwebtoken'
 import {
@@ -132,15 +133,27 @@ export const verifyCode = async (
 export const login = async ({
   loginDto,
   locale,
+  sessionUserId,
 }: {
   loginDto: LoginDto
   locale: Locales
+  /**
+   * The current session's userId, forwarded by the site's `fetchServer` as
+   * the `x-user-id` header. The login route only accepts requests carrying
+   * the shared `x-internal-key`, so this id comes from the signed session
+   * cookie - not from the browser. The server relies on it to enforce the
+   * "one session userId = one account" invariant.
+   */
+  sessionUserId?: string
 }) => {
-  const { user, mode, token } = await createAccountOrSignin(loginDto)
+  const { user, mode, token } = await createAccountOrSignin({
+    loginDto,
+    sessionUserId,
+  })
 
   const loginEvent = new LoginEvent({
     user,
-    previousUserId: loginDto.userId,
+    previousUserId: sessionUserId,
     mode,
     locale,
   })
@@ -162,7 +175,32 @@ export function createToken(user: Pick<VerifiedUser, 'id' | 'email'>) {
   )
 }
 
-export async function createAccountOrSignin(loginDto: LoginDto) {
+/**
+ * Returns the verified account that already owns `userId`, unless it is the
+ * account identified by `email`.
+ *
+ * `VerifiedUser.id` is not unique in the schema - only `email` is the primary
+ * key - so nothing in the database stops two accounts from sharing a userId.
+ * The application enforces the "one session userId = one account" invariant
+ * here, at every account entry point, by refusing to let an id belong to two
+ * verified accounts.
+ */
+const findOtherVerifiedAccountWithUserId = (
+  { userId, email }: { userId: string; email: string },
+  { session }: { session: Session }
+) =>
+  session.verifiedUser.findFirst({
+    where: { id: userId, NOT: { email } },
+    select: { email: true },
+  })
+
+export async function createAccountOrSignin({
+  loginDto,
+  sessionUserId,
+}: {
+  loginDto: LoginDto
+  sessionUserId?: string
+}) {
   const verificationCode = await verifyCode(loginDto)
 
   const [user, mode] = await transaction(async (session) => {
@@ -176,31 +214,47 @@ export async function createAccountOrSignin(loginDto: LoginDto) {
     )
 
     if (existingUser) {
-      // Reject login if the anonymous session userId is already attached
-      // to a different verified account
-      if (existingUser.id !== loginDto.userId) {
-        const conflictingUser = await session.verifiedUser.findFirst({
-          where: {
-            id: loginDto.userId,
-            NOT: { email: loginDto.email },
-          },
-          select: { email: true },
-        })
-
-        if (conflictingUser) {
-          throw new ForbiddenException(
-            'userId is already attached to another verified account'
-          )
-        }
+      // SignIn: the existing account's own id wins - never generate a fresh
+      // one. Only refuse when the session's userId already belongs to another
+      // verified account: the login event reconciles the session's data
+      // (previousUserId) into this account, which would move that other
+      // account's data over and delete its user row.
+      if (
+        sessionUserId &&
+        sessionUserId !== existingUser.id &&
+        (await findOtherVerifiedAccountWithUserId(
+          { userId: sessionUserId, email: loginDto.email },
+          { session }
+        ))
+      ) {
+        throw new ForbiddenException(
+          'userId is already attached to another verified account'
+        )
       }
 
       return [existingUser, VerificationCodeMode.signIn] as const
     }
 
-    // SignUp if user doesn't exist
+    // SignUp: reuse the session userId as the account id only when it is
+    // still a free anonymous identity - the anonymous user row is then
+    // updated in place, keeping the user's data attached. When it already
+    // belongs to another verified account (typically signing up a new email
+    // while authenticated as another account), start a fresh identity so one
+    // id never maps to several accounts.
+    const otherAccountWithUserId = sessionUserId
+      ? await findOtherVerifiedAccountWithUserId(
+          { userId: sessionUserId, email: loginDto.email },
+          { session }
+        )
+      : null
+
+    const newUserId = otherAccountWithUserId
+      ? randomUUID()
+      : (sessionUserId ?? randomUUID())
+
     const { user: newUser } = await createOrUpdateVerifiedUser(
       {
-        id: { id: loginDto.userId, email: loginDto.email },
+        id: { id: newUserId, email: loginDto.email },
         user: loginDto,
         select: defaultVerifiedUserSelection,
       },

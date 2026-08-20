@@ -16,7 +16,6 @@ import { fetchServer } from '@/helpers/server/fetchServer'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { revalidatePath } from 'next/cache'
-import { v4 } from 'uuid'
 import { createAppSession } from './create-app-session'
 import { getUserSession } from './get-user-session'
 
@@ -36,7 +35,15 @@ export const login = async ({
       `${AUTHENTICATION_URL}/login${params}`,
       {
         method: 'POST',
-        body: { email, code, userId: session?.id ?? v4() },
+        // The current session's userId is forwarded to the server as the
+        // `x-user-id` header by `fetchServer`: the server is the one deciding
+        // which userId to attach to the account (reusing the session's when
+        // free, generating a fresh one when switching accounts), so the
+        // "one session id = one account" invariant is enforced there.
+        body: {
+          email,
+          code,
+        },
       }
     )
 

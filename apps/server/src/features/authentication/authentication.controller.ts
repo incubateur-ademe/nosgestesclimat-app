@@ -1,6 +1,7 @@
 import { captureException } from '@sentry/node'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
@@ -51,8 +52,35 @@ router
     validateRequest(LoginValidator),
     async (req, res) => {
       const startedAt = Date.now()
+
+      // The login endpoint is only reachable through the site's server-side
+      // `fetchServer`, which always forwards the shared `x-internal-key`
+      // alongside the session identity. Requiring it makes the `x-user-id`
+      // header trustworthy - it is set from the signed session cookie by the
+      // site proxy, not by the browser - so the "one session userId = one
+      // account" invariant can rely on it instead of a client-settable field.
+      if (req.headers['x-internal-key'] !== config.security.internalApiKey) {
+        return res.status(StatusCodes.UNAUTHORIZED).end()
+      }
+
+      // The current session's userId travels as the `x-user-id` header. The
+      // server uses it - not a client-provided body field - to enforce the
+      // "one session userId = one account" invariant.
+      const rawSessionUserId = req.headers['x-user-id']
+      let sessionUserId: string | undefined
+      if (typeof rawSessionUserId === 'string') {
+        const parsedSessionUserId = v.safeParse(
+          v.pipe(v.string(), v.uuid()),
+          rawSessionUserId
+        )
+        if (!parsedSessionUserId.success) {
+          return res.status(StatusCodes.BAD_REQUEST).end()
+        }
+        sessionUserId = parsedSessionUserId.output
+      }
+
       const context = {
-        userId: req.body.userId,
+        userId: sessionUserId,
         email: maskEmail(req.body.email),
         locale: req.query.locale,
       }
@@ -65,6 +93,7 @@ router
         const { token, user, mode } = await login({
           loginDto: req.body,
           locale: req.query.locale,
+          sessionUserId,
         })
 
         res.cookie(COOKIE_NAME, token, getCookieOptions(config.app.origin))

@@ -13,6 +13,7 @@ import {
 import { VerificationCodeMode } from '../../../adapters/prisma/generated.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { config } from '../../../config.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import { Locales } from '../../../core/i18n/constant.ts'
@@ -29,6 +30,13 @@ vi.mock('@sentry/node', async () => ({
   captureException: vi.fn(),
 }))
 
+// Every login request carries the shared `x-internal-key`, exactly like the
+// site's `fetchServer` sends it: it is what makes the `x-user-id` header
+// trustworthy.
+const loginHeaders = {
+  'x-internal-key': config.security.internalApiKey,
+}
+
 describe('Given a NGC user', () => {
   const agent = supertest(app)
   const url = LOGIN_ROUTE
@@ -44,16 +52,30 @@ describe('Given a NGC user', () => {
   describe('When logging in', () => {
     describe('And no data provided', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
-        await agent.post(url).expect(StatusCodes.BAD_REQUEST)
+        await agent.post(url).set(loginHeaders).expect(StatusCodes.BAD_REQUEST)
       })
     })
 
-    describe('And invalid userId', () => {
+    describe('And no internal key header', () => {
+      test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
+        await agent
+          .post(url)
+          .set('x-user-id', faker.string.uuid())
+          .send({
+            email: faker.internet.email(),
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+          })
+          .expect(StatusCodes.UNAUTHORIZED)
+      })
+    })
+
+    describe('And an invalid session userId header', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', faker.string.alpha(34))
           .send({
-            userId: faker.string.alpha(34),
             email: faker.internet.email(),
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
           })
@@ -65,8 +87,8 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(loginHeaders)
           .send({
-            userId: faker.string.uuid(),
             email: 'Je ne donne jamais mon email',
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
           })
@@ -78,8 +100,8 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.BAD_REQUEST} error`, async () => {
         await agent
           .post(url)
+          .set(loginHeaders)
           .send({
-            userId: faker.string.uuid(),
             email: faker.internet.email(),
             code: '42',
           })
@@ -91,8 +113,8 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.UNAUTHORIZED} error`, async () => {
         await agent
           .post(url)
+          .set(loginHeaders)
           .send({
-            userId: faker.string.uuid(),
             email: faker.internet.email(),
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
           })
@@ -103,11 +125,14 @@ describe('Given a NGC user', () => {
         const userId = faker.string.uuid()
         const email = faker.internet.email().toLocaleLowerCase()
 
-        await agent.post(url).send({
-          userId,
-          email,
-          code: faker.number.int({ min: 100000, max: 999999 }).toString(),
-        })
+        await agent
+          .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', userId)
+          .send({
+            email,
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+          })
 
         expect(logger.warn).toHaveBeenCalledWith(
           'Login rejected: invalid verification code',
@@ -123,11 +148,14 @@ describe('Given a NGC user', () => {
         const userId = faker.string.uuid()
         const email = faker.internet.email().toLocaleLowerCase()
 
-        await agent.post(url).send({
-          userId,
-          email,
-          code: faker.number.int({ min: 100000, max: 999999 }).toString(),
-        })
+        await agent
+          .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', userId)
+          .send({
+            email,
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+          })
 
         expect(captureException).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -149,8 +177,8 @@ describe('Given a NGC user', () => {
 
         await agent
           .post(url)
+          .set(loginHeaders)
           .send({
-            userId: faker.string.uuid(),
             email: verificationCode.email,
             code: '654321',
           })
@@ -171,8 +199,8 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.OK} response with a cookie`, async () => {
         const verificationCode = await createVerificationCode({ agent })
 
+        const sessionUserId = faker.string.uuid()
         const payload = {
-          userId: faker.string.uuid(),
           email: verificationCode.email,
           code: verificationCode.code,
         }
@@ -181,6 +209,8 @@ describe('Given a NGC user', () => {
 
         const response = await agent
           .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', sessionUserId)
           .send(payload)
           .expect(StatusCodes.OK)
 
@@ -192,7 +222,7 @@ describe('Given a NGC user', () => {
         await EventBus.flush()
 
         expect(jwt.decode(token!)).toEqual({
-          userId: payload.userId,
+          userId: sessionUserId,
           email: verificationCode.email,
           exp: expect.any(Number),
           iat: expect.any(Number),
@@ -202,8 +232,8 @@ describe('Given a NGC user', () => {
       test('Then it updates brevo contact', async () => {
         const verificationCode = await createVerificationCode({ agent })
 
+        const sessionUserId = faker.string.uuid()
         const payload = {
-          userId: faker.string.uuid(),
           email: verificationCode.email,
           code: verificationCode.code,
         }
@@ -212,7 +242,7 @@ describe('Given a NGC user', () => {
             expectBody: {
               email: verificationCode.email,
               attributes: {
-                USER_ID: payload.userId,
+                USER_ID: sessionUserId,
               },
               updateEnabled: true,
             },
@@ -220,7 +250,12 @@ describe('Given a NGC user', () => {
           brevoSendEmail()
         )
 
-        await agent.post(url).send(payload).expect(StatusCodes.OK)
+        await agent
+          .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', sessionUserId)
+          .send(payload)
+          .expect(StatusCodes.OK)
 
         await EventBus.flush()
       })
@@ -236,8 +271,8 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
+            .set(loginHeaders)
             .send({
-              userId: faker.string.uuid(),
               email: verificationCode.email,
               code: verificationCode.code,
             })
@@ -259,7 +294,8 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
-            .send({ userId: faker.string.uuid(), email, code })
+            .set(loginHeaders)
+            .send({ email, code })
             .expect(StatusCodes.OK)
 
           const createdUser = await prisma.verifiedUser.findUnique({
@@ -281,10 +317,10 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
+            .set(loginHeaders)
             .send({
               email: verificationCode.email,
               code: verificationCode.code,
-              userId: faker.string.uuid(),
             })
             .expect(StatusCodes.UNAUTHORIZED)
         })
@@ -296,10 +332,9 @@ describe('Given a NGC user', () => {
             expirationDate,
           })
 
-          await agent.post(url).send({
+          await agent.post(url).set(loginHeaders).send({
             email: verificationCode.email,
             code: verificationCode.code,
-            userId: faker.string.uuid(),
           })
 
           expect(logger.warn).toHaveBeenCalledWith(
@@ -320,15 +355,20 @@ describe('Given a NGC user', () => {
             mode: VerificationCodeMode.signUp,
           })
 
+          const sessionUserId = faker.string.uuid()
           const payload = {
-            userId: faker.string.uuid(),
             email,
             code,
           }
 
           mswServer.use(brevoUpdateContact(), brevoSendEmail())
 
-          await agent.post(url).send(payload).expect(StatusCodes.OK)
+          await agent
+            .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', sessionUserId)
+            .send(payload)
+            .expect(StatusCodes.OK)
 
           const createdUser = await prisma.verifiedUser.findUnique({
             where: { email },
@@ -336,7 +376,7 @@ describe('Given a NGC user', () => {
 
           expect(createdUser).toEqual({
             email,
-            id: payload.userId,
+            id: sessionUserId,
             name: null,
             optedInForCommunications: false,
             position: null,
@@ -354,14 +394,17 @@ describe('Given a NGC user', () => {
           })
 
           const payload = {
-            userId: faker.string.uuid(),
             email,
             code,
           }
 
           mswServer.use(brevoUpdateContact(), brevoSendEmail())
 
-          await agent.post(url).send(payload).expect(StatusCodes.OK)
+          await agent
+            .post(url)
+            .set(loginHeaders)
+            .send(payload)
+            .expect(StatusCodes.OK)
 
           const [verificationCode] = await prisma.verificationCode.findMany({
             where: { email },
@@ -381,10 +424,10 @@ describe('Given a NGC user', () => {
             mode: VerificationCodeMode.signUp,
           })
 
+          const sessionUserId = faker.string.uuid()
           const payload = {
             email,
             code,
-            userId: faker.string.uuid(),
           }
 
           mswServer.use(
@@ -392,7 +435,7 @@ describe('Given a NGC user', () => {
               expectBody: {
                 email,
                 attributes: {
-                  USER_ID: payload.userId,
+                  USER_ID: sessionUserId,
                 },
                 updateEnabled: true,
               },
@@ -413,7 +456,12 @@ describe('Given a NGC user', () => {
             })
           )
 
-          await agent.post(url).send(payload).expect(StatusCodes.OK)
+          await agent
+            .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', sessionUserId)
+            .send(payload)
+            .expect(StatusCodes.OK)
           await EventBus.flush()
         })
 
@@ -424,8 +472,8 @@ describe('Given a NGC user', () => {
               mode: VerificationCodeMode.signUp,
             })
 
+            const sessionUserId = faker.string.uuid()
             const payload = {
-              userId: faker.string.uuid(),
               email,
               code,
             }
@@ -435,7 +483,7 @@ describe('Given a NGC user', () => {
                 expectBody: {
                   email,
                   attributes: {
-                    USER_ID: payload.userId,
+                    USER_ID: sessionUserId,
                   },
                   updateEnabled: true,
                 },
@@ -458,7 +506,9 @@ describe('Given a NGC user', () => {
 
             await agent
               .post(url)
+              .set(loginHeaders)
               .set('origin', 'https://evil.example.com')
+              .set('x-user-id', sessionUserId)
               .send(payload)
               .expect(StatusCodes.OK)
           })
@@ -471,8 +521,8 @@ describe('Given a NGC user', () => {
               mode: VerificationCodeMode.signUp,
             })
 
+            const sessionUserId = faker.string.uuid()
             const payload = {
-              userId: faker.string.uuid(),
               email,
               code,
             }
@@ -482,7 +532,7 @@ describe('Given a NGC user', () => {
                 expectBody: {
                   email,
                   attributes: {
-                    USER_ID: payload.userId,
+                    USER_ID: sessionUserId,
                   },
                   updateEnabled: true,
                 },
@@ -505,6 +555,8 @@ describe('Given a NGC user', () => {
 
             await agent
               .post(url)
+              .set(loginHeaders)
+              .set('x-user-id', sessionUserId)
               .send(payload)
               .query({ locale: Locales.en })
               .expect(StatusCodes.OK)
@@ -512,7 +564,7 @@ describe('Given a NGC user', () => {
         })
       })
 
-      describe('And userId is already attached to another verified account', () => {
+      describe('And the session userId is already attached to another verified account', () => {
         let emailA: string
         let emailB: string
         let userIdA: string
@@ -533,8 +585,9 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', userIdA)
             .send({
-              userId: userIdA,
               email: signUpCodeA.email,
               code: signUpCodeA.code,
             })
@@ -554,8 +607,9 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', userIdB)
             .send({
-              userId: userIdB,
               email: signUpCodeB.email,
               code: signUpCodeB.code,
             })
@@ -564,7 +618,7 @@ describe('Given a NGC user', () => {
           await EventBus.flush()
         })
 
-        test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {
+        test(`Then signing in with that session returns a ${StatusCodes.FORBIDDEN} error`, async () => {
           const signInCode = await createVerificationCode({
             agent,
             verificationCode: { email: emailB },
@@ -573,8 +627,9 @@ describe('Given a NGC user', () => {
 
           await agent
             .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', userIdA)
             .send({
-              userId: userIdA,
               email: signInCode.email,
               code: signInCode.code,
             })
@@ -588,11 +643,14 @@ describe('Given a NGC user', () => {
             mode: VerificationCodeMode.signIn,
           })
 
-          await agent.post(url).send({
-            userId: userIdA,
-            email: signInCode.email,
-            code: signInCode.code,
-          })
+          await agent
+            .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', userIdA)
+            .send({
+              email: signInCode.email,
+              code: signInCode.code,
+            })
 
           expect(logger.warn).toHaveBeenCalledWith(
             'Login rejected: userId attached to another account',
@@ -601,6 +659,38 @@ describe('Given a NGC user', () => {
               email: maskEmail(emailB),
             })
           )
+        })
+
+        test(`Then signing up a new email with that session creates the account with a fresh userId instead of reusing the taken one`, async () => {
+          const emailC = faker.internet.email().toLocaleLowerCase()
+          const signUpCodeC = await createVerificationCode({
+            agent,
+            verificationCode: { email: emailC },
+            mode: VerificationCodeMode.signUp,
+          })
+
+          mswServer.use(brevoUpdateContact(), brevoSendEmail())
+
+          await agent
+            .post(url)
+            .set(loginHeaders)
+            .set('x-user-id', userIdA)
+            .send({
+              email: signUpCodeC.email,
+              code: signUpCodeC.code,
+            })
+            .expect(StatusCodes.OK)
+
+          await EventBus.flush()
+
+          const createdUser = await prisma.verifiedUser.findUnique({
+            where: { email: emailC },
+          })
+
+          expect(createdUser).not.toBeNull()
+          // The invariant holds: the new account must not share userIdA with
+          // account A.
+          expect(createdUser?.id).not.toBe(userIdA)
         })
       })
     })
@@ -621,8 +711,8 @@ describe('Given a NGC user', () => {
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         await agent
           .post(url)
+          .set(loginHeaders)
           .send({
-            userId: faker.string.uuid(),
             email: faker.internet.email(),
             code: faker.number.int({ min: 100000, max: 999999 }).toString(),
           })
@@ -633,11 +723,14 @@ describe('Given a NGC user', () => {
         const userId = faker.string.uuid()
         const email = faker.internet.email().toLocaleLowerCase()
 
-        await agent.post(url).send({
-          userId,
-          email,
-          code: faker.number.int({ min: 100000, max: 999999 }).toString(),
-        })
+        await agent
+          .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', userId)
+          .send({
+            email,
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+          })
 
         expect(logger.error).toHaveBeenCalledWith(
           'Login failed',
@@ -654,11 +747,14 @@ describe('Given a NGC user', () => {
         const userId = faker.string.uuid()
         const email = faker.internet.email().toLocaleLowerCase()
 
-        await agent.post(url).send({
-          userId,
-          email,
-          code: faker.number.int({ min: 100000, max: 999999 }).toString(),
-        })
+        await agent
+          .post(url)
+          .set(loginHeaders)
+          .set('x-user-id', userId)
+          .send({
+            email,
+            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+          })
 
         expect(captureException).toHaveBeenCalledWith(
           databaseError,

@@ -66,9 +66,8 @@ export async function middlewareMigrateLegacySessions(
     redirect: null,
     cookies: [
       ...buildSessionCookies(tokens),
-      // @tofix on garde les cookies legacy, le temps d’être sûr de ne pas avoir besoin de revert
-      // { name: LEGACY_SESSION_COOKIE!, value: '', options: { maxAge: 0 } },
-      // { name: ANON_SESSION_COOKIE, value: '', options: { maxAge: 0 } },
+      { name: LEGACY_SESSION_COOKIE!, value: '', options: { maxAge: 0 } },
+      { name: ANON_SESSION_COOKIE, value: '', options: { maxAge: 0 } },
     ],
   }
 }

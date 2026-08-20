@@ -6,6 +6,7 @@ import {
   brevoSendEmail,
   brevoUpdateContact,
 } from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
+import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
@@ -35,8 +36,12 @@ export const login = async ({
 
   const response = await agent
     .post(LOGIN_ROUTE)
+    // The session's userId used to be sent in the body; it now travels as
+    // the `x-user-id` header, exactly like the site proxy forwards it. The
+    // shared `x-internal-key` proves the request comes from the site, not
+    // from a browser.
+    .set(authHeaders({ userId }))
     .send({
-      userId,
       email,
       code,
     })

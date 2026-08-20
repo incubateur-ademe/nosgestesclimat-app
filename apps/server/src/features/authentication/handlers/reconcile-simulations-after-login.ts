@@ -10,8 +10,9 @@ export const reconcileSimulationsAfterLogin: Handler<LoginEvent> = ({
     return
   }
 
-  // Skip reconciliation when the anon session userId is already the verified user's id
-  if (previousUserId === user.id) {
+  // Skip reconciliation when the anon session userId is already the verified
+  // user's id, or when there is no session userId to reconcile from.
+  if (!previousUserId || previousUserId === user.id) {
     return
   }
 
