@@ -45,7 +45,7 @@ export const createVerificationCode = async (
     locale: Locales
   },
   { session: parentSession }: { session?: Session } = {}
-): Promise<{ email: string; expirationDate: Date }> => {
+): Promise<{ id: string; email: string; expirationDate: Date }> => {
   const expirationDate = dayjs().add(1, 'hour').toDate()
 
   // The code must be committed *before* the email is handed to Brevo. Sending
@@ -76,6 +76,7 @@ export const createVerificationCode = async (
   await EventBus.once(verificationCodeCreatedEvent)
 
   return {
+    id: verificationCode.id,
     email: verificationCode.email,
     expirationDate: verificationCode.expirationDate,
   }
