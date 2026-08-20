@@ -76,15 +76,33 @@ server {
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
     }
-
-    location ~ ^/(en/)?(simulateur/tutoriel)?$ {
+ 
+    # ── Pages publiques catégorie 2 ──────────────────────────────
+    # Contenu identique pour tous les utilisateurs anonymes.
+    # Cache-bypass automatique pour les utilisateurs authentifiés
+    # (détection via le cookie ngc_session). TTL 1h.
+    #
+    # Exact-match : accueil, simulateur/tutoriel, empreinte-carbone,
+    # empreinte-eau, cgu, mentions-legales,
+    # mentions-legales-base-empreinte, politique-de-confidentialite,
+    # accessibilite, contact, diffuser, nos-relais, plan-du-site,
+    # budget, international, gestion-infolettres,
+    # newsletter-confirmation, partenaire, questions-frequentes,
+    # stats
+    #
+    # Sub-path : blog, documentation, nouveautes, guide, themes,
+    # campagne-partenaire, evenement
+    #
+    # Note : /fr et /fr/* sont des 307 vers la locale par défaut,
+    # donc exclus volontairement de la regex.
+    location ~ ^/(en/)?($|simulateur/tutoriel|empreinte-carbone|empreinte-eau|cgu|mentions-legales|mentions-legales-base-empreinte|politique-de-confidentialite|accessibilite|contact|diffuser|nos-relais|plan-du-site|budget|international|gestion-infolettres|newsletter-confirmation|partenaire|questions-frequentes|stats|blog($|/.*)|documentation($|/.*)|nouveautes($|/.*)|guide($|/.*)|themes($|/.*)|campagne-partenaire($|/.*)|evenement($|/.*))$ {
         proxy_pass https://scalingo;
 
         proxy_cache_key "$scheme$request_method$host$request_uri$ngc_is_auth";
         proxy_cache_lock on;
         proxy_cache_background_update on;
         proxy_ignore_headers Cache-Control;
-        proxy_cache_valid 200 30m;
+        proxy_cache_valid 200 1h;
         proxy_cache_bypass $ngc_is_auth$http_upgrade;
         proxy_no_cache $ngc_is_auth$http_upgrade;
     }
