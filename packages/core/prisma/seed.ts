@@ -1,10 +1,13 @@
 import { actionAssessmentFactory } from '../src/features/actions/factories/action-assessment.factory.ts'
 import { actionFactory } from '../src/features/actions/factories/action.factory.ts'
+import { ensureSeddEvent } from '../src/features/events/services/ensure-sedd-event.service.ts'
 import { simulationFactory } from '../src/features/simulation-computation/factories/simulation.factory.ts'
 import { userFactory } from '../src/features/users/factories/user.factory.ts'
 import { prisma } from '../src/prisma/client.ts'
 
 const seed = async () => {
+  // Default event — créé une seule fois, idempotent
+  await ensureSeddEvent()
   // Actions
   // No English translation on purpose, to exercise the French fallback
   // on catalogue / detail pages when a locale is missing.

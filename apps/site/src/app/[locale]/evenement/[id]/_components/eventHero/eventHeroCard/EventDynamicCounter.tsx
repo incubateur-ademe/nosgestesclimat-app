@@ -1,5 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
+import Emoji from '@/design-system/utils/Emoji'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import CircularProgressbar from '../CircularProgressbar'
 import { COUNTER_BLOCK_ANIMATION_TOTAL } from './AnimatedCounterBlock'
@@ -13,7 +15,7 @@ interface Props {
   secondaryCtaHref: string
 }
 
-export default function EventDynamicCounter({
+export default async function EventDynamicCounter({
   locale,
   currentValue,
   targetValue,
@@ -21,6 +23,7 @@ export default function EventDynamicCounter({
   primaryCtaHref,
   secondaryCtaHref,
 }: Props) {
+  const { t } = await getServerTranslation({ locale })
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
@@ -48,9 +51,31 @@ export default function EventDynamicCounter({
 
         <div>
           <p className="mb-1! text-slate-600">
-            <Trans i18nKey="event.dynamicCounter.target.title" locale={locale}>
-              Objectif
-            </Trans>
+            {progressPercentage === 100 ? (
+              <span>
+                <Trans
+                  i18nKey="event.dynamicCounter.target.title.topped"
+                  locale={locale}>
+                  Objectif atteint
+                </Trans>{' '}
+                <Emoji>🚀</Emoji>
+              </span>
+            ) : progressPercentage > 100 ? (
+              <span>
+                <Trans
+                  i18nKey="event.dynamicCounter.target.title.over"
+                  locale={locale}>
+                  Objectif dépassé
+                </Trans>{' '}
+                <Emoji>🚀</Emoji>
+              </span>
+            ) : (
+              <Trans
+                i18nKey="event.dynamicCounter.target.title.default"
+                locale={locale}>
+                Objectif
+              </Trans>
+            )}
           </p>
           <p>
             <span className="mb-1 flex flex-wrap items-baseline gap-1 leading-none! lg:flex-nowrap">
@@ -75,7 +100,12 @@ export default function EventDynamicCounter({
         <ButtonLink
           className="mb-3 w-full text-base lg:text-xl"
           size="xl"
-          href={primaryCtaHref}>
+          href={primaryCtaHref}
+          target="_blank"
+          aria-label={t(
+            'event.dynamicCounter.primaryCta.ariaLabel',
+            'Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre'
+          )}>
           <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
             Je mobilise mon organisation
           </Trans>
@@ -85,7 +115,12 @@ export default function EventDynamicCounter({
           className="w-full text-base lg:text-xl"
           href={secondaryCtaHref}
           size="xl"
-          color="secondary">
+          color="secondary"
+          target="_blank"
+          aria-label={t(
+            'event.dynamicCounter.secondaryCta.ariaLabel',
+            'Je participe individuellement, ouvrir dans une nouvelle fenêtre'
+          )}>
           <Trans i18nKey="event.dynamicCounter.secondaryCta" locale={locale}>
             Je participe individuellement
           </Trans>

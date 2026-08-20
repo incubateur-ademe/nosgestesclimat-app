@@ -3,7 +3,8 @@
 # review-app-postdeploy.sh
 #
 # Run during server postdeploy. Performs tasks specific to review apps
-# (syncing Notion actions, pushing DATABASE_URL to the site review app).
+# (ensuring the default SEDD event, syncing Notion actions, pushing
+# DATABASE_URL to the site review app).
 #
 # On production/preprod, this is a no-op.
 #
@@ -24,7 +25,11 @@ echo "── Review app postdeploy ───────────────
 echo "  App: $APP"
 echo "──────────────────────────────────────────────────────────"
 
-# 1. Sync Notion actions to the review app database
+# 1. Ensure the default SEDD event exists so /evenement/sedd renders
+echo "── Ensuring SEDD event ───────────────────────────────────"
+node --experimental-strip-types ./src/jobs/ensure-sedd-event.ts
+
+# 2. Sync Notion actions to the review app database
 if [[ -n "${NOTION_API_KEY:-}" && -n "${NOTION_ACTION_DATABASE_ID:-}" ]]; then
   echo "── Syncing Notion actions ───────────────────────────────"
   node --experimental-strip-types ./src/jobs/sync-notion-actions.ts
@@ -32,7 +37,7 @@ else
   echo "Notion credentials not configured. Skipping actions sync."
 fi
 
-# 2. Push DATABASE_URL to the corresponding site review app
+# 3. Push DATABASE_URL to the corresponding site review app
 : "${FGP_PUSH_DB_URL_TO_SITE_TOKEN:?FGP_PUSH_DB_URL_TO_SITE_TOKEN is required}"
 : "${FGP_PUSH_DB_URL_TO_SITE_URL:?FGP_PUSH_DB_URL_TO_SITE_URL is required}"
 : "${DATABASE_URL:?DATABASE_URL is required}"

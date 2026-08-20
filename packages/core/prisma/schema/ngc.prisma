@@ -1,3 +1,32 @@
+model Event {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  // Known limitation: events are French-only for now, so `name` stays a plain
+  // String. If multilingual events are ever needed, this should become a
+  // translated field (JSON column or translation table).
+  name      String
+  // Timestamptz so the instant is stored in UTC and displayed in Europe/Paris.
+  startDate DateTime @db.Timestamptz(3)
+  endDate   DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("ngc")
+}
+
+view EventComputation {
+  eventId          String
+  organisationId   String?
+  simulationsCount Int
+  organisation     Organisation? @relation(fields: [organisationId], references: [id])
+
+  // The materialized view already has a unique index on (eventId,
+  // organisationId): declaring it enables relations on the view.
+  @@unique([eventId, organisationId])
+  @@map("event_computation")
+  @@schema("ngc")
+}
+
 model Answer {
   id         String   @id @db.Uuid
   survey     String
@@ -213,6 +242,7 @@ model Organisation {
   administrators        OrganisationAdministrator[]
   numberOfCollaborators Int?                        @db.Integer
   polls                 Poll[]
+  eventComputations     EventComputation[]
   createdAt             DateTime                    @default(now())
   updatedAt             DateTime                    @updatedAt
 
@@ -335,6 +365,8 @@ model Simulation {
 
   @@index([userId])
   @@index([userEmail])
+  @@index([createdAt])
+  @@index([progression])
   @@schema("ngc")
 }
 

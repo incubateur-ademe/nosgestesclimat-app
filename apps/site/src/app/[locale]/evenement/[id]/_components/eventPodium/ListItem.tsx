@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '../../_helpers/eventPageData'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 
 interface Props extends PodiumItem {
   locale: Locale
@@ -17,16 +17,9 @@ export default function ListItem({ rank, label, score, locale }: Props) {
 
       <span>
         {score}{' '}
-        <span className="hidden md:inline">
-          <Trans locale={locale} i18nKey="event.podium.list.item.score.big">
-            calculs d'empreinte
-          </Trans>
-        </span>
-        <span className="md:hidden">
-          <Trans locale={locale} i18nKey="event.podium.list.item.score.small">
-            tests
-          </Trans>
-        </span>
+        <Trans locale={locale} i18nKey="event.podium.list.item.participations">
+          participations
+        </Trans>
       </span>
     </li>
   )

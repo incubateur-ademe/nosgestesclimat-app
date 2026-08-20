@@ -14,6 +14,7 @@ export default function ActionCard({
   description,
   buttonLabel,
   buttonHref,
+  buttonAriaLabel,
   className,
   index,
 }: Props) {
@@ -36,7 +37,9 @@ export default function ActionCard({
         <Link
           href={buttonHref}
           className="focus-visible:ring-primary-700 absolute inset-0 z-10 rounded-3xl focus-visible:ring-2 focus-visible:ring-offset-3 focus-visible:outline-hidden"
-          aria-label={title}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={buttonAriaLabel}
         />
 
         <div className="bg-primary-50 pointer-events-none mb-4 flex size-12 items-center justify-center rounded-full">

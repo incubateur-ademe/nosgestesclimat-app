@@ -1,11 +1,17 @@
 import ChevronLeft from '@/components/icons/ChevronLeft'
+import Link from '@/components/Link'
+import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import { twMerge } from 'tailwind-merge'
-import type { PodiumItem } from '../../_helpers/eventPageData'
+import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
 import PodiumBlock from './PodiumBlock'
+
+const GENERAL_RANKING_URL =
+  'https://eu.posthog.com/shared/usl5nIC6qMxcL94bJI689dnZEGPidQ'
 
 interface Props {
   items: PodiumItem[]
@@ -14,6 +20,7 @@ interface Props {
   prevHref?: string
   nextHref?: string
   hasStarted: boolean
+  activeFilter: FilterValue
 }
 
 const orderClasses = {
@@ -29,11 +36,23 @@ export default async function PodiumVisual({
   prevHref,
   nextHref,
   hasStarted,
+  activeFilter,
 }: Props) {
   const podiumItems = items.slice(0, 3)
-  const remainingItems = items.slice(3, 10)
+  const remainingItems = items.slice(3, 15)
 
   const { t } = await getServerTranslation({ locale })
+
+  const organisationType = {
+    all: t('event.podium.empty.type.all', 'organisation'),
+    companies: t('event.podium.empty.type.companies', 'entreprise'),
+    associations: t('event.podium.empty.type.associations', 'association'),
+    education: t('event.podium.empty.type.education', 'école ou université'),
+    'public-services': t(
+      'event.podium.empty.type.public-services',
+      'collectivité'
+    ),
+  }[activeFilter]
 
   return (
     <>
@@ -45,28 +64,46 @@ export default async function PodiumVisual({
             color="secondary"
             className="absolute top-1/2 left-0 z-10 hidden h-11 w-11 -translate-y-1/2 p-0! md:flex"
             aria-label={t(
-              'event.podium.nextButton.label',
+              'event.podium.previousButton.label',
               'Organisation précédente'
             )}>
             <ChevronLeft />
           </ButtonLink>
         ) : null}
-        <ol
-          className={twMerge(
-            'mt-8 mb-12 flex w-full max-w-80 list-none flex-col items-stretch gap-3 md:mx-14 md:min-h-80 md:max-w-none md:flex-1 md:flex-row md:items-end md:justify-center md:gap-0 lg:mx-20',
-            className
-          )}>
-          {podiumItems.map((item) => (
-            <li
-              key={item.rank}
-              className={twMerge(
-                'w-full md:flex-1',
-                orderClasses[item.rank as 1 | 2 | 3]
-              )}>
-              <PodiumBlock hasStarted={hasStarted} locale={locale} {...item} />
-            </li>
-          ))}
-        </ol>
+        {podiumItems.length > 0 && (
+          <ol
+            className={twMerge(
+              'mt-8 mb-12 flex w-full max-w-80 list-none flex-col items-stretch gap-3 md:mx-14 md:min-h-80 md:max-w-none md:flex-1 md:flex-row md:items-end md:justify-center md:gap-0 lg:mx-20',
+              className
+            )}>
+            {podiumItems.map((item) => (
+              <li
+                key={item.rank}
+                className={twMerge(
+                  'w-full md:flex-1',
+                  orderClasses[item.rank as 1 | 2 | 3]
+                )}>
+                <PodiumBlock
+                  hasStarted={hasStarted}
+                  locale={locale}
+                  {...item}
+                />
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {podiumItems.length === 0 && (
+          <p className="text-primary-700 mt-8 mb-12 flex w-full items-center justify-center px-4 text-center text-base font-medium md:min-h-80">
+            {t(
+              'event.podium.empty',
+              "Aucune {{organisationType}} n'a participé pour le moment",
+              {
+                organisationType,
+              }
+            )}
+          </p>
+        )}
         {nextHref ? (
           <ButtonLink
             href={nextHref}
@@ -98,6 +135,26 @@ export default async function PodiumVisual({
           ))}
         </ol>
       )}
+
+      <div className="mt-6 flex justify-center">
+        <Link
+          href={GENERAL_RANKING_URL}
+          aria-label={t(
+            'event.podium.generalRankingLink.ariaLabel',
+            'Voir le classement général, ouvrir dans une nouvelle fenêtre'
+          )}
+          className="font-medium!">
+          <Trans i18nKey="event.podium.generalRankingLink" locale={locale}>
+            Voir le classement général
+          </Trans>
+        </Link>
+      </div>
+
+      <p className="text-primary-700 mt-4 text-right text-sm italic">
+        <Trans i18nKey="event.podium.updateNote" locale={locale}>
+          Le podium se met à jour environ toutes les 15 minutes
+        </Trans>
+      </p>
     </>
   )
 }

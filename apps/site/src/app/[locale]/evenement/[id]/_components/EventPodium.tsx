@@ -1,27 +1,15 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '../_helpers/eventPageData'
+import { filterAndRankPodiumItems } from '@nosgestesclimat/core/features/events/helpers/podium'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import type { FilterValue } from './eventPodium/EventTabs'
-import EventTabs, { FILTER_KEY, FILTER_VALUES } from './eventPodium/EventTabs'
+import EventTabs, {
+  FILTER_KEY,
+  FILTER_VALUES,
+  buildFilterHref,
+} from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
-
-function buildFilterHref(
-  existing: Record<string, string | string[] | undefined>,
-  filterValue: string
-) {
-  const next = new URLSearchParams()
-  for (const [key, value] of Object.entries(existing)) {
-    if (key === FILTER_KEY) continue
-    if (Array.isArray(value)) {
-      value.forEach((v) => next.append(key, v))
-    } else if (value != null) {
-      next.set(key, value)
-    }
-  }
-  next.set(FILTER_KEY, filterValue)
-  return `?${next.toString()}`
-}
 
 interface Props {
   locale: Locale
@@ -56,6 +44,12 @@ export default async function EventPodium({
   const prevHref = prevFilter ? buildFilterHref(params, prevFilter) : undefined
   const nextHref = nextFilter ? buildFilterHref(params, nextFilter) : undefined
 
+  // Before the event starts, all tabs show the same placeholder list.
+  const filteredItems = filterAndRankPodiumItems(
+    items,
+    hasStarted ? activeFilter : 'all'
+  )
+
   return (
     <div className="mb-16">
       <p className="text-secondary-700 pt-16 text-center text-base font-bold uppercase">
@@ -70,16 +64,17 @@ export default async function EventPodium({
         </Trans>
       </Title>
 
-      <EventTabs filter={filter} locale={locale} />
+      <EventTabs filter={filter} locale={locale} params={params} />
 
       <PodiumVisual
         // Trigger animation on each change
         key={`podium-visual-${activeFilter}`}
         locale={locale}
-        items={items}
+        items={filteredItems}
         prevHref={prevHref}
         nextHref={nextHref}
         hasStarted={hasStarted}
+        activeFilter={activeFilter}
       />
     </div>
   )

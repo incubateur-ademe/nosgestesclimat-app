@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
 import { twMerge } from 'tailwind-merge'
-import type { PodiumItem } from '../../_helpers/eventPageData'
 import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 import RankBadge from './RankBadge'
 
@@ -50,8 +50,10 @@ export default function PodiumBlock({
             !isFirst && 'text-primary-600 text-base'
           )}>
           {score}{' '}
-          <Trans locale={locale} i18nKey="event.podium.block.score.text1">
-            calculs d'empreinte
+          <Trans
+            locale={locale}
+            i18nKey="event.podium.list.item.participations">
+            participations
           </Trans>
         </span>
         {!hasStarted && (

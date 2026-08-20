@@ -69,8 +69,8 @@ describe('ResendButton', () => {
 
     await waitFor(() => {
       expect(mockResendCode).toHaveBeenCalledTimes(1)
+      expect(screen.getByText('Code renvoyé')).toBeInTheDocument()
     })
-    expect(screen.getByText('Code renvoyé')).toBeInTheDocument()
   })
 
   it('tracks the resend click via PostHog', async () => {

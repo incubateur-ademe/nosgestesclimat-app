@@ -14,6 +14,25 @@ export const FILTER_VALUES = [
 ] as const
 export type FilterValue = (typeof FILTER_VALUES)[number]
 
+// Build a `?filter=value` href that preserves the other search params, so the
+// tabs behave like the podium prev/next buttons.
+export function buildFilterHref(
+  existing: Record<string, string | string[] | undefined>,
+  filterValue: string
+): string {
+  const next = new URLSearchParams()
+  for (const [key, value] of Object.entries(existing)) {
+    if (key === FILTER_KEY) continue
+    if (Array.isArray(value)) {
+      value.forEach((v) => next.append(key, v))
+    } else if (value != null) {
+      next.set(key, value)
+    }
+  }
+  next.set(FILTER_KEY, filterValue)
+  return `?${next.toString()}`
+}
+
 const FILTER_TRANSLATIONS: Record<
   FilterValue,
   { key: string; defaultLabel: string }
@@ -40,9 +59,10 @@ const FILTER_TRANSLATIONS: Record<
 interface Props {
   filter?: string | string[]
   locale: Locale
+  params: Record<string, string | string[] | undefined>
 }
 
-export default async function EventTabs({ filter, locale }: Props) {
+export default async function EventTabs({ filter, locale, params }: Props) {
   const { t } = await getServerTranslation({ locale })
 
   const rawFilter = Array.isArray(filter) ? filter[0] : filter
@@ -57,7 +77,7 @@ export default async function EventTabs({ filter, locale }: Props) {
       FILTER_TRANSLATIONS[value].key,
       FILTER_TRANSLATIONS[value].defaultLabel
     ),
-    href: `?${FILTER_KEY}=${value}`,
+    href: buildFilterHref(params, value),
     isActive: value === activeFilter,
     scroll: false,
   }))

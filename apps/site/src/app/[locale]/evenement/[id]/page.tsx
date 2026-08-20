@@ -5,6 +5,8 @@ import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import { findEvent } from '@nosgestesclimat/core/features/events/repositories/event.repository'
+import { notFound } from 'next/navigation'
 import EventCTAs from './_components/EventCTAs'
 import EventDetail from './_components/EventDetail'
 import EventHero from './_components/EventHero'
@@ -20,13 +22,16 @@ export async function generateMetadata({
   const { locale: localeParam, id } = await params
   const locale = localeParam as Locale
   const { t } = await getServerTranslation({ locale })
+  const event = await findEvent(id)
 
   return getMetadataObject({
     locale,
-    title: t(
-      'event.meta.title',
-      "Événement collectif d'empreinte carbone - Nos Gestes Climat"
-    ),
+    title:
+      event?.name ??
+      t(
+        'event.meta.title',
+        "Événement collectif d'empreinte carbone - Nos Gestes Climat"
+      ),
     description: t(
       'event.meta.description',
       "Relevez le défi avec votre organisation : mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement."
@@ -42,15 +47,18 @@ export default async function EvenementPage({
   params,
   searchParams,
 }: PageProps<'/[locale]/evenement/[id]'>) {
-  const { locale: localeParam } = await params
+  const { locale: localeParam, id: eventId } = await params
 
   const locale = localeParam as Locale
 
-  const { t } = await getServerTranslation({ locale })
+  const data = await getEventPageData({ eventId, locale })
+
+  if (!data) notFound()
 
   const {
     detailImageSrc,
     startDate,
+    endDate,
     dynamicCounter,
     statisticsValues,
     podiumItems,
@@ -60,7 +68,7 @@ export default async function EvenementPage({
     ctaHeading,
     ctaDescription,
     ctaCards,
-  } = getEventPageData({ t, locale })
+  } = data
 
   const hasStarted = new Date() >= new Date(startDate)
 
@@ -70,7 +78,12 @@ export default async function EvenementPage({
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
-          <EventDetail locale={locale} imageSrc={detailImageSrc} />
+          <EventDetail
+            locale={locale}
+            imageSrc={detailImageSrc}
+            startDate={startDate}
+            endDate={endDate}
+          />
 
           <EventHero
             locale={locale}

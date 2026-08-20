@@ -1,16 +1,16 @@
-/** Event page data — centralized mock content before CMS integration. */
+/** Event page data — feeds real-time data from the materialized view, falls back to mock content before CMS integration. */
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import { organisationTypeToCategory } from '@nosgestesclimat/core/features/events/helpers/podium'
+import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
+import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
-
-export interface PodiumItem {
-  rank: number
-  label: string
-  score: number
-}
 
 export interface Testimony {
   text: string
@@ -34,6 +34,7 @@ export interface CtaCard {
   description: string
   buttonLabel: string
   buttonHref: string
+  buttonAriaLabel: string
 }
 
 export interface EventPageData {
@@ -61,50 +62,80 @@ export interface EventPageData {
   ctaCards: CtaCard[]
 }
 
-export function getEventPageData({
-  t,
+const TARGET_VALUE = 50000
+
+const ACTIONS_COUNT = 46
+
+// Build the podium items from the organisations returned by the service, which
+// already caps them at PODIUM_LIMIT_PER_TYPE per type server-side.
+function buildPodiumItems(organisations: EventOrganisation[]): PodiumItem[] {
+  return organisations.map((org, index) => ({
+    rank: index + 1,
+    label: org.name,
+    score: org.simulationsCount,
+    category: organisationTypeToCategory(org.type),
+  }))
+}
+
+export async function getEventPageData({
+  eventId,
+
   locale,
 }: {
-  t: (key: string, defaultValue: string) => string
+  eventId: string
   locale: Locale
-}): EventPageData {
-  const currentValue = 0
-  const targetValue = 50000
+}): Promise<EventPageData | null> {
+  'use cache'
+  cacheLife({ stale: 600, revalidate: 600, expire: 600 })
+
+  const { t } = await getServerTranslation({ locale })
+
+  const eventInfo = await getEventInfo(eventId)
+
+  if (!eventInfo) return null
+
+  const currentValue = 76000 //meventInfo.totalSimulations
+
+  const podiumItems =
+    eventInfo.organisations.length > 0
+      ? buildPodiumItems(eventInfo.organisations)
+      : [
+          {
+            rank: 1,
+            label: t('event.podium.yourOrg', 'Organisation 1'),
+            score: 0,
+            category: 'all' as const,
+          },
+          ...Array.from({ length: 14 }, (_, index) => ({
+            rank: index + 2,
+            label: t(
+              `event.podium.competitor${index + 2}`,
+              `Organisation ${index + 2}`
+            ),
+            score: 0,
+            category: 'all' as const,
+          })),
+        ]
 
   return {
     detailImageSrc:
       'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/VIGNETTE_SEDD_f711b1d37b.svg',
-    startDate: '2026-09-01T00:00:00+02:00',
-    endDate: '2026-09-30T23:59:59+02:00',
+    startDate: eventInfo.startDate.toISOString(),
+    endDate: eventInfo.endDate.toISOString(),
     dynamicCounter: {
       currentValue,
-      targetValue,
-      progressPercentage:
-        targetValue > 0 ? (currentValue / targetValue) * 100 : 0,
+      targetValue: TARGET_VALUE,
+      progressPercentage: (currentValue / TARGET_VALUE) * 100,
       primaryCtaHref: ORGANISATION_HOME_PAGE,
       secondaryCtaHref:
         'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
     },
     statisticsValues: {
-      simulations: 0,
-      actions: 0,
-      organisations: 0,
+      simulations: eventInfo.totalSimulations,
+      actions: ACTIONS_COUNT,
+      organisations: eventInfo.organisationCount,
     },
-    podiumItems: [
-      {
-        rank: 1,
-        label: t('event.podium.yourOrg', 'Organisation 1'),
-        score: 0,
-      },
-      ...Array.from({ length: 9 }, (_, index) => ({
-        rank: index + 2,
-        label: t(
-          `event.podium.competitor${index + 2}`,
-          `Organisation ${index + 2}`
-        ),
-        score: 0,
-      })),
-    ],
+    podiumItems,
     testimonies: [
       {
         text: t(
@@ -167,7 +198,7 @@ export function getEventPageData({
           title: t('event.tutorial.org.1.title', 'Créez un test collectif'),
           description: (
             <Trans i18nKey="event.tutorial.org.1.description" locale={locale}>
-              <Link href={ORGANISATION_HOME_PAGE}>
+              <Link href={ORGANISATION_HOME_PAGE} target="_blank">
                 Configurez votre campagne
               </Link>{' '}
               en quelques clics et définissez vos objectifs.
@@ -251,6 +282,10 @@ export function getEventPageData({
         buttonLabel: t('event.ctas.card1.buttonLabel', 'Je participe'),
         buttonHref:
           'https://nosgestesclimat.fr/o/ademe-sedd/sedd-2026-1?utm_medium=sharelink&utm_source=NGC',
+        buttonAriaLabel: t(
+          'event.ctas.card1.buttonAriaLabel',
+          'Je participe, ouvrir dans une nouvelle fenêtre'
+        ),
       },
       {
         emoji: '🏛️',
@@ -265,6 +300,10 @@ export function getEventPageData({
           'Je crée un test collectif'
         ),
         buttonHref: ORGANISATION_HOME_PAGE,
+        buttonAriaLabel: t(
+          'event.ctas.card2.buttonAriaLabel',
+          'Je crée un test collectif, ouvrir dans une nouvelle fenêtre'
+        ),
       },
     ],
   }
