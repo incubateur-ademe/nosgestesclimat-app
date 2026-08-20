@@ -3,6 +3,7 @@ import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
 import Emoji from '@/design-system/utils/Emoji'
 import { throwNextError } from '@/helpers/server/error'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
 import { getPublicPoll } from '@/services/organisations/get-public-poll'
@@ -66,10 +67,16 @@ export default async function CampagnePage({
     redirect(SIMULATOR_PATH)
   }
 
+  // A completed simulation is only offered for reuse when it has the same
+  // mode as the poll (e.g. a previous scolaire test when joining another
+  // scolaire poll). A different-mode simulation is never reused: a fresh test
+  // is simply created, while the previous simulation stays in the account (an
+  // anonymous user only sees its last simulation, but both are listed once the
+  // user creates an account).
   const allowToReuseExistingSimulation =
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     !!lastCompletedSimulation &&
-    poll.mode === 'standard' &&
+    getSimulationMode(lastCompletedSimulation) === poll.mode &&
     !poll.simulations.hasParticipated &&
     // eslint-disable-next-line react-hooks/purity
     Date.now() - new Date(lastCompletedSimulation.date as string).getTime() <
