@@ -31,7 +31,9 @@ describe('processNextPendingComputation', () => {
   })
 
   it('processes a pending job end-to-end', async () => {
-    const simulation = await simulationFactory.withPendingComputation().create()
+    const simulation = await simulationFactory
+      .withPendingComputation()
+      .create()
 
     const result = await processNextPendingComputation(getEngine)
 

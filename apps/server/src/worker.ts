@@ -3,16 +3,12 @@ import { CHANNELS } from './adapters/redis/constant.ts'
 import { EventBus } from './core/event-bus/event-bus.ts'
 import { JobCreatedAsyncEvent } from './features/jobs/events/JobCreated.event.ts'
 import { dispatchJob } from './features/jobs/handlers/dispatch-job.ts'
-import { SimulationUpsertedAsyncEvent } from './features/simulations/events/SimulationUpserted.event.ts'
-import { computePollStats } from './features/simulations/handlers/compute-poll-stats.ts'
 import logger from './logger.ts'
 
 const RedisApiEventMap = {
-  SimulationUpsertedAsyncEvent,
   JobCreatedAsyncEvent,
 } as const
 
-EventBus.on(SimulationUpsertedAsyncEvent, computePollStats)
 EventBus.on(JobCreatedAsyncEvent, dispatchJob)
 
 const parseMessage = (message: string) => {

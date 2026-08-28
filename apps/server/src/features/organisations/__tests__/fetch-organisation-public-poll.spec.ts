@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
@@ -8,7 +7,6 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
 import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
-import { deepMergeSubstract, deepMergeSum } from '../../../core/deep-merge.ts'
 import logger from '../../../logger.ts'
 import {
   createOrganisation,
@@ -188,18 +186,7 @@ describe('Given a NGC user', () => {
               hasParticipated: true,
             },
             progression: 1,
-            computedResults,
             userComputedResults: computedResults,
-            otherComputedResults: deepMergeSubstract(
-              computedResults,
-              computedResults
-            ),
-            funFacts: Object.fromEntries(
-              Object.entries(modelFunFacts).map(([k]) => [
-                k,
-                expect.any(Number),
-              ])
-            ),
             updatedAt: expect.any(String),
           })
         })
@@ -224,18 +211,7 @@ describe('Given a NGC user', () => {
                 hasParticipated: true,
               },
               progression: 1,
-              computedResults,
               userComputedResults: computedResults,
-              otherComputedResults: deepMergeSubstract(
-                computedResults,
-                computedResults
-              ),
-              funFacts: Object.fromEntries(
-                Object.entries(modelFunFacts).map(([k]) => [
-                  k,
-                  expect.any(Number),
-                ])
-              ),
               updatedAt: expect.any(String),
             })
           })
@@ -364,17 +340,6 @@ describe('Given a NGC user', () => {
                 finished: 3,
                 hasParticipated: false,
               },
-              computedResults: simulations.reduce(
-                (acc, { computedResults }) =>
-                  deepMergeSum(acc, computedResults),
-                {}
-              ),
-              funFacts: Object.fromEntries(
-                Object.entries(modelFunFacts).map(([k]) => [
-                  k,
-                  expect.any(Number),
-                ])
-              ),
               updatedAt: expect.any(String),
             })
           })

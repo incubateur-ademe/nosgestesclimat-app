@@ -1,4 +1,6 @@
 import { createAssessActions } from '@nosgestesclimat/core/features/actions/services/assess-actions.service'
+import { createComputePollStats } from '@nosgestesclimat/core/features/polls/stats/legacy/compute-poll-stats'
+import { createProcessNextPendingPollStats } from '@nosgestesclimat/core/features/polls/stats/services/process-next-pending-poll-stats'
 import {
   createGetEngineForModel,
   createWarmUpHotEngines,
@@ -18,6 +20,10 @@ const assessActions = createAssessActions({
 })
 const processNextPendingComputation = createProcessNextPendingComputation({
   assessActions,
+})
+const computePollStats = createComputePollStats({ logger })
+const processNextPendingPollStats = createProcessNextPendingPollStats({
+  computePollStats,
 })
 
 let running = true
@@ -42,6 +48,13 @@ async function main() {
         // Sampled after the engine cache reset, so heapUsed here is the
         // between-jobs floor rather than the peak reached during the job.
         logger.info('[worker] Job processed', currentMemoryMB())
+        // Drain the queue without delay
+        continue
+      }
+
+      const statsProcessed = await processNextPendingPollStats()
+      if (statsProcessed) {
+        logger.info('[worker] Poll stats processed', currentMemoryMB())
         // Drain the queue without delay
         continue
       }

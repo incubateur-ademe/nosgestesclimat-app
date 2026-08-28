@@ -32,11 +32,7 @@ import {
   getPendingJobStatus,
   JobFilesRootPath,
 } from '../jobs/jobs.service.ts'
-import type { SimulationAsyncEvent } from '../simulations/events/SimulationUpserted.event.ts'
-import {
-  getPollSimulationsExcelData,
-  getPollStats,
-} from '../simulations/simulations.service.ts'
+import { getPollSimulationsExcelData } from '../simulations/simulations.service.ts'
 import { OrganisationCreatedEvent } from './events/OrganisationCreated.event.ts'
 import { OrganisationUpdatedEvent } from './events/OrganisationUpdated.event.ts'
 import { PollCreatedEvent } from './events/PollCreated.event.ts'
@@ -53,8 +49,6 @@ import {
   fetchUserOrganisations,
   findOrganisationPollById,
   findOrganisationPollBySlugOrId,
-  findSimulationPoll,
-  setPollStats,
   updateAdministratorOrganisation,
   updateOrganisationPoll,
 } from './organisations.repository.ts'
@@ -256,7 +250,7 @@ const isOrganisationAdmin = (
   )
 
 const pollToDto = ({
-  poll: { organisationId: _1, computeRealTimeStats: _2, ...poll },
+  poll: { organisationId: _1, ...poll },
   simulationsInfos: { count, finished, hasParticipated },
   simulationsInfos,
   organisation,
@@ -469,45 +463,6 @@ export const fetchPublicPoll = async ({
       throw new EntityNotFoundException('Poll not found')
     }
     throw e
-  }
-}
-
-export const updatePollStats = async (
-  { pollId, simulation }: { pollId: string; simulation?: SimulationAsyncEvent },
-  { session }: { session: Session }
-) => {
-  const stats = await getPollStats({ id: pollId, simulation }, { session })
-
-  await setPollStats(pollId, stats, { session })
-}
-
-export const updatePollStatsAfterSimulationChange = async ({
-  simulation,
-  created,
-}: {
-  simulation: SimulationAsyncEvent
-  created: boolean
-}) => {
-  try {
-    return await transaction(async (session) => {
-      const simulationPoll = await findSimulationPoll(
-        { simulationId: simulation.id },
-        { session }
-      )
-
-      if (!simulationPoll || !simulationPoll.poll.computeRealTimeStats) {
-        return
-      }
-
-      const { pollId } = simulationPoll
-
-      return updatePollStats(
-        { pollId, ...(created ? { simulation } : {}) },
-        { session }
-      )
-    }, prisma)
-  } catch (e) {
-    logger.error('Poll funFacts update failed', e)
   }
 }
 

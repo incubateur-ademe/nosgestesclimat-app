@@ -1,4 +1,3 @@
-import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import {
   ComputedResultsSchema,
   type ComputedResults,
@@ -16,7 +15,6 @@ import {
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
 import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
-import type { SimulationParams } from '../simulations/simulations.validator.ts'
 import { createOrUpdateVerifiedUser } from '../users/users.repository.ts'
 import type {
   OrganisationCreateDto,
@@ -692,51 +690,6 @@ export const fetchOrganisationPublicPoll = async (
     simulationsInfos,
     organisation,
   }
-}
-
-export const findSimulationPoll = (
-  { simulationId }: SimulationParams,
-  { session }: { session: Session }
-) => {
-  return session.simulationPoll.findFirst({
-    where: {
-      simulationId,
-    },
-    select: {
-      pollId: true,
-      simulationId: true,
-      updatedAt: true,
-      poll: {
-        select: {
-          computeRealTimeStats: true,
-        },
-      },
-    },
-  })
-}
-
-export const setPollStats = (
-  id: string,
-  {
-    computedResults,
-    funFacts,
-  }: { computedResults: ComputedResults; funFacts: FunFacts },
-  { session }: { session: Session }
-) => {
-  return session.poll.update({
-    where: {
-      id,
-    },
-    data: {
-      computedResults,
-      funFacts,
-    },
-    select: {
-      id: true,
-      funFacts: true,
-      computedResults: true,
-    },
-  })
 }
 
 export type OrganisationsBatchBrevoStats = {

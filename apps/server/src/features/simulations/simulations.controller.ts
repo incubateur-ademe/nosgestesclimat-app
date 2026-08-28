@@ -11,7 +11,7 @@ import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameR
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { programComputation } from './handlers/program-computation.ts'
-import { publishRedisEvent } from './handlers/publish-redis-event.ts'
+import { programPollStats } from './handlers/program-poll-stats.ts'
 import { sendSimulationUpserted } from './handlers/send-simulation-upserted.ts'
 import { updateBrevoContact } from './handlers/update-brevo-contact.ts'
 import {
@@ -28,8 +28,8 @@ const router = express.Router()
 
 EventBus.on(SimulationUpsertedEvent, updateBrevoContact)
 EventBus.on(SimulationUpsertedEvent, sendSimulationUpserted)
-EventBus.on(SimulationUpsertedEvent, publishRedisEvent)
 EventBus.on(SimulationUpsertedEvent, programComputation)
+EventBus.on(SimulationUpsertedEvent, programPollStats)
 
 /**
  * Upserts a simulation

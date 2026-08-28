@@ -274,8 +274,8 @@ model Poll {
   organisationId               String
   organisation                 Organisation                    @relation(fields: [organisationId], onDelete: Cascade, references: [id])
   simulations                  SimulationPoll[]
+  statsComputations            PollStatsComputation[]
   mode                         PollMode                        @default(standard) @map("pollMode")
-  computeRealTimeStats         Boolean                         @default(true)
   createdAt                    DateTime                        @default(now())
   updatedAt                    DateTime                        @updatedAt
 
@@ -400,6 +400,8 @@ model SimulationPoll {
   updatedAt    DateTime   @updatedAt
 
   @@unique([simulationId, pollId])
+  @@index([pollId])
+  @@index([pollId, id])
   @@schema("ngc")
 }
 
