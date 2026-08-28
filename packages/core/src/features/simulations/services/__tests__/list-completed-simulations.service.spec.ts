@@ -265,7 +265,7 @@ describe('listCompletedSimulations', () => {
     expect(result).toEqual([])
   })
 
-  it('delegates migration to migrateSimulationIfNeeded only for the most recent simulation', async () => {
+  it('delegates migration to migrateSimulationIfNeeded for each simulation', async () => {
     const { migrateSimulationIfNeeded } =
       await import('../../helpers/migrate-simulation.ts')
     const user = await userFactory.create()
@@ -292,14 +292,14 @@ describe('listCompletedSimulations', () => {
 
     await listCompletedSimulations({ userId: user.id })
 
-    expect(migrateSimulationIfNeeded).toHaveBeenCalledTimes(1)
+    expect(migrateSimulationIfNeeded).toHaveBeenCalledTimes(2)
     expect(migrateSimulationIfNeeded).toHaveBeenCalledWith(
       expect.objectContaining({
         id: newer.id,
         situation: newer.situation,
       })
     )
-    expect(migrateSimulationIfNeeded).not.toHaveBeenCalledWith(
+    expect(migrateSimulationIfNeeded).toHaveBeenCalledWith(
       expect.objectContaining({
         id: older.id,
         situation: older.situation,
