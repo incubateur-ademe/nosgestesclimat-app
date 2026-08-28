@@ -3,19 +3,17 @@ import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'j
 import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json' with { type: 'json' }
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import { serializeModel } from '../../simulations/repository/model.mapper.ts'
-import type {
-  Model,
-  ModelLocale,
-  ModelRegion,
-} from '../../simulations/types/model.ts'
+import { serializeModel } from '../repository/model.mapper.ts'
+import type { Model, ModelLocale, ModelRegion } from '../types/model.ts'
 
 interface SimulationFixture {
   id: string
   userId: string | null
   progression: number
+  date: Date
   createdAt: Date
   model: Model
+  computedResults: object
 }
 
 interface SimulationTransientParams {
@@ -100,10 +98,10 @@ export const simulationFactory = SimulationFactory.define(
       await prisma.simulation.create({
         data: {
           id: data.id,
-          date: new Date(),
+          date: data.date,
           progression: data.progression,
           model: serializeModel(data.model),
-          computedResults: {},
+          computedResults: data.computedResults,
           situation: {},
           actionChoices: {},
           userId: data.userId,
@@ -117,6 +115,7 @@ export const simulationFactory = SimulationFactory.define(
       id: faker.string.uuid(),
       userId: null,
       progression: faker.number.float({ min: 0, max: 1 }),
+      date: new Date(),
       createdAt: new Date(),
       model: {
         region:
@@ -129,6 +128,7 @@ export const simulationFactory = SimulationFactory.define(
           publishedTag: pkg.version,
         },
       },
+      computedResults: {},
     }
   }
 )
