@@ -48,3 +48,22 @@ export const findLatestCompletedSimulation = async ({
 
   return row ? mapSimulation(row) : null
 }
+
+export const findCompletedSimulations = async ({
+  userId,
+  limit,
+}: {
+  userId: string
+  limit?: number
+}): Promise<Simulation[]> => {
+  const rows = await prisma.simulation.findMany({
+    where: { userId, progression: 1 },
+    orderBy: { date: 'desc' },
+    take: limit,
+    select: simulationSelect,
+  })
+
+  return rows
+    .map(mapSimulation)
+    .filter((simulation): simulation is Simulation => simulation !== null)
+}
