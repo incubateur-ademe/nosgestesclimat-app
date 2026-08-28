@@ -191,7 +191,8 @@ describe('getUserSimulationProgress', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withProgression(0.5)
-      .params({ userId: user.id, computedResults: { bilan: 1000 } })
+      .withDeprecatedComputedResults()
+      .params({ userId: user.id })
       .create()
 
     const result = await getUserSimulationProgress({ userId: user.id })
@@ -204,10 +205,10 @@ describe('getUserSimulationProgress', () => {
     await simulationFactory
       .withModelRegion('FR')
       .completed()
+      .withDeprecatedComputedResults()
       .params({
         userId: user.id,
         date: new Date('2024-01-01'),
-        computedResults: {},
       })
       .create()
     const current = await simulationFactory

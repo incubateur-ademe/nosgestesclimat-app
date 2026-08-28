@@ -20,7 +20,7 @@ export interface Simulation {
   polls?: { id: string; slug: string; name?: string }[]
   groups?: { id: string }[]
   /** Server-owned: absent on simulations that have not been persisted yet. */
-  updated_at?: string
+  updatedAt?: string
 }
 
 /**

@@ -3,18 +3,11 @@ import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'j
 import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json' with { type: 'json' }
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
+import { Prisma } from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../repository/model.mapper.ts'
 import type { Model, ModelLocale, ModelRegion } from '../types/model.ts'
-
-interface SimulationFixture {
-  id: string
-  userId: string | null
-  progression: number
-  date: Date
-  createdAt: Date
-  model: Model
-  computedResults: object
-}
+import type { Simulation } from '../types/simulation.ts'
+import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
 
 interface SimulationTransientParams {
   progression?: number
@@ -24,9 +17,9 @@ interface SimulationTransientParams {
 }
 
 class SimulationFactory extends Factory<
-  SimulationFixture,
+  Simulation,
   SimulationTransientParams,
-  SimulationFixture
+  Simulation
 > {
   withProgression(progression: number) {
     return this.params({ progression })
@@ -39,6 +32,11 @@ class SimulationFactory extends Factory<
   }
   withModelLocale(lang: ModelLocale) {
     return this.transient({ modelLocale: lang })
+  }
+  withDeprecatedComputedResults() {
+    return this.params({
+      computedResults: { bilan: 1000 } as unknown as ComputedResultSchema,
+    })
   }
 
   started() {
@@ -101,11 +99,17 @@ export const simulationFactory = SimulationFactory.define(
           date: data.date,
           progression: data.progression,
           model: serializeModel(data.model),
-          computedResults: data.computedResults,
-          situation: {},
-          actionChoices: {},
+          computedResults:
+            data.computedResults as unknown as Prisma.InputJsonValue,
+          situation: data.situation as unknown as Prisma.InputJsonValue,
+          extendedSituation: data.extendedSituation
+            ? (data.extendedSituation as unknown as Prisma.InputJsonValue)
+            : Prisma.DbNull,
+          foldedSteps: data.foldedSteps as unknown as Prisma.InputJsonValue[],
+          actionChoices: data.actionChoices as unknown as Prisma.InputJsonValue,
           userId: data.userId,
           createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
         },
       })
       return data
@@ -117,6 +121,7 @@ export const simulationFactory = SimulationFactory.define(
       progression: faker.number.float({ min: 0, max: 1 }),
       date: new Date(),
       createdAt: new Date(),
+      updatedAt: new Date(),
       model: {
         region:
           transientParams.modelRegion ??
@@ -128,7 +133,36 @@ export const simulationFactory = SimulationFactory.define(
           publishedTag: pkg.version,
         },
       },
-      computedResults: {},
+      situation: {},
+      extendedSituation: null,
+      foldedSteps: [],
+      actionChoices: {},
+      computedResults: zeroedComputedResults,
     }
   }
 )
+
+const zeroedComputedResults: ComputedResultSchema = {
+  carbone: {
+    bilan: 0,
+    categories: {
+      'services sociétaux': 0,
+      alimentation: 0,
+      divers: 0,
+      logement: 0,
+      transport: 0,
+    },
+    subcategories: {},
+  },
+  eau: {
+    bilan: 0,
+    categories: {
+      'services sociétaux': 0,
+      alimentation: 0,
+      divers: 0,
+      logement: 0,
+      transport: 0,
+    },
+    subcategories: {},
+  },
+}

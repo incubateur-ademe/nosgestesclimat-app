@@ -1,59 +1,36 @@
 import { prisma } from '../../../prisma/client.ts'
-import { SimulationNotFound } from '../exceptions/simulations.exception.ts'
 import type { Simulation } from '../types/simulation.ts'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
-import { hasValidComputedResults } from '../validators/computed-results.schema.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
-export const getSimulationById = async (id: string): Promise<Simulation> => {
-  const simulation = await prisma.simulation.findUnique({ where: { id } })
-
-  if (!simulation) {
-    throw new SimulationNotFound({ simulationId: id })
-  }
-
-  return mapSimulation(simulation)
-}
-
-const latestSimulationSelect = {
+const simulationSelect = {
   id: true,
-  progression: true,
+  date: true,
   model: true,
+  progression: true,
+  situation: true,
+  extendedSituation: true,
+  foldedSteps: true,
+  actionChoices: true,
   computedResults: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  polls: {
+    select: { pollId: true, poll: { select: { slug: true, name: true } } },
+  },
+  groups: { select: { groupId: true } },
 } as const
 
-type LatestSimulationRow = {
-  id: string
-  progression: number
-  model: string
-  computedResults: ComputedResultSchema
-}
-
-const findLatestValid = async (where: {
+export const findLatestSimulation = async ({
+  userId,
+}: {
   userId: string
-  progression?: number
-}): Promise<LatestSimulationRow | null> => {
+}): Promise<Simulation | null> => {
   const row = await prisma.simulation.findFirst({
-    where,
+    where: { userId },
     orderBy: { date: 'desc' },
-    select: latestSimulationSelect,
+    select: simulationSelect,
   })
 
-  return row && hasValidComputedResults(row) ? row : null
-}
-
-export const findLatestSimulation = ({
-  userId,
-}: {
-  userId: string
-}): Promise<LatestSimulationRow | null> => findLatestValid({ userId })
-
-export const findLatestCompletedSimulation = async ({
-  userId,
-}: {
-  userId: string
-}): Promise<(LatestSimulationRow & { progression: 1 }) | null> => {
-  const row = await findLatestValid({ userId, progression: 1 })
-
-  return row && { ...row, progression: 1 }
+  return row ? mapSimulation(row) : null
 }

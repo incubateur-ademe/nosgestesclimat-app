@@ -44,7 +44,7 @@ const defaultSimulation: Simulation = {
     locale: 'fr',
     version: { publishedTag: 'v12.10.1' },
   }),
-  updated_at: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   computedResults: {
     carbone: {
       bilan: 0,

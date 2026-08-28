@@ -1,7 +1,7 @@
 import {
-  findLatestCompletedSimulation,
-  findLatestSimulation,
-} from '../repository/simulation.repository.ts'
+  findLatestCompletedSimulationProgress,
+  findLatestSimulationProgress,
+} from '../repository/simulation-progress.repository.ts'
 import type { UserSimulationProgress } from '../types/simulation-progress.ts'
 
 const toProgress = <Progression extends number>(
@@ -21,8 +21,8 @@ export const getUserSimulationProgress = async ({
   userId: string
 }): Promise<UserSimulationProgress> => {
   const [latest, latestCompleted] = await Promise.all([
-    findLatestSimulation({ userId }),
-    findLatestCompletedSimulation({ userId }),
+    findLatestSimulationProgress({ userId }),
+    findLatestCompletedSimulationProgress({ userId }),
   ])
 
   const currentSimulation = toProgress(latest)
