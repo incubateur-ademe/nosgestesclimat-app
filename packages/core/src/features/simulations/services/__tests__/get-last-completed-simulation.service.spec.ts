@@ -1,8 +1,12 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { getLastCompletedSimulation } from '../get-last-completed-simulation.service.ts'
+
+vi.mock('../../helpers/migrate-simulation.ts', () => ({
+  migrateSimulationIfNeeded: vi.fn((simulation) => simulation),
+}))
 
 const validComputedResults = {
   carbone: {
@@ -30,6 +34,10 @@ const validComputedResults = {
 }
 
 describe('getLastCompletedSimulation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   afterEach(async () => {
     await prisma.simulationPoll.deleteMany()
     await prisma.groupParticipant.deleteMany()
@@ -185,5 +193,27 @@ describe('getLastCompletedSimulation', () => {
     const result = await getLastCompletedSimulation({ userId: user.id })
 
     expect(result).toBeNull()
+  })
+
+  it('delegates migration to migrateSimulationIfNeeded', async () => {
+    const { migrateSimulationIfNeeded } =
+      await import('../../helpers/migrate-simulation.ts')
+    const user = await userFactory.create()
+    const simulation = await simulationFactory
+      .withModelRegion('FR')
+      .completed()
+      .params({ userId: user.id, computedResults: validComputedResults })
+      .create()
+
+    await getLastCompletedSimulation({ userId: user.id })
+
+    expect(migrateSimulationIfNeeded).toHaveBeenCalledTimes(1)
+    expect(migrateSimulationIfNeeded).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: simulation.id,
+        userId: user.id,
+        situation: simulation.situation,
+      })
+    )
   })
 })

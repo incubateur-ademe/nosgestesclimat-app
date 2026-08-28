@@ -53,7 +53,7 @@ describe('getLastCompletedSimulation', () => {
     })
   })
 
-  it('maps the entity to a DTO and applies migration', async () => {
+  it('maps the entity to a DTO', async () => {
     const userId = randomUUID()
     vi.mocked(getUserSession).mockResolvedValue({
       id: userId,

@@ -1,5 +1,4 @@
 import packageJson from '@incubateur-ademe/nosgestesclimat/package.json'
-import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json'
 import {
   supportedRegions,
   type Region,
@@ -14,8 +13,7 @@ import {
   type ModelRegion,
   type ModelVersion,
 } from '@nosgestesclimat/core/features/simulations/types/model'
-import { migrateSituation } from '@publicodes/tools/migration'
-import type { Simulation, SimulationMode } from './simulations'
+import type { SimulationMode } from './simulations'
 
 export { supportedRegions }
 
@@ -58,22 +56,4 @@ export function getCurrentModel({
     region,
     locale,
   }
-}
-
-export function migrateSimulationIfNeeded(simulation: Simulation) {
-  const model = parseModelString(simulation.model)
-  if (!model) return simulation
-
-  const version = model.version
-  if ('PRNumber' in version) {
-    return simulation
-  }
-  if (version.publishedTag === CURRENT_MODEL_VERSION) {
-    return simulation
-  }
-  simulation.situation = migrateSituation(
-    simulation.situation,
-    migrationInstructions
-  )
-  return simulation
 }
