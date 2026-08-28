@@ -199,10 +199,10 @@ describe('listCompletedSimulations', () => {
     expect(result).toHaveLength(2)
   })
 
-  it('defaults the limit to 50 when none is provided', async () => {
+  it('defaults the limit to 10 when none is provided', async () => {
     const user = await userFactory.create()
     await Promise.all(
-      Array.from({ length: 55 }, () =>
+      Array.from({ length: 11 }, () =>
         simulationFactory
           .withModelRegion('FR')
           .completed()
@@ -224,7 +224,7 @@ describe('listCompletedSimulations', () => {
 
     const result = await listCompletedSimulations({ userId: user.id })
 
-    expect(result).toHaveLength(50)
+    expect(result).toHaveLength(10)
   })
 
   it('filters out simulations with invalid computedResults', async () => {

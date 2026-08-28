@@ -3,7 +3,7 @@ import type { Simulation } from '../types/simulation.ts'
 
 export const listCompletedSimulations = async ({
   userId,
-  limit = 50,
+  limit = 10,
 }: {
   userId: string
   limit?: number

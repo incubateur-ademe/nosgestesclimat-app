@@ -15,7 +15,10 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
     (await searchParams) ?? {}
 
   await requireAuthUser()
-  const simulations = await throwNextError(() => listCompletedSimulations())
+  const simulations = await throwNextError(() =>
+    // only <1% of users have more than 5 simulations
+    listCompletedSimulations({ limit: 10 })
+  )
 
   return (
     <div>
