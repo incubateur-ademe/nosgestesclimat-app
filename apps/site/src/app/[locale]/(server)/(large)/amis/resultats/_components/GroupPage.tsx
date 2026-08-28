@@ -5,7 +5,7 @@ import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import type { AppUser } from '@/services/auth/get-user-session'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import type { Group } from '@/types/groups'
 import dayjs from 'dayjs'
 import EditableGroupTitle from './EditableGroupTitle'
@@ -30,9 +30,7 @@ export default async function GroupPage({
   // The user may have completed a newer test since joining the group; offer to
   // update their participation with it. Resolved server-side so it stays in
   // sync with `group` after `revalidatePath`.
-  const [latestCompletedSimulation] = await getCompletedSimulations({
-    pageSize: 1,
-  })
+  const latestCompletedSimulation = await getLastCompletedSimulation()
   const newSimulation =
     latestCompletedSimulation &&
     latestCompletedSimulation.id !== userSimulation.id &&
