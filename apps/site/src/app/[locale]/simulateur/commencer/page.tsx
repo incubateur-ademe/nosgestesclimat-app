@@ -5,7 +5,7 @@ import { stringifyModel } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { createSimulation } from '@/services/simulations/create-simulation'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
 import { redirect } from 'next/navigation'
 
@@ -26,7 +26,7 @@ export default async function Commencer({
     redirect(getLinkToTutoriel({ locale, searchParams: tutorielSearchParams }))
   }
 
-  const currentSimulation = await getCurrentSimulation()
+  const { currentSimulation } = await getUserSimulationProgress()
 
   const model = await resolveNewSimulationModel({
     searchParams: resolvedSearchParams,

@@ -1,14 +1,14 @@
 import Trans from '@/components/translation/trans/TransServer'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
 
 /**
  * Server component: this page mounts no `UserProvider`, so the simulation has
  * to be resolved here rather than read from the client context.
  */
 export default async function DoTheTest({ locale }: { locale: string }) {
-  const currentSimulation = await getCurrentSimulation()
+  const { currentSimulation } = await getUserSimulationProgress()
 
   if (!currentSimulation?.progression) {
     return (
