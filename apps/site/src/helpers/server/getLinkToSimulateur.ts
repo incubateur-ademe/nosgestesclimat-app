@@ -8,15 +8,16 @@ import {
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { UserSession } from '@/services/auth/get-user-session'
 import type { TFunction } from 'i18next'
+
 export function getMainCTA({
   currentSimulation,
-  completedSimulations,
+  completedSimulation,
   user,
   t,
 }: {
-  currentSimulation?: Simulation
+  currentSimulation?: Pick<Simulation, 'progression'>
   user: UserSession
-  completedSimulations: Simulation[]
+  completedSimulation?: Pick<Simulation, 'progression'>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: TFunction<any, string>
 }) {
@@ -31,7 +32,7 @@ export function getMainCTA({
   if (currentSimulation.progression === 0) {
     return {
       children: t('Commencer le test'),
-      href: completedSimulations.length ? SIMULATOR_PATH : TUTORIAL_PATH,
+      href: completedSimulation ? SIMULATOR_PATH : TUTORIAL_PATH,
     }
   }
   if (currentSimulation.progression === 1) {

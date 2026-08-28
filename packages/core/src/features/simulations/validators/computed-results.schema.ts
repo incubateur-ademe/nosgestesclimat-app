@@ -26,7 +26,9 @@ export type ComputedResultSchema = v.InferOutput<typeof ComputedResultSchema>
  * matches the current carbone/eau shape. Legacy simulations predating this
  * shape are kept in the database but exposed as if they did not exist.
  */
-export const hasValidComputedResults = (simulation: {
-  computedResults?: unknown
-}): boolean =>
+export const hasValidComputedResults = <
+  Simulation extends { computedResults?: unknown },
+>(
+  simulation: Simulation
+): simulation is Simulation & { computedResults: ComputedResultSchema } =>
   v.safeParse(ComputedResultSchema, simulation.computedResults).success

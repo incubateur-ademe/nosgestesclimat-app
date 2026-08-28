@@ -2,9 +2,8 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
 import { Suspense } from 'react'
 import Trans from '../translation/trans/TransServer'
 
@@ -18,10 +17,8 @@ export default function PasserTestBanner({ locale }: { locale: string }) {
 
 async function PasserTestBannerServer({ locale }: { locale: string }) {
   const user = await getUserSession()
-  const [currentSimulation, completedSimulations] = await Promise.all([
-    getCurrentSimulation(),
-    getCompletedSimulations({ pageSize: 1 }),
-  ])
+  const { currentSimulation, completedSimulation } =
+    await getUserSimulationProgress()
   const { t } = await getServerTranslation({ locale })
 
   // Do not show the banner if the user has completed his/her test
@@ -36,7 +33,12 @@ async function PasserTestBannerServer({ locale }: { locale: string }) {
         </Trans>
       </p>
       <ButtonLink
-        {...getMainCTA({ currentSimulation, completedSimulations, user, t })}
+        {...getMainCTA({
+          currentSimulation,
+          completedSimulation,
+          user,
+          t,
+        })}
       />
     </Card>
   )

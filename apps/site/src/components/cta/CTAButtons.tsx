@@ -5,9 +5,8 @@ import {
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMainCTA } from '@/helpers/server/getLinkToSimulateur'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
 import { Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 import RotatingArrowIcon from '../icons/RotatingArrowIcon'
@@ -36,10 +35,8 @@ async function ServerCTAButtons({
   locale,
 }: Props) {
   const user = await getUserSession()
-  const [currentSimulation, completedSimulations] = await Promise.all([
-    getCurrentSimulation(),
-    getCompletedSimulations({ pageSize: 1 }),
-  ])
+  const { currentSimulation, completedSimulation } =
+    await getUserSimulationProgress()
   const { t } = await getServerTranslation({ locale })
 
   const showRestart =
@@ -51,7 +48,7 @@ async function ServerCTAButtons({
 
   const mainButton = getMainCTA({
     currentSimulation,
-    completedSimulations,
+    completedSimulation,
     user,
     t,
   })
