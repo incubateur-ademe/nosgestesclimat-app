@@ -16,7 +16,8 @@ export interface Simulation {
   computedResults: ComputedResults
   progression: number
   model: string
-  user?: { id: string; name?: string }
+  /** @deprecated */
+  user?: unknown
   polls?: { id: string; slug: string; name?: string }[]
   groups?: { id: string }[]
   /** Server-owned: absent on simulations that have not been persisted yet. */

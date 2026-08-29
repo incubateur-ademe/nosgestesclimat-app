@@ -31,11 +31,7 @@ export default function InvitationForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useReactHookForm<Inputs>({
-    defaultValues: {
-      guestName: currentSimulation?.user?.name,
-    },
-  })
+  } = useReactHookForm<Inputs>()
 
   const hasCompletedTest = currentSimulation?.progression === 1
 
