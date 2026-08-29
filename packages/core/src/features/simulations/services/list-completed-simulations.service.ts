@@ -11,5 +11,5 @@ export const listCompletedSimulations = async ({
 }): Promise<Simulation[]> => {
   const simulations = await findCompletedSimulations({ userId, limit })
 
-  return simulations.map(migrateSimulationIfNeeded)
+  return simulations.map((simulation) => migrateSimulationIfNeeded(simulation))
 }
