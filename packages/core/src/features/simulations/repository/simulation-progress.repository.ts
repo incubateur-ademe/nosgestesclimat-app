@@ -9,7 +9,7 @@ const latestSimulationSelect = {
   computedResults: true,
 } as const
 
-type LatestSimulationRow = {
+type SimulationProgressRow = {
   id: string
   progression: number
   model: string
@@ -19,7 +19,7 @@ type LatestSimulationRow = {
 const findLatestValid = async (where: {
   userId: string
   progression?: number
-}): Promise<LatestSimulationRow | null> => {
+}): Promise<SimulationProgressRow | null> => {
   const row = await prisma.simulation.findFirst({
     where,
     orderBy: { date: 'desc' },
@@ -33,14 +33,29 @@ export const findLatestSimulationProgress = ({
   userId,
 }: {
   userId: string
-}): Promise<LatestSimulationRow | null> => findLatestValid({ userId })
+}): Promise<SimulationProgressRow | null> => findLatestValid({ userId })
 
 export const findLatestCompletedSimulationProgress = async ({
   userId,
 }: {
   userId: string
-}): Promise<(LatestSimulationRow & { progression: 1 }) | null> => {
+}): Promise<(SimulationProgressRow & { progression: 1 }) | null> => {
   const row = await findLatestValid({ userId, progression: 1 })
 
   return row && { ...row, progression: 1 }
+}
+
+export const findSimulationProgressById = async ({
+  id,
+  userId,
+}: {
+  id: string
+  userId: string
+}): Promise<SimulationProgressRow | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: { id, userId },
+    select: latestSimulationSelect,
+  })
+
+  return row && hasValidComputedResults(row) ? row : null
 }

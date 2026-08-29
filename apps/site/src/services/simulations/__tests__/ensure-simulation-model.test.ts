@@ -1,4 +1,5 @@
 import { GROUP_URL, SIMULATION_URL } from '@/constants/urls/main'
+import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
 import { http, HttpResponse } from 'msw'
@@ -15,8 +16,6 @@ import { uploadLocalSimulations } from '../upload-local-simulations'
  * handed it.
  */
 
-const MODEL_REGEX =
-  /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
 const DATABASE_DEFAULT_MODEL = 'FR-fr-0.0.0'
 
 const getCurrentSimulationMock = vi.hoisted(() => vi.fn())
@@ -88,7 +87,7 @@ describe('simulation write paths', () => {
 
       await saveSimulation({ simulation: modellessSimulation() })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
 
@@ -105,7 +104,7 @@ describe('simulation write paths', () => {
         name: 'Alice',
       })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
 
@@ -124,7 +123,7 @@ describe('simulation write paths', () => {
         participants: [{ simulation: modellessSimulation() }],
       })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
   })
@@ -140,7 +139,7 @@ describe('simulation write paths', () => {
 
       await updateGroupParticipant({ groupId: 'group-id', name: 'Alice' })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
       expect(captured.value?.progression).toBe(0)
     })
