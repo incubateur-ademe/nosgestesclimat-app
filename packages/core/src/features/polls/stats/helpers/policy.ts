@@ -1,4 +1,4 @@
-const DEFAULT_COOLDOWN_TIERS = '50:0s|1000:60s|300s'
+const DEFAULT_COOLDOWN_TIERS = '100:0s|1000:15m|4h'
 
 export interface CooldownTier {
   // null means no upper bound (default tier)
@@ -7,19 +7,20 @@ export interface CooldownTier {
 }
 
 const parseSeconds = (value: string): number => {
-  const match = /^(\d+)(m|s)?$/.exec(value.trim())
+  const match = /^(\d+)(h|m|s)?$/.exec(value.trim())
   if (!match) {
     throw new Error(`Invalid cooldown value "${value}"`)
   }
   const [, amount, unit] = match
-  return Number(amount) * (unit === 'm' ? 60 : 1)
+  return Number(amount) * (unit === 'h' ? 3600 : unit === 'm' ? 60 : 1)
 }
 
 /**
  * Parses a tier configuration string of the form
  * `threshold:cooldown|threshold:cooldown|defaultCooldown` (e.g.
- * `50:0s|1000:60s|300s`). Cooldowns accept an `s` (seconds) or `m` (minutes)
- * suffix; without a suffix they are in seconds. Throws on invalid input.
+ * `100:0s|1000:15m|4h`). Cooldowns accept an `s` (seconds), `m` (minutes) or
+ * `h` (hours) suffix; without a suffix they are in seconds. Throws on invalid
+ * input.
  */
 export const parseCooldownTiers = (raw: string): CooldownTier[] =>
   raw.split('|').map((part) => {

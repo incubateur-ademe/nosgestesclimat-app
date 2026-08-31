@@ -22,6 +22,12 @@ describe('parseCooldownTiers', () => {
     ])
   })
 
+  it('parses hour units', () => {
+    expect(parseCooldownTiers('10:4h')).toEqual([
+      { upTo: 10, cooldownSeconds: 14400 },
+    ])
+  })
+
   it('throws on invalid cooldown values', () => {
     expect(() => parseCooldownTiers('50:not-a-number')).toThrow()
   })
@@ -29,14 +35,15 @@ describe('parseCooldownTiers', () => {
 
 describe('resolveCooldownSeconds', () => {
   const tiers = [
-    { upTo: 50, cooldownSeconds: 0 },
-    { upTo: 1000, cooldownSeconds: 60 },
-    { upTo: null, cooldownSeconds: 300 },
+    { upTo: 100, cooldownSeconds: 0 },
+    { upTo: 1000, cooldownSeconds: 900 },
+    { upTo: null, cooldownSeconds: 14400 },
   ]
 
   it('returns the cooldown of the first matching tier', () => {
-    expect(resolveCooldownSeconds(tiers, 50)).toBe(0)
-    expect(resolveCooldownSeconds(tiers, 51)).toBe(60)
-    expect(resolveCooldownSeconds(tiers, 1001)).toBe(300)
+    expect(resolveCooldownSeconds(tiers, 100)).toBe(0)
+    expect(resolveCooldownSeconds(tiers, 101)).toBe(900)
+    expect(resolveCooldownSeconds(tiers, 1000)).toBe(900)
+    expect(resolveCooldownSeconds(tiers, 1001)).toBe(14400)
   })
 })
