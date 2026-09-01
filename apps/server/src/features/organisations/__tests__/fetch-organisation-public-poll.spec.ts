@@ -184,6 +184,7 @@ describe('Given a NGC user', () => {
               count: 1,
               finished: 1,
               hasParticipated: true,
+              cooldownSeconds: 0,
             },
             progression: 1,
             userComputedResults: computedResults,
@@ -209,6 +210,7 @@ describe('Given a NGC user', () => {
                 count: 1,
                 finished: 1,
                 hasParticipated: true,
+                cooldownSeconds: 0,
               },
               progression: 1,
               userComputedResults: computedResults,
@@ -228,6 +230,7 @@ describe('Given a NGC user', () => {
               count: 1,
               finished: 1,
               hasParticipated: false,
+              cooldownSeconds: 0,
             })
             expect(response.body.userComputedResults).toBeUndefined()
           })
@@ -339,6 +342,7 @@ describe('Given a NGC user', () => {
                 count: 3,
                 finished: 3,
                 hasParticipated: false,
+                cooldownSeconds: 0,
               },
               updatedAt: expect.any(String),
             })
