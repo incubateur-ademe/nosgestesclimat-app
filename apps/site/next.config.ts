@@ -40,6 +40,19 @@ const nextConfig = withMDX({
 
     return [...redirects, ...enRedirects]
   },
+  // En prod/preprod, c'est nginx qui sert /_static/cms/ (assets cachés).
+  // Ailleurs (review apps, dev local), pas de nginx devant : on proxy
+  // /_static/cms/ vers S3 pour que les previews restent fonctionnelles.
+  async rewrites() {
+    if (APP_ENV === 'production' || APP_ENV === 'preprod') return []
+
+    return [
+      {
+        source: '/_static/cms/:path*',
+        destination: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/:path*',
+      },
+    ]
+  },
   productionBrowserSourceMaps: true,
   turbopack: {
     root: new URL('../../', import.meta.url).pathname,
