@@ -19,6 +19,8 @@ import ModelInfo from '../_components/ModelInfo'
 import TheySpeakAboutUs from '../_components/TheySpeakAboutUs'
 import TwoFootprints from '../_components/TwoFootprints'
 
+export const instant = false
+
 export const generateMetadata = getCommonMetadata({
   title: t('Calculez votre empreinte carbone et eau avec Nos Gestes Climat'),
   image: '/_static/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',

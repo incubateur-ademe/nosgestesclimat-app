@@ -198,13 +198,13 @@ export default async function FooterServer({
               <ThematicPagesSection locale={locale} />
             </div>
           </div>
-          {locale === 'fr' ? (
+          {locale === 'fr' && (
             <div className="hidden md:block">
               <HideInIframe hideIfNotFrenchRegion>
                 <WantToActBlock locale={locale} />
               </HideInIframe>
             </div>
-          ) : null}
+          )}
         </div>
 
         <div className="flex flex-wrap justify-between gap-8 md:flex-row md:flex-nowrap">
