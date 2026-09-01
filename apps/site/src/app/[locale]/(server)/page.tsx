@@ -19,6 +19,8 @@ import ModelInfo from '../_components/ModelInfo'
 import TheySpeakAboutUs from '../_components/TheySpeakAboutUs'
 import TwoFootprints from '../_components/TwoFootprints'
 
+// NextJS > 16.3.0 shows an error if a page can't navigate instantly
+// this flag is required to remove it
 export const instant = false
 
 export const generateMetadata = getCommonMetadata({
