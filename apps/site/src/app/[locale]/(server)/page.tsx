@@ -1,6 +1,5 @@
 import CTAButtons from '@/components/cta/CTAButtons'
 
-import { ClientLayout } from '@/components/layout/ClientLayout'
 import Footer from '@/components/layout/Footer'
 import JSONLD from '@/components/seo/JSONLD'
 import Trans from '@/components/translation/trans/TransServer'
@@ -8,18 +7,17 @@ import LandingPage from '@/design-system/layout/LandingPage'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { type Locale } from '@/i18nConfig'
-import { getUserSession } from '@/services/auth/get-user-session'
-import Partners from '../../components/landing-pages/Partners'
-import CollectivelyCommit from './_components/CollectivelyCommit'
-import DecryptChallenges from './_components/DecryptChallenges'
-import DidYouKnowMainLanding from './_components/DidYouKnowMainLanding'
-import HomePageDescription from './_components/HomePageDescription'
-import HomepageSubtitle from './_components/HomepageSubtitle'
-import InteractiveIllustration from './_components/InteractiveIllustration'
-import Mobilise from './_components/Mobilise'
-import ModelInfo from './_components/ModelInfo'
-import TheySpeakAboutUs from './_components/TheySpeakAboutUs'
-import TwoFootprints from './_components/TwoFootprints'
+import Partners from '../../../components/landing-pages/Partners'
+import CollectivelyCommit from '../_components/CollectivelyCommit'
+import DecryptChallenges from '../_components/DecryptChallenges'
+import DidYouKnowMainLanding from '../_components/DidYouKnowMainLanding'
+import HomePageDescription from '../_components/HomePageDescription'
+import HomepageSubtitle from '../_components/HomepageSubtitle'
+import InteractiveIllustration from '../_components/InteractiveIllustration'
+import Mobilise from '../_components/Mobilise'
+import ModelInfo from '../_components/ModelInfo'
+import TheySpeakAboutUs from '../_components/TheySpeakAboutUs'
+import TwoFootprints from '../_components/TwoFootprints'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Calculez votre empreinte carbone et eau avec Nos Gestes Climat'),
@@ -35,10 +33,9 @@ export const generateMetadata = getCommonMetadata({
 
 export default async function Homepage({ params }: PageProps<'/[locale]'>) {
   const locale = (await params).locale as Locale
-  const userSession = await getUserSession()
 
   return (
-    <ClientLayout locale={locale} userSession={userSession}>
+    <>
       <JSONLD
         jsonLd={[
           {
@@ -52,6 +49,7 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
       />
       <LandingPage
         locale={locale}
+        withHeader={false}
         heroIllustration={<InteractiveIllustration />}
         heroTitle={
           <Trans locale={locale}>Découvrez votre empreinte carbone</Trans>
@@ -95,6 +93,6 @@ export default async function Homepage({ params }: PageProps<'/[locale]'>) {
       </LandingPage>
 
       <Footer backgroundColor="white" locale={locale} />
-    </ClientLayout>
+    </>
   )
 }

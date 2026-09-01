@@ -2,7 +2,7 @@ import { mswServer } from '@/__tests__/server'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import TheySpeakAboutUs from '../TheySpeakAboutUs'
 
 const mockPartners = [
@@ -21,6 +21,8 @@ const mockPartners = [
     displayOrder: 2,
   },
 ]
+
+vi.mock('next/cache', () => ({ cacheLife: vi.fn() }))
 
 describe('TheySpeakAboutUs component', () => {
   beforeAll(() => {

@@ -3,7 +3,7 @@ import type { DefaultPageProps } from '@/types'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import OurPartners from '../page'
 
 const mockPartners = [
@@ -22,6 +22,8 @@ const mockPartners = [
     displayOrder: 2,
   },
 ]
+
+vi.mock('next/cache', () => ({ cacheLife: vi.fn() }))
 
 describe('OurPartners page', () => {
   beforeAll(() => {

@@ -300,9 +300,6 @@ importers:
       i18next:
         specifier: ^25.10.10
         version: 25.10.10(typescript@5.9.3)
-      i18next-resources-to-backend:
-        specifier: ^1.2.0
-        version: 1.2.0
       iron-session:
         specifier: ^8.0.4
         version: 8.0.4
@@ -6630,9 +6627,6 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || ^22.0.0, npm: '>=6', yarn: '>=1'}
     deprecated: Project is deprecated, use i18next-cli instead
     hasBin: true
-
-  i18next-resources-to-backend@1.2.0:
-    resolution: {integrity: sha512-8f1l03s+QxDmCfpSXCh9V+AFcxAwIp0UaroWuyOx+hmmv8484GcELHs+lnu54FrNij8cDBEXvEwhzZoXsKcVpg==}
 
   i18next@24.2.3:
     resolution: {integrity: sha512-lfbf80OzkocvX7nmZtu7nSTNbrTYR52sLWxPtlXX1zAhVw8WEnFk4puUkCR4B1dNQwbSpEHHHemcZu//7EcB7A==}
@@ -17280,10 +17274,6 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
       - supports-color
-
-  i18next-resources-to-backend@1.2.0:
-    dependencies:
-      '@babel/runtime': 7.29.2
 
   i18next@24.2.3(typescript@5.9.3):
     dependencies:

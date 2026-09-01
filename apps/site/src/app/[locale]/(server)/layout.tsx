@@ -1,3 +1,4 @@
+import MainHooks from '@/app/[locale]/_components/mainLayoutProviders/MainHooks'
 import { GoogleTagIframe } from '@/components/googleTagManager/GoogleTagIframe'
 import { GoogleTagScript } from '@/components/googleTagManager/GoogleTagScript'
 import HeaderServer from '@/components/layout/HeaderServer'
@@ -13,6 +14,7 @@ export default async function LargeLayout({
   const { locale } = await params
   return (
     <>
+      <MainHooks />
       <SkipToMainContentLink />
       <Suspense fallback={null}>
         <Banner locale={locale as Locale} />

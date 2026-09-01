@@ -2,6 +2,7 @@ import type { PartnerType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import i18nConfig from '@/i18nConfig'
 import { captureException } from '@sentry/nextjs'
+import { cacheLife } from 'next/cache'
 
 interface Props {
   displayOnLandingPage?: boolean
@@ -10,6 +11,9 @@ interface Props {
 export async function fetchPartners(
   props?: Props
 ): Promise<{ data: PartnerType[]; isError?: boolean }> {
+  'use cache'
+  cacheLife('hours')
+
   const { displayOnLandingPage } = props || {}
 
   try {

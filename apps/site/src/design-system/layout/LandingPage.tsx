@@ -11,6 +11,7 @@ interface Props {
   heroPartners: ReactNode
   children: ReactNode
   locale: string
+  withHeader?: boolean
 }
 
 export default function LandingPage({
@@ -20,10 +21,11 @@ export default function LandingPage({
   heroPartners,
   children,
   locale,
+  withHeader = true,
 }: Props) {
   return (
     <>
-      <HeaderServer locale={locale} />
+      {withHeader && <HeaderServer locale={locale} />}
 
       <Main>
         <Hero

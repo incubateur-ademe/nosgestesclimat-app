@@ -2,6 +2,7 @@ import type { ArticleType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
 import { captureException } from '@sentry/nextjs'
+import { cacheLife } from 'next/cache'
 import { URLSearchParams } from 'url'
 
 interface Props {
@@ -12,6 +13,9 @@ interface Props {
 export async function fetchArticles(
   props?: Props
 ): Promise<{ data: ArticleType[]; isError?: boolean }> {
+  'use cache'
+  cacheLife('hours')
+
   const { params, locale } = props || {}
 
   try {
