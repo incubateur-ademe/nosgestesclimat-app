@@ -9,12 +9,14 @@ interface UseCreatePollStep2Props {
   organisationSlug: string
 }
 
+export type PollModeValue = 'standard' | 'scolaire'
+
 /**
  * Static mode options for poll creation
  */
 export const pollModes = [
   {
-    value: 'standard' as const,
+    value: 'standard' as PollModeValue,
     titleKey: 'collectiveTest.mode.standard.title',
     titleDefault: 'Mode standard',
     descriptionKey: 'collectiveTest.mode.standard.description',
@@ -25,7 +27,7 @@ export const pollModes = [
     imageAlt: 'Illustration mode standard',
   },
   {
-    value: 'scolaire' as const,
+    value: 'scolaire' as PollModeValue,
     titleKey: 'collectiveTest.mode.scolaire.title',
     titleDefault: 'Mode scolaire',
     descriptionKey: 'collectiveTest.mode.scolaire.description',
