@@ -1,3 +1,4 @@
+import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
 import * as v from 'valibot'
@@ -5,7 +6,6 @@ import { allowedRedirectUrls, config } from '../../config.ts'
 import { isSafeRedirectUrl } from '../../core/allowed-urls.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.ts'
-import type { Situation } from '../../features/simulations/simulations.validator.ts'
 
 const twoTons = axios.create({
   baseURL: config.thirdParty.twoTons.url,

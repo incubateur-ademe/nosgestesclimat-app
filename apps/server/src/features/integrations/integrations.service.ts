@@ -1,6 +1,6 @@
+import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { exportSituation as twoTonsExportSituation } from '../../adapters/2tonnes/client.ts'
 import { exportSituation as agirExportSituation } from '../../adapters/agir/client.ts'
-import type { Situation } from '../simulations/simulations.validator.ts'
 import type { SituationExportQueryParamsSchema } from './integrations.validator.ts'
 import { ExternalServiceTypeEnum } from './integrations.validator.ts'
 

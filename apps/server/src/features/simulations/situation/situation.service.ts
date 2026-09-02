@@ -1,7 +1,7 @@
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
+import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import type Engine from 'publicodes'
 import logger from '../../../logger.ts'
-import type { Situation } from '../simulations.validator.ts'
 
 const isDottedName = (dottedName: unknown): dottedName is DottedName =>
   typeof dottedName === 'string'

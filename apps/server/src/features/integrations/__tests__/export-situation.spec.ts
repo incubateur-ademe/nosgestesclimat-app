@@ -1,3 +1,4 @@
+import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import * as v from 'valibot'
@@ -9,7 +10,6 @@ import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
 import { getRandomPersonaSituation } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
-import type { Situation } from '../../simulations/simulations.validator.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)
