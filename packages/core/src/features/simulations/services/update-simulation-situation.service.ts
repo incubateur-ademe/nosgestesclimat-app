@@ -7,10 +7,7 @@ import {
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../errors/simulations.error.ts'
-import {
-  hasZeroCarbonFootprint,
-  isSimulationCompleted,
-} from '../helpers/simulation-guards.ts'
+import { isSimulationCompleted } from '../helpers/simulation-guards.ts'
 import { findSimulationProgressById } from '../repository/simulation-progress.repository.ts'
 import { updateSimulation } from '../repository/simulation.repository.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
@@ -43,7 +40,14 @@ export const updateSimulationSituation = async ({
     SimulationNotFoundError | SimulationCompletedError | ZeroFootprintError
   >
 > => {
-  if (hasZeroCarbonFootprint(computedResults)) {
+  /**
+   * A simulation whose carbon footprint is zero is the symptom of a broken
+   * computation or a pristine simulation, never of a real answer set: refusing
+   * to persist it keeps the bad value from overwriting the answers already
+   * stored.
+   */
+  // TODO: move carbon footprint check to schema
+  if (computedResults.carbone.bilan === 0) {
     return failure(new ZeroFootprintError())
   }
 
@@ -56,7 +60,7 @@ export const updateSimulationSituation = async ({
     return failure(new SimulationNotFoundError())
   }
 
-  if (isSimulationCompleted(existing.progression)) {
+  if (isSimulationCompleted(existing)) {
     return failure(new SimulationCompletedError())
   }
 
