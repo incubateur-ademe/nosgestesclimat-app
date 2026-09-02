@@ -33,6 +33,9 @@ export function useAutoSaveSimulation() {
   useEffect(() => {
     const { id, model, situation, foldedSteps, progression } = currentSimulation
 
+    // Avoid useless server calls
+    if (progression === 0) return
+
     debouncedSave({
       id,
       model,
