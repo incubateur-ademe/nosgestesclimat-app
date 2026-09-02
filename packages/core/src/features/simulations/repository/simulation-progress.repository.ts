@@ -1,4 +1,8 @@
 import { prisma } from '../../../prisma/client.ts'
+import type {
+  CompletedSimulationProgress,
+  SimulationProgress,
+} from '../types/simulation-progress.ts'
 import {
   hasValidComputedResults,
   type ComputedResults,
@@ -18,6 +22,16 @@ type SimulationProgressRow = {
   computedResults: ComputedResults
 }
 
+const toProgress = <Progression extends number>(row: {
+  id: string
+  progression: Progression
+  model: string
+}): { id: string; progression: Progression; model: string } => ({
+  id: row.id,
+  progression: row.progression,
+  model: row.model,
+})
+
 const findLatestValid = async (where: {
   userId: string
   progression?: number
@@ -31,20 +45,24 @@ const findLatestValid = async (where: {
   return row && hasValidComputedResults(row) ? row : null
 }
 
-export const findLatestSimulationProgress = ({
+export const findLatestSimulationProgress = async ({
   userId,
 }: {
   userId: string
-}): Promise<SimulationProgressRow | null> => findLatestValid({ userId })
+}): Promise<SimulationProgress | null> => {
+  const row = await findLatestValid({ userId })
+
+  return row ? toProgress(row) : null
+}
 
 export const findLatestCompletedSimulationProgress = async ({
   userId,
 }: {
   userId: string
-}): Promise<(SimulationProgressRow & { progression: 1 }) | null> => {
+}): Promise<CompletedSimulationProgress | null> => {
   const row = await findLatestValid({ userId, progression: 1 })
 
-  return row && { ...row, progression: 1 }
+  return row ? toProgress({ ...row, progression: 1 as const }) : null
 }
 
 export const findSimulationProgressById = async ({
@@ -53,11 +71,11 @@ export const findSimulationProgressById = async ({
 }: {
   id: string
   userId: string
-}): Promise<SimulationProgressRow | null> => {
+}): Promise<SimulationProgress | null> => {
   const row = await prisma.simulation.findFirst({
     where: { id, userId },
     select: latestSimulationSelect,
   })
 
-  return row && hasValidComputedResults(row) ? row : null
+  return row && hasValidComputedResults(row) ? toProgress(row) : null
 }

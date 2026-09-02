@@ -1,16 +1,20 @@
 import Trans from '@/components/translation/trans/TransServer'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
-import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
+import { getUserSimulationJourney } from '@/services/simulations/get-user-simulation-journey'
+import {
+  hasFreshSimulation,
+  hasSimulation,
+} from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
 
 /**
  * Server component: this page mounts no `UserProvider`, so the simulation has
  * to be resolved here rather than read from the client context.
  */
 export default async function DoTheTest({ locale }: { locale: string }) {
-  const { currentSimulation } = await getUserSimulationProgress()
+  const journey = await getUserSimulationJourney()
 
-  if (!currentSimulation?.progression) {
+  if (!hasSimulation(journey) || hasFreshSimulation(journey)) {
     return (
       <div>
         <Trans i18nKey="faq.doTheTest.notStarted" locale={locale}>

@@ -1,12 +1,12 @@
-import type { UserSimulationProgress } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
+import type { UserSimulationJourney } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
 import { v4 as randomUUID } from 'uuid'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getUserSimulationProgress } from '../get-user-simulation-progress'
+import { getUserSimulationJourney } from '../get-user-simulation-journey'
 
 const serviceMock = vi.hoisted(() => ({
-  getUserSimulationProgress: vi.fn(),
+  getUserSimulationJourney: vi.fn(),
 }))
 
 vi.mock('@/services/auth/get-user-session', () => ({
@@ -14,13 +14,13 @@ vi.mock('@/services/auth/get-user-session', () => ({
 }))
 
 vi.mock(
-  '@nosgestesclimat/core/features/simulations/services/get-user-simulation-progress.service',
+  '@nosgestesclimat/core/features/simulations/services/get-user-simulation-journey.service',
   () => ({
-    getUserSimulationProgress: serviceMock.getUserSimulationProgress,
+    getUserSimulationJourney: serviceMock.getUserSimulationJourney,
   })
 )
 
-describe('getUserSimulationProgress', () => {
+describe('getUserSimulationJourney', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -29,13 +29,13 @@ describe('getUserSimulationProgress', () => {
     it('should return undefined for both simulations without calling the service', async () => {
       vi.mocked(getUserSession).mockResolvedValue(null)
 
-      const result = await getUserSimulationProgress()
+      const result = await getUserSimulationJourney()
 
       expect(result).toEqual({
         currentSimulation: undefined,
         completedSimulation: undefined,
       })
-      expect(serviceMock.getUserSimulationProgress).not.toHaveBeenCalled()
+      expect(serviceMock.getUserSimulationJourney).not.toHaveBeenCalled()
     })
   })
 
@@ -47,19 +47,19 @@ describe('getUserSimulationProgress', () => {
         email: 'alice@example.com',
         isAuth: true,
       })
-      const progress: UserSimulationProgress = {
+      const progress: UserSimulationJourney = {
         currentSimulation: {
           id: 'sim-1',
           progression: 0.5,
           model: 'FR-fr-1.2.3',
         },
       }
-      serviceMock.getUserSimulationProgress.mockResolvedValue(progress)
+      serviceMock.getUserSimulationJourney.mockResolvedValue(progress)
 
-      const result = await getUserSimulationProgress()
+      const result = await getUserSimulationJourney()
 
-      expect(serviceMock.getUserSimulationProgress).toHaveBeenCalledTimes(1)
-      expect(serviceMock.getUserSimulationProgress).toHaveBeenCalledWith({
+      expect(serviceMock.getUserSimulationJourney).toHaveBeenCalledTimes(1)
+      expect(serviceMock.getUserSimulationJourney).toHaveBeenCalledWith({
         userId,
       })
       expect(result).toBe(progress)
@@ -70,11 +70,11 @@ describe('getUserSimulationProgress', () => {
     it('should still delegate to the service with the anonymous user id', async () => {
       const userId = randomUUID()
       vi.mocked(getUserSession).mockResolvedValue({ id: userId, isAuth: false })
-      serviceMock.getUserSimulationProgress.mockResolvedValue({})
+      serviceMock.getUserSimulationJourney.mockResolvedValue({})
 
-      await getUserSimulationProgress()
+      await getUserSimulationJourney()
 
-      expect(serviceMock.getUserSimulationProgress).toHaveBeenCalledWith({
+      expect(serviceMock.getUserSimulationJourney).toHaveBeenCalledWith({
         userId,
       })
     })
@@ -89,9 +89,9 @@ describe('getUserSimulationProgress', () => {
         isAuth: true,
       })
       const error = new Error('boom')
-      serviceMock.getUserSimulationProgress.mockRejectedValue(error)
+      serviceMock.getUserSimulationJourney.mockRejectedValue(error)
 
-      await expect(getUserSimulationProgress()).rejects.toBe(error)
+      await expect(getUserSimulationJourney()).rejects.toBe(error)
     })
   })
 })

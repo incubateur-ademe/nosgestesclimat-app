@@ -3,7 +3,7 @@ import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { serializeModel } from '../../repository/model.mapper.ts'
-import { getUserSimulationProgress } from '../get-user-simulation-progress.service.ts'
+import { getUserSimulationJourney } from '../get-user-simulation-journey.service.ts'
 
 const validComputedResults = {
   carbone: {
@@ -30,7 +30,7 @@ const validComputedResults = {
   },
 }
 
-describe('getUserSimulationProgress', () => {
+describe('getUserSimulationJourney', () => {
   afterEach(async () => {
     await prisma.simulation.deleteMany()
     await prisma.user.deleteMany()
@@ -39,7 +39,7 @@ describe('getUserSimulationProgress', () => {
   it('returns undefined for both when the user has no simulations', async () => {
     const user = await userFactory.create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({})
   })
@@ -65,7 +65,7 @@ describe('getUserSimulationProgress', () => {
       })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({
       currentSimulation: {
@@ -97,7 +97,7 @@ describe('getUserSimulationProgress', () => {
       })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({
       currentSimulation: {
@@ -134,7 +134,7 @@ describe('getUserSimulationProgress', () => {
       })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({
       currentSimulation: {
@@ -171,7 +171,7 @@ describe('getUserSimulationProgress', () => {
       })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({
       currentSimulation: {
@@ -195,7 +195,7 @@ describe('getUserSimulationProgress', () => {
       .params({ userId: user.id })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({})
   })
@@ -221,7 +221,7 @@ describe('getUserSimulationProgress', () => {
       })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({
       currentSimulation: {
@@ -240,7 +240,7 @@ describe('getUserSimulationProgress', () => {
       .params({ userId: other.id, computedResults: validComputedResults })
       .create()
 
-    const result = await getUserSimulationProgress({ userId: user.id })
+    const result = await getUserSimulationJourney({ userId: user.id })
 
     expect(result).toEqual({})
   })

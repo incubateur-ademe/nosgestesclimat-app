@@ -8,7 +8,8 @@ import { usePartner } from '@/contexts/partner/PartnerContext'
 import Alert from '@/design-system/alerts/alert/Alert'
 import Emoji from '@/design-system/utils/Emoji'
 import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
-import type { CompletedSimulationProgress } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
+import { hasCompletedSimulation } from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
+import type { UserSimulationJourney } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
 import RedirectLink from './RedirectLink'
 
 const PARTNER_NAMES = {
@@ -18,12 +19,12 @@ const PARTNER_NAMES = {
 
 export default function AdaptiveMessage({
   partner,
-  completedSimulation,
+  journey,
 }: {
   partner: string
-  completedSimulation?: CompletedSimulationProgress
+  journey: UserSimulationJourney
 }) {
-  const isTestCompleted = !!completedSimulation
+  const isTestCompleted = hasCompletedSimulation(journey)
 
   const { redirectUrl, alertToDisplay } = usePartner()
 

@@ -5,8 +5,13 @@ import { stringifyModel } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { createSimulation } from '@/services/simulations/create-simulation'
-import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
+import { getUserSimulationJourney } from '@/services/simulations/get-user-simulation-journey'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
+import {
+  hasCompletedCurrentSimulation,
+  hasCurrentSimulationInProgress,
+  hasSimulation,
+} from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
 import { redirect } from 'next/navigation'
 
 export default async function Commencer({
@@ -26,7 +31,7 @@ export default async function Commencer({
     redirect(getLinkToTutoriel({ locale, searchParams: tutorielSearchParams }))
   }
 
-  const { currentSimulation } = await getUserSimulationProgress()
+  const journey = await getUserSimulationJourney()
 
   const model = await resolveNewSimulationModel({
     searchParams: resolvedSearchParams,
@@ -34,14 +39,16 @@ export default async function Commencer({
   })
 
   if (
-    !currentSimulation ||
-    currentSimulation.progression > 0 ||
-    currentSimulation.model !== stringifyModel(model)
+    !hasSimulation(journey) ||
+    hasCurrentSimulationInProgress(journey) ||
+    hasCompletedCurrentSimulation(journey) ||
+    journey.currentSimulation?.model !== stringifyModel(model)
   ) {
     await createSimulation(model)
   }
   redirect(
-    currentSimulation && currentSimulation.progression > 0
+    hasCurrentSimulationInProgress(journey) ||
+      hasCompletedCurrentSimulation(journey)
       ? SIMULATOR_PATH
       : TUTORIAL_PATH
   )

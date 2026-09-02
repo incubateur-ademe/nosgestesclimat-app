@@ -1,7 +1,7 @@
 import { PARTNER_JAGIS, PARTNER_KEY } from '@/constants/partners'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
-import type { UserSimulationProgress } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
+import type { UserSimulationJourney } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { faker } from '@faker-js/faker'
 import '@testing-library/jest-dom'
@@ -11,8 +11,8 @@ import { vi } from 'vitest'
 import PartnerPage from '../page'
 
 const mockVerifyPartner = vi.fn<(partner: string) => Promise<unknown>>()
-const mockGetUserSimulationProgress =
-  vi.fn<() => Promise<UserSimulationProgress>>()
+const mockGetUserSimulationJourney =
+  vi.fn<() => Promise<UserSimulationJourney>>()
 const mockNotFound = vi.mocked(notFound)
 
 vi.mock('@/services/partners/verifyPartner', () => ({
@@ -21,8 +21,8 @@ vi.mock('@/services/partners/verifyPartner', () => ({
 
 // The page resolves the simulation server-side, so it cannot be driven from the
 // test wrapper's client-side user context.
-vi.mock('@/services/simulations/get-user-simulation-progress', () => ({
-  getUserSimulationProgress: () => mockGetUserSimulationProgress(),
+vi.mock('@/services/simulations/get-user-simulation-journey', () => ({
+  getUserSimulationJourney: () => mockGetUserSimulationJourney(),
 }))
 
 vi.mock('@/components/layout/HeaderServer', () => ({
@@ -50,7 +50,7 @@ describe('PartnerPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockGetUserSimulationProgress.mockResolvedValue({})
+    mockGetUserSimulationJourney.mockResolvedValue({})
     safeLocalStorage.clear()
   })
 
@@ -58,7 +58,7 @@ describe('PartnerPage', () => {
     it('should display a message indicating the upcoming redirection', async () => {
       // Given
       mockVerifyPartner.mockResolvedValue({ name: 'Test Partner' })
-      mockGetUserSimulationProgress.mockResolvedValue({
+      mockGetUserSimulationJourney.mockResolvedValue({
         currentSimulation: completedProgress,
         completedSimulation: completedProgress,
       })
@@ -123,7 +123,7 @@ describe('PartnerPage', () => {
     it('should redirect to /simulateur/bilan', async () => {
       // Given
       mockVerifyPartner.mockResolvedValue({ name: 'Test Partner' })
-      mockGetUserSimulationProgress.mockResolvedValue({
+      mockGetUserSimulationJourney.mockResolvedValue({
         currentSimulation: {
           id: faker.string.uuid(),
           progression: 0,

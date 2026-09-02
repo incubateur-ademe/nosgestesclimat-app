@@ -4,7 +4,7 @@ import Main from '@/design-system/layout/Main'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { verifyPartner } from '@/services/partners/verifyPartner'
-import { getUserSimulationProgress } from '@/services/simulations/get-user-simulation-progress'
+import { getUserSimulationJourney } from '@/services/simulations/get-user-simulation-journey'
 import { notFound } from 'next/navigation'
 import AdaptiveMessage from './_components/AdaptiveMessage'
 
@@ -37,7 +37,7 @@ export default async function PartenairePage({
     notFound()
   }
 
-  const { completedSimulation } = await getUserSimulationProgress()
+  const journey = await getUserSimulationJourney()
 
   return (
     <>
@@ -46,7 +46,7 @@ export default async function PartenairePage({
       <Main>
         <div className="min-h-screen">
           <div className="mt-36 text-center">
-            <AdaptiveMessage partner={partner} completedSimulation={completedSimulation} />
+            <AdaptiveMessage partner={partner} journey={journey} />
           </div>
         </div>
       </Main>
