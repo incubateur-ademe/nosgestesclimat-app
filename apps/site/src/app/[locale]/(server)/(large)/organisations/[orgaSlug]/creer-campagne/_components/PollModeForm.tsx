@@ -29,74 +29,72 @@ export default function PollModeForm({ organisation }: Props) {
             const isModeDisabled = mode.value === 'scolaire'
 
             return (
-              <>
-                <label
-                  key={mode.value}
-                  className={twMerge(
-                    'group relative flex flex-1 cursor-pointer flex-col items-center rounded-xl border px-2 py-4 transition-all has-checked:shadow-lg md:w-60 md:flex-none md:p-6',
-                    index === 0
-                      ? 'border-violet-500 bg-violet-50 hover:border-violet-700 has-checked:border-violet-700'
-                      : 'border-slate-500 bg-slate-50 hover:border-slate-700 has-checked:border-slate-700',
-                    isModeDisabled && 'cursor-not-allowed opacity-80'
-                  )}
-                  data-testid={`poll-mode-${mode.value}`}>
-                  {mode.value === 'scolaire' && (
-                    <Badge
-                      size="sm"
-                      color="secondary"
-                      className="absolute -top-2 right-2 z-10 rounded-full opacity-80 drop-shadow-lg">
-                      Beta
-                    </Badge>
-                  )}
+              <label
+                key={mode.value}
+                className={twMerge(
+                  'group relative flex flex-1 cursor-pointer flex-col items-center rounded-xl border px-2 py-4 transition-all has-checked:shadow-lg md:w-60 md:flex-none md:p-6',
+                  index === 0
+                    ? 'border-violet-500 bg-violet-50 hover:border-violet-700 has-checked:border-violet-700'
+                    : 'border-slate-500 bg-slate-50 hover:border-slate-700 has-checked:border-slate-700',
+                  isModeDisabled && 'cursor-not-allowed opacity-80'
+                )}
+                data-testid={`poll-mode-${mode.value}`}>
+                {mode.value === 'scolaire' && (
+                  <Badge
+                    size="sm"
+                    color="secondary"
+                    className="absolute -top-2 right-2 z-10 rounded-full opacity-80 drop-shadow-lg">
+                    Beta
+                  </Badge>
+                )}
 
-                  {/* Mobile radio dot */}
-                  <span className="group-has-checked:border-primary-700 mx-auto flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 md:hidden">
-                    <span className="bg-primary-700 hidden h-3 w-3 rounded-full group-has-checked:block" />
+                {/* Mobile radio dot */}
+                <span className="group-has-checked:border-primary-700 mx-auto flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 md:hidden">
+                  <span className="bg-primary-700 hidden h-3 w-3 rounded-full group-has-checked:block" />
+                </span>
+
+                <input
+                  type="radio"
+                  name="mode"
+                  value={mode.value}
+                  className="sr-only"
+                  defaultChecked={mode.value === 'standard'}
+                  disabled={isModeDisabled}
+                />
+
+                <h3 className="mt-3 mb-2 text-base font-bold text-gray-900 md:mt-0 md:text-lg">
+                  <Trans i18nKey={mode.titleKey}>{mode.titleDefault}</Trans>
+                </h3>
+
+                <p className="mb-4 text-center text-sm text-gray-700">
+                  <Trans i18nKey={mode.descriptionKey}>
+                    {mode.descriptionDefault}
+                  </Trans>
+                </p>
+
+                <Image
+                  src={mode.imageSrc}
+                  alt={mode.imageAlt}
+                  width={200}
+                  height={150}
+                  className="my-auto mb-6"
+                />
+
+                <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
+                  <Trans>Sélectionner</Trans>
+
+                  {/* Desktop radio dot */}
+                  <span className="group-has-checked:border-primary-700 hidden h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 md:flex">
+                    <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
                   </span>
+                </span>
 
-                  <input
-                    type="radio"
-                    name="mode"
-                    value={mode.value}
-                    className="sr-only"
-                    defaultChecked={mode.value === 'standard'}
-                    disabled={isModeDisabled}
-                  />
-
-                  <h3 className="mt-3 mb-2 text-base font-bold text-gray-900 md:mt-0 md:text-lg">
-                    <Trans i18nKey={mode.titleKey}>{mode.titleDefault}</Trans>
-                  </h3>
-
-                  <p className="mb-4 text-center text-sm text-gray-700">
-                    <Trans i18nKey={mode.descriptionKey}>
-                      {mode.descriptionDefault}
-                    </Trans>
+                {isModeDisabled && (
+                  <p className="text-primary text-primary-700 absolute -bottom-8 mt-2 mb-0 text-center text-sm font-medium">
+                    <Trans>Bientôt disponible</Trans>
                   </p>
-
-                  <Image
-                    src={mode.imageSrc}
-                    alt={mode.imageAlt}
-                    width={200}
-                    height={150}
-                    className="my-auto mb-6"
-                  />
-
-                  <span className="group-has-checked:border-primary-700 group-has-checked:text-primary-700 mt-auto inline-flex items-center gap-2 justify-self-end rounded-full border-2 border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-600 transition-colors">
-                    <Trans>Sélectionner</Trans>
-
-                    {/* Desktop radio dot */}
-                    <span className="group-has-checked:border-primary-700 hidden h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 md:flex">
-                      <span className="bg-primary-700 hidden h-2 w-2 rounded-full group-has-checked:block" />
-                    </span>
-                  </span>
-
-                  {isModeDisabled && (
-                    <p className="text-primary text-primary-700 absolute -bottom-8 mt-2 mb-0 text-center text-sm font-medium">
-                      <Trans>Bientôt disponible</Trans>
-                    </p>
-                  )}
-                </label>
-              </>
+                )}
+              </label>
             )
           })}
         </div>
