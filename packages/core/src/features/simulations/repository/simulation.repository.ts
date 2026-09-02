@@ -1,16 +1,13 @@
-import type {
-  DottedName,
-  ExtendedSituation,
-} from '@incubateur-ademe/nosgestesclimat'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import { prisma } from '../../../prisma/client.ts'
-import { Prisma } from '../../../prisma/generated/client.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import { SimulationNotFoundError } from '../errors/simulations.error.ts'
 import type { Simulation } from '../types/simulation.ts'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
 const simulationSelect = {
@@ -19,7 +16,6 @@ const simulationSelect = {
   model: true,
   progression: true,
   situation: true,
-  extendedSituation: true,
   foldedSteps: true,
   actionChoices: true,
   computedResults: true,
@@ -98,7 +94,6 @@ export const updateSimulation = async ({
   id,
   userId,
   situation,
-  extendedSituation,
   foldedSteps,
   progression,
   computedResults,
@@ -107,10 +102,9 @@ export const updateSimulation = async ({
   id: string
   userId: string
   situation: Situation<DottedName>
-  extendedSituation: ExtendedSituation | null
   foldedSteps: DottedName[]
   progression: number
-  computedResults: ComputedResultSchema
+  computedResults: ComputedResults
   model?: string
 }): Promise<Result<void, SimulationNotFoundError>> => {
   try {
@@ -119,14 +113,10 @@ export const updateSimulation = async ({
       where: { id, userId },
       data: {
         situation: situation as unknown as Prisma.InputJsonValue,
-        extendedSituation: extendedSituation
-          ? (extendedSituation as unknown as Prisma.InputJsonValue)
-          : Prisma.DbNull,
         foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
         progression,
         computedResults: computedResults as unknown as Prisma.InputJsonValue,
         ...(model ? { model } : {}),
-        states: { create: { date: new Date(), progression } },
       },
       // `select` is narrowed to the id to reduce data transfer because Prisma
       // always returns a row: nothing here reads it.

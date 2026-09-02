@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
+import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import supertest from 'supertest'
 import * as v from 'valibot'
@@ -17,7 +18,6 @@ import {
 } from '../../organisations/__tests__/fixtures/organisations.fixture.ts'
 import { SimulationUpsertedAsyncEvent } from '../events/SimulationUpserted.event.ts'
 import * as simulationRepository from '../simulations.repository.ts'
-import { ComputedResultSchema } from '../simulations.validator.ts'
 import { getRandomTestCase } from './fixtures/simulations.fixtures.ts'
 
 vi.mock('../simulations.repository', async () => ({
@@ -135,7 +135,7 @@ describe('Given a poll participation', () => {
       })
 
       expect(
-        v.safeParse(ComputedResultSchema, cache.computedResults).issues
+        v.safeParse(ComputedResultsSchema, cache.computedResults).issues
       ).toBeUndefined()
     })
 

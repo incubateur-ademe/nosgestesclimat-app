@@ -1,8 +1,8 @@
+import { SituationSchema } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { initContract } from '@ts-rest/core'
 import { StatusCodes } from 'http-status-codes'
 import * as v from 'valibot'
 import { ValidationErrorSchema } from '../../../../core/middlewares/validation-error.schema.ts'
-import { SituationSchema } from '../../../simulations/simulations.validator.ts'
 import { ExternalServiceTypeEnum } from '../../integrations.validator.ts'
 import { MAPPING_CASES } from './mapping-situation.constant.ts'
 

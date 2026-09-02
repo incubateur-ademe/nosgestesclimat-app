@@ -3,11 +3,11 @@ import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'j
 import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json' with { type: 'json' }
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import { Prisma } from '../../../prisma/generated/client.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../repository/model.mapper.ts'
 import type { Model, ModelLocale, ModelRegion } from '../types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 interface SimulationTransientParams {
   progression?: number
@@ -35,7 +35,7 @@ class SimulationFactory extends Factory<
   }
   withDeprecatedComputedResults() {
     return this.params({
-      computedResults: { bilan: 1000 } as unknown as ComputedResultSchema,
+      computedResults: { bilan: 1000 } as unknown as ComputedResults,
     })
   }
 
@@ -102,9 +102,6 @@ export const simulationFactory = SimulationFactory.define(
           computedResults:
             data.computedResults as unknown as Prisma.InputJsonValue,
           situation: data.situation as unknown as Prisma.InputJsonValue,
-          extendedSituation: data.extendedSituation
-            ? (data.extendedSituation as unknown as Prisma.InputJsonValue)
-            : Prisma.DbNull,
           foldedSteps: data.foldedSteps as unknown as Prisma.InputJsonValue[],
           actionChoices: data.actionChoices as unknown as Prisma.InputJsonValue,
           userId: data.userId,
@@ -134,7 +131,6 @@ export const simulationFactory = SimulationFactory.define(
         },
       },
       situation: {},
-      extendedSituation: null,
       foldedSteps: [],
       actionChoices: {},
       computedResults: zeroedComputedResults,
@@ -142,7 +138,7 @@ export const simulationFactory = SimulationFactory.define(
   }
 )
 
-const zeroedComputedResults: ComputedResultSchema = {
+const zeroedComputedResults: ComputedResults = {
   carbone: {
     bilan: 0,
     categories: {

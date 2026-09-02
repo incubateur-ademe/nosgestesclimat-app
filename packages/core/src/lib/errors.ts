@@ -17,3 +17,9 @@ export class ErrorWithCode<Code extends string = string> extends Error {
 export abstract class DomainError<
   Code extends string = string,
 > extends ErrorWithCode<Code> {}
+
+export class InvalidPayloadError extends DomainError<'invalid_payload'> {
+  constructor(message: string = 'Invalid payload') {
+    super('invalid_payload', message)
+  }
+}

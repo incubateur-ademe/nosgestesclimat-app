@@ -1,3 +1,4 @@
+import type { InvalidPayloadError } from '../../../lib/errors.ts'
 import { DomainError } from '../../../lib/errors.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
@@ -17,3 +18,9 @@ export class ZeroFootprintError extends DomainError<'zero_footprint'> {
     super('zero_footprint', 'Bilan carbone nul')
   }
 }
+
+export type UpdateSimulationSituationError =
+  | SimulationNotFoundError
+  | SimulationCompletedError
+  | ZeroFootprintError
+  | InvalidPayloadError

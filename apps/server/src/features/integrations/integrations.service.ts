@@ -1,6 +1,6 @@
 import { exportSituation as twoTonsExportSituation } from '../../adapters/2tonnes/client.ts'
 import { exportSituation as agirExportSituation } from '../../adapters/agir/client.ts'
-import type { SituationSchema } from '../simulations/simulations.validator.ts'
+import type { Situation } from '../simulations/simulations.validator.ts'
 import type { SituationExportQueryParamsSchema } from './integrations.validator.ts'
 import { ExternalServiceTypeEnum } from './integrations.validator.ts'
 
@@ -8,7 +8,7 @@ type ExternalService = keyof typeof ExternalServiceTypeEnum
 
 type ExternalServiceAdapter = {
   exportSituation: (
-    situation: SituationSchema,
+    situation: Situation,
     params: SituationExportQueryParamsSchema
   ) => Promise<{ redirectUrl: string }>
 }
@@ -64,7 +64,7 @@ export const exportSituation = ({
   situation,
   params,
 }: {
-  situation: SituationSchema
+  situation: Situation
   externalService: ExternalService
   params: SituationExportQueryParamsSchema
 }) => {

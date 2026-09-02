@@ -1,7 +1,4 @@
-import type {
-  DottedName,
-  ExtendedSituation,
-} from '@incubateur-ademe/nosgestesclimat'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Result } from '../../../lib/result.ts'
 import { failure } from '../../../lib/result.ts'
@@ -16,7 +13,7 @@ import {
 } from '../helpers/simulation-guards.ts'
 import { findSimulationProgressById } from '../repository/simulation-progress.repository.ts'
 import { updateSimulation } from '../repository/simulation.repository.ts'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 /**
  * Updates what changes when a user answers a question. Unlike  creation,
@@ -27,7 +24,6 @@ export const updateSimulationSituation = async ({
   userId,
   simulationId,
   situation,
-  extendedSituation,
   foldedSteps,
   progression,
   computedResults,
@@ -36,10 +32,9 @@ export const updateSimulationSituation = async ({
   userId: string
   simulationId: string
   situation: Situation<DottedName>
-  extendedSituation: ExtendedSituation | null
   foldedSteps: DottedName[]
   progression: number
-  computedResults: ComputedResultSchema
+  computedResults: ComputedResults
   /** Written only when supplied in order to repair a broken model string */
   model?: string
 }): Promise<
@@ -69,7 +64,6 @@ export const updateSimulationSituation = async ({
     id: simulationId,
     userId,
     situation,
-    extendedSituation,
     foldedSteps,
     progression,
     computedResults,

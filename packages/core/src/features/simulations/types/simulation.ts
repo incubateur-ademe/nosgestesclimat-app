@@ -1,9 +1,6 @@
-import type {
-  DottedName,
-  ExtendedSituation,
-} from '@incubateur-ademe/nosgestesclimat'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import type { Model } from './model.ts'
 
 export interface Simulation {
@@ -12,10 +9,9 @@ export interface Simulation {
   model: Model
   progression: number
   situation: Situation<DottedName>
-  extendedSituation: ExtendedSituation | null
   foldedSteps: DottedName[]
   actionChoices: Partial<Record<DottedName, boolean>>
-  computedResults: ComputedResultSchema
+  computedResults: ComputedResults
   createdAt: Date
   updatedAt: Date
   /** null if the user has deleted the simulation (soft delete) */

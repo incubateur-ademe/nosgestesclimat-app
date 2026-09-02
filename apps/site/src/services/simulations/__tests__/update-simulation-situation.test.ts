@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { parseModelString } from '@/helpers/server/model/models'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { toSimulationDto } from '../simulation.dto'
-import type { SimulationSituationPayload } from '../update-simulation-situation'
 import { updateSimulationSituation } from '../update-simulation-situation'
+import type { UpdateSimulationSituationPayload } from '../update-simulation-situation-payload.schema'
 
 const serviceMock = vi.hoisted(() => ({
   updateSimulationSituation: vi.fn(),
@@ -41,8 +41,8 @@ vi.mock('next/navigation', () => ({
 }))
 
 const aPayload = (
-  overrides: Partial<SimulationSituationPayload> = {}
-): SimulationSituationPayload => {
+  overrides: Partial<UpdateSimulationSituationPayload> = {}
+): UpdateSimulationSituationPayload => {
   const simulation = toSimulationDto(
     simulationFactory
       .withModelRegion('FR')
@@ -53,20 +53,12 @@ const aPayload = (
   )
   simulation.computedResults.carbone.bilan = 1000
 
-  const {
-    id,
-    model,
-    situation,
-    extendedSituation,
-    foldedSteps,
-    progression,
-    computedResults,
-  } = simulation
+  const { id, model, situation, foldedSteps, progression, computedResults } =
+    simulation
   return {
     id,
     model,
-    situation,
-    extendedSituation,
+    situation: situation as UpdateSimulationSituationPayload['situation'],
     foldedSteps,
     progression,
     computedResults,
@@ -104,7 +96,6 @@ describe('updateSimulationSituation', () => {
       userId,
       simulationId: payload.id,
       situation: payload.situation,
-      extendedSituation: payload.extendedSituation,
       foldedSteps: payload.foldedSteps,
       progression: 0.5,
       computedResults: payload.computedResults,
@@ -139,7 +130,6 @@ describe('updateSimulationSituation', () => {
       isAuth: true,
     })
     const payload = aPayload()
-    // @ts-expect-error reproducing a payload coming from stale client state
     delete payload.model
 
     await updateSimulationSituation(payload)
@@ -149,5 +139,23 @@ describe('updateSimulationSituation', () => {
     ][]
     expect(parseModelString(written.model ?? '')).not.toBeNull()
     expect(written.model).not.toBe('FR-fr-0.0.0')
+  })
+
+  it('rejects a malformed payload without reaching the core service', async () => {
+    const userId = randomUUID()
+    vi.mocked(getUserSession).mockResolvedValue({
+      id: userId,
+      email: 'alice@example.com',
+      isAuth: true,
+    })
+    const payload = aPayload({ id: 'not-a-uuid' })
+
+    const result = await updateSimulationSituation(payload)
+
+    expect(result).toMatchObject({
+      success: false,
+      error: { code: 'invalid_payload' },
+    })
+    expect(serviceMock.updateSimulationSituation).not.toHaveBeenCalled()
   })
 })

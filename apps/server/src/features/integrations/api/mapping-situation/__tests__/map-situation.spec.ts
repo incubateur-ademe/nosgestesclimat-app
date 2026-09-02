@@ -9,7 +9,7 @@ import { client } from '../../../../../adapters/scaleway/client.ts'
 import app from '../../../../../app.ts'
 import logger from '../../../../../logger.ts'
 import { getRandomPersonaSituation } from '../../../../simulations/__tests__/fixtures/simulations.fixtures.ts'
-import type { SituationSchema } from '../../../../simulations/simulations.validator.ts'
+import type { Situation } from '../../../../simulations/simulations.validator.ts'
 import { ExternalServiceTypeEnum } from '../../../integrations.validator.ts'
 import { randomPartner } from '../../mapping-file/__tests__/fixtures/index.ts'
 import type { MappingFileKind } from '../../mapping-file/mapping-file.contract.ts'
@@ -59,7 +59,7 @@ describe('Given a NGC integrations API user', () => {
 
   describe('When mapping a ngc situation', () => {
     let partner: ExternalServiceTypeEnum
-    let situation: SituationSchema
+    let situation: Situation
 
     describe('And an invalid partner', () => {
       test(`Then it return a ${StatusCodes.BAD_REQUEST} error`, async () => {

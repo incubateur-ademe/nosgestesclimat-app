@@ -9,14 +9,14 @@ import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
 import { getRandomPersonaSituation } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
-import type { SituationSchema } from '../../simulations/simulations.validator.ts'
+import type { Situation } from '../../simulations/simulations.validator.ts'
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)
   const url = '/integrations/v1/:externalService/export-situation'
 
   describe('When exporting his simulation situation', () => {
-    let situation: SituationSchema
+    let situation: Situation
 
     beforeEach(() => (situation = getRandomPersonaSituation()))
 

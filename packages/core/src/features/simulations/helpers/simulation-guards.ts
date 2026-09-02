@@ -1,4 +1,4 @@
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 /**
  * A simulation whose carbon footprint is zero is the symptom of a broken
@@ -7,7 +7,7 @@ import type { ComputedResultSchema } from '../validators/computed-results.schema
  * stored.
  */
 export const hasZeroCarbonFootprint = (
-  computedResults: ComputedResultSchema
+  computedResults: ComputedResults
 ): boolean => computedResults.carbone.bilan === 0
 
 /**

@@ -3,7 +3,6 @@ import { serializeModel } from '@nosgestesclimat/core/features/simulations/repos
 import { v4 as randomUUID } from 'uuid'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getInitialExtendedSituation } from '@/helpers/modelFetching/getInitialExtendedSituation'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { getCurrentSimulation } from '../get-current-simulation'
 
@@ -69,7 +68,6 @@ describe('getCurrentSimulation', () => {
       id: entity.id,
       date: entity.date.toISOString(),
       situation: entity.situation,
-      extendedSituation: getInitialExtendedSituation(),
       foldedSteps: entity.foldedSteps,
       actionChoices: entity.actionChoices,
       computedResults: entity.computedResults,

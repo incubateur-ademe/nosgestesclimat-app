@@ -2,7 +2,6 @@ import { simulationFactory } from '@nosgestesclimat/core/features/simulations/fa
 import type { Simulation as SimulationEntity } from '@nosgestesclimat/core/features/simulations/types/simulation'
 import { describe, expect, it } from 'vitest'
 
-import { getInitialExtendedSituation } from '@/helpers/modelFetching/getInitialExtendedSituation'
 import { toSimulationDto } from '../simulation.dto'
 
 const buildEntity = (
@@ -32,26 +31,6 @@ describe('toSimulationDto', () => {
 
     expect(dto.date).toBe('2024-01-01T00:00:00.000Z')
     expect(dto.updatedAt).toBe('2024-01-02T00:00:00.000Z')
-  })
-
-  it('uses the stored extendedSituation when present', () => {
-    const entity = buildEntity({
-      extendedSituation: {
-        'transport . voiture . thermique': {
-          nodeValue: 1,
-          source: 'answered',
-        },
-      } as unknown as SimulationEntity['extendedSituation'],
-    })
-    const dto = toSimulationDto(entity)
-
-    expect(dto.extendedSituation).toBe(entity.extendedSituation)
-  })
-
-  it('falls back to the initial extendedSituation when null', () => {
-    const dto = toSimulationDto(buildEntity({ extendedSituation: null }))
-
-    expect(dto.extendedSituation).toEqual(getInitialExtendedSituation())
   })
 
   it('passes through situation, foldedSteps, actionChoices, and computedResults', () => {

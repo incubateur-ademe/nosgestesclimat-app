@@ -3,8 +3,8 @@
 import { useCurrentSimulation } from '@/publicodes-state'
 import { getComputedResults } from '@/publicodes-state/helpers/getComputedResults'
 import { EngineContext } from '@/publicodes-state/providers/engineProvider/context'
-import type { SimulationSituationPayload } from '@/services/simulations/update-simulation-situation'
 import { updateSimulationSituation } from '@/services/simulations/update-simulation-situation'
+import type { UpdateSimulationSituationPayload } from '@/services/simulations/update-simulation-situation-payload.schema'
 import { useDebounce } from '@/utils/debounce'
 import { captureException, setExtra } from '@sentry/nextjs'
 import { useContext, useEffect } from 'react'
@@ -18,7 +18,7 @@ export function useAutoSaveSimulation() {
   const engineContext = useContext(EngineContext)
 
   const debouncedSave = useDebounce(
-    async (payload: SimulationSituationPayload) => {
+    async (payload: UpdateSimulationSituationPayload) => {
       const result = await updateSimulationSituation(payload)
 
       if (!result.success) {
@@ -31,20 +31,12 @@ export function useAutoSaveSimulation() {
   )
 
   useEffect(() => {
-    const {
-      id,
-      model,
-      situation,
-      extendedSituation,
-      foldedSteps,
-      progression,
-    } = currentSimulation
+    const { id, model, situation, foldedSteps, progression } = currentSimulation
 
     debouncedSave({
       id,
       model,
-      situation,
-      extendedSituation,
+      situation: situation as UpdateSimulationSituationPayload['situation'],
       foldedSteps,
       progression,
       // The engine holds fresher results than the provider state, which only

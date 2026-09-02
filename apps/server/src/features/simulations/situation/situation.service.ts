@@ -1,7 +1,7 @@
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
 import logger from '../../../logger.ts'
-import type { SituationSchema } from '../simulations.validator.ts'
+import type { Situation } from '../simulations.validator.ts'
 
 const isDottedName = (dottedName: unknown): dottedName is DottedName =>
   typeof dottedName === 'string'
@@ -10,7 +10,7 @@ const evaluateSituationDottedName = ({
   dottedName,
   situation,
 }: {
-  situation: SituationSchema
+  situation: Situation
   dottedName: unknown
 }): number => {
   if (!isDottedName(dottedName)) {
@@ -60,8 +60,8 @@ const checkIfConditionIsTrue = ({
   situation,
   rules,
 }: {
-  situation: SituationSchema
   rawCondition: unknown
+  situation: Situation
   rules: Partial<NGCRules>
 }): boolean => {
   // a condition can be a nested condition object (e.g. `une de ces conditions`
@@ -127,7 +127,7 @@ const evaluateSituationFormula = ({
   formule,
   rules,
 }: {
-  situation: SituationSchema
+  situation: Situation
   formule: Record<string, unknown>
   rules: Partial<NGCRules>
 }): number => {
@@ -222,7 +222,7 @@ export const getSituationDottedNameValue = ({
   situation,
   rules,
 }: {
-  situation: SituationSchema
+  situation: Situation
   dottedName: DottedName
   rules: Partial<NGCRules>
 }): number => {
@@ -261,7 +261,7 @@ export const getSituationDottedNameValueWithEngine = ({
   situation,
   engine,
 }: {
-  situation: SituationSchema
+  situation: Situation
   dottedName: DottedName
   engine: Engine
 }) => {

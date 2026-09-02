@@ -108,7 +108,6 @@ describe('getLastCompletedSimulation', () => {
       },
       progression: 1,
       situation: {},
-      extendedSituation: null,
       foldedSteps: [],
       actionChoices: {},
       computedResults: validComputedResults,

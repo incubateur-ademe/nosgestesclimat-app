@@ -1,6 +1,8 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
-import { hasValidComputedResults } from '../validators/computed-results.schema.ts'
+import {
+  hasValidComputedResults,
+  type ComputedResults,
+} from '../validators/computed-results.schema.ts'
 
 const latestSimulationSelect = {
   id: true,
@@ -13,7 +15,7 @@ type SimulationProgressRow = {
   id: string
   progression: number
   model: string
-  computedResults: ComputedResultSchema
+  computedResults: ComputedResults
 }
 
 const findLatestValid = async (where: {

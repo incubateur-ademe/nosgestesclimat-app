@@ -1,8 +1,10 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Simulation } from '../types/simulation.ts'
-import type { ComputedResultSchema } from '../validators/computed-results.schema.ts'
-import { hasValidComputedResults } from '../validators/computed-results.schema.ts'
+import {
+  hasValidComputedResults,
+  type ComputedResults,
+} from '../validators/computed-results.schema.ts'
 import { parseModelString } from './model.mapper.ts'
 
 type SimulationRow = {
@@ -11,7 +13,6 @@ type SimulationRow = {
   model: string
   progression: number
   situation: unknown
-  extendedSituation: unknown
   foldedSteps: unknown
   actionChoices: unknown
   computedResults: unknown
@@ -44,10 +45,9 @@ export const mapSimulation = (row: SimulationRow): Simulation | null => {
     model,
     progression: row.progression,
     situation: row.situation as Situation<DottedName>,
-    extendedSituation: row.extendedSituation as Simulation['extendedSituation'],
     foldedSteps: row.foldedSteps as DottedName[],
     actionChoices: row.actionChoices as Partial<Record<DottedName, boolean>>,
-    computedResults: row.computedResults as ComputedResultSchema,
+    computedResults: row.computedResults as ComputedResults,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     userId: row.userId,

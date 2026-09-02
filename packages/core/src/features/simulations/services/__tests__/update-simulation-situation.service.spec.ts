@@ -5,12 +5,11 @@ import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { parseModelString } from '../../repository/model.mapper.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
-import type { ComputedResultSchema } from '../../validators/computed-results.schema.ts'
+import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { updateSimulationSituation } from '../update-simulation-situation.service.ts'
 
 describe('updateSimulationSituation', () => {
   afterEach(async () => {
-    await prisma.simulationState.deleteMany()
     await prisma.simulationPoll.deleteMany()
     await prisma.groupParticipant.deleteMany()
     await prisma.group.deleteMany()
@@ -20,7 +19,7 @@ describe('updateSimulationSituation', () => {
     await prisma.user.deleteMany()
   })
 
-  it('persists the answered fields, appends a single state, and leaves unrelated fields untouched', async () => {
+  it('persists the answered fields and leaves unrelated fields untouched', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
@@ -69,7 +68,6 @@ describe('updateSimulationSituation', () => {
     expect(updated).toEqual(
       expect.objectContaining({
         situation,
-        extendedSituation,
         foldedSteps,
         progression: 0.5,
         computedResults,
@@ -78,12 +76,6 @@ describe('updateSimulationSituation', () => {
         polls: [{ id: poll.id, slug: 'test-poll', name: 'Test Poll' }],
       })
     )
-    expect(
-      await prisma.simulationState.findMany({
-        where: { simulationId: simulation.id },
-        select: { date: true, progression: true },
-      })
-    ).toEqual([{ date: expect.any(Date), progression: 0.5 }])
   })
 
   it('leaves the model unchanged when none is supplied', async () => {
@@ -270,7 +262,7 @@ describe('updateSimulationSituation', () => {
   })
 })
 
-const computedResults: ComputedResultSchema = {
+const computedResults: ComputedResults = {
   carbone: {
     bilan: 1000,
     categories: {
@@ -295,7 +287,7 @@ const computedResults: ComputedResultSchema = {
   },
 }
 
-const zeroedComputedResults: ComputedResultSchema = {
+const zeroedComputedResults: ComputedResults = {
   ...computedResults,
   carbone: { ...computedResults.carbone, bilan: 0 },
 }
@@ -304,14 +296,13 @@ const situation = {
   'transport . voiture . km': 12000,
 } as unknown as Record<DottedName, number>
 const foldedSteps = ['transport . voiture . km'] as DottedName[]
-const extendedSituation = {
-  'transport . voiture . km': { source: 'answered', nodeValue: 12000 },
-} as never
 
 const payload = {
   situation,
-  extendedSituation,
   foldedSteps,
   progression: 0.5,
   computedResults,
-}
+} satisfies Omit<
+  Parameters<typeof updateSimulationSituation>[0],
+  'simulationId' | 'userId'
+>

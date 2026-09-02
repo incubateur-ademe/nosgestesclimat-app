@@ -14,12 +14,12 @@ const MetricComputedResultSchema = v.strictObject({
   subcategories: v.record(v.string(), v.number()),
 })
 
-export const ComputedResultSchema = v.strictObject({
+export const ComputedResultsSchema = v.strictObject({
   carbone: MetricComputedResultSchema,
   eau: MetricComputedResultSchema,
 })
 
-export type ComputedResultSchema = v.InferOutput<typeof ComputedResultSchema>
+export type ComputedResults = v.InferOutput<typeof ComputedResultsSchema>
 
 /**
  * A simulation's `computedResults` is only exploitable by the frontend when it
@@ -30,5 +30,5 @@ export const hasValidComputedResults = <
   Simulation extends { computedResults?: unknown },
 >(
   simulation: Simulation
-): simulation is Simulation & { computedResults: ComputedResultSchema } =>
-  v.safeParse(ComputedResultSchema, simulation.computedResults).success
+): simulation is Simulation & { computedResults: ComputedResults } =>
+  v.safeParse(ComputedResultsSchema, simulation.computedResults).success

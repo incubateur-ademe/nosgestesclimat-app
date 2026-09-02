@@ -8,8 +8,8 @@ import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRule
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
 import Engine from 'publicodes'
 
+import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { describe, expect, test } from 'vitest'
-import type { SituationSchema } from '../../simulations.validator.ts'
 import { getSituationDottedNameValue } from '../situation.service.ts'
 
 const frRules = modelRules as Partial<NGCRules>
@@ -27,7 +27,7 @@ const getEngineSituationDottedNameValue = ({
   situation,
   dottedName,
 }: {
-  situation: SituationSchema
+  situation: Situation
   dottedName: DottedName
 }) => {
   try {
@@ -83,7 +83,7 @@ describe('getSituationDottedNameValue', () => {
     const testCases: {
       name: string
       dottedName: DottedName
-      situation: SituationSchema
+      situation: Situation
       rules: Partial<NGCRules>
       expected: number
     }[] = [

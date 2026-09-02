@@ -55,6 +55,7 @@ const defaultSimulation: Simulation = {
         divers: 0,
         'services sociétaux': 0,
       } as Record<DottedName, number>,
+      subcategories: {} as Record<DottedName, number>,
     },
     eau: {
       bilan: 0,
@@ -65,6 +66,7 @@ const defaultSimulation: Simulation = {
         divers: 0,
         'services sociétaux': 0,
       } as Record<DottedName, number>,
+      subcategories: {} as Record<DottedName, number>,
     },
   },
   progression: 0,

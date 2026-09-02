@@ -15,7 +15,7 @@ import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
  * what makes repairing here reliable.
  */
 export async function ensureSimulationModel<
-  Payload extends Pick<Simulation, 'id' | 'model'>,
+  Payload extends Pick<Simulation, 'id'> & Partial<Pick<Simulation, 'model'>>,
 >(simulation: Payload): Promise<Payload> {
   if (simulation.model && parseModelString(simulation.model)) {
     return simulation
