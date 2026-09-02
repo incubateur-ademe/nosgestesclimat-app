@@ -1,9 +1,9 @@
 import Ademe from '@/components/images/partners/Ademe'
 import Marianne from '@/components/images/partners/Marianne'
 import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
-import Logo from '@/components/misc/Logo'
 import Trans from '@/components/translation/trans/TransServer'
 
+import LogoLinkServer from '@/components/misc/LogoLinkServer'
 import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -45,12 +45,7 @@ export default async function FooterServer({
       )}>
       <div className="md:mx-auto md:max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
-          <Link
-            href="/"
-            data-testid="home-logo-link"
-            className="flex items-center justify-center no-underline">
-            <Logo size="md" />
-          </Link>
+          <LogoLinkServer />
         </div>
         {locale === 'fr' ? (
           <div className="my-4 block md:hidden">
