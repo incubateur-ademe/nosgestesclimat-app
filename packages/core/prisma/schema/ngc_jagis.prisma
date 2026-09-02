@@ -67,20 +67,6 @@ model SimulationComputation {
   @@schema("ngc")
 }
 
-model PollStatsComputation {
-  pollId      String            @id
-  poll        Poll              @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  status      ComputationStatus @default(pending)
-  runAt       DateTime?
-  startedAt   DateTime?
-  completedAt DateTime?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-
-  @@index([status, runAt])
-  @@schema("ngc")
-}
-
 enum ComputationStatus {
   pending
   processing

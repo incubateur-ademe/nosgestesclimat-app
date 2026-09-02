@@ -15,14 +15,7 @@ const parseSeconds = (value: string): number => {
   return Number(amount) * (unit === 'h' ? 3600 : unit === 'm' ? 60 : 1)
 }
 
-/**
- * Parses a tier configuration string of the form
- * `threshold:cooldown|threshold:cooldown|defaultCooldown` (e.g.
- * `100:0s|1000:15m|4h`). Cooldowns accept an `s` (seconds), `m` (minutes) or
- * `h` (hours) suffix; without a suffix they are in seconds. Throws on invalid
- * input.
- */
-export const parseCooldownTiers = (raw: string): CooldownTier[] =>
+const parseRaw = (raw: string): CooldownTier[] =>
   raw.split('|').map((part) => {
     const [threshold, cooldown] = part.trim().split(':')
     if (!cooldown) {
@@ -31,16 +24,19 @@ export const parseCooldownTiers = (raw: string): CooldownTier[] =>
     return { upTo: Number(threshold), cooldownSeconds: parseSeconds(cooldown) }
   })
 
-const loadCooldownTiersFromEnv = (): CooldownTier[] => {
-  const raw = process.env.POLL_STATS_COOLDOWN_TIERS
-  if (!raw) {
-    return parseCooldownTiers(DEFAULT_COOLDOWN_TIERS)
+/**
+ * Parses a cooldown tier configuration string of the form
+ * `threshold:cooldown|threshold:cooldown|defaultCooldown` (e.g.
+ * `100:0s|1000:15m|4h`). Cooldowns accept an `s` (seconds), `m` (minutes) or
+ * `h` (hours) suffix; without a suffix they are in seconds. An empty or
+ * undefined input yields the default tiers. Throws on malformed input.
+ */
+export const parseCooldownTiers = (raw: string | undefined): CooldownTier[] => {
+  const input = raw?.trim()
+  if (!input) {
+    return parseRaw(DEFAULT_COOLDOWN_TIERS)
   }
-  try {
-    return parseCooldownTiers(raw)
-  } catch {
-    return parseCooldownTiers(DEFAULT_COOLDOWN_TIERS)
-  }
+  return parseRaw(input)
 }
 
 /**
@@ -58,14 +54,3 @@ export const resolveCooldownSeconds = (
   }
   return tiers[tiers.length - 1].cooldownSeconds
 }
-
-const cooldownTiers = loadCooldownTiersFromEnv()
-
-/**
- * Maps a poll's participation count to the minimum delay between two
- * recomputations. Small polls are recomputed immediately (0s); larger polls
- * are throttled so a burst of simulations does not trigger a recompute every
- * time.
- */
-export const resolvePollStatsCooldownSeconds = (count: number): number =>
-  resolveCooldownSeconds(cooldownTiers, count)

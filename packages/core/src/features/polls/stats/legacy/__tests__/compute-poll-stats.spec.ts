@@ -24,7 +24,7 @@ describe('computePollStats', () => {
 
   it('sums computedResults across valid simulations and ignores invalid ones', async () => {
     const organisation = await organisationFactory.create()
-    const poll = await pollFactory.withOrganisation(organisation.id).create()
+    const poll = await pollFactory.create({}, { transient: { organisationId: organisation.id } })
 
     const validSimulation1 = await simulationFactory
       .completed()
@@ -46,7 +46,7 @@ describe('computePollStats', () => {
 
   it('derives fun facts from the situation', async () => {
     const organisation = await organisationFactory.create()
-    const poll = await pollFactory.withOrganisation(organisation.id).create()
+    const poll = await pollFactory.create({}, { transient: { organisationId: organisation.id } })
 
     await simulationFactory
       .completed()

@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { parseCooldownTiers, resolveCooldownSeconds } from '../policy.ts'
+import {
+  parseCooldownTiers,
+  resolveCooldownSeconds,
+} from '../cooldown-policy.ts'
+
+const DEFAULT_TIERS = [
+  { upTo: 100, cooldownSeconds: 0 },
+  { upTo: 1000, cooldownSeconds: 900 },
+  { upTo: null, cooldownSeconds: 14400 },
+]
 
 describe('parseCooldownTiers', () => {
   it('parses threshold:cooldown pairs', () => {
@@ -28,8 +37,18 @@ describe('parseCooldownTiers', () => {
     ])
   })
 
-  it('throws on invalid cooldown values', () => {
-    expect(() => parseCooldownTiers('50:not-a-number')).toThrow()
+  it('falls back to the default tiers when the input is undefined', () => {
+    expect(parseCooldownTiers(undefined)).toEqual(DEFAULT_TIERS)
+  })
+
+  it('falls back to the default tiers when the input is empty', () => {
+    expect(parseCooldownTiers('')).toEqual(DEFAULT_TIERS)
+  })
+
+  it('throws on malformed input', () => {
+    expect(() => parseCooldownTiers('50:not-a-number')).toThrow(
+      'Invalid cooldown value'
+    )
   })
 })
 

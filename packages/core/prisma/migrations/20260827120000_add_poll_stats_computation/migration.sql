@@ -24,9 +24,8 @@ FROM "ngc"."Poll";
 CREATE TABLE "ngc"."PollStatsComputation" (
     "pollId" TEXT NOT NULL,
     "status" "ngc"."ComputationStatus" NOT NULL DEFAULT 'pending',
-    "runAt" TIMESTAMP(3),
+    "scheduledAt" TIMESTAMP(3),
     "startedAt" TIMESTAMP(3),
-    "completedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -34,13 +33,10 @@ CREATE TABLE "ngc"."PollStatsComputation" (
 );
 
 -- CreateIndex
-CREATE INDEX "PollStatsComputation_status_runAt_idx" ON "ngc"."PollStatsComputation"("status", "runAt");
+CREATE INDEX "PollStatsComputation_status_scheduledAt_idx" ON "ngc"."PollStatsComputation"("status", "scheduledAt");
 
 -- CreateIndex
-CREATE INDEX "SimulationPoll_pollId_idx" ON "ngc"."SimulationPoll"("pollId");
-
--- CreateIndex
-CREATE INDEX "SimulationPoll_pollId_id_idx" ON "ngc"."SimulationPoll"("pollId", "id");
+CREATE INDEX "SimulationPoll_pollId_createdAt_idx" ON "ngc"."SimulationPoll"("pollId", "createdAt");
 
 -- AddForeignKey
 ALTER TABLE "ngc"."PollStatsComputation" ADD CONSTRAINT "PollStatsComputation_pollId_fkey" FOREIGN KEY ("pollId") REFERENCES "ngc"."Poll"("id") ON DELETE CASCADE ON UPDATE CASCADE;

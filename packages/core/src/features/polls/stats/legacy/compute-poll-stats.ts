@@ -17,11 +17,11 @@ import {
   ComputedResultsSchema,
   type ComputedResults,
 } from '../../../simulations/validators/computed-results.schema.ts'
+import { getSituationDottedNameValue } from './evaluate-situation.ts'
 import {
   SituationSchema,
   type Situation,
 } from '../../../simulations/validators/situation.schema.ts'
-import { createGetSituationDottedNameValue } from './evaluate-situation.ts'
 import { sumNested } from './sum-nested.ts'
 
 const MAX_VALUE = 100000
@@ -96,7 +96,7 @@ async function* batchPollSimulations(pollId: string) {
       skip: cursor ? 1 : 0,
       ...(cursor ? { cursor } : {}),
       where: { pollId },
-      orderBy: { id: 'asc' },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
       select: {
         id: true,
         simulation: {
@@ -122,10 +122,6 @@ async function* batchPollSimulations(pollId: string) {
 }
 
 export function createComputePollStats({ logger }: { logger: Logger }) {
-  const getSituationDottedNameValue = createGetSituationDottedNameValue({
-    logger,
-  })
-
   return async function computePollStats(pollId: string): Promise<{
     computedResults: ComputedResults
     funFacts: FunFacts
@@ -147,13 +143,17 @@ export function createComputePollStats({ logger }: { logger: Logger }) {
 
       for (const dottedName of Object.values(funFactsRules)) {
         if (dottedName in frRules) {
-          funFactValues[dottedName] =
-            (funFactValues[dottedName] || 0) +
-            getSituationDottedNameValue({
+          let value = 0
+          try {
+            value = getSituationDottedNameValue({
               dottedName,
               situation: simulation.situation,
               rules: frRules,
             })
+          } catch (error) {
+            logger.error('Cannot evaluate dottedName', { dottedName, error })
+          }
+          funFactValues[dottedName] = (funFactValues[dottedName] || 0) + value
         }
       }
     }

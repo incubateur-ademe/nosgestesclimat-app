@@ -4,7 +4,7 @@ import {
   PutObjectCommand,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { resolvePollStatsCooldownSeconds } from '@nosgestesclimat/core/features/polls/stats/helpers/policy'
+import { resolveCooldownSeconds } from '@nosgestesclimat/core/features/polls/stats/helpers/cooldown-policy'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import {
   isPrismaErrorNotFound,
@@ -281,7 +281,10 @@ const pollToDto = ({
     count,
     finished,
     hasParticipated,
-    cooldownSeconds: resolvePollStatsCooldownSeconds(count),
+    cooldownSeconds: resolveCooldownSeconds(
+      config.app.pollStatsCooldownTiers,
+      count
+    ),
   },
   ...(simulationsInfos.hasParticipated
     ? {

@@ -1,26 +1,15 @@
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
 
-import { describe, expect, test, vi } from 'vitest'
-import { createGetSituationDottedNameValue } from '../evaluate-situation.ts'
-import type { SituationSchema } from '../situation.schema.ts'
-
-const logger = {
-  error: vi.fn(),
-  warn: vi.fn(),
-  info: vi.fn(),
-  debug: vi.fn(),
-}
-
-const getSituationDottedNameValue = createGetSituationDottedNameValue({
-  logger,
-})
+import { describe, expect, test } from 'vitest'
+import { getSituationDottedNameValue } from '../evaluate-situation.ts'
+import type { Situation } from '../../../../simulations/validators/situation.schema.ts'
 
 describe('getSituationDottedNameValue', () => {
   describe('Given nested conditions', () => {
     const testCases: {
       name: string
       dottedName: DottedName
-      situation: SituationSchema
+      situation: Situation
       rules: Partial<NGCRules>
       expected: number
     }[] = [

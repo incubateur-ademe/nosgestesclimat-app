@@ -4,7 +4,6 @@
  * engine-based evaluation in Phase 2.
  */
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
-import type { Logger } from '../../../logger/index.ts'
 import type { Situation } from '../../../simulations/validators/situation.schema.ts'
 
 const isDottedName = (dottedName: unknown): dottedName is DottedName =>
@@ -38,19 +37,22 @@ const isOperator = (raw: string): raw is Operator => OPERATORS.has(raw)
 
 const evaluateConditions = (
   operator: Operator,
-  { left, right }: { left: number | string; right: number | string }
+  {
+    left,
+    right,
+  }: { left: number; right: number } | { left: string; right: string }
 ) => {
   switch (operator) {
     case '<':
-      return (left as number) < (right as number)
+      return left < right
     case '>':
-      return (left as number) > (right as number)
+      return left > right
     case '=':
       return left === right
     case '>=':
-      return (left as number) >= (right as number)
+      return left >= right
     case '<=':
-      return (left as number) <= (right as number)
+      return left <= right
     case '!=':
       return left !== right
   }
@@ -91,6 +93,7 @@ const checkIfConditionIsTrue = ({
 
   if (
     !dottedName ||
+    // if the dottedName is not in the situation (default or no show) we consider the condition as false
     situation[dottedName] === undefined ||
     situation[dottedName] === null
   ) {
@@ -104,8 +107,10 @@ const checkIfConditionIsTrue = ({
   const left =
     typeof situation[dottedName] === 'string'
       ? situation[dottedName]
-      : evaluateSituationDottedName({ dottedName, situation })
-
+      : evaluateSituationDottedName({
+          dottedName,
+          situation,
+        })
   if (isOperator(operator) && value) {
     if (Number.isNaN(+value)) {
       return typeof left === 'string'
@@ -148,6 +153,7 @@ const evaluateSituationFormula = ({
             rules,
           })
         }
+
         return +variation.alors || 0
       }
     }
@@ -155,6 +161,8 @@ const evaluateSituationFormula = ({
     formule = fallback.sinon
 
     if (typeof formule === 'number') {
+      // TODO: fix me engine does not fallback correctly
+      // return formule
       return 0
     }
   }
@@ -212,43 +220,34 @@ const evaluateSituationFormula = ({
   return 0
 }
 
-export function createGetSituationDottedNameValue({
-  logger,
+// Unlike the legacy server version, errors are thrown (not caught and logged):
+// the caller is responsible for handling them.
+export const getSituationDottedNameValue = ({
+  dottedName,
+  situation,
+  rules,
 }: {
-  logger: Logger
-}) {
-  return function getSituationDottedNameValue({
-    dottedName,
+  situation: Situation
+  dottedName: DottedName
+  rules: Partial<NGCRules>
+}): number => {
+  const rule = rules[dottedName]
+
+  if (
+    !rule ||
+    typeof rule === 'string' ||
+    !rule.formule ||
+    typeof rule.formule !== 'object'
+  ) {
+    if (typeof rule?.formule === 'number') {
+      return rule.formule
+    }
+    return 0
+  }
+
+  return evaluateSituationFormula({
+    formule: rule.formule,
     situation,
     rules,
-  }: {
-    situation: Situation
-    dottedName: DottedName
-    rules: Partial<NGCRules>
-  }): number {
-    try {
-      const rule = rules[dottedName]
-
-      if (
-        !rule ||
-        typeof rule === 'string' ||
-        !rule.formule ||
-        typeof rule.formule !== 'object'
-      ) {
-        if (typeof rule?.formule === 'number') {
-          return rule.formule
-        }
-        return 0
-      }
-
-      return evaluateSituationFormula({
-        formule: rule.formule,
-        situation,
-        rules,
-      })
-    } catch (error) {
-      logger.error('Cannot evaluate dottedName', { dottedName, error })
-      return 0
-    }
-  }
+  })
 }

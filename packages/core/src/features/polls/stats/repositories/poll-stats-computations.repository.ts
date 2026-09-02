@@ -1,38 +1,22 @@
 import { prisma } from '../../../../prisma/client.ts'
 
-const STALE_PROCESSING_TIMEOUT_SECONDS = 30
+// Must exceed the maximum duration of a poll stats recomputation so a worker
+// crash mid-recompute does not leave the row stuck in `processing`.
+const STALE_PROCESSING_TIMEOUT_SECONDS = 600
 
-const PENDING_ELIGIBILITY = 'AND ("runAt" IS NULL OR "runAt" <= NOW())'
-
+// Invariant: a `pending` row always carries a non-null `scheduledAt` (the next
+// execution due date; "immediate" is `new Date()`). Only `completed`, `failed`
+// and `processing` rows may have a null `scheduledAt`. Claimable rows are thus
+// `pending` rows whose due date passed, plus stale `processing` rows.
 const CLAIM_QUERY = `
   SELECT "pollId"
   FROM "ngc"."PollStatsComputation"
-  WHERE (status = 'pending' ${PENDING_ELIGIBILITY})
-     OR (
-       status = 'processing'
-       AND "startedAt" < NOW() - INTERVAL '${STALE_PROCESSING_TIMEOUT_SECONDS} seconds'
-     )
-  ORDER BY "runAt" ASC NULLS FIRST, "createdAt" ASC
+  WHERE (status = 'pending' AND "scheduledAt" <= NOW())
+     OR (status = 'processing' AND "startedAt" < NOW() - INTERVAL '${STALE_PROCESSING_TIMEOUT_SECONDS} seconds')
+  ORDER BY "scheduledAt" ASC, "createdAt" ASC
   LIMIT 1
   FOR UPDATE SKIP LOCKED
 `
-
-/**
- * Marks a poll as needing its stats recomputed.
- *
- * Idempotent and coalescing: a single row per poll. A `completed`/`failed`
- * row is moved back to `pending` (eligible immediately). A `pending` or
- * `processing` row is left untouched, preserving any throttling deferral.
- */
-export const enqueuePollStatsComputation = (pollId: string) =>
-  prisma.$executeRaw`
-    INSERT INTO "ngc"."PollStatsComputation" ("pollId", "status", "updatedAt")
-    VALUES (${pollId}, 'pending', NOW())
-    ON CONFLICT ("pollId") DO UPDATE SET
-      "status" = 'pending',
-      "updatedAt" = NOW()
-    WHERE "PollStatsComputation"."status" IN ('completed', 'failed')
-  `
 
 export const claimNextPendingPollStatsComputation = async () =>
   prisma.$transaction(async (tx) => {
@@ -40,28 +24,37 @@ export const claimNextPendingPollStatsComputation = async () =>
       await tx.$queryRawUnsafe<Array<{ pollId: string }>>(CLAIM_QUERY)
     if (jobs.length === 0) return null
     const { pollId } = jobs[0]
-    const row = await tx.pollStatsComputation.update({
+    await tx.pollStatsComputation.update({
       where: { pollId },
       data: { status: 'processing', startedAt: new Date() },
-      select: { pollId: true, completedAt: true },
     })
-    return { pollId: row.pollId, completedAt: row.completedAt }
-  })
-
-export const releasePollStatsComputation = (pollId: string, runAt: Date) =>
-  prisma.pollStatsComputation.update({
-    where: { pollId },
-    data: { status: 'pending', runAt, startedAt: null },
+    return { pollId }
   })
 
 export const markPollStatsComputationCompleted = (pollId: string) =>
   prisma.pollStatsComputation.update({
     where: { pollId },
-    data: { status: 'completed', completedAt: new Date(), runAt: null },
+    data: { status: 'completed', scheduledAt: null, startedAt: null },
   })
 
 export const markPollStatsComputationFailed = (pollId: string) =>
   prisma.pollStatsComputation.update({
     where: { pollId },
-    data: { status: 'failed', completedAt: new Date(), runAt: null },
+    data: { status: 'failed', scheduledAt: null, startedAt: null },
+  })
+
+export const getPollStatsComputationStatus = (pollId: string) =>
+  prisma.pollStatsComputation.findUnique({
+    where: { pollId },
+    select: { status: true, scheduledAt: true, startedAt: true },
+  })
+
+export const schedulePollStatsComputation = (
+  pollId: string,
+  scheduledAt: Date
+) =>
+  prisma.pollStatsComputation.upsert({
+    where: { pollId },
+    create: { pollId, status: 'pending', scheduledAt },
+    update: { status: 'pending', scheduledAt },
   })
