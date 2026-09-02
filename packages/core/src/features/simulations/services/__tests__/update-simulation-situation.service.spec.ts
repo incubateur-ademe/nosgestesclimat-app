@@ -2,6 +2,11 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
+import {
+  SimulationCompletedError,
+  SimulationNotFoundError,
+  ZeroFootprintError,
+} from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { parseModelString } from '../../repository/model.mapper.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
@@ -144,7 +149,7 @@ describe('updateSimulationSituation', () => {
 
     expect(result).toEqual({
       success: false,
-      error: expect.objectContaining({ code: 'simulation_not_found' }),
+      error: new SimulationNotFoundError(),
     })
   })
 
@@ -167,7 +172,7 @@ describe('updateSimulationSituation', () => {
 
     expect(result).toEqual({
       success: false,
-      error: expect.objectContaining({ code: 'simulation_not_found' }),
+      error: new SimulationNotFoundError(),
     })
 
     const updated = await findSimulationById({
@@ -195,7 +200,7 @@ describe('updateSimulationSituation', () => {
 
     expect(result).toEqual({
       success: false,
-      error: expect.objectContaining({ code: 'simulation_completed' }),
+      error: new SimulationCompletedError(),
     })
 
     const updated = await findSimulationById({
@@ -224,7 +229,7 @@ describe('updateSimulationSituation', () => {
 
     expect(result).toEqual({
       success: false,
-      error: expect.objectContaining({ code: 'simulation_completed' }),
+      error: new SimulationCompletedError(),
     })
 
     const updated = await findSimulationById({
@@ -251,7 +256,7 @@ describe('updateSimulationSituation', () => {
 
     expect(result).toEqual({
       success: false,
-      error: expect.objectContaining({ code: 'zero_footprint' }),
+      error: new ZeroFootprintError(),
     })
 
     const updated = await findSimulationById({
