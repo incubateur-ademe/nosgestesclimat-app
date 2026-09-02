@@ -22,7 +22,6 @@ export const mapSimulation = (db: SimulationModel): Simulation => {
     model,
     situation: db.situation as Situation<DottedName>,
     foldedSteps: db.foldedSteps as DottedName[],
-    actionChoices: db.actionChoices as Partial<Record<DottedName, boolean>>,
     computedResults: db.computedResults as Simulation['computedResults'],
     createdAt: db.createdAt,
     updatedAt: db.updatedAt,

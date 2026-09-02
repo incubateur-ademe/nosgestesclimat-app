@@ -10,7 +10,6 @@ export interface Simulation {
   progression: number
   situation: Situation<DottedName>
   foldedSteps: DottedName[]
-  actionChoices: Partial<Record<DottedName, boolean>>
   computedResults: ComputedResults
   createdAt: Date
   updatedAt: Date

@@ -26,7 +26,6 @@ export const createParticipantSimulation = async <
     userId,
     simulation: {
       id,
-      actionChoices,
       computedResults,
       date,
       model,
@@ -83,7 +82,6 @@ export const createParticipantSimulation = async <
     situation,
     foldedSteps,
     progression,
-    actionChoices,
     computedResults,
     ...(additionalQuestionsAnswers?.length
       ? {

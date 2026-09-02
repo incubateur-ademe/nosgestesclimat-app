@@ -6,7 +6,6 @@ import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { Locales } from '../../core/i18n/constant.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
-import type { ActionChoicesSchema } from '../../features/simulations/simulations.validator.ts'
 import type {
   Group,
   Organisation,
@@ -753,7 +752,6 @@ export const addOrUpdateContactAfterSimulationCreated = async ({
   email,
   userId,
   newsletters,
-  actionChoices,
   computedResults,
   lastSimulationDate,
   subscribeToGroupNewsletter,
@@ -762,7 +760,6 @@ export const addOrUpdateContactAfterSimulationCreated = async ({
   email: string
   userId: string
   newsletters?: Array<ListIds>
-  actionChoices?: ActionChoicesSchema
   computedResults: ComputedResults
   lastSimulationDate: Date
   subscribeToGroupNewsletter: boolean
@@ -770,9 +767,7 @@ export const addOrUpdateContactAfterSimulationCreated = async ({
   const attributes = {
     [Attributes.USER_ID]: userId,
     [Attributes.LAST_SIMULATION_DATE]: lastSimulationDate.toISOString(),
-    [Attributes.ACTIONS_SELECTED_NUMBER]: Object.values(
-      actionChoices || {}
-    ).filter((v) => !!v).length,
+    [Attributes.ACTIONS_SELECTED_NUMBER]: [],
     ...lastSimulationResult({
       locale: Locales.fr,
       computedResults,

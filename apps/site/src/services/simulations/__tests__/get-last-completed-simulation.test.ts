@@ -73,7 +73,6 @@ describe('getLastCompletedSimulation', () => {
       date: entity.date.toISOString(),
       situation: entity.situation,
       foldedSteps: entity.foldedSteps,
-      actionChoices: entity.actionChoices,
       computedResults: entity.computedResults,
       progression: entity.progression,
       model: serializeModel(entity.model),

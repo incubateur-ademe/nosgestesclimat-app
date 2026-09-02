@@ -92,7 +92,6 @@ describe('getCurrentSimulation', () => {
       progression: 0.5,
       situation: {},
       foldedSteps: [],
-      actionChoices: {},
       computedResults: validComputedResults,
       createdAt: latest.createdAt,
       updatedAt: latest.updatedAt,

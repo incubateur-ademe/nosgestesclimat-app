@@ -8,7 +8,6 @@ export function toSimulationDto(simulation: SimulationEntity): Simulation {
     date: simulation.date.toISOString(),
     situation: simulation.situation,
     foldedSteps: simulation.foldedSteps,
-    actionChoices: simulation.actionChoices,
     computedResults:
       simulation.computedResults as Simulation['computedResults'],
     progression: simulation.progression,

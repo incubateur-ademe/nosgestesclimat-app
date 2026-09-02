@@ -103,7 +103,6 @@ export const simulationFactory = SimulationFactory.define(
             data.computedResults as unknown as Prisma.InputJsonValue,
           situation: data.situation as unknown as Prisma.InputJsonValue,
           foldedSteps: data.foldedSteps as unknown as Prisma.InputJsonValue[],
-          actionChoices: data.actionChoices as unknown as Prisma.InputJsonValue,
           userId: data.userId,
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
@@ -132,7 +131,6 @@ export const simulationFactory = SimulationFactory.define(
       },
       situation: {},
       foldedSteps: [],
-      actionChoices: {},
       computedResults: zeroedComputedResults,
     }
   }

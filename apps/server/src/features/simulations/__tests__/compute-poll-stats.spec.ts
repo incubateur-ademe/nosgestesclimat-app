@@ -69,7 +69,6 @@ describe('Given a poll participation', () => {
       const simulation = await prisma.simulation.create({
         data: {
           id: faker.string.uuid(),
-          actionChoices: {},
           computedResults,
           date: new Date(),
           progression: 1,

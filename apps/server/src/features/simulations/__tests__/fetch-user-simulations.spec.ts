@@ -129,7 +129,6 @@ describe('Given a NGC user', () => {
               bilan: 1000,
               categories: { transport: 1000 },
             },
-            actionChoices: {},
             situation: {},
             foldedSteps: [],
             userId,

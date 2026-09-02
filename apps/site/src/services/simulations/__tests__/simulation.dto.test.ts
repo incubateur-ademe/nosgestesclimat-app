@@ -33,13 +33,12 @@ describe('toSimulationDto', () => {
     expect(dto.updatedAt).toBe('2024-01-02T00:00:00.000Z')
   })
 
-  it('passes through situation, foldedSteps, actionChoices, and computedResults', () => {
+  it('passes through situation, foldedSteps, and computedResults', () => {
     const entity = buildEntity()
     const dto = toSimulationDto(entity)
 
     expect(dto.situation).toBe(entity.situation)
     expect(dto.foldedSteps).toBe(entity.foldedSteps)
-    expect(dto.actionChoices).toBe(entity.actionChoices)
     expect(dto.computedResults).toEqual(entity.computedResults)
   })
 

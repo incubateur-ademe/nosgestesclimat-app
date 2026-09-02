@@ -376,7 +376,6 @@ describe('Given a NGC user', () => {
                 updatedAt: expect.any(String),
                 polls: [],
                 foldedSteps: [],
-                actionChoices: {},
                 additionalQuestionsAnswers: [],
               },
               createdAt: expect.any(String),

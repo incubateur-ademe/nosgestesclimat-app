@@ -14,7 +14,6 @@ type SimulationRow = {
   progression: number
   situation: unknown
   foldedSteps: unknown
-  actionChoices: unknown
   computedResults: unknown
   createdAt: Date
   updatedAt: Date
@@ -46,7 +45,6 @@ export const mapSimulation = (row: SimulationRow): Simulation | null => {
     progression: row.progression,
     situation: row.situation as Situation<DottedName>,
     foldedSteps: row.foldedSteps as DottedName[],
-    actionChoices: row.actionChoices as Partial<Record<DottedName, boolean>>,
     computedResults: row.computedResults as ComputedResults,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

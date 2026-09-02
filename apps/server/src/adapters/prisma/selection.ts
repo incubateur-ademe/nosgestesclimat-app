@@ -64,7 +64,6 @@ export const defaultGroupParticipantSimulationSelection = {
   situation: true,
   foldedSteps: true,
   progression: true,
-  actionChoices: true,
   computedResults: true,
   additionalQuestionsAnswers: {
     select: {
@@ -142,7 +141,6 @@ export const defaultSimulationSelection = {
   situation: true,
   foldedSteps: true,
   progression: true,
-  actionChoices: true,
   computedResults: true,
   additionalQuestionsAnswers: {
     select: {
@@ -198,7 +196,6 @@ export const defaultSimulationSelectionWithoutPollAndSituation = {
   ...simulationSelectionWithUsers,
   situation: false,
   foldedSteps: false,
-  actionChoices: false,
 }
 
 export const simulationSelection = {

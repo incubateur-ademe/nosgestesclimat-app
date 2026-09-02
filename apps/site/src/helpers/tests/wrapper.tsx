@@ -38,7 +38,6 @@ const defaultSimulation: Simulation = {
   date: new Date(),
   situation: {},
   foldedSteps: [],
-  actionChoices: {},
   model: stringifyModel({
     region: 'FR',
     locale: 'fr',

@@ -17,7 +17,6 @@ const simulationSelect = {
   progression: true,
   situation: true,
   foldedSteps: true,
-  actionChoices: true,
   computedResults: true,
   createdAt: true,
   updatedAt: true,

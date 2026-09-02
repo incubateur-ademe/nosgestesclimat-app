@@ -11,7 +11,6 @@ export interface Simulation {
   date: Date | string
   situation: Situation
   foldedSteps: DottedName[]
-  actionChoices: Partial<Record<DottedName, boolean>>
   persona?: string
   computedResults: ComputedResults
   progression: number

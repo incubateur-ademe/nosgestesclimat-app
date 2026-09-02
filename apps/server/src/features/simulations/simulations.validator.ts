@@ -22,10 +22,6 @@ export const SimulationParams = v.strictObject({
 
 export type SimulationParams = v.InferOutput<typeof SimulationParams>
 
-const ActionChoicesSchema = v.record(v.string(), v.boolean())
-
-export type ActionChoicesSchema = v.InferOutput<typeof ActionChoicesSchema>
-
 const AdditionalQuestionsAnswersSchema = v.array(
   v.union([
     v.object({
@@ -58,7 +54,6 @@ export const SimulationParticipantCreateDto = v.object({
   model: v.optional(v.pipe(v.string(), v.regex(MODEL_REGEX))),
   progression: v.number(),
   computedResults: ComputedResultsSchema,
-  actionChoices: v.optional(ActionChoicesSchema, {}),
   additionalQuestionsAnswers: v.optional(AdditionalQuestionsAnswersSchema),
   foldedSteps: v.optional(FoldedStepsSchema, []),
   situation: SituationSchema,

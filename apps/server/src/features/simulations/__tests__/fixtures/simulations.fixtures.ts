@@ -191,7 +191,6 @@ export const getSimulationPayload = ({
   situation,
   foldedSteps,
   progression,
-  actionChoices,
   computedResults,
   additionalQuestionsAnswers,
 }: Partial<SimulationParticipantCreateInputDto> = {}): SimulationParticipantCreateInputDto => {
@@ -207,7 +206,6 @@ export const getSimulationPayload = ({
     situation,
     foldedSteps,
     progression: progression || 1,
-    actionChoices,
     computedResults,
     additionalQuestionsAnswers,
   }

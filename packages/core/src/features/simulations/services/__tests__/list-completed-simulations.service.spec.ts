@@ -110,7 +110,6 @@ describe('listCompletedSimulations', () => {
         progression: 1,
         situation: {},
         foldedSteps: [],
-        actionChoices: {},
         computedResults: validComputedResults,
         createdAt: newer.createdAt,
         updatedAt: newer.updatedAt,
