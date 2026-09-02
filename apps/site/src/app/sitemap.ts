@@ -11,8 +11,6 @@ import { findVisibleActionSlugs } from '@nosgestesclimat/core/features/actions/r
 import type { MetadataRoute } from 'next'
 import { utils } from 'publicodes'
 
-export const revalidate = 3600
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [
     documentationUrls,
