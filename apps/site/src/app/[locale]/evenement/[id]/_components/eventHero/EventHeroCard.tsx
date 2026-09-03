@@ -16,14 +16,14 @@ interface Props {
 export default function EventHeroCard({
   locale,
   startDate,
-  currentValue,
+  currentValue: prout,
   targetValue,
   progressPercentage,
   primaryCtaHref,
   secondaryCtaHref,
 }: Props) {
   const hasEventStarted = new Date() >= startDate
-
+  const currentValue = 10000
   const launchDateLabel = startDate.toLocaleDateString(
     locale === 'fr' ? 'fr-FR' : 'en-GB',
     {
