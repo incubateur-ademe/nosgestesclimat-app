@@ -1,5 +1,5 @@
 'use client'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type { ReactNode } from 'react'
 import React from 'react'
 import ErrorContent from './ErrorContent'
@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error) {
     // Send error to Sentry
-    captureException(error)
+    captureErrorForSentryAndPosthog(error)
   }
 
   render() {

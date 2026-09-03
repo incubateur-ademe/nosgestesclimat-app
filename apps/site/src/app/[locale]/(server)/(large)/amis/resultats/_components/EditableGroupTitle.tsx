@@ -13,8 +13,8 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AppUser } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
-import { captureException } from '@sentry/nextjs'
 import { useState, useTransition } from 'react'
 import { isGroupOwner } from '../../_helpers/isGroupOwner'
 import { updateGroupAction } from '../_actions/update-group.action'
@@ -41,7 +41,7 @@ export default function EditableGroupTitle({
           name: groupNameUpdated,
         })
       } catch (e) {
-        captureException(e)
+        captureErrorForSentryAndPosthog(e)
       }
     })
   }

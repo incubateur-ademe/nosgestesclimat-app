@@ -88,6 +88,7 @@ vi.mock('uuid', () => ({
 // Mock Sentry
 vi.mock('@sentry/nextjs', () => ({
   captureException: vi.fn(),
+  captureMessage: vi.fn(),
   setExtra: vi.fn(),
 }))
 

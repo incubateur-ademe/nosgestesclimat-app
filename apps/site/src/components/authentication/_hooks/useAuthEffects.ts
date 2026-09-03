@@ -5,9 +5,9 @@ import { useEffect, type Dispatch } from 'react'
 import { useCookieManagement } from '@/components/cookies/useCookieManagement'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import { reconcileUserOnAuth } from '@/helpers/user/reconcileOnAuth'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
-import { captureException } from '@sentry/nextjs'
 import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
@@ -43,7 +43,7 @@ function useVerifyEffect(
         }
       })
       .catch((error) => {
-        captureException(error)
+        captureErrorForSentryAndPosthog(error)
         dispatch({ type: 'CODE_INVALID', reason: new UnknownCodeError() })
       })
 
@@ -93,7 +93,7 @@ function useCompletionEffect(
           router.refresh()
         }
       } catch (error) {
-        captureException(error)
+        captureErrorForSentryAndPosthog(error)
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps

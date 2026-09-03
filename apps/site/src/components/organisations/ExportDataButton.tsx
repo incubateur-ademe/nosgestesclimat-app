@@ -5,7 +5,7 @@ import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import { downloadPollResults } from '@/services/organisations/download-poll-results'
 import type { PublicOrganisationPoll } from '@/types/organisations'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { useTransition } from 'react'
 import DownloadIcon from '../icons/DownloadIcon'
 import Trans from '../translation/trans/TransClient'
@@ -35,7 +35,7 @@ export default function ExportDataButton({
 
         window.open(data.url, '_blank')
       } catch (error) {
-        captureException(error)
+        captureErrorForSentryAndPosthog(error)
       }
     })
   }

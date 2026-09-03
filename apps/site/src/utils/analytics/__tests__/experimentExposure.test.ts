@@ -11,6 +11,7 @@ const posthogMock = vi.hoisted(() => ({
     | undefined,
   onFeatureFlags: vi.fn<(callback: FeatureFlagsCallback) => () => void>(),
   getFeatureFlag: vi.fn(),
+  captureException: vi.fn(),
 }))
 
 vi.mock('posthog-js', () => ({ default: posthogMock }))

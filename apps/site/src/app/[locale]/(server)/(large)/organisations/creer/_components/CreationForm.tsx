@@ -16,7 +16,7 @@ import TextInput from '@/design-system/inputs/TextInput'
 import Separator from '@/design-system/layout/Separator'
 import { useCreateOrganisation } from '@/hooks/organisations/useCreateOrganisation'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { useRouter } from 'next/navigation'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
@@ -67,15 +67,13 @@ export default function CreationForm() {
         ],
       })
 
-
       router.push(
         `/organisations/${organisationUpdated.slug}/creer-campagne/informations`
       )
     } catch (error: unknown) {
-      captureException(error)
+      captureErrorForSentryAndPosthog(error)
     }
   }
-
 
   return (
     <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mb-12">
