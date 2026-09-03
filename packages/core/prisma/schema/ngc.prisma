@@ -424,7 +424,7 @@ model Survey {
 }
 
 model User {
-  id            String               @id @db.Uuid
+  id            String               @id @unique @db.Uuid
   name          String?
   email         String?
   ageRange      AgeRange?
@@ -472,7 +472,7 @@ model VerificationCode {
 
 model VerifiedUser {
   email                    String                      @id
-  id                       String                      @db.Uuid
+  id                       String                      @unique @db.Uuid
   user                     User                        @relation(fields: [id], references: [id], onDelete: Cascade)
   name                     String?
   telephone                String?
