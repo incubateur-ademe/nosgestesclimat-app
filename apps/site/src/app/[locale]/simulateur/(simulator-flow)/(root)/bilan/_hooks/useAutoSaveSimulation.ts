@@ -33,8 +33,8 @@ export function useAutoSaveSimulation() {
   useEffect(() => {
     const { id, model, situation, foldedSteps, progression } = currentSimulation
 
-    // Avoid useless server calls
-    if (progression === 0) return
+    // Avoid useless server calls and let completion be handled at the end of the test
+    if (progression === 0 || progression === 1) return
 
     debouncedSave({
       id,
