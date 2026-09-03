@@ -2,36 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
+import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { getCurrentSimulation } from '../get-current-simulation.service.ts'
 
 vi.mock('../../helpers/migrate-simulation.ts', () => ({
   migrateSimulationIfNeeded: vi.fn((simulation) => simulation),
 }))
-
-const validComputedResults = {
-  carbone: {
-    bilan: 1000,
-    categories: {
-      alimentation: 300,
-      transport: 400,
-      logement: 200,
-      divers: 50,
-      'services sociétaux': 50,
-    },
-    subcategories: {},
-  },
-  eau: {
-    bilan: 500,
-    categories: {
-      alimentation: 150,
-      transport: 200,
-      logement: 100,
-      divers: 25,
-      'services sociétaux': 25,
-    },
-    subcategories: {},
-  },
-}
 
 describe('getCurrentSimulation', () => {
   beforeEach(() => {
@@ -225,3 +201,28 @@ describe('getCurrentSimulation', () => {
     )
   })
 })
+
+const validComputedResults = {
+  carbone: {
+    bilan: 1000,
+    categories: {
+      alimentation: 300,
+      transport: 400,
+      logement: 200,
+      divers: 50,
+      'services sociétaux': 50,
+    },
+    subcategories: {},
+  },
+  eau: {
+    bilan: 500,
+    categories: {
+      alimentation: 150,
+      transport: 200,
+      logement: 100,
+      divers: 25,
+      'services sociétaux': 25,
+    },
+    subcategories: {},
+  },
+} satisfies ComputedResults

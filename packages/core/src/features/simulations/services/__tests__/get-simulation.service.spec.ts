@@ -1,15 +1,16 @@
+import { randomUUID } from 'node:crypto'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
-import { getLastCompletedSimulation } from '../get-last-completed-simulation.service.ts'
+import { getSimulation } from '../get-simulation.service.ts'
 
 vi.mock('../../helpers/migrate-simulation.ts', () => ({
   migrateSimulationIfNeeded: vi.fn((simulation) => simulation),
 }))
 
-describe('getLastCompletedSimulation', () => {
+describe('getSimulation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -24,130 +25,71 @@ describe('getLastCompletedSimulation', () => {
     await prisma.user.deleteMany()
   })
 
-  it('returns null when the user has no simulations', async () => {
+  it('returns null when the simulation does not exist', async () => {
     const user = await userFactory.create()
 
-    const result = await getLastCompletedSimulation({ userId: user.id })
+    const result = await getSimulation({ id: randomUUID(), userId: user.id })
 
     expect(result).toBeNull()
   })
 
-  it('returns null when the user has only in-progress simulations', async () => {
+  it('returns the simulation matching the id', async () => {
     const user = await userFactory.create()
-    await simulationFactory
+    const simulation = await simulationFactory
       .withModelRegion('FR')
       .withProgression(0.5)
       .params({
         userId: user.id,
-        date: new Date('2024-02-01'),
         computedResults: validComputedResults,
       })
       .create()
 
-    const result = await getLastCompletedSimulation({ userId: user.id })
-
-    expect(result).toBeNull()
-  })
-
-  it('returns the latest completed simulation ordered by date', async () => {
-    const user = await userFactory.create()
-    const [, latest] = await Promise.all([
-      simulationFactory
-        .withModelRegion('FR')
-        .completed()
-        .params({
-          userId: user.id,
-          date: new Date('2024-01-01'),
-          computedResults: validComputedResults,
-        })
-        .create(),
-      simulationFactory
-        .withModelRegion('FR')
-        .completed()
-        .params({
-          userId: user.id,
-          date: new Date('2024-02-01'),
-          computedResults: validComputedResults,
-        })
-        .create(),
-    ])
-
-    const result = await getLastCompletedSimulation({ userId: user.id })
+    const result = await getSimulation({ id: simulation.id, userId: user.id })
 
     expect(result).toEqual({
-      id: latest.id,
-      date: latest.date,
+      id: simulation.id,
+      date: simulation.date,
       model: {
         region: 'FR',
         locale: 'fr',
         version: { publishedTag: expect.any(String) },
       },
-      progression: 1,
+      progression: 0.5,
       situation: {},
       foldedSteps: [],
       computedResults: validComputedResults,
-      createdAt: latest.createdAt,
-      updatedAt: latest.updatedAt,
+      createdAt: simulation.createdAt,
+      updatedAt: simulation.updatedAt,
       userId: user.id,
       polls: [],
       groups: [],
     })
   })
 
-  it('ignores a newer in-progress simulation and returns the latest completed one', async () => {
-    const user = await userFactory.create()
-    const [completed] = await Promise.all([
-      simulationFactory
-        .withModelRegion('FR')
-        .completed()
-        .params({
-          userId: user.id,
-          date: new Date('2024-01-01'),
-          computedResults: validComputedResults,
-        })
-        .create(),
-      simulationFactory
-        .withModelRegion('FR')
-        .withProgression(0.5)
-        .params({
-          userId: user.id,
-          date: new Date('2024-02-01'),
-          computedResults: validComputedResults,
-        })
-        .create(),
-    ])
-
-    const result = await getLastCompletedSimulation({ userId: user.id })
-
-    expect(result).toEqual(
-      expect.objectContaining({ id: completed.id, progression: 1 })
-    )
-  })
-
-  it('does not return another user simulation', async () => {
+  it('does not return a simulation belonging to another user', async () => {
     const [user, other] = await Promise.all([
       userFactory.create(),
       userFactory.create(),
     ])
-    await simulationFactory
-      .completed()
+    const simulation = await simulationFactory
+      .withProgression(0.5)
       .params({ userId: other.id, computedResults: validComputedResults })
       .create()
 
-    const result = await getLastCompletedSimulation({ userId: user.id })
+    const result = await getSimulation({ id: simulation.id, userId: user.id })
 
     expect(result).toBeNull()
   })
 
-  it('returns null when the latest completed simulation has invalid computedResults', async () => {
+  it('returns null when the simulation has invalid computedResults', async () => {
     const user = await userFactory.create()
-    await simulationFactory
-      .completed()
+    const simulation = await simulationFactory
+      .withProgression(0.5)
       .withDeprecatedComputedResults()
       .params({ userId: user.id })
       .create()
 
-    const result = await getLastCompletedSimulation({ userId: user.id })
+    const result = await getSimulation({ id: simulation.id, userId: user.id })
 
     expect(result).toBeNull()
   })
@@ -155,7 +97,7 @@ describe('getLastCompletedSimulation', () => {
   it('returns null when the model string cannot be parsed', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withProgression(0.5)
       .params({ userId: user.id, computedResults: validComputedResults })
       .create()
 
@@ -164,9 +106,53 @@ describe('getLastCompletedSimulation', () => {
       data: { model: 'FR-de-1.2.3' },
     })
 
-    const result = await getLastCompletedSimulation({ userId: user.id })
+    const result = await getSimulation({ id: simulation.id, userId: user.id })
 
     expect(result).toBeNull()
+  })
+
+  it('hydrates polls and groups when present', async () => {
+    const user = await userFactory.create()
+    const simulation = await simulationFactory
+      .withModelRegion('FR')
+      .withProgression(0.5)
+      .params({ userId: user.id, computedResults: validComputedResults })
+      .create()
+
+    const organisation = await prisma.organisation.create({
+      data: { name: 'Test Org', slug: 'test-org' },
+    })
+    const poll = await prisma.poll.create({
+      data: {
+        name: 'Test Poll',
+        slug: 'test-poll',
+        organisationId: organisation.id,
+        customAdditionalQuestions: [],
+      },
+    })
+    await prisma.simulationPoll.create({
+      data: { pollId: poll.id, simulationId: simulation.id },
+    })
+
+    const group = await prisma.group.create({
+      data: { name: 'Test Group', emoji: '🌍' },
+    })
+    await prisma.groupParticipant.create({
+      data: {
+        userId: user.id,
+        simulationId: simulation.id,
+        groupId: group.id,
+      },
+    })
+
+    const result = await getSimulation({ id: simulation.id, userId: user.id })
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        polls: [{ id: poll.id, slug: 'test-poll', name: 'Test Poll' }],
+        groups: [{ id: group.id }],
+      })
+    )
   })
 
   it('delegates migration to migrateSimulationIfNeeded', async () => {
@@ -175,11 +161,11 @@ describe('getLastCompletedSimulation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withProgression(0.5)
       .params({ userId: user.id, computedResults: validComputedResults })
       .create()
 
-    await getLastCompletedSimulation({ userId: user.id })
+    await getSimulation({ id: simulation.id, userId: user.id })
 
     expect(migrateSimulationIfNeeded).toHaveBeenCalledTimes(1)
     expect(migrateSimulationIfNeeded).toHaveBeenCalledWith(
