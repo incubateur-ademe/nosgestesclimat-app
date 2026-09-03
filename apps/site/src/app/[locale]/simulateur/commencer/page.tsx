@@ -39,10 +39,10 @@ export default async function Commencer({
   })
 
   if (
+    journey.currentSimulation?.model !== stringifyModel(model) ||
     !hasSimulation(journey) ||
     hasCurrentSimulationInProgress(journey) ||
-    hasCompletedCurrentSimulation(journey) ||
-    journey.currentSimulation?.model !== stringifyModel(model)
+    hasCompletedCurrentSimulation(journey)
   ) {
     await createSimulation(model)
   }
