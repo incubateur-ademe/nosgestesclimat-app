@@ -131,6 +131,26 @@ template. Le certificat reste valide — les fichiers dans
 Le renouvellement automatique via `certbot.timer` utilise l'authenticator nginx
 et fonctionne sans intervention.
 
+## Reverse proxy PostHog (`/revp/`)
+
+Le tracking PostHog transite par un pathname de notre domaine (`/revp/`) au lieu
+du domaine `eu.i.posthog.com` : les ad-blockers filtrent par domaine, donc le
+trafic analytics vers `nosgestesclimat.fr/revp/...` n'est pas bloqué.
+
+Implémentation dans `nginx.conf.tpl`, dans le `server` principal :
+
+- `/revp/static/*` → `eu-assets.i.posthog.com/static/*` (assets SDK)
+- `/revp/array/*` → `eu-assets.i.posthog.com/array/*` (remote config)
+- `/revp/*` → `eu.i.posthog.com/*` (capture, flags, API)
+
+Ces `location` désactivent le cache disque (`proxy_cache off`) — l'API PostHog est
+dynamique — et réécrivent `Host` vers PostHog (le `server` force par défaut
+`Host ${UPSTREAM}`).
+
+Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
+`ui_host` reste `https://eu.i.posthog.com` (voir
+`apps/site/src/services/tracking/Posthog.ts`).
+
 ## Tester avant bascule DNS
 
     curl -I --resolve preprod.nosgestesclimat.fr:443:<ip> \

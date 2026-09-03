@@ -112,6 +112,7 @@ server {
     proxy_cache_use_stale error timeout updating
                           http_500 http_502 http_503 http_504;
 
+
     # Assets statiques Next.js (hashés, immutables).
     # `proxy_cache_lock` évite le cache stampede.
     location /_next/static/ {
@@ -180,6 +181,45 @@ server {
         # Et ne pas écrire dans le cache dans ces cas :
         # sinon on pollue avec un mix anon/auth.
         proxy_no_cache $ngc_is_auth$http_upgrade;
+    }
+
+    # ── PostHog reverse proxy (pathname /revp/) ──────────────────
+    # https://posthog.com/docs/advanced/proxy/nginx
+    # Check LVAO config https://github.com/incubateur-ademe/quefairedemesobjets/blob/main/servers.conf.erb#L83-L98
+    
+    location /revp/static/ {
+        proxy_pass https://eu-assets.i.posthog.com/static/;
+        proxy_set_header Host eu-assets.i.posthog.com;
+        proxy_ssl_server_name on;
+        proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+        proxy_cache off;
+    }
+
+    location /revp/array/ {
+        proxy_pass https://eu-assets.i.posthog.com/array/;
+        proxy_set_header Host eu-assets.i.posthog.com;
+        proxy_ssl_server_name on;
+        proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+        proxy_cache off;
+    }
+
+    location /revp/ {
+        proxy_pass https://eu.i.posthog.com/;
+        proxy_set_header Host eu.i.posthog.com;
+        proxy_ssl_server_name on;
+        proxy_ssl_name eu.i.posthog.com;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+        # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
+        proxy_set_header X-Real-IP $remote_addr;
+        # Nettoie Origin/Referer pour éviter les rejets PostHog depuis des domaines inconnus.
+        proxy_set_header Origin "";
+        proxy_set_header Referer "";
+        proxy_cache off;
     }
 
     # Catch-all : rate-limit + cache générique, bypass sur websocket.
