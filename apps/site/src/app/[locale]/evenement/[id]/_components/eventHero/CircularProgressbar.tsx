@@ -1,5 +1,6 @@
 'use client'
 
+import { twMerge } from 'tailwind-merge'
 import {
   CENTER,
   DIAMETER,
@@ -35,7 +36,11 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
     <svg
       role="img"
       aria-label={`${displayedValue}%`}
-      className="w-full max-w-40"
+      className={twMerge(
+        'w-full max-w-40',
+        // displayedValue >= 100 &&
+        'animate-[bg-pulse_3s_ease-in-out_forwards'
+      )}
       overflow="visible"
       viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
       {/* Track */}
@@ -50,23 +55,22 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
       {/*
        * Default progress circle
        */}
-      {!isOverflow && (
-        <path
-          d={FULL_CIRCLE_PATH_D}
-          stroke="#d40d83"
-          strokeWidth={STROKE_WIDTH}
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray={`${DIAMETER}px ${DIAMETER}px`}
-          strokeDashoffset={`${offset}px`}
-        />
-      )}
+
+      <path
+        d={FULL_CIRCLE_PATH_D}
+        stroke="#d40d83"
+        strokeWidth={STROKE_WIDTH}
+        strokeLinecap="round"
+        fill="none"
+        strokeDasharray={`${DIAMETER}px ${DIAMETER}px`}
+        strokeDashoffset={`${offset}px`}
+      />
 
       {/*
        * Overflow mode default circle: the track continues its way over the
        * first 100% colored track
        */}
-      {isOverflow && (
+      {isOverflow && displayedValue >= 100 && (
         <>
           <defs>
             {/*
@@ -126,20 +130,12 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
             strokeDasharray={`${pathLength}px ${pathLength}px`}
             strokeDashoffset={`${offset}px`}
           />
+
           {/*
-           * Tip cap: the curved front part of the bar end, as a transparent
-           * half-ring with only a white stroke, pointing in the direction of
-           * the progression. It carries the drop shadow and marks where the
-           * bar on top overlaps the lap underneath.
+           * Tip cap: the curved front part of the bar end to make visible the
+           * overlapping bar tip
            */}
-          <path
-            d={tipCapD}
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth={0.5}
-            transform={`rotate(${tipRotation} ${tipX} ${tipY})`}
-            filter={`url(#${GRADIENT_ID}-shadow)`}
-          />
+
           <path
             d={tipCapD}
             fill="none"

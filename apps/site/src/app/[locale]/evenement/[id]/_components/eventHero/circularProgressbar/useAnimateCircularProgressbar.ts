@@ -29,7 +29,7 @@ export function useAnimateCircularProgressbar({
   const isReducedMotion = getReducedMotionSnapshot()
 
   // Conic gradient painted once, reused as the trace fill. The lazy
-  // initializer keeps the canvas work out of render and runs only on client.
+  // initializer keeps the canvas work out of render
   const [gradientImage] = useState(() => buildConicGradientDataUrl())
 
   const isOverflow = value > 100
@@ -76,7 +76,7 @@ export function useAnimateCircularProgressbar({
 
       function animate(now: number) {
         const elapsed = now - startTime
-        const t = Math.min(elapsed / 800, 1)
+        const t = Math.min(elapsed / 3800, 1)
         setProgress(1 - Math.pow(1 - t, 3))
         if (t < 1) {
           requestAnimationFrameRef.current = requestAnimationFrame(animate)
@@ -91,7 +91,7 @@ export function useAnimateCircularProgressbar({
       cancelAnimationFrame(requestAnimationFrameRef.current)
     }
   }, [startDelay])
-
+  console.log({ progress })
   return {
     displayedValue,
     isOverflow,
