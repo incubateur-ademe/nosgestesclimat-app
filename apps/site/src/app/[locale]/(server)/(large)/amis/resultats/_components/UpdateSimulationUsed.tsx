@@ -9,7 +9,7 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AppUser } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import dayjs from 'dayjs'
 import { useState, useTransition } from 'react'
 import { findOwnParticipant } from '../../_helpers/findOwnParticipant'
@@ -51,7 +51,7 @@ export default function UpdateSimulationUsed({
 
         setIsUpdated(true)
       } catch (error) {
-        captureException(error)
+        captureErrorForSentryAndPosthog(error)
         setIsError(true)
       }
     })

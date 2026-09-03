@@ -1,10 +1,10 @@
 'use client'
 
 import type { FeatureFlagName } from '@/services/feature-flags/flags'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { whenExperimentsResolved } from '@/utils/analytics/experimentExposure'
 import { captureUniqueSessionActionEvent } from '@/utils/analytics/trackUniqueEvent'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { captureException } from '@sentry/nextjs'
 import { useEffect } from 'react'
 
 /**
@@ -33,7 +33,7 @@ export default function ActionTracker({
           co2PotentialInKg: action.assessment?.impact,
         })
       })
-      .catch(captureException)
+      .catch(captureErrorForSentryAndPosthog)
   }, [
     action.trackingId,
     action.theme.trackingId,

@@ -12,7 +12,7 @@ import {
 import { useExportSituation } from '@/hooks/partners/useExportSituation'
 import { useVerifyPartner } from '@/hooks/partners/useVerifyPartner'
 import { EMPTY_SITUATION, useOptionalSimulation } from '@/publicodes-state'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { notFound, useRouter } from 'next/navigation'
 import {
   createContext,
@@ -104,7 +104,7 @@ export function PartnerProvider({ children }: PropsWithChildren) {
         content: <SuccessMessage redirectUrl={redirectUrlFromResponse} />,
       })
     } catch (error) {
-      captureException(error)
+      captureErrorForSentryAndPosthog(error)
 
       setAlertToDisplay({
         type: 'error',

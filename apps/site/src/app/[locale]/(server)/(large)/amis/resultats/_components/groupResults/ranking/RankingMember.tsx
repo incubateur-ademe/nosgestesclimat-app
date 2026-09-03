@@ -10,8 +10,8 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AppUser } from '@/services/auth/get-user-session'
 import type { Group, Participant } from '@/types/groups'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
-import { captureException } from '@sentry/nextjs'
 import isMobile from 'is-mobile'
 import { useState, useTransition } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -101,7 +101,7 @@ export default function RankingMember({
 
         setIsConfirmationModalOpen(false)
       } catch (error) {
-        captureException(error)
+        captureErrorForSentryAndPosthog(error)
       }
     })
   }

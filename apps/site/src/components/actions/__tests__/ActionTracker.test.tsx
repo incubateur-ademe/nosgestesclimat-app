@@ -13,6 +13,7 @@ const posthogMock = vi.hoisted(() => ({
   ),
   getFeatureFlag: vi.fn(() => 'test-fond-blanc'),
   capture: vi.fn(),
+  captureException: vi.fn(),
   get_session_id: vi.fn(() => 'session-id'),
 }))
 

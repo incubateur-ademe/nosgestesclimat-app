@@ -1,5 +1,5 @@
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
-import { captureException } from '@sentry/nextjs'
 import type { Engine } from '../types'
 
 export const safeGetRuleHelper = (
@@ -12,7 +12,7 @@ export const safeGetRuleHelper = (
   } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error)
-    captureException(error)
+    captureErrorForSentryAndPosthog(error)
   }
   return rule
 }
