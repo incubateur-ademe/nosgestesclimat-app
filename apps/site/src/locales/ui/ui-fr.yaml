@@ -807,7 +807,6 @@ entries:
   actions.components.actionCard.highlighted.potentialImpact: Impact potentiel
   actions.components.actionCard.highlighted.footprintShare: soit {{percentage}} % de votre empreinte totale
   actions.components.actionCard.link: Voir l'action<1> "{{actionTitle}}"</1>
-  actions.components.actionCard.ctaVariant.link: Voir l'action<1> "{{actionTitle}}"</1>
   actions.components.actionCard.impactTag: Jusqu'à {{formattedValue}} {{unit}} CO<5>2</5>e / an
   actions.components.actionCard.noImpactTag: Impact non quantifiable
   actions.components.actionCard.lowImpactTag: Moins de {{formattedValue}} {{unit}} CO<5>2</5>e / an
@@ -1325,13 +1324,11 @@ entries:
   event.dynamicCounter.promise: Résultats en 10 minutes — 100% gratuit
   event.dynamicCounter.secondaryCta: Je participe individuellement
   event.dynamicCounter.target.text: calculs d'empreinte carbone
-  event.dynamicCounter.target.title: Objectif
   event.dynamicCounter.text: EN DIRECT
   event.hero.title.description: "A l'occasion de la Semaine européenne du développement durable, relevez le défi avec votre organisation : <2>mesurez votre empreinte carbone et passez à l'action pour la réduire collectivement</2>"
   event.hero.title.part1: L'impact est plus fort
   event.hero.title.part2: quand il est collectif
   event.podium.subtitle: Le podium de la mobilisation
-  event.podium.yourOrg: Organisation 1
   event.statistics.first: calculs d'empreinte carbone déjà réalisés
   event.statistics.third.link: Rejoignez-les !
   event.statistics.third.text: Organisations déjà mobilisées
@@ -1375,11 +1372,6 @@ entries:
   event.dynamicCounter.secondaryCta.ariaLabel: Je participe individuellement, ouvrir dans une nouvelle fenêtre
   event.ctas.card1.buttonAriaLabel: Je participe, ouvrir dans une nouvelle fenêtre
   event.ctas.card2.buttonAriaLabel: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
-  event.podium.categories.all: Toutes
-  event.podium.categories.companies: Entreprises
-  event.podium.categories.associations: Associations
-  event.podium.categories.education: Éducation
-  event.podium.categories.publicServices: Services publics
   event.testimonies.4.text: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.countdown.date: Lancement le {{date}}
   event.countdown.description: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
@@ -1417,7 +1409,7 @@ entries:
   common.days: Jours
   common.hours: heures
   common.minutes: Minutes
-  common.seconds: seconds
+  common.seconds: secondes
   event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
@@ -1461,7 +1453,6 @@ entries:
   La valeur minimum pour ce champ est de: La valeur minimum pour ce champ est de
   La valeur pour ce champ est comprise entre: La valeur pour ce champ est comprise entre
   actions.components.highestImpactActionsSection.publicDescription: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
-  actions.detailPage.sections.otherThemeActions.description: Sélectionnées selon vos réponses au simulateur
   actions.detailPage.sections.otherThemeActions.title: Découvrez d’autres actions pour réduire votre empreinte
   event.dynamicCounter.target.title.default: Objectif
   event.dynamicCounter.target.title.over: Objectif dépassé

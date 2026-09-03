@@ -1900,8 +1900,6 @@ entries:
   event.tutorial.carousel.prevSlide.lock: Diapositive précédente
   event.dynamicCounter.target.text: carbon footprint calculations
   event.dynamicCounter.target.text.lock: calculs d'empreinte carbone
-  event.dynamicCounter.target.title: Objective
-  event.dynamicCounter.target.title.lock: Objectif
   event.testimonies.subtitle: They took the plunge
   event.testimonies.subtitle.lock: Ils ont franchi le pas
   event.tutorial.org.2.title: Share the link
@@ -1916,8 +1914,6 @@ entries:
   event.tutorial.individual.1.title.lock: Répondez aux questions
   event.tutorial.org.3.title: Follow the results
   event.tutorial.org.3.title.lock: Suivez les résultats
-  event.podium.yourOrg: Organisation 1
-  event.podium.yourOrg.lock: Organisation 1
   event.hero.title.part2: when it is collective
   event.hero.title.part2.lock: quand il est collectif
   event.dynamicCounter.text: LIVE
@@ -2020,16 +2016,6 @@ entries:
   event.ctas.card1.buttonAriaLabel.lock: Je participe, ouvrir dans une nouvelle fenêtre
   event.ctas.card2.buttonAriaLabel: Start a collective test, open in a new window
   event.ctas.card2.buttonAriaLabel.lock: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
-  event.podium.categories.all: All
-  event.podium.categories.all.lock: Toutes
-  event.podium.categories.companies: Companies
-  event.podium.categories.companies.lock: Entreprises
-  event.podium.categories.associations: Associations
-  event.podium.categories.associations.lock: Associations
-  event.podium.categories.education: Education
-  event.podium.categories.education.lock: Éducation
-  event.podium.categories.publicServices: Public services
-  event.podium.categories.publicServices.lock: Services publics
   event.testimonies.4.text: I was surprised to find that the bulk of my carbon footprint doesn’t come from my direct actions, such as my journeys, but rather from more invisible aspects of daily life, such as public services or the production of the goods I buy. It made me realise that carbon impact is often indirect.
   event.testimonies.4.text.lock: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.countdown.label: Starting in
@@ -2188,12 +2174,8 @@ entries:
   La valeur maximum pour ce champ est de: The maximum value for this field is
   actions.components.highestImpactActionsSection.publicDescription: The top 3 actions you can take to limit or reduce your CO<1>2</1> emissions
   actions.components.highestImpactActionsSection.publicDescription.lock: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
-  actions.detailPage.sections.otherThemeActions.description: Selected according to your answers to the simulator
-  actions.detailPage.sections.otherThemeActions.description.lock: Sélectionnées selon vos réponses au simulateur
   actions.detailPage.sections.otherThemeActions.title: Find out about other ways to reduce your carbon footprint
   actions.detailPage.sections.otherThemeActions.title.lock: Découvrez d’autres actions pour réduire votre empreinte
-  actions.components.actionCard.ctaVariant.link: See the<1> "{{actionTitle}}"</1> campaign
-  actions.components.actionCard.ctaVariant.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
   event.dynamicCounter.target.title.default: Objective
   event.dynamicCounter.target.title.default.lock: Objectif
   event.dynamicCounter.target.title.topped: Target achieved
