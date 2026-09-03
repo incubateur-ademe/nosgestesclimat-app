@@ -34,10 +34,6 @@ type TestAgent = ReturnType<typeof supertest>
 
 export const CREATE_SIMULATION_ROUTE = '/simulations/v1'
 
-export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1'
-
-export const FETCH_USER_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
-
 export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
 const defaultModelVersion = modelPackage.version

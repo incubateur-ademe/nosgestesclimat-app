@@ -10,7 +10,6 @@ import {
   SimulationAdditionalQuestionAnswerType,
 } from '../../adapters/prisma/generated.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
-import { PaginationQuery } from '../../core/pagination.ts'
 import { PublicPollParams } from '../organisations/organisations.validator.ts'
 
 const MODEL_REGEX =
@@ -103,20 +102,6 @@ export const SimulationCreateValidator = {
   body: SimulationCreateDto,
   params: v.optional(v.strictObject({})),
   query: SimulationCreateQuery,
-}
-
-const SimulationsFetchQuery = v.strictObject({
-  ...PaginationQuery.entries,
-  ...LocaleQuery.entries,
-  completedOnly: v.optional(v.pipe(v.string(), v.parseBoolean())),
-})
-
-export type SimulationsFetchQuery = v.InferOutput<typeof SimulationsFetchQuery>
-
-export const SimulationsFetchValidator = {
-  body: v.optional(v.strictObject({})),
-  params: v.optional(v.strictObject({})),
-  query: SimulationsFetchQuery,
 }
 
 export const SimulationFetchValidator = {

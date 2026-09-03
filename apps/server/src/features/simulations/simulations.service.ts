@@ -7,7 +7,6 @@ import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-la
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import {
   ComputedResultsSchema,
-  hasValidComputedResults,
   type ComputedResults,
 } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import {
@@ -53,15 +52,12 @@ import {
   batchPollSimulations,
   createParticipantSimulation,
   createPollUserSimulation,
-  fetchSimulationById,
-  fetchUserSimulations,
   softDeleteSimulation as softDeleteSimulationFunc,
 } from './simulations.repository.ts'
 import {
   type SimulationCreateDto,
   type SimulationCreateQuery,
   type SimulationParams,
-  type SimulationsFetchQuery,
 } from './simulations.validator.ts'
 import {
   getSituationDottedNameValue,
@@ -191,56 +187,6 @@ export const createSimulation = async ({
   await EventBus.once(simulationUpsertedEvent)
   return {
     simulation: simulationToDto(simulation, user),
-  }
-}
-
-export const fetchSimulations = async ({
-  query,
-  user,
-}: {
-  query: SimulationsFetchQuery
-  user: PartialUser
-}) => {
-  const { simulations, count } = await transaction(
-    (session) => fetchUserSimulations({ userId: user.id }, { session, query }),
-    prisma
-  )
-
-  return {
-    simulations: simulations
-      .map((s) => simulationToDto(s, user))
-      .filter(hasValidComputedResults),
-    count,
-  }
-}
-
-export const fetchSimulation = async ({
-  params,
-  user,
-}: {
-  params: SimulationParams
-  user: PartialUser
-}) => {
-  try {
-    const simulation = await transaction(
-      (session) => fetchSimulationById(params, { session }),
-      prisma
-    )
-
-    if (
-      !simulation.user ||
-      simulation.user.id !== user.id ||
-      !hasValidComputedResults(simulation)
-    ) {
-      throw new EntityNotFoundException('Simulation not found')
-    }
-
-    return simulationToDto(simulation, user)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Simulation not found')
-    }
-    throw e
   }
 }
 

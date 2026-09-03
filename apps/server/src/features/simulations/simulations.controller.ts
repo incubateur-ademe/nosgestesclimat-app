@@ -5,7 +5,6 @@ import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
 import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import { withPaginationHeaders } from '../../core/pagination.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
@@ -17,18 +16,12 @@ import { sendSimulationUpserted } from './handlers/send-simulation-upserted.ts'
 import { updateBrevoContact } from './handlers/update-brevo-contact.ts'
 import {
   createSimulation,
-  fetchSimulation,
-  fetchSimulations,
   softDeleteSimulation,
 } from './simulations.service.ts'
-import type {
-  SimulationCreateQuery,
-  SimulationsFetchQuery,
-} from './simulations.validator.ts'
+import type { SimulationCreateQuery } from './simulations.validator.ts'
 import {
   SimulationCreateValidator,
   SimulationFetchValidator,
-  SimulationsFetchValidator,
 } from './simulations.validator.ts'
 
 const router = express.Router()
@@ -89,64 +82,6 @@ router.route('/v1').post(
     }
   }
 )
-
-/**
- * Returns simulations for a user
- */
-router
-  .route('/v1')
-  .get(
-    authentificationMiddleware<
-      unknown,
-      unknown,
-      unknown,
-      SimulationsFetchQuery
-    >(),
-    validateRequest(SimulationsFetchValidator),
-    async ({ query, user }, res) => {
-      try {
-        const { simulations, count } = await fetchSimulations({
-          query,
-          user: user!,
-        })
-        return withPaginationHeaders({
-          ...query,
-          count,
-        })(res)
-          .status(StatusCodes.OK)
-          .json(simulations)
-      } catch (err) {
-        logger.error('Simulations fetch failed', err)
-
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-      }
-    }
-  )
-
-/**
- * Returns simulations for a user and an id
- */
-router
-  .route('/v1/:simulationId')
-  .get(
-    authentificationMiddleware(),
-    validateRequest(SimulationFetchValidator),
-    async ({ params, user }, res) => {
-      try {
-        const simulation = await fetchSimulation({ params, user: user! })
-
-        return res.status(StatusCodes.OK).json(simulation)
-      } catch (err) {
-        if (err instanceof EntityNotFoundException) {
-          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-        }
-
-        logger.error('Simulation fetch failed', err)
-
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-      }
-    }
-  )
 
 /**
  * Soft deletes a simulation by associating it with a deleted user id
