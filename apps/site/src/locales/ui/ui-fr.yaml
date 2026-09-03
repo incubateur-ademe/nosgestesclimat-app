@@ -1148,6 +1148,8 @@ entries:
   cookies.management.required.detail.description2: Sauvegarde de la session anonyme (pour retrouver les simulations précédentes)
   cookies.management.required.detail.description3: Sauvegarde des données de simulation en local
   cookies.management.required.detail.description4: Sauvegarde des préférences de cookie (cette bannière)
+  cookies.management.required.detail.description5: Authentification sur l'espace personnel
+  cookies.management.required.detail.description6: Renouvellement de la session d'authentification
   cookies.management.required.detail.title: Voir le détail des cookies
   organisations.askDemo.iframe.title: Formulaire - prendre rendez-vous pour une démo de nos fonctionnalités pour les organisations
   results.tabs.groups: Test collectif

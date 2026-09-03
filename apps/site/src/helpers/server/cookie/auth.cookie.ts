@@ -6,8 +6,12 @@ import type { CookieToSet } from './types'
 export const SESSION_COOKIE = 'ngc_session'
 export const REFRESH_COOKIE = 'ngc_refresh'
 
+// maxAge of BOTH the session and refresh cookies (they share the refresh
+// token's lifetime).
+export const AUTH_COOKIE_MAX_AGE = REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60
+
 export function buildSessionCookies(tokens: SessionTokens): CookieToSet[] {
-  const maxAge = REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60
+  const maxAge = AUTH_COOKIE_MAX_AGE
   const options = getCookieOptions()
   return [
     {

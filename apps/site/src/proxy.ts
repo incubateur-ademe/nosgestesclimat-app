@@ -1,6 +1,7 @@
 import { middlewareAuth } from '@/helpers/server/proxy/auth.middleware'
 import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags.middleware'
 import { middlewareMigrateLegacySessions } from '@/helpers/server/proxy/migrate-legacy-sessions.middleware'
+import { middlewarePurgeLegacyCookieDomains } from '@/helpers/server/proxy/purge-legacy-cookie-domains.middleware'
 import { middlewareRegion } from '@/helpers/server/proxy/region.middleware'
 import i18nConfig from '@/i18nConfig'
 import { i18nRouter } from 'next-i18n-router'
@@ -30,6 +31,11 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   const region = await middlewareRegion(request)
 
+  const legacyDomainPurge = middlewarePurgeLegacyCookieDomains(
+    request,
+    auth.cookies
+  )
+
   // Phase 2 — Routing
   const response = i18nRouter(request, i18nConfig)
 
@@ -38,8 +44,16 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     ...migrate.cookies,
     ...auth.cookies,
     ...region.cookies,
+    ...legacyDomainPurge.cookies,
   ]) {
     response.cookies.set(cookie.name, cookie.value, cookie.options)
+  }
+
+  // `NextResponse.cookies` is a Map keyed by name: two cookies with the same
+  // name (host-only vs Domain-scoped) can't coexist, so the purges must be
+  // appended as raw `Set-Cookie` headers, after the `set()` calls above.
+  for (const rawSetCookie of legacyDomainPurge.rawSetCookies) {
+    response.headers.append('set-cookie', rawSetCookie)
   }
 
   return response

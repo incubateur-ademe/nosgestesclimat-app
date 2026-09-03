@@ -11,7 +11,7 @@
     },
     "worker": {
       "amount": 1,
-      "size": "S"
+      "size": "M"
     }
   },
   "env": {

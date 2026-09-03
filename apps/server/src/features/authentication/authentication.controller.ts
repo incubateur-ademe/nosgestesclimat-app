@@ -1,7 +1,6 @@
 import { captureException } from '@sentry/node'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { InvalidVerificationCodeException } from '../../core/errors/InvalidVerificationCodeException.ts'
@@ -11,11 +10,7 @@ import logger, { errorMeta, maskEmail } from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
 import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import {
-  COOKIE_NAME,
-  getCookieOptions,
-  login,
-} from './authentication.service.ts'
+import { login } from './authentication.service.ts'
 import { LoginValidator } from './authentication.validator.ts'
 import { AccountCreatedEvent } from './events/AccountCreated.event.ts'
 import { LoginEvent } from './events/Login.event.ts'
@@ -67,13 +62,11 @@ router
       logger.info('Login attempt', context)
 
       try {
-        const { token, user, mode } = await login({
+        const { user, mode } = await login({
           loginDto: req.body,
           locale: req.query.locale,
           sessionUserId,
         })
-
-        res.cookie(COOKIE_NAME, token, getCookieOptions(config.app.origin))
 
         logger.info('Login succeeded', {
           ...context,
@@ -138,22 +131,5 @@ router
       }
     }
   )
-
-/**
- * Logs a user out
- */
-router.route('/v1/logout').post((_, res) => {
-  try {
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-    })
-
-    return res.status(StatusCodes.OK).end()
-  } catch (err) {
-    logger.error('Logout failed', err)
-
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-  }
-})
 
 export default router

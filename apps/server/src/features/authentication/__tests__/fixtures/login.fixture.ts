@@ -34,7 +34,7 @@ export const login = async ({
 
   mswServer.use(brevoUpdateContact(), brevoSendEmail())
 
-  const response = await agent
+  await agent
     .post(LOGIN_ROUTE)
     // The session's userId used to be sent in the body; it now travels as
     // the `x-user-id` header, exactly like the site proxy forwards it. The
@@ -51,10 +51,7 @@ export const login = async ({
 
   resetMswServer()
 
-  const [cookie] = response.headers['set-cookie']
-
   return {
-    cookie,
     email,
     userId,
   }

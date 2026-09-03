@@ -1,5 +1,5 @@
-const domain = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
-const secure = domain !== 'localhost'
+const secure =
+  new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname !== 'localhost'
 
 export function getCookieOptions() {
   return {
@@ -8,6 +8,5 @@ export function getCookieOptions() {
     sameSite: secure ? ('none' as const) : ('lax' as const),
     partitioned: secure,
     path: '/',
-    ...(secure ? { domain } : {}),
   }
 }

@@ -15,6 +15,7 @@ export const getFullUser = async ({
 
   return {
     ...user,
+    isVerified: !!verifiedUser,
     telephone: verifiedUser?.telephone ?? null,
     position: verifiedUser?.position ?? null,
     optedInForCommunications: verifiedUser?.optedInForCommunications ?? false,

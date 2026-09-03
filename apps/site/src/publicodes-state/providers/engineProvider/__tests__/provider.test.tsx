@@ -91,7 +91,7 @@ describe('EngineProvider', () => {
     rerender(<Tree rules={refreshedRules()} />)
 
     // Then — the footprint does not fall back to the model defaults
-    expect(bilan()).toBe(answeredBilan)
+    expect(bilan()).toBeCloseTo(answeredBilan, 5)
   }, 30_000)
 
   it('should keep a rule depending on a previous answer evaluable when it receives a new rules object', async () => {

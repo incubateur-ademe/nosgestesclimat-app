@@ -41,9 +41,6 @@ const AppSchema = v.strictObject({
 })
 
 const SecuritySchema = v.strictObject({
-  cookie: v.strictObject({
-    name: v.optional(v.string(), 'ngc_server_auth_jwt'),
-  }),
   job: v.strictObject({ secret: v.string() }),
   jwt: v.strictObject({ secret: v.string() }),
   internalApiKey: v.string(),
@@ -162,7 +159,6 @@ const {
     CONNECT_CLIENT_ID,
     CONNECT_CLIENT_SECRET,
     CONNECT_URL,
-    AUTH_COOKIE_NAME,
     INTERNAL_API_KEY,
     JOB_SECRET,
     JWT_SECRET,
@@ -205,9 +201,6 @@ export const config = v.parse(ConfigSchema, {
     serverUrl: SERVER_URL,
   },
   security: {
-    cookie: {
-      name: AUTH_COOKIE_NAME,
-    },
     job: {
       secret: JOB_SECRET,
     },

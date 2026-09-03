@@ -470,30 +470,11 @@ HEATLOWCARBONSYSTEM-kwh: 0
 ELECTRICITYNETWORK-kwh: logement . électricité . réseau . consommation
 ELECLOWCARBONSYSTEM-kwh: logement . électricité . photovoltaique . autoconsommation
 foodconsumptionknowledge: "'NO'"
-breakfast-milkandcereals-timesperweek:
-  formule:
-    variations:
-      - si: alimentation . petit déjeuner . type = 'lait céréales'
-        alors: 7
-      - sinon: 0
-breakfast-fruit-timesperweek:
-  formule:
-    variations:
-      - si: alimentation . petit déjeuner . type = 'végétalien'
-        alors: 7
-      - sinon: 0
-breakfast-bread-timesperweek:
-  formule:
-    variations:
-      - si: alimentation . petit déjeuner . type = 'continental'
-        alors: 7
-      - sinon: 0
-breakfast-english-timesperweek:
-  formule:
-    variations:
-      - si: alimentation . petit déjeuner . type = 'britannique'
-        alors: 7
-      - sinon: 0
+# Minimal fix, not maintained at the moment.
+breakfast-milkandcereals-timesperweek: 7
+breakfast-fruit-timesperweek: 0
+breakfast-bread-timesperweek: 0
+breakfast-english-timesperweek: 0
 meal-redmeat-timesperweek:
   formule: alimentation . plats . viande rouge . nombre
 meal-othermeatandfish-timesperweek:

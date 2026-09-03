@@ -1561,6 +1561,10 @@ entries:
   cookies.management.required.detail.description1.lock: Choix de langue
   cookies.management.required.detail.description4: Saving cookie preferences (this banner)
   cookies.management.required.detail.description4.lock: Sauvegarde des préférences de cookie (cette bannière)
+  cookies.management.required.detail.description5: Authentication on the personal space
+  cookies.management.required.detail.description5.lock: Authentification sur l'espace personnel
+  cookies.management.required.detail.description6: Renewal of the authentication session
+  cookies.management.required.detail.description6.lock: Renouvellement de la session d'authentification
   results.tabs.groups: Group test
   results.tabs.groups.lock: Test collectif
   results.tabs.myGroups: Create a group test

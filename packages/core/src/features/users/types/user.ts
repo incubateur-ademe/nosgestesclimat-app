@@ -8,6 +8,7 @@ export interface FullUser {
   id: string
   name: string | null
   email: string | null
+  isVerified: boolean
   ageRange: AgeRange | null
   createdAt: Date
   updatedAt: Date

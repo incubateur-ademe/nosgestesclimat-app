@@ -40,7 +40,7 @@ export async function middlewareAuth(
   } catch (err) {
     // (B) Corrupted or tampered session cookie: log and treat as anonymous.
     captureException(err)
-    return { redirect: null, cookies: [] }
+    return { redirect: null, cookies: deleteSessionCookies() }
   }
 
   if (!isSessionExpired(payload)) {
@@ -62,7 +62,7 @@ export async function middlewareAuth(
       new Error('Session expired but no refresh cookie present'),
       { level: 'error' }
     )
-    return { redirect: null, cookies: [] }
+    return { redirect: null, cookies: deleteSessionCookies() }
   }
 
   let tokens: SessionTokens
@@ -72,7 +72,7 @@ export async function middlewareAuth(
     if (err instanceof TokenExpiredException) {
       // (E) Refresh token exists but is past its expiration.
       // The user must log in again; continue anonymously.
-      return { redirect: null, cookies: [] }
+      return { redirect: null, cookies: deleteSessionCookies() }
     }
 
     if (err instanceof TokenConsumedException) {

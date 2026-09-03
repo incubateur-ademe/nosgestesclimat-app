@@ -180,9 +180,16 @@ export default function CookieConsentForm({
                   </li>
 
                   <li>
-                    <pre className="block font-bold">ngc_server_auth_jwt</pre>
-                    <Trans i18nKey="cookies.management.required.detail.description2">
+                    <pre className="block font-bold">ngc_session</pre>
+                    <Trans i18nKey="cookies.management.required.detail.description5">
                       Authentification sur l'espace personnel
+                    </Trans>
+                  </li>
+
+                  <li>
+                    <pre className="block font-bold">ngc_refresh</pre>
+                    <Trans i18nKey="cookies.management.required.detail.description6">
+                      Renouvellement de la session d'authentification
                     </Trans>
                   </li>
 

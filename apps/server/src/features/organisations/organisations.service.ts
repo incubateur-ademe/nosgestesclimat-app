@@ -25,7 +25,6 @@ import type { PaginationQuery } from '../../core/pagination.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
 import logger from '../../logger.ts'
-import { createToken } from '../authentication/authentication.service.ts'
 import type { JobParams } from '../jobs/jobs.repository.ts'
 import { JobKind } from '../jobs/jobs.repository.ts'
 import {
@@ -161,7 +160,6 @@ export const updateOrganisation = async ({
   organisationDto: OrganisationUpdateDto
   user: PartialVerifiedUser
 }) => {
-  let token: string | undefined
   const { administrators: [{ email }] = [{}] } = organisationDto
   if (email && email !== user.email) {
     throw new ForbiddenException(
@@ -175,9 +173,6 @@ export const updateOrganisation = async ({
         session,
       })
     )
-    if (administrator) {
-      token = createToken(administrator)
-    }
     const organisationUpdatedEvent = new OrganisationUpdatedEvent({
       administrator,
       organisation,
@@ -188,7 +183,6 @@ export const updateOrganisation = async ({
     await EventBus.once(organisationUpdatedEvent)
 
     return {
-      token,
       organisation: organisationToDto(organisation, user.email),
     }
   } catch (e) {

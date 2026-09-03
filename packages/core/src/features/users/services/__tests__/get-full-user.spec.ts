@@ -26,6 +26,7 @@ describe('getFullUser', () => {
 
     expect(result).toEqual({
       ...user,
+      isVerified: false,
       telephone: null,
       position: null,
       optedInForCommunications: false,
@@ -44,6 +45,7 @@ describe('getFullUser', () => {
 
     expect(result).toEqual({
       ...user,
+      isVerified: true,
       telephone: verifiedUser.telephone,
       position: verifiedUser.position,
       optedInForCommunications: verifiedUser.optedInForCommunications,
