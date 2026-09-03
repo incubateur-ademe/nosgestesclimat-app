@@ -3,20 +3,22 @@ import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
-import type { PublicOrganisationPoll } from '@/types/organisations'
+import type { Poll } from '@nosgestesclimat/core/features/polls/types/poll'
 
 interface Props {
-  poll: PublicOrganisationPoll
+  poll: Poll
+  hasCompletedPollSimulation: boolean
   createSimulation: () => void
   locale: Locale
 }
 
 export default function PollTutorialButton({
   poll,
+  hasCompletedPollSimulation,
   locale,
   createSimulation,
 }: Props) {
-  if (poll.simulations.hasParticipated && poll.progression === 1) {
+  if (hasCompletedPollSimulation) {
     return (
       <div>
         <p

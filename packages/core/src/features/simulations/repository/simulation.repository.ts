@@ -1,5 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
+import { isCuid } from '../../../lib/cuid.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
@@ -41,6 +42,31 @@ export const findLatestSimulation = async ({
 }): Promise<Simulation | null> => {
   const row = await prisma.simulation.findFirst({
     where: { userId },
+    orderBy: { date: 'desc' },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
+export const findLatestPollSimulation = async ({
+  userId,
+  pollIdOrSlug,
+}: {
+  userId: string
+  pollIdOrSlug: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: {
+      userId,
+      polls: {
+        some: {
+          poll: isCuid(pollIdOrSlug)
+            ? { id: pollIdOrSlug }
+            : { slug: pollIdOrSlug },
+        },
+      },
+    },
     orderBy: { date: 'desc' },
     select: simulationSelect,
   })

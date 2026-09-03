@@ -1467,8 +1467,8 @@ entries:
   simulation.eau.climateAndWater.title.lock: Eau, climat, même combat ?
   endpage.meta.title.carbon: My carbon footprint - Nos Gestes Climat
   endpage.meta.title.carbon.lock: Mon empreinte carbone - Nos Gestes Climat
-  simulation.eau.title: The water footprint used to produce what you consume
-  simulation.eau.title.lock: L’empreinte eau qui sert à produire ce que vous consommez
+  simulation.eau.title: The water footprint involved in producing what you consume
+  simulation.eau.title.lock: L'empreinte eau qui sert à produire ce que vous consommez
   simulation.eau.whatIsWaterFootprint.vigieEau: Visit VigiEau to find out more.
   simulation.eau.whatIsWaterFootprint.vigieEau.lock: Rendez-vous sur VigiEau pour en savoir plus.
   simulation.eau.documentation.title: How is your footprint calculated?
@@ -2058,7 +2058,7 @@ entries:
   results.footprintBlock.actionsBlock.link: Find out about my activities
   results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
   common.co2eAn.title: CO₂e per year
-  common.co2eAn.title.lock: CO₂e / an
+  common.co2eAn.title.lock: CO₂e / an
   results.footprintBlock.actionsBlock.title: 'How to reduce your carbon footprint:'
   results.footprintBlock.actionsBlock.title.lock: 'Comment réduire votre empreinte :'
   iframe.safari.openInNewTab: Open the calculator in a new tab

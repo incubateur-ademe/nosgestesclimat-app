@@ -7,7 +7,10 @@ import type { Prisma } from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../repository/model.mapper.ts'
 import type { Model, ModelLocale, ModelRegion } from '../types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
-import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import {
+  computedResultsFactory,
+  deprecatedComputedResults,
+} from './computed-results.factory.ts'
 
 interface SimulationTransientParams {
   progression?: number
@@ -34,12 +37,12 @@ class SimulationFactory extends Factory<
     return this.transient({ modelLocale: lang })
   }
   withDeprecatedComputedResults() {
-    return this.params({
-      computedResults: { bilan: 1000 } as unknown as ComputedResults,
-    })
+    return this.params({ computedResults: deprecatedComputedResults })
   }
   withValidComputedResults() {
-    return this.params({ computedResults: validComputedResults })
+    return this.params({
+      computedResults: computedResultsFactory.valid().build(),
+    })
   }
 
   started() {
@@ -134,57 +137,7 @@ export const simulationFactory = SimulationFactory.define(
       },
       situation: {},
       foldedSteps: [],
-      computedResults: zeroedComputedResults,
+      computedResults: computedResultsFactory.build(),
     }
   }
 )
-
-const zeroedComputedResults: ComputedResults = {
-  carbone: {
-    bilan: 0,
-    categories: {
-      'services sociétaux': 0,
-      alimentation: 0,
-      divers: 0,
-      logement: 0,
-      transport: 0,
-    },
-    subcategories: {},
-  },
-  eau: {
-    bilan: 0,
-    categories: {
-      'services sociétaux': 0,
-      alimentation: 0,
-      divers: 0,
-      logement: 0,
-      transport: 0,
-    },
-    subcategories: {},
-  },
-}
-
-export const validComputedResults: ComputedResults = {
-  carbone: {
-    bilan: 1000,
-    categories: {
-      alimentation: 300,
-      transport: 400,
-      logement: 200,
-      divers: 50,
-      'services sociétaux': 50,
-    },
-    subcategories: {},
-  },
-  eau: {
-    bilan: 500,
-    categories: {
-      alimentation: 150,
-      transport: 200,
-      logement: 100,
-      divers: 25,
-      'services sociétaux': 25,
-    },
-    subcategories: {},
-  },
-}

@@ -1,38 +1,34 @@
 import CarbonFootprintResults from '@/components/results/carbonFootprint/CarbonFootprintResults'
 import { modalClassName } from '@/design-system/modals/Modal'
-import type { SimulationResult } from '@/helpers/server/model/simulationResult'
+import type { ComputedResults } from '@/publicodes-state/types'
 import type { Locale } from '@/i18nConfig'
 import type { PropsWithChildren } from 'react'
 
-const DUMMY_SIMULATION_RESULT: SimulationResult = {
-  group: null,
-  computedResults: {
-    carbone: {
-      bilan: 9000,
-      categories: {
-        transport: 2750,
-        alimentation: 2500,
-        logement: 1500,
-        divers: 1250,
-        'services sociétaux': 1000,
-      } as SimulationResult['computedResults']['carbone']['categories'],
-      subcategories:
-        {} as SimulationResult['computedResults']['carbone']['subcategories'],
+const DUMMY_COMPUTED_RESULTS = {
+  carbone: {
+    bilan: 9000,
+    categories: {
+      transport: 2750,
+      alimentation: 2500,
+      logement: 1500,
+      divers: 1250,
+      'services sociétaux': 1000,
     },
-    eau: {
-      bilan: 1200000,
-      categories: {
-        transport: 150000,
-        alimentation: 700000,
-        logement: 200000,
-        divers: 100000,
-        'services sociétaux': 50000,
-      } as SimulationResult['computedResults']['eau']['categories'],
-      subcategories:
-        {} as SimulationResult['computedResults']['eau']['subcategories'],
-    },
+    subcategories: {},
   },
-}
+  eau: {
+    bilan: 1200000,
+    categories: {
+      transport: 150000,
+      alimentation: 700000,
+      logement: 200000,
+      divers: 100000,
+      'services sociétaux': 50000,
+    },
+    subcategories: {},
+  },
+} as ComputedResults
+
 export default function ErrorPage({
   children,
   locale,
@@ -50,7 +46,7 @@ export default function ErrorPage({
 
       <div>
         <CarbonFootprintResults
-          simulationResult={DUMMY_SIMULATION_RESULT}
+          computedResults={DUMMY_COMPUTED_RESULTS}
           locale={locale as Locale}
           hideSaveBlock
         />

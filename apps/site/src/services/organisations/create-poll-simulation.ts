@@ -7,13 +7,12 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { withUserSession } from '@/services/auth/with-user-session'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
-import type { PublicOrganisationPoll } from '@/types/organisations'
 
 /**
  * Either reuse an existing simulation or create a new one
  */
 type CreatePollSimulationArgs = {
-  poll: PublicOrganisationPoll
+  poll: { id: string }
   locale: Locale
 } & (
   | { simulation: Simulation; model?: never }
