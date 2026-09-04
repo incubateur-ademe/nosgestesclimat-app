@@ -52,12 +52,12 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
           <path
             d={FULL_CIRCLE_PATH_D}
             aria-hidden="true"
-            className="animate-flash-scale animate-fade-in absolute origin-center rounded-3xl fill-[#F54900] blur-2xl duration-500"
+            className="animate-fade-in absolute origin-center rounded-3xl fill-[#F54900] blur-2xl duration-500"
           />
           <path
             d={FULL_CIRCLE_PATH_D}
             aria-hidden="true"
-            className="animate-fade-in absolute z-10 origin-center rounded-3xl fill-white opacity-100! blur-md duration-500"
+            className="animate-fade-in absolute z-10 origin-center rounded-3xl fill-white blur-md duration-500"
           />
         </>
       )}
