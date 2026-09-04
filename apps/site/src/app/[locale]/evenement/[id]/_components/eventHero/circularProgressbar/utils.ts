@@ -101,16 +101,39 @@ export function getBarTipValues({
   }
 }
 
-export function getProgressPathD({
-  lapCount,
+const FULL_PERCENTAGE = 100
+
+export function getComputedValues({
+  progress,
+  isOverflow,
+  value,
   fullCirclePathD,
+  circumference,
 }: {
-  lapCount: number
+  progress: number
+  isOverflow: boolean
+  value: number
   fullCirclePathD: string
+  circumference: number
 }) {
+  // The whole progression lives on one single ring. Above 100%, the trace
+  // starts a new lap on top of the previous one (same lane), drawn again so it
+  // overlaps visually. Each lap is a full circle appended to the path.
+  const lapCount = Math.max(
+    Math.ceil(progress * (isOverflow ? value / 100 : 0)),
+    1
+  )
   let progressPathD = ''
   for (let lap = 0; lap < lapCount; lap++) {
     progressPathD += fullCirclePathD
   }
-  return progressPathD
+  const pathLength = lapCount * circumference
+
+  return {
+    pathLength,
+    progressPathD,
+    offsetSingleLap:
+      (1 - Math.min((progress * value) / FULL_PERCENTAGE, 1)) * circumference,
+    offsetOverflow: (1 - progress) * pathLength,
+  }
 }

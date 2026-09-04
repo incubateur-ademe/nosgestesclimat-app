@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   buildConicGradientDataUrl,
   getBarTipValues,
-  getProgressPathD,
+  getComputedValues,
   getReducedMotionSnapshot,
 } from './utils'
 
@@ -16,6 +16,8 @@ export const CENTER = 50
 export const STROKE_WIDTH = 10
 const RADIUS = VIEWBOX / 2 - STROKE_WIDTH / 2
 export const CIRCUMFERENCE = Math.PI * 2 * RADIUS
+const FULL_PERCENTAGE = 100
+const ANIMATION_DURATION = 3000
 
 // White border stroke width (the rainbow trace is drawn on top of it).
 export const FULL_CIRCLE_PATH_D =
@@ -23,33 +25,26 @@ export const FULL_CIRCLE_PATH_D =
   ` a ${RADIUS},${RADIUS} 0 1 1 0,${2 * RADIUS}` +
   ` a ${RADIUS},${RADIUS} 0 1 1 0,-${2 * RADIUS}`
 
+// Conic gradient painted once, reused as the trace fill. The lazy
+// initializer keeps the canvas work out of render
+const gradientImage = buildConicGradientDataUrl()
+
 export function useAnimateCircularProgressbar({ value, startDelay }: Props) {
   const [progress, setProgress] = useState(0)
   const displayedValue = Math.round(progress * value)
   const requestAnimationFrameRef = useRef<number>(0)
   const isReducedMotion = getReducedMotionSnapshot()
 
-  // Conic gradient painted once, reused as the trace fill. The lazy
-  // initializer keeps the canvas work out of render
-  const [gradientImage] = useState(() => buildConicGradientDataUrl())
+  const isOverflow = value >= FULL_PERCENTAGE
 
-  const isOverflow = value >= 100
-
-  // The whole progression lives on one single ring. Above 100%, the trace
-  // starts a new lap on top of the previous one (same lane), drawn again so it
-  // overlaps visually. Each lap is a full circle appended to the path.
-  const totalLaps = progress * (isOverflow ? value / 100 : 0)
-  const lapCount = Math.max(Math.ceil(totalLaps), 1)
-
-  const progressPathD = getProgressPathD({
-    lapCount,
-    fullCirclePathD: FULL_CIRCLE_PATH_D,
-  })
-
-  const pathLength = lapCount * CIRCUMFERENCE
-  const offsetSingleLap =
-    (1 - Math.min((progress * value) / 100, 1)) * CIRCUMFERENCE
-  const offsetOverflow = (1 - progress) * pathLength
+  const { pathLength, progressPathD, offsetSingleLap, offsetOverflow } =
+    getComputedValues({
+      progress,
+      value,
+      isOverflow,
+      circumference: CIRCUMFERENCE,
+      fullCirclePathD: FULL_CIRCLE_PATH_D,
+    })
 
   const { tipCapD, tipRotation, tipX, tipY } = getBarTipValues({
     center: CENTER,
@@ -65,7 +60,7 @@ export function useAnimateCircularProgressbar({ value, startDelay }: Props) {
 
       function animate(now: number) {
         const elapsed = now - startTime
-        const t = Math.min(elapsed / 3000, 1)
+        const t = Math.min(elapsed / ANIMATION_DURATION, 1)
         setProgress(1 - Math.pow(1 - t, 3))
         if (t < 1) {
           requestAnimationFrameRef.current = requestAnimationFrame(animate)
