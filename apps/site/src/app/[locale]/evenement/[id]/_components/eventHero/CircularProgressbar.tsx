@@ -31,7 +31,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
     tipRotation,
     tipX,
     tipY,
-  } = useAnimateCircularProgressBar({ value, startDelay })
+  } = useAnimateCircularProgressBar({ value: 120, startDelay })
 
   const isOverHundredPercent = displayedValue >= 100
 
@@ -52,7 +52,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
           <path
             d={FULL_CIRCLE_PATH_D}
             aria-hidden="true"
-            className="animate-fade-in absolute origin-center rounded-3xl fill-[#F54900] blur-2xl duration-500"
+            className="animate-flash-scale absolute origin-center rounded-3xl fill-[#F54900] blur-2xl duration-500"
           />
           <path
             d={FULL_CIRCLE_PATH_D}
