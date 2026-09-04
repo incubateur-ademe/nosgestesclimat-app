@@ -86,12 +86,13 @@ setup(
     await organisation.saveInContext()
     await poll.saveInContext()
 
+    // @TODO: uncomment when re-enabling mode scolaire
     // Create a second poll in scolaire mode for youth tutorial testing
-    const scolairePoll = new Poll(page, organisation)
-    await page.goto(scolairePoll.createUrl)
-    await scolairePoll.create('scolaire')
-    await scolairePoll.copyInviteLink()
-    await scolairePoll.saveInContext('poll-scolaire')
+    // const scolairePoll = new Poll(page, organisation)
+    // await page.goto(scolairePoll.createUrl)
+    // await scolairePoll.create('scolaire')
+    // await scolairePoll.copyInviteLink()
+    // await scolairePoll.saveInContext('poll-scolaire')
 
     await saveContext(page, ORGANISATION_ADMIN_STATE)
   }
