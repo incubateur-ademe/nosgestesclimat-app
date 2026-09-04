@@ -4,6 +4,14 @@ export function getReducedMotionSnapshot() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function hexToRgb(hex: string): [number, number, number] {
+  return [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16),
+  ]
+}
+
 // Renders a conic (radial) gradient of the rainbow palette on a canvas and
 // returns it as a data URL, so it can be used as an SVG pattern fill.
 export function buildConicGradientDataUrl(size = 256): string {
@@ -22,9 +30,9 @@ export function buildConicGradientDataUrl(size = 256): string {
   const steps = 360
   const colorStops = ['#F54900', '#D40D83']
   for (let step = 0; step < steps; step++) {
-    const angle = (step / steps) * Math.PI * 2
-    const nextAngle = ((step + 1) / steps) * Math.PI * 2
     const position = step / steps
+    const angle = position * Math.PI * 2
+    const nextAngle = ((step + 1) / steps) * Math.PI * 2
 
     // Interpolate the rainbow color at this angle.
     const t = position * colorStops.length
@@ -49,14 +57,6 @@ export function buildConicGradientDataUrl(size = 256): string {
   }
 
   return canvas.toDataURL('image/png')
-}
-
-export function hexToRgb(hex: string): [number, number, number] {
-  return [
-    parseInt(hex.slice(1, 3), 16),
-    parseInt(hex.slice(3, 5), 16),
-    parseInt(hex.slice(5, 7), 16),
-  ]
 }
 
 export function getBarTipValues({

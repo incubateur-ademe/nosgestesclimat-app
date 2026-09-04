@@ -28,7 +28,7 @@ export const FULL_CIRCLE_PATH_D =
 // Conic gradient painted once, reused as the trace fill
 const gradientImage = buildConicGradientDataUrl()
 
-export function useAnimateCircularProgressbar({ value, startDelay }: Props) {
+export function useAnimateCircularProgressBar({ value, startDelay }: Props) {
   const [progress, setProgress] = useState(0)
   const displayedValue = Math.round(progress * value)
   const requestAnimationFrameRef = useRef<number>(0)

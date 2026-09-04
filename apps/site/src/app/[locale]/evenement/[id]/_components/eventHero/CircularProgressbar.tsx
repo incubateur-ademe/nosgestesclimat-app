@@ -6,9 +6,9 @@ import {
   CIRCUMFERENCE,
   FULL_CIRCLE_PATH_D,
   STROKE_WIDTH,
-  useAnimateCircularProgressbar,
+  useAnimateCircularProgressBar,
   VIEWBOX,
-} from './circularProgressbar/useAnimateCircularProgressbar'
+} from './circularProgressBar/useAnimateCircularProgressBar'
 
 interface Props {
   value: number
@@ -31,7 +31,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
     tipRotation,
     tipX,
     tipY,
-  } = useAnimateCircularProgressbar({ value, startDelay })
+  } = useAnimateCircularProgressBar({ value, startDelay })
 
   const isOverHundredPercent = displayedValue >= 100
 
