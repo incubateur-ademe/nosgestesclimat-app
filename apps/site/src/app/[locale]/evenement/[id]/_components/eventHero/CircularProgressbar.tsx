@@ -33,17 +33,19 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
     tipY,
   } = useAnimateCircularProgressbar({ value, startDelay })
 
+  const isOverHundredPercent = displayedValue >= 100
+
   return (
     <svg
       role="img"
       aria-label={`${displayedValue}%`}
       className={twMerge(
         'relative w-full max-w-40',
-        displayedValue >= 100 && 'animate-scale'
+        isOverHundredPercent && 'animate-scale'
       )}
       overflow="visible"
       viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
-      {displayedValue >= 100 && (
+      {isOverHundredPercent && !isReducedMotion && (
         <>
           <path
             d={FULL_CIRCLE_PATH_D}
@@ -84,7 +86,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
        * Overflow mode default circle: the track continues its way over the
        * first 100% colored track
        */}
-      {isOverflow && displayedValue >= 100 && (
+      {isOverflow && isOverHundredPercent && (
         <>
           <defs>
             {/*
