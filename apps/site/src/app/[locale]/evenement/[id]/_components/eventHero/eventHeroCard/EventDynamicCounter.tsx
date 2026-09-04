@@ -3,7 +3,7 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import CircularProgressbar from '../CircularProgressbar'
+import CircularProgressBar from '../CircularProgressBar'
 import { COUNTER_BLOCK_ANIMATION_TOTAL } from './AnimatedCounterBlock'
 
 interface Props {
@@ -43,7 +43,7 @@ export default async function EventDynamicCounter({
 
       <div className="mb-6 flex gap-4 md:gap-6">
         <div className="max-w-full min-w-16 md:min-w-28 lg:min-w-36">
-          <CircularProgressbar
+          <CircularProgressBar
             value={progressPercentage}
             startDelay={COUNTER_BLOCK_ANIMATION_TOTAL}
           />

@@ -166,7 +166,6 @@ export default {
             transform: 'translate3d(0, -4px, 0) scaleY(1.02)',
           },
         },
-
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
@@ -214,6 +213,31 @@ export default {
           '0%, 100%': { backgroundColor: '#4949ba' },
           '50%': { backgroundColor: '#373978' },
         },
+        'flash-scale': {
+          '0%': {
+            opacity: 0,
+            transform: 'scale(0)',
+          },
+          '10%': {
+            opacity: 0.8,
+            transform: 'scale(1)',
+          },
+          '40%': {
+            opacity: 0.7,
+            transform: 'scale(0.6)',
+          },
+          '100%': {
+            opacity: 0,
+          },
+        },
+        scale: {
+          '0%, 100%': {
+            transform: 'scale(1)',
+          },
+          '50%': {
+            transform: 'scale(1.05)',
+          },
+        },
         'rainbow-shadow-move': {
           '0%': {
             'background-position': '0% 50%',
@@ -246,6 +270,8 @@ export default {
         'float-leaf-2': 'float-badge 5.5s ease-in-out 0.8s infinite',
         'float-leaf-3': 'float-badge 4.8s ease-in-out 1.5s infinite',
         'bg-pulse': 'bg-pulse 5s ease-in-out infinite',
+        'flash-scale': 'flash-scale 3s ease-in-out forwards',
+        scale: 'scale 0.5s ease-out forwards',
         'rainbow-shadow-move': 'rainbow-shadow-move 8s linear infinite',
       },
       screens: {
