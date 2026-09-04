@@ -2198,3 +2198,11 @@ entries:
   actions.detailPage.sections.otherThemeActions.title.lock: Découvrez d’autres actions pour réduire votre empreinte
   actions.components.actionCard.ctaVariant.link: See the<1> "{{actionTitle}}"</1> campaign
   actions.components.actionCard.ctaVariant.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
+  event.dynamicCounter.target.title.topped: Target achieved
+  event.dynamicCounter.target.title.topped.lock: Objectif atteint
+  event.dynamicCounter.target.title.over: Target exceeded
+  event.dynamicCounter.target.title.over.lock: Objectif dépassé
+  footer.ademe.ariaLabel: ADEME (opens in a new window)
+  footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
+  event.dynamicCounter.target.title.default: Objective
+  event.dynamicCounter.target.title.default.lock: Objectif

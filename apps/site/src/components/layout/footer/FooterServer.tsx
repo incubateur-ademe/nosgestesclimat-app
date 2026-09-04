@@ -1,16 +1,16 @@
 import Ademe from '@/components/images/partners/Ademe'
 import Marianne from '@/components/images/partners/Marianne'
 import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
-import Link from '@/components/Link'
-import Logo from '@/components/misc/Logo'
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Trans from '@/components/translation/trans/TransServer'
 
+import LogoLinkServer from '@/components/misc/LogoLinkServer'
 import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { cacheLife } from 'next/cache'
+import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
@@ -44,12 +44,7 @@ export default async function FooterServer({
       )}>
       <div className="md:mx-auto md:max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
-          <Link
-            href="/"
-            data-testid="home-logo-link"
-            className="flex items-center justify-center no-underline">
-            <Logo size="md" />
-          </Link>
+          <LogoLinkServer />
         </div>
         {locale === 'fr' ? (
           <div className="my-4 block md:hidden">
@@ -197,13 +192,13 @@ export default async function FooterServer({
               <ThematicPagesSection locale={locale} />
             </div>
           </div>
-          {locale === 'fr' ? (
+          {locale === 'fr' && (
             <div className="hidden md:block">
               <HideInIframe hideIfNotFrenchRegion>
                 <WantToActBlock locale={locale} />
               </HideInIframe>
             </div>
-          ) : null}
+          )}
         </div>
         <LanguageSwitchButton />
 
@@ -247,7 +242,13 @@ export default async function FooterServer({
           <div className="flex gap-4 self-end pb-1">
             <Marianne className="h-auto w-12 md:w-auto" />
 
-            <Link href="https://ademe.fr" target="_blank">
+            <Link
+              href="https://ademe.fr"
+              aria-label={t(
+                'footer.ademe.ariaLabel',
+                'ADEME (ouvrir dans une nouvelle fenêtre)'
+              )}
+              target="_blank">
               <Ademe className="h-auto w-10 md:w-auto" />
             </Link>
           </div>

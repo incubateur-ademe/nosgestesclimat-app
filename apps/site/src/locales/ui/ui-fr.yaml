@@ -1465,3 +1465,7 @@ entries:
   actions.components.highestImpactActionsSection.publicDescription: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
   actions.detailPage.sections.otherThemeActions.description: Sélectionnées selon vos réponses au simulateur
   actions.detailPage.sections.otherThemeActions.title: Découvrez d’autres actions pour réduire votre empreinte
+  event.dynamicCounter.target.title.default: Objectif
+  event.dynamicCounter.target.title.over: Objectif dépassé
+  event.dynamicCounter.target.title.topped: Objectif atteint
+  footer.ademe.ariaLabel: ADEME (ouvrir dans une nouvelle fenêtre)
