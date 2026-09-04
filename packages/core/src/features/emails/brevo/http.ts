@@ -1,4 +1,5 @@
-import { BrevoRequestException } from './errors.ts'
+import { failure, success } from '../../../lib/result.ts'
+import { EmailRequestError } from '../errors.ts'
 import type { BrevoConfig, RequestOptions } from './types.ts'
 
 const DEFAULT_TIMEOUT = 5_000
@@ -27,7 +28,7 @@ export const createPost =
       timeout = DEFAULT_TIMEOUT,
       retries = DEFAULT_RETRIES,
     }: RequestOptions = {}
-  ): Promise<void> => {
+  ) => {
     const endpoint = `${url.replace(/\/$/, '')}${path}`
 
     for (let attempt = 0; ; attempt++) {
@@ -50,15 +51,15 @@ export const createPost =
           continue
         }
 
-        throw new BrevoRequestException({
-          message: `Brevo request to ${path} failed`,
-          cause: error,
-          path,
-        })
+        return failure(
+          new EmailRequestError(`Brevo request to ${path} failed`, {
+            cause: error,
+          })
+        )
       }
 
       if (response.ok) {
-        return
+        return success()
       }
 
       const responseBody = await response.text()
@@ -68,11 +69,11 @@ export const createPost =
         continue
       }
 
-      throw new BrevoRequestException({
-        message: `Brevo request to ${path} failed with status ${response.status}`,
-        path,
-        status: response.status,
-        body: responseBody,
-      })
+      return failure(
+        new EmailRequestError(
+          `Brevo request to ${path} failed with status ${response.status}`,
+          { cause: { path, status: response.status, body: responseBody } }
+        )
+      )
     }
   }
