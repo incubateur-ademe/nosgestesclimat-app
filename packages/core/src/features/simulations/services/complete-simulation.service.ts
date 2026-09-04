@@ -9,6 +9,7 @@ import type { CaptureException, Logger } from '../../logger/index.ts'
 import {
   type CompleteSimulationError,
   SimulationCompletedError,
+  SimulationIncompleteError,
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../errors/simulations.error.ts'
@@ -31,18 +32,19 @@ export function createCompleteSimulation(_: CompleteSimulationDependencies) {
   return async function completeSimulation({
     userId,
     simulationId,
-    situation: __,
-    foldedSteps: ___,
+    progression,
     computedResults,
     locale: ____,
   }: {
     userId: string
     simulationId: string
+    progression: number
     situation: Situation<DottedName>
     foldedSteps: DottedName[]
     computedResults: ComputedResults
     locale: ISOSupportedLanguage
   }): Promise<Result<void, CompleteSimulationError>> {
+    if (progression !== 1) return failure(new SimulationIncompleteError())
     if (computedResults.carbone.bilan === 0) {
       return failure(new ZeroFootprintError())
     }

@@ -13,6 +13,12 @@ export class SimulationCompletedError extends DomainError<'simulation_completed'
   }
 }
 
+export class SimulationIncompleteError extends DomainError<'simulation_incomplete'> {
+  constructor() {
+    super('simulation_incomplete', 'Simulation non terminée')
+  }
+}
+
 export class ZeroFootprintError extends DomainError<'zero_footprint'> {
   constructor() {
     super('zero_footprint', 'Bilan carbone nul')
@@ -26,6 +32,7 @@ export type UpdateSimulationSituationError =
   | InvalidPayloadError
 
 export type CompleteSimulationError =
+  | SimulationIncompleteError
   | SimulationNotFoundError
   | SimulationCompletedError
   | ZeroFootprintError

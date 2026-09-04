@@ -7,6 +7,7 @@ import * as v from 'valibot'
 
 export const CompleteSimulationPayloadSchema = v.strictObject({
   id: v.pipe(v.string(), v.uuid()),
+  progression: v.literal(1),
   situation: SituationSchema,
   foldedSteps: FoldedStepsSchema,
   computedResults: ComputedResultsSchema,

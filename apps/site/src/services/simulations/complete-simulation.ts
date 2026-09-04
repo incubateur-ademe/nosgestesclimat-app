@@ -45,10 +45,12 @@ export const completeSimulation = async (
 
   revalidatePath(END_PAGE_PATH, 'layout')
 
-  const { id, situation, foldedSteps, computedResults } = parsed.data
+  const { id, progression, situation, foldedSteps, computedResults } =
+    parsed.data
   const result = await completeSimulationService({
     userId: session.id,
     simulationId: id,
+    progression,
     situation: situation as Situation<DottedName>,
     foldedSteps: foldedSteps as DottedName[],
     computedResults,

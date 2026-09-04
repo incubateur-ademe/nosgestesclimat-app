@@ -14,12 +14,14 @@ export function useCompleteSimulation() {
   return {
     isPending,
     completeSimulation() {
-      if (currentSimulation.progression !== 1) return
+      const progression = currentSimulation.progression
+      if (progression !== 1) return
 
       startTransition(async () => {
         const { id, situation, foldedSteps } = currentSimulation
         const result = await completeSimulationAction({
           id,
+          progression,
           situation: situation as CompleteSimulationPayload['situation'],
           foldedSteps,
           computedResults: getComputedResults(engineContext),
