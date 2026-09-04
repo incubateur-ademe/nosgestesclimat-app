@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
-import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -409,7 +408,7 @@ describe('Given a NGC user', () => {
         await EventBus.flush()
       })
 
-      test('Then it updates poll fun facts', async () => {
+      test('Then it enqueues a poll stats computation', async () => {
         const payload: SimulationCreateInputDto = {
           id: faker.string.uuid(),
           situation,
@@ -427,23 +426,17 @@ describe('Given a NGC user', () => {
 
         await EventBus.flush()
 
-        const { funFacts } = await prisma.poll.findUniqueOrThrow({
+        const computation = await prisma.pollStatsComputation.findUnique({
           where: {
-            id: pollId,
-          },
-          select: {
-            funFacts: true,
+            pollId,
           },
         })
 
-        expect(funFacts).toEqual(
-          Object.fromEntries(
-            Object.entries(modelFunFacts).map(([k]) => [k, expect.any(Number)])
-          )
-        )
+        expect(computation).not.toBeNull()
+        expect(computation?.status).toBe('pending')
       })
 
-      test('Then it does not update poll fun facts if simulation is incomplete', async () => {
+      test('Then it does not enqueue a poll stats computation if simulation is incomplete', async () => {
         const payload: SimulationCreateInputDto = {
           id: faker.string.uuid(),
           situation,
@@ -461,16 +454,13 @@ describe('Given a NGC user', () => {
 
         await EventBus.flush()
 
-        const { funFacts } = await prisma.poll.findUniqueOrThrow({
+        const computation = await prisma.pollStatsComputation.findUnique({
           where: {
-            id: pollId,
-          },
-          select: {
-            funFacts: true,
+            pollId,
           },
         })
 
-        expect(funFacts).toBeNull()
+        expect(computation).toBeNull()
       })
 
       describe('And using poll slug', () => {

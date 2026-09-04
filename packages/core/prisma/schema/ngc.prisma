@@ -273,11 +273,24 @@ model Poll {
   organisationId               String
   organisation                 Organisation                    @relation(fields: [organisationId], onDelete: Cascade, references: [id])
   simulations                  SimulationPoll[]
+  statsComputations            PollStatsComputation[]
   mode                         PollMode                        @default(standard) @map("pollMode")
-  computeRealTimeStats         Boolean                         @default(true)
   createdAt                    DateTime                        @default(now())
   updatedAt                    DateTime                        @updatedAt
 
+  @@schema("ngc")
+}
+
+model PollStatsComputation {
+  pollId      String            @id
+  poll        Poll              @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  status      ComputationStatus @default(pending)
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([status, scheduledAt])
   @@schema("ngc")
 }
 
@@ -398,6 +411,7 @@ model SimulationPoll {
   updatedAt    DateTime   @updatedAt
 
   @@unique([simulationId, pollId])
+  @@index([pollId, createdAt])
   @@schema("ngc")
 }
 

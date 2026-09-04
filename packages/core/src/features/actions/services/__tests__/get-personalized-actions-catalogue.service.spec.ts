@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
+import { simulationComputationFactory } from '../../../simulation-computation/factories/simulation-computation.factory.ts'
+import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
@@ -57,7 +58,7 @@ describe('getPersonalizedActionsCatalogue', () => {
       async (status) => {
         const action = await actionFactory.published().create()
         const user = await userFactory.create()
-        await simulationFactory
+        await simulationComputationFactory
           .completed()
           .params({ userId: user.id })
           .withComputationStatus(status)
@@ -82,12 +83,12 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const user = await userFactory.create()
       const [older] = await Promise.all([
-        simulationFactory
+        simulationComputationFactory
           .completed()
           .params({ userId: user.id, createdAt: new Date('2024-01-01') })
           .withCompletedComputation()
           .create(),
-        simulationFactory
+        simulationComputationFactory
           .completed()
           .params({ userId: user.id, createdAt: new Date('2024-06-01') })
           .withPendingComputation()
@@ -124,7 +125,7 @@ describe('getPersonalizedActionsCatalogue', () => {
   describe('when the latest simulation computation is completed', () => {
     it('returns the completed assessments even when a newer simulation is unfinished', async () => {
       const user = await userFactory.create()
-      const completed = await simulationFactory
+      const completed = await simulationComputationFactory
         .completed()
         .params({ userId: user.id, createdAt: new Date('2024-01-01') })
         .withCompletedComputation()
@@ -166,7 +167,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
     it('returns only applicable actions sorted by impact desc, unknown impact last', async () => {
       const user = await userFactory.create()
-      const simulation = await simulationFactory
+      const simulation = await simulationComputationFactory
         .completed()
         .params({ userId: user.id })
         .withCompletedComputation()
@@ -226,7 +227,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
     it('returns at most 3 top actions when more than 3 actions have impact', async () => {
       const user = await userFactory.create()
-      const simulation = await simulationFactory
+      const simulation = await simulationComputationFactory
         .completed()
         .params({ userId: user.id })
         .withCompletedComputation()
@@ -270,7 +271,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
     it('excludes deleted and unpublished actions', async () => {
       const user = await userFactory.create()
-      const simulation = await simulationFactory
+      const simulation = await simulationComputationFactory
         .completed()
         .params({ userId: user.id })
         .withCompletedComputation()

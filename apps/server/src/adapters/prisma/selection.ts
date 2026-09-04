@@ -130,7 +130,6 @@ export const defaultPollSelection = {
   customAdditionalQuestions: true,
   expectedNumberOfParticipants: true,
   mode: true,
-  computeRealTimeStats: true,
   createdAt: true,
   updatedAt: true,
 }

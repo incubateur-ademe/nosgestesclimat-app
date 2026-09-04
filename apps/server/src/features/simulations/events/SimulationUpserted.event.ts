@@ -52,17 +52,11 @@ type SimulationAttributes = BaseSimulationUpsertedEventAttributes &
         group?: undefined
         administrator?: undefined
         organisation: Pick<Organisation, 'name' | 'slug'>
-        poll: Pick<Poll, 'slug'>
+        poll: Pick<Poll, 'slug' | 'id'>
         newsletters?: undefined
       }
   )
 
 export class SimulationUpsertedEvent extends EventBusEvent<SimulationAttributes> {
   name = 'SimulationUpsertedEvent'
-}
-
-export class SimulationUpsertedAsyncEvent extends EventBusEvent<
-  SimulationAttributes | ModelToDto<SimulationAttributes>
-> {
-  name = 'SimulationUpsertedAsyncEvent'
 }

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { simulationFactory } from '../../../simulation-computation/factories/simulation.factory.ts'
+import { simulationComputationFactory } from '../../../simulation-computation/factories/simulation-computation.factory.ts'
+import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { food, housing } from '../../data/themes/index.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
@@ -106,7 +107,7 @@ describe('getPersonalizedActionDetails', () => {
           .applicable({ impact: 500 })
           .create()
 
-        await simulationFactory
+        await simulationComputationFactory
           .params({ userId: user.id, createdAt: new Date('2024-06-01') })
           .completed()
           .withComputationStatus(status)

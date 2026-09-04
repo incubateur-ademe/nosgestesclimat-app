@@ -57,18 +57,13 @@ export const claimNextPendingSimulationComputation = async () =>
   prisma.$transaction(async (tx) => {
     const jobs =
       await tx.$queryRawUnsafe<Array<{ simulationId: string }>>(CLAIM_QUERY)
-
     if (jobs.length === 0) return null
-
     const { simulationId } = jobs[0]
     const result = await tx.simulationComputation.update({
       where: { simulationId },
-      include: {
-        simulation: true,
-      },
+      include: { simulation: true },
       data: { status: 'processing', startedAt: new Date() },
     })
-
     return { simulation: mapSimulation(result.simulation) }
   })
 

@@ -1,7 +1,7 @@
 import { actionAssessmentFactory } from '../src/features/actions/factories/action-assessment.factory.ts'
 import { actionFactory } from '../src/features/actions/factories/action.factory.ts'
 import { ensureSeddEvent } from '../src/features/events/services/ensure-sedd-event.service.ts'
-import { simulationFactory } from '../src/features/simulation-computation/factories/simulation.factory.ts'
+import { simulationComputationFactory } from '../src/features/simulation-computation/factories/simulation-computation.factory.ts'
 import { userFactory } from '../src/features/users/factories/user.factory.ts'
 import { prisma } from '../src/prisma/client.ts'
 
@@ -44,7 +44,7 @@ const seed = async () => {
 
   // User 1 — completed simulation with a full set of assessments
   const user1 = await userFactory.create()
-  const sim1 = await simulationFactory
+  const sim1 = await simulationComputationFactory
     .params({ userId: user1.id })
     .withCompletedComputation()
     .create()
@@ -94,11 +94,11 @@ const seed = async () => {
 
   // User 2 — two simulations: an older completed one and a newer pending one
   const user2 = await userFactory.create()
-  const sim2old = await simulationFactory
+  const sim2old = await simulationComputationFactory
     .params({ userId: user2.id, createdAt: new Date('2024-01-01') })
     .withCompletedComputation()
     .create()
-  const sim2new = await simulationFactory
+  const sim2new = await simulationComputationFactory
     .params({ userId: user2.id })
     .withPendingComputation()
     .create()

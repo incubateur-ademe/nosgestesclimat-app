@@ -1,40 +1,52 @@
 import { faker } from '@faker-js/faker'
+import type { DeepPartial, GeneratorFn } from 'fishery'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import type { Poll } from '../../../prisma/generated/client.ts'
+import { organisationFactory } from '../../organisations/factories/organisation.factory.ts'
 
-class PollFactory extends Factory<Poll> {}
+export class PollFactory extends Factory<Poll, unknown, Poll> {}
 
-export const pollFactory = PollFactory.define(({ onCreate }) => {
+export const pollGenerator: GeneratorFn<
+  Poll,
+  unknown,
+  Poll,
+  DeepPartial<Poll>
+> = ({ onCreate }) => {
   onCreate(async (data) => {
+    // An empty `organisationId` signals "not provided": the required parent
+    // organisation is created on the fly. Passing an explicit id (e.g. to
+    // share an organisation across polls) keeps that one instead.
+    const organisationId =
+      data.organisationId || (await organisationFactory.create()).id
     await prisma.poll.create({
       data: {
         id: data.id,
         name: data.name,
         slug: data.slug,
-        organisationId: data.organisationId,
+        organisationId,
         customAdditionalQuestions: {},
         mode: data.mode,
-        computeRealTimeStats: data.computeRealTimeStats,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       },
     })
-    return data
+    return { ...data, organisationId }
   })
 
   return {
     id: faker.string.uuid(),
     name: faker.company.name(),
     slug: `poll-${faker.string.uuid()}`,
-    organisationId: faker.string.uuid(),
+    organisationId: '',
     funFacts: null,
     computedResults: null,
     expectedNumberOfParticipants: null,
     customAdditionalQuestions: {},
     mode: 'standard' as const,
-    computeRealTimeStats: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   }
-})
+}
+
+export const pollFactory = PollFactory.define(pollGenerator)

@@ -1,7 +1,10 @@
+/**
+ * Ported from the legacy server (apps/server/src/features/simulations/situation/situation.service.ts).
+ * Does not meet core quality standards and will be replaced by an
+ * engine-based evaluation in Phase 2.
+ */
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
-import type Engine from 'publicodes'
-import logger from '../../../logger.ts'
-import type { SituationSchema } from '../simulations.validator.ts'
+import type { SituationSchema } from './situation.schema.ts'
 
 const isDottedName = (dottedName: unknown): dottedName is DottedName =>
   typeof dottedName === 'string'
@@ -217,6 +220,8 @@ const evaluateSituationFormula = ({
   return 0
 }
 
+// Unlike the legacy server version, errors are thrown (not caught and logged):
+// the caller is responsible for handling them.
 export const getSituationDottedNameValue = ({
   dottedName,
   situation,
@@ -226,65 +231,23 @@ export const getSituationDottedNameValue = ({
   dottedName: DottedName
   rules: Partial<NGCRules>
 }): number => {
-  try {
-    const rule = rules[dottedName]
+  const rule = rules[dottedName]
 
-    if (
-      !rule ||
-      typeof rule === 'string' ||
-      !rule.formule ||
-      typeof rule.formule !== 'object'
-    ) {
-      if (typeof rule?.formule === 'number') {
-        return rule.formule
-      }
-      return 0
+  if (
+    !rule ||
+    typeof rule === 'string' ||
+    !rule.formule ||
+    typeof rule.formule !== 'object'
+  ) {
+    if (typeof rule?.formule === 'number') {
+      return rule.formule
     }
-
-    return evaluateSituationFormula({
-      formule: rule.formule,
-      situation,
-      rules,
-    })
-  } catch (error) {
-    logger.error(`Cannot evaluate dottedName ${dottedName}`, {
-      situation,
-      error,
-    })
-
     return 0
   }
-}
 
-export const getSituationDottedNameValueWithEngine = ({
-  dottedName,
-  situation,
-  engine,
-}: {
-  situation: SituationSchema
-  dottedName: DottedName
-  engine: Engine
-}) => {
-  try {
-    engine.setSituation(situation)
-
-    const value = engine.evaluate(dottedName).nodeValue
-
-    if (typeof value === 'number' && !!value) {
-      return value
-    }
-
-    if (value === true) {
-      return 1
-    }
-
-    return 0
-  } catch (error) {
-    logger.error(`Cannot evaluate dottedName ${dottedName}`, {
-      situation,
-      error,
-    })
-
-    return 0
-  }
+  return evaluateSituationFormula({
+    formule: rule.formule,
+    situation,
+    rules,
+  })
 }
