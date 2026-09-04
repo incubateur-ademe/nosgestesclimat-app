@@ -1,7 +1,8 @@
-import { prisma } from '@nosgestesclimat/core/prisma/client'
-import type { Prisma } from './generated.ts'
-
-export type Session = Prisma.TransactionClient
+import { type Transaction as Session } from '@nosgestesclimat/core/lib/transaction'
+export {
+  transaction,
+  type Transaction as Session,
+} from '@nosgestesclimat/core/lib/transaction'
 
 export type RequestOptionsOrThrow = { session: Session; orThrow: true }
 export type RequestOptionsOrNull = { session: Session; orThrow?: false }
@@ -12,10 +13,3 @@ export type FetchEntityResponse<
   T,
   Options extends RequestOptions,
 > = Options extends RequestOptionsOrThrow ? Promise<T> : Promise<T | null>
-
-export const transaction = <R>(
-  cb: (prisma: Session) => Promise<R>,
-  session?: Session
-): Promise<R> => {
-  return (session ? cb(session) : prisma.$transaction(cb)) as Promise<R>
-}

@@ -1,3 +1,4 @@
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
 import { ComputationAlreadyExistsException } from '../exceptions/simulation-computation.exception.ts'
@@ -19,10 +20,11 @@ const CLAIM_QUERY = `
 `
 
 export const createSimulationComputation = async (
-  simulationId: string
+  simulationId: string,
+  tx: Transaction = prisma
 ): Promise<void> => {
   try {
-    await prisma.simulationComputation.create({
+    await tx.simulationComputation.create({
       data: { simulationId, status: 'pending' },
     })
   } catch (error) {
