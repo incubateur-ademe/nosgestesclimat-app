@@ -41,10 +41,12 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
       aria-label={`${displayedValue}%`}
       className={twMerge(
         'relative w-full max-w-40',
+        // Trigger "bump" animation when crossing 100%
         isOverHundredPercent && 'animate-scale'
       )}
       overflow="visible"
       viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
+      {/*Halo effect when crossing 100%*/}
       {isOverHundredPercent && !isReducedMotion && (
         <>
           <path
