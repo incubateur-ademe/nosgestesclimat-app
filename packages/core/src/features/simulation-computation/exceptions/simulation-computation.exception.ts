@@ -1,5 +1,4 @@
 import { Exception } from '../../../exception.ts'
-import type { Model } from '../../simulations/types/model.ts'
 
 export class SimulationComputationFailedException extends Exception<{
   simulationId: string
@@ -18,10 +17,4 @@ export class SimulationNotFinishedException extends Exception<{
   progression: number
 }> {
   level = 'error' as const
-}
-
-export class UnsupportedModelException extends Exception<{
-  model: Model
-}> {
-  level = 'warning' as const
 }
