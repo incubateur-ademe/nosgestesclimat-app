@@ -118,7 +118,7 @@ export function getComputedValues({
 }) {
   // The whole progression lives on one single ring. Above 100%, the trace
   // starts a new lap on top of the previous one (same lane), drawn again so it
-  // overlaps visually. Each lap is a full circle appended to the path.
+  // overlaps visually. Each lap is a full circle appended to the path
   const lapCount = Math.max(
     Math.ceil(progress * (isOverflow ? value / 100 : 0)),
     1

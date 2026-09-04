@@ -19,14 +19,13 @@ export const CIRCUMFERENCE = Math.PI * 2 * RADIUS
 const FULL_PERCENTAGE = 100
 const ANIMATION_DURATION = 3000
 
-// White border stroke width (the rainbow trace is drawn on top of it).
+// White border stroke width (the rainbow trace is drawn on top of it)
 export const FULL_CIRCLE_PATH_D =
   `M ${CENTER},${CENTER} m 0,-${RADIUS}` +
   ` a ${RADIUS},${RADIUS} 0 1 1 0,${2 * RADIUS}` +
   ` a ${RADIUS},${RADIUS} 0 1 1 0,-${2 * RADIUS}`
 
-// Conic gradient painted once, reused as the trace fill. The lazy
-// initializer keeps the canvas work out of render
+// Conic gradient painted once, reused as the trace fill
 const gradientImage = buildConicGradientDataUrl()
 
 export function useAnimateCircularProgressbar({ value, startDelay }: Props) {
