@@ -3,6 +3,7 @@ import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'j
 import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json' with { type: 'json' }
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../../simulations/repository/model.mapper.ts'
 import type {
   Model,
@@ -23,6 +24,8 @@ interface SimulationTransientParams {
   modelVersion?: Model['version']
   modelRegion?: ModelRegion
   modelLocale?: ModelLocale
+  situation?: Prisma.InputJsonValue
+  computedResults?: Prisma.InputJsonValue
 }
 
 class SimulationFactory extends Factory<
@@ -103,8 +106,8 @@ export const simulationFactory = SimulationFactory.define(
           date: new Date(),
           progression: data.progression,
           model: serializeModel(data.model),
-          computedResults: {},
-          situation: {},
+          computedResults: transientParams.computedResults ?? {},
+          situation: transientParams.situation ?? {},
           actionChoices: {},
           userId: data.userId,
           createdAt: data.createdAt,

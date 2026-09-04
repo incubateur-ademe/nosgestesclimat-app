@@ -45,6 +45,24 @@ Migre la base de donnée (requiert les dépendances, l'env et les services)
 pnpm -F core db:migrate
 ```
 
+Seed la base avec des données de démo (requiert l'env — notamment `SEED_ADMIN_EMAILS` — et les services)
+
+```bash
+pnpm -F core db:seed
+```
+
+Pour que les données que les stats de campagnes soient calculées, il faut lancer le job de seed des stats (requiert l'env et les services)
+
+```bash
+pnpm -F server jobs:seed
+```
+
+Réinitialise la base (drop + migrations) puis la seed avec des données de démo (requiert l'env et les services)
+
+```bash
+pnpm -F core db:reset
+```
+
 Lance le service en mode développement (requiert les services, l'env et la migration)
 
 ```bash
