@@ -24,3 +24,9 @@ export type UpdateSimulationSituationError =
   | SimulationCompletedError
   | ZeroFootprintError
   | InvalidPayloadError
+
+export type CompleteSimulationError =
+  | SimulationNotFoundError
+  | SimulationCompletedError
+  | ZeroFootprintError
+  | InvalidPayloadError
