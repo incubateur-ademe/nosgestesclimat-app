@@ -58,3 +58,59 @@ export function hexToRgb(hex: string): [number, number, number] {
     parseInt(hex.slice(5, 7), 16),
   ]
 }
+
+export function getBarTipValues({
+  center,
+  radius,
+  progress,
+  value,
+  strokeWidth,
+}: {
+  center: number
+  radius: number
+  progress: number
+  value: number
+  strokeWidth: number
+}) {
+  // Position of the tip of the trace, clockwise from the top. The white tip
+  // cap (and its shadow) is drawn here to mark the level difference between
+  // the lap below and the lap on top.
+  const tipAngle = ((progress * value) / 100) * 2 * Math.PI
+  const tipX = center + radius * Math.sin(tipAngle)
+  const tipY = center - radius * Math.cos(tipAngle)
+
+  // Half-ring at the tip: only the curved front part of the rounded bar end,
+  // as a white stroke (transparent inside), pointing in the direction of the
+  // progression. It borders where the bar on top overlaps the lap underneath,
+  // and carries the drop shadow.
+  //
+  // The arc is built in a frame centered on the tip, spanning the front half
+  // of a circle (from -90° to +90° in screen coords, so it bulges towards +x),
+  // then rotated by the progression angle so the bulge follows the bar.
+  const tipRadius = strokeWidth / 2
+  const tipRotation = (tipAngle * 180) / Math.PI
+  const tipCapD =
+    `M ${tipX.toFixed(2)},${(tipY - tipRadius).toFixed(2)}` +
+    ` A ${tipRadius},${tipRadius} 0 0 1 ${tipX.toFixed(2)},${(tipY + tipRadius).toFixed(2)}`
+
+  return {
+    tipCapD,
+    tipRotation,
+    tipX,
+    tipY,
+  }
+}
+
+export function getProgressPathD({
+  lapCount,
+  fullCirclePathD,
+}: {
+  lapCount: number
+  fullCirclePathD: string
+}) {
+  let progressPathD = ''
+  for (let lap = 0; lap < lapCount; lap++) {
+    progressPathD += fullCirclePathD
+  }
+  return progressPathD
+}

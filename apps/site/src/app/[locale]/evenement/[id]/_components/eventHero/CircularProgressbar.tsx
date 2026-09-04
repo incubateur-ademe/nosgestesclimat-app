@@ -3,7 +3,7 @@
 import { twMerge } from 'tailwind-merge'
 import {
   CENTER,
-  DIAMETER,
+  CIRCUMFERENCE,
   FULL_CIRCLE_PATH_D,
   STROKE_WIDTH,
   useAnimateCircularProgressbar,
@@ -23,7 +23,8 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
     isOverflow,
     gradientImage,
     isReducedMotion,
-    offset,
+    offsetSingleLap,
+    offsetOverflow,
     progressPathD,
     pathLength,
     tipCapD,
@@ -37,12 +38,26 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
       role="img"
       aria-label={`${displayedValue}%`}
       className={twMerge(
-        'w-full max-w-40',
-        // displayedValue >= 100 &&
-        'animate-[bg-pulse_3s_ease-in-out_forwards'
+        'relative w-full max-w-40',
+        displayedValue >= 100 && 'animate-scale'
       )}
       overflow="visible"
       viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}>
+      {displayedValue >= 100 && (
+        <>
+          <path
+            d={FULL_CIRCLE_PATH_D}
+            aria-hidden="true"
+            className="animate-flash-scale animate-fade-in absolute origin-center rounded-3xl fill-[#F54900] blur-2xl duration-500"
+          />
+          <path
+            d={FULL_CIRCLE_PATH_D}
+            aria-hidden="true"
+            className="animate-fade-in absolute z-10 origin-center rounded-3xl fill-white opacity-100! blur-md duration-500"
+          />
+        </>
+      )}
+
       {/* Track */}
       <path
         d={FULL_CIRCLE_PATH_D}
@@ -55,15 +70,14 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
       {/*
        * Default progress circle
        */}
-
       <path
         d={FULL_CIRCLE_PATH_D}
         stroke="#d40d83"
         strokeWidth={STROKE_WIDTH}
         strokeLinecap="round"
         fill="none"
-        strokeDasharray={`${DIAMETER}px ${DIAMETER}px`}
-        strokeDashoffset={`${offset}px`}
+        strokeDasharray={`${CIRCUMFERENCE}px ${CIRCUMFERENCE}px`}
+        strokeDashoffset={`${offsetSingleLap}px`}
       />
 
       {/*
@@ -128,7 +142,8 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
             strokeLinecap="round"
             fill="none"
             strokeDasharray={`${pathLength}px ${pathLength}px`}
-            strokeDashoffset={`${offset}px`}
+            strokeDashoffset={`${offsetOverflow}px`}
+            className="animate-fade-in z-10"
           />
 
           {/*
