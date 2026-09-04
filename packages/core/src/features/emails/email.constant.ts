@@ -1,0 +1,115 @@
+export const Attributes = {
+  NUMBER_CREATED_GROUPS_WITH_ONE_PARTICIPANT:
+    'NUMBER_CREATED_GROUPS_WITH_ONE_PARTICIPANT',
+  LAST_SIMULATION_ALIMENTATION_FOOTPRINT:
+    'LAST_SIMULATION_ALIMENTATION_FOOTPRINT',
+  LAST_SIMULATION_TRANSPORTS_FOOTPRINT: 'LAST_SIMULATION_TRANSPORTS_FOOTPRINT',
+  LAST_SIMULATION_LOGEMENT_FOOTPRINT: 'LAST_SIMULATION_LOGEMENT_FOOTPRINT',
+  LAST_SIMULATION_SERVICES_FOOTPRINT: 'LAST_SIMULATION_SERVICES_FOOTPRINT',
+  LAST_SIMULATION_DIVERS_FOOTPRINT: 'LAST_SIMULATION_DIVERS_FOOTPRINT',
+  LAST_SIMULATION_BILAN_FOOTPRINT: 'LAST_SIMULATION_BILAN_FOOTPRINT',
+  LAST_POLL_PARTICIPANTS_NUMBER: 'LAST_POLL_PARTICIPANTS_NUMBER',
+  LAST_SIMULATION_BILAN_WATER: 'LAST_SIMULATION_BILAN_WATER',
+  LAST_GROUP_CREATION_DATE: 'LAST_GROUP_CREATION_DATE',
+  ACTIONS_SELECTED_NUMBER: 'ACTIONS_SELECTED_NUMBER',
+  IS_ORGANISATION_ADMIN: 'IS_ORGANISATION_ADMIN',
+  NUMBER_CREATED_GROUPS: 'NUMBER_CREATED_GROUPS',
+  NUMBER_ORGANISATION_CREATED_POLLS: 'NUMBER_ORGANISATION_CREATED_POLLS',
+  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS:
+    'NUMBER_ORGANISATION_COMPLETED_SIMULATIONS',
+  LAST_SIMULATION_DATE: 'LAST_SIMULATION_DATE',
+  LAST_ORGANISATION_SIMULATION_DATE: 'LAST_ORGANISATION_SIMULATION_DATE',
+  ORGANISATION_NAME: 'ORGANISATION_NAME',
+  ORGANISATION_SLUG: 'ORGANISATION_SLUG',
+  ORGANISATION_TYPE: 'ORGANISATION_TYPE',
+  USER_ID: 'USER_ID',
+  PRENOM: 'PRENOM',
+  OPT_IN: 'OPT_IN',
+} as const
+
+export type Attributes = (typeof Attributes)[keyof typeof Attributes]
+
+export const ListIds = {
+  MAIN_NEWSLETTER: 22,
+  ORGANISATIONS: 27,
+  GROUP_CREATED: 29,
+  GROUP_JOINED: 30,
+  TRANSPORT_NEWSLETTER: 32,
+  LOGEMENT_NEWSLETTER: 36,
+  CONSO_NEWSLETTER: 40,
+  ALIMENTATION_NEWSLETTER: 41,
+  CITOYENS_NEWSLETTER: 42,
+} as const
+
+export type ListIds = (typeof ListIds)[keyof typeof ListIds]
+
+const FrTemplateIds = {
+  SIMULATION_COMPLETED: 55,
+  GROUP_CREATED: 57,
+  GROUP_JOINED: 58,
+  VERIFICATION_CODE: 66,
+  ORGANISATION_CREATED: 70,
+  ORGANISATION_JOINED: 122,
+  POLL_CREATED: 126,
+  SIMULATION_IN_PROGRESS: 102,
+  API_VERIFICATION_CODE: 116,
+  NEWSLETTER_CONFIRMATION: 118,
+  SIGN_UP: 137,
+  SIGN_UP_SIMULATION_COMPLETED: 138,
+} as const
+
+type FrTemplateIds = ValueOf<typeof FrTemplateIds>
+
+const EnTemplateIds = {
+  VERIFICATION_CODE: 125,
+  ORGANISATION_CREATED: 124,
+  ORGANISATION_JOINED: 123,
+  POLL_CREATED: 127,
+  SIGN_UP: 139,
+  SIGN_UP_SIMULATION_COMPLETED: 140,
+} as const
+
+type EnTemplateIds = ValueOf<typeof EnTemplateIds>
+
+export const TemplateIds = {
+  en: EnTemplateIds,
+  fr: FrTemplateIds,
+} as const
+
+export type TemplateIds = ValueOf<typeof TemplateIds>
+
+export type TemplateId = FrTemplateIds | EnTemplateIds
+
+type ValueOf<T> = T[keyof T]
+
+export type GroupTemplateId =
+  | typeof FrTemplateIds.GROUP_CREATED
+  | typeof FrTemplateIds.GROUP_JOINED
+
+// Matomo campaigns & keywords
+export const MATOMO_CAMPAIGN_KEY = 'mtm_campaign'
+export const MATOMO_CAMPAIGN_EMAIL_AUTOMATISE = 'email-automatise'
+
+export const MATOMO_KEYWORD_KEY = 'mtm_kwd'
+export const MATOMO_KEYWORDS = {
+  [FrTemplateIds.SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
+  [EnTemplateIds.SIGN_UP_SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
+  [FrTemplateIds.SIGN_UP_SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
+  [FrTemplateIds.SIMULATION_IN_PROGRESS]: 'pause-test-en-cours',
+  [FrTemplateIds.GROUP_CREATED]: {
+    GROUP_URL: 'groupe-admin-voir-classement',
+    SHARE_URL: 'groupe-admin-url-partage',
+    DELETE_URL: 'groupe-admin-delete',
+  },
+  [FrTemplateIds.GROUP_JOINED]: {
+    GROUP_URL: 'groupe-invite-voir-classement',
+    SHARE_URL: 'groupe-invite-url-partage',
+    DELETE_URL: 'groupe-invite-delete',
+  },
+  [EnTemplateIds.ORGANISATION_CREATED]: 'orga-admin-creation',
+  [FrTemplateIds.ORGANISATION_CREATED]: 'orga-admin-creation',
+  [EnTemplateIds.ORGANISATION_JOINED]: 'orga-invite-campagne',
+  [FrTemplateIds.ORGANISATION_JOINED]: 'orga-invite-campagne',
+  [EnTemplateIds.POLL_CREATED]: 'poll-admin-creation',
+  [FrTemplateIds.POLL_CREATED]: 'poll-admin-creation',
+} as const
