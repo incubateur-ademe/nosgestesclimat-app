@@ -3,6 +3,7 @@ import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
 import Emoji from '@/design-system/utils/Emoji'
 import { throwNextError } from '@/helpers/server/error'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
 import { getPublicPoll } from '@/services/organisations/get-public-poll'
@@ -66,10 +67,14 @@ export default async function CampagnePage({
     redirect(SIMULATOR_PATH)
   }
 
+  // A completed simulation is only offered for reuse when :
+  // - the previous completed simulation has "mode" === "standard"
+  // - the newer simulation also has "mode" === "standard"
   const allowToReuseExistingSimulation =
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     !!lastCompletedSimulation &&
     poll.mode === 'standard' &&
+    getSimulationMode(lastCompletedSimulation) === 'standard' &&
     !poll.simulations.hasParticipated &&
     // eslint-disable-next-line react-hooks/purity
     Date.now() - new Date(lastCompletedSimulation.date as string).getTime() <

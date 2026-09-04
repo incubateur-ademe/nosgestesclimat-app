@@ -1,4 +1,3 @@
-import { EMAIL_PAGE_PATH } from '@/constants/urls/paths'
 import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures'
 import { createPage } from '../fixtures/feature-flags'
@@ -8,17 +7,6 @@ import { Poll } from '../fixtures/polls'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
 
 test.use({ storageState: NEW_VISITOR_STATE })
-
-test('should show youth tutorial when joining via the scolaire poll invite link', async ({
-  scolairePoll,
-  page,
-}) => {
-  await page.goto(scolairePoll.inviteLink)
-  await expect(page.getByTestId('youth-tutorial')).toBeVisible()
-  await expect(page.getByTestId('youth-tutorial-start-button')).toBeVisible()
-
-  await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()
-})
 
 test.describe('When a user completes the test via the scolaire poll invite link', () => {
   let page: Page
@@ -49,14 +37,6 @@ test.describe('When a user completes the test via the scolaire poll invite link'
     const ngcTest = new NGCTest(page)
     await ngcTest.skipAllQuestions()
 
-    // @TODO: temporary bandage, fix me soon
-    // The scolaire flow can land directly on /fin when the poll is not yet
-    // attached to the simulation when endTestAction runs (a race on preprod);
-    // the email step is only displayed when it is. Skip it only when shown,
-    // otherwise the click would wait forever for a button that never appears.
-    if (page.url().includes(EMAIL_PAGE_PATH)) {
-      await page.getByTestId('skip-email-button').click()
-    }
     await expect(page).toHaveURL(/\/fin/)
   })
 
@@ -84,5 +64,28 @@ test.describe('When a user completes the test via the scolaire poll invite link'
     await expect(
       page.locator(`a[href="${scolairePoll.url}"]`).filter({ visible: true })
     ).toBeVisible()
+  })
+
+  test("shouldn't offer to reuse the previous scolaire test when joining a new scolaire poll", async ({
+    scolairePoll,
+  }) => {
+    // Joining a new scolaire poll must offer to reuse the previous scolaire
+    // test (same mode), with its date and result.
+    await page.goto(scolairePoll.inviteLink)
+    await expect(page.getByTestId('youth-tutorial-start-button')).toBeVisible()
+  })
+
+  test('starts a fresh test when joining a standard poll after completing a scolaire test', async ({
+    poll,
+  }) => {
+    // The shared page has just completed a test via the scolaire poll invite
+    // link. Joining a standard poll (different mode) must not offer to reuse
+    // the scolaire test: the standard tutorial simply starts a fresh test,
+    // while the scolaire simulation stays in the account.
+    await page.goto(poll.inviteLink)
+    await expect(page.getByTestId('tutoriel-title')).toBeVisible()
+    await expect(page.getByTestId('reuse-simulation-banner-title')).toBeHidden()
+    await page.getByTestId('skip-tutorial-button').click()
+    await expect(page).toHaveURL(/\/simulateur\/bilan/)
   })
 })
