@@ -1,7 +1,7 @@
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
-import { mapSimulation } from '../../simulations/repository/simulation.mapper.ts'
 import { ComputationAlreadyExistsException } from '../exceptions/simulation-computation.exception.ts'
+import { mapSimulation } from './simulation.mapper.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
 

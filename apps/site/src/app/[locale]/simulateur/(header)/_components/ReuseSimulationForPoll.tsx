@@ -53,7 +53,7 @@ export default async function ReuseSimulationForPoll({
             i18nKey="reuseSimulationForPoll.testDate.testDone">
             Test réalisé le
           </Trans>{' '}
-          {dayjs(simulation.updated_at)
+          {dayjs(simulation.updatedAt)
             .toDate()
             .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
               day: '2-digit',
@@ -63,7 +63,7 @@ export default async function ReuseSimulationForPoll({
           <Trans locale={locale} i18nKey="reuseSimulationForPoll.testDate.at">
             à
           </Trans>{' '}
-          {dayjs(simulation.updated_at)
+          {dayjs(simulation.updatedAt)
             .toDate()
             .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
               hour: '2-digit',

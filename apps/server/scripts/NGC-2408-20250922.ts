@@ -17,7 +17,6 @@ import {
   fetchOrganisations,
   fetchPolls,
 } from '../src/features/organisations/organisations.service.ts'
-import { fetchSimulations } from '../src/features/simulations/simulations.service.ts'
 import {
   fetchUsersForEmail,
   fetchVerifiedUser,
@@ -186,13 +185,15 @@ if (deleteUser) {
 
       const query = {
         ...v.parse(PaginationQuery, {}),
-        locale: 'fr' as const,
       }
 
       while (true) {
-        const { simulations } = await fetchSimulations({
-          user: { id: userId },
-          query,
+        const simulations = await prisma.simulation.findMany({
+          where: { userId },
+          skip: query.page * query.pageSize,
+          take: query.pageSize,
+          orderBy: { date: 'desc' },
+          select: { id: true, date: true, progression: true },
         })
 
         for (const simulation of simulations) {

@@ -1,4 +1,8 @@
-import { ComputedResultSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import {
+  FoldedStepsSchema,
+  SituationSchema,
+} from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import * as v from 'valibot'
 import { ListIds } from '../../adapters/brevo/constant.ts'
 import {
@@ -6,7 +10,6 @@ import {
   SimulationAdditionalQuestionAnswerType,
 } from '../../adapters/prisma/generated.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
-import { PaginationQuery } from '../../core/pagination.ts'
 import { PublicPollParams } from '../organisations/organisations.validator.ts'
 
 const MODEL_REGEX =
@@ -17,12 +20,6 @@ export const SimulationParams = v.strictObject({
 })
 
 export type SimulationParams = v.InferOutput<typeof SimulationParams>
-
-const ActionChoicesSchema = v.record(v.string(), v.boolean())
-
-export type ActionChoicesSchema = v.InferOutput<typeof ActionChoicesSchema>
-
-export { ComputedResultSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 
 const AdditionalQuestionsAnswersSchema = v.array(
   v.union([
@@ -43,59 +40,6 @@ export type AdditionalQuestionsAnswersSchema = v.InferOutput<
   typeof AdditionalQuestionsAnswersSchema
 >
 
-const FoldedStepsSchema = v.array(v.string())
-
-const SituationNodeValue = v.union([
-  v.string(),
-  v.number(),
-  v.strictObject({
-    valeur: v.union([
-      v.pipe(v.unknown(), v.transform(Number), v.number()),
-      v.pipe(
-        v.string(),
-        v.transform((s) => +s.replace(/\s/g, '')),
-        v.number()
-      ),
-    ]),
-    unité: v.optional(v.string()),
-  }),
-  v.strictObject({
-    type: v.literal('number'),
-    fullPrecision: v.boolean(),
-    nodeValue: v.number(),
-    nodeKind: v.literal('constant'),
-    rawNode: v.number(),
-    isNullable: v.optional(v.boolean()),
-    missingVariables: v.optional(v.object({})),
-  }),
-  v.strictObject({
-    explanation: v.strictObject({
-      type: v.literal('number'),
-      fullPrecision: v.boolean(),
-      nodeValue: v.number(),
-      nodeKind: v.literal('constant'),
-      rawNode: v.strictObject({
-        constant: v.strictObject({
-          type: v.union([v.literal('constant'), v.literal('number')]),
-          nodeValue: v.number(),
-        }),
-      }),
-      isNullable: v.optional(v.boolean()),
-      missingVariables: v.optional(v.object({})),
-    }),
-    unit: v.strictObject({
-      numerators: v.string(),
-      denominators: v.optional(v.string()),
-    }),
-    nodeKind: v.literal('unité'),
-    rawNode: v.string(),
-  }),
-])
-
-export const SituationSchema = v.record(v.string(), SituationNodeValue)
-
-export type SituationSchema = v.InferOutput<typeof SituationSchema>
-
 export const SimulationParticipantCreateDto = v.object({
   id: v.pipe(v.string(), v.uuid()),
   date: v.optional(
@@ -108,8 +52,7 @@ export const SimulationParticipantCreateDto = v.object({
   ),
   model: v.optional(v.pipe(v.string(), v.regex(MODEL_REGEX))),
   progression: v.number(),
-  computedResults: ComputedResultSchema,
-  actionChoices: v.optional(ActionChoicesSchema, {}),
+  computedResults: ComputedResultsSchema,
   additionalQuestionsAnswers: v.optional(AdditionalQuestionsAnswersSchema),
   foldedSteps: v.optional(FoldedStepsSchema, []),
   situation: SituationSchema,
@@ -159,20 +102,6 @@ export const SimulationCreateValidator = {
   body: SimulationCreateDto,
   params: v.optional(v.strictObject({})),
   query: SimulationCreateQuery,
-}
-
-const SimulationsFetchQuery = v.strictObject({
-  ...PaginationQuery.entries,
-  ...LocaleQuery.entries,
-  completedOnly: v.optional(v.pipe(v.string(), v.parseBoolean())),
-})
-
-export type SimulationsFetchQuery = v.InferOutput<typeof SimulationsFetchQuery>
-
-export const SimulationsFetchValidator = {
-  body: v.optional(v.strictObject({})),
-  params: v.optional(v.strictObject({})),
-  query: SimulationsFetchQuery,
 }
 
 export const SimulationFetchValidator = {

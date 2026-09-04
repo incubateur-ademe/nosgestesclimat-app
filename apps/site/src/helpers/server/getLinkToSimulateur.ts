@@ -5,22 +5,27 @@ import {
   START_SIMULATION_PATH,
   TUTORIAL_PATH,
 } from '@/constants/urls/paths'
-import type { Simulation } from '@/helpers/server/model/simulations'
 import type { UserSession } from '@/services/auth/get-user-session'
+import {
+  hasCompletedCurrentSimulation,
+  hasCompletedSimulation,
+  hasFreshSimulation,
+  hasSimulation,
+} from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
+import type { UserSimulationJourney } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
 import type { TFunction } from 'i18next'
+
 export function getMainCTA({
-  currentSimulation,
-  completedSimulations,
+  journey,
   user,
   t,
 }: {
-  currentSimulation?: Simulation
+  journey: UserSimulationJourney
   user: UserSession
-  completedSimulations: Simulation[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: TFunction<any, string>
 }) {
-  if (!currentSimulation) {
+  if (!hasSimulation(journey)) {
     return {
       children: t('Commencer le test'),
       href: START_SIMULATION_PATH,
@@ -28,13 +33,13 @@ export function getMainCTA({
     }
   }
 
-  if (currentSimulation.progression === 0) {
+  if (hasFreshSimulation(journey)) {
     return {
       children: t('Commencer le test'),
-      href: completedSimulations.length ? SIMULATOR_PATH : TUTORIAL_PATH,
+      href: hasCompletedSimulation(journey) ? SIMULATOR_PATH : TUTORIAL_PATH,
     }
   }
-  if (currentSimulation.progression === 1) {
+  if (hasCompletedCurrentSimulation(journey)) {
     return {
       children: t('Voir mes résultats'),
       href: user?.isAuth ? MON_ESPACE_PATH : END_PAGE_PATH,

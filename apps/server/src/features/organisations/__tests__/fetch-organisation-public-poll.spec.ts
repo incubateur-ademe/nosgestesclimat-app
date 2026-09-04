@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
+import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -9,7 +10,6 @@ import app from '../../../app.ts'
 import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { deepMergeSubstract, deepMergeSum } from '../../../core/deep-merge.ts'
 import logger from '../../../logger.ts'
-import type { ComputedResultSchema } from '../../simulations/simulations.validator.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -156,7 +156,7 @@ describe('Given a NGC user', () => {
       })
 
       describe('And the user did participate to the poll', () => {
-        let computedResults: ComputedResultSchema
+        let computedResults: ComputedResults
         let userId: string
 
         beforeEach(async () => {

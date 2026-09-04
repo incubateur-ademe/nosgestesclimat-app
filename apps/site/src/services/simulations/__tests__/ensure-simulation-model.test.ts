@@ -1,4 +1,5 @@
 import { GROUP_URL, SIMULATION_URL } from '@/constants/urls/main'
+import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
 import { http, HttpResponse } from 'msw'
@@ -15,9 +16,9 @@ import { uploadLocalSimulations } from '../upload-local-simulations'
  * handed it.
  */
 
-const MODEL_REGEX =
-  /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
 const DATABASE_DEFAULT_MODEL = 'FR-fr-0.0.0'
+
+const getCurrentSimulationMock = vi.hoisted(() => vi.fn())
 
 vi.mock('next/headers', () => ({
   headers: () =>
@@ -45,6 +46,10 @@ vi.mock('@/services/auth/create-app-session', () => ({
   createAppSession: vi.fn(),
 }))
 
+vi.mock('@/services/simulations/get-current-simulation', () => ({
+  getCurrentSimulation: getCurrentSimulationMock,
+}))
+
 /** A simulation as it comes out of long-lived client state: no model at all. */
 const modellessSimulation = (): Simulation => {
   const simulation = buildNewSimulationPayload({
@@ -53,11 +58,6 @@ const modellessSimulation = (): Simulation => {
   })
   simulation.computedResults.carbone.bilan = 1000
   return { ...simulation, model: undefined } as unknown as Simulation
-}
-
-/** Stubs what the API holds for the connected user, newest first. */
-const stubCurrentSimulations = (simulations: Simulation[]) => {
-  mswServer.use(http.get(SIMULATION_URL, () => HttpResponse.json(simulations)))
 }
 
 /** Captures the simulation body POSTed to a given endpoint. */
@@ -87,7 +87,7 @@ describe('simulation write paths', () => {
 
       await saveSimulation({ simulation: modellessSimulation() })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
 
@@ -104,7 +104,7 @@ describe('simulation write paths', () => {
         name: 'Alice',
       })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
 
@@ -123,14 +123,14 @@ describe('simulation write paths', () => {
         participants: [{ simulation: modellessSimulation() }],
       })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
   })
 
   describe('given no simulation at all', () => {
     it('should build one server-side when a participant joins before taking the test', async () => {
-      stubCurrentSimulations([])
+      getCurrentSimulationMock.mockResolvedValue(undefined)
       const captured = captureSimulationBody(
         'post',
         `${GROUP_URL}/:groupId/participants`,
@@ -139,7 +139,7 @@ describe('simulation write paths', () => {
 
       await updateGroupParticipant({ groupId: 'group-id', name: 'Alice' })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
       expect(captured.value?.progression).toBe(0)
     })
@@ -151,7 +151,7 @@ describe('simulation write paths', () => {
         model: 'FR-fr-1.2.3',
         progression: 0.4,
       })
-      stubCurrentSimulations([inProgress])
+      getCurrentSimulationMock.mockResolvedValue(inProgress)
       const captured = captureSimulationBody(
         'post',
         `${GROUP_URL}/:groupId/participants`,

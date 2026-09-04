@@ -10,7 +10,7 @@ import { useEffect } from 'react'
 export default function CurrentSimulationTracker({
   currentSimulation,
 }: {
-  currentSimulation: Simulation
+  currentSimulation: Pick<Simulation, 'model'>
 }) {
   useEffect(() => {
     posthog.register({

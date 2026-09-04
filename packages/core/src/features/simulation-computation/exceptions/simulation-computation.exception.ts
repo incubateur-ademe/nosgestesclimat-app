@@ -1,4 +1,4 @@
-import { Exception } from '../../../exception.js'
+import { Exception } from '../../../exception.ts'
 import type { Model } from '../../simulations/types/model.ts'
 
 export class SimulationComputationFailedException extends Exception<{

@@ -39,7 +39,14 @@ export function migrateSimulation(
     (simulation.computedResults as { bilan?: number }).bilan !== undefined
   ) {
     const newComputedResults: ComputedResults = {
-      carbone: simulation.computedResults as ComputedResults['carbone'],
+      carbone: {
+        bilan: simulation.computedResults.bilan ?? 0,
+        categories: (simulation.computedResults.categories ?? {}) as Record<
+          DottedName,
+          number
+        >,
+        subcategories: {} as Record<DottedName, number>,
+      },
       eau: {
         bilan: 0,
         categories: {} as Record<DottedName, number>,

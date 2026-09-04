@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { SimulationComputationFailedException } from '../../exceptions/simulation-computation.exception.ts'
 import { createTestEngine } from '../../factories/engine.factory.ts'
-import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
 import { createProcessNextPendingComputation } from '../process-next-pending-computation.service.ts'
 

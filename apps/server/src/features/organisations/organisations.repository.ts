@@ -1,4 +1,8 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
+import {
+  ComputedResultsSchema,
+  type ComputedResults,
+} from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import slugify from 'slugify'
 import * as v from 'valibot'
 import type { JsonValue } from '../../adapters/prisma/generated.ts'
@@ -13,7 +17,6 @@ import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
 import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
 import type { SimulationParams } from '../simulations/simulations.validator.ts'
-import { ComputedResultSchema } from '../simulations/simulations.validator.ts'
 import { createOrUpdateVerifiedUser } from '../users/users.repository.ts'
 import type {
   OrganisationCreateDto,
@@ -326,7 +329,7 @@ type SimulationsInfo = {
   | {
       hasParticipated: true
       progression: number
-      userComputedResults: ComputedResultSchema
+      userComputedResults: ComputedResults
     }
 )
 
@@ -376,7 +379,7 @@ const fetchPollSimulationsInfo = async (
   ])
 
   const userComputedResults = v.safeParse(
-    ComputedResultSchema,
+    ComputedResultsSchema,
     userSimulation?.simulation.computedResults
   )
 
@@ -399,9 +402,9 @@ const sanitizePollComputedResults = <T extends { computedResults: JsonValue }>({
   computedResults: rawComputedResults,
   ...poll
 }: T): Omit<T, 'computedResults'> & {
-  computedResults: ComputedResultSchema | null
+  computedResults: ComputedResults | null
 } => {
-  const computedResults = v.safeParse(ComputedResultSchema, rawComputedResults)
+  const computedResults = v.safeParse(ComputedResultsSchema, rawComputedResults)
   return {
     ...poll,
     ...(computedResults.success
@@ -717,7 +720,7 @@ export const setPollStats = (
   {
     computedResults,
     funFacts,
-  }: { computedResults: ComputedResultSchema; funFacts: FunFacts },
+  }: { computedResults: ComputedResults; funFacts: FunFacts },
   { session }: { session: Session }
 ) => {
   return session.poll.update({

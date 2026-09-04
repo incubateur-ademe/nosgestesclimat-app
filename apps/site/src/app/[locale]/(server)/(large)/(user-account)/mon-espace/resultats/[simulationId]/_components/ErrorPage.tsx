@@ -16,6 +16,8 @@ const DUMMY_SIMULATION_RESULT: SimulationResult = {
         divers: 1250,
         'services sociétaux': 1000,
       } as SimulationResult['computedResults']['carbone']['categories'],
+      subcategories:
+        {} as SimulationResult['computedResults']['carbone']['subcategories'],
     },
     eau: {
       bilan: 1200000,
@@ -26,6 +28,8 @@ const DUMMY_SIMULATION_RESULT: SimulationResult = {
         divers: 100000,
         'services sociétaux': 50000,
       } as SimulationResult['computedResults']['eau']['categories'],
+      subcategories:
+        {} as SimulationResult['computedResults']['eau']['subcategories'],
     },
   },
 }

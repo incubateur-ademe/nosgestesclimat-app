@@ -253,7 +253,6 @@ describe('Given a NGC user', () => {
           date: expect.any(String),
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-          actionChoices: {},
           additionalQuestionsAnswers: [],
           foldedSteps: [],
           polls: [
@@ -281,9 +280,6 @@ describe('Given a NGC user', () => {
           situation,
           progression: 1,
           computedResults,
-          actionChoices: {
-            myAction: true,
-          },
           foldedSteps: [],
           additionalQuestionsAnswers: [
             {
@@ -319,7 +315,6 @@ describe('Given a NGC user', () => {
             situation: true,
             foldedSteps: true,
             progression: true,
-            actionChoices: true,
             computedResults: true,
             additionalQuestionsAnswers: {
               select: {
@@ -502,7 +497,6 @@ describe('Given a NGC user', () => {
             date: expect.any(String),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
-            actionChoices: {},
             additionalQuestionsAnswers: [],
             foldedSteps: [],
             polls: [
@@ -803,7 +797,6 @@ describe('Given a NGC user', () => {
             date: expect.any(String),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
-            actionChoices: {},
             additionalQuestionsAnswers: [],
             foldedSteps: [],
             polls: [
@@ -835,9 +828,6 @@ describe('Given a NGC user', () => {
             situation,
             progression: 1,
             computedResults,
-            actionChoices: {
-              myAction: true,
-            },
             foldedSteps: [],
             additionalQuestionsAnswers: [
               {
@@ -880,7 +870,6 @@ describe('Given a NGC user', () => {
               situation: true,
               foldedSteps: true,
               progression: true,
-              actionChoices: true,
               computedResults: true,
               additionalQuestionsAnswers: {
                 select: {

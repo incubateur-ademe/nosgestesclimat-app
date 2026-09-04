@@ -16,7 +16,7 @@ import {
 } from '@/helpers/server/model/utils/getTendency'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { listCompletedSimulations } from '@/services/simulations/list-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { captureException } from '@sentry/nextjs'
 import { notFound, redirect } from 'next/navigation'
@@ -61,8 +61,8 @@ export default async function FinPage({
     redirect('/')
   }
 
-  const simulations = await getCompletedSimulations({
-    pageSize: user.isAuth ? 2 : 1,
+  const simulations = await listCompletedSimulations({
+    limit: user.isAuth ? 2 : 1,
   })
 
   const [simulation, previousSimulation] = simulations

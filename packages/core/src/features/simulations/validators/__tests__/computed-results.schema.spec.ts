@@ -1,7 +1,7 @@
 import * as v from 'valibot'
 import { describe, expect, it } from 'vitest'
 import {
-  ComputedResultSchema,
+  ComputedResultsSchema,
   hasValidComputedResults,
 } from '../computed-results.schema.ts'
 
@@ -33,16 +33,16 @@ const validComputedResults = {
   },
 }
 
-describe('ComputedResultSchema', () => {
+describe('ComputedResultsSchema', () => {
   it('accepts a current-format computedResults (carbone/eau)', () => {
     expect(
-      v.safeParse(ComputedResultSchema, validComputedResults).success
+      v.safeParse(ComputedResultsSchema, validComputedResults).success
     ).toBe(true)
   })
 
   it('rejects a legacy computedResults without the carbone/eau shape', () => {
     expect(
-      v.safeParse(ComputedResultSchema, {
+      v.safeParse(ComputedResultsSchema, {
         bilan: 1000,
         categories: { transport: 1000 },
       }).success
@@ -51,7 +51,7 @@ describe('ComputedResultSchema', () => {
 
   it('rejects a computedResults missing the eau metric', () => {
     expect(
-      v.safeParse(ComputedResultSchema, {
+      v.safeParse(ComputedResultsSchema, {
         ...validComputedResults,
         eau: undefined,
       }).success

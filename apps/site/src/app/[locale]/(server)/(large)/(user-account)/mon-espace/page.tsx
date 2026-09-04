@@ -3,7 +3,7 @@ import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import { throwNextError } from '@/helpers/server/error'
 import { requireAuthUser } from '@/services/auth/require-auth-user'
 import { deleteSimulation } from '@/services/simulations/delete-simulation'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { listCompletedSimulations } from '@/services/simulations/list-completed-simulations'
 import type { DefaultPageProps } from '@/types'
 import { revalidatePath } from 'next/cache'
 import ResultsView from './_components/ResultsView'
@@ -15,7 +15,10 @@ export default async function Page({ params, searchParams }: DefaultPageProps) {
     (await searchParams) ?? {}
 
   await requireAuthUser()
-  const simulations = await throwNextError(() => getCompletedSimulations())
+  const simulations = await throwNextError(() =>
+    // only <1% of users have more than 5 simulations
+    listCompletedSimulations({ limit: 10 })
+  )
 
   return (
     <div>

@@ -17,10 +17,7 @@ import {
   FETCH_USER_GROUP_ROUTE,
   joinGroup,
 } from '../../groups/__tests__/fixtures/groups.fixture.ts'
-import {
-  createSimulation,
-  FETCH_USER_SIMULATIONS_ROUTE,
-} from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
+import { createSimulation } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
 import { LOGIN_ROUTE } from './fixtures/login.fixture.ts'
 import { createVerificationCode } from './fixtures/verification-codes.fixture.ts'
 
@@ -76,13 +73,13 @@ describe('Given a NGC user with a previous anonymous session', () => {
     })
 
     test('Then the simulation remains accessible under the same userId', async () => {
-      const response = await agent
-        .get(FETCH_USER_SIMULATIONS_ROUTE)
-        .set(authHeaders({ userId: anonUserId }))
-        .expect(StatusCodes.OK)
+      const simulations = await prisma.simulation.findMany({
+        where: { userId: anonUserId },
+        select: { id: true },
+      })
 
-      expect(response.body).toHaveLength(1)
-      expect(response.body[0].id).toBe(simulation.id)
+      expect(simulations).toHaveLength(1)
+      expect(simulations[0].id).toBe(simulation.id)
     })
   })
 
@@ -147,22 +144,22 @@ describe('Given a NGC user with a previous anonymous session', () => {
       })
 
       test('Then the anonymous simulation is transferred to the verified user', async () => {
-        const response = await agent
-          .get(FETCH_USER_SIMULATIONS_ROUTE)
-          .set(authHeaders({ userId: verifiedUserId }))
-          .expect(StatusCodes.OK)
+        const simulations = await prisma.simulation.findMany({
+          where: { userId: verifiedUserId },
+          select: { id: true },
+        })
 
-        const simulationIds = response.body.map((s: { id: string }) => s.id)
+        const simulationIds = simulations.map((s) => s.id)
         expect(simulationIds).toContain(anonSimulation.id)
       })
 
       test('Then the anonymous session no longer holds any simulations', async () => {
-        const response = await agent
-          .get(FETCH_USER_SIMULATIONS_ROUTE)
-          .set(authHeaders({ userId: anonUserId }))
-          .expect(StatusCodes.OK)
+        const simulations = await prisma.simulation.findMany({
+          where: { userId: anonUserId },
+          select: { id: true },
+        })
 
-        expect(response.body).toHaveLength(0)
+        expect(simulations).toHaveLength(0)
       })
     })
 
@@ -238,12 +235,12 @@ describe('Given a NGC user with a previous anonymous session', () => {
         })
 
         test('Then the anonymous simulation is transferred to the verified user', async () => {
-          const response = await agent
-            .get(FETCH_USER_SIMULATIONS_ROUTE)
-            .set(authHeaders({ userId: verifiedUserId }))
-            .expect(StatusCodes.OK)
+          const simulations = await prisma.simulation.findMany({
+            where: { userId: verifiedUserId },
+            select: { id: true },
+          })
 
-          const simulationIds = response.body.map((s: { id: string }) => s.id)
+          const simulationIds = simulations.map((s) => s.id)
           expect(simulationIds).toContain(anonSimulation.id)
         })
 

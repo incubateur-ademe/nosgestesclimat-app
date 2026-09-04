@@ -8,7 +8,7 @@ import { throwNextError } from '@/helpers/server/error'
 import { getSimulationResult } from '@/helpers/server/model/simulationResult'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import type { DefaultPageProps } from '@/types'
 import { notFound } from 'next/navigation'
 
@@ -37,7 +37,7 @@ export default async function SimulationPage({
 }: PageProps<'/[locale]/fin/eau'>) {
   const { locale } = await params
   const user = await getUserSession()
-  const [simulation] = await getCompletedSimulations({ pageSize: 1 })
+  const simulation = await getLastCompletedSimulation()
   if (!user || !simulation) {
     notFound()
   }

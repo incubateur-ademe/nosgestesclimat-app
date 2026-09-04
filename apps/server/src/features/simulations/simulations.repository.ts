@@ -15,7 +15,6 @@ import type { PublicPollParams } from '../organisations/organisations.validator.
 import type {
   SimulationCreateDto,
   SimulationParticipantCreateDto,
-  SimulationsFetchQuery,
 } from './simulations.validator.ts'
 
 export const createParticipantSimulation = async <
@@ -26,7 +25,6 @@ export const createParticipantSimulation = async <
     userId,
     simulation: {
       id,
-      actionChoices,
       computedResults,
       date,
       model,
@@ -83,7 +81,6 @@ export const createParticipantSimulation = async <
     situation,
     foldedSteps,
     progression,
-    actionChoices,
     computedResults,
     ...(additionalQuestionsAnswers?.length
       ? {
@@ -130,49 +127,6 @@ export const createParticipantSimulation = async <
     created: !existingSimulation,
     updated: !!existingSimulation,
   }
-}
-
-export const fetchUserSimulations = async (
-  { userId }: { userId: string },
-  {
-    session,
-    query: { pageSize, page, completedOnly },
-  }: { session: Session; query: SimulationsFetchQuery }
-) => {
-  const where = {
-    ...{ userId },
-    progression: completedOnly ? 1 : undefined,
-  }
-
-  const [simulations, count] = await Promise.all([
-    session.simulation.findMany({
-      where,
-      skip: page * pageSize,
-      take: pageSize,
-      select: simulationSelection,
-      orderBy: {
-        date: 'desc',
-      },
-    }),
-    session.simulation.count({ where }),
-  ])
-
-  return {
-    simulations,
-    count,
-  }
-}
-
-export const fetchSimulationById = (
-  { simulationId }: { simulationId: string },
-  { session }: { session: Session }
-) => {
-  return session.simulation.findUniqueOrThrow({
-    where: {
-      id: simulationId,
-    },
-    select: simulationSelection,
-  })
 }
 
 export const createPollUserSimulation = async (

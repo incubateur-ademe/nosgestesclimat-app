@@ -22,9 +22,6 @@ if (config.thirdParty.sentry.dsn) {
 
 export const redactBody = <T = unknown>(body: T) => {
   if (typeof body === 'object' && !!body) {
-    if ('actionChoices' in body) {
-      body.actionChoices = '[REDACTED]'
-    }
     if ('additionalQuestionsAnswers' in body) {
       body.additionalQuestionsAnswers = '[REDACTED]'
     }

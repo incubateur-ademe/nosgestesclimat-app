@@ -5,7 +5,14 @@ import type {
 } from '@incubateur-ademe/nosgestesclimat'
 import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
-import { hasValidComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import {
+  ComputedResultsSchema,
+  type ComputedResults,
+} from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import {
+  SituationSchema,
+  type Situation,
+} from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
@@ -45,19 +52,12 @@ import {
   batchPollSimulations,
   createParticipantSimulation,
   createPollUserSimulation,
-  fetchSimulationById,
-  fetchUserSimulations,
   softDeleteSimulation as softDeleteSimulationFunc,
 } from './simulations.repository.ts'
-import type {
-  SimulationCreateDto,
-  SimulationCreateQuery,
-  SimulationParams,
-  SimulationsFetchQuery,
-} from './simulations.validator.ts'
 import {
-  ComputedResultSchema,
-  SituationSchema,
+  type SimulationCreateDto,
+  type SimulationCreateQuery,
+  type SimulationParams,
 } from './simulations.validator.ts'
 import {
   getSituationDottedNameValue,
@@ -190,56 +190,6 @@ export const createSimulation = async ({
   }
 }
 
-export const fetchSimulations = async ({
-  query,
-  user,
-}: {
-  query: SimulationsFetchQuery
-  user: PartialUser
-}) => {
-  const { simulations, count } = await transaction(
-    (session) => fetchUserSimulations({ userId: user.id }, { session, query }),
-    prisma
-  )
-
-  return {
-    simulations: simulations
-      .map((s) => simulationToDto(s, user))
-      .filter(hasValidComputedResults),
-    count,
-  }
-}
-
-export const fetchSimulation = async ({
-  params,
-  user,
-}: {
-  params: SimulationParams
-  user: PartialUser
-}) => {
-  try {
-    const simulation = await transaction(
-      (session) => fetchSimulationById(params, { session }),
-      prisma
-    )
-
-    if (
-      !simulation.user ||
-      simulation.user.id !== user.id ||
-      !hasValidComputedResults(simulation)
-    ) {
-      throw new EntityNotFoundException('Simulation not found')
-    }
-
-    return simulationToDto(simulation, user)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Simulation not found')
-    }
-    throw e
-  }
-}
-
 export const softDeleteSimulation = async ({
   params,
   user,
@@ -367,15 +317,15 @@ const isValidSimulation = <T>(
     )
 ): simulation is T & {
   progression: number
-  computedResults: ComputedResultSchema
-  situation: SituationSchema
+  computedResults: ComputedResults
+  situation: Situation
 } => {
   if (simulation.progression !== 1) {
     return false
   }
 
   const computedResults = v.safeParse(
-    ComputedResultSchema,
+    ComputedResultsSchema,
     simulation.computedResults
   )
 
@@ -391,7 +341,7 @@ const isValidSimulation = <T>(
   ].every((v) => v <= MAX_VALUE)
 }
 
-const getEmptyComputedResults = (): ComputedResultSchema => ({
+const getEmptyComputedResults = (): ComputedResults => ({
   carbone: {
     bilan: 0,
     categories: {
@@ -417,13 +367,10 @@ const getEmptyComputedResults = (): ComputedResultSchema => ({
 })
 
 const mergeComputedResults = (
-  computedResults1: ComputedResultSchema,
-  computedResults2: ComputedResultSchema
+  computedResults1: ComputedResults,
+  computedResults2: ComputedResults
 ) => {
-  return deepMergeSum(
-    computedResults1,
-    computedResults2
-  ) as ComputedResultSchema
+  return deepMergeSum(computedResults1, computedResults2) as ComputedResults
 }
 
 const computeAllStatValues = async (
@@ -475,7 +422,7 @@ const computeAllStatValues = async (
 type RedisPollFunFactsCache = {
   simulationCount: number
   funFactValues: { [key in DottedName]?: number }
-  computedResults: ComputedResultSchema
+  computedResults: ComputedResults
 }
 
 const getStatValues = async (
@@ -598,7 +545,7 @@ export const getPollSimulationsExcelData = async (
       continue
     }
     const computedResults = v.safeParse(
-      ComputedResultSchema,
+      ComputedResultsSchema,
       simulation.computedResults
     )
 

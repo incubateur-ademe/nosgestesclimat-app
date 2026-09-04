@@ -38,13 +38,12 @@ const defaultSimulation: Simulation = {
   date: new Date(),
   situation: {},
   foldedSteps: [],
-  actionChoices: {},
   model: stringifyModel({
     region: 'FR',
     locale: 'fr',
     version: { publishedTag: 'v12.10.1' },
   }),
-  updated_at: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   computedResults: {
     carbone: {
       bilan: 0,
@@ -55,6 +54,7 @@ const defaultSimulation: Simulation = {
         divers: 0,
         'services sociétaux': 0,
       } as Record<DottedName, number>,
+      subcategories: {} as Record<DottedName, number>,
     },
     eau: {
       bilan: 0,
@@ -65,6 +65,7 @@ const defaultSimulation: Simulation = {
         divers: 0,
         'services sociétaux': 0,
       } as Record<DottedName, number>,
+      subcategories: {} as Record<DottedName, number>,
     },
   },
   progression: 0,

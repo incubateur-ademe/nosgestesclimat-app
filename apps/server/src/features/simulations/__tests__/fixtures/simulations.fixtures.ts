@@ -3,6 +3,10 @@ import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
+import {
+  SituationSchema,
+  type Situation,
+} from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { StatusCodes } from 'http-status-codes'
 import type { PublicodesExpression } from 'publicodes'
 import Engine, { utils } from 'publicodes'
@@ -21,19 +25,14 @@ import {
 } from '../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../core/event-bus/event-bus.ts'
 import type { Metric } from '../../../../types/types.ts'
-import type {
-  SimulationCreateInputDto,
-  SimulationParticipantCreateInputDto,
+import {
+  type SimulationCreateInputDto,
+  type SimulationParticipantCreateInputDto,
 } from '../../simulations.validator.ts'
-import { SituationSchema } from '../../simulations.validator.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 
 export const CREATE_SIMULATION_ROUTE = '/simulations/v1'
-
-export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1'
-
-export const FETCH_USER_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
 export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
@@ -153,7 +152,7 @@ const computeMetricResults = (metric: Metric, parsedRules: RuleName) => ({
   ),
 })
 
-const getComputedResults = (situation: SituationSchema) => {
+const getComputedResults = (situation: Situation) => {
   engine.setSituation(situation)
 
   const parsedRules = engine.getParsedRules()
@@ -188,7 +187,6 @@ export const getSimulationPayload = ({
   situation,
   foldedSteps,
   progression,
-  actionChoices,
   computedResults,
   additionalQuestionsAnswers,
 }: Partial<SimulationParticipantCreateInputDto> = {}): SimulationParticipantCreateInputDto => {
@@ -204,7 +202,6 @@ export const getSimulationPayload = ({
     situation,
     foldedSteps,
     progression: progression || 1,
-    actionChoices,
     computedResults,
     additionalQuestionsAnswers,
   }

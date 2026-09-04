@@ -102,7 +102,7 @@ const getShouldDisplayHelperText = ({
   // Or that have one simulation created in the past
   if (
     simulations.length === 1 &&
-    dayjs(simulations[0].updated_at).isBefore(dayjs())
+    dayjs(simulations[0].updatedAt).isBefore(dayjs())
   )
     return true
 
