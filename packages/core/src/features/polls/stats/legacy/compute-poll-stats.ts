@@ -17,11 +17,11 @@ import {
   ComputedResultsSchema,
   type ComputedResults,
 } from '../../../simulations/validators/computed-results.schema.ts'
-import { getSituationDottedNameValue } from './evaluate-situation.ts'
 import {
   SituationSchema,
   type Situation,
 } from '../../../simulations/validators/situation.schema.ts'
+import { getSituationDottedNameValue } from './evaluate-situation.ts'
 import { sumNested } from './sum-nested.ts'
 
 const MAX_VALUE = 100000

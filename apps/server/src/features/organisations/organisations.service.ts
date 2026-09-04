@@ -25,7 +25,6 @@ import type { Locales } from '../../core/i18n/constant.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
-import logger from '../../logger.ts'
 import type { JobParams } from '../jobs/jobs.repository.ts'
 import { JobKind } from '../jobs/jobs.repository.ts'
 import {
