@@ -1,4 +1,4 @@
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 import { PARTNER_KEY } from '@/constants/partners'
 import Main from '@/design-system/layout/Main'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -41,7 +41,7 @@ export default async function PartenairePage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <Header locale={locale} />
 
       <Main>
         <div className="min-h-screen">

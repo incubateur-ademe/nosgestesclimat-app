@@ -133,8 +133,8 @@ export const captureExportPollData = {
 
 // Footer
 
-export const captureFooterClickLanguage = ({ locale }: PosthogProps) => ({
-  eventName: 'Footer click Language',
+export const captureClickLanguage = ({ locale }: PosthogProps) => ({
+  eventName: 'Header click change language ',
   properties: {
     locale,
   },

@@ -17,6 +17,7 @@ export default async function MySpaceButton({ locale }: { locale: string }) {
     <ButtonLinkServer
       color="secondary"
       href={CONNEXION_PATH}
+      className="max-tiny:px-2 max-tiny:py-2"
       data-track-event={headerClickMonEspaceUnauthenticatedServer}
       data-track-posthog={captureClickHeaderMonEspaceUnauthenticatedServer}>
       <Trans locale={locale} i18nKey="header.monEspace.title">

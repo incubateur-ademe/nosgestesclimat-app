@@ -1,6 +1,11 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@radix-ui/themes/styles.css';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
-@config '../../../tailwind.config.js';
+@config '../../tailwind.config.js';
 
 @theme {
   --color-heroLightBackground: #f0f8ff;
@@ -10,6 +15,88 @@
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Very small screens (below 360px): compact header layout */
+@custom-variant max-tiny (@media (max-width: 360px));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+}
+
+root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -40,6 +127,7 @@
   html {
     background-color: #fff;
     color: #1a1a1a;
+    @apply font-sans;
   }
 
   button {
@@ -112,12 +200,50 @@
     @apply text-white;
     @apply p-4;
   }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -180,97 +306,6 @@ html[data-useragent*='Trident'] #js {
 }
 
 /*
-	Animated illustration
-*/
-.landing-animated-illustration > svg {
-  max-width: 32rem;
-  height: auto;
-  margin: 1rem auto;
-  border-radius: 0.8rem;
-  width: 95%;
-}
-
-.landing-animated-illustration--small > svg {
-  max-width: 15rem;
-}
-
-.prefix__avion {
-  animation: traversée 90s infinite;
-  animation-timing-function: linear;
-}
-
-@keyframes traversée {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
-
-.prefix__fenetres rect:nth-child(3) {
-  animation: jour-nuit 60s infinite;
-  animation-delay: 1s;
-  animation-timing-function: steps(5, end);
-}
-
-.prefix__fenetres rect:nth-child(5) {
-  animation: jour-nuit 60s infinite;
-  animation-delay: 3s;
-  animation-timing-function: steps(5, end);
-}
-
-.prefix__fenetres rect:nth-child(10) {
-  animation: jour-nuit 60s infinite;
-  animation-delay: 5s;
-  animation-timing-function: steps(5, end);
-}
-
-@keyframes jour-nuit {
-  0% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  40% {
-    opacity: 0;
-  }
-  60% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.landing-animated-illustration--cycling .prefix__cycliste {
-  animation: traversée-inversée 45s infinite; /*, saute linear 1s infinite; Pas possible de combiner les deux, à cause du transform:*/
-}
-.landing-animated-illustration--cycling .prefix__velo {
-  animation: traversée-inversée 45s infinite;
-}
-@keyframes saute {
-  from {
-    transform: translateY(0%);
-  }
-  to {
-    transform: translateY(5%);
-  }
-}
-@keyframes traversée-inversée {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-
-/*
 	RegionGrid
 */
 .region-grid {
@@ -280,142 +315,6 @@ html[data-useragent*='Trident'] #js {
   .region-grid {
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   }
-}
-
-.news-page ul {
-  padding-left: 1rem;
-  list-style: '› ';
-}
-
-.news-page ul li {
-  margin-bottom: 0.5rem;
-}
-
-/*
-	Gamecard
-*/
-.game-card-1 {
-  @apply fill-primary-700;
-  fill-opacity: 0.996078;
-  fill-rule: 'evenodd';
-  @apply stroke-primary-700;
-  stroke-width: 7.2062;
-  stroke-linecap: 'round';
-  stroke-linejoin: 'round';
-  stroke-miterlimit: 19.2;
-  stroke-dasharray: 'none';
-  stroke-opacity: 1;
-}
-
-.game-card-2 {
-  @apply fill-primary-700;
-  fill-opacity: 0.996078;
-  fill-rule: 'evenodd';
-  @apply stroke-primary-700;
-  stroke-width: 7.2062;
-  stroke-linecap: 'round';
-  stroke-linejoin: 'round';
-  stroke-miterlimit: 19.2;
-  stroke-dasharray: 'none';
-  stroke-opacity: 1;
-}
-
-.game-card-3 {
-  fill: white;
-  fill-opacity: 0.997404;
-  fill-rule: 'evenodd';
-  @apply stroke-primary-700;
-  stroke-width: 10.1932;
-  stroke-linecap: 'round';
-  stroke-linejoin: 'round';
-  stroke-miterlimit: 19.2;
-  stroke-dasharray: 'none';
-  stroke-opacity: 1;
-}
-
-.game-card-3-active {
-  @apply fill-green-700;
-}
-
-.game-card-number {
-  font-size: 1rem;
-  line-height: 1.25;
-  letter-spacing: 0;
-  stroke-width: 0.385599;
-  fill: 'white';
-  font-weight: 'bold';
-}
-
-/*
-  Statistics (temporary)
-*/
-.statistics-iframe-table {
-  table-layout: fixed;
-  width: 100%;
-  margin-bottom: 0.5rem;
-  background-color: #fff;
-  border-bottom: 2px solid #f0f0f0;
-  border-collapse: collapse;
-  overflow: hidden;
-}
-.statistics-iframe-table tr:nth-child(2n + 1) {
-  background-color: #f9f8f6;
-}
-
-.statistics-iframe-table th {
-  padding: 0.75rem 0 0.75rem 0.75rem;
-  font-size: 0.875rem;
-  text-align: left;
-  border-bottom: 2px solid #1e1e1e;
-}
-.statistics-iframe-table td {
-  font-size: 0.8125rem;
-  width: 60%;
-  padding: 0.5rem;
-}
-.statistics-iframe-table td + td,
-.statistics-iframe-table th + th {
-  width: 20%;
-  font-weight: 700;
-  text-align: right;
-}
-.statistics-figure-wrapper {
-  width: 100%;
-  text-align: center;
-  padding-top: 0rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-.statistics-table {
-  table-layout: fixed;
-  width: 100%;
-  margin-bottom: 0.5rem;
-  background-color: #fff;
-  border-bottom: 2px solid #f0f0f0;
-  border-collapse: collapse;
-  overflow: hidden;
-}
-.statistics-table tr:nth-child(2n + 1) {
-  background-color: #f9f8f6;
-}
-
-.statistics-table th {
-  padding: 0.75rem 0 0.75rem 0.75rem;
-  font-size: 0.875rem;
-  text-align: left;
-  border-bottom: 2px solid #1e1e1e;
-}
-.statistics-table .statistics-table td {
-  font-size: 0.8125rem;
-  width: 60%;
-  padding: 0.5rem;
-}
-.statistics-table td + td,
-.statistics-table th + th {
-  width: 20%;
-  font-weight: 700;
-  text-align: right;
 }
 
 /*
