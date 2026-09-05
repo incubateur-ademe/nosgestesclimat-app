@@ -43,8 +43,6 @@ export const completeSimulation = async (
   const parsed = validatePayload(CompleteSimulationPayloadSchema, payload)
   if (!parsed.success) return parsed
 
-  revalidatePath(END_PAGE_PATH, 'layout')
-
   const { id, progression, situation, foldedSteps, computedResults } =
     parsed.data
 
@@ -59,6 +57,8 @@ export const completeSimulation = async (
   })
 
   if (!result.success) return result
+
+  revalidatePath(END_PAGE_PATH, 'layout')
 
   const { groups, polls } = result.data
 
