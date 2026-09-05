@@ -1,12 +1,12 @@
 import { Attributes } from '../../emails/email.constant.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import type { Simulation } from '../types/simulation.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 const NUMBER_OF_KG_IN_A_TON = 1000
 const NUMBER_OF_DAYS_IN_A_YEAR = 365
 
 export const mapSimulationToContactAttributes = (
-  simulation: Pick<Simulation, 'computedResults'> | null,
+  simulation: { computedResults: ComputedResults | null } | null,
   locale: ISOSupportedLanguage
 ) => {
   const { computedResults } = simulation ?? {}
