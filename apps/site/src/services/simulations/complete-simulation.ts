@@ -49,7 +49,7 @@ export const completeSimulation = async (
     parsed.data
 
   const result = await completeSimulationService({
-    userId: session.id,
+    userSession: session,
     simulationId: id,
     progression,
     situation: situation as Situation<DottedName>,

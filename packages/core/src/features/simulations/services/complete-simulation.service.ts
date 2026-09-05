@@ -4,6 +4,7 @@ import type { RunInBackground } from '../../../lib/background-task.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import { transaction } from '../../../lib/transaction.ts'
+import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
@@ -60,7 +61,7 @@ export function createCompleteSimulation({
   const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
 
   return async function completeSimulation({
-    userId,
+    userSession,
     simulationId,
     progression,
     situation,
@@ -68,7 +69,7 @@ export function createCompleteSimulation({
     computedResults,
     locale,
   }: {
-    userId: string
+    userSession: AppUser
     simulationId: string
     progression: number
     situation: Situation<DottedName>
@@ -78,6 +79,8 @@ export function createCompleteSimulation({
   }): Promise<
     Result<Pick<Simulation, 'groups' | 'polls'>, CompleteSimulationError>
   > {
+    const userId = userSession.id
+
     if (progression !== 1) return failure(new SimulationIncompleteError())
     if (computedResults.carbone.bilan === 0) {
       return failure(new ZeroFootprintError())
@@ -129,11 +132,10 @@ export function createCompleteSimulation({
     if (!written.success) return written
 
     runInBackground(async () => {
-      const user = await findUserById(userId)
-      if (!user?.email) return
+      if (!userSession.isAuth || !userSession.email) return
       const promises = await Promise.allSettled([
         addOrUpdateContact({
-          email: user.email,
+          email: userSession.email,
           attributes: {
             [Attributes.USER_ID]: userId,
             [Attributes.LAST_SIMULATION_DATE]: simulation.date.toISOString(),
@@ -155,13 +157,18 @@ export function createCompleteSimulation({
               simulationId,
               locale,
               origin,
-              email: user.email,
+              email: userSession.email,
               poll,
             })
           }
 
           // Only try to find group if no poll was found (polls are more frequent than groups)
-          const groups = await findGroupsBySimulationId({ simulationId })
+          const [user, groups] = await Promise.all([
+            findUserById(userId),
+            findGroupsBySimulationId({ simulationId }),
+          ])
+          // should never happen since we check the user session before
+          if (!user || !user.email) throw new Error('invariant')
           const group = groups.at(-1)
           if (group) {
             const params = {

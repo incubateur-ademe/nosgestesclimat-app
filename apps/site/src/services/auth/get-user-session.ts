@@ -1,32 +1,17 @@
 'use server'
 import type { SessionPayload } from '@nosgestesclimat/core/features/auth/types/session'
+import type {
+  AnonUser,
+  AppUser,
+  AuthUser,
+  UserSession,
+} from '@nosgestesclimat/core/features/auth/types/user-session'
 import * as Sentry from '@sentry/nextjs'
 
 import { headers } from 'next/headers'
 import { cache } from 'react'
 
-export interface AnonUser {
-  id: string
-  isAuth: false
-}
-
-export interface AuthUser {
-  id: string
-  email: string
-  isAuth: true
-}
-
-/**
- * Represents a user that is either authenticated (has an email) or anonymous (has an id but no email).
- */
-export type AppUser = AuthUser | AnonUser
-
-/**
- * Represents the result of {@link getUserSession}:
- * - `AppUser`: A session exists (either anonymous or authenticated).
- * - `null`: No user session exists (e.g. first visit, no data at all).
- */
-export type UserSession = AppUser | null
+export type { AnonUser, AppUser, AuthUser, UserSession }
 
 export const getUserSession = cache(async function (): Promise<UserSession> {
   const reqHeaders = await headers()
