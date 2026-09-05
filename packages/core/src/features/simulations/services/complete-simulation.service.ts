@@ -3,9 +3,24 @@ import type { Situation } from 'publicodes'
 import type { RunInBackground } from '../../../lib/background-task.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
+import { transaction } from '../../../lib/transaction.ts'
+import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import { findGroupsBySimulationId } from '../../groups/repositories/group.repository.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
+import { findPollsBySimulationId } from '../../polls/repositories/poll.repository.ts'
+import { UnsupportedModelError } from '../../simulation-computation/errors/simulation-computation.error.ts'
+import { ComputationAlreadyExistsException } from '../../simulation-computation/exceptions/simulation-computation.exception.ts'
+import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
+import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
+import { findUserById } from '../../users/repositories/users.repository.ts'
+import { mapSimulationToContactAttributes } from '../emails/map-simulation-to-contact-attributes.js'
+import {
+  createSendGroupCreatedEmail,
+  createSendGroupJoinedEmail,
+  createSendPollJoinedEmail,
+} from '../emails/simulation-emails.ts'
 import {
   type CompleteSimulationError,
   SimulationCompletedError,
@@ -14,7 +29,11 @@ import {
   ZeroFootprintError,
 } from '../errors/simulations.error.ts'
 import { isSimulationCompleted } from '../helpers/simulation-guards.ts'
-import { findSimulationById } from '../repository/simulation.repository.ts'
+import {
+  findSimulationById,
+  updateSimulation,
+} from '../repository/simulation.repository.ts'
+import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 interface CompleteSimulationDependencies {
@@ -28,13 +47,26 @@ interface CompleteSimulationDependencies {
   runInBackground: RunInBackground
 }
 
-export function createCompleteSimulation(_: CompleteSimulationDependencies) {
+export function createCompleteSimulation({
+  logger,
+  captureException,
+  addOrUpdateContact,
+  sendEmail,
+  origin,
+  runInBackground,
+}: CompleteSimulationDependencies) {
+  const sendGroupCreatedEmail = createSendGroupCreatedEmail(sendEmail)
+  const sendGroupJoinedEmail = createSendGroupJoinedEmail(sendEmail)
+  const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
+
   return async function completeSimulation({
     userId,
     simulationId,
     progression,
+    situation,
+    foldedSteps,
     computedResults,
-    locale: ____,
+    locale,
   }: {
     userId: string
     simulationId: string
@@ -43,7 +75,9 @@ export function createCompleteSimulation(_: CompleteSimulationDependencies) {
     foldedSteps: DottedName[]
     computedResults: ComputedResults
     locale: ISOSupportedLanguage
-  }): Promise<Result<void, CompleteSimulationError>> {
+  }): Promise<
+    Result<Pick<Simulation, 'groups' | 'polls'>, CompleteSimulationError>
+  > {
     if (progression !== 1) return failure(new SimulationIncompleteError())
     if (computedResults.carbone.bilan === 0) {
       return failure(new ZeroFootprintError())
@@ -54,8 +88,114 @@ export function createCompleteSimulation(_: CompleteSimulationDependencies) {
     if (isSimulationCompleted(simulation))
       return failure(new SimulationCompletedError())
 
-    // FIXME: implement
+    const isModelSupportedForComputation = isModelSupported(simulation.model)
 
-    return success()
+    if (!isModelSupportedForComputation) {
+      const exception = new UnsupportedModelError(simulation.model)
+      logger.error(exception.message, { model: exception.model })
+      captureException(exception)
+    }
+
+    const written = await transaction(async (tx) => {
+      const result = await updateSimulation(
+        {
+          id: simulationId,
+          userId,
+          situation,
+          foldedSteps,
+          progression,
+          computedResults,
+        },
+        tx
+      )
+      if (!result.success) return result
+
+      if (isModelSupportedForComputation) {
+        try {
+          await createSimulationComputation(simulationId, tx)
+        } catch (error) {
+          if (error instanceof ComputationAlreadyExistsException) {
+            logger.warn(error.name, { simulationId })
+          } else {
+            throw error
+          }
+        }
+      }
+
+      // TODO: create poll stats computation
+
+      return result
+    })
+    if (!written.success) return written
+
+    runInBackground(async () => {
+      const user = await findUserById(userId)
+      if (!user?.email) return
+      const promises = await Promise.allSettled([
+        addOrUpdateContact({
+          email: user.email,
+          attributes: {
+            [Attributes.USER_ID]: userId,
+            [Attributes.LAST_SIMULATION_DATE]: simulation.date.toISOString(),
+            ...mapSimulationToContactAttributes(
+              {
+                computedResults,
+              },
+              locale
+            ),
+          },
+        }),
+        (async () => {
+          // The most recent membership is the one the user just completed.
+          const polls = await findPollsBySimulationId({ simulationId })
+          const poll = polls.at(-1)
+          if (poll) {
+            return sendPollJoinedEmail({
+              organisation: poll.organisation,
+              simulationId,
+              locale,
+              origin,
+              email: user.email,
+              poll,
+            })
+          }
+
+          // Only try to find group if no poll was found (polls are more frequent than groups)
+          const groups = await findGroupsBySimulationId({ simulationId })
+          const group = groups.at(-1)
+          if (group) {
+            const params = {
+              group,
+              origin,
+              user,
+            }
+
+            return group.administratorId === userId
+              ? sendGroupCreatedEmail(params)
+              : sendGroupJoinedEmail(params)
+          }
+
+          return success()
+        })(),
+      ])
+
+      for (const [index, promise] of promises.entries()) {
+        let error: unknown
+        if (promise.status === 'rejected') error = promise.reason
+        else if (!promise.value.success) error = promise.value.error
+        if (error) {
+          captureException(error)
+          logger.error('Failed to run side effect', {
+            index,
+            error,
+          })
+        }
+      }
+    })
+
+    return success({
+      groups: simulation.groups,
+      polls: simulation.polls,
+    })
   }
 }

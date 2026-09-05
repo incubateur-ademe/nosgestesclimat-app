@@ -47,6 +47,7 @@ export const completeSimulation = async (
 
   const { id, progression, situation, foldedSteps, computedResults } =
     parsed.data
+
   const result = await completeSimulationService({
     userId: session.id,
     simulationId: id,
@@ -56,13 +57,15 @@ export const completeSimulation = async (
     computedResults,
     locale: await getLocaleFromHeaders(),
   })
+
   if (!result.success) return result
 
-  // FIXME: retrieve polls and groups
-  const polls = []
-  const groups = []
-  if (groups.length) revalidatePath(GROUP_RESULTS_ROUTE_PATTERN, 'page')
-  if (!session.isAuth && (polls.length || groups.length))
+  const { groups, polls } = result.data
+
+  if (groups?.length) revalidatePath(GROUP_RESULTS_ROUTE_PATTERN, 'page')
+
+  if (!session.isAuth && (polls?.length || groups?.length))
     redirect(EMAIL_PAGE_PATH)
+
   redirect(END_PAGE_PATH)
 }

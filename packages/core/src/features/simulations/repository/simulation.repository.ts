@@ -7,10 +7,8 @@ import { prisma } from '../../../prisma/client.ts'
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import { SimulationNotFoundError } from '../errors/simulations.error.ts'
-import type { Model } from '../types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
-import { parseModelString } from './model.mapper.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
 const simulationSelect = {
@@ -134,94 +132,5 @@ export const updateSimulation = async (
       return failure(new SimulationNotFoundError())
     }
     throw error
-  }
-}
-
-/**
- * Poll and group memberships hydrated with what the completion emails need:
- * the organisation behind each poll, and the administrator behind each group.
- */
-export const findSimulationEmailContext = async ({
-  id,
-  userId,
-}: {
-  id: string
-  userId: string
-}): Promise<{
-  polls: { slug: string; organisation: { name: string; slug: string } }[]
-  groups: { id: string; name: string; administratorId: string | null }[]
-}> => {
-  const row = await prisma.simulation.findFirst({
-    where: { id, userId },
-    select: {
-      polls: {
-        // The last membership is the one the user just took part in.
-        orderBy: { createdAt: 'asc' },
-        select: {
-          poll: {
-            select: {
-              slug: true,
-              organisation: { select: { name: true, slug: true } },
-            },
-          },
-        },
-      },
-      groups: {
-        orderBy: { createdAt: 'asc' },
-        select: {
-          group: {
-            select: {
-              id: true,
-              name: true,
-              administrator: { select: { userId: true } },
-            },
-          },
-        },
-      },
-    },
-  })
-
-  return {
-    polls: (row?.polls ?? []).map(({ poll }) => ({
-      slug: poll.slug,
-      organisation: poll.organisation,
-    })),
-    groups: (row?.groups ?? []).map(({ group }) => ({
-      id: group.id,
-      name: group.name,
-      administratorId: group.administrator?.userId ?? null,
-    })),
-  }
-}
-
-export const findSimulationMembershipById = async ({
-  id,
-  userId,
-}: {
-  id: string
-  userId: string
-}): Promise<{
-  progression: number
-  model: Model | null
-  polls: { id: string }[]
-  groups: { id: string }[]
-} | null> => {
-  const row = await prisma.simulation.findFirst({
-    where: { id, userId },
-    select: {
-      progression: true,
-      model: true,
-      polls: { select: { pollId: true } },
-      groups: { select: { groupId: true } },
-    },
-  })
-
-  if (!row) return null
-
-  return {
-    progression: row.progression,
-    model: parseModelString(row.model),
-    polls: row.polls.map(({ pollId }) => ({ id: pollId })),
-    groups: row.groups.map(({ groupId }) => ({ id: groupId })),
   }
 }
