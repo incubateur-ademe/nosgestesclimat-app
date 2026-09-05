@@ -8,6 +8,8 @@ import {
 } from '../../emails/email.constant.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import type { Simulation } from '../types/simulation.ts'
+import { mapSimulationToContactAttributes } from './map-simulation-to-contact-attributes.ts'
 
 type EmailUser = Readonly<{
   id: string
@@ -141,6 +143,42 @@ export const createSendPollJoinedEmail = (sendEmail: SendEmail) =>
         ORGANISATION_NAME: name,
         DETAILED_VIEW_URL: detailedViewUrl.toString(),
         SIMULATION_URL: simulationUrl.toString(),
+      },
+    })
+  }
+
+export const createSendSimulationCompletedEmail = (sendEmail: SendEmail) =>
+  function sendSimulationCompletedEmail({
+    email,
+    locale,
+    origin,
+    simulationId,
+    computedResults,
+  }: Readonly<{
+    email: string
+    origin: string
+    locale: ISOSupportedLanguage
+    simulationId: string
+    computedResults: Simulation['computedResults']
+  }>) {
+    const templateId = TemplateIds[locale].SIGN_UP_SIMULATION_COMPLETED
+
+    const simulationUrl = new URL(origin)
+    simulationUrl.pathname = 'fin'
+    const { searchParams } = simulationUrl
+    searchParams.append('sid', simulationId)
+    searchParams.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
+    searchParams.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId])
+
+    const dashboardUrl = new URL(`${origin}/mon-espace`)
+
+    return sendEmail({
+      email,
+      templateId,
+      params: {
+        SIMULATION_URL: simulationUrl.toString(),
+        DASHBOARD_URL: dashboardUrl.toString(),
+        ...mapSimulationToContactAttributes({ computedResults }, locale),
       },
     })
   }

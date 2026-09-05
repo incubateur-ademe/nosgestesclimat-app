@@ -20,6 +20,7 @@ import {
   createSendGroupCreatedEmail,
   createSendGroupJoinedEmail,
   createSendPollJoinedEmail,
+  createSendSimulationCompletedEmail,
 } from '../emails/simulation-emails.ts'
 import {
   type CompleteSimulationError,
@@ -58,6 +59,8 @@ export function createCompleteSimulation({
   const sendGroupCreatedEmail = createSendGroupCreatedEmail(sendEmail)
   const sendGroupJoinedEmail = createSendGroupJoinedEmail(sendEmail)
   const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
+  const sendSimulationCompletedEmail =
+    createSendSimulationCompletedEmail(sendEmail)
 
   return async function completeSimulation({
     userSession,
@@ -156,14 +159,13 @@ export function createCompleteSimulation({
           }
 
           // Only try to find group if no poll was found (polls are more frequent than groups)
-          const [user, groups] = await Promise.all([
-            findUserById(userId),
-            findGroupsBySimulationId({ simulationId }),
-          ])
-          // should never happen since we check the user session before
-          if (!user || !user.email) throw new Error('invariant')
+          const groups = await findGroupsBySimulationId({ simulationId })
           const group = groups.at(-1)
           if (group) {
+            // The name of the user is only needed by the group emails
+            const user = await findUserById(userId)
+            // should never happen since we check the user session before
+            if (!user || !user.email) throw new Error('invariant')
             const params = {
               group,
               origin,
@@ -175,7 +177,15 @@ export function createCompleteSimulation({
               : sendGroupJoinedEmail(params)
           }
 
-          return success()
+          // The simulation is shared with nobody: the user only gets a way
+          // back to the results it just completed.
+          return sendSimulationCompletedEmail({
+            email: userSession.email,
+            simulationId,
+            computedResults,
+            locale,
+            origin,
+          })
         })(),
       ])
 
