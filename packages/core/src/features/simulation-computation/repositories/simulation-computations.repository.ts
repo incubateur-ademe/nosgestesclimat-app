@@ -1,6 +1,9 @@
+import type { Result } from '../../../lib/result.ts'
+import { failure, success } from '../../../lib/result.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
-import { ComputationAlreadyExistsException } from '../exceptions/simulation-computation.exception.ts'
+import { ComputationAlreadyExistsError } from '../errors/simulation-computation.error.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
@@ -19,15 +22,17 @@ const CLAIM_QUERY = `
 `
 
 export const createSimulationComputation = async (
-  simulationId: string
-): Promise<void> => {
+  simulationId: string,
+  tx: Transaction = prisma
+): Promise<Result<void, ComputationAlreadyExistsError>> => {
   try {
-    await prisma.simulationComputation.create({
+    await tx.simulationComputation.create({
       data: { simulationId, status: 'pending' },
     })
+    return success()
   } catch (error) {
     if (isPrismaErrorUniqueConstraintFailed(error)) {
-      throw new ComputationAlreadyExistsException({ simulationId })
+      return failure(new ComputationAlreadyExistsError(simulationId))
     }
     throw error
   }

@@ -2,6 +2,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
@@ -23,8 +24,14 @@ const simulationSelect = {
   userId: true,
   polls: {
     select: { pollId: true, poll: { select: { slug: true, name: true } } },
+    // Oldest first: the last entry is the poll the user most recently joined.
+    orderBy: { createdAt: 'asc' },
   },
-  groups: { select: { groupId: true } },
+  groups: {
+    select: { groupId: true },
+    // Oldest first: the last entry is the group the user most recently joined.
+    orderBy: { createdAt: 'asc' },
+  },
 } as const
 
 export const findLatestSimulation = async ({
@@ -89,25 +96,28 @@ export const findSimulationById = async ({
   return row ? mapSimulation(row) : null
 }
 
-export const updateSimulation = async ({
-  id,
-  userId,
-  situation,
-  foldedSteps,
-  progression,
-  computedResults,
-  model,
-}: {
-  id: string
-  userId: string
-  situation: Situation<DottedName>
-  foldedSteps: DottedName[]
-  progression: number
-  computedResults: ComputedResults
-  model?: string
-}): Promise<Result<void, SimulationNotFoundError>> => {
+export const updateSimulation = async (
+  {
+    id,
+    userId,
+    situation,
+    foldedSteps,
+    progression,
+    computedResults,
+    model,
+  }: {
+    id: string
+    userId: string
+    situation: Situation<DottedName>
+    foldedSteps: DottedName[]
+    progression: number
+    computedResults: ComputedResults
+    model?: string
+  },
+  tx: Transaction = prisma
+): Promise<Result<void, SimulationNotFoundError>> => {
   try {
-    await prisma.simulation.update({
+    await tx.simulation.update({
       // `userId` stays in the `where` so that ownership is enforced atomically at write time rather than by a preceding read.
       where: { id, userId },
       data: {

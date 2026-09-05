@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { verifiedUserFactory } from '../../factories/verified-user.factory.ts'
-import { getFullUser } from '../get-full-user.service.ts'
+import { getUser } from '../get-user.service.ts'
 
-describe('getFullUser', () => {
+describe('getUser', () => {
   afterEach(async () => {
     await Promise.all([
       prisma.verifiedUser.deleteMany(),
@@ -13,27 +13,29 @@ describe('getFullUser', () => {
   })
 
   it('returns null when no user matches the userId', async () => {
-    const result = await getFullUser({
+    const result = await getUser({
       userId: '00000000-0000-0000-0000-000000000000',
     })
     expect(result).toBeNull()
   })
 
-  it('returns user data when only a user exists', async () => {
+  it('returns an unverified user when only a user exists', async () => {
     const user = await userFactory.create()
 
-    const result = await getFullUser({ userId: user.id })
+    const result = await getUser({ userId: user.id })
 
     expect(result).toEqual({
-      ...user,
-      isVerified: false,
-      telephone: null,
-      position: null,
-      optedInForCommunications: false,
+      type: 'unverified',
+      id: user.id,
+      name: user.name,
+      email: null,
+      ageRange: user.ageRange,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     })
   })
 
-  it('returns user data merged with verifiedUser fields when a verified user with the same userId exists', async () => {
+  it('returns a verified user when a verified user with the same userId exists', async () => {
     const id = '00000000-0000-0000-0000-000000000000'
     const user = await userFactory.create({ id })
 
@@ -41,14 +43,19 @@ describe('getFullUser', () => {
       id: user.id,
     })
 
-    const result = await getFullUser({ userId: user.id })
+    const result = await getUser({ userId: user.id })
 
     expect(result).toEqual({
-      ...user,
-      isVerified: true,
+      type: 'verified',
+      id: user.id,
+      name: user.name,
+      email: verifiedUser.email,
+      ageRange: user.ageRange,
       telephone: verifiedUser.telephone,
       position: verifiedUser.position,
       optedInForCommunications: verifiedUser.optedInForCommunications,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     })
   })
 })
