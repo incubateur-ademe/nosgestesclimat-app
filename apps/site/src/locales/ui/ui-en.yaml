@@ -1789,10 +1789,10 @@ entries:
   tutorial.email.title.default.lock: Votre adresse e-mail
   common.authentication.verifyEmail: Verify my email address
   common.authentication.verifyEmail.lock: Vérifier mon adresse e-mail
-  tutorial.email.contest.youth: Your e-mail address will be used for the prize draw.
-  tutorial.email.contest.youth.lock: Ton e-mail sera utilisé pour le tirage au sort.
-  tutorial.email.contest.default: Your e-mail address will be used for the prize draw.
-  tutorial.email.contest.default.lock: Votre e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.youth: Check your email for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be saved in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.youth.lock: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.default: Please check your email address for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
@@ -2198,3 +2198,13 @@ entries:
   actions.detailPage.sections.otherThemeActions.title.lock: Découvrez d’autres actions pour réduire votre empreinte
   actions.components.actionCard.ctaVariant.link: See the<1> "{{actionTitle}}"</1> campaign
   actions.components.actionCard.ctaVariant.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
+  event.dynamicCounter.target.title.default: Objective
+  event.dynamicCounter.target.title.default.lock: Objectif
+  event.dynamicCounter.target.title.topped: Target achieved
+  event.dynamicCounter.target.title.topped.lock: Objectif atteint
+  event.dynamicCounter.target.title.over: Target exceeded
+  event.dynamicCounter.target.title.over.lock: Objectif dépassé
+  tutorial.email.title.youthContest: Your email address for the prize draw
+  tutorial.email.title.youthContest.lock: Ton adresse e-mail pour le tirage au sort
+  tutorial.email.title.defaultContest: Your email address for the prize draw
+  tutorial.email.title.defaultContest.lock: Votre adresse e-mail pour le tirage au sort

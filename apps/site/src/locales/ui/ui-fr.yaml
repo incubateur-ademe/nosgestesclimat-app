@@ -1280,8 +1280,8 @@ entries:
   common.authentication.verifyEmail: Vérifier mon adresse e-mail
   common.optional: facultatif
   common.skip: Passer
-  tutorial.email.contest.default: Votre e-mail sera utilisé pour le tirage au sort.
-  tutorial.email.contest.youth: Ton e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.default: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.youth: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.seeMore: En savoir plus
   tutorial.email.subtitle.default: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
@@ -1419,7 +1419,7 @@ entries:
   common.days: Jours
   common.hours: heures
   common.minutes: Minutes
-  common.seconds: secondes
+  common.seconds: seconds
   event.testimonies.4.author.job: Test collectif réalisé par l’organisation Pass Culture
   Toutes: Toutes
   simulator.dontKnow.button.reassuranceYouth: Pas d'inquiétude, on prend des données moyennes pour garder les résultats fiables.
@@ -1465,3 +1465,8 @@ entries:
   actions.components.highestImpactActionsSection.publicDescription: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
   actions.detailPage.sections.otherThemeActions.description: Sélectionnées selon vos réponses au simulateur
   actions.detailPage.sections.otherThemeActions.title: Découvrez d’autres actions pour réduire votre empreinte
+  event.dynamicCounter.target.title.default: Objectif
+  event.dynamicCounter.target.title.over: Objectif dépassé
+  event.dynamicCounter.target.title.topped: Objectif atteint
+  tutorial.email.title.defaultContest: Votre adresse e-mail pour le tirage au sort
+  tutorial.email.title.youthContest: Ton adresse e-mail pour le tirage au sort
