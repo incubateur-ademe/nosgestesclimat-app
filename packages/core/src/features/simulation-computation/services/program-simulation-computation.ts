@@ -35,6 +35,9 @@ export function createProgramSimulationComputation(
       return
     }
 
-    await createSimulationComputation(simulationId)
+    const result = await createSimulationComputation(simulationId)
+    if (!result.success) {
+      logger.warn(result.error.name, { simulationId })
+    }
   }
 }

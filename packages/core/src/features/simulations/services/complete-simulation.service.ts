@@ -12,7 +12,6 @@ import { findGroupsBySimulationId } from '../../groups/repositories/group.reposi
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import { findPollsBySimulationId } from '../../polls/repositories/poll.repository.ts'
 import { UnsupportedModelError } from '../../simulation-computation/errors/simulation-computation.error.ts'
-import { ComputationAlreadyExistsException } from '../../simulation-computation/exceptions/simulation-computation.exception.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { findUserById } from '../../users/repositories/users.repository.ts'
@@ -99,8 +98,8 @@ export function createCompleteSimulation({
       captureException(exception)
     }
 
-    const written = await transaction(async (tx) => {
-      const result = await updateSimulation(
+    const updated = await transaction(async (tx) => {
+      const update = await updateSimulation(
         {
           id: simulationId,
           userId,
@@ -111,25 +110,21 @@ export function createCompleteSimulation({
         },
         tx
       )
-      if (!result.success) return result
+      if (!update.success) return update
 
       if (isModelSupportedForComputation) {
-        try {
-          await createSimulationComputation(simulationId, tx)
-        } catch (error) {
-          if (error instanceof ComputationAlreadyExistsException) {
-            logger.warn(error.name, { simulationId })
-          } else {
-            throw error
-          }
+        const computation = await createSimulationComputation(simulationId, tx)
+        if (!computation.success) {
+          logger.warn(computation.error.name, { simulationId })
         }
       }
 
       // TODO: create poll stats computation
 
-      return result
+      return success()
     })
-    if (!written.success) return written
+
+    if (!updated.success) return updated
 
     runInBackground(async () => {
       if (!userSession.isAuth || !userSession.email) return

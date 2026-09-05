@@ -4,7 +4,7 @@ export type Success<Data> = Data extends void
   ? { success: true }
   : { success: true; data: Data }
 
-type Failure<Err extends ErrorWithCode = ErrorWithCode> = {
+export type Failure<Err extends ErrorWithCode = ErrorWithCode> = {
   success: false
   error: Err
 }

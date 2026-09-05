@@ -9,3 +9,12 @@ export class UnsupportedModelError extends DomainError<'unsupported_model'> {
     this.model = model
   }
 }
+
+export class ComputationAlreadyExistsError extends DomainError<'computation_already_exists'> {
+  public readonly simulationId: string
+
+  constructor(simulationId: string) {
+    super('computation_already_exists', 'Computation already exists')
+    this.simulationId = simulationId
+  }
+}

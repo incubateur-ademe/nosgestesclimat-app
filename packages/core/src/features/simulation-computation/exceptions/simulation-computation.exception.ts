@@ -6,12 +6,6 @@ export class SimulationComputationFailedException extends Exception<{
   level = 'fatal' as const
 }
 
-export class ComputationAlreadyExistsException extends Exception<{
-  simulationId: string
-}> {
-  level = 'error' as const
-}
-
 export class SimulationNotFinishedException extends Exception<{
   simulationId: string
   progression: number
