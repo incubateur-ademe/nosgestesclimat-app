@@ -20,17 +20,11 @@ const groupSelect = {
   updatedAt: true,
 } as const
 
-export const findGroupsBySimulationId = async ({
-  simulationId,
-}: {
-  simulationId: string
-}): Promise<Group[]> => {
-  const rows = await prisma.groupParticipant.findMany({
-    where: { simulationId },
-    // Oldest first: the last entry is the group the user most recently joined.
-    orderBy: { createdAt: 'asc' },
-    select: { group: { select: groupSelect } },
+export const findGroupById = async (id: string): Promise<Group | null> => {
+  const row = await prisma.group.findUnique({
+    where: { id },
+    select: groupSelect,
   })
 
-  return rows.map(({ group }) => toGroup(group))
+  return row ? toGroup(row) : null
 }

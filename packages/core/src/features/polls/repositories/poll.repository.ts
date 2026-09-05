@@ -47,17 +47,11 @@ const pollSelect = {
   },
 } as const
 
-export const findPollsBySimulationId = async ({
-  simulationId,
-}: {
-  simulationId: string
-}): Promise<Poll[]> => {
-  const rows = await prisma.simulationPoll.findMany({
-    where: { simulationId },
-    // Oldest first: the last entry is the poll the user most recently joined.
-    orderBy: { createdAt: 'asc' },
-    select: { poll: { select: pollSelect } },
+export const findPollById = async (id: string): Promise<Poll | null> => {
+  const row = await prisma.poll.findUnique({
+    where: { id },
+    select: pollSelect,
   })
 
-  return rows.map(({ poll }) => toPoll(poll))
+  return row ? toPoll(row) : null
 }

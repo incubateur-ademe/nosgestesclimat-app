@@ -1,6 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { RunInBackground } from '../../../lib/background-task.ts'
+import { invariant } from '../../../lib/invariant.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
 import { transaction } from '../../../lib/transaction.ts'
@@ -8,9 +9,9 @@ import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import { findGroupsBySimulationId } from '../../groups/repositories/group.repository.ts'
+import { findGroupById } from '../../groups/repositories/group.repository.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
-import { findPollsBySimulationId } from '../../polls/repositories/poll.repository.ts'
+import { findPollById } from '../../polls/repositories/poll.repository.ts'
 import { UnsupportedModelError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
@@ -145,9 +146,10 @@ export function createCompleteSimulation({
         }),
         (async () => {
           // The most recent membership is the one the user just completed.
-          const polls = await findPollsBySimulationId({ simulationId })
-          const poll = polls.at(-1)
-          if (poll) {
+          const lastPoll = simulation.polls?.at(-1)
+          if (lastPoll) {
+            const poll = await findPollById(lastPoll.id)
+            invariant(poll)
             return sendPollJoinedEmail({
               organisation: poll.organisation,
               simulationId,
@@ -159,13 +161,13 @@ export function createCompleteSimulation({
           }
 
           // Only try to find group if no poll was found (polls are more frequent than groups)
-          const groups = await findGroupsBySimulationId({ simulationId })
-          const group = groups.at(-1)
-          if (group) {
-            // The name of the user is only needed by the group emails
-            const user = await findUserById(userId)
-            // should never happen since we check the user session before
-            if (!user || !user.email) throw new Error('invariant')
+          const lastGroup = simulation.groups?.at(-1)
+          if (lastGroup) {
+            const [group, user] = await Promise.all([
+              findGroupById(lastGroup.id),
+              findUserById(userId),
+            ])
+            invariant(group && user && user.email) // safe as retrieve by reliable ids
             const params = {
               group,
               origin,
