@@ -22,9 +22,8 @@ test.describe('when a user starts to answer test', () => {
     await page.waitForURL(/\/simulateur\/bilan/)
     await ngcTest.skipButton().click()
     await ngcTest.skipButton().click()
-    await ngcTest.skipButton().click()
-    // Wait for the autosave to trigger
-    await page.waitForTimeout(5000)
+    // The last skip persists the progress the assertions below rely on.
+    await ngcTest.waitForProgressSave(() => ngcTest.skipButton().click())
   })
 
   test('it should not be displayed if the user continue the test', async ({

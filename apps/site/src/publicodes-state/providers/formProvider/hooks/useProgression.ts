@@ -56,5 +56,10 @@ export default function useProgression({
 
   return {
     remainingQuestionsByCategories,
+    /**
+     * Fresh at render time, unlike `simulation.progression` which the effect
+     * above only catches up with on the next commit.
+     */
+    progression: currentStoredProgression === 1 ? 1 : progression,
   }
 }

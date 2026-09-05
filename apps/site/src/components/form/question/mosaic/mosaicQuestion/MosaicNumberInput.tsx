@@ -13,6 +13,7 @@ interface Props {
   icons?: string
   description?: string
   setValue: (value: number | '' | undefined) => void
+  onBlur: () => void
   index: number
   value: number | undefined | '' | null
   parentMosaic: string
@@ -25,6 +26,7 @@ export default function MosaicNumberInput({
   icons,
   description,
   setValue,
+  onBlur,
   index,
   value,
   parentMosaic,
@@ -96,6 +98,7 @@ export default function MosaicNumberInput({
             }
             setValue(inputValue === '' ? inputValue : floatValue)
           }}
+          onBlur={onBlur}
           data-testid={question}
           id={`${DEFAULT_FOCUS_ELEMENT_ID}-${index}`}
           aria-describedby={warningId}

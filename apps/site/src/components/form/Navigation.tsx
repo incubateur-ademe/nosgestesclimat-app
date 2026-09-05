@@ -17,6 +17,7 @@ import {
 } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
+import { useSaveSimulationProgress } from '@/hooks/simulation/useSaveSimulationProgress'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
 import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
@@ -134,6 +135,8 @@ export default function Navigation({
   }, [hasActiveNotifications, setNotificationValue])
 
   const { updateCurrentSimulation } = useUser()
+
+  const { requestSaveSimulationProgress } = useSaveSimulationProgress()
 
   // Check if the numeric value or one of numeric mosaic children is out of bounds (floor/ceiling)
   const { isNextDisabled } = useIsDisabledByBounds(question)
@@ -260,6 +263,10 @@ export default function Navigation({
 
       if (isLastQuestion && !isIntercalaireNext) {
         onComplete()
+      } else {
+        // `endTest` saves the whole simulation itself, so the last question is
+        // the one submission that must not persist its progress here.
+        requestSaveSimulationProgress()
       }
     },
     [
@@ -274,6 +281,7 @@ export default function Navigation({
       isLastQuestion,
       isIntercalaireNext,
       onComplete,
+      requestSaveSimulationProgress,
       persistedRemainingQuestions.length,
     ]
   )

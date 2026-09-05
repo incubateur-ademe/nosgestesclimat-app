@@ -5,6 +5,7 @@ import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
 import { questionClickPass } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
+import { useSaveSimulationProgress } from '@/hooks/simulation/useSaveSimulationProgress'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import {
   useEngine,
@@ -28,6 +29,7 @@ export default function DontKnowButton({ question }: Props) {
   const { t } = useClientTranslation()
   const { goToNextQuestion } = useGotoNextQuestion()
   const { updateCurrentSimulation } = useUser()
+  const { requestSaveSimulationProgress } = useSaveSimulationProgress()
   const maybeSimulation = useOptionalSimulation()
 
   const simulationMode = getSimulationMode(maybeSimulation)
@@ -81,6 +83,10 @@ export default function DontKnowButton({ question }: Props) {
     handleFoldWithDefaultValue()
 
     goToNextQuestion()
+
+    // On the last question this is a no-op: the hook refuses to persist a
+    // completed progression, which `endTest` owns.
+    requestSaveSimulationProgress()
   }
 
   return (

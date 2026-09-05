@@ -33,6 +33,7 @@ export default function NumberInputWithAssistance({
     value: currentValue,
     placeholder: currentPlaceholder,
     handleValueChange,
+    handleBlur,
   } = useNumberInputWithAssistanceState({
     question,
     value,
@@ -57,6 +58,7 @@ export default function NumberInputWithAssistance({
         value={currentValue as Evaluation<number>}
         placeholder={currentPlaceholder}
         handleValueChange={handleValueChange}
+        onBlur={handleBlur}
         unit={currentUnit}
         id={id}
         {...props}

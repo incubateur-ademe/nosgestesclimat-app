@@ -21,6 +21,12 @@ export function useNumberInputState({ value, setValue }: Props) {
     debouncedSetValue(values.floatValue)
   }
 
+  // Leaving the field commits right away: clicking "Suivant" blurs it first, and
+  // the save that follows must not send the value from before the last keystroke.
+  const handleBlur = () => {
+    debouncedSetValue.flush()
+  }
+
   // La valeur peut être mise à jour depuis l'exterieur (via les boutons de suggestion par exemple)
   // Quand ça arrive, la valeur de `value` et `currentValues` sont désynchronisées.
   // Pour reset le champs avec la valeur passée en prop, on reset `currentValues.value` a undefined.
@@ -35,5 +41,6 @@ export function useNumberInputState({ value, setValue }: Props) {
     value: (currentValues.value ??
       currentValues.floatValue) as Evaluation<number>,
     onChange: handleValueChange,
+    onBlur: handleBlur,
   }
 }

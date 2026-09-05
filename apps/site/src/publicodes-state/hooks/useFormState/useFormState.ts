@@ -20,6 +20,7 @@ export default function useFormState() {
     relevantAnsweredQuestions,
     remainingQuestionsByCategories,
     missingVariables,
+    progression,
   } = useContext(formContext)
 
   const {
@@ -115,6 +116,13 @@ export default function useFormState() {
      * Advancement of the test between 0 and 1. This is different from "progression" which it is based on the current question index here and not on the number of answered questions.
      */
     testAdvancement,
+    /**
+     * Share of the relevant questions that have been answered, between 0 and 1.
+     * Unlike `testAdvancement` it counts answers, not the current question index.
+     * Fresher than `simulation.progression`, which the form provider only writes
+     * back on the next commit.
+     */
+    progression,
     /**
      * Missing variables and score with the current situation
      */

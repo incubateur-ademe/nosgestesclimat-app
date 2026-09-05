@@ -21,7 +21,7 @@ export default function Mosaic({
   label,
   overLimitQuestions = [],
 }: Props) {
-  const { values, setValue, aucunOption } = useMosaicState({
+  const { values, setValue, flushSetValue, aucunOption } = useMosaicState({
     questionsOfMosaic,
     question,
   })
@@ -42,6 +42,7 @@ export default function Mosaic({
             firstInputId={firstInputId}
             value={values[questionOfMosaic]}
             setValue={setValue}
+            flushSetValue={flushSetValue}
             warningId={
               overLimitQuestions.includes(questionOfMosaic)
                 ? getWarningId(questionOfMosaic)

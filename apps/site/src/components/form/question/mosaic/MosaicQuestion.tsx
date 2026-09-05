@@ -17,6 +17,7 @@ interface Props {
     dottedName: DottedName,
     value: number | boolean | '' | undefined
   ) => void
+  flushSetValue: () => void
   warningId?: string
 }
 
@@ -26,6 +27,7 @@ export default function MosaicQuestion({
   index,
   value,
   setValue,
+  flushSetValue,
   firstInputId,
   warningId,
 }: Props) {
@@ -47,6 +49,7 @@ export default function MosaicQuestion({
           index={index}
           value={value}
           setValue={(value) => setValue(question, value)}
+          onBlur={flushSetValue}
           warningId={warningId}
           {...maybeIdFirstInput}
         />

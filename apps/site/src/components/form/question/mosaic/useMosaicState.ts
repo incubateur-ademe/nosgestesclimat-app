@@ -27,6 +27,7 @@ export function useMosaicState({
     dottedName: DottedName,
     value: boolean | number | '' | undefined
   ) => void
+  flushSetValue: () => void
   aucunOption:
     | {
         value: boolean
@@ -153,6 +154,10 @@ export function useMosaicState({
   return {
     values: state,
     setValue: handleSetValue,
+    // Leaving a number field commits right away: clicking "Suivant" blurs it
+    // first, and the save that follows must not send the value from before the
+    // last keystroke.
+    flushSetValue: setValuesLater.flush,
     aucunOption: aucunOption
       ? {
           value: aucunOptionSelected,

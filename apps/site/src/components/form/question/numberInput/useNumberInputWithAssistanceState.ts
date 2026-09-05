@@ -60,7 +60,7 @@ export const useNumberInputWithAssistanceState = ({
   assistance,
   setValue,
 }: NumberInputWithAssistanceStateProps) => {
-  const { value, onChange } = useNumberInputState({
+  const { value, onChange, onBlur } = useNumberInputState({
     value: defaultValue,
     setValue,
   })
@@ -151,6 +151,14 @@ export const useNumberInputWithAssistanceState = ({
     onChange(values)
   }
 
+  // Leaving the field commits right away, whichever of the two debounced writers
+  // is pending: clicking "Suivant" blurs it first, and the save that follows must
+  // not send the value from before the last keystroke.
+  const handleBlur = () => {
+    debouncedSyncQuestionAndAssistance.flush()
+    onBlur()
+  }
+
   return {
     currentUnit,
     assistanceUnit,
@@ -167,5 +175,6 @@ export const useNumberInputWithAssistanceState = ({
           ? placeholder
           : '',
     handleValueChange,
+    handleBlur,
   }
 }

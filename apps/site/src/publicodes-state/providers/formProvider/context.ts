@@ -14,6 +14,7 @@ interface FormContextType {
   currentCategory: DottedName | null
   setCurrentQuestion: (question: DottedName) => void
   missingVariables: MissingVariables
+  progression: number
 }
 export default createContext<FormContextType>({
   questionsByCategories: {} as Record<DottedName, DottedName[]>,
@@ -25,4 +26,5 @@ export default createContext<FormContextType>({
   currentCategory: null,
   setCurrentQuestion: () => '',
   missingVariables: {} as MissingVariables,
+  progression: 0,
 })

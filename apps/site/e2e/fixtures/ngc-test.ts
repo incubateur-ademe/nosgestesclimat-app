@@ -67,6 +67,20 @@ export class NGCTest {
     return this.page.getByTestId('skip-question-button')
   }
 
+  // Progress is persisted when a question is submitted, not on a timer, so a
+  // spec that needs the server to know about it waits for that server action.
+  // Server actions POST with a `next-action` header, which sets them apart from
+  // the RSC GETs the question query-param sync triggers.
+  async waitForProgressSave(action: () => Promise<void>) {
+    const progressSaved = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        !!response.request().headers()['next-action']
+    )
+    await action()
+    await progressSaved
+  }
+
   private endButton() {
     return this.page.getByTestId('end-test-button')
   }

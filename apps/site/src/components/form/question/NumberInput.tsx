@@ -24,7 +24,7 @@ export default function NumberInput({
   id,
   ...props
 }: ComponentProps<typeof NumericFormat> & Props) {
-  const { value, onChange } = useNumberInputState({
+  const { value, onChange, onBlur } = useNumberInputState({
     value: defaultValue,
     setValue,
   })
@@ -35,6 +35,7 @@ export default function NumberInput({
       value={value}
       placeholder={value === undefined ? placeholder : ''}
       handleValueChange={onChange}
+      onBlur={onBlur}
       id={id}
       unit={unit}
       {...props}
