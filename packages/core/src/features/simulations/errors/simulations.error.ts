@@ -1,5 +1,6 @@
 import type { InvalidPayloadError } from '../../../lib/errors.ts'
 import { DomainError } from '../../../lib/errors.ts'
+import type { ComputationAlreadyExistsError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
   constructor() {
@@ -36,4 +37,5 @@ export type CompleteSimulationError =
   | SimulationNotFoundError
   | SimulationCompletedError
   | ZeroFootprintError
+  | ComputationAlreadyExistsError
   | InvalidPayloadError

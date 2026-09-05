@@ -114,9 +114,7 @@ export function createCompleteSimulation({
 
       if (isModelSupportedForComputation) {
         const computation = await createSimulationComputation(simulationId, tx)
-        if (!computation.success) {
-          logger.warn(computation.error.name, { simulationId })
-        }
+        if (!computation.success) return computation
       }
 
       // TODO: create poll stats computation
