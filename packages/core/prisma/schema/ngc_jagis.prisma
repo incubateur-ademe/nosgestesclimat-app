@@ -16,11 +16,10 @@ model Action {
 }
 
 model ActionTranslation {
-  id       String @id @default(uuid()) @db.Uuid
-  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  actionId String @db.Uuid
-  locale   String
-
+  id                  String       @id @default(uuid()) @db.Uuid
+  action              Action       @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  actionId            String       @db.Uuid
+  locale              String
   title               String
   slug                String
   description         String?
