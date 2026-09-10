@@ -1101,7 +1101,7 @@ entries:
   simulation.eau.documentation.description: Notre calculateur repose sur un modèle de données, dont l'intégralité des calculs est documentée ; les données affichées sont directement associées à votre test.
   simulation.eau.documentation.link: Comprendre le calcul
   simulation.eau.documentation.title: Comment est calculée votre empreinte ?
-  simulation.eau.title: L’empreinte eau qui sert à produire ce que vous consommez
+  simulation.eau.title: L'empreinte eau qui sert à produire ce que vous consommez
   simulation.eau.whatIsWaterFootprint.description: "L'empreinte eau, c'est <2>l'ensemble de l'eau consommée</2> pour <5>produire</5>et <7>distribuer</7> les biens et services de votre quotidien. Par exemple il faut de l'eau pour :"
   simulation.eau.whatIsWaterFootprint.list.animals: l'alimentation des <1>animaux</1> que vous consommez
   simulation.eau.whatIsWaterFootprint.list.cotton: la culture du <1>coton</1> que vous portez
@@ -1396,7 +1396,7 @@ entries:
   event.podium.empty.type.public-services: collectivité
   results.footprintBlock.actionsBlock.link: Découvrir mes actions
   results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
-  common.co2eAn.title: CO₂e / an
+  common.co2eAn.title: CO₂e / an
   iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
   iframe.safari.errorTitle: Version de Safari incompatible

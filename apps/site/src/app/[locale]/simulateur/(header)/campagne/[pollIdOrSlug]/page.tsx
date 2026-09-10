@@ -2,15 +2,15 @@ import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
 import Emoji from '@/design-system/utils/Emoji'
-import { throwNextError } from '@/helpers/server/error'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
-import { getPublicPoll } from '@/services/organisations/get-public-poll'
+import { getPoll } from '@/services/polls/get-poll'
 import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { getPollParticipation } from '@/services/simulations/get-poll-participation'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
-import { redirect } from 'next/navigation'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
+import { notFound, redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
@@ -26,24 +26,19 @@ export default async function CampagnePage({
     locale: Locale
   }
 
-  const [poll, lastCompletedSimulation, currentSimulation] =
-    await throwNextError(() =>
-      Promise.all([
-        getPublicPoll(pollIdOrSlug),
-        getLastCompletedSimulation(),
-        getCurrentSimulation(),
-      ])
-    )
+  const [poll, lastCompletedSimulation, currentPollSimulation] =
+    await Promise.all([
+      getPoll(pollIdOrSlug),
+      getLastCompletedSimulation(),
+      getPollParticipation(pollIdOrSlug),
+    ])
+  if (!poll) notFound()
 
-  if (
-    currentSimulation &&
-    currentSimulation.progression < 1 &&
-    currentSimulation.polls?.some((p) => p.id === poll.id)
-  ) {
+  if (currentPollSimulation && !isSimulationCompleted(currentPollSimulation)) {
     redirect(SIMULATOR_PATH)
   }
 
-  async function createNewSimulation() {
+  const createNewSimulation = async () => {
     'use server'
     await createPollSimulation({
       poll,
@@ -57,7 +52,7 @@ export default async function CampagnePage({
     redirect(SIMULATOR_PATH)
   }
 
-  async function reuseSimulation() {
+  const reuseSimulation = async () => {
     'use server'
     if (!lastCompletedSimulation) return
     await createPollSimulation({
@@ -75,7 +70,7 @@ export default async function CampagnePage({
     !!lastCompletedSimulation &&
     poll.mode === 'standard' &&
     getSimulationMode(lastCompletedSimulation) === 'standard' &&
-    !poll.simulations.hasParticipated &&
+    !currentPollSimulation &&
     // eslint-disable-next-line react-hooks/purity
     Date.now() - new Date(lastCompletedSimulation.date as string).getTime() <
       6 * 30 * 24 * 3600 * 1000
@@ -110,6 +105,9 @@ export default async function CampagnePage({
   const buttonNext = (
     <PollTutorialButton
       poll={poll}
+      hasCompletedPollSimulation={
+        !!currentPollSimulation && isSimulationCompleted(currentPollSimulation)
+      }
       locale={locale}
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       createSimulation={createNewSimulation}

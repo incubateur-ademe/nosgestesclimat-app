@@ -4,11 +4,9 @@ import { noIndexObject } from '@/constants/metadata'
 import { END_PAGE_PATH } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { throwNextError } from '@/helpers/server/error'
-import { getSimulationResult } from '@/helpers/server/model/simulationResult'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
+import { getLatestSimulationResult } from '@/services/simulations/get-latest-simulation-result'
 import type { DefaultPageProps } from '@/types'
 import { notFound } from 'next/navigation'
 
@@ -37,15 +35,10 @@ export default async function SimulationPage({
 }: PageProps<'/[locale]/fin/eau'>) {
   const { locale } = await params
   const user = await getUserSession()
-  const simulation = await getLastCompletedSimulation()
-  if (!user || !simulation) {
+  const result = await getLatestSimulationResult({ withTendency: false })
+  if (!user) {
     notFound()
   }
-  const simulationResult = await throwNextError(async () => {
-    return await getSimulationResult({
-      simulation,
-    })
-  })
 
   return (
     <>
@@ -56,7 +49,7 @@ export default async function SimulationPage({
       />
 
       <WaterFootprintResults
-        simulationResult={simulationResult}
+        computedResults={result.simulation.computedResults}
         locale={locale as Locale}
         hideSaveBlock={user.isAuth}
       />

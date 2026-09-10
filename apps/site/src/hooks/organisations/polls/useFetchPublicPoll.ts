@@ -1,6 +1,6 @@
 'use client'
 
-import { getPublicPoll } from '@/services/organisations/get-public-poll'
+import { getPublicPollDeprecated } from '@/services/organisations/get-public-poll-deprecated'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
 import { useParams, useSearchParams } from 'next/navigation'
@@ -20,7 +20,7 @@ export const useFetchPublicPoll = ({
 
   return useQuery({
     queryKey: ['organisations', 'polls', localPollIdOrSlug],
-    queryFn: () => getPublicPoll(localPollIdOrSlug as string),
+    queryFn: () => getPublicPollDeprecated(localPollIdOrSlug as string),
     enabled: !!localPollIdOrSlug && enabled,
     retry: false,
   })

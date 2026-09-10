@@ -6,7 +6,6 @@ import type { AppUser } from '../../../auth/types/user-session.ts'
 import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import { groupFactory } from '../../../groups/factories/group.factory.ts'
-import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
@@ -340,7 +339,7 @@ describe('completeSimulation', () => {
       const user = await verifiedUser()
       const simulation = await startedSimulation(user.id)
       await joinPoll(simulation.id)
-      const { poll, organisation } = await joinPoll(simulation.id)
+      const { poll } = await joinPoll(simulation.id)
 
       await completeSimulation({
         userSession: authenticated(user),
@@ -354,9 +353,9 @@ describe('completeSimulation', () => {
         email: user.email,
         templateId: TemplateIds.fr.ORGANISATION_JOINED,
         params: expect.objectContaining({
-          ORGANISATION_NAME: organisation.name,
+          ORGANISATION_NAME: poll.organisation.name,
           DETAILED_VIEW_URL: expect.stringContaining(
-            `${origin}/organisations/${organisation.slug}/campagnes/${poll.slug}`
+            `${origin}/organisations/${poll.organisation.slug}/campagnes/${poll.slug}`
           ),
           SIMULATION_URL: expect.stringContaining(`sid=${simulation.id}`),
         }),
@@ -612,12 +611,11 @@ const startedSimulation = (userId: string) =>
     .create()
 
 const joinPoll = async (simulationId: string) => {
-  const organisation = await organisationFactory.create()
-  const poll = await pollFactory.withOrganisation(organisation.id).create()
+  const poll = await pollFactory.create()
   await prisma.simulationPoll.create({
     data: { pollId: poll.id, simulationId },
   })
-  return { poll, organisation }
+  return { poll }
 }
 
 const joinGroup = async ({
