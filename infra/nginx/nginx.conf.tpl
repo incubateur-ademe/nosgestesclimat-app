@@ -194,8 +194,9 @@ server {
         add_header Cache-Control "public, max-age=31536000, immutable" always;
     }
 
-    # Images Next.js, fonts et assets divers via Scalingo, cachés 30 jours.
-    location ~ ^/(_next/image|images|misc|fonts)/ {
+    # Images Next.js (optimiseur `/_next/image?url=…`), fonts et assets divers
+    # via Scalingo, cachés 30 jours.
+    location ~ ^/(_next/image|images|misc|fonts)(/|$) {
         proxy_pass https://scalingo;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
