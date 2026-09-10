@@ -94,8 +94,10 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
   `/(images|misc|fonts)/` et proxy PostHog `/revp/`) ne sont écrites dans
   `access.log` qu'en cas d'erreur (4xx/5xx) → moins de volume et de bruit.
 - `otelcol-contrib` (service systemd, user `otelcol-contrib`) :
-  - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte, préfixe
-    stable parsé par regex — le `error_log json` est réservé à NGINX Plus) ;
+  - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte parsé par
+    regex : préfixe `time [level] pid#tid: *connection` + contexte `server`,
+    `request`, `upstream`, `host`). `client` et `referrer` sont exclus (PII),
+    et le `error_log json` est Plus-only ;
   - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
     pour alléger le volume envoyé à PostHog ;
   - masque les IP (`client: <ip>` dans error.log) et emails
@@ -106,9 +108,9 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 - Corrélation : `$request_id` (généré par nginx) est propagé à l'app via
   `X-Request-ID` et mappé en `trace_id` du log côté collecteur (convention
   OTel) — pour relier logs nginx et logs applicatifs partageant cet ID.
-  `$connection` (logué) relie en plus une ligne d'`access.log` à la ligne
-  correspondante d'`error.log` (préfixe `*N`) ; `$upstream_addr` distingue un
-  502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
+  `connection` (extrait des deux logs) permet de filtrer dans PostHog une ligne
+  d'`access.log` et la ligne d'`error.log` correspondante ; `upstream_addr`
+  distingue un 502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
 - La clé est stockée dans `/etc/otelcol-contrib/otelcol-contrib.env` (0600),
   chargée par systemd (`EnvironmentFile`).
 

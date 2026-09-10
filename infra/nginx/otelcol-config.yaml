@@ -59,8 +59,9 @@ receivers:
     include_file_path: true
     storage: file_storage
     operators:
+      # Préfixe fixe : `time [level] pid#tid: *connection`.
       - type: regex_parser
-        regex: '^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\]'
+        regex: '^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\] (?P<pid>\d+)#(?P<tid>\d+): \*(?P<connection>\d+)' # yamllint disable-line rule:line-length
         timestamp:
           parse_from: attributes.time
           layout_type: strptime
@@ -76,6 +77,20 @@ receivers:
             crit: fatal
             alert: fatal
             emerg: fatal
+      # Contexte de requête (optionnel selon le type d'erreur). On ancre sur les
+      # libellés (pas la position). `client`/`referrer` exclus : PII.
+      - type: regex_parser
+        regex: 'server: (?P<server>[^,]+)'
+        on_error: send
+      - type: regex_parser
+        regex: 'request: "(?P<request>[^"]*)"'
+        on_error: send
+      - type: regex_parser
+        regex: 'upstream: "(?P<upstream>[^"]*)"'
+        on_error: send
+      - type: regex_parser
+        regex: 'host: "(?P<host>[^"]*)"'
+        on_error: send
 
 processors:
   resource/nginx:
@@ -98,7 +113,7 @@ processors:
     log_statements:
       - context: log
         statements:
-          - 'replace_pattern(body, "client:? [0-9:.]+", "client [ip]")'
+          - 'replace_pattern(body, "client:? [0-9a-fA-F:.]+", "client [ip]")'
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
           - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
 
