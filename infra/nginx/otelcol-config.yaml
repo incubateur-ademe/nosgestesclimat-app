@@ -104,8 +104,8 @@ processors:
 
 exporters:
   otlphttp/posthog:
-    # Région EU. Pour un workspace US : https://us.i.posthog.com/i/v1/logs
-    endpoint: https://eu.i.posthog.com/i/v1/logs
+    # Base OTLP : l'exporter ajoute /v1/logs. EU (US : us.i.posthog.com/i)
+    endpoint: https://eu.i.posthog.com/i
     headers:
       Authorization: Bearer ${env:POSTHOG_PROJECT_TOKEN}
     retry_on_failure:
