@@ -97,25 +97,21 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 - `otelcol-contrib` (service systemd, user `otelcol-contrib`) :
   - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte parsé par
     regex : préfixe `time [level] pid#tid: *connection` + contexte `server`,
-    `request`, `upstream`, `host`). `client` et `referrer` sont exclus (PII),
-    et le `error_log json` est Plus-only ;
-  - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
-    pour alléger le volume envoyé à PostHog ;
-  - dans les receivers : emails masqués sur la ligne brute avant parsing (une
-    seule règle couvre tous les champs) et `network.protocol.version` normalisé
-    en semconv (`HTTP/1.1` → `1.1`, `HTTP/2.0` → `2`) ;
-  - dans `transform/access` : pose `event_name=nginx.access` ;
-  - dans `transform/error` : pose `event_name=nginx.error` et masque, dans le
-    message, les IP (`client: <ip>`, IPv4 et IPv6) et la query du `referrer`.
-    Les pipelines sont séparés car les deux logs n'ont pas le même contenu ;
+    `request`, `upstream`, `host` — `client` et `referrer` ne sont pas extraits,
+    et le `error_log json` est Plus-only) ;
+  - masque sur la ligne brute, **avant parsing** : emails, IP client (IPv4 et
+    IPv6) et query du `referrer` — donc dans tous les champs d'un coup ;
+  - normalise `network.protocol.version` en semconv (`HTTP/1.1` → `1.1`,
+    `HTTP/2.0` → `2`) et retire le `body` de l'access log (JSON brut redondant
+    avec les attributs) pour alléger le volume ;
+  - pose `event_name=nginx.access|nginx.error` : attribut semconv promu en
+    champ natif `EventName` (que stanza ne sait pas écrire) puis retiré ;
   - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
   - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
     `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
 - Corrélation : `$request_id` (généré par nginx) est propagé à l'app via
-  `X-Request-ID` et mappé en `trace_id` du log côté collecteur (convention
-  OTel) — l'attribut `request_id` est ensuite supprimé (la valeur vit dans le
-  `trace_id`, filtrable dans PostHog). Pour relier logs nginx et logs
-  applicatifs partageant cet ID.
+  `X-Request-ID` et mappé en `trace_id` du log (convention OTel), pour relier
+  logs nginx et logs applicatifs partageant cet ID.
   `connection` (extrait des deux logs) permet de filtrer dans PostHog une ligne
   d'`access.log` et la ligne d'`error.log` correspondante ; `upstream_addr`
   distingue un 502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
@@ -128,17 +124,16 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
   indisponibles, le trafic n'est pas affecté et les logs restent sur disque.
 - Offsets de lecture persistés (`file_storage`) : reprise exacte après restart
   ou rotation de logs (ni trou, ni doublon).
-- File-queue persistée sur disque — le reste (retry 5s → 30s / 5 min max,
-  10 consommateurs, 1000 lots ≈ 1 h 20 de tampon) sont les défauts de
-  l'exporter : coupure réseau absorbée sans perte, y compris sur restart.
+- File d'export persistée sur disque : les logs en attente survivent à un
+  redémarrage du collecteur et repartent à la reprise (coupure réseau absorbée).
 
 ### Données personnelles (RGPD)
 
 Aucune donnée directement identifiante n'est envoyée à PostHog :
 
 - **IP** : retirée de `access.log` (pas de `remote_addr`). Dans `error.log`
-  (format nginx figé, qui inclut `client: <ip>`), elles sont masquées côté
-  collecteur (`transform/error`) — **IPv4 et IPv6**.
+  (format nginx figé, qui inclut `client: <ip>`), elles sont masquées par le
+  collecteur — **IPv4 et IPv6**.
 - **Query strings** : conservées (attribut `url.query`, séparé du chemin
   `url.path`) pour le debugging, mais les emails qu'elles contiennent sont
   masqués côté collecteur.

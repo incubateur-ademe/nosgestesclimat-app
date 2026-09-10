@@ -58,10 +58,9 @@ upstream scalingo {
 # JSON structuré : chaque champ devient un attribut filtrable dans PostHog.
 # Les champs `http.*`, `url.*` et `user_agent.*` suivent les conventions
 # sémantiques OTel (semconv) ; les autres restent nginx-spécifiques.
-# Sans IP (remote_addr) ni referer. La query string est conservée : les
-# éventuels emails qu'elle contient sont masqués côté collecteur
-# (transform/access). `network.protocol.version` reçoit `$server_protocol` brut
-# ("HTTP/1.1"), normalisé en semconv ("1.1", "2", "3") par le collecteur.
+# Sans IP (remote_addr) ni referer. La query string est conservée pour le
+# debugging : les emails qu'elle contient sont masqués par le collecteur, qui
+# normalise aussi `network.protocol.version` (brut ici) en semconv.
 # `escape=json` échappe l'user-agent (JSON valide).
 log_format json_combined escape=json
   '{'
