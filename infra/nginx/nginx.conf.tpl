@@ -63,11 +63,15 @@ upstream scalingo {
 log_format json_combined escape=json
   '{'
     '"time_iso8601":"$time_iso8601",'
+    '"request_id":"$request_id",'
     '"request_method":"$request_method",'
     '"request_uri":"$request_uri",'
     '"status":$status,'
     '"body_bytes_sent":$body_bytes_sent,'
     '"request_time":$request_time,'
+    '"upstream_status":"$upstream_status",'
+    '"upstream_connect_time":"$upstream_connect_time",'
+    '"upstream_header_time":"$upstream_header_time",'
     '"upstream_response_time":"$upstream_response_time",'
     '"upstream_cache_status":"$upstream_cache_status",'
     '"http_user_agent":"$http_user_agent"'
@@ -126,6 +130,8 @@ server {
     proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto https;
+    # Corrélation : nginx → app → collecteur (mappé en trace_id du log).
+    proxy_set_header X-Request-ID $request_id;
     # Préserve la négo websocket si le client en initie une.
     proxy_set_header Upgrade $http_upgrade;
     # Conséquence de `Upgrade` ci-dessus — force l'header pour qu'il traverse nginx.

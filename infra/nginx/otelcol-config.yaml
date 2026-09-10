@@ -37,6 +37,11 @@ receivers:
           layout_type: strptime
           # %j = offset ±HH:MM (deux-points), comme $time_iso8601.
           layout: '%Y-%m-%dT%H:%M:%S%j'
+        # request_id (32 hex, généré par nginx) → trace_id du log : convention
+        # OTel pour corréler avec les traces/logs partageant le X-Request-ID.
+        trace:
+          trace_id:
+            parse_from: attributes.request_id
 
   # error.log : format texte d'nginx OSS. Le JSON (`error_log json`) est
   # réservé à NGINX Plus. Le préfixe est stable :
