@@ -88,10 +88,9 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 
 - `nginx.conf.tpl` écrit `access.log` au format JSON (`log_format json_combined`),
   chaque champ devenant un attribut filtrable dans PostHog — sans IP, sans
-  referer. Le collecteur les **normalise en conventions OTel** :
-  `http.request.method`, `http.response.status_code`, `url.path`, `url.query`,
-  `user_agent.original` ; les champs upstream restent nginx-spécifiques
-  (`upstream_cache_status`, `upstream_addr`, `upstream_status`, …).
+  referer. Les champs `http.*` / `url.*` / `user_agent.original` suivent les
+  **conventions sémantiques OTel** (semconv) ; les champs upstream restent
+  nginx-spécifiques (`upstream_cache_status`, `upstream_addr`, …).
 - Logging conditionnel : les routes bavardes (assets `/_next/`, `/_static/cms/`,
   `/(images|misc|fonts)/` et proxy PostHog `/revp/`) ne sont écrites dans
   `access.log` qu'en cas d'erreur (4xx/5xx) → moins de volume et de bruit.

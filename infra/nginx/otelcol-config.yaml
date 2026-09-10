@@ -107,7 +107,7 @@ processors:
     timeout: 5s
 
   # Masque les IP (`client: <ip>` d'error.log) et emails avant envoi à PostHog.
-  # Emails : body (ligne brute) + toutes les valeurs d'attributs (request_uri…).
+  # Emails : body (ligne brute) + toutes les valeurs d'attributs (url.query…).
   transform/scrub_pii:
     error_mode: ignore
     log_statements:
@@ -117,24 +117,6 @@ processors:
           - 'replace_pattern(body, "referrer: \"([^\"?]*)\\?[^\"]*\"", "referrer: \"$$1\"")' # yamllint disable-line rule:line-length
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
           - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
-
-  # Normalisation OTel (semconv) : renomme les champs nginx vers les noms
-  # standards, pour que les logs soient « compris » par les backends OTel.
-  transform/semconv:
-    error_mode: ignore
-    log_statements:
-      - context: log
-        statements:
-          - 'set(attributes["http.request.method"], attributes["request_method"])' # yamllint disable-line rule:line-length
-          - 'delete_key(attributes, "request_method")'
-          - 'set(attributes["http.response.status_code"], attributes["status"])'
-          - 'delete_key(attributes, "status")'
-          - 'set(attributes["url.path"], attributes["uri"])'
-          - 'delete_key(attributes, "uri")'
-          - 'set(attributes["url.query"], attributes["args"])'
-          - 'delete_key(attributes, "args")'
-          - 'set(attributes["user_agent.original"], attributes["http_user_agent"])' # yamllint disable-line rule:line-length
-          - 'delete_key(attributes, "http_user_agent")'
 
 exporters:
   otlphttp/posthog:
@@ -158,9 +140,5 @@ service:
   pipelines:
     logs/nginx:
       receivers: [filelog/access, filelog/error]
-      processors:
-        - resource/nginx
-        - transform/scrub_pii
-        - transform/semconv
-        - batch
+      processors: [resource/nginx, transform/scrub_pii, batch]
       exporters: [otlphttp/posthog]

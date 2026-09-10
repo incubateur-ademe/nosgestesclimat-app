@@ -55,8 +55,9 @@ upstream scalingo {
 # Logs au format JSON (consommés par l'OpenTelemetry Collector → PostHog)
 # ----------------------------------------------------------------------------
 
-# JSON structuré : chaque champ devient un attribut filtrable dans PostHog
-# (ex. upstream_cache_status = HIT/MISS/BYPASS pour le debugging cache).
+# JSON structuré : chaque champ devient un attribut filtrable dans PostHog.
+# Les champs `http.*`, `url.*` et `user_agent.*` suivent les conventions
+# sémantiques OTel (semconv) ; les autres restent nginx-spécifiques.
 # Sans IP (remote_addr) ni referer. La query string est conservée : les
 # éventuels emails qu'elle contient sont masqués côté collecteur
 # (transform/scrub_pii). `escape=json` échappe l'user-agent (JSON valide).
@@ -65,10 +66,10 @@ log_format json_combined escape=json
     '"time_iso8601":"$time_iso8601",'
     '"request_id":"$request_id",'
     '"connection":"$connection",'
-    '"request_method":"$request_method",'
-    '"uri":"$uri",'
-    '"args":"$args",'
-    '"status":$status,'
+    '"http.request.method":"$request_method",'
+    '"url.path":"$uri",'
+    '"url.query":"$args",'
+    '"http.response.status_code":$status,'
     '"body_bytes_sent":$body_bytes_sent,'
     '"request_time":$request_time,'
     '"upstream_addr":"$upstream_addr",'
@@ -77,7 +78,7 @@ log_format json_combined escape=json
     '"upstream_header_time":"$upstream_header_time",'
     '"upstream_response_time":"$upstream_response_time",'
     '"upstream_cache_status":"$upstream_cache_status",'
-    '"http_user_agent":"$http_user_agent"'
+    '"user_agent.original":"$http_user_agent"'
   '}';
 
 # ----------------------------------------------------------------------------
