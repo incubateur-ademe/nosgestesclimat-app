@@ -463,52 +463,6 @@ describe('completeSimulation', () => {
       )
     })
 
-    it('sends the simulation completed email when the simulation is shared with nobody', async () => {
-      const { completeSimulation, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
-      const simulation = await startedSimulation(user.id)
-
-      await completeSimulation({
-        userSession: authenticated(user),
-        simulationId: simulation.id,
-        ...payload,
-      })
-      await settleBackground()
-
-      expect(sendEmail).toHaveBeenCalledTimes(1)
-      expect(sendEmail).toHaveBeenCalledWith({
-        email: user.email,
-        templateId: TemplateIds.fr.SIGN_UP_SIMULATION_COMPLETED,
-        params: expect.objectContaining({
-          SIMULATION_URL: expect.stringContaining(
-            `${origin}/fin?sid=${simulation.id}`
-          ),
-          DASHBOARD_URL: `${origin}/mon-espace`,
-          [Attributes.LAST_SIMULATION_BILAN_FOOTPRINT]: '1',
-        }),
-      })
-    })
-
-    it('sends the simulation completed email in the language of the request', async () => {
-      const { completeSimulation, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
-      const simulation = await startedSimulation(user.id)
-
-      await completeSimulation({
-        userSession: authenticated(user),
-        simulationId: simulation.id,
-        ...payload,
-        locale: 'en',
-      })
-      await settleBackground()
-
-      expect(sendEmail).toHaveBeenCalledWith(
-        expect.objectContaining({
-          templateId: TemplateIds.en.SIGN_UP_SIMULATION_COMPLETED,
-        })
-      )
-    })
-
     it('does not send emails to an anonymous user and does not try to add the contact', async () => {
       const {
         completeSimulation,

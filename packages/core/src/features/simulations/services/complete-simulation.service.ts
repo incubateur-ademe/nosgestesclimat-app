@@ -21,7 +21,6 @@ import {
   createSendGroupCreatedEmail,
   createSendGroupJoinedEmail,
   createSendPollJoinedEmail,
-  createSendSimulationCompletedEmail,
 } from '../emails/simulation-emails.ts'
 import {
   type CompleteSimulationError,
@@ -60,8 +59,6 @@ export function createCompleteSimulation({
   const sendGroupCreatedEmail = createSendGroupCreatedEmail(sendEmail)
   const sendGroupJoinedEmail = createSendGroupJoinedEmail(sendEmail)
   const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
-  const sendSimulationCompletedEmail =
-    createSendSimulationCompletedEmail(sendEmail)
 
   return async function completeSimulation({
     userSession,
@@ -174,15 +171,7 @@ export function createCompleteSimulation({
               : sendGroupJoinedEmail(params)
           }
 
-          // The simulation is shared with nobody: the user only gets a way
-          // back to the results it just completed.
-          return sendSimulationCompletedEmail({
-            email: userSession.email,
-            simulationId,
-            computedResults,
-            locale,
-            origin,
-          })
+          return success()
         })(),
       ])
 
