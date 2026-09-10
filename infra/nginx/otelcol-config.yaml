@@ -156,13 +156,9 @@ exporters:
     endpoint: https://eu.i.posthog.com/i
     headers:
       Authorization: Bearer ${env:POSTHOG_PROJECT_TOKEN}
-    retry_on_failure:
-      enabled: true
-      initial_interval: 5s
-      max_interval: 30s
-      max_elapsed_time: 5m
+    # La file d'attente et le retry (5s → 30s, 5 min max) sont actifs par
+    # défaut ; seule la persistance sur disque est à préciser ici.
     sending_queue:
-      enabled: true
       num_consumers: 1
       queue_size: 5000
       storage: file_storage
