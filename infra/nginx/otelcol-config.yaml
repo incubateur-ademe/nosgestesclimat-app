@@ -119,15 +119,18 @@ processors:
     timeout: 5s
 
   # access.log : ni IP client ni referrer (absents du log_format) et le body
-  # (JSON brut) est supprimé au receiver → seul le scrub d'attributs s'applique
-  # (emails pouvant apparaître dans `url.query` / `user_agent.original`).
+  # (JSON brut) est supprimé au receiver → seuls les attributs porteurs d'URL
+  # ou de texte libre sont nettoyés.
   transform/access:
     error_mode: ignore
     log_statements:
       - context: log
         statements:
           - 'set(log.event_name, "nginx.access")'
-          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
+          # Emails : uniquement les attributs susceptibles d'en porter un.
+          - 'replace_pattern(attributes["url.path"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
+          - 'replace_pattern(attributes["url.query"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
+          - 'replace_pattern(attributes["user_agent.original"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
 
   # error.log : le body (message brut, conservé) porte l'IP client, le referrer
   # et d'éventuels emails ; les attributs peuvent aussi en contenir.
@@ -140,7 +143,9 @@ processors:
           - 'replace_pattern(body, "client:? [0-9a-fA-F:.]+", "client [ip]")'
           - 'replace_pattern(body, "referrer: \"([^\"?]*)\\?[^\"]*\"", "referrer: \"$$1\"")' # yamllint disable-line rule:line-length
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
-          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
+          # Attributs susceptibles de porter un email (URL/requête).
+          - 'replace_pattern(attributes["request"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
+          - 'replace_pattern(attributes["upstream"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
 
 exporters:
   otlphttp/posthog:
