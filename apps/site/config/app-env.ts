@@ -9,8 +9,8 @@ const isPreviewUrl = (siteUrl: string | undefined) => {
 export const APP_ENV =
   process.env.NEXT_PUBLIC_SITE_URL === 'https://nosgestesclimat.fr'
     ? 'production'
-    : process.env.NEXT_PUBLIC_SITE_URL ===
-          'https://preprod.nosgestesclimat.fr' ||
-        isPreviewUrl(process.env.NEXT_PUBLIC_SITE_URL)
+    : process.env.NEXT_PUBLIC_SITE_URL === 'https://preprod.nosgestesclimat.fr'
       ? 'preprod'
-      : 'development'
+      : isPreviewUrl(process.env.NEXT_PUBLIC_SITE_URL)
+        ? 'review'
+        : 'development'

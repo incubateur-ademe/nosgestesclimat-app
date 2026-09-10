@@ -40,16 +40,20 @@ const nextConfig = withMDX({
 
     return [...redirects, ...enRedirects]
   },
-  // En prod/preprod, c'est nginx qui sert /_static/cms/ (assets cachés).
-  // Ailleurs (review apps, dev local), pas de nginx devant : on proxy
-  // /_static/cms/ vers S3 pour que les previews restent fonctionnelles.
+  // Seuls nosgestesclimat.fr et preprod.nosgestesclimat.fr sont derrière le
+  // proxy cache nginx, qui sert /_static/cms/ avec un cache immutable.
+  // Les review apps et le dev local n'ont pas de nginx devant : on proxy
+  // /_static/cms/ vers S3 pour que ces environnements restent fonctionnels.
   async rewrites() {
-    if (APP_ENV === 'production' || APP_ENV === 'preprod') return []
+    const isBehindNginx = APP_ENV === 'production' || APP_ENV === 'preprod'
+
+    if (isBehindNginx) return []
 
     return [
       {
         source: '/_static/cms/:path*',
-        destination: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/:path*',
+        destination:
+          'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/:path*',
       },
     ]
   },
