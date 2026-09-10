@@ -108,7 +108,9 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
     `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
 - Corrélation : `$request_id` (généré par nginx) est propagé à l'app via
   `X-Request-ID` et mappé en `trace_id` du log côté collecteur (convention
-  OTel) — pour relier logs nginx et logs applicatifs partageant cet ID.
+  OTel) — l'attribut `request_id` est ensuite supprimé (la valeur vit dans le
+  `trace_id`, filtrable dans PostHog). Pour relier logs nginx et logs
+  applicatifs partageant cet ID.
   `connection` (extrait des deux logs) permet de filtrer dans PostHog une ligne
   d'`access.log` et la ligne d'`error.log` correspondante ; `upstream_addr`
   distingue un 502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
