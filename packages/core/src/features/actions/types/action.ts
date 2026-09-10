@@ -82,6 +82,7 @@ export interface NewActionChoice {
 
 export type ActionChoice = NewActionChoice & {
   id: string
+  chosenAt: Date
 }
 
 export type NewActionAssessment = {
