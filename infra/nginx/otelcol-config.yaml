@@ -30,6 +30,12 @@ receivers:
     include_file_path: true
     storage: file_storage
     operators:
+      # Emails masqués sur la ligne brute, avant parsing : une seule règle
+      # couvre tous les champs (url.*, user_agent, …) sans les énumérer.
+      - type: regex_replace
+        field: body
+        regex: '[\w.+-]+@[\w.-]+'
+        replace_with: '[email]'
       - type: json_parser
         parse_to: attributes
         timestamp:
@@ -64,13 +70,18 @@ receivers:
   #   YYYY/MM/DD HH:MM:SS [level] pid#tid: message
   #   ex. 2024/09/10 11:16:00 [error] 1234#1234: *567 upstream timed out
   # La regex extrait date/heure + niveau ; le message reste en `body` où les
-  # IP/emails sont masqués par le processor `transform/error` avant envoi.
+  # Emails masqués ci-dessous ; IP/referrer masqués par `transform/error`.
   filelog/error:
     include: [/var/log/nginx/error.log]
     start_at: end
     include_file_path: true
     storage: file_storage
     operators:
+      # Emails masqués sur la ligne brute, avant parsing (cf. access).
+      - type: regex_replace
+        field: body
+        regex: '[\w.+-]+@[\w.-]+'
+        replace_with: '[email]'
       # Préfixe fixe : `time [level] pid#tid: *connection`.
       - type: regex_parser
         regex: '^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\] (?P<pid>\d+)#(?P<tid>\d+): \*(?P<connection>\d+)' # yamllint disable-line rule:line-length
@@ -118,22 +129,18 @@ processors:
     send_batch_size: 1000
     timeout: 5s
 
-  # access.log : ni IP client ni referrer (absents du log_format) et le body
-  # (JSON brut) est supprimé au receiver → seuls les attributs porteurs d'URL
-  # ou de texte libre sont nettoyés.
+  # access.log : ni IP client ni referrer (absents du log_format) ; le body
+  # (JSON brut) est supprimé au receiver et les emails y sont masqués avant
+  # parsing. Il ne reste ici que le type d'événement.
   transform/access:
     error_mode: ignore
     log_statements:
       - context: log
         statements:
           - 'set(log.event_name, "nginx.access")'
-          # Emails : uniquement les attributs susceptibles d'en porter un.
-          - 'replace_pattern(attributes["url.path"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
-          - 'replace_pattern(attributes["url.query"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
-          - 'replace_pattern(attributes["user_agent.original"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
 
-  # error.log : le body (message brut, conservé) porte l'IP client, le referrer
-  # et d'éventuels emails ; les attributs peuvent aussi en contenir.
+  # error.log : le body (message brut, conservé) porte l'IP client et le
+  # referrer à masquer (les emails sont déjà traités par le receiver).
   transform/error:
     error_mode: ignore
     log_statements:
@@ -142,10 +149,6 @@ processors:
           - 'set(log.event_name, "nginx.error")'
           - 'replace_pattern(body, "client:? [0-9a-fA-F:.]+", "client [ip]")'
           - 'replace_pattern(body, "referrer: \"([^\"?]*)\\?[^\"]*\"", "referrer: \"$$1\"")' # yamllint disable-line rule:line-length
-          - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
-          # Attributs susceptibles de porter un email (URL/requête).
-          - 'replace_pattern(attributes["request"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
-          - 'replace_pattern(attributes["upstream"], "[\\w.+-]+@[\\w.-]+", "[email]")' # yamllint disable-line rule:line-length
 
 exporters:
   otlphttp/posthog:

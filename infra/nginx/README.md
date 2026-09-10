@@ -101,14 +101,13 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
     et le `error_log json` est Plus-only ;
   - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
     pour alléger le volume envoyé à PostHog ;
-  - dans le receiver `filelog/access` : `network.protocol.version` est normalisé
+  - dans les receivers : emails masqués sur la ligne brute avant parsing (une
+    seule règle couvre tous les champs) et `network.protocol.version` normalisé
     en semconv (`HTTP/1.1` → `1.1`, `HTTP/2.0` → `2`) ;
-  - dans `transform/access` : pose `event_name=nginx.access` et masque les
-    emails des attributs ;
+  - dans `transform/access` : pose `event_name=nginx.access` ;
   - dans `transform/error` : pose `event_name=nginx.error` et masque, dans le
-    message, les IP (`client: <ip>`, IPv4 et IPv6), la query du `referrer` et
-    les emails. Les pipelines sont séparés car les deux logs n'ont pas le même
-    contenu à nettoyer ;
+    message, les IP (`client: <ip>`, IPv4 et IPv6) et la query du `referrer`.
+    Les pipelines sont séparés car les deux logs n'ont pas le même contenu ;
   - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
   - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
     `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
