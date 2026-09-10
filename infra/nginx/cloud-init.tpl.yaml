@@ -40,28 +40,12 @@ write_files:
       POSTHOG_PROJECT_TOKEN=__POSTHOG_PROJECT_TOKEN__
       ENVIRONMENT=__ENVIRONMENT__
 
-  # Rétention réduite (2 jours au lieu de 14 par défaut) : les logs sont déjà
-  # expédiés vers PostHog, et error.log contient encore des IP (format nginx
-  # non modifiable) — on limite leur présence sur disque.
-  - path: /etc/logrotate.d/nginx
-    permissions: '0644'
-    content: |
-      /var/log/nginx/*.log {
-          daily
-          missingok
-          rotate 2
-          compress
-          delaycompress
-          notifempty
-          create 0640 www-data adm
-          sharedscripts
-          postrotate
-              invoke-rc.d nginx rotate >/dev/null 2>&1
-          endscript
-      }
-
 runcmd:
   - mkdir -p /var/cache/nginx /var/lib/nginx-config
+  # Rétention des logs nginx : 2 jours au lieu de 14. On ne touche qu'au nombre
+  # de rotations du fichier livré par Ubuntu (daily, compress, postrotate… sont
+  # déjà corrects).
+  - sed -i 's/rotate 14/rotate 2/' /etc/logrotate.d/nginx
   - chown -R www-data:www-data /var/cache/nginx
   - ln -sf /etc/nginx/sites-available/nosgestesclimat /etc/nginx/sites-enabled/
   - rm -f /etc/nginx/sites-enabled/default
