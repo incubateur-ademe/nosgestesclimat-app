@@ -40,14 +40,6 @@ write_files:
       POSTHOG_PROJECT_TOKEN=__POSTHOG_PROJECT_TOKEN__
       ENVIRONMENT=__ENVIRONMENT__
 
-  - path: /etc/systemd/system/otelcol-contrib.service.d/override.conf
-    permissions: '0644'
-    content: |
-      [Service]
-      EnvironmentFile=/etc/otelcol-contrib/otelcol-contrib.env
-      Restart=on-failure
-      RestartSec=10s
-
   # Rétention réduite (2 jours au lieu de 14 par défaut) : les logs sont déjà
   # expédiés vers PostHog, et error.log contient encore des IP (format nginx
   # non modifiable) — on limite leur présence sur disque.
@@ -80,32 +72,23 @@ runcmd:
     ufw --force enable
 
   # ── OpenTelemetry Collector (nginx → PostHog Logs) ──────────────────────
-  # Version épinglée via __OTELCOL_VERSION__ : pas de maj surprise — on bump
-  # volontairement la version dans generate-cloud-init.sh.
+  # install-otelcol.sh est idempotent : cloud-init l'utilise au first boot,
+  # et on peut relancer le même script en SSH pour (ré)installer/upgrader.
+  # Version épinglée : __OTELCOL_VERSION__ (bump dans generate-cloud-init.sh).
   - |
     set -euo pipefail
-    VER="__OTELCOL_VERSION__"
-    BASE="https://github.com/open-telemetry/opentelemetry-collector-releases"
-    DEB="${BASE}/releases/download/v${VER}/"\
-    "otelcol-contrib_${VER}_linux_amd64.deb"
-    curl -fsSL --retry 3 -o /tmp/otelcol-contrib.deb "$DEB"
-    curl -fsSL --retry 3 -o /tmp/otelcol-contrib.deb.sha256 "$DEB.sha256"
-    EXPECTED=$(awk '{print $1}' /tmp/otelcol-contrib.deb.sha256)
-    ACTUAL=$(sha256sum /tmp/otelcol-contrib.deb | awk '{print $1}')
-    test "$EXPECTED" = "$ACTUAL"
-    dpkg -i /tmp/otelcol-contrib.deb
-    rm -f /tmp/otelcol-contrib.deb /tmp/otelcol-contrib.deb.sha256
-  - mkdir -p /var/lib/otelcol-contrib
-  - chown -R otelcol-contrib:otelcol-contrib /var/lib/otelcol-contrib
-  # Lecture de /var/log/nginx/*.log (groupe `adm` sur Ubuntu/Debian).
-  - usermod -aG adm otelcol-contrib
+    GH_RAW="raw.githubusercontent.com"
+    RAW="https://${GH_RAW}/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx"
+    curl -fsSL "$RAW/install-otelcol.sh" \
+      -o /usr/local/bin/install-otelcol.sh
+    chmod +x /usr/local/bin/install-otelcol.sh
+    NGC_REF="__TEMPLATE_REF__" \
+      /usr/local/bin/install-otelcol.sh "__OTELCOL_VERSION__"
 
-  # ── Pull des fichiers depuis GitHub (conf nginx, config collector, units) ─
+  # ── Pull du pull script + units systemd nginx ───────────────────────────
   - |
     GH_RAW="raw.githubusercontent.com"
     RAW="https://${GH_RAW}/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx"
-    curl -fsSL "$RAW/otelcol-config.yaml" \
-      -o /etc/otelcol-contrib/config.yaml
     curl -fsSL "$RAW/pull-config.sh" \
       -o /usr/local/bin/nginx-config-pull.sh
     chmod +x /usr/local/bin/nginx-config-pull.sh
@@ -114,7 +97,6 @@ runcmd:
     curl -fsSL "$RAW/nginx-config-pull.timer" \
       -o /etc/systemd/system/nginx-config-pull.timer
   - systemctl daemon-reload
-  - systemctl enable --now otelcol-contrib
   - systemctl enable --now nginx-config-pull.timer
   - /usr/local/bin/nginx-config-pull.sh
   - echo "✅ Nginx config pulled. Nginx à l'arrêt — certificat SSL manquant."
