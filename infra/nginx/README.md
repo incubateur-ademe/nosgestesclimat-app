@@ -93,6 +93,8 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 - `otelcol-contrib` (service systemd, user `otelcol-contrib`) :
   - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte, préfixe
     stable parsé par regex — le `error_log json` est réservé à NGINX Plus) ;
+  - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
+    pour alléger le volume envoyé à PostHog ;
   - masque les IP (`client: <ip>` dans error.log) et emails
     (`transform/scrub_pii`) avant l'envoi ;
   - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;

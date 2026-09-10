@@ -42,6 +42,10 @@ receivers:
         trace:
           trace_id:
             parse_from: attributes.request_id
+      # Champs déjà extraits dans attributes : on supprime le body (JSON brut
+      # redondant) pour alléger le volume envoyé à PostHog.
+      - type: remove
+        field: body
 
   # error.log : format texte d'nginx OSS. Le JSON (`error_log json`) est
   # réservé à NGINX Plus. Le préfixe est stable :
@@ -96,7 +100,7 @@ processors:
         statements:
           - 'replace_pattern(body, "client:? [0-9:.]+", "client [ip]")'
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
-          - 'replace_all_patterns(attributes, "value", "[\\w.]+@[\\w.]+", "@")'
+          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")'  # yamllint disable-line rule:line-length
 
 exporters:
   otlphttp/posthog:
