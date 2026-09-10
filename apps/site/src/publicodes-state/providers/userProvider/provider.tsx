@@ -3,7 +3,7 @@
 import { useState, type PropsWithChildren } from 'react'
 
 import type { Simulation } from '@/helpers/server/model/simulations'
-import type { UserSession } from '@/services/auth/get-user-session'
+import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
 import UserContext from './context'
 import usePersistentTutorials from './hooks/usePersistentTutorials'
 

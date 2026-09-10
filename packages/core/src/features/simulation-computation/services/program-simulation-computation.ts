@@ -1,8 +1,6 @@
 import type { CaptureException, Logger } from '../../logger/index.ts'
-import {
-  SimulationNotFinishedException,
-  UnsupportedModelException,
-} from '../exceptions/simulation-computation.exception.ts'
+import { UnsupportedModelError } from '../errors/simulation-computation.error.ts'
+import { SimulationNotFinishedException } from '../exceptions/simulation-computation.exception.ts'
 import { isModelSupported } from '../model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../repositories/simulation-computations.repository.ts'
 import { getSimulationById } from '../repositories/simulation.repository.ts'
@@ -29,18 +27,17 @@ export function createProgramSimulationComputation(
     }
 
     if (!isModelSupported(simulation.model)) {
-      const exception = new UnsupportedModelException({
-        message: 'Unsupported model',
-        model: simulation.model,
+      const exception = new UnsupportedModelError(simulation.model)
+      logger.error(`[program-simulation-computation] ${exception.message}`, {
+        model: exception.model,
       })
-      logger.error(
-        `[program-simulation-computation] ${exception.message}`,
-        exception.payload
-      )
       captureException(exception)
       return
     }
 
-    await createSimulationComputation(simulationId)
+    const result = await createSimulationComputation(simulationId)
+    if (!result.success) {
+      logger.warn(result.error.name, { simulationId })
+    }
   }
 }

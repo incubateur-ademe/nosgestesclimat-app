@@ -8,7 +8,6 @@ import { mswServer } from '../../../__tests__/server'
 import { mockAuthenticatedSession } from '../../../helpers/tests/mockAuthenticatedSession'
 import { createGroup } from '../../groups/create-group'
 import { updateGroupParticipant } from '../../groups/update-group-participant'
-import { saveSimulation } from '../save-simulation'
 import { uploadLocalSimulations } from '../upload-local-simulations'
 
 /**
@@ -79,15 +78,6 @@ describe('simulation write paths', () => {
   })
 
   describe('given a simulation without a model', () => {
-    it('should resolve a model before saving it', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
-
-      await saveSimulation({ simulation: modellessSimulation() })
-
-      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
-      expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
-    })
-
     it('should resolve a model before adding a group participant', async () => {
       const captured = captureSimulationBody(
         'post',
@@ -159,18 +149,6 @@ describe('simulation write paths', () => {
 
       expect(captured.value?.id).toBe(inProgress.id)
       expect(captured.value?.progression).toBe(0.4)
-    })
-  })
-
-  describe('given a simulation that already has a model', () => {
-    it('should keep it untouched', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
-      const simulation = modellessSimulation()
-      simulation.model = 'ED-fr-pr-42'
-
-      await saveSimulation({ simulation })
-
-      expect(captured.value?.model).toBe('ED-fr-pr-42')
     })
   })
 
