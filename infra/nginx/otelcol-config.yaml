@@ -122,6 +122,9 @@ processors:
           # - `request_id` alimente le `trace_id` (bloc `trace` du json_parser).
           - 'delete_key(attributes, "time_iso8601")'
           - 'delete_key(attributes, "request_id")'
+          # Type d'événement (champ natif OTel) : accès vs erreur.
+          - 'set(log.event_name, "nginx.access") where attributes["sev"] == nil'
+          - 'set(log.event_name, "nginx.error") where attributes["sev"] != nil'
 
 exporters:
   otlphttp/posthog:
