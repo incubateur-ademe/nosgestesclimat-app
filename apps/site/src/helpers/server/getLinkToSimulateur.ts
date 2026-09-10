@@ -5,7 +5,7 @@ import {
   START_SIMULATION_PATH,
   TUTORIAL_PATH,
 } from '@/constants/urls/paths'
-import type { UserSession } from '@/services/auth/get-user-session'
+import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
 import {
   hasCompletedCurrentSimulation,
   hasCompletedSimulation,

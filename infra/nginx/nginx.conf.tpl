@@ -219,9 +219,6 @@ server {
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
         proxy_set_header X-Real-IP $remote_addr;
-        # Nettoie Origin/Referer pour éviter les rejets PostHog depuis des domaines inconnus.
-        proxy_set_header Origin "";
-        proxy_set_header Referer "";
         proxy_cache off;
     }
 
