@@ -28,7 +28,7 @@ receivers:
     include_file_path: true
     storage: file_storage
     attributes:
-      "event.name": nginx.access
+      'event.name': nginx.access
     operators:
       # Emails masqués avant parsing : la règle couvre alors toute la ligne,
       # donc tous les champs.
@@ -76,7 +76,7 @@ receivers:
     include_file_path: true
     storage: file_storage
     attributes:
-      "event.name": nginx.error
+      'event.name': nginx.error
     operators:
       # Emails, IP client et query du referrer masqués avant parsing.
       - type: regex_replace
@@ -93,7 +93,9 @@ receivers:
         replace_with: 'referrer: "$${1}"'
       # Préfixe fixe : `time [level] pid#tid: *connection`.
       - type: regex_parser
-        regex: '^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\] (?P<pid>\d+)#(?P<tid>\d+): \*(?P<connection>\d+)' # yamllint disable-line rule:line-length
+        regex: >-
+          ^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\] (?P<pid>\d+)#(?P<tid>\d+):
+          \*(?P<connection>\d+)
         timestamp:
           parse_from: attributes.time
           layout_type: strptime
@@ -146,7 +148,7 @@ processors:
     log_statements:
       - context: log
         statements:
-          - 'set(log.event_name, log.attributes["event.name"]) where log.attributes["event.name"] != nil' # yamllint disable-line rule:line-length
+          - 'set(log.event_name, log.attributes["event.name"])'
           - 'delete_key(log.attributes, "event.name")'
 
 exporters:
