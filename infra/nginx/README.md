@@ -90,6 +90,9 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
   (`upstream_cache_status`, `status`, `request_uri`, `request_time`,
   `upstream_status`, `upstream_connect_time`, `upstream_header_time`, …) —
   sans IP, sans referer.
+- Logging conditionnel : les routes bavardes (assets `/_next/`, `/_static/cms/`,
+  `/(images|misc|fonts)/` et proxy PostHog `/revp/`) ne sont écrites dans
+  `access.log` qu'en cas d'erreur (4xx/5xx) → moins de volume et de bruit.
 - `otelcol-contrib` (service systemd, user `otelcol-contrib`) :
   - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte, préfixe
     stable parsé par regex — le `error_log json` est réservé à NGINX Plus) ;

@@ -100,7 +100,7 @@ processors:
         statements:
           - 'replace_pattern(body, "client:? [0-9:.]+", "client [ip]")'
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
-          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")'  # yamllint disable-line rule:line-length
+          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
 
 exporters:
   otlphttp/posthog:

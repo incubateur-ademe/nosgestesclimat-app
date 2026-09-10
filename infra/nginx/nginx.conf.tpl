@@ -78,6 +78,32 @@ log_format json_combined escape=json
   '}';
 
 # ----------------------------------------------------------------------------
+# Logging conditionnel
+# ----------------------------------------------------------------------------
+
+# 1 si la route est "bavarde" (assets statiques Next.js/CMS, proxy PostHog).
+# `~^/_next/` couvre aussi `/_next/image?…` ($uri = /_next/image, sans query).
+map $uri $ngc_noisy {
+    default                  0;
+    ~^/_next/                 1;
+    ~^/_static/cms/           1;
+    ~^/(images|misc|fonts)/   1;
+    ~^/revp/                  1;
+}
+
+# 1 si la réponse est une erreur (4xx/5xx).
+map $status $ngc_is_error {
+    default  0;
+    ~^[45]   1;
+}
+
+# On loggue tout, sauf une route bavarde SANS erreur (combinaison "10").
+map "$ngc_noisy$ngc_is_error" $ngc_loggable {
+    "10"     0;
+    default  1;
+}
+
+# ----------------------------------------------------------------------------
 # Redirections (HTTP → HTTPS, www → apex)
 # ----------------------------------------------------------------------------
 
@@ -86,7 +112,7 @@ server {
     listen [::]:80 default_server;
     server_name _;
 
-    access_log /var/log/nginx/access.log json_combined;
+    access_log /var/log/nginx/access.log json_combined if=$ngc_loggable;
 
     return 301 https://$host$request_uri;
 }
@@ -97,7 +123,7 @@ server {
     http2 on;
     server_name www.${DOMAIN};
 
-    access_log /var/log/nginx/access.log json_combined;
+    access_log /var/log/nginx/access.log json_combined if=$ngc_loggable;
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
@@ -115,7 +141,7 @@ server {
     http2 on;
     server_name ${DOMAIN};
 
-    access_log /var/log/nginx/access.log json_combined;
+    access_log /var/log/nginx/access.log json_combined if=$ngc_loggable;
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
