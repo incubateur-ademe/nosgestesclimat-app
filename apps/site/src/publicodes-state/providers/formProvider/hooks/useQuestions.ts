@@ -89,6 +89,11 @@ export default function useQuestions({
         }
       })
 
+      // We artificially add some questions in the missing variables.
+      MUST_ASK_QUESTIONS.forEach((dottedName) => {
+        tempMissingVariables[dottedName] = 1
+      })
+
       // We artificially set the missing variables of the whiteList to a high value
       PRIORITY_QUESTIONS.forEach((dottedName) => {
         if (dottedName in tempMissingVariables) {
@@ -101,11 +106,6 @@ export default function useQuestions({
         if (dottedName in tempMissingVariables) {
           tempMissingVariables[dottedName] -= 1000
         }
-      })
-
-      // We artificially add some questions in the missing variables.
-      MUST_ASK_QUESTIONS.forEach((dottedName) => {
-        tempMissingVariables[dottedName] = 1
       })
 
       return tempMissingVariables

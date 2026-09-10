@@ -40,7 +40,6 @@ export default function MosaicNumberInput({
     parentMosaic as DottedName
   )
 
-  // Model shenanigans for description split...
   return (
     <div
       className={
