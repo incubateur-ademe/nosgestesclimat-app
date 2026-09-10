@@ -117,6 +117,8 @@ processors:
           - 'replace_pattern(body, "referrer: \"([^\"?]*)\\?[^\"]*\"", "referrer: \"$$1\"")' # yamllint disable-line rule:line-length
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
           - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
+          # `time_iso8601` a servi à poser le timestamp du record → redondant.
+          - 'delete_key(attributes, "time_iso8601")'
 
 exporters:
   otlphttp/posthog:

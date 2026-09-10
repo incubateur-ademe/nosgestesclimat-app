@@ -55,6 +55,15 @@ upstream scalingo {
 # Logs au format JSON (consommés par l'OpenTelemetry Collector → PostHog)
 # ----------------------------------------------------------------------------
 
+# Version HTTP normalisée pour `network.protocol.version` (semconv : "1.1", "2").
+map $server_protocol $http_version {
+    default     $server_protocol;
+    "HTTP/1.0"  1.0;
+    "HTTP/1.1"  1.1;
+    "HTTP/2.0"  2;
+    "HTTP/3.0"  3;
+}
+
 # JSON structuré : chaque champ devient un attribut filtrable dans PostHog.
 # Les champs `http.*`, `url.*` et `user_agent.*` suivent les conventions
 # sémantiques OTel (semconv) ; les autres restent nginx-spécifiques.
@@ -66,10 +75,13 @@ log_format json_combined escape=json
     '"time_iso8601":"$time_iso8601",'
     '"request_id":"$request_id",'
     '"connection":"$connection",'
+    '"server.address":"$host",'
+    '"network.protocol.version":"$http_version",'
     '"http.request.method":"$request_method",'
     '"url.path":"$uri",'
     '"url.query":"$args",'
     '"http.response.status_code":$status,'
+    '"http.request.body.size":"$content_length",'
     '"http.response.body.size":$body_bytes_sent,'
     '"request_time":$request_time,'
     '"upstream_addr":"$upstream_addr",'
