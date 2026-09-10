@@ -52,6 +52,28 @@ upstream scalingo {
 }
 
 # ----------------------------------------------------------------------------
+# Logs au format JSON (consommés par l'OpenTelemetry Collector → PostHog)
+# ----------------------------------------------------------------------------
+
+# JSON structuré : chaque champ devient un attribut filtrable dans PostHog
+# (ex. upstream_cache_status = HIT/MISS/BYPASS pour le debugging cache).
+# Sans IP (remote_addr) ni referer. La query string est conservée : les
+# éventuels emails qu'elle contient sont masqués côté collecteur
+# (transform/scrub_pii). `escape=json` échappe l'user-agent (JSON valide).
+log_format json_combined escape=json
+  '{'
+    '"time_iso8601":"$time_iso8601",'
+    '"request_method":"$request_method",'
+    '"request_uri":"$request_uri",'
+    '"status":$status,'
+    '"body_bytes_sent":$body_bytes_sent,'
+    '"request_time":$request_time,'
+    '"upstream_response_time":"$upstream_response_time",'
+    '"upstream_cache_status":"$upstream_cache_status",'
+    '"http_user_agent":"$http_user_agent"'
+  '}';
+
+# ----------------------------------------------------------------------------
 # Redirections (HTTP → HTTPS, www → apex)
 # ----------------------------------------------------------------------------
 
@@ -59,6 +81,8 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name _;
+
+    access_log /var/log/nginx/access.log json_combined;
 
     return 301 https://$host$request_uri;
 }
@@ -69,6 +93,7 @@ server {
     http2 on;
     server_name www.${DOMAIN};
 
+    access_log /var/log/nginx/access.log json_combined;
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
@@ -86,6 +111,7 @@ server {
     http2 on;
     server_name ${DOMAIN};
 
+    access_log /var/log/nginx/access.log json_combined;
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;

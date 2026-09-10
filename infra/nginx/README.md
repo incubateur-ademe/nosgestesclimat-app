@@ -10,7 +10,8 @@ Proxy cache Nginx devant l'application Scalingo.
     Instance Scaleway (Nginx)
       ├── cache
       ├── rate limiting
-      └── SSL (Let's Encrypt, renouvellement automatique)
+      ├── SSL (Let's Encrypt, renouvellement automatique)
+      └── logs JSON → OpenTelemetry Collector → PostHog Logs (OTLP)
       │
       ▼
     nosgestesclimat-site.osc-secnum-fr1.scalingo.io (Scalingo)
@@ -40,6 +41,7 @@ de pull lui-même.
 | `nginx-config-pull.service` | Unit systemd (oneshot)                                          |
 | `nginx-config-pull.timer`   | Timer systemd (5 min)                                           |
 | `cloud-init.tpl.yaml`       | Template cloud-init (setup machine + first boot)                |
+| `otelcol-config.yaml`       | Config OpenTelemetry Collector (nginx → PostHog Logs)           |
 | `generate-cloud-init.sh`    | Génère `cloud-init.preprod.yaml` et `cloud-init.prod.yaml`      |
 
 ### `deploy.env`
@@ -75,9 +77,108 @@ Ces fichiers sont téléchargés au first boot (via cloud-init `runcmd`) et ne s
 - Soit recréer l'instance (cloud-init télécharge les nouvelles versions)
 - Soit SSH manuel : `curl -fsSL https://raw.githubusercontent.com/incubateur-ademe/nosgestesclimat-app/refs/heads/main/infra/nginx/pull-config.sh -o /usr/local/bin/nginx-config-pull.sh`
 
+## Logs Nginx → PostHog (OpenTelemetry)
+
+Les logs d'accès et d'erreur de Nginx sont envoyés vers PostHog Logs via
+l'OpenTelemetry Collector (`otelcol-contrib`), installé sur la même instance
+par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
+
+### Fonctionnement
+
+- `nginx.conf.tpl` écrit `access.log` au format JSON (`log_format json_combined`),
+  chaque champ devenant un attribut filtrable dans PostHog
+  (`upstream_cache_status`, `status`, `request_uri`, `request_time`, …) — sans
+  IP, sans referer.
+- `otelcol-contrib` (service systemd, user `otelcol-contrib`) :
+  - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte, préfixe
+    stable parsé par regex — le `error_log json` est réservé à NGINX Plus) ;
+  - masque les IP (`client: <ip>` dans error.log) et emails
+    (`transform/scrub_pii`) avant l'envoi ;
+  - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
+  - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
+    `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
+- La clé est stockée dans `/etc/otelcol-contrib/otelcol-contrib.env` (0600),
+  chargée par systemd (`EnvironmentFile`).
+
+### Résilience
+
+- nginx n'a aucune dépendance vers PostHog : si le collecteur ou PostHog sont
+  indisponibles, le trafic n'est pas affecté et les logs restent sur disque.
+- Offsets de lecture persistés (`file_storage`) : reprise exacte après restart
+  ou rotation de logs (ni trou, ni doublon).
+- File-queue persistée + retry avec backoff (5s → 30s, 5 min max) : coupure
+  réseau absorbée sans perte.
+
+### Données personnelles (RGPD)
+
+Aucune donnée directement identifiante n'est envoyée à PostHog :
+
+- **IP** : retirée de `access.log` (pas de `remote_addr`). Dans `error.log`
+  (format nginx figé, qui inclut `client: <ip>`), elles sont masquées côté
+  collecteur (`transform/scrub_pii`) avant l'envoi.
+- **Query strings** : conservées (`request_uri`) pour le debugging, mais les
+  emails qu'elles peuvent contenir sont masqués côté collecteur.
+- **Bodies POST** : jamais loggés par nginx (pas de `$request_body`). Attention
+  en revanche aux logs applicatifs Next.js, qui sont hors de ce pipeline.
+- **Referer** : retiré des logs.
+
+Restent : méthode, chemin + query string (emails masqués), statut, tailles,
+temps de réponse, statut cache et user-agent (borderline — retirable si besoin).
+
+Rétention sur disque : `/var/log/nginx/*.log` tournent sur 2 jours (logrotate
+`daily` + `rotate 2`, au lieu de 14 j par défaut). Le buffer du collecteur
+(`/var/lib/otelcol-contrib`) est déjà masqué (le scrub précède l'export).
+
+### Consulter les logs
+
+PostHog → Logs, filtrer sur `service.name = nginx` puis
+`deployment.environment = prod` (ou `preprod`). Exemples de recherche :
+`429`, `upstream_cache_status = MISS`, `status = 500`.
+
+### Modifier la config du collecteur
+
+`otelcol-config.yaml` est tiré depuis GitHub par `pull-config.sh`, comme
+`nginx.conf.tpl` : quand elle change (après validation `otelcol-contrib
+validate`), le collecteur est redémarré automatiquement. Le token et
+l'environnement restent dans `/etc/otelcol-contrib/otelcol-contrib.env`.
+
+Déploiement manuel si besoin :
+
+    curl -fsSL https://raw.githubusercontent.com/incubateur-ademe/nosgestesclimat-app/refs/heads/main/infra/nginx/otelcol-config.yaml \
+      -o /etc/otelcol-contrib/config.yaml
+    otelcol-contrib validate --config /etc/otelcol-contrib/config.yaml
+    systemctl restart otelcol-contrib
+
+### Upgrader le collecteur
+
+La version d'`otelcol-contrib` est épinglée dans `generate-cloud-init.sh`
+(`OTELCOL_VERSION`) pour éviter les mises à jour breaking. Pour upgrader :
+incrémenter la version puis recréer l'instance, ou `dpkg -i` manuellement en
+SSH (le binaire n'est pas mis à jour par `pull-config.sh`).
+
+### Volume & coût
+
+PostHog Logs est facturé au volume. Les assets statiques (`/_next/static/`,
+`/_static/cms/`, `images/`, …) représentent l'essentiel du trafic et peu de
+valeur en logs. Pour les exclure, ajouter un `filter` processor dans
+`otelcol-config.yaml` (attribut `request_uri`) :
+
+    filter/static:
+      logs:
+        exclude:
+          match_type: regexp
+          record_attributes:
+            - key: request_uri
+              value: '^/(_next/static|_static/cms|images|misc|fonts)/'
+
+puis l'ajouter au pipeline : `processors: [resource/nginx, filter/static, batch]`.
+
 ## Créer une instance
 
-    ./generate-cloud-init.sh preprod   # ou prod
+Le script requiert désormais la variable d'environnement `POSTHOG_PROJECT_TOKEN`
+(clé de projet PostHog, préfixe `phc_`) pour générer la config du collecteur :
+
+    POSTHOG_PROJECT_TOKEN=phc_... ./generate-cloud-init.sh preprod   # ou prod
 
 Puis dans la console Scaleway :
 
