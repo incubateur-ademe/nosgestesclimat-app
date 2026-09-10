@@ -1,91 +1,17 @@
+import { ListIds } from '@nosgestesclimat/core/features/emails/email.constant'
 import { StatusCodes } from 'http-status-codes'
-import { Locales } from '../../core/i18n/constant.ts'
 import type { ValueOf } from '../../types/types.ts'
 
-const FrTemplateIds = {
-  SIMULATION_COMPLETED: 55,
-  GROUP_CREATED: 57,
-  GROUP_JOINED: 58,
-  VERIFICATION_CODE: 66,
-  ORGANISATION_CREATED: 70,
-  ORGANISATION_JOINED: 122,
-  POLL_CREATED: 126,
-  SIMULATION_IN_PROGRESS: 102,
-  API_VERIFICATION_CODE: 116,
-  NEWSLETTER_CONFIRMATION: 118,
-  SIGN_UP: 137,
-  SIGN_UP_SIMULATION_COMPLETED: 138,
-} as const
-
-type FrTemplateIds = ValueOf<typeof FrTemplateIds>
-
-const EnTemplateIds = {
-  VERIFICATION_CODE: 125,
-  ORGANISATION_CREATED: 124,
-  ORGANISATION_JOINED: 123,
-  POLL_CREATED: 127,
-  SIGN_UP: 139,
-  SIGN_UP_SIMULATION_COMPLETED: 140,
-} as const
-
-type EnTemplateIds = ValueOf<typeof EnTemplateIds>
-
-export const TemplateIds = {
-  [Locales.en]: EnTemplateIds,
-  [Locales.fr]: FrTemplateIds,
-} as const
-
-export type TemplateIds = ValueOf<typeof TemplateIds>
-
-export type TemplateId = FrTemplateIds | EnTemplateIds
-
-export type GroupTemplateId =
-  | typeof FrTemplateIds.GROUP_CREATED
-  | typeof FrTemplateIds.GROUP_JOINED
-
-export const Attributes = {
-  NUMBER_CREATED_GROUPS_WITH_ONE_PARTICIPANT:
-    'NUMBER_CREATED_GROUPS_WITH_ONE_PARTICIPANT',
-  LAST_SIMULATION_ALIMENTATION_FOOTPRINT:
-    'LAST_SIMULATION_ALIMENTATION_FOOTPRINT',
-  LAST_SIMULATION_TRANSPORTS_FOOTPRINT: 'LAST_SIMULATION_TRANSPORTS_FOOTPRINT',
-  LAST_SIMULATION_LOGEMENT_FOOTPRINT: 'LAST_SIMULATION_LOGEMENT_FOOTPRINT',
-  LAST_SIMULATION_SERVICES_FOOTPRINT: 'LAST_SIMULATION_SERVICES_FOOTPRINT',
-  LAST_SIMULATION_DIVERS_FOOTPRINT: 'LAST_SIMULATION_DIVERS_FOOTPRINT',
-  LAST_SIMULATION_BILAN_FOOTPRINT: 'LAST_SIMULATION_BILAN_FOOTPRINT',
-  LAST_POLL_PARTICIPANTS_NUMBER: 'LAST_POLL_PARTICIPANTS_NUMBER',
-  LAST_SIMULATION_BILAN_WATER: 'LAST_SIMULATION_BILAN_WATER',
-  LAST_GROUP_CREATION_DATE: 'LAST_GROUP_CREATION_DATE',
-  IS_ORGANISATION_ADMIN: 'IS_ORGANISATION_ADMIN',
-  NUMBER_CREATED_GROUPS: 'NUMBER_CREATED_GROUPS',
-  NUMBER_ORGANISATION_CREATED_POLLS: 'NUMBER_ORGANISATION_CREATED_POLLS',
-  NUMBER_ORGANISATION_COMPLETED_SIMULATIONS:
-    'NUMBER_ORGANISATION_COMPLETED_SIMULATIONS',
-  LAST_SIMULATION_DATE: 'LAST_SIMULATION_DATE',
-  LAST_ORGANISATION_SIMULATION_DATE: 'LAST_ORGANISATION_SIMULATION_DATE',
-  ORGANISATION_NAME: 'ORGANISATION_NAME',
-  ORGANISATION_SLUG: 'ORGANISATION_SLUG',
-  ORGANISATION_TYPE: 'ORGANISATION_TYPE',
-  USER_ID: 'USER_ID',
-  PRENOM: 'PRENOM',
-  OPT_IN: 'OPT_IN',
-} as const
-
-export type Attributes = ValueOf<typeof Attributes>
-
-export const ListIds = {
-  MAIN_NEWSLETTER: 22,
-  ORGANISATIONS: 27,
-  GROUP_CREATED: 29,
-  GROUP_JOINED: 30,
-  TRANSPORT_NEWSLETTER: 32,
-  LOGEMENT_NEWSLETTER: 36,
-  CONSO_NEWSLETTER: 40,
-  ALIMENTATION_NEWSLETTER: 41,
-  CITOYENS_NEWSLETTER: 42,
-} as const
-
-export type ListIds = ValueOf<typeof ListIds>
+export {
+  Attributes,
+  ListIds,
+  TemplateIds,
+  TRACKING_CAMPAIGNS,
+  TRACKING_MEDIUM,
+  TRACKING_SOURCE,
+  type GroupTemplateId,
+  type TemplateId,
+} from '@nosgestesclimat/core/features/emails/email.constant'
 
 export const AllNewsletters = [
   ListIds.MAIN_NEWSLETTER,
@@ -95,32 +21,6 @@ export const AllNewsletters = [
   ListIds.ALIMENTATION_NEWSLETTER,
   ListIds.CITOYENS_NEWSLETTER,
 ] as const
-
-// tracking
-export const TRACKING_SOURCE = 'NGC'
-export const TRACKING_MEDIUM = 'email-automatise'
-export const TRACKING_CAMPAIGNS = {
-  [TemplateIds[Locales.fr].SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
-  [TemplateIds[Locales.en].SIGN_UP_SIMULATION_COMPLETED]:
-    'fin-retrouver-simulation',
-  [TemplateIds[Locales.fr].SIGN_UP_SIMULATION_COMPLETED]:
-    'fin-retrouver-simulation',
-  [TemplateIds[Locales.fr].SIMULATION_IN_PROGRESS]: 'pause-test-en-cours',
-  [TemplateIds[Locales.fr].GROUP_CREATED]: {
-    GROUP_URL: 'groupe-admin-voir-classement',
-    SHARE_URL: 'groupe-admin-url-partage',
-  },
-  [TemplateIds[Locales.fr].GROUP_JOINED]: {
-    GROUP_URL: 'groupe-invite-voir-classement',
-    SHARE_URL: 'groupe-invite-url-partage',
-  },
-  [TemplateIds[Locales.en].ORGANISATION_CREATED]: 'orga-admin-creation',
-  [TemplateIds[Locales.fr].ORGANISATION_CREATED]: 'orga-admin-creation',
-  [TemplateIds[Locales.en].ORGANISATION_JOINED]: 'orga-invite-campagne',
-  [TemplateIds[Locales.fr].ORGANISATION_JOINED]: 'orga-invite-campagne',
-  [TemplateIds[Locales.en].POLL_CREATED]: 'poll-admin-creation',
-  [TemplateIds[Locales.fr].POLL_CREATED]: 'poll-admin-creation',
-} as const
 
 export const ClientErrors = {
   BAD_REQUEST: {

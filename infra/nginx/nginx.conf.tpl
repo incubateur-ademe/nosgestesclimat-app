@@ -186,14 +186,12 @@ server {
     # ── PostHog reverse proxy (pathname /revp/) ──────────────────
     # https://posthog.com/docs/advanced/proxy/nginx
     # Check LVAO config https://github.com/incubateur-ademe/quefairedemesobjets/blob/main/servers.conf.erb#L83-L98
-    
+
     location /revp/static/ {
         proxy_pass https://eu-assets.i.posthog.com/static/;
         proxy_set_header Host eu-assets.i.posthog.com;
         proxy_ssl_server_name on;
         proxy_ssl_name eu-assets.i.posthog.com;
-        proxy_ssl_verify on;
-        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
     }
 
@@ -202,8 +200,6 @@ server {
         proxy_set_header Host eu-assets.i.posthog.com;
         proxy_ssl_server_name on;
         proxy_ssl_name eu-assets.i.posthog.com;
-        proxy_ssl_verify on;
-        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
     }
 
@@ -216,9 +212,6 @@ server {
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
         proxy_set_header X-Real-IP $remote_addr;
-        # Nettoie Origin/Referer pour éviter les rejets PostHog depuis des domaines inconnus.
-        proxy_set_header Origin "";
-        proxy_set_header Referer "";
         proxy_cache off;
     }
 

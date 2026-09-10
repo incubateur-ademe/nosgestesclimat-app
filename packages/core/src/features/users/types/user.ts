@@ -4,15 +4,25 @@ export interface UserProfile {
   ageRange: AgeRange | null
 }
 
-export interface FullUser {
+interface UserBase {
   id: string
   name: string | null
-  email: string | null
-  isVerified: boolean
   ageRange: AgeRange | null
   createdAt: Date
   updatedAt: Date
+}
+
+export interface UnverifiedUser extends UserBase {
+  type: 'unverified'
+  email: null
+}
+
+export interface VerifiedUser extends UserBase {
+  type: 'verified'
+  email: string
   telephone: string | null
   position: string | null
   optedInForCommunications: boolean
 }
+
+export type User = UnverifiedUser | VerifiedUser

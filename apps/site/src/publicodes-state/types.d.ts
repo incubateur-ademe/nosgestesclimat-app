@@ -1,4 +1,3 @@
-import type { UserSession } from '@/services/auth/get-user-session'
 import type { Group } from '@/types/groups'
 import type {
   DottedName,
@@ -6,6 +5,7 @@ import type {
   NodeValue,
   SuggestionValue,
 } from '@incubateur-ademe/nosgestesclimat'
+import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import type PublicodesEngine from 'publicodes'
 import type {

@@ -1,15 +1,37 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { User, VerifiedUser } from '../../../prisma/generated/client.ts'
+import type { User } from '../types/user.ts'
 
-export const findUser = async (userId: string): Promise<User | null> =>
-  prisma.user.findUnique({
+export const findUserById = async (userId: string): Promise<User | null> => {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
+    include: { verifiedUsers: true },
   })
 
-export const findVerifiedUser = async (
-  userId: string
-): Promise<VerifiedUser | null> =>
-  // id is not @unique, can't be used with findUnique
-  prisma.verifiedUser.findFirst({
-    where: { id: userId },
-  })
+  if (!user) return null
+
+  const verifiedUser = user.verifiedUsers[0]
+  if (verifiedUser) {
+    return {
+      type: 'verified',
+      id: user.id,
+      name: user.name,
+      email: verifiedUser.email,
+      ageRange: user.ageRange,
+      telephone: verifiedUser.telephone,
+      position: verifiedUser.position,
+      optedInForCommunications: verifiedUser.optedInForCommunications,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }
+  }
+
+  return {
+    type: 'unverified',
+    id: user.id,
+    name: user.name,
+    email: null, // user's table email field is deprecated
+    ageRange: user.ageRange,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  }
+}
