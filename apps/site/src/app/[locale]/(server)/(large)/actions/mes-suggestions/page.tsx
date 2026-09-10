@@ -27,7 +27,7 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
   const { locale } = await params
 
   const user = await getUserSession()
-
+  console.log(user)
   if (!user) {
     redirect(ACTIONS_PATH)
   }
@@ -66,6 +66,7 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
           </Trans>
         ),
       }}
+      aside={<div className="h-32 w-96 bg-red-500">porjfoen</div>}
     />
   )
 }

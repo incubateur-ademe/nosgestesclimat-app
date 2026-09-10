@@ -62,5 +62,6 @@ export const getUserSession = cache(async function (): Promise<UserSession> {
     isAuth: false,
   }
   Sentry.setUser(user)
+
   return user
 })
