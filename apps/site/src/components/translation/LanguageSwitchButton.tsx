@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from '@/design-system/shadcn/popover'
 import Emoji from '@/design-system/utils/Emoji'
+import Link from 'next/link'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
@@ -17,7 +18,11 @@ interface Props {
 
 export default function LanguageSwitchButton({ className }: Props) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const { activeLang, inactiveLang } = useSwitchLanguage()
+  const languages = useSwitchLanguage()
+
+  if (!languages) return null
+
+  const { activeLang, inactiveLang } = languages
 
   return (
     <div className={twMerge('max-tiny:mr-1 mr-2', className)}>
@@ -41,7 +46,8 @@ export default function LanguageSwitchButton({ className }: Props) {
           />
         </PopoverTrigger>
         <PopoverContent className="z-400! max-w-24 min-w-24">
-          <a
+          <Link
+            prefetch={false}
             href={inactiveLang.url}
             lang={inactiveLang.locale}
             data-testid={`language-switch-button-${inactiveLang.locale}`}
@@ -55,7 +61,7 @@ export default function LanguageSwitchButton({ className }: Props) {
             <span className="text-primary-700 text-base font-normal capitalize">
               {inactiveLang.label}
             </span>
-          </a>
+          </Link>
         </PopoverContent>
       </Popover>
     </div>

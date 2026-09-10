@@ -17,7 +17,7 @@ interface LanguageReturnedObject {
 export function useSwitchLanguage(): {
   activeLang: LanguageReturnedObject
   inactiveLang: LanguageReturnedObject
-} {
+} | null {
   const currentLocale = useCurrentLocale(i18nConfig)! as Locale
   const alternatePaths = useAlternateLanguagePaths()
 
@@ -38,12 +38,16 @@ export function useSwitchLanguage(): {
     trackPosthogEvent(captureClickLanguage({ locale: newLocale }))
   }
 
-  const { activeLang, inactiveLang } = useMemo(() => {
+  return useMemo(() => {
+    // There is no english version for the current page
+    // we don't need to return the language objects
+    if (!alternatePaths.en || !alternatePaths.fr) return null
+
     let activeLang
     let inactiveLang
 
     const frBaseProps = {
-      url: generateLanguageUrl(alternatePaths.fr!),
+      url: generateLanguageUrl(alternatePaths.fr),
       onLanguageChange: () => onLanguageChange('fr'),
       label: 'FR',
       flag: '🇫🇷',
@@ -51,7 +55,7 @@ export function useSwitchLanguage(): {
     }
 
     const enBaseProps = {
-      url: generateLanguageUrl(alternatePaths.en!),
+      url: generateLanguageUrl(alternatePaths.en),
       onLanguageChange: () => onLanguageChange('en'),
       label: 'EN',
       flag: '🇬🇧',
@@ -80,9 +84,4 @@ export function useSwitchLanguage(): {
 
     return { activeLang, inactiveLang }
   }, [currentLocale, alternatePaths])
-
-  return {
-    activeLang,
-    inactiveLang,
-  }
 }
