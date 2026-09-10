@@ -188,7 +188,6 @@ server {
     # Check LVAO config https://github.com/incubateur-ademe/quefairedemesobjets/blob/main/servers.conf.erb#L83-L98
 
     location /revp/static/ {
-        add_header 'Access-Control-Allow-Origin' '*';
         proxy_pass https://eu-assets.i.posthog.com/static/;
         proxy_set_header Host eu-assets.i.posthog.com;
         proxy_ssl_server_name on;
@@ -197,7 +196,6 @@ server {
     }
 
     location /revp/array/ {
-        add_header 'Access-Control-Allow-Origin' '*';
         proxy_pass https://eu-assets.i.posthog.com/array/;
         proxy_set_header Host eu-assets.i.posthog.com;
         proxy_ssl_server_name on;
@@ -206,7 +204,6 @@ server {
     }
 
     location /revp/ {
-        add_header 'Access-Control-Allow-Origin' '*';
         proxy_pass https://eu.i.posthog.com/;
         proxy_set_header Host eu.i.posthog.com;
         proxy_ssl_server_name on;
