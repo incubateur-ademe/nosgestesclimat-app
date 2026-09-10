@@ -41,7 +41,7 @@ de pull lui-même.
 | `nginx-config-pull.service` | Unit systemd (oneshot)                                          |
 | `nginx-config-pull.timer`   | Timer systemd (5 min)                                           |
 | `cloud-init.tpl.yaml`       | Template cloud-init (setup machine + first boot)                |
-| `install-otelcol.sh`        | Installe/upgrade le collecteur (idempotent, first boot ou SSH)  |
+| `install-otelcol.sh`        | Installe/upgrade le collecteur (idempotent, version épinglée)   |
 | `otelcol-config.yaml`       | Config OpenTelemetry Collector (nginx → PostHog Logs)           |
 | `generate-cloud-init.sh`    | Génère `cloud-init.preprod.yaml` et `cloud-init.prod.yaml`      |
 
@@ -151,58 +151,6 @@ PostHog → Logs, filtrer sur `service.name = nginx` puis
 `nginx.conf.tpl` : quand elle change (après validation `otelcol-contrib
 validate`), le collecteur est redémarré automatiquement. Le token et
 l'environnement restent dans `/etc/otelcol-contrib/otelcol-contrib.env`.
-
-Déploiement manuel si besoin :
-
-    curl -fsSL https://raw.githubusercontent.com/incubateur-ademe/nosgestesclimat-app/refs/heads/main/infra/nginx/otelcol-config.yaml \
-      -o /etc/otelcol-contrib/config.yaml
-    otelcol-contrib validate --config /etc/otelcol-contrib/config.yaml
-    systemctl restart otelcol-contrib
-
-### Installer / upgrader le collecteur
-
-Le binaire `otelcol-contrib` (et son unit systemd) est installé par
-`install-otelcol.sh`, **idempotent** : il installe, réinstalle ou met à jour.
-La version est épinglée (`OTELCOL_VERSION` dans `generate-cloud-init.sh`).
-
-Cloud-init l'appelle au first boot. Sur une instance **existante**, on relance
-le même script en SSH.
-
-**Upgrader** (l'instance a déjà le collecteur) :
-
-    ssh root@<ip>
-    NGC_REF=main /usr/local/bin/install-otelcol.sh 0.161.0
-
-**Première installation** (instance créée avant cette feature, sans binaire) :
-
-    ssh root@<ip>
-
-    # 1. Env file (secret + environnement), en 0600
-    mkdir -p /etc/otelcol-contrib
-    cat > /etc/otelcol-contrib/otelcol-contrib.env <<'EOF'
-    POSTHOG_PROJECT_TOKEN=phc_...
-    ENVIRONMENT=prod
-    EOF
-    chmod 600 /etc/otelcol-contrib/otelcol-contrib.env
-
-    # 2. Script + installation (télécharge la version épinglée)
-    curl -fsSL https://raw.githubusercontent.com/incubateur-ademe/nosgestesclimat-app/refs/heads/main/infra/nginx/install-otelcol.sh \
-      -o /usr/local/bin/install-otelcol.sh
-    chmod +x /usr/local/bin/install-otelcol.sh
-    NGC_REF=main /usr/local/bin/install-otelcol.sh 0.160.0
-
-La conf nginx (JSON + logging conditionnel) arrive ensuite au prochain
-`nginx-config-pull` (≤ 5 min), ou immédiatement :
-
-    /usr/local/bin/nginx-config-pull.sh
-
-> - `NGC_REF` = branche/tag d'où tirer `otelcol-config.yaml` (défaut `main` ;
->   utiliser le nom de la branche tant que la PR n'est pas mergée).
-> - Instance ancienne : mettre aussi à jour `pull-config.sh` (non auto-updaté,
->   cf. « Modifier le pull script ou les units systemd ») pour qu'il rafraîchisse
->   ensuite la config du collecteur.
-> - Alternative : **recréer l'instance** → cloud-init installe tout, mais le
->   cache nginx et le certificat SSL sont perdus.
 
 ### Volume & coût
 

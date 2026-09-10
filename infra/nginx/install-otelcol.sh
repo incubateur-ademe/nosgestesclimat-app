@@ -22,7 +22,7 @@ curl -fsSL "$RAW/otelcol-config.yaml" -o /etc/otelcol-contrib/config.yaml
 # L'unit ne charge que /etc/otelcol-contrib/otelcol-contrib.conf ; le token est
 # dans otelcol-contrib.env → on l'ajoute via un drop-in.
 mkdir -p /etc/systemd/system/otelcol-contrib.service.d
-cat > /etc/systemd/system/otelcol-contrib.service.d/override.conf <<'EOF'
+cat >/etc/systemd/system/otelcol-contrib.service.d/override.conf <<'EOF'
 [Service]
 EnvironmentFile=/etc/otelcol-contrib/otelcol-contrib.env
 EOF
