@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import UserEmailForm from '@/components/user/UserEmailForm'
 import Button from '@/design-system/buttons/Button'
 import { UserProvider } from '@/publicodes-state'
-import type { AuthUser } from '@/services/auth/get-user-session'
+import type { AuthUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import { useCallback, useState } from 'react'
 interface Props {
   user: AuthUser

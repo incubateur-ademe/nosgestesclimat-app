@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
-import { pollFactory } from '../../../organisations/factories/poll.factory.ts'
+import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { eventFactory } from '../../factories/event.factory.ts'
 import { refreshEventComputation } from '../../repositories/event.repository.ts'
@@ -18,10 +18,9 @@ const seedPoll = async (
     simulationDates?: Date[]
   } = {}
 ) => {
-  const poll = await pollFactory.create({
+  const poll = await pollFactory.withOrganisation(organisationId).create({
     name: `Poll ${organisationId}`,
     slug: `poll-${organisationId}-${Math.random().toString(36).slice(2, 8)}`,
-    organisationId,
     createdAt:
       options.pollCreatedAt ??
       new Date(

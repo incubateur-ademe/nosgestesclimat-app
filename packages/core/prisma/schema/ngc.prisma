@@ -109,6 +109,7 @@ model GroupParticipant {
   updatedAt    DateTime   @updatedAt
 
   @@unique([groupId, userId])
+  @@index([simulationId, createdAt])
   @@schema("ngc")
 }
 
