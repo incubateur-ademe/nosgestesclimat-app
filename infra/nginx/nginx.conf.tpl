@@ -52,6 +52,60 @@ upstream scalingo {
 }
 
 # ----------------------------------------------------------------------------
+# Logs au format JSON (consommés par l'OpenTelemetry Collector → PostHog)
+# ----------------------------------------------------------------------------
+
+# JSON structuré : chaque champ devient un attribut filtrable dans PostHog
+# (ex. upstream_cache_status = HIT/MISS/BYPASS pour le debugging cache).
+# Sans IP (remote_addr) ni referer. La query string est conservée : les
+# éventuels emails qu'elle contient sont masqués côté collecteur
+# (transform/scrub_pii). `escape=json` échappe l'user-agent (JSON valide).
+log_format json_combined escape=json
+  '{'
+    '"time_iso8601":"$time_iso8601",'
+    '"request_id":"$request_id",'
+    '"connection":"$connection",'
+    '"request_method":"$request_method",'
+    '"request_uri":"$request_uri",'
+    '"status":$status,'
+    '"body_bytes_sent":$body_bytes_sent,'
+    '"request_time":$request_time,'
+    '"upstream_addr":"$upstream_addr",'
+    '"upstream_status":"$upstream_status",'
+    '"upstream_connect_time":"$upstream_connect_time",'
+    '"upstream_header_time":"$upstream_header_time",'
+    '"upstream_response_time":"$upstream_response_time",'
+    '"upstream_cache_status":"$upstream_cache_status",'
+    '"http_user_agent":"$http_user_agent"'
+  '}';
+
+# ----------------------------------------------------------------------------
+# Logging conditionnel
+# ----------------------------------------------------------------------------
+
+# 1 si la route est "bavarde" (assets statiques Next.js/CMS, proxy PostHog).
+# `~^/_next/` couvre aussi `/_next/image?…` ($uri = /_next/image, sans query).
+map $uri $ngc_noisy {
+    default                  0;
+    ~^/_next/                 1;
+    ~^/_static/cms/           1;
+    ~^/(images|misc|fonts)/   1;
+    ~^/revp/                  1;
+}
+
+# 1 si la réponse est une erreur (4xx/5xx).
+map $status $ngc_is_error {
+    default  0;
+    ~^[45]   1;
+}
+
+# On loggue tout, sauf une route bavarde SANS erreur (combinaison "10").
+map "$ngc_noisy$ngc_is_error" $ngc_loggable {
+    "10"     0;
+    default  1;
+}
+
+# ----------------------------------------------------------------------------
 # Redirections (HTTP → HTTPS, www → apex)
 # ----------------------------------------------------------------------------
 
@@ -59,6 +113,8 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name _;
+
+    access_log /var/log/nginx/access.log json_combined if=$ngc_loggable;
 
     return 301 https://$host$request_uri;
 }
@@ -69,6 +125,7 @@ server {
     http2 on;
     server_name www.${DOMAIN};
 
+    access_log /var/log/nginx/access.log json_combined if=$ngc_loggable;
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
@@ -86,6 +143,7 @@ server {
     http2 on;
     server_name ${DOMAIN};
 
+    access_log /var/log/nginx/access.log json_combined if=$ngc_loggable;
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
@@ -100,6 +158,8 @@ server {
     proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto https;
+    # Corrélation : nginx → app → collecteur (mappé en trace_id du log).
+    proxy_set_header X-Request-ID $request_id;
     # Préserve la négo websocket si le client en initie une.
     proxy_set_header Upgrade $http_upgrade;
     # Conséquence de `Upgrade` ci-dessus — force l'header pour qu'il traverse nginx.
