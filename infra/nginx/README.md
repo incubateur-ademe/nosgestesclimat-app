@@ -100,7 +100,7 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
     et le `error_log json` est Plus-only ;
   - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
     pour alléger le volume envoyé à PostHog ;
-  - masque les IP (`client: <ip>` dans error.log) et emails
+  - masque les IP (`client: <ip>`, IPv4 et IPv6), le `referrer` et les emails
     (`transform/scrub_pii`) avant l'envoi ;
   - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
   - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
@@ -129,12 +129,14 @@ Aucune donnée directement identifiante n'est envoyée à PostHog :
 
 - **IP** : retirée de `access.log` (pas de `remote_addr`). Dans `error.log`
   (format nginx figé, qui inclut `client: <ip>`), elles sont masquées côté
-  collecteur (`transform/scrub_pii`) avant l'envoi.
+  collecteur (`transform/scrub_pii`) — **IPv4 et IPv6**.
 - **Query strings** : conservées (`request_uri`) pour le debugging, mais les
   emails qu'elles peuvent contenir sont masqués côté collecteur.
 - **Bodies POST** : jamais loggés par nginx (pas de `$request_body`). Attention
   en revanche aux logs applicatifs Next.js, qui sont hors de ce pipeline.
-- **Referer** : retiré des logs.
+- **Referer** : retiré de `access.log`, et **redacté** (`referrer: [redacted]`)
+  dans `error.log` — nginx l'ajoute au message d'erreur, donc il fallait le
+  traiter là aussi.
 
 Restent : méthode, chemin + query string (emails masqués), statut, tailles,
 temps de réponse, statut cache et user-agent (borderline — retirable si besoin).

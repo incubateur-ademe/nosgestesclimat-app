@@ -114,6 +114,7 @@ processors:
       - context: log
         statements:
           - 'replace_pattern(body, "client:? [0-9a-fA-F:.]+", "client [ip]")'
+          - 'replace_pattern(body, "referrer: \\S+", "referrer: [redacted]")'
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
           - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
 
