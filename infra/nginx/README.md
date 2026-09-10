@@ -89,8 +89,7 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 - `nginx.conf.tpl` écrit `access.log` au format JSON (`log_format json_combined`),
   chaque champ devenant un attribut filtrable dans PostHog
   (`upstream_cache_status`, `status`, `request_uri`, `request_time`,
-  `upstream_status`, `upstream_connect_time`, `upstream_header_time`, …) —
-  sans IP, sans referer.
+  `connection`, `upstream_addr`, `upstream_status`, …) — sans IP, sans referer.
 - Logging conditionnel : les routes bavardes (assets `/_next/`, `/_static/cms/`,
   `/(images|misc|fonts)/` et proxy PostHog `/revp/`) ne sont écrites dans
   `access.log` qu'en cas d'erreur (4xx/5xx) → moins de volume et de bruit.
@@ -107,6 +106,9 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 - Corrélation : `$request_id` (généré par nginx) est propagé à l'app via
   `X-Request-ID` et mappé en `trace_id` du log côté collecteur (convention
   OTel) — pour relier logs nginx et logs applicatifs partageant cet ID.
+  `$connection` (logué) relie en plus une ligne d'`access.log` à la ligne
+  correspondante d'`error.log` (préfixe `*N`) ; `$upstream_addr` distingue un
+  502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
 - La clé est stockée dans `/etc/otelcol-contrib/otelcol-contrib.env` (0600),
   chargée par systemd (`EnvironmentFile`).
 
