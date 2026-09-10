@@ -281,10 +281,36 @@ server {
 
 
     proxy_cache ngc_cache;
-    # Sert le cache même si l'upstream est en panne (500-504)
-    # ou en revalidation par un autre worker (updating).
+    # Sert le cache même si l'upstream est en panne (502-504) ou en
+    # revalidation par un autre worker (updating).
+    # Pas de `http_500` : une erreur applicative doit laisser s'afficher la
+    # page 500 de Next.
     proxy_cache_use_stale error timeout updating
-                          http_500 http_502 http_503 http_504;
+                          http_502 http_503 http_504;
+
+    # ── Page d'erreur applicative (indispo / timeout upstream) ───
+    # `error_page` interroge l'upstream en sous-requête : la page ne peut être
+    # servie pendant une panne que si son entrée de cache existe déjà, d'où le
+    # pré-chauffage par `pull-config.sh`. Les locations non-HTML désactivent
+    # l'interception : une erreur doit y rester une erreur.
+    proxy_intercept_errors on;
+    error_page 502 503 504 /app-crash;
+
+    # Clé en `$uri` : la sous-requête d'`error_page` conserve l'URI d'origine,
+    # donc la clé du catch-all raterait l'entrée de /app-crash.
+    location = /app-crash {
+        proxy_pass https://scalingo;
+        # Évite la boucle error_page → /app-crash → error_page.
+        proxy_intercept_errors off;
+
+        proxy_cache ngc_cache;
+        proxy_cache_key "ngc-crash$scheme$host$uri";
+        # TTL volontairement absent : celui de Next fait foi.
+        proxy_cache_use_stale error timeout updating
+                              http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
+        proxy_cache_lock on;
+    }
 
 
     # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
@@ -301,6 +327,7 @@ server {
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
         proxy_cache_background_update on;
+        proxy_intercept_errors off;
     }
 
     # Proxy vers le bucket S3 des assets CMS (images, PDF) avec cache 30 jours.
@@ -319,6 +346,7 @@ server {
                               http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
+        proxy_intercept_errors off;
     }
 
     # Images Next.js (optimiseur `/_next/image?url=…`), fonts et assets divers
@@ -331,6 +359,7 @@ server {
         # cache.
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
+        proxy_intercept_errors off;
     }
 
     # Fichiers statiques racine servis par l'app : favicon, icônes Apple,
@@ -414,6 +443,7 @@ server {
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     location /revp/array/ {
@@ -426,6 +456,7 @@ server {
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     location /revp/ {
@@ -446,6 +477,7 @@ server {
         # → https://posthog.com/docs/advanced/proxy/proxy-reference
         client_max_body_size 64M;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     # Catch-all : rate-limit + cache générique, bypass sur websocket.
