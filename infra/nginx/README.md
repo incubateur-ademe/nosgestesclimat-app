@@ -128,8 +128,9 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
   indisponibles, le trafic n'est pas affecté et les logs restent sur disque.
 - Offsets de lecture persistés (`file_storage`) : reprise exacte après restart
   ou rotation de logs (ni trou, ni doublon).
-- File-queue persistée sur disque (le retry avec backoff 5s → 30s / 5 min max
-  est le défaut de l'exporter) : coupure réseau absorbée sans perte.
+- File-queue persistée sur disque — le reste (retry 5s → 30s / 5 min max,
+  10 consommateurs, 1000 lots ≈ 1 h 20 de tampon) sont les défauts de
+  l'exporter : coupure réseau absorbée sans perte, y compris sur restart.
 
 ### Données personnelles (RGPD)
 

@@ -156,12 +156,10 @@ exporters:
     endpoint: https://eu.i.posthog.com/i
     headers:
       Authorization: Bearer ${env:POSTHOG_PROJECT_TOKEN}
-    # La file d'attente et le retry (5s → 30s, 5 min max) sont actifs par
-    # défaut. On ne précise que la persistance sur disque et la taille de la
-    # file (~5000 lots ≈ 7 h de logs, quelques dizaines de Mo) ; les 10
-    # consommateurs par défaut résorbent l'arriéré en parallèle.
+    # File d'attente (activée par défaut) : on ne précise que la persistance
+    # sur disque, pour survivre à un restart du collecteur. Retry (5s → 30s,
+    # 5 min max), 10 consommateurs et 1000 lots (~1 h 20 de tampon) : défauts.
     sending_queue:
-      queue_size: 5000
       storage: file_storage
 
 service:
