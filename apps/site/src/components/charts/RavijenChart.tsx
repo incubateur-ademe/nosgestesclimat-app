@@ -1,11 +1,9 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { trackingDownloadRavijenChart } from '@/constants/tracking/misc'
 import Button from '@/design-system/buttons/Button'
 import { getSubcatsOfCategory } from '@/helpers/publicodes/getSubcatsOfCategory'
 import { useEngine } from '@/publicodes-state'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { toPng } from 'html-to-image'
 import CategoryChart from './ravijenChart/CategoryChart'
@@ -56,8 +54,6 @@ export default function RavijenChart({
           size="sm"
           color="secondary"
           onClick={() => {
-            trackMatomoEvent__deprecated(trackingDownloadRavijenChart)
-
             const ravijen = document.getElementById('ravijen')!
 
             toPng(ravijen).then(function (dataUrl) {

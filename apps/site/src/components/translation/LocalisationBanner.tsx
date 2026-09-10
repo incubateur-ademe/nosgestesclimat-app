@@ -3,20 +3,18 @@
 import Link from '@/components/Link'
 import CountryFlag from '@/components/misc/CountryFlag'
 import { LOCALISATION_BANNER_ID } from '@/constants/ids'
-import { trackingClickRegionBanner } from '@/constants/tracking/misc'
 import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import {
   DEFAULT_REGION,
-  type Model,
   supportedRegions,
+  type Model,
   type Region,
 } from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { isServerSide } from '@/utils/nextjs/isServerSide'
 import Trans from './trans/TransClient'
 
@@ -76,10 +74,7 @@ export default function LocalisationBanner({ model }: { model: Model }) {
             size="sm"
             className="ml-auto block"
             data-testid="understood-localisation-button"
-            onClick={() => {
-              hideTutorial('localisationBanner')
-              trackMatomoEvent__deprecated(trackingClickRegionBanner)
-            }}>
+            onClick={() => hideTutorial('localisationBanner')}>
             <Trans>J'ai compris</Trans>
           </Button>
         </div>

@@ -1,12 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  tutorielClickFaq,
-  tutorielClickQuestion,
-} from '@/constants/tracking/pages/tutoriel'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Image from 'next/image'
 import OrganisationPrivacy from './autresQuestions/OrganisationPrivacy'
 
@@ -25,20 +20,12 @@ export default function AutresQuestions() {
               role="button"
               tabIndex={0}
               aria-expanded="false"
-              onClick={() =>
-                trackMatomoEvent__deprecated(
-                  tutorielClickQuestion("C'est quoi mon empreinte carbone ?")
-                )
-              }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackMatomoEvent__deprecated(
-                    tutorielClickQuestion("C'est quoi mon empreinte carbone ?")
-                  )
                 }
               }}>
               <Trans>C'est quoi mon empreinte carbone ?</Trans>
@@ -82,20 +69,12 @@ export default function AutresQuestions() {
               role="button"
               tabIndex={0}
               aria-expanded="false"
-              onClick={() =>
-                trackMatomoEvent__deprecated(
-                  tutorielClickQuestion('Comment on la mesure ?')
-                )
-              }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackMatomoEvent__deprecated(
-                    tutorielClickQuestion('Comment on la mesure ?')
-                  )
                 }
               }}>
               <Trans>Comment on la mesure ?</Trans>
@@ -138,22 +117,12 @@ export default function AutresQuestions() {
                     role="button"
                     tabIndex={0}
                     aria-expanded="false"
-                    onClick={() =>
-                      trackMatomoEvent__deprecated(
-                        tutorielClickQuestion('Mais que veut dire ce petit e ?')
-                      )
-                    }
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault()
                         const details = e.currentTarget
                           .parentElement as HTMLDetailsElement
                         details.open = !details.open
-                        trackMatomoEvent__deprecated(
-                          tutorielClickQuestion(
-                            'Mais que veut dire ce petit e ?'
-                          )
-                        )
                       }
                     }}>
                     <Trans i18nKey={'sites.publicodes.Tutorial.questionE'}>
@@ -195,20 +164,12 @@ export default function AutresQuestions() {
               role="button"
               tabIndex={0}
               aria-expanded="false"
-              onClick={() =>
-                trackMatomoEvent__deprecated(
-                  tutorielClickQuestion("D'où vient mon empreinte ?")
-                )
-              }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackMatomoEvent__deprecated(
-                    tutorielClickQuestion("D'où vient mon empreinte ?")
-                  )
                 }
               }}>
               <Trans>D'où vient mon empreinte ?</Trans>
@@ -236,20 +197,12 @@ export default function AutresQuestions() {
               role="button"
               tabIndex={0}
               aria-expanded="false"
-              onClick={() =>
-                trackMatomoEvent__deprecated(
-                  tutorielClickQuestion("D'où vient mon empreinte ?")
-                )
-              }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
                   const details = e.currentTarget
                     .parentElement as HTMLDetailsElement
                   details.open = !details.open
-                  trackMatomoEvent__deprecated(
-                    tutorielClickQuestion("D'où vient mon empreinte ?")
-                  )
                 }
               }}>
               <Trans>Pourquoi avons-nous ajouté l'empreinte eau ?</Trans>
@@ -276,8 +229,7 @@ export default function AutresQuestions() {
         href="/questions-frequentes"
         size="sm"
         color="text"
-        className="px-0 underline"
-        trackingEvent={tutorielClickFaq}>
+        className="px-0 underline">
         <Trans>Consultez la FAQ</Trans>
       </ButtonLink>
     </div>

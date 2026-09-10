@@ -1,5 +1,3 @@
-import { clickMySpaceNoResultsStartTest } from '@/constants/tracking/pages/mon-espace'
-import { captureClickMySpaceNoResultsStartTest } from '@/constants/tracking/posthogTrackers'
 import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import {
   baseClassNames,
@@ -25,8 +23,6 @@ export default function NoResultsBlock({ locale }: { locale: Locale }) {
       <div className="flex justify-center">
         <Link
           href={TUTORIAL_PATH}
-          data-track-event={clickMySpaceNoResultsStartTest}
-          data-track-posthog={captureClickMySpaceNoResultsStartTest}
           className={twMerge(
             baseClassNames,
             colorClassNames.secondary,

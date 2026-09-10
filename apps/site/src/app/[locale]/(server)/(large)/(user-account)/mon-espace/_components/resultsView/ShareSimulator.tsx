@@ -1,9 +1,12 @@
 import ShareSimulationButton from '@/components/sharing/ShareSimulationButton'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
-import { UTM_MEDIUM_KEY, UTM_SOURCE_KEY } from '@/constants/urls/utm'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import {
+  UTM_MEDIUM_KEY,
+  UTM_SOURCE_KEY,
+} from '@nosgestesclimat/core/features/tracking/utm'
 
 interface Props {
   locale: Locale

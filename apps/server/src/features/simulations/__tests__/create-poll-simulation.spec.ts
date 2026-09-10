@@ -950,8 +950,8 @@ describe('Given a NGC user', () => {
                 templateId: 122,
                 params: {
                   ORGANISATION_NAME: organisationName,
-                  DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                  SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                  DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-invite-campagne`,
+                  SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=fin-retrouver-simulation`,
                 },
               },
             }),
@@ -1078,8 +1078,8 @@ describe('Given a NGC user', () => {
                   templateId: 122,
                   params: {
                     ORGANISATION_NAME: organisationName,
-                    DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                    DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-invite-campagne`,
+                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=fin-retrouver-simulation`,
                   },
                 },
               }),
@@ -1151,8 +1151,8 @@ describe('Given a NGC user', () => {
                   templateId: 123,
                   params: {
                     ORGANISATION_NAME: organisationName,
-                    DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=orga-invite-campagne`,
-                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&mtm_campaign=email-automatise&mtm_kwd=fin-retrouver-simulation`,
+                    DETAILED_VIEW_URL: `https://nosgestesclimat.test/organisations/${organisationSlug}/campagnes/${pollSlug}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-invite-campagne`,
+                    SIMULATION_URL: `https://nosgestesclimat.test/fin?sid=${payload.id}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=fin-retrouver-simulation`,
                   },
                 },
               }),

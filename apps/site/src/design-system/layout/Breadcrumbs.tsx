@@ -2,9 +2,7 @@
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransClient'
-import { breadcrumbClickLink } from '@/constants/tracking/layout'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { Fragment, type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -58,9 +56,6 @@ export default function Breadcrumbs({
                 if (itemBeforeCurrent.isDisabled) {
                   e.preventDefault()
                 }
-                trackMatomoEvent__deprecated(
-                  breadcrumbClickLink(itemBeforeCurrent.href)
-                )
               }}
               title={`${itemBeforeCurrent.label} - ${t('Visiter cette page')}`}
               aria-current={itemBeforeCurrent.isActive}
@@ -85,7 +80,6 @@ export default function Breadcrumbs({
                     if (isDisabled || isActive) {
                       e.preventDefault()
                     }
-                    trackMatomoEvent__deprecated(breadcrumbClickLink(href))
                   }}
                   title={`${label} - ${isActive ? t('Page active') : t('Visiter cette page')}`}
                   aria-current={isActive}

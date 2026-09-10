@@ -1,13 +1,11 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { cookieBannerClick } from '@/constants/tracking/cookie'
 import Button from '@/design-system/buttons/Button'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import Modal from '@/design-system/modals/Modal'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { CookieFieldset, CookieRadio } from './cookieConsentForm/CookieFieldSet'
@@ -57,9 +55,6 @@ export default function CookieConsentForm({
         </div>
         <form
           onSubmit={(e) => {
-            trackMatomoEvent__deprecated(
-              cookieBannerClick('Confirmer mes choix')
-            )
             void handleSubmit(confirmChoices)(e)
           }}
           data-testid="cookie-form">
@@ -87,9 +82,6 @@ export default function CookieConsentForm({
                     type="button"
                     color="secondary"
                     onClick={() => {
-                      trackMatomoEvent__deprecated(
-                        cookieBannerClick('Tout refuser')
-                      )
                       rejectAll()
                     }}
                     size="sm"
@@ -104,9 +96,6 @@ export default function CookieConsentForm({
                     type="button"
                     color="primary"
                     onClick={() => {
-                      trackMatomoEvent__deprecated(
-                        cookieBannerClick('Tout accepter')
-                      )
                       acceptAll()
                     }}
                     size="sm"

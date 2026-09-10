@@ -1,9 +1,5 @@
 import TitleDescLinkBlock from '@/components/landing-pages/TitleDescLinkBlock'
 import Trans from '@/components/translation/trans/TransServer'
-import {
-  getLandingClickModelDocumentation,
-  getLandingClickNouveautes,
-} from '@/helpers/tracking/landings'
 
 export default function ModelInfo({ locale }: { locale: string }) {
   return (
@@ -36,7 +32,6 @@ export default function ModelInfo({ locale }: { locale: string }) {
               href: '/documentation',
               text: <Trans locale={locale}>Découvrir la documentation</Trans>,
             }}
-            trackingEvent={getLandingClickModelDocumentation('/')}
           />
 
           <TitleDescLinkBlock
@@ -57,7 +52,6 @@ export default function ModelInfo({ locale }: { locale: string }) {
               href: '/nouveautes',
               text: <Trans locale={locale}>Voir les nouveautés</Trans>,
             }}
-            trackingEvent={getLandingClickNouveautes('/')}
           />
         </div>
       </div>

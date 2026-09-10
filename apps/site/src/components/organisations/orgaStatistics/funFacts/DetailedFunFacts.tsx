@@ -2,14 +2,10 @@
 
 import SaveIcon from '@/components/icons/SaveIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import { organisationsDashboardClickFunFactsDownload } from '@/constants/tracking/pages/organisationsDashboard'
-import { captureDownloadFunFactsPlus } from '@/constants/tracking/posthogTrackers'
+import { captureDownloadFunFactsPlus } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import type { Entries } from '@/publicodes-state/types'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import { toPng } from 'html-to-image'
 import { useParams } from 'next/navigation'
@@ -82,10 +78,7 @@ export default function DetailedFunFacts({
           size="sm"
           color="secondary"
           onClick={() => {
-            trackMatomoEvent__deprecated(
-              organisationsDashboardClickFunFactsDownload
-            )
-            trackPosthogEvent(captureDownloadFunFactsPlus)
+            trackEvent(captureDownloadFunFactsPlus)
 
             const funFactsPlus = document.getElementById('funFactsPlus')!
 

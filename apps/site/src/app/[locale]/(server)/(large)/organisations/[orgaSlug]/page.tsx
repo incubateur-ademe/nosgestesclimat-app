@@ -1,7 +1,6 @@
 import SettingsIcon from '@/components/icons/SettingsIcon'
 import OrganisationFilAriane from '@/components/layout/FilAriane'
 import Trans from '@/components/translation/trans/TransClient'
-import { organisationsDashboardClickParameters } from '@/constants/tracking/pages/organisationsDashboard'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { unformatAdministratorName } from '@/helpers/organisations/unformatAdministratorName'
@@ -50,7 +49,6 @@ export default async function OrganisationPage({
         </div>
         <ButtonLink
           href={`/organisations/${organisation?.slug}/parametres`}
-          trackingEvent={organisationsDashboardClickParameters}
           color="text"
           data-testid="organisation-page-see-parameters-button"
           className="flex items-center self-start">

@@ -602,12 +602,12 @@ describe('Given a NGC user', () => {
                 params: {
                   GROUP_URL: expect.stringMatching(
                     new RegExp(
-                      '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/resultats\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-voir-classement$'
+                      '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/resultats\\?groupId=[a-zA-Z0-9_]+&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-voir-classement$'
                     )
                   ),
                   SHARE_URL: expect.stringMatching(
                     new RegExp(
-                      '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage$'
+                      '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-url-partage$'
                     )
                   ),
                   GROUP_NAME: payload.name,
@@ -659,12 +659,12 @@ describe('Given a NGC user', () => {
                   params: {
                     GROUP_URL: expect.stringMatching(
                       new RegExp(
-                        '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/resultats\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-voir-classement$'
+                        '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/resultats\\?groupId=[a-zA-Z0-9_]+&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-voir-classement$'
                       )
                     ),
                     SHARE_URL: expect.stringMatching(
                       new RegExp(
-                        '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage$'
+                        '^https:\\/\\/nosgestesclimat\\.test\\/amis\\/invitation\\?groupId=[a-zA-Z0-9_]+&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-url-partage$'
                       )
                     ),
 

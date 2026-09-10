@@ -3,19 +3,11 @@
 import NewTabSvg from '@/components/icons/NewTabSvg'
 import RegionGrid from '@/components/misc/RegionGrid'
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  profilClickRegion,
-  profilOpenRegions,
-} from '@/constants/tracking/pages/profil'
 import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
-import {
-  supportedRegions,
-  type Region,
-} from '@/helpers/server/model/models'
+import { supportedRegions, type Region } from '@/helpers/server/model/models'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useState } from 'react'
 
 interface Props {
@@ -38,7 +30,6 @@ export default function RegionSelector({
   const [currentRegion, setCurrentRegion] = useState(region)
   async function onUpdate(code: Region) {
     setCurrentRegion(code)
-    trackMatomoEvent__deprecated(profilClickRegion(code))
 
     await updateRegion(code)
 
@@ -50,7 +41,6 @@ export default function RegionSelector({
       <details open={isOpen} className="rounded-xl bg-gray-100 p-2">
         <summary
           className="middle w-auto cursor-pointer p-4"
-          onClick={() => trackMatomoEvent__deprecated(profilOpenRegions)}
           aria-expanded={isOpen}
           aria-controls="region-grid"
           role="button"
@@ -58,7 +48,6 @@ export default function RegionSelector({
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault()
-              trackMatomoEvent__deprecated(profilOpenRegions)
             }
           }}>
           <span>

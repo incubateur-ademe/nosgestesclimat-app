@@ -2,7 +2,6 @@ import DidYouKnowMainLanding from '@/app/[locale]/_components/DidYouKnowMainLand
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import Trans from '@/components/translation/trans/TransServer'
 import PostThumbnail from '@/design-system/cms/PostThumbnail'
-import { getPostThumbnailClickEvent } from '@/helpers/tracking/blog'
 import type { ArticleItemType } from '../../adapters/cmsClient'
 import Pagination from './articleList/Pagination'
 
@@ -33,7 +32,6 @@ export default function ArticleList({
               category={article.blogCategory?.title ?? ''}
               imageSrc={article.image?.url ?? ''}
               href={`/blog/${article.blogCategory?.slug}/${article.slug}`}
-              trackingEvent={getPostThumbnailClickEvent(article.slug)}
               className="bg-gray-50"
             />
           </li>
@@ -57,7 +55,6 @@ export default function ArticleList({
                 category={article.blogCategory?.title ?? ''}
                 imageSrc={article.image?.url ?? ''}
                 href={`/blog/${article.blogCategory?.slug}/${article.slug}`}
-                trackingEvent={['blog', 'article', article.slug]}
                 className="bg-gray-50"
               />
             </li>

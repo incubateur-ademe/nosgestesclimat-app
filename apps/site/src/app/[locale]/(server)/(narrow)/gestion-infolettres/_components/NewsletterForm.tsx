@@ -3,8 +3,6 @@
 import { postNewsletterFormAction } from '@/actions/newsletters/postNewsletterFormAction'
 import NewsletterCheckBoxes from '@/components/newsletter/NewsletterCheckboxes'
 import Trans from '@/components/translation/trans/TransClient'
-import { captureClickUpdateUserNewsletters } from '@/constants/tracking/posthogTrackers'
-import { clickUpdateUserNewsletters } from '@/constants/tracking/user-account'
 import Alert from '@/design-system/alerts/alert/Alert'
 import Button from '@/design-system/buttons/Button'
 import EmailInput from '@/design-system/inputs/EmailInput'
@@ -13,10 +11,6 @@ import {
   type ListIds,
   type Newsletters,
 } from '@/helpers/server/model/newsletter'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
 import Form from 'next/form'
 import { useActionState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -63,14 +57,7 @@ export default function NewsletterForm({ newsletters }: NewsletterFormProps) {
           }
         />
 
-        <Button
-          type="submit"
-          className="mb-8 h-14 w-60"
-          disabled={pending}
-          onClick={() => {
-            trackMatomoEvent__deprecated(clickUpdateUserNewsletters)
-            trackPosthogEvent(captureClickUpdateUserNewsletters)
-          }}>
+        <Button type="submit" className="mb-8 h-14 w-60" disabled={pending}>
           {pending ? (
             <Loader size="sm" color="light" />
           ) : (

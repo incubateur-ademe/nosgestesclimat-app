@@ -118,10 +118,7 @@ export default async function CarbonFootprintLandingPage({
 
         <DailyGestureCarbonFootprint locale={locale} />
 
-        <UnderstandToActCarbonFootprint
-          locale={locale}
-          pathname={'/empreinte-carbone'}
-        />
+        <UnderstandToActCarbonFootprint locale={locale} />
 
         <MotivationSectionCarbonFootprint locale={locale} />
 

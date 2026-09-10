@@ -18,7 +18,6 @@ const mockProps = {
       label: t('Whatsapp'),
       link: DUMMY_COMPLETE_URL,
       icon: <WhatsappIcon />,
-      eventTracked: ['toto'],
     },
   ],
   modalTitle: t('Partager le simulateur'),

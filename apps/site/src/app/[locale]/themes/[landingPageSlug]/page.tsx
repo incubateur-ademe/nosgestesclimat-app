@@ -208,7 +208,6 @@ export default async function ThematicLandingPage({
         {block6 && (
           <UnderstandToAct
             locale={locale}
-            pathname={`/${landingPageSlug}`}
             title={block6.title}
             description={block6.htmlDescription}
             posts={

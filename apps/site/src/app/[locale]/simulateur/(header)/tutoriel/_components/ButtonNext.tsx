@@ -2,8 +2,8 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
-import { useActionState } from 'react'
 import type { SearchParams } from 'next/dist/server/request/search-params'
+import { useActionState } from 'react'
 import { startSimulation } from '../_actions/start-simulation.action'
 
 export default function ButtonNext({

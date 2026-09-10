@@ -1,13 +1,6 @@
-'use client'
-
 import Baseline from '@/components/organisations/Baseline'
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  organisationsAccueilClickCommencer,
-  organisationsAccueilClickDemo,
-} from '@/constants/tracking/pages/organisationsAccueil'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Image from 'next/image'
 
 export default function HeroSection() {
@@ -27,19 +20,13 @@ export default function HeroSection() {
           <li>
             <ButtonLink
               href="/organisations/connexion"
-              data-testid="start-link"
-              trackingEvent={organisationsAccueilClickCommencer}>
+              data-testid="start-link">
               <Trans>Commencer</Trans>
             </ButtonLink>
           </li>
 
           <li>
-            <ButtonLink
-              color="text"
-              href="/organisations/demander-demo"
-              onClick={() => {
-                trackMatomoEvent__deprecated(organisationsAccueilClickDemo)
-              }}>
+            <ButtonLink color="text" href="/organisations/demander-demo">
               <Trans>Demander une démo</Trans>
             </ButtonLink>
           </li>

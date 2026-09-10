@@ -5,5 +5,4 @@ import type { OrganisationCreatedEvent } from '../events/OrganisationCreated.eve
 
 export const sendOrganisationCreated: Handler<OrganisationCreatedEvent> = ({
   attributes,
-}) =>
-  sendOrganisationCreatedEmail({ ...attributes, origin: config.app.origin })
+}) => sendOrganisationCreatedEmail({ ...attributes, origin: config.app.origin })

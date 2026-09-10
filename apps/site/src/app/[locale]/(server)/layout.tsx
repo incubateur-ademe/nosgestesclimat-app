@@ -19,7 +19,7 @@ export default async function LargeLayout({
       <Suspense fallback={null}>
         <Banner locale={locale as Locale} />
       </Suspense>
-      <HeaderServer locale={locale} />
+      <HeaderServer />
       {children}
       <GoogleTagScript />
       <GoogleTagIframe />

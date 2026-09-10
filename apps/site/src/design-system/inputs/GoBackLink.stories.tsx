@@ -18,10 +18,6 @@ const meta: Meta<typeof GoBackLink> = {
       control: 'text',
       description: 'Additional CSS classes',
     },
-    eventTracked: {
-      control: 'object',
-      description: 'Event tracking array',
-    },
   },
 }
 
@@ -44,7 +40,6 @@ export const WithCustomClass: Story = {
 export const WithTracking: Story = {
   args: {
     href: '/blog',
-    eventTracked: ['navigation', 'back', 'blog'],
   },
 }
 

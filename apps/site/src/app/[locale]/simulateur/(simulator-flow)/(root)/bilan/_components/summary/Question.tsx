@@ -2,7 +2,6 @@
 
 import ChoicesValue from '@/components/misc/ChoicesValue'
 import NumberValue from '@/components/misc/NumberValue'
-import { simulateurClickSommaireQuestion } from '@/constants/tracking/pages/simulateur'
 import { foldEveryQuestionsUntil } from '@/helpers/foldEveryQuestionsUntil'
 import {
   getBackgroundDarkColor,
@@ -17,7 +16,6 @@ import {
   useRule,
   useUser,
 } from '@/publicodes-state'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
 
@@ -87,8 +85,6 @@ export default function Question({
 
         // Reset the scroll position to the top of the page
         window.scrollTo({ top: 0, behavior: 'instant' })
-
-        trackMatomoEvent__deprecated(simulateurClickSommaireQuestion)
 
         toggleQuestionList()
       }}>

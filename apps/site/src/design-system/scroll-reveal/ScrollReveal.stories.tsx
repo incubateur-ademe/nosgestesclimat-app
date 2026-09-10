@@ -22,7 +22,7 @@ export default meta
 type Story = StoryObj<typeof ScrollReveal>
 
 const Card = ({ label }: { label: string }) => (
-  <div className="flex h-24 w-48 items-center justify-center rounded-xl bg-primary-700 p-4 font-bold text-white shadow-lg">
+  <div className="bg-primary-700 flex h-24 w-48 items-center justify-center rounded-xl p-4 font-bold text-white shadow-lg">
     {label}
   </div>
 )

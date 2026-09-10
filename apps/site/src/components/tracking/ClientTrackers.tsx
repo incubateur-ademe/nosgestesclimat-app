@@ -1,10 +1,8 @@
 'use client'
 
-import { trackingLocale, trackingRegion } from '@/constants/tracking/misc'
 import type { Region } from '@/helpers/server/model/models'
 import { useTrackPageview } from '@/hooks/tracking/useTrackPageview'
 import type { Locale } from '@/i18nConfig'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
@@ -16,7 +14,6 @@ export function ClientTrackers({
   region: Region | undefined
 }) {
   useEffect(() => {
-    trackMatomoEvent__deprecated(trackingLocale(locale))
     posthog.register_for_session({
       locale,
     })
@@ -25,7 +22,6 @@ export function ClientTrackers({
   useEffect(() => {
     if (!region) return
 
-    trackMatomoEvent__deprecated(trackingRegion(region))
     posthog.register_for_session({
       region,
     })

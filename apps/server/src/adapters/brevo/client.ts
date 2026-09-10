@@ -1,5 +1,10 @@
 import { mapComputedResultsToContactAttributes } from '@nosgestesclimat/core/features/simulations/emails/map-computed-results-to-contact-attributes'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import {
+  UTM_CAMPAIGN_KEY,
+  UTM_MEDIUM_KEY,
+  UTM_SOURCE_KEY,
+} from '@nosgestesclimat/core/features/tracking/utm'
 import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
@@ -22,11 +27,10 @@ import {
   Attributes,
   ClientErrors,
   ListIds,
-  MATOMO_CAMPAIGN_EMAIL_AUTOMATISE,
-  MATOMO_CAMPAIGN_KEY,
-  MATOMO_KEYWORD_KEY,
-  MATOMO_KEYWORDS,
   TemplateIds,
+  TRACKING_CAMPAIGNS,
+  TRACKING_MEDIUM,
+  TRACKING_SOURCE,
 } from './constant.ts'
 
 const brevo = axios.create({
@@ -226,14 +230,16 @@ const sendGroupEmail = ({
   const groupUrl = new URL(`${origin}/amis/resultats`)
   const { searchParams: groupSp } = groupUrl
   groupSp.append('groupId', groupId)
-  groupSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  groupSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].GROUP_URL)
+  groupSp.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  groupSp.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  groupSp.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId].GROUP_URL)
 
   const shareUrl = new URL(`${origin}/amis/invitation`)
   const { searchParams: shareSp } = shareUrl
   shareSp.append('groupId', groupId)
-  shareSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  shareSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].SHARE_URL)
+  shareSp.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  shareSp.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  shareSp.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId].SHARE_URL)
 
   return sendEmail({
     email,
@@ -278,8 +284,9 @@ export const sendOrganisationCreatedEmail = ({
   const templateId = TemplateIds[locale].ORGANISATION_CREATED
   const dashBoardUrl = new URL(`${origin}/organisations/${slug}`)
   const { searchParams } = dashBoardUrl
-  searchParams.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  searchParams.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId])
+  searchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  searchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  searchParams.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId])
 
   return sendEmail({
     email,
@@ -295,7 +302,7 @@ export const sendOrganisationCreatedEmail = ({
 export const sendPollCreatedEmail = ({
   locale,
   origin,
-  organisation: { name: organisationName, slug: organisationSlug },
+  organisation: { slug: organisationSlug },
   poll: { name: pollName, slug: pollSlug },
   administrator: { name: administratorName, email },
 }: Readonly<{
@@ -310,19 +317,15 @@ export const sendPollCreatedEmail = ({
     `${origin}/organisations/${organisationSlug}/campagnes/${pollSlug}`
   )
   const { searchParams: dashboardSearchParams } = dashboardUrl
-  dashboardSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  dashboardSearchParams.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId])
+  dashboardSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  dashboardSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  dashboardSearchParams.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId])
 
   const pollUrl = new URL(`${origin}/o/${organisationSlug}/${pollSlug}`)
   const { searchParams: pollSearchParams } = pollUrl
-  pollSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    `Organisation_${organisationName}`
-  )
-  pollSearchParams.append(MATOMO_KEYWORD_KEY, pollName)
+  pollSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  pollSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  pollSearchParams.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId])
 
   return sendEmail({
     email,
@@ -363,8 +366,9 @@ export const sendSimulationUpsertedEmail = ({
     simulationUrl.pathname = isSimulationCompleted ? 'fin' : 'simulateur/bilan'
     const { searchParams } = simulationUrl
     searchParams.append('sid', simulation.id)
-    searchParams.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-    searchParams.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId])
+    searchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+    searchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+    searchParams.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId])
 
     const dashBoardUrl = new URL(`${origin}/mon-espace`)
 
@@ -390,8 +394,9 @@ export const sendSimulationUpsertedEmail = ({
   simulationUrl.pathname = isSimulationCompleted ? 'fin' : 'simulateur/bilan'
   const { searchParams } = simulationUrl
   searchParams.append('sid', simulation.id)
-  searchParams.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  searchParams.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId])
+  searchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  searchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  searchParams.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId])
 
   return sendEmail({
     email,
@@ -446,25 +451,21 @@ export const sendPollSimulationUpsertedEmail = async ({
     `${origin}/organisations/${organisationSlug}/campagnes/${pollSlug}`
   )
   const { searchParams: detailedViewUrlSearchParams } = detailedViewUrl
+  detailedViewUrlSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  detailedViewUrlSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
   detailedViewUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  detailedViewUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[templateId]
+    UTM_CAMPAIGN_KEY,
+    TRACKING_CAMPAIGNS[templateId]
   )
   const simulationUrl = new URL(origin)
   simulationUrl.pathname = 'fin'
   const { searchParams: simulationUrlSearchParams } = simulationUrl
   simulationUrlSearchParams.append('sid', id)
+  simulationUrlSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  simulationUrlSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
   simulationUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  simulationUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[TemplateIds[Locales.fr].SIMULATION_COMPLETED]
+    UTM_CAMPAIGN_KEY,
+    TRACKING_CAMPAIGNS[TemplateIds[Locales.fr].SIMULATION_COMPLETED]
   )
 
   await sendEmail({

@@ -3,14 +3,12 @@
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
 import { GROUP_EMOJIS } from '@/constants/group'
-import { amisCreationEtapeVotreGroupeSuivant } from '@/constants/tracking/pages/amisCreation'
 import Button from '@/design-system/buttons/Button'
 import GridRadioInputs from '@/design-system/inputs/GridRadioInputs'
 import PrenomInput from '@/design-system/inputs/PrenomInput'
 import TextInput from '@/design-system/inputs/TextInput'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useState, useTransition } from 'react'
 import { useForm as useReactHookForm, type Control } from 'react-hook-form'
 import { createGroupAction } from '../_actions/create-group.action'
@@ -40,7 +38,6 @@ export default function NameForm({
 
   function onSubmit({ name, emoji, administratorName }: Inputs) {
     setIsError(false)
-    trackMatomoEvent__deprecated(amisCreationEtapeVotreGroupeSuivant)
 
     startTransition(async () => {
       const result = await createGroupAction({

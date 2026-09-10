@@ -3,10 +3,8 @@ import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
 export default async function UnderstandToActCarbonFootprint({
-  pathname,
   locale,
 }: {
-  pathname: string
   locale: string
 }) {
   const { t } = await getServerTranslation({ locale })
@@ -14,7 +12,6 @@ export default async function UnderstandToActCarbonFootprint({
   return (
     <UnderstandToAct
       locale={locale}
-      pathname={pathname}
       description={
         <p className="mb-0">
           <Trans

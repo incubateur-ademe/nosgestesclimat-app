@@ -40,6 +40,16 @@ export class PostHog {
     this.registerProperties()
   }
 
+  /**
+   * Resets the PostHog identity (new anonymous `distinct_id`) on logout without
+   * dropping tracking: `posthog.reset()` also clears the SDK consent marker
+   * (`__ph_opt_in_out_<token>`), we re-apply it right after the reset so the user is still tracked according to his previous consent.
+   */
+  resetIdentity() {
+    posthog.reset()
+    this.update(savedCookieState.posthog)
+  }
+
   private switchDNTOn() {
     posthog.set_config({
       // Force type because type false is not listed, but does indeed have the desired behaviour
@@ -93,13 +103,7 @@ export class PostHog {
       },
       rageclick: false,
 
-      custom_campaign_params: [
-        'mtm_campaign',
-        'mtm_kwd',
-        'mtm_keyword',
-        'organisation',
-        'poll',
-      ], // Enable to set query parameters as properties on the events
+      custom_campaign_params: ['mtm_campaign', 'mtm_kwd', 'mtm_keyword'], // Enable to set query parameters as properties on the events
 
       loaded: () => {
         this.registerProperties()

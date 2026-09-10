@@ -3,8 +3,6 @@ import AmisIcon from '@/components/icons/AmisIcon'
 import BilanIcon from '@/components/icons/BilanIcon'
 import SettingsIcon from '@/components/icons/SettingsIcon'
 import Trans from '@/components/translation/trans/TransServer'
-import { monEspaceTabTrackEventServer } from '@/constants/tracking/pages/mon-espace'
-import { captureClickMonEspaceTabServer } from '@/constants/tracking/posthogTrackers'
 import {
   MON_ESPACE_ACTIONS_PATH,
   MON_ESPACE_GROUPS_PATH,
@@ -54,14 +52,6 @@ export default async function ProfileTab({
       ),
       href: MON_ESPACE_PATH,
       isActive: activePath === MON_ESPACE_PATH,
-      'data-track-event':
-        activePath !== MON_ESPACE_PATH
-          ? monEspaceTabTrackEventServer('results')
-          : undefined,
-      'data-track-posthog':
-        activePath !== MON_ESPACE_PATH
-          ? captureClickMonEspaceTabServer({ tab: 'results' })
-          : undefined,
       prefetch: false,
     },
     {
@@ -90,14 +80,6 @@ export default async function ProfileTab({
       ),
       href: MON_ESPACE_ACTIONS_PATH,
       isActive: activePath === MON_ESPACE_ACTIONS_PATH,
-      'data-track-event':
-        activePath !== MON_ESPACE_ACTIONS_PATH
-          ? monEspaceTabTrackEventServer('actions')
-          : undefined,
-      'data-track-posthog':
-        activePath !== MON_ESPACE_ACTIONS_PATH
-          ? captureClickMonEspaceTabServer({ tab: 'actions' })
-          : undefined,
       prefetch: false,
     },
     {
@@ -128,14 +110,6 @@ export default async function ProfileTab({
       ),
       href: MON_ESPACE_GROUPS_PATH,
       isActive: activePath === MON_ESPACE_GROUPS_PATH,
-      'data-track-event':
-        activePath !== MON_ESPACE_GROUPS_PATH
-          ? monEspaceTabTrackEventServer('groups')
-          : undefined,
-      'data-track-posthog':
-        activePath !== MON_ESPACE_GROUPS_PATH
-          ? captureClickMonEspaceTabServer({ tab: 'groups' })
-          : undefined,
       prefetch: false,
     },
     {
@@ -159,14 +133,6 @@ export default async function ProfileTab({
       ),
       href: MON_ESPACE_SETTINGS_PATH,
       isActive: activePath === MON_ESPACE_SETTINGS_PATH,
-      'data-track-event':
-        activePath !== MON_ESPACE_SETTINGS_PATH
-          ? monEspaceTabTrackEventServer('settings')
-          : undefined,
-      'data-track-posthog':
-        activePath !== MON_ESPACE_SETTINGS_PATH
-          ? captureClickMonEspaceTabServer({ tab: 'settings' })
-          : undefined,
       containerClassName: 'md:ml-auto',
       prefetch: false,
     },

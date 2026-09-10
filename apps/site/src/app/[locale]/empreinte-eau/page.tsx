@@ -124,10 +124,7 @@ export default async function WaterFootprintLandingPage(
 
         <DailyGestureWaterFootprint locale={locale} />
 
-        <UnderstandToActWaterFootprint
-          pathname={'/empreinte-eau'}
-          locale={locale}
-        />
+        <UnderstandToActWaterFootprint locale={locale} />
 
         <MotivationSectionWaterFootprint locale={locale} />
 

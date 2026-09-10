@@ -132,7 +132,7 @@ L'API est développée en MVC standard.
 - Les controllers sont organisés par features et exposent des routes par version dans l'URL. Ils se chargent d'appeler le code business et de gérer la réponse de manière explicite en fonction du succès ou de l'erreur métier.
 - Les services gèrent la logique business
 - Les repositories accèdent à la base de données et gèrent les transactions déclenchées par les services au besoin (paramètre `session`)
-- Les adapteurs se chargent d'appeler les APIs externes (brevo, connect, matomo ...)
+- Les adapteurs se chargent d'appeler les APIs externes (brevo, connect, posthog ...)
 - L'event bus, les évènements et les handlers sont utilisés pour gérer tous les effets de bord. Aucun effet de bord ne doit être trigger depuis les services. Il faut passer par un évènement.
 
 #### Worker & Jobs
@@ -144,7 +144,3 @@ On se contente d'envoyer un event de l'event bus dans un channel redis comme on 
 ## Intégrations
 
 Ce projet s'intègre avec des partenaires. Des documentations sont disponibles dans Notion (Développement / Docs / Export données simulateur et Portail intégrations).
-
-## Statistiques
-
-Bénéficiant de plusieurs outils de statistiques. Le serveur scrappe les données de la veille sur Matomo pour les mettre en base afin qu'elles soient accessibles via metabase. Là encore des documentations existent dans Notion (Développement / Docs / Import des stats).

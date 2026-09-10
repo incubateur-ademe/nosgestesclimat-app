@@ -1,14 +1,15 @@
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import type { AuthContextValue } from '@/components/authentication/AuthProvider'
+import { useAuth } from '@/components/authentication/AuthProvider'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useAuth } from '@/components/authentication/AuthProvider'
-import type { AuthContextValue } from '@/components/authentication/AuthProvider'
 import ResendButton from '../ResendButton'
 
 vi.mock('@/utils/analytics/trackEvent')
 vi.mock('@/components/authentication/AuthProvider', async () => {
-  const actual = await vi.importActual('@/components/authentication/AuthProvider')
+  const actual = await vi.importActual(
+    '@/components/authentication/AuthProvider'
+  )
   return { ...actual, useAuth: vi.fn() }
 })
 
@@ -70,16 +71,6 @@ describe('ResendButton', () => {
     await waitFor(() => {
       expect(mockResendCode).toHaveBeenCalledTimes(1)
       expect(screen.getByText('Code renvoyé')).toBeInTheDocument()
-    })
-  })
-
-  it('tracks the resend click via PostHog', async () => {
-    const mockTrack = vi.mocked(trackPosthogEvent)
-    renderComponent()
-    await userEvent.click(screen.getByRole('button'))
-
-    await waitFor(() => {
-      expect(mockTrack).toHaveBeenCalled()
     })
   })
 

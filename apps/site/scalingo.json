@@ -22,10 +22,6 @@
       "generator": "template",
       "template": "https://nosgestesclimat-preprod-pr%PR_NUMBER%.osc-fr1.scalingo.io"
     },
-    "NEXT_PUBLIC_MATOMO_DOMAIN": {
-      "value": "*.osc-fr1.scalingo.io",
-      "description": "Matomo domain for Scalingo review apps"
-    },
     "ENGINE_HOT_KEYS": {
       "value": "FR:current",
       "description": "Worker: rule engines kept warm at all times. Review apps only fit the single busiest combination on their S container (see apps/site/scripts/memory-usage)"

@@ -56,7 +56,7 @@
     url.searchParams.append('iframe', 'true')
     url.searchParams.append('integratorUrl', integratorUrl.toString())
 
-    // Append matomo tracking params
+    // Append tracking params
 
     const utmSourceParam = script.dataset.utm_source
 

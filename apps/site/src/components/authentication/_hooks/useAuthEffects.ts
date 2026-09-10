@@ -6,7 +6,7 @@ import { useCookieManagement } from '@/components/cookies/useCookieManagement'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import { reconcileUserOnAuth } from '@/helpers/user/reconcileOnAuth'
 import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { useRouter } from 'next/navigation'
 
@@ -75,7 +75,7 @@ function useCompletionEffect(
         safeSessionStorage.removeItem(EMAIL_PENDING_AUTHENTICATION_KEY)
 
         if (options.tracker) {
-          trackPosthogEvent(options.tracker)
+          trackEvent(options.tracker)
         }
 
         await reconcileUserOnAuth({

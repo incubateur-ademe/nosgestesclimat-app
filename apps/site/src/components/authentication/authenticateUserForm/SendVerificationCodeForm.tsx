@@ -3,13 +3,13 @@
 import DefaultSubmitErrorMessage from '@/components/error/DefaultSubmitErrorMessage'
 import Trans from '@/components/translation/trans/TransClient'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
-import { captureClickSubmitEmail } from '@/constants/tracking/pages/signin'
+import { captureClickSubmitEmail } from '@/constants/tracking/trackers'
 import type { ButtonColor } from '@/design-system/buttons/Button'
 import Form from '@/design-system/form/Form'
 import EmailInput from '@/design-system/inputs/EmailInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { isEmailValid } from '@/utils/isEmailValid'
 import { type ReactNode } from 'react'
@@ -61,7 +61,7 @@ export default function SendVerificationCodeForm({
   return (
     <Form
       onSubmit={(e) => {
-        trackPosthogEvent(captureClickSubmitEmail({ mode }))
+        trackEvent(captureClickSubmitEmail({ mode }))
         void handleSubmit((data: FormData) => {
           void sendEmail(data.email)
         })(e)

@@ -1,14 +1,13 @@
 import StepsDisplay from '@/components/groups/StepsDisplay'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
-import { amisCreationVotreGroupeRetour } from '@/constants/tracking/pages/amisCreation'
 import GoBackButton from '@/design-system/inputs/GoBackButton'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { throwNextError } from '@/helpers/server/error'
-import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import { requireAuthUser } from '@/services/auth/require-auth-user'
+import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import type { DefaultPageProps } from '@/types'
 import NameForm from './_components/NameForm'
 
@@ -37,10 +36,7 @@ export default async function GroupNamePage({
 
   return (
     <div className="pb-8">
-      <GoBackButton
-        className="mb-4 font-bold"
-        eventTracked={amisCreationVotreGroupeRetour}
-      />
+      <GoBackButton className="mb-4 font-bold" />
 
       {Boolean(showStep) && <StepsDisplay currentStep={2} />}
 

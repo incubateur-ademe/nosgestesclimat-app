@@ -3,13 +3,11 @@
 import { AuthProvider, useAuth } from '@/components/authentication/AuthProvider'
 import VerifyCodeForm from '@/components/authentication/authenticateUserForm/VerifyCodeForm'
 import Trans from '@/components/translation/trans/TransClient'
-import { captureClickUpdateUserEmail } from '@/constants/tracking/posthogTrackers'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
 import Modal from '@/design-system/modals/Modal'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { formatEmail } from '@/utils/format/formatEmail'
 import { success } from '@nosgestesclimat/core/lib/result'
 import { useRouter } from 'next/navigation'
@@ -104,7 +102,6 @@ function UserEmailFormContent({
   })
 
   const createCodeIfEmailChanged: SubmitHandler<Inputs> = (data) => {
-    trackPosthogEvent(captureClickUpdateUserEmail)
     const nextEmail = formatEmail(data.email)
 
     if (nextEmail && nextEmail !== defaultEmail) {
@@ -153,7 +150,10 @@ function UserEmailFormContent({
         )}
 
         <div>
-          <Button data-testid="submit-button" type="submit" className="mt-6 gap-2 self-start">
+          <Button
+            data-testid="submit-button"
+            type="submit"
+            className="mt-6 gap-2 self-start">
             {submitLabel ? (
               <span data-testid="custom-submit-label">{submitLabel}</span>
             ) : (
