@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import dayjs from 'dayjs'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
@@ -23,11 +24,7 @@ describe('Given a NGC integrations API user', () => {
   const url = RECOVER_API_TOKEN_ROUTE
 
   afterEach(async () => {
-    await prisma.integrationWhitelist.deleteMany()
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.integrationApiScope.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When recovering an API token', () => {

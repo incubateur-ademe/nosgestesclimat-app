@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import dayjs from 'dayjs'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { formatBrevoDate } from '../../../adapters/brevo/__tests__/fixtures/formatBrevoDate.ts'
@@ -26,7 +27,7 @@ describe('Given newsletter stats recover job', () => {
   })
 
   afterEach(async () => {
-    await prisma.brevoNewsletterStats.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   describe('When CRON is triggerred', () => {
