@@ -22,9 +22,11 @@ describe('commitToAction()', () => {
     const user = await userFactory.create()
 
     const actionChoice = await actionChoiceFactory
-      .withActionId(action.id)
-      .withUserId(user.id)
-      .withType('committed')
+      .params({
+        actionId: action.id,
+        userId: user.id,
+        type: 'committed',
+      })
       .create()
 
     expect(actionChoice).toEqual(
@@ -43,9 +45,11 @@ describe('commitToAction()', () => {
 
     await expect(
       actionChoiceFactory
-        .withActionId(action.id)
-        .withUserId(faker.string.uuid())
-        .withType('committed')
+        .params({
+          actionId: action.id,
+          userId: faker.string.uuid(),
+          type: 'committed',
+        })
         .create()
     ).rejects.toThrow(/Foreign key constraint violated/)
   })
@@ -58,9 +62,11 @@ describe('commitToAction()', () => {
     let error
     try {
       await actionChoiceFactory
-        .withActionId(faker.string.uuid())
-        .withUserId(user.id)
-        .withType('committed')
+        .params({
+          actionId: faker.string.uuid(),
+          userId: user.id,
+          type: 'committed',
+        })
         .create()
     } catch (err) {
       error = err
@@ -74,11 +80,13 @@ describe('commitToAction()', () => {
 
     const user = await userFactory.create()
 
-    const actionChoice = await actionChoiceFactory
-      .withActionId(action.id)
-      .withUserId(user.id)
-      .withType('committed')
-      .create()
+    const createActionChoiceFactory = actionChoiceFactory.params({
+      actionId: action.id,
+      userId: user.id,
+      type: 'committed',
+    })
+
+    const actionChoice = await createActionChoiceFactory.create()
 
     expect(actionChoice).toEqual(
       expect.objectContaining({
@@ -90,11 +98,7 @@ describe('commitToAction()', () => {
 
     let error
     try {
-      await actionChoiceFactory
-        .withActionId(action.id)
-        .withUserId(user.id)
-        .withType('committed')
-        .create()
+      await createActionChoiceFactory.create()
     } catch (err) {
       error = err
     } finally {
