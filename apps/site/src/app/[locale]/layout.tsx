@@ -9,8 +9,8 @@ import { Suspense } from 'react'
 
 import i18nConfig from '@/i18nConfig'
 import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
+import '../../styles/globals.css'
 import { BODY_ID } from './_components/mainLayoutProviders/IframeOptionsContext'
-import './globals.css'
 import { marianne } from './marianne'
 
 export function generateStaticParams() {

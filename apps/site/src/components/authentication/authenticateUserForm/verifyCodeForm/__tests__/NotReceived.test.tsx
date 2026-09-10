@@ -1,12 +1,14 @@
+import type { AuthContextValue } from '@/components/authentication/AuthProvider'
+import { useAuth } from '@/components/authentication/AuthProvider'
+import { UnknownCodeError } from '@/components/authentication/errors'
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useAuth } from '@/components/authentication/AuthProvider'
-import type { AuthContextValue } from '@/components/authentication/AuthProvider'
-import { UnknownCodeError } from '@/components/authentication/errors'
 import NotReceived from '../NotReceived'
 
 vi.mock('@/components/authentication/AuthProvider', async () => {
-  const actual = await vi.importActual('@/components/authentication/AuthProvider')
+  const actual = await vi.importActual(
+    '@/components/authentication/AuthProvider'
+  )
   return { ...actual, useAuth: vi.fn() }
 })
 vi.mock('@/components/authentication/_hooks/useSecondsLeft', () => ({

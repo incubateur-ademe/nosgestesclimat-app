@@ -1,4 +1,4 @@
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 import type { ReactNode } from 'react'
 import Main from './Main'
 import DynamicCounter from './landingPage/DynamicCounter'
@@ -25,7 +25,7 @@ export default function LandingPage({
 }: Props) {
   return (
     <>
-      {withHeader && <HeaderServer locale={locale} />}
+      {withHeader && <Header locale={locale} />}
 
       <Main>
         <Hero

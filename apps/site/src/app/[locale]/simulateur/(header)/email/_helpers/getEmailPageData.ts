@@ -1,5 +1,5 @@
-import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { getPublicPoll } from '@/services/organisations/get-public-poll'
 
 interface EmailPageData {

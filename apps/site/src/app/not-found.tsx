@@ -2,8 +2,8 @@ import Route404 from '@/components/layout/404'
 import { noIndexObject } from '@/constants/metadata'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import i18nConfig from '@/i18nConfig'
-import './[locale]/globals.css'
 import { Suspense } from 'react'
+import '../styles/globals.css'
 import { marianne } from './[locale]/marianne'
 
 export function generateMetadata() {

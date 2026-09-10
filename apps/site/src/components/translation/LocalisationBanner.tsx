@@ -9,8 +9,8 @@ import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import {
   DEFAULT_REGION,
-  type Model,
   supportedRegions,
+  type Model,
   type Region,
 } from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'

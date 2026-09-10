@@ -15,6 +15,10 @@ const mockGetUserSimulationJourney =
   vi.fn<() => Promise<UserSimulationJourney>>()
 const mockNotFound = vi.mocked(notFound)
 
+vi.mock('@/components/layout/Header', () => ({
+  default: vi.fn(() => null),
+}))
+
 vi.mock('@/services/partners/verifyPartner', () => ({
   verifyPartner: (partner: string) => mockVerifyPartner(partner),
 }))

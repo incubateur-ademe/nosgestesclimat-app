@@ -9,10 +9,7 @@ import {
 } from '@/constants/tracking/pages/profil'
 import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
-import {
-  supportedRegions,
-  type Region,
-} from '@/helpers/server/model/models'
+import { supportedRegions, type Region } from '@/helpers/server/model/models'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'

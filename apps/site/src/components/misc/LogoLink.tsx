@@ -8,7 +8,7 @@ interface Props {
   className?: string
   size?: 'sm' | 'md'
 }
-export default function LogoLinkServer({ className, size = 'md' }: Props) {
+export default function LogoLink({ className, size = 'md' }: Props) {
   return (
     <div className={twMerge('flex items-center', className)}>
       <Link

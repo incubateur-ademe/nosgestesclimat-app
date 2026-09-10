@@ -1,5 +1,5 @@
 import Footer from '@/components/layout/Footer'
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import type { PropsWithChildren } from 'react'
@@ -13,7 +13,7 @@ export default async function LargeLayout({ children, params }: LayoutProps) {
   return (
     <>
       <ClientLayout locale={locale} userSession={userSession}>
-        <HeaderServer locale={locale} />
+        <Header locale={locale} />
         {children}
       </ClientLayout>
       <Footer backgroundColor="white" locale={locale} />

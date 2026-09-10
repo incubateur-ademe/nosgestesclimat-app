@@ -153,7 +153,10 @@ function UserEmailFormContent({
         )}
 
         <div>
-          <Button data-testid="submit-button" type="submit" className="mt-6 gap-2 self-start">
+          <Button
+            data-testid="submit-button"
+            type="submit"
+            className="mt-6 gap-2 self-start">
             {submitLabel ? (
               <span data-testid="custom-submit-label">{submitLabel}</span>
             ) : (

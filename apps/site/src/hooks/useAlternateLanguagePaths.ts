@@ -49,15 +49,25 @@ export const useAlternateLanguagePaths = (): Partial<
 const isLocale = (lang: string): lang is Locale =>
   (i18nConfig.locales as string[]).includes(lang)
 
+const hasLocalePrefix = (pathname: string, locale: Locale): boolean =>
+  pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+
 const readAlternatePaths = (): Partial<Record<Locale, string>> => {
   const paths: Partial<Record<Locale, string>> = {}
 
   for (const link of document.querySelectorAll<HTMLLinkElement>(
     'link[rel="alternate"][hreflang]'
   )) {
+    if (!isLocale(link.hreflang)) return paths
+
     // Only trust the pathname as the hostname may be set to incorrect values in dev env
-    if (isLocale(link.hreflang)) {
-      paths[link.hreflang] = new URL(link.href).pathname
+    const pathname = new URL(link.href).pathname
+
+    // Add "/fr" prefix to ensure locale is duly changed
+    if (link.hreflang === 'fr' && !hasLocalePrefix(pathname, link.hreflang)) {
+      paths[link.hreflang] = `/fr${pathname.length > 1 ? pathname : ''}`
+    } else {
+      paths[link.hreflang] = pathname
     }
   }
 
