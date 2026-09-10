@@ -1,0 +1,128 @@
+# ----------------------------------------------------------------------------
+# OpenTelemetry Collector — nginx → PostHog Logs
+#
+# Taille /var/log/nginx/{access,error}.log et les exporte vers PostHog Logs
+# (endpoint OTLP HTTP). Déployé sur l'instance Scaleway par cloud-init,
+# service systemd `otelcol-contrib` (user `otelcol-contrib`).
+#
+# Résilience :
+#   - `file_storage` (offsets de lecture) → reprise exacte après restart,
+#     ni trou ni doublon lors des rotations de logs.
+#   - `sending_queue.storage` (file-queue) + `retry_on_failure` → si PostHog ou
+#     le réseau est indisponible, les logs sont mis en attente sur disque et
+#     réexpédiés avec backoff (aucune perte, nginx n'est jamais impacté).
+#
+# Les variables ${env:...} sont résolues par le collecteur au démarrage depuis
+# son environnement, chargé par systemd via
+# /etc/otelcol-contrib/otelcol-contrib.env (cf. cloud-init.tpl.yaml).
+# ----------------------------------------------------------------------------
+
+extensions:
+  health_check:
+  file_storage:
+    directory: /var/lib/otelcol-contrib
+
+receivers:
+  # access.log : JSON (voir `log_format json_combined` dans nginx.conf.tpl).
+  filelog/access:
+    include: [/var/log/nginx/access.log]
+    start_at: end
+    include_file_path: true
+    storage: file_storage
+    operators:
+      - type: json_parser
+        parse_to: attributes
+        timestamp:
+          parse_from: attributes.time_iso8601
+          layout_type: strptime
+          # %j = offset ±HH:MM (deux-points), comme $time_iso8601.
+          layout: '%Y-%m-%dT%H:%M:%S%j'
+        # request_id (32 hex, généré par nginx) → trace_id du log : convention
+        # OTel pour corréler avec les traces/logs partageant le X-Request-ID.
+        trace:
+          trace_id:
+            parse_from: attributes.request_id
+      # Champs déjà extraits dans attributes : on supprime le body (JSON brut
+      # redondant) pour alléger le volume envoyé à PostHog.
+      - type: remove
+        field: body
+
+  # error.log : format texte d'nginx OSS. Le JSON (`error_log json`) est
+  # réservé à NGINX Plus. Le préfixe est stable :
+  #   YYYY/MM/DD HH:MM:SS [level] pid#tid: message
+  #   ex. 2024/09/10 11:16:00 [error] 1234#1234: *567 upstream timed out
+  # La regex extrait date/heure + niveau ; le message reste en `body` où les
+  # IP/emails sont masqués par le processor `transform/scrub_pii` avant envoi.
+  filelog/error:
+    include: [/var/log/nginx/error.log]
+    start_at: end
+    include_file_path: true
+    storage: file_storage
+    operators:
+      - type: regex_parser
+        regex: '^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\]'
+        timestamp:
+          parse_from: attributes.time
+          layout_type: strptime
+          layout: '%Y/%m/%d %H:%M:%S'
+        severity:
+          parse_from: attributes.sev
+          mapping:
+            debug: debug
+            info: info
+            notice: info
+            warn: warn
+            error: error
+            crit: fatal
+            alert: fatal
+            emerg: fatal
+
+processors:
+  resource/nginx:
+    attributes:
+      - key: service.name
+        value: nginx
+        action: upsert
+      - key: deployment.environment
+        value: ${env:ENVIRONMENT}
+        action: upsert
+
+  batch:
+    send_batch_size: 1000
+    timeout: 5s
+
+  # Masque les IP (`client: <ip>` d'error.log) et emails avant envoi à PostHog.
+  # Emails : body (ligne brute) + toutes les valeurs d'attributs (request_uri…).
+  transform/scrub_pii:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          - 'replace_pattern(body, "client:? [0-9:.]+", "client [ip]")'
+          - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
+          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
+
+exporters:
+  otlphttp/posthog:
+    # Base OTLP : l'exporter ajoute /v1/logs. EU (US : us.i.posthog.com/i)
+    endpoint: https://eu.i.posthog.com/i
+    headers:
+      Authorization: Bearer ${env:POSTHOG_PROJECT_TOKEN}
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 5m
+    sending_queue:
+      enabled: true
+      num_consumers: 1
+      queue_size: 5000
+      storage: file_storage
+
+service:
+  extensions: [health_check, file_storage]
+  pipelines:
+    logs/nginx:
+      receivers: [filelog/access, filelog/error]
+      processors: [resource/nginx, transform/scrub_pii, batch]
+      exporters: [otlphttp/posthog]

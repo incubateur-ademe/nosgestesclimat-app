@@ -34,18 +34,55 @@ write_files:
       RestartSec=10s
       TimeoutStartSec=60s
 
+  - path: /etc/otelcol-contrib/otelcol-contrib.env
+    permissions: '0600'
+    content: |
+      POSTHOG_PROJECT_TOKEN=__POSTHOG_PROJECT_TOKEN__
+      ENVIRONMENT=__ENVIRONMENT__
+
 runcmd:
   - mkdir -p /var/cache/nginx /var/lib/nginx-config
+  # Rétention des logs nginx : 2 jours au lieu de 14. On ne touche qu'au nombre
+  # de rotations du fichier livré par Ubuntu (daily, compress, postrotate… sont
+  # déjà corrects).
+  - sed -i 's/rotate 14/rotate 2/' /etc/logrotate.d/nginx
   - chown -R www-data:www-data /var/cache/nginx
   - ln -sf /etc/nginx/sites-available/nosgestesclimat /etc/nginx/sites-enabled/
   - rm -f /etc/nginx/sites-enabled/default
-  - ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw --force enable
-  - curl -fsSL https://raw.githubusercontent.com/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx/pull-config.sh -o /usr/local/bin/nginx-config-pull.sh
-  - chmod +x /usr/local/bin/nginx-config-pull.sh
-  - curl -fsSL https://raw.githubusercontent.com/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx/nginx-config-pull.service -o /etc/systemd/system/nginx-config-pull.service
-  - curl -fsSL https://raw.githubusercontent.com/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx/nginx-config-pull.timer -o /etc/systemd/system/nginx-config-pull.timer
+  - |
+    ufw allow 22/tcp
+    ufw allow 80/tcp
+    ufw allow 443/tcp
+    ufw --force enable
+
+  # ── OpenTelemetry Collector (nginx → PostHog Logs) ──────────────────────
+  # install-otelcol.sh est idempotent : cloud-init l'utilise au first boot,
+  # et on peut relancer le même script en SSH pour (ré)installer/upgrader.
+  # Version épinglée : __OTELCOL_VERSION__ (bump dans generate-cloud-init.sh).
+  - |
+    set -euo pipefail
+    GH_RAW="raw.githubusercontent.com"
+    RAW="https://${GH_RAW}/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx"
+    curl -fsSL "$RAW/install-otelcol.sh" \
+      -o /usr/local/bin/install-otelcol.sh
+    chmod +x /usr/local/bin/install-otelcol.sh
+    NGC_REF="__TEMPLATE_REF__" \
+      /usr/local/bin/install-otelcol.sh "__OTELCOL_VERSION__"
+
+  # ── Pull du pull script + units systemd nginx ───────────────────────────
+  - |
+    GH_RAW="raw.githubusercontent.com"
+    RAW="https://${GH_RAW}/__REPO__/refs/heads/__TEMPLATE_REF__/infra/nginx"
+    curl -fsSL "$RAW/pull-config.sh" \
+      -o /usr/local/bin/nginx-config-pull.sh
+    chmod +x /usr/local/bin/nginx-config-pull.sh
+    curl -fsSL "$RAW/nginx-config-pull.service" \
+      -o /etc/systemd/system/nginx-config-pull.service
+    curl -fsSL "$RAW/nginx-config-pull.timer" \
+      -o /etc/systemd/system/nginx-config-pull.timer
   - systemctl daemon-reload
   - systemctl enable --now nginx-config-pull.timer
   - /usr/local/bin/nginx-config-pull.sh
   - echo "✅ Nginx config pulled. Nginx à l'arrêt — certificat SSL manquant."
-  - echo "   certbot certonly --manual --preferred-challenges dns -d __DOMAIN__ -d www.__DOMAIN__"
+  - echo "   certbot certonly --manual --preferred-challenges dns"
+  - echo "   -d __DOMAIN__ -d www.__DOMAIN__"
