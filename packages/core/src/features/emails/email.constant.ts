@@ -86,11 +86,9 @@ export type GroupTemplateId =
   | typeof FrTemplateIds.GROUP_JOINED
 
 // Matomo campaigns & keywords
-export const MATOMO_CAMPAIGN_KEY = 'mtm_campaign'
-export const MATOMO_CAMPAIGN_EMAIL_AUTOMATISE = 'email-automatise'
-
-export const MATOMO_KEYWORD_KEY = 'mtm_kwd'
-export const MATOMO_KEYWORDS = {
+export const TRACKING_SOURCE = 'NGC'
+export const TRACKING_MEDIUM = 'email-automatise'
+export const TRACKING_CAMPAIGNS = {
   [FrTemplateIds.SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
   [EnTemplateIds.SIGN_UP_SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
   [FrTemplateIds.SIGN_UP_SIMULATION_COMPLETED]: 'fin-retrouver-simulation',
