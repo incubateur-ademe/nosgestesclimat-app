@@ -70,7 +70,7 @@ log_format json_combined escape=json
     '"url.path":"$uri",'
     '"url.query":"$args",'
     '"http.response.status_code":$status,'
-    '"body_bytes_sent":$body_bytes_sent,'
+    '"http.response.body.size":$body_bytes_sent,'
     '"request_time":$request_time,'
     '"upstream_addr":"$upstream_addr",'
     '"upstream_status":"$upstream_status",'
