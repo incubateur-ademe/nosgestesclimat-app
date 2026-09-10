@@ -88,7 +88,7 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 
 - `nginx.conf.tpl` écrit `access.log` au format JSON (`log_format json_combined`),
   chaque champ devenant un attribut filtrable dans PostHog
-  (`upstream_cache_status`, `status`, `request_uri`, `request_time`,
+  (`upstream_cache_status`, `status`, `uri`, `args`, `request_time`,
   `connection`, `upstream_addr`, `upstream_status`, …) — sans IP, sans referer.
 - Logging conditionnel : les routes bavardes (assets `/_next/`, `/_static/cms/`,
   `/(images|misc|fonts)/` et proxy PostHog `/revp/`) ne sont écrites dans
@@ -130,8 +130,8 @@ Aucune donnée directement identifiante n'est envoyée à PostHog :
 - **IP** : retirée de `access.log` (pas de `remote_addr`). Dans `error.log`
   (format nginx figé, qui inclut `client: <ip>`), elles sont masquées côté
   collecteur (`transform/scrub_pii`) — **IPv4 et IPv6**.
-- **Query strings** : conservées (`request_uri`) pour le debugging, mais les
-  emails qu'elles peuvent contenir sont masqués côté collecteur.
+- **Query strings** : conservées (attribut `args`, séparé du chemin `uri`) pour
+  le debugging, mais les emails qu'elles contiennent sont masqués côté collecteur.
 - **Bodies POST** : jamais loggés par nginx (pas de `$request_body`). Attention
   en revanche aux logs applicatifs Next.js, qui sont hors de ce pipeline.
 - **Referer** : retiré de `access.log`. Dans `error.log` (où nginx l'ajoute au
