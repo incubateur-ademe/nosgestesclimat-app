@@ -1,7 +1,8 @@
 'use server'
 
+import type { AuthUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import { redirect, unauthorized } from 'next/navigation'
-import { getUserSession, type AuthUser } from './get-user-session'
+import { getUserSession } from './get-user-session'
 
 /**
  * Requires an authenticated user session.

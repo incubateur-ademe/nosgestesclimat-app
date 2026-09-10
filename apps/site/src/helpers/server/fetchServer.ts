@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@/constants/urls/main'
 import { handleApiResponse } from '@/helpers/shared/handleApiResponse'
-import type { AppUser } from '@/services/auth/get-user-session'
 import { getUserSession } from '@/services/auth/get-user-session'
+import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import { headers } from 'next/headers'
 import { InternalError } from './error'
 
