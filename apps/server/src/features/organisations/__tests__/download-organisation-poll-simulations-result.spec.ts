@@ -1,6 +1,7 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import crypto from 'crypto'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -30,14 +31,7 @@ describe('Given a NGC user', () => {
   const url = DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT_ROUTE
 
   afterEach(async () => {
-    await prisma.organisationAdministrator.deleteMany()
-    await Promise.all([
-      prisma.organisation.deleteMany(),
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-      prisma.job.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('And no authentication', () => {

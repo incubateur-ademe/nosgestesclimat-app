@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
@@ -25,17 +26,7 @@ describe('Given a NGC user with a previous anonymous session', () => {
   const agent = supertest(app)
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.groupParticipant.deleteMany(),
-      prisma.groupAdministrator.deleteMany(),
-      prisma.simulation.deleteMany(),
-    ])
-    await Promise.all([
-      prisma.verifiedUser.deleteMany(),
-      prisma.group.deleteMany(),
-      prisma.user.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When the user has simulations on their anonymous session and signs up', () => {
