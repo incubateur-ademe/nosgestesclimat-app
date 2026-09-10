@@ -2,6 +2,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
@@ -25,16 +26,7 @@ import { createCompleteSimulation } from '../complete-simulation.service.ts'
 
 describe('completeSimulation', () => {
   afterEach(async () => {
-    await prisma.simulationComputation.deleteMany()
-    await prisma.simulationPoll.deleteMany()
-    await prisma.groupParticipant.deleteMany()
-    await prisma.groupAdministrator.deleteMany()
-    await prisma.group.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.verifiedUser.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('persists the answers and returns the groups and polls the simulation belongs to', async () => {

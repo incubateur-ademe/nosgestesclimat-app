@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -43,17 +44,7 @@ describe('Given a NGC user', () => {
 
   afterEach(async () => {
     await EventBus.flush()
-    await Promise.all([
-      prisma.organisationAdministrator.deleteMany(),
-      prisma.simulationPoll.deleteMany(),
-      prisma.simulation.deleteMany(),
-    ])
-    await Promise.all([
-      prisma.organisation.deleteMany(),
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When creating a simulation in a poll', () => {

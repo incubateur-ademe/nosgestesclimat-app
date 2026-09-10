@@ -1,15 +1,13 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { verifiedUserFactory } from '../../factories/verified-user.factory.ts'
 import { getUser } from '../get-user.service.ts'
 
 describe('getUser', () => {
   afterEach(async () => {
-    await Promise.all([
-      prisma.verifiedUser.deleteMany(),
-      prisma.user.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   it('returns null when no user matches the userId', async () => {

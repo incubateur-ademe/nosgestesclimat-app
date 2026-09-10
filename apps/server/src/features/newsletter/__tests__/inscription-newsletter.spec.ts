@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -28,11 +29,7 @@ describe('Given a NGC user', () => {
   const url = '/newsletters/v1/inscription'
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When subscribing to newsletters', () => {

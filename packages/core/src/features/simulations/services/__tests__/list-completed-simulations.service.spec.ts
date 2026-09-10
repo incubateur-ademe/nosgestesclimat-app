@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
   simulationFactory,
@@ -17,13 +18,7 @@ describe('listCompletedSimulations', () => {
   })
 
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.groupParticipant.deleteMany()
-    await prisma.group.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns an empty array when the user has no simulations', async () => {

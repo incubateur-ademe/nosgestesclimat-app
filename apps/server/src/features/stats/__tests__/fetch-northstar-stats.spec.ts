@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek.js'
 import utc from 'dayjs/plugin/utc.js'
@@ -108,7 +109,7 @@ describe('Given a redirected NGC user', () => {
   const url = '/stats/v1/northstar'
 
   afterEach(async () => {
-    await prisma.matomoStats.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   describe('When fetching northstar stats', () => {

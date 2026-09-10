@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -20,11 +21,7 @@ describe('Given a NGC integrations API user', () => {
   const url = GENERATE_API_TOKEN_ROUTE
 
   afterEach(async () => {
-    await prisma.integrationWhitelist.deleteMany()
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.integrationApiScope.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When asking for an API token', () => {

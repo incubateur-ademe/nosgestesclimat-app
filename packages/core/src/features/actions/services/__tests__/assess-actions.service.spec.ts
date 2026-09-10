@@ -1,6 +1,7 @@
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { ActionAssessmentPublicodesException } from '../../exceptions/action-assessment.exception.ts'
@@ -52,9 +53,7 @@ describe('compute action assessments service', () => {
 
   afterEach(async () => {
     vi.restoreAllMocks()
-    await prisma.actionAssessment.deleteMany()
-    await prisma.action.deleteMany()
-    await prisma.simulation.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('computes applicable and non-applicable action assessments', async () => {

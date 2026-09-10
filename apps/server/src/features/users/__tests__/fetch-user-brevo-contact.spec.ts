@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { AxiosError } from 'axios'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -19,11 +20,7 @@ describe('Given a NGC user', () => {
   const url = '/users/v1/me/contact'
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When fetching the contact info', () => {
