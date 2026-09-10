@@ -1,13 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { noopLogger } from '../../../logger/fixture.ts'
 import type { Model, ModelRegion } from '../../../simulations/types/model.ts'
 import { CURRENT_MODEL_VERSION } from '../../model-support/model-versions.ts'
-
-const noopLogger = {
-  error: () => {},
-  warn: () => {},
-  info: () => {},
-  debug: () => {},
-}
 
 // Every test resets the module registry to get fresh hot/lru maps, so each one
 // parses the real model JSON into a new Engine - the eviction test does it four
