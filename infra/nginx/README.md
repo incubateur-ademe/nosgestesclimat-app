@@ -167,20 +167,17 @@ SSH (le binaire n'est pas mis à jour par `pull-config.sh`).
 
 ### Volume & coût
 
-PostHog Logs est facturé au volume. Les assets statiques (`/_next/static/`,
-`/_static/cms/`, `images/`, …) représentent l'essentiel du trafic et peu de
-valeur en logs. Pour les exclure, ajouter un `filter` processor dans
-`otelcol-config.yaml` (attribut `request_uri`) :
+PostHog Logs est facturé au volume. Le filtrage des routes bavardes se fait
+**côté nginx**, pas dans le collecteur : les lignes concernées ne sont jamais
+écrites sur disque (économie d'I/O et d'espace), ne traversent pas le pipeline
+du collecteur et n'atteignent pas PostHog.
 
-    filter/static:
-      logs:
-        exclude:
-          match_type: regexp
-          record_attributes:
-            - key: request_uri
-              value: '^/(_next/static|_static/cms|images|misc|fonts)/'
-
-puis l'ajouter au pipeline : `processors: [resource/nginx, filter/static, batch]`.
+- **Routes bavardes** (`/_next/`, `/_static/cms/`, `/(images|misc|fonts)/`,
+  `/revp/`) : seules les réponses en **erreur (4xx/5xx)** sont écrites (cf.
+  « Logging conditionnel » plus haut). Pour ne garder que les 5xx, ajuster le
+  `map $status $ngc_is_error` dans `nginx.conf.tpl`.
+- **body** de l'access log : supprimé côté collecteur (JSON brut redondant avec
+  les attributs) — cf. « Fonctionnement ».
 
 ## Créer une instance
 
