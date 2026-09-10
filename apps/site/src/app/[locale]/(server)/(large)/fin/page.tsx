@@ -8,18 +8,14 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { NoSessionFoundError, throwNextError } from '@/helpers/server/error'
-import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import {
-  getTendency,
-  type Tendency,
-} from '@/helpers/server/model/utils/getTendency'
+import { NoSessionFoundError } from '@/helpers/server/error'
+import { getGroupDisplayInfo } from '@/helpers/server/model/utils/getGroupDisplayInfo'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { listCompletedSimulations } from '@/services/simulations/list-completed-simulations'
+import { getLatestSimulationResult } from '@/services/simulations/get-latest-simulation-result'
 import type { DefaultPageProps } from '@/types'
 import { captureException } from '@sentry/nextjs'
-import { notFound, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 
 export async function generateMetadata({ params }: DefaultPageProps) {
   const { locale } = await params
@@ -61,28 +57,7 @@ export default async function FinPage({
     redirect('/')
   }
 
-  const simulations = await listCompletedSimulations({
-    limit: user.isAuth ? 2 : 1,
-  })
-
-  const [simulation, previousSimulation] = simulations
-  if (!simulation) {
-    notFound()
-  }
-
-  const simulationResult = await throwNextError(async () => {
-    return await getSimulationResult({
-      simulation,
-    })
-  })
-  let tendency: Tendency | undefined
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (previousSimulation) {
-    tendency = getTendency({
-      previousValue: previousSimulation.computedResults.carbone.bilan,
-      currentValue: simulation.computedResults.carbone.bilan,
-    })
-  }
+  const result = await getLatestSimulationResult({ withTendency: user.isAuth })
 
   return (
     <>
@@ -93,14 +68,15 @@ export default async function FinPage({
       />
 
       <CarbonFootprintResults
-        simulationResult={simulationResult}
-        hasPreviousSimulation={!!previousSimulation}
+        computedResults={result.simulation.computedResults}
         locale={locale as Locale}
-        tendency={tendency}
+        tendency={result.tendency ?? undefined}
+        hasPreviousSimulation={result.tendency !== null}
+        group={result.group ? getGroupDisplayInfo(result.group) : null}
       />
 
       <IframeDataShareModal
-        computedResults={simulationResult.computedResults}
+        computedResults={result.simulation.computedResults}
       />
     </>
   )

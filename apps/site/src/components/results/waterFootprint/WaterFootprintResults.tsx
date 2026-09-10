@@ -1,5 +1,5 @@
 import { eauMetric } from '@/constants/model/metric'
-import type { SimulationResult } from '@/helpers/server/model/simulationResult'
+import type { ComputedResults } from '@/publicodes-state/types'
 import type { Locale } from '@/i18nConfig'
 import Trans from '../../translation/trans/TransServer'
 import FootprintBlock from '../FootprintBlock'
@@ -12,13 +12,13 @@ import WaterActions from './_components/WaterActions'
 import WhatIsWaterFootprint from './_components/WhatIsWaterFootprint'
 
 interface Props {
-  simulationResult: SimulationResult
+  computedResults: ComputedResults
   locale: Locale
   hideSaveBlock?: boolean
 }
 
 export default function WaterFootprintResults({
-  simulationResult,
+  computedResults,
   locale,
   hideSaveBlock = false,
 }: Props) {
@@ -27,10 +27,10 @@ export default function WaterFootprintResults({
       <FootprintBlock
         className="mb-12"
         locale={locale}
-        value={simulationResult.computedResults.eau.bilan}
+        value={computedResults.eau.bilan}
         title={
           <Trans locale={locale} i18nKey="simulation.eau.title">
-            L’empreinte eau qui sert à produire ce que vous consommez
+            L'empreinte eau qui sert à produire ce que vous consommez
           </Trans>
         }
         metric={eauMetric}
@@ -44,7 +44,7 @@ export default function WaterFootprintResults({
       <IsItALot locale={locale} />
 
       <FootprintDetail
-        computedResults={simulationResult.computedResults}
+        computedResults={computedResults}
         locale={locale}
         metric={eauMetric}
       />

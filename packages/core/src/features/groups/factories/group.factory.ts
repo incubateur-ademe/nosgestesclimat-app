@@ -32,7 +32,7 @@ export const groupFactory = GroupFactory.define(({ onCreate }) => {
     id: faker.string.uuid(),
     name: faker.company.buzzPhrase(),
     // prettier-ignore
-    emoji: faker.helpers.arrayElement(['🌍','🌱','🌳','🌊','☀️','🔥','♻️','🍃','🌿','🌸','🐱','🐶','🦊','🐼','🦋','🐝','🦉','🐢','🐬','🦋','🍎','🍇','🥕','🌽','🍞','🧀','🍫','☕','🍷','💧','🚲','🚗','✈️','🚆','🏠','🏢','🏭','💡','🔋','♻️',]),
+    emoji: faker.helpers.arrayElement(['🌍','🌱','🌳','🌊','☀️','🔥','♻️','🍃','🌿','🌸','🐱','🐶','🦊','🐼','🦋','🐝','🦉','🐢','🐬','🦄','🍎','🍇','🥕','🌽','🍞','🧀','🍫','☕','🍷','💧','🚲','🚗','✈️','🚆','🏠','🏢','🏭','💡','🔋',]),
     administratorId: null,
     createdAt: new Date(),
     updatedAt: new Date(),

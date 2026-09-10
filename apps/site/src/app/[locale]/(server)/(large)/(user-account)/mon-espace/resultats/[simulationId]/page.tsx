@@ -7,8 +7,8 @@ import {
 import Breadcrumbs from '@/design-system/layout/Breadcrumbs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
-import { getSimulationResult } from '@/helpers/server/model/simulationResult'
-import { getSimulation } from '@/services/simulations/get-simulation'
+import { getGroupDisplayInfo } from '@/helpers/server/model/utils/getGroupDisplayInfo'
+import { getSimulationResult } from '@/services/simulations/get-simulation-result'
 import type { DefaultPageProps } from '@/types'
 import type { Metadata } from 'next'
 
@@ -34,10 +34,7 @@ export default async function DetailledResultsPage({
 
   const { t } = await getServerTranslation({ locale })
 
-  const simulation = await getSimulation(simulationId)
-  const simulationResult = await getSimulationResult({
-    simulation,
-  })
+  const simulationResult = await getSimulationResult(simulationId)
 
   return (
     <>
@@ -71,9 +68,14 @@ export default async function DetailledResultsPage({
       />
 
       <CarbonFootprintResults
-        simulationResult={simulationResult}
+        computedResults={simulationResult.simulation.computedResults}
         locale={locale}
         hideSaveBlock
+        group={
+          simulationResult.group
+            ? getGroupDisplayInfo(simulationResult.group)
+            : null
+        }
       />
     </>
   )

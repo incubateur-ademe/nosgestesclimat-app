@@ -1,10 +1,16 @@
 'use client'
 
-import type { BaseOrganisationPoll } from '@/types/organisations'
+import type { SimulationMode } from '@/helpers/server/model/simulations'
 import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
-export function PollTracker({ poll }: { poll: BaseOrganisationPoll }) {
+interface TrackedPoll {
+  slug: string
+  mode: SimulationMode
+  organisation: { slug: string }
+}
+
+export function PollTracker({ poll }: { poll: TrackedPoll }) {
   useEffect(() => {
     posthog.register_for_session({
       organisation: poll.organisation.slug,
