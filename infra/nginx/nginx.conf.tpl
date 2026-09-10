@@ -55,20 +55,26 @@ upstream scalingo {
 # Logs au format JSON (consommés par l'OpenTelemetry Collector → PostHog)
 # ----------------------------------------------------------------------------
 
-# JSON structuré : chaque champ devient un attribut filtrable dans PostHog
-# (ex. upstream_cache_status = HIT/MISS/BYPASS pour le debugging cache).
-# Sans IP (remote_addr) ni referer. La query string est conservée : les
-# éventuels emails qu'elle contient sont masqués côté collecteur
-# (transform/scrub_pii). `escape=json` échappe l'user-agent (JSON valide).
+# JSON structuré : chaque champ devient un attribut filtrable dans PostHog.
+# Les champs `http.*`, `url.*` et `user_agent.*` suivent les conventions
+# sémantiques OTel (semconv) ; les autres restent nginx-spécifiques.
+# Sans IP (remote_addr) ni referer. La query string est conservée pour le
+# debugging : les emails qu'elle contient sont masqués par le collecteur, qui
+# normalise aussi `network.protocol.version` (brut ici) en semconv.
+# `escape=json` échappe l'user-agent (JSON valide).
 log_format json_combined escape=json
   '{'
     '"time_iso8601":"$time_iso8601",'
     '"request_id":"$request_id",'
     '"connection":"$connection",'
-    '"request_method":"$request_method",'
-    '"request_uri":"$request_uri",'
-    '"status":$status,'
-    '"body_bytes_sent":$body_bytes_sent,'
+    '"server.address":"$host",'
+    '"network.protocol.version":"$server_protocol",'
+    '"http.request.method":"$request_method",'
+    '"url.path":"$uri",'
+    '"url.query":"$args",'
+    '"http.response.status_code":$status,'
+    '"http.request.body.size":"$content_length",'
+    '"http.response.body.size":$body_bytes_sent,'
     '"request_time":$request_time,'
     '"upstream_addr":"$upstream_addr",'
     '"upstream_status":"$upstream_status",'
@@ -76,7 +82,7 @@ log_format json_combined escape=json
     '"upstream_header_time":"$upstream_header_time",'
     '"upstream_response_time":"$upstream_response_time",'
     '"upstream_cache_status":"$upstream_cache_status",'
-    '"http_user_agent":"$http_user_agent"'
+    '"user_agent.original":"$http_user_agent"'
   '}';
 
 # ----------------------------------------------------------------------------
