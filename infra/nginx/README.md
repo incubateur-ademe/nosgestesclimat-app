@@ -101,8 +101,14 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
     et le `error_log json` est Plus-only ;
   - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
     pour alléger le volume envoyé à PostHog ;
-  - masque les IP (`client: <ip>`, IPv4 et IPv6), la query du `referrer` et les
-    emails (`transform/scrub_pii`) avant l'envoi ;
+  - dans le receiver `filelog/access` : `network.protocol.version` est normalisé
+    en semconv (`HTTP/1.1` → `1.1`, `HTTP/2.0` → `2`) ;
+  - dans `transform/access` : pose `event_name=nginx.access` et masque les
+    emails des attributs ;
+  - dans `transform/error` : pose `event_name=nginx.error` et masque, dans le
+    message, les IP (`client: <ip>`, IPv4 et IPv6), la query du `referrer` et
+    les emails. Les pipelines sont séparés car les deux logs n'ont pas le même
+    contenu à nettoyer ;
   - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
   - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
     `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
@@ -132,9 +138,10 @@ Aucune donnée directement identifiante n'est envoyée à PostHog :
 
 - **IP** : retirée de `access.log` (pas de `remote_addr`). Dans `error.log`
   (format nginx figé, qui inclut `client: <ip>`), elles sont masquées côté
-  collecteur (`transform/scrub_pii`) — **IPv4 et IPv6**.
-- **Query strings** : conservées (attribut `args`, séparé du chemin `uri`) pour
-  le debugging, mais les emails qu'elles contiennent sont masqués côté collecteur.
+  collecteur (`transform/error`) — **IPv4 et IPv6**.
+- **Query strings** : conservées (attribut `url.query`, séparé du chemin
+  `url.path`) pour le debugging, mais les emails qu'elles contiennent sont
+  masqués côté collecteur.
 - **Bodies POST** : jamais loggés par nginx (pas de `$request_body`). Attention
   en revanche aux logs applicatifs Next.js, qui sont hors de ce pipeline.
 - **Referer** : retiré de `access.log`. Dans `error.log` (où nginx l'ajoute au

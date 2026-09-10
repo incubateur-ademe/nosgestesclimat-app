@@ -42,6 +42,12 @@ receivers:
         trace:
           trace_id:
             parse_from: attributes.request_id
+      # `$server_protocol` brut ("HTTP/1.1") → semconv ("1.1", "2", "3").
+      - type: regex_replace
+        field: attributes["network.protocol.version"]
+        regex: '^HTTP/(1\.[01]|[23]).*'
+        # Le collecteur interprète `${...}` comme variable d'env → `$$` échappe.
+        replace_with: '$${1}'
       # Nettoyage à la source : tout champ déjà exploité ailleurs est supprimé
       # pour alléger le volume envoyé à PostHog.
       - type: remove
@@ -52,18 +58,13 @@ receivers:
       # `request_id` a posé le trace_id du record.
       - type: remove
         field: attributes.request_id
-      # Type d'événement déclaré à la source : l'attribut semconv `event.name`
-      # est promu en champ natif `EventName` par `transform/scrub_pii`.
-      - type: add
-        field: attributes["event.name"]
-        value: nginx.access
 
   # error.log : format texte d'nginx OSS. Le JSON (`error_log json`) est
   # réservé à NGINX Plus. Le préfixe est stable :
   #   YYYY/MM/DD HH:MM:SS [level] pid#tid: message
   #   ex. 2024/09/10 11:16:00 [error] 1234#1234: *567 upstream timed out
   # La regex extrait date/heure + niveau ; le message reste en `body` où les
-  # IP/emails sont masqués par le processor `transform/scrub_pii` avant envoi.
+  # IP/emails sont masqués par le processor `transform/error` avant envoi.
   filelog/error:
     include: [/var/log/nginx/error.log]
     start_at: end
@@ -102,10 +103,6 @@ receivers:
       - type: regex_parser
         regex: 'host: "(?P<host>[^"]*)"'
         on_error: send
-      # Type d'événement déclaré à la source (promu en `EventName` aval).
-      - type: add
-        field: attributes["event.name"]
-        value: nginx.error
 
 processors:
   resource/nginx:
@@ -121,20 +118,29 @@ processors:
     send_batch_size: 1000
     timeout: 5s
 
-  # Masque les IP (`client: <ip>` d'error.log) et emails avant envoi à PostHog.
-  # Emails : body (ligne brute) + toutes les valeurs d'attributs (url.query…).
-  transform/scrub_pii:
+  # access.log : ni IP client ni referrer (absents du log_format) et le body
+  # (JSON brut) est supprimé au receiver → seul le scrub d'attributs s'applique
+  # (emails pouvant apparaître dans `url.query` / `user_agent.original`).
+  transform/access:
     error_mode: ignore
     log_statements:
       - context: log
         statements:
+          - 'set(log.event_name, "nginx.access")'
+          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
+
+  # error.log : le body (message brut, conservé) porte l'IP client, le referrer
+  # et d'éventuels emails ; les attributs peuvent aussi en contenir.
+  transform/error:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          - 'set(log.event_name, "nginx.error")'
           - 'replace_pattern(body, "client:? [0-9a-fA-F:.]+", "client [ip]")'
           - 'replace_pattern(body, "referrer: \"([^\"?]*)\\?[^\"]*\"", "referrer: \"$$1\"")' # yamllint disable-line rule:line-length
           - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
           - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
-          # `event.name` (posé par chaque receiver à la source) → champ natif.
-          - 'set(log.event_name, attributes["event.name"]) where attributes["event.name"] != nil' # yamllint disable-line rule:line-length
-          - 'delete_key(attributes, "event.name")'
 
 exporters:
   otlphttp/posthog:
@@ -156,7 +162,11 @@ exporters:
 service:
   extensions: [health_check, file_storage]
   pipelines:
-    logs/nginx:
-      receivers: [filelog/access, filelog/error]
-      processors: [resource/nginx, transform/scrub_pii, batch]
+    logs/access:
+      receivers: [filelog/access]
+      processors: [resource/nginx, transform/access, batch]
+      exporters: [otlphttp/posthog]
+    logs/error:
+      receivers: [filelog/error]
+      processors: [resource/nginx, transform/error, batch]
       exporters: [otlphttp/posthog]
