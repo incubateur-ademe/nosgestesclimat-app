@@ -167,10 +167,31 @@ server {
 
 
     proxy_cache ngc_cache;
-    # Sert le cache même si l'upstream est en panne (500-504)
-    # ou en revalidation par un autre worker (updating).
+    # Sert le cache même si l'upstream est en panne (502-504) ou en
+    # revalidation par un autre worker (updating).
+    # On ne sert volontairement PAS de stale sur `http_500` : une erreur
+    # applicative doit laisser s'afficher la page 500 de Next.
     proxy_cache_use_stale error timeout updating
-                          http_500 http_502 http_503 http_504;
+                          http_502 http_503 http_504;
+
+    # ── Timeouts upstream ────────────────────────────────────────
+    # Valeurs volontairement bornées : on ne laisse pas l'utilisateur
+    # attendre les ~60 s par défaut quand Scalingo est saturé ou injoignable.
+    # Passé ce délai, `error_page` en dessous prend le relais.
+    proxy_connect_timeout 5s;
+    proxy_send_timeout    15s;
+    proxy_read_timeout    30s;
+
+    # ── Page d'erreur applicative (indispo / timeout upstream) ───
+    # Sur indisponibilité (502/503/504) ou dépassement de timeout, rejoue la
+    # requête en interne vers /app-crash (location dédiée plus bas, cache
+    # long + use_stale).
+    # On n'intercepte volontairement PAS `500` : une erreur applicative rendue
+    # par Next garde sa propre page 500.
+    # Sans `=`, le code d'erreur d'origine (502, 503, 504) est conservé dans la
+    # réponse au client — utile pour le monitoring et les robots.
+    proxy_intercept_errors on;
+    error_page 502 503 504 /app-crash;
 
 
     # Assets statiques Next.js (hashés, immutables).
@@ -178,6 +199,8 @@ server {
     location /_next/static/ {
         proxy_pass https://scalingo;
         proxy_cache_lock on;
+        # Une 5xx sur un asset ne doit pas renvoyer la page HTML d'erreur.
+        proxy_intercept_errors off;
     }
 
     # Proxy vers le bucket S3 des assets CMS (images, PDF) avec cache 30 jours.
@@ -192,6 +215,8 @@ server {
         proxy_cache_lock on;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
+        # Un asset manquant/erroné ne doit pas renvoyer la page d'erreur HTML.
+        proxy_intercept_errors off;
     }
 
     # Images Next.js (optimiseur `/_next/image?url=…`), fonts et assets divers
@@ -200,6 +225,8 @@ server {
         proxy_pass https://scalingo;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
+        # Une 5xx sur un asset ne doit pas renvoyer la page HTML d'erreur.
+        proxy_intercept_errors off;
     }
 
     # ── Pages publiques catégorie 2 ──────────────────────────────
@@ -254,6 +281,8 @@ server {
         proxy_ssl_server_name on;
         proxy_ssl_name eu-assets.i.posthog.com;
         proxy_cache off;
+        # Ne pas substituer une page HTML aux erreurs de l'API PostHog.
+        proxy_intercept_errors off;
     }
 
     location /revp/array/ {
@@ -262,6 +291,8 @@ server {
         proxy_ssl_server_name on;
         proxy_ssl_name eu-assets.i.posthog.com;
         proxy_cache off;
+        # Ne pas substituer une page HTML aux erreurs de l'API PostHog.
+        proxy_intercept_errors off;
     }
 
     location /revp/ {
@@ -274,6 +305,34 @@ server {
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
         proxy_set_header X-Real-IP $remote_addr;
         proxy_cache off;
+        # Ne pas substituer une page HTML aux erreurs de l'API PostHog.
+        proxy_intercept_errors off;
+    }
+
+    # ── Page d'erreur applicative (indispo / timeout upstream) ────
+    # Cible de `error_page` ci-dessus, et servie en direct pour permettre le
+    # pré-chauffage du cache par `pull-config.sh`.
+    # Contenu identique pour tous les utilisateurs (aucune personnalisation) :
+    # clé de cache unique, `use_stale` pour continuer à la servir si Scalingo
+    # est totalement injoignable, `proxy_intercept_errors off` pour éviter une
+    # boucle error_page → app-crash → error_page.
+    location = /app-crash {
+        proxy_pass https://scalingo;
+        proxy_intercept_errors off;
+
+        proxy_cache ngc_cache;
+        proxy_cache_key "$scheme$host$uri";
+        proxy_cache_valid 200 1h;
+        # Contrairement aux autres locations, on garde `http_500` ici : si la
+        # page d'erreur elle-même tombe, on préfère servir sa dernière copie.
+        proxy_cache_use_stale error timeout updating
+                              http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
+        proxy_cache_lock on;
+        # Next peut renvoyer des headers qui empêchent la mise en cache
+        # (Cache-Control, Set-Cookie de session) : on les ignore pour garantir
+        # une entrée stable et partageable.
+        proxy_ignore_headers Cache-Control Expires Set-Cookie;
     }
 
     # Catch-all : rate-limit + cache générique, bypass sur websocket.

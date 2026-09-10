@@ -1463,3 +1463,9 @@ entries:
   poll.creation.mode.select: Sélectionner
   poll.creation.mode.tempDisabled: Fonctionnalité désactivée temporairement, en cours d'amélioration
   poll.creation.mode.title: Choisissez le mode du test
+  appCrash.metadata.description: L'application rencontre quelques difficultés en ce moment, nos équipes sont sur le coup.
+  appCrash.metadata.title: Erreur - Nos Gestes Climat
+  common.errors.retry: Réessayer
+  common.errors.description: L'application rencontre quelques difficultés en ce moment. Nos équipes sont prévenues et mettent tout en œuvre pour rétablir la situation au plus vite.
+  common.errors.retryLater: Merci de réessayer dans quelques minutes.
+  common.errors.title: Oups, une erreur est survenue
