@@ -73,13 +73,15 @@ export interface NewAction {
 
 export type UpdatedAction = Partial<NewAction>
 
-export interface ActionChoice {
-  id: string
+export interface NewActionChoice {
   userId: string
   actionId: string
   // TODO: update when product has decided possible choices
   type: 'committed' | 'rejected'
-  chosenAt: Date
+}
+
+export type ActionChoice = NewActionChoice & {
+  id: string
 }
 
 export type NewActionAssessment = {

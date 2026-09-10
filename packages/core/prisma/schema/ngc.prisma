@@ -436,6 +436,7 @@ model User {
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   verifiedUsers VerifiedUser[]
+  actionChoices ActionChoice[]
 
   @@schema("ngc")
 }

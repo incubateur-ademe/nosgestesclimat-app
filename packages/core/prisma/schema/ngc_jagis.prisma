@@ -65,6 +65,7 @@ model ActionChoice {
   id        String           @id @default(uuid()) @db.Uuid
   type      ActionChoiceType
   action    Action           @relation(fields: [actionId], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
   chosenAt  DateTime         @default(now())
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
