@@ -4,9 +4,9 @@ import { getLinkToTutoriel } from '@/helpers/navigation/simulateurPages'
 import { stringifyModel } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { createSimulation } from '@/services/simulations/create-simulation'
 import { getUserSimulationJourney } from '@/services/simulations/get-user-simulation-journey'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
+import { startSimulation } from '@/services/simulations/start-simulation'
 import {
   hasCompletedCurrentSimulation,
   hasCurrentSimulationInProgress,
@@ -44,7 +44,7 @@ export default async function Commencer({
     hasCurrentSimulationInProgress(journey) ||
     hasCompletedCurrentSimulation(journey)
   ) {
-    await createSimulation(model)
+    await startSimulation(model)
   }
   redirect(
     hasCurrentSimulationInProgress(journey) ||
