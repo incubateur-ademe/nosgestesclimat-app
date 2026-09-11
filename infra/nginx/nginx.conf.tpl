@@ -49,8 +49,8 @@ upstream scalingo {
     # Sans `resolve`, l'IP Scalingo est figée au parsing de la conf.
     #
     # Ce nom résout 4 IP = 4 serveurs (avec un seul, max_fails est ignoré).
-    # Défaut = 1 : un seul échec (timeout de lecture des en-têtes inclus) évince
-    # l'IP pendant 10 s (fail_timeout, qui sert aussi de fenêtre de comptage).
+    # L'IP est évincée après 3 échecs (timeouts de lecture des en-têtes inclus)
+    # et le reste 10 s — `fail_timeout` est aussi la fenêtre de comptage.
     # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server
     server ${UPSTREAM}:443 resolve max_fails=3;
     keepalive 64;
@@ -60,8 +60,8 @@ upstream scalingo {
 # Proxy vers Scalingo : tuning
 # ----------------------------------------------------------------------------
 
-# `Connection: upgrade` en permanence était un mensonge hop-by-hop, et empêche le
-# keepalive. Ne valoir "upgrade" que sur vraie négo websocket, vide sinon.
+# Le map ne vaut "upgrade" que sur une vraie négo websocket, vide sinon :
+# un `Connection` hop-by-hop permanent empêche la réutilisation de connexion.
 # → https://nginx.org/en/docs/http/websocket.html
 # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive
 map $http_upgrade $connection_upgrade {
@@ -188,14 +188,13 @@ server {
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection $connection_upgrade;
 
-    # HTTP/1.1 est requis pour que `keepalive 64` serve à quelque chose : le
-    # défaut historique est 1.0, sans connexion persistante (1.1 par défaut
-    # depuis nginx 1.29.7 — à retirer quand on mettra à jour).
+    # HTTP/1.1 est requis pour que `keepalive 64` serve : HTTP/1.0 n'a pas de
+    # connexion persistante (inutile à partir de nginx 1.29.7).
     # → https://blog.nginx.org/blog/keep-alive-to-upstreams-is-now-default-in-nginx-1-29-7
     proxy_http_version 1.1;
 
-    # Une connexion TCP (Scaleway → Outscale, en France) prend quelques ms :
-    # les 60 s par défaut immobilisent la requête sur une connexion morte.
+    # Une connexion TCP (Scaleway → Outscale, en France) prend quelques ms ;
+    # au-delà de 5 s, c'est une connexion morte.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_connect_timeout
     proxy_connect_timeout 5s;
 
@@ -205,17 +204,17 @@ server {
     # → https://gateway.envoyproxy.io/docs/tasks/traffic/http-timeouts
     proxy_read_timeout 65s;
 
-    # Budget TOTAL de reprise. Défaut 0 = illimité : c'est ce qui a laissé une
-    # requête durer 296 s (≈5×60 s de reprises sur chaque IP). Doit rester
+    # Budget TOTAL de reprise, à ne pas laisser illimité : des reprises de 60 s
+    # sur chacune des IP faisaient durer une requête jusqu'à 296 s. Doit rester
     # supérieur à proxy_connect_timeout.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream_timeout
     proxy_next_upstream_timeout 10s;
-    # 3 tentatives au total (donc 2 reprises) : c'est le défaut du NGINX Ingress
-    # Controller. Le défaut nginx (0) réessaie une fois par IP disponible.
+    # 3 tentatives au total (donc 2 reprises), comme le NGINX Ingress Controller
+    # — sans quoi nginx réessaie une fois par IP disponible.
     proxy_next_upstream_tries 3;
-    # Conditions de reprise = défaut (`error timeout`), volontairement : les 4 IP
-    # sont les fronts d'une même app, pas des backends indépendants — réessayer un
-    # 5xx du routeur (503 « file pleine ») ajouterait de la charge sans réparer.
+    # Aucune reprise sur un 5xx *répondu* par le routeur, ni sur une requête
+    # non-idempotente — volontaire : les 4 IP sont les fronts d'une même app,
+    # réessayer un 503 « file pleine » ajouterait de la charge sans réparer.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
