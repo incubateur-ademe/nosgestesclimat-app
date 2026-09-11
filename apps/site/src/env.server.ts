@@ -1,3 +1,4 @@
+import { parseCooldownTiers } from '@nosgestesclimat/core/features/polls/stats/helpers/cooldown-policy'
 import * as v from 'valibot'
 
 import { publicEnv } from './env.public'
@@ -16,11 +17,16 @@ const NonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty())
 const ServerEnvSchema = v.strictObject({
   BREVO_API_KEY: NonEmptyStringSchema,
   BREVO_URL: v.pipe(NonEmptyStringSchema, v.url()),
+  POLL_STATS_COOLDOWN_TIERS: v.pipe(
+    v.string(),
+    v.transform((tiers: string) => parseCooldownTiers(tiers))
+  ),
 })
 
 const parsed = v.safeParse(ServerEnvSchema, {
   BREVO_API_KEY: process.env.BREVO_API_KEY,
   BREVO_URL: process.env.BREVO_URL,
+  POLL_STATS_COOLDOWN_TIERS: process.env.POLL_STATS_COOLDOWN_TIERS ?? '',
 })
 
 if (!parsed.success) {
