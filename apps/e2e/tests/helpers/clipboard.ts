@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 /**
- * Reads the clipboard content after clicking on a button.
+ * Returns the content of the clipboard after clicking on a copy button.
  *
  * Handles:
  * - Granting clipboard permissions on Chromium
@@ -16,9 +16,11 @@ import { expect, test } from '@playwright/test'
 export async function copyAndReadClipboard({
   page,
   copyAction,
+  timeout = 15_000,
 }: {
   page: Page
   copyAction: () => Promise<void>
+  timeout?: number
 }): Promise<string> {
   const browser = page.context().browser()
 
@@ -35,25 +37,26 @@ export async function copyAndReadClipboard({
   const readClipboard = () =>
     page.evaluate(() => navigator.clipboard.readText()).catch(() => '')
 
-  // Clipboard write requires the document to be focused: with parallel workers,
-  // this page may have lost focus, making writeText reject.
-  await page.bringToFront()
-
   const contentBeforeCopy = await readClipboard()
 
-  await copyAction()
-
-  // `navigator.clipboard.writeText` resolves asynchronously and a click returns
-  // as soon as the event is dispatched, so the write may still be in flight
-  // here: read back until the new content lands.
   let clipboardContent = contentBeforeCopy
 
-  await expect
-    .poll(async () => {
-      clipboardContent = await readClipboard()
-      return clipboardContent
-    })
-    .not.toBe(contentBeforeCopy)
+  // The click can be lost. These pages keep the main thread busy for seconds
+  // after load (publicodes parsing, plus a full re-render while React recovers
+  // from a hydration mismatch), and a click dispatched in that window lands on
+  // nodes React is replacing. So retry the whole interaction, waiting for the
+  // asynchronous `writeText` in between so a lost click is not mistaken for a
+  // slow write.
+  await expect(async () => {
+    await page.bringToFront()
+    await copyAction()
+
+    await expect
+      .poll(readClipboard, { timeout: 2_000 })
+      .not.toBe(contentBeforeCopy)
+
+    clipboardContent = await readClipboard()
+  }).toPass({ timeout, intervals: [0, 500, 1_000, 2_000] })
 
   return clipboardContent
 }
