@@ -52,6 +52,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - _static (CMS assets proxied to S3, cf. next.config.ts rewrites)
+     * - api (route handlers, jamais localisés)
      * - favicon.ico / favicon.png (favicon files)
      * - images (public images directory)
      * - manifest.webmanifest (PWA manifest)
@@ -65,7 +66,7 @@ export const config = {
      */
     {
       source:
-        '/((?!_next/static|_next/image|_static|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|sitemap.xml|datashare).*)',
+        '/((?!_next/static|_next/image|_static|api|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|sitemap.xml|datashare).*)',
     },
   ],
 }
