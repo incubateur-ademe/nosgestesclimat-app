@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -23,17 +24,8 @@ describe('Given a NGC user', () => {
   const simulationIds: string[] = []
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.groupParticipant.deleteMany(),
-      prisma.groupAdministrator.deleteMany(),
-      prisma.group.deleteMany(),
-      prisma.simulation.deleteMany({
-        where: { id: { in: simulationIds.splice(0) } },
-      }),
-      prisma.user.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-    ])
+    simulationIds.splice(0)
+    await emptyDatabase(prisma)
   })
 
   describe('When deleting a simulation', () => {

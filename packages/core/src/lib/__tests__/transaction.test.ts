@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../prisma/client.ts'
+import { emptyDatabase } from '../../test-utils/empty-database.ts'
 import { DomainError } from '../errors.ts'
 import { failure, success } from '../result.ts'
 import { transaction } from '../transaction.ts'
@@ -14,7 +15,7 @@ class TestError extends DomainError<'test_error'> {
 
 describe('transaction', () => {
   afterEach(async () => {
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('commits the callback writes and returns its success result', async () => {

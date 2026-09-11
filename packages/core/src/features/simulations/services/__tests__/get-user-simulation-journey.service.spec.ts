@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { serializeModel } from '../../repository/model.mapper.ts'
@@ -7,8 +8,7 @@ import { getUserSimulationJourney } from '../get-user-simulation-journey.service
 
 describe('getUserSimulationJourney', () => {
   afterEach(async () => {
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns undefined for both when the user has no simulations', async () => {

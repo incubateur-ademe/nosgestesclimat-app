@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
@@ -21,11 +22,7 @@ describe('Given a completed simulation (progression = 1)', () => {
   let simulationId: string
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.user.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   beforeEach(async () => {

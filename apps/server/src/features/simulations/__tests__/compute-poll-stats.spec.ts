@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import supertest from 'supertest'
 import * as v from 'valibot'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -29,16 +30,7 @@ describe('Given a poll participation', () => {
 
   afterEach(async () => {
     await EventBus.flush()
-    await Promise.all([
-      prisma.organisationAdministrator.deleteMany(),
-      prisma.simulationPoll.deleteMany(),
-    ])
-    await Promise.all([
-      prisma.organisation.deleteMany(),
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When worker handles the async event', () => {

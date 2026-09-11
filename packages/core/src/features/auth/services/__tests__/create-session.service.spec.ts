@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { hashToken } from '../../helpers/hash-token.ts'
 import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
@@ -15,8 +16,7 @@ describe('createSession', () => {
   })
 
   afterEach(async () => {
-    await prisma.refreshToken.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('creates a RefreshToken in DB and returns valid tokens', async () => {
