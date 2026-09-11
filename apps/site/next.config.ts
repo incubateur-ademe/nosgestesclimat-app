@@ -40,15 +40,17 @@ const nextConfig = withMDX({
 
     return [...redirects, ...enRedirects]
   },
-  // Seuls nosgestesclimat.fr et preprod.nosgestesclimat.fr sont derrière le
-  // proxy cache nginx, qui sert /_static/cms/ avec un cache immutable.
-  // Les review apps et le dev local n'ont pas de nginx devant : on proxy
-  // /_static/cms/ vers S3 pour que ces environnements restent fonctionnels.
+  // Les assets du CMS sont référencés sous /_static/cms/.
+  //
+  // En prod/preprod, c'est nginx qui les sert depuis S3 (cache immutable) : les
+  // requêtes du navigateur n'atteignent jamais Next.js. Mais l'optimiseur
+  // d'images récupère les images locales par une requête interne vers l'app
+  // (`/_next/image?url=/_static/cms/…`), et nginx réécrit le `Host` vers l'app
+  // Scalingo : cette requête interne ne traverse donc pas nginx. Sans ce proxy,
+  // elle reçoit un 404 et l'optimiseur répond 400.
+  //
+  // On proxy donc /_static/cms/ vers S3 dans tous les environnements.
   async rewrites() {
-    const isBehindNginx = APP_ENV === 'production' || APP_ENV === 'preprod'
-
-    if (isBehindNginx) return []
-
     return [
       {
         source: '/_static/cms/:path*',
