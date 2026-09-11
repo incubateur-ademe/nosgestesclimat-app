@@ -10,7 +10,6 @@ import { emptyComputedResults } from '../../../simulations/helpers/empty-compute
 import { findSimulationById } from '../../../simulations/repository/simulation.repository.ts'
 import type { Model } from '../../../simulations/types/model.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import { verifiedUserFactory } from '../../../users/factories/verified-user.factory.ts'
 import { PollNotFoundError } from '../../errors/polls.error.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
 import { createPollParticipation } from '../../repositories/poll-participation.repository.ts'
@@ -66,7 +65,7 @@ describe('participateToPoll', () => {
 
     it('does not email when the simulation is not yet answered', async () => {
       const { participateToPoll, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const { poll } = await campaign()
 
       await participateToPoll({
@@ -116,7 +115,7 @@ describe('participateToPoll', () => {
 
     it('tells an authenticated user they joined the campaign', async () => {
       const { participateToPoll, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const { poll, organisation } = await campaign()
       const simulation = await completedSimulation(user.id)
 
@@ -160,7 +159,7 @@ describe('participateToPoll', () => {
 
     it('does not email when the user had already entered the poll', async () => {
       const { participateToPoll, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const { poll } = await campaign()
       const [first, second] = await Promise.all([
         completedSimulation(user.id),
@@ -187,7 +186,7 @@ describe('participateToPoll', () => {
 
     it('does not duplicate or email when the simulation is already in the poll', async () => {
       const { participateToPoll, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const { poll } = await campaign()
       const simulation = await completedSimulation(user.id)
       await createPollParticipation({
@@ -215,7 +214,7 @@ describe('participateToPoll', () => {
 
     it('does not email for a simulation still in progress', async () => {
       const { participateToPoll, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const { poll } = await campaign()
       const simulation = await simulationFactory
         .withModelRegion('FR')
@@ -284,7 +283,7 @@ describe('participateToPoll', () => {
       } = setup()
       const error = new Error('brevo is down')
       sendEmail.mockResolvedValue({ success: false, error })
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const { poll } = await campaign()
       const simulation = await completedSimulation(user.id)
 
@@ -350,19 +349,6 @@ const campaign = async () => {
     { transient: { organisationId: organisation.id } }
   )
   return { poll, organisation }
-}
-
-/**
- * An authenticated session belongs to either a verified or an unverified user.
- * Only a verified user exposes an email to the emails sent in background.
- */
-const verifiedUser = async () => {
-  const user = await userFactory.create()
-  const { email } = await verifiedUserFactory.create({
-    id: user.id,
-    email: user.email!,
-  })
-  return { ...user, email }
 }
 
 const verified = (user: { id: string; email: string }): AppUser => ({
