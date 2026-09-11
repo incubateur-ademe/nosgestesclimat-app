@@ -49,10 +49,13 @@ upstream scalingo {
     # Sans `resolve`, l'IP Scalingo est figée au parsing de la conf.
     #
     # Ce nom résout 4 IP = 4 serveurs (avec un seul, max_fails est ignoré).
-    # L'IP est évincée après 3 échecs (timeouts de lecture des en-têtes inclus)
-    # et le reste 10 s — `fail_timeout` est aussi la fenêtre de comptage.
+    # Défaut = 1 : une seule requête en timeout (lecture des en-têtes incluse)
+    # évince l'IP 10 s. On tolère 3 échecs pour qu'un pic de lenteur de l'app
+    # — partagé par les 4 fronts — ne les évince pas tous.
     # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server
     server ${UPSTREAM}:443 resolve max_fails=3;
+    # Défaut = 0 (32 depuis nginx 1.29.7) : le cache de connexions évite un
+    # TCP+TLS par requête vers l'upstream.
     keepalive 64;
 }
 
@@ -188,33 +191,33 @@ server {
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection $connection_upgrade;
 
-    # HTTP/1.1 est requis pour que `keepalive 64` serve : HTTP/1.0 n'a pas de
-    # connexion persistante (inutile à partir de nginx 1.29.7).
+    # Défaut = 1.0 : HTTP/1.0 n'ayant pas de connexion persistante, `keepalive 64`
+    # ne servait à rien. Inutile à partir de nginx 1.29.7, où 1.1 est le défaut.
     # → https://blog.nginx.org/blog/keep-alive-to-upstreams-is-now-default-in-nginx-1-29-7
     proxy_http_version 1.1;
 
-    # Une connexion TCP (Scaleway → Outscale, en France) prend quelques ms ;
-    # au-delà de 5 s, c'est une connexion morte.
+    # Défaut = 60 s : sur une connexion morte, la requête restait immobilisée
+    # une minute. Une connexion TCP (Scaleway → Outscale) prend quelques ms.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_connect_timeout
     proxy_connect_timeout 5s;
 
-    # Au-dessus des 59 s du routeur Scalingo : un proxy doit être plus patient
-    # que son backend, sinon c'est son 504 générique qui remonte au lieu du leur.
+    # Défaut = 60 s, soit 1 s de marge sur les 59 s du routeur Scalingo : trop
+    # juste. Un proxy doit être franchement plus patient que son backend, sinon
+    # c'est notre 504 générique qui remonte au lieu du leur (X-Scalingo-Error).
     # → https://doc.scalingo.com/platform/networking/public/routing
     # → https://gateway.envoyproxy.io/docs/tasks/traffic/http-timeouts
     proxy_read_timeout 65s;
 
-    # Budget TOTAL de reprise, à ne pas laisser illimité : des reprises de 60 s
-    # sur chacune des IP faisaient durer une requête jusqu'à 296 s. Doit rester
-    # supérieur à proxy_connect_timeout.
+    # Défaut = illimité : des reprises de 60 s sur chacune des IP faisaient
+    # durer une requête jusqu'à 296 s. Doit rester > proxy_connect_timeout.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream_timeout
     proxy_next_upstream_timeout 10s;
-    # 3 tentatives au total (donc 2 reprises), comme le NGINX Ingress Controller
-    # — sans quoi nginx réessaie une fois par IP disponible.
+    # Défaut = 0, soit une reprise par IP disponible (4 ici). 3 tentatives au
+    # total (donc 2 reprises), comme le NGINX Ingress Controller.
     proxy_next_upstream_tries 3;
-    # Aucune reprise sur un 5xx *répondu* par le routeur, ni sur une requête
-    # non-idempotente — volontaire : les 4 IP sont les fronts d'une même app,
-    # réessayer un 503 « file pleine » ajouterait de la charge sans réparer.
+    # Défaut = `error timeout`, qu'on garde : les 4 IP sont les fronts d'une même
+    # app, donc réessayer un 5xx du routeur (503 « file pleine ») ajouterait de la
+    # charge sans réparer. Les non-idempotentes ne sont jamais réessayées.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
