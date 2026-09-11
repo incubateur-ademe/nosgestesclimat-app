@@ -33,7 +33,7 @@ export default async function GroupConnexionPage({ params }: DefaultPageProps) {
     redirect('/amis/creer/votre-groupe')
   }
 
-  const { t } = await getServerTranslation(params)
+  const { t } = getServerTranslation(await params)
 
   return (
     <div className="pb-8">
