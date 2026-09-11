@@ -213,9 +213,9 @@ server {
     # 3 tentatives au total (donc 2 reprises) : c'est le défaut du NGINX Ingress
     # Controller. Le défaut nginx (0) réessaie une fois par IP disponible.
     proxy_next_upstream_tries 3;
-    # Conditions de reprise = défaut (`error timeout`) : un 502/503/504 *répondu*
-    # par le routeur n'est pas réessayé (y ajouter `http_502 http_503 http_504`),
-    # et les requêtes non-idempotentes ne le sont jamais.
+    # Conditions de reprise = défaut (`error timeout`), volontairement : les 4 IP
+    # sont les fronts d'une même app, pas des backends indépendants — réessayer un
+    # 5xx du routeur (503 « file pleine ») ajouterait de la charge sans réparer.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
