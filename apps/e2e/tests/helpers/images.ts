@@ -24,11 +24,13 @@ export async function expectNoBrokenImages(page: Page, path: string) {
   // et remonte les URLs fautives en cas d'échec.
   await expect
     .poll(() =>
-      page.locator('img').evaluateAll((images) =>
-        (images as HTMLImageElement[])
-          .filter((image) => image.complete && image.naturalWidth === 0)
-          .map((image) => image.src)
-      )
+      page
+        .locator('img')
+        .evaluateAll((images) =>
+          (images as HTMLImageElement[])
+            .filter((image) => image.complete && image.naturalWidth === 0)
+            .map((image) => image.src)
+        )
     )
     .toEqual([])
 }
