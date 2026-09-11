@@ -256,6 +256,37 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 `ui_host` reste `https://eu.i.posthog.com` (voir
 `apps/site/src/services/tracking/Posthog.ts`).
 
+## Page d'erreur applicative (indispo / timeout)
+
+Quand Scalingo est injoignable (502/503/504) ou met trop longtemps à répondre,
+nginx sert la page `/app-crash` de l'app Next, mise en cache sur
+l'instance :
+
+- `proxy_connect_timeout 5s`, `proxy_send_timeout 15s`, `proxy_read_timeout 30s`
+  (au lieu des ~60 s par défaut) : passé ce délai, nginx bascule sur la page
+  d'erreur au lieu de laisser l'utilisateur attendre.
+- `proxy_intercept_errors on` + `error_page 502 503 504 /app-crash`.
+  **Le `500` n'est volontairement pas intercepté** : une vraie erreur
+  applicative doit laisser s'afficher la page 500 de Next. Pour la même raison,
+  `http_500` est absent du `proxy_cache_use_stale` global (sinon un cache stale
+  remplacerait cette page 500).
+- La `location = /app-crash` met la réponse en cache 1 h
+  (`proxy_cache_key "$scheme$host$uri"`) avec `proxy_cache_use_stale` : la
+  dernière copie est servie même si Scalingo est totalement injoignable.
+- Le code d'erreur d'origine (502/503/504) est conservé dans la réponse au
+  client.
+- La page est en `noindex` (metadata Next) et interdite dans `robots.txt`.
+
+`pull-config.sh` pré-chauffe `/app-crash` à chaque run (toutes les 5 min)
+pour que l'entrée de cache existe avant la panne.
+
+Un reload nginx ne vide pas le cache proxy : les zones de mémoire partagée et
+les fichiers sur disque sont conservés (le cache loader les recharge même après
+un restart).
+
+Pour vérifier le comportement sans attendre une panne, voir les commandes de
+cache dans « Vérifier le cache » plus bas (`/app-crash` doit répondre `HIT`).
+
 ## Tester avant bascule DNS
 
     curl -I --resolve preprod.nosgestesclimat.fr:443:<ip> \

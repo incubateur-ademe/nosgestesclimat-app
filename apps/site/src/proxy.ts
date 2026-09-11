@@ -61,10 +61,11 @@ export const config = {
      * - robots.txt (robots file)
      * - sitemap.xml (root sitemap file)
      * - datashare (iframe datashare modal)
+     * - app-crash (page d'erreur hors i18n, servie par nginx sur panne)
      */
     {
       source:
-        '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|sitemap.xml|datashare).*)',
+        '/((?!_next/static|_next/image|favicon.ico|favicon.png|images|manifest.webmanifest|scripts|demos|misc|videos|robots.txt|sitemap.xml|datashare|app-crash).*)',
     },
   ],
 }
