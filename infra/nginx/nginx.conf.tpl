@@ -47,8 +47,29 @@ upstream scalingo {
     # Zone partagée de 64 Ko requise par `resolve` ci-dessous pour propager l'IP entre workers.
     zone scalingo 64k;
     # Sans `resolve`, l'IP Scalingo est figée au parsing de la conf.
-    server ${UPSTREAM}:443 resolve;
+    #
+    # Ce nom résout 4 IP = 4 serveurs (avec un seul, max_fails est ignoré).
+    # Défaut = 1 : une seule requête en timeout (lecture des en-têtes incluse)
+    # évince l'IP 10 s. On tolère 3 échecs pour qu'un pic de lenteur de l'app
+    # — partagé par les 4 fronts — ne les évince pas tous.
+    # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server
+    server ${UPSTREAM}:443 resolve max_fails=3;
+    # Défaut = 0 (32 depuis nginx 1.29.7) : le cache de connexions évite un
+    # TCP+TLS par requête vers l'upstream.
     keepalive 64;
+}
+
+# ----------------------------------------------------------------------------
+# Proxy vers Scalingo : tuning
+# ----------------------------------------------------------------------------
+
+# Le map ne vaut "upgrade" que sur une vraie négo websocket, vide sinon :
+# un `Connection` hop-by-hop permanent empêche la réutilisation de connexion.
+# → https://nginx.org/en/docs/http/websocket.html
+# → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ""      "";
 }
 
 # ----------------------------------------------------------------------------
@@ -166,10 +187,38 @@ server {
     proxy_set_header X-Forwarded-Proto https;
     # Corrélation : nginx → app → collecteur (mappé en trace_id du log).
     proxy_set_header X-Request-ID $request_id;
-    # Préserve la négo websocket si le client en initie une.
+    # Négo websocket transmise _uniquement_ si le client en initie une.
     proxy_set_header Upgrade $http_upgrade;
-    # Conséquence de `Upgrade` ci-dessus — force l'header pour qu'il traverse nginx.
-    proxy_set_header Connection "upgrade";
+    proxy_set_header Connection $connection_upgrade;
+
+    # Défaut = 1.0 : HTTP/1.0 n'ayant pas de connexion persistante, `keepalive 64`
+    # ne servait à rien. Inutile à partir de nginx 1.29.7, où 1.1 est le défaut.
+    # → https://blog.nginx.org/blog/keep-alive-to-upstreams-is-now-default-in-nginx-1-29-7
+    proxy_http_version 1.1;
+
+    # Défaut = 60 s : sur une connexion morte, la requête restait immobilisée
+    # une minute. Une connexion TCP (Scaleway → Outscale) prend quelques ms.
+    # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_connect_timeout
+    proxy_connect_timeout 5s;
+
+    # Défaut = 60 s, soit 1 s de marge sur les 59 s du routeur Scalingo : trop
+    # juste. Un proxy doit être franchement plus patient que son backend, sinon
+    # c'est notre 504 générique qui remonte au lieu du leur (X-Scalingo-Error).
+    # → https://doc.scalingo.com/platform/networking/public/routing
+    # → https://gateway.envoyproxy.io/docs/tasks/traffic/http-timeouts
+    proxy_read_timeout 65s;
+
+    # Défaut = illimité : des reprises de 60 s sur chacune des IP faisaient
+    # durer une requête jusqu'à 296 s. Doit rester > proxy_connect_timeout.
+    # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream_timeout
+    proxy_next_upstream_timeout 10s;
+    # Défaut = 0, soit une reprise par IP disponible (4 ici). 3 tentatives au
+    # total (donc 2 reprises), comme le NGINX Ingress Controller.
+    proxy_next_upstream_tries 3;
+    # Défaut = `error timeout`, qu'on garde : les 4 IP sont les fronts d'une même
+    # app, donc réessayer un 5xx du routeur (503 « file pleine ») ajouterait de la
+    # charge sans réparer. Les non-idempotentes ne sont jamais réessayées.
+    # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
     proxy_cache ngc_cache;
