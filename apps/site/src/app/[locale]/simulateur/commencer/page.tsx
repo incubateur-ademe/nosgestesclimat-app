@@ -28,7 +28,7 @@ export default async function Commencer({
         tutorielSearchParams.set(key, value)
       }
     }
-    redirect(getLinkToTutoriel({ locale, searchParams: tutorielSearchParams }))
+    redirect(getLinkToTutoriel({ searchParams: tutorielSearchParams }))
   }
 
   const journey = await getUserSimulationJourney()
