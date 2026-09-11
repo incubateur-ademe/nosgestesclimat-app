@@ -197,8 +197,9 @@ server {
     # → https://blog.nginx.org/blog/keep-alive-to-upstreams-is-now-default-in-nginx-1-29-7
     proxy_http_version 1.1;
 
-    # Un TCP intra-région se connecte en millisecondes : les 60 s par défaut
-    # immobilisent la requête sur une connexion morte.
+    # L'instance (Scaleway) et les fronts Scalingo (Outscale) sont tous deux en
+    # France : la connexion TCP se fait en quelques millisecondes. Les 60 s par
+    # défaut immobilisent la requête sur une connexion morte.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_connect_timeout
     proxy_connect_timeout 5s;
 
@@ -216,6 +217,11 @@ server {
     # 3 tentatives au total (donc 2 reprises) : c'est le défaut du NGINX Ingress
     # Controller. Le défaut nginx (0) réessaie une fois par IP disponible.
     proxy_next_upstream_tries 3;
+    # Les conditions de reprise restent le défaut (`error timeout`) : rien n'est
+    # réessayé sur un 5xx renvoyé par le routeur (son 503 « file pleine »), ni
+    # sur une requête non-idempotente. Ajouter `http_503` le permettrait, pour
+    # les seules requêtes idempotentes.
+    # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
     proxy_cache ngc_cache;
