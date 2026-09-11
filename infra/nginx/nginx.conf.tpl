@@ -48,10 +48,9 @@ upstream scalingo {
     zone scalingo 64k;
     # Sans `resolve`, l'IP Scalingo est figée au parsing de la conf.
     #
-    # max_fails/fail_timeout ne s'appliquent qu'à un groupe de plusieurs serveurs :
-    # ce nom résout 4 IP, donc 4 serveurs. Défaut = 1 seul échec toléré avant
-    # d'évincer l'IP 10 s — et un timeout de lecture des en-têtes compte comme échec.
-    # `fail_timeout` sert à la fois de fenêtre de comptage ET de durée d'éviction.
+    # Ce nom résout 4 IP = 4 serveurs (avec un seul, max_fails est ignoré).
+    # Défaut = 1 : un seul échec (timeout de lecture des en-têtes inclus) évince
+    # l'IP pendant fail_timeout, qui sert aussi de fenêtre de comptage.
     # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server
     server ${UPSTREAM}:443 resolve max_fails=3 fail_timeout=10s;
     keepalive 64;
@@ -61,10 +60,8 @@ upstream scalingo {
 # Proxy vers Scalingo : tuning
 # ----------------------------------------------------------------------------
 
-# `Connection` est un en-tête hop-by-hop : l'annoncer en "upgrade" en permanence
-# décrit un changement de protocole qui n'a pas lieu. Il ne doit valoir "upgrade"
-# que si le client négocie réellement un websocket, et être vidé sinon — c'est ce
-# que demande la doc nginx pour le keepalive.
+# `Connection: upgrade` en permanence était un mensonge hop-by-hop, et empêche le
+# keepalive. Ne valoir "upgrade" que sur vraie négo websocket, vide sinon.
 # → https://nginx.org/en/docs/http/websocket.html
 # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive
 map $http_upgrade $connection_upgrade {
@@ -191,22 +188,21 @@ server {
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection $connection_upgrade;
 
-    # HTTP/1.1 est requis pour que `keepalive 64` serve : le défaut historique est
-    # 1.0, un protocole sans connexion persistante (défaut 1.1 depuis nginx 1.29.7,
-    # ici on l'explicite pour ne pas dépendre de la version déployée).
+    # HTTP/1.1 est requis pour que `keepalive 64` serve à quelque chose : le
+    # défaut historique est 1.0, sans connexion persistante (1.1 par défaut
+    # depuis nginx 1.29.7 — à retirer quand on mettra à jour).
     # → https://blog.nginx.org/blog/keep-alive-to-upstreams-is-now-default-in-nginx-1-29-7
     proxy_http_version 1.1;
 
-    # L'instance (Scaleway) et les fronts Scalingo (Outscale) sont tous deux en
-    # France : la connexion TCP se fait en quelques millisecondes. Les 60 s par
-    # défaut immobilisent la requête sur une connexion morte.
+    # Une connexion TCP (Scaleway → Outscale, en France) prend quelques ms :
+    # les 60 s par défaut immobilisent la requête sur une connexion morte.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_connect_timeout
     proxy_connect_timeout 5s;
 
-    # Le routeur Scalingo coupe à 59 s : se placer au-dessus laisse remonter SON
-    # 504 (en-tête X-Scalingo-Error), plus explicite que le nôtre. Ne pas
-    # descendre sous son seuil, cela masquerait la cause.
+    # Au-dessus des 59 s du routeur Scalingo : un proxy doit être plus patient
+    # que son backend, sinon c'est son 504 générique qui remonte au lieu du leur.
     # → https://doc.scalingo.com/platform/networking/public/routing
+    # → https://gateway.envoyproxy.io/docs/tasks/traffic/http-timeouts
     proxy_read_timeout 65s;
 
     # Budget TOTAL de reprise. Défaut 0 = illimité : c'est ce qui a laissé une
@@ -217,10 +213,9 @@ server {
     # 3 tentatives au total (donc 2 reprises) : c'est le défaut du NGINX Ingress
     # Controller. Le défaut nginx (0) réessaie une fois par IP disponible.
     proxy_next_upstream_tries 3;
-    # Les conditions de reprise restent le défaut (`error timeout`) : rien n'est
-    # réessayé sur un 5xx renvoyé par le routeur (son 503 « file pleine »), ni
-    # sur une requête non-idempotente. Ajouter `http_503` le permettrait, pour
-    # les seules requêtes idempotentes.
+    # Conditions de reprise = défaut (`error timeout`) : un 502/503/504 *répondu*
+    # par le routeur n'est pas réessayé (y ajouter `http_502 http_503 http_504`),
+    # et les requêtes non-idempotentes ne le sont jamais.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
