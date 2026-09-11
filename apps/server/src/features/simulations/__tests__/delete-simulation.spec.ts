@@ -66,7 +66,6 @@ describe('Given a NGC user', () => {
     describe('And simulation was created by another user', () => {
       test(`Then it returns a ${StatusCodes.NOT_FOUND} error`, async () => {
         const simulation = await createSimulation({
-          agent,
           userId: faker.string.uuid(),
         })
         simulationIds.push(simulation.id)
@@ -84,7 +83,7 @@ describe('Given a NGC user', () => {
 
       beforeEach(async () => {
         userId = faker.string.uuid()
-        const simulation = await createSimulation({ agent, userId })
+        const simulation = await createSimulation({ userId })
         simulationId = simulation.id
         simulationIds.push(simulation.id)
       })
@@ -163,7 +162,7 @@ describe('Given a NGC user', () => {
 
       test(`Then it returns a ${StatusCodes.INTERNAL_SERVER_ERROR} error`, async () => {
         const userId = faker.string.uuid()
-        const simulation = await createSimulation({ agent, userId })
+        const simulation = await createSimulation({ userId })
         simulationIds.push(simulation.id)
 
         vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
@@ -178,7 +177,7 @@ describe('Given a NGC user', () => {
 
       test('Then it logs the exception', async () => {
         const userId = faker.string.uuid()
-        const simulation = await createSimulation({ agent, userId })
+        const simulation = await createSimulation({ userId })
         simulationIds.push(simulation.id)
 
         vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(

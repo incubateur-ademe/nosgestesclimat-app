@@ -17,41 +17,23 @@ import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
 import type Engine from 'publicodes'
 import * as v from 'valibot'
-import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
+import type { JsonValue } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
 import { redis } from '../../adapters/redis/client.ts'
 import { KEYS } from '../../adapters/redis/constant.ts'
 import { deepMergeSum } from '../../core/deep-merge.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
-import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
-import { EventBus } from '../../core/event-bus/event-bus.ts'
-import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser } from '../../core/types/user.ts'
 
-import {
-  defaultUserSelection,
-  defaultVerifiedUserSelection,
-  simulationSelection,
-} from '../../adapters/prisma/selection.ts'
 import type { OrganisationPollCustomAdditionalQuestion } from '../organisations/organisations.validator.ts'
-import {
-  createOrUpdateUser,
-  fetchVerifiedUser,
-} from '../users/users.repository.ts'
 import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.ts'
-import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { carbonMetric, waterMetric } from './simulation.constant.ts'
 import {
   batchPollSimulations,
-  createParticipantSimulation,
   softDeleteSimulation as softDeleteSimulationFunc,
 } from './simulations.repository.ts'
-import {
-  type SimulationCreateDto,
-  type SimulationCreateQuery,
-  type SimulationParams,
-} from './simulations.validator.ts'
+import { type SimulationParams } from './simulations.validator.ts'
 import {
   getSituationDottedNameValue,
   getSituationDottedNameValueWithEngine,
@@ -59,129 +41,6 @@ import {
 
 const frRules = modelRules as Partial<NGCRules>
 const funFactsRules = modelFunFacts as { [k in keyof FunFacts]: DottedName }
-
-/**
- * Transforms a simulation entity to a DTO format.
- * If the simulation user is not the connected user, sensitive fields are hidden
- * and only the name is returned for privacy purposes.
- *
- * @param simulation - The simulation entity with user, verifiedUser, and polls data
- * @param connectedUser - The identifier of the connected user (email for verified users, id for unverified users)
- * @returns The simulation DTO with user data filtered based on ownership
- */
-const simulationToDto = (
-  {
-    verifiedUser,
-    polls,
-    user,
-    groups,
-    ...rest
-  }: Partial<
-    Prisma.SimulationGetPayload<{ select: typeof simulationSelection }>
-  >,
-  connectedUser: PartialUser
-) => ({
-  ...rest,
-  groups: groups?.map(({ groupId }) => ({ id: groupId })),
-  polls: polls?.map(({ pollId, poll: { slug, name } }) => ({
-    id: pollId,
-    slug,
-    name,
-  })),
-  ...(user
-    ? { user: user.id === connectedUser.id ? user : { name: user.name } }
-    : {}),
-  ...(verifiedUser
-    ? {
-        user:
-          isVerifiedUser(connectedUser) &&
-          verifiedUser.email === connectedUser.email
-            ? verifiedUser
-            : { name: verifiedUser.name },
-      }
-    : {}),
-})
-
-export const createSimulation = async ({
-  simulationDto,
-  query,
-  user,
-}: {
-  simulationDto: SimulationCreateDto
-  query: SimulationCreateQuery
-  user: PartialUser
-}) => {
-  const verifiedUser = isVerifiedUser(user) ? user : undefined
-
-  let fullUser
-  // Case 1. The user is authentified
-  if (verifiedUser) {
-    const dbVerifiedUser = await fetchVerifiedUser(
-      {
-        email: verifiedUser.email,
-        select: defaultVerifiedUserSelection,
-      },
-      { session: prisma }
-    )
-
-    if (!dbVerifiedUser || dbVerifiedUser.id !== user.id) {
-      throw new UnauthorizedException()
-    }
-
-    fullUser = dbVerifiedUser
-  }
-
-  // Case 2. Not authentified: upsert the unverified user account by its id
-  if (!fullUser) {
-    ;({ user: fullUser } = await transaction((session) =>
-      createOrUpdateUser(
-        {
-          id: user.id,
-          user: {},
-          select: defaultUserSelection,
-        },
-        { session }
-      )
-    ))
-  }
-
-  const {
-    simulation,
-    created: simulationCreated,
-    updated: simulationUpdated,
-  } = await transaction((session) =>
-    createParticipantSimulation(
-      {
-        userId: user.id,
-        email: verifiedUser?.email,
-        simulation: simulationDto,
-        select: simulationSelection,
-      },
-      { session }
-    )
-  )
-
-  const simulationUpsertedEvent = new SimulationUpsertedEvent({
-    created: simulationCreated,
-    updated: simulationUpdated,
-    user: fullUser ?? {
-      id: user.id,
-      email: verifiedUser ? verifiedUser.email : null,
-      name: null,
-    },
-    verified: isVerifiedUser(user),
-    newsletters: query.newsletters,
-    simulation,
-    sendEmail: query.sendEmail,
-    locale: query.locale,
-  })
-
-  EventBus.emit(simulationUpsertedEvent)
-  await EventBus.once(simulationUpsertedEvent)
-  return {
-    simulation: simulationToDto(simulation, user),
-  }
-}
 
 export const softDeleteSimulation = async ({
   params,

@@ -65,14 +65,6 @@ export type SimulationParticipantCreateInputDto = v.InferInput<
   typeof SimulationParticipantCreateDto
 >
 
-const SimulationCreateDto = v.object({
-  ...SimulationParticipantCreateDto.entries,
-})
-
-export type SimulationCreateDto = v.InferOutput<typeof SimulationCreateDto>
-
-export type SimulationCreateInputDto = v.InferInput<typeof SimulationCreateDto>
-
 const SimulationCreateNewsletterList = v.pipe(
   v.union([
     v.optional(
@@ -96,12 +88,6 @@ const SimulationCreateQuery = v.strictObject({
 })
 
 export type SimulationCreateQuery = v.InferOutput<typeof SimulationCreateQuery>
-
-export const SimulationCreateValidator = {
-  body: SimulationCreateDto,
-  params: v.optional(v.strictObject({})),
-  query: SimulationCreateQuery,
-}
 
 export const SimulationFetchValidator = {
   body: v.optional(v.strictObject({})),

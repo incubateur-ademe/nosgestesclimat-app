@@ -163,9 +163,7 @@ describe('Given a NGC user', () => {
         beforeEach(async () => {
           ;({
             user: { id: userId },
-          } = await createSimulation({
-            agent,
-          }))
+          } = await createSimulation({}))
         })
 
         test(`Then it returns a ${StatusCodes.OK} response with updated user`, async () => {
@@ -230,9 +228,7 @@ describe('Given a NGC user', () => {
         beforeEach(async () => {
           ;({
             user: { id: userId },
-          } = await createSimulation({
-            agent,
-          }))
+          } = await createSimulation({}))
         })
 
         test(`Then it returns a ${StatusCodes.FORBIDDEN} error`, async () => {

@@ -2,27 +2,17 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
-import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
-import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { programComputation } from './handlers/program-computation.ts'
 import { publishRedisEvent } from './handlers/publish-redis-event.ts'
 import { sendSimulationUpserted } from './handlers/send-simulation-upserted.ts'
 import { updateBrevoContact } from './handlers/update-brevo-contact.ts'
-import {
-  createSimulation,
-  softDeleteSimulation,
-} from './simulations.service.ts'
-import type { SimulationCreateQuery } from './simulations.validator.ts'
-import {
-  SimulationCreateValidator,
-  SimulationFetchValidator,
-} from './simulations.validator.ts'
+import { softDeleteSimulation } from './simulations.service.ts'
+import { SimulationFetchValidator } from './simulations.validator.ts'
 
 const router = express.Router()
 
@@ -30,58 +20,6 @@ EventBus.on(SimulationUpsertedEvent, updateBrevoContact)
 EventBus.on(SimulationUpsertedEvent, sendSimulationUpserted)
 EventBus.on(SimulationUpsertedEvent, publishRedisEvent)
 EventBus.on(SimulationUpsertedEvent, programComputation)
-
-/**
- * Upserts a simulation
- */
-router.route('/v1').post(
-  authentificationMiddleware<
-    unknown,
-    unknown,
-    unknown,
-    SimulationCreateQuery
-  >(),
-  rateLimitSameRequestMiddleware({
-    ttlInSeconds: 30,
-    hashRequest: ({ method, url, query }) => {
-      if (!query.code || !query.email || typeof query.email !== 'string') {
-        return
-      }
-      return `${method}_${url}_${query.email}`
-    },
-  }),
-  validateRequest(SimulationCreateValidator),
-  async (req, res) => {
-    try {
-      const { simulation } = await createSimulation({
-        simulationDto: req.body,
-        query: req.query,
-        user: req.user!,
-      })
-
-      return res.status(StatusCodes.CREATED).json(simulation)
-    } catch (err) {
-      if (err instanceof ImmutableSimulationException) {
-        return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
-      }
-
-      if (err instanceof ForbiddenException) {
-        return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-      }
-
-      if (
-        err instanceof EntityNotFoundException ||
-        err instanceof UnauthorizedException
-      ) {
-        return res.status(StatusCodes.UNAUTHORIZED).end()
-      }
-
-      logger.error('Simulation creation failed', err)
-
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-    }
-  }
-)
 
 /**
  * Soft deletes a simulation by associating it with a deleted user id
