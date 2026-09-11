@@ -2,6 +2,7 @@ import { mergeTests } from '@playwright/test'
 import { test as cookieBannerTest } from '../fixtures/cookie-banner'
 import { test as featureFlagsTest } from '../fixtures/feature-flags'
 import { test as groupTest } from '../fixtures/groups'
+import { test as hydrationGuardTest } from '../fixtures/hydration-guard'
 import { test as ngcTest } from '../fixtures/ngc-test'
 import { test as organisationTest } from '../fixtures/organisations'
 import { test as pollTest } from '../fixtures/polls'
@@ -11,6 +12,7 @@ import { test as userAccountTest } from '../fixtures/user-account'
 import { test as visibleTestIdTest } from '../fixtures/visible-testid'
 
 export const test = mergeTests(
+  hydrationGuardTest,
   groupTest,
   ngcTest,
   cookieBannerTest,

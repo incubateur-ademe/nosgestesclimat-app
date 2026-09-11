@@ -15,6 +15,11 @@
       "@site/*": ["../site/src/*"]
     }
   },
-  "include": ["tests/**/*.ts", "mock/**/*.ts", "playwright.config.ts"],
+  "include": [
+    "tests/**/*.ts",
+    "mock/**/*.ts",
+    "reporters/**/*.ts",
+    "playwright.config.ts"
+  ],
   "exclude": ["node_modules"]
 }

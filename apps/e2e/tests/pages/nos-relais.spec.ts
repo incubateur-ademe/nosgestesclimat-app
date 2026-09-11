@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from '../fixtures'
 
 test('should render without breaking the app', async ({ page }) => {
   await page.goto('/nos-relais')
