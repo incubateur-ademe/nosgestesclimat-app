@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import { Prisma } from '../../../prisma/generated/client.ts'
-import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
 import type { Poll } from '../types/poll.ts'
 import { organisationFactory } from './organisation.factory.ts'
 
@@ -13,13 +12,6 @@ interface PollTransientParams {
 class PollFactory extends Factory<Poll, PollTransientParams, Poll> {
   scolaire() {
     return this.params({ mode: 'scolaire' })
-  }
-
-  /** computedResults predating the current carbone/eau shape */
-  withDeprecatedComputedResults() {
-    return this.params({
-      computedResults: { bilan: 1000 } as unknown as ComputedResults,
-    })
   }
 
   withStatsComputationStatus(
