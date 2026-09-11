@@ -112,11 +112,9 @@ describe('runSync', () => {
       })
 
       await createOrganisationPollSimulation({
-        agent,
         pollId: poll.id,
       })
       await createOrganisationPollSimulation({
-        agent,
         pollId: poll.id,
       })
 
@@ -157,7 +155,6 @@ describe('runSync', () => {
         organisationId: orgId1,
       })
       await createOrganisationPollSimulation({
-        agent,
         pollId: poll1.id,
       })
 
@@ -175,11 +172,9 @@ describe('runSync', () => {
         organisationId: orgId2,
       })
       await createOrganisationPollSimulation({
-        agent,
         pollId: poll2.id,
       })
       await createOrganisationPollSimulation({
-        agent,
         pollId: poll2.id,
       })
 

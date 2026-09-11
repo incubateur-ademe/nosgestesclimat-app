@@ -92,9 +92,8 @@ describe('Given a poll participation', () => {
         sendEmail: false,
         updated: false,
         created: true,
-        organisation,
+        newsletters: [],
         simulation,
-        poll,
         user,
       })
     })

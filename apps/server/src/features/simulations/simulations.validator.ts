@@ -10,7 +10,6 @@ import {
   SimulationAdditionalQuestionAnswerType,
 } from '../../adapters/prisma/generated.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
-import { PublicPollParams } from '../organisations/organisations.validator.ts'
 
 const MODEL_REGEX =
   /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
@@ -107,11 +106,5 @@ export const SimulationCreateValidator = {
 export const SimulationFetchValidator = {
   body: v.optional(v.strictObject({})),
   params: SimulationParams,
-  query: LocaleQuery,
-}
-
-export const OrganisationPollSimulationCreateValidator = {
-  body: SimulationCreateDto,
-  params: PublicPollParams,
   query: LocaleQuery,
 }

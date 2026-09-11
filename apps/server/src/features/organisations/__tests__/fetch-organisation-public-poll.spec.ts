@@ -10,6 +10,7 @@ import app from '../../../app.ts'
 import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { deepMergeSubstract, deepMergeSum } from '../../../core/deep-merge.ts'
 import logger from '../../../logger.ts'
+import { updatePollStats } from '../organisations.service.ts'
 import {
   createOrganisation,
   createOrganisationPoll,
@@ -164,9 +165,9 @@ describe('Given a NGC user', () => {
             computedResults,
             user: { id: userId },
           } = await createOrganisationPollSimulation({
-            agent,
             pollId,
           }))
+          await updatePollStats({ pollId }, { session: prisma })
         })
 
         test(`Then it returns a ${StatusCodes.OK} response with the poll data`, async () => {
@@ -341,11 +342,11 @@ describe('Given a NGC user', () => {
             while (simulations.length < 3) {
               simulations.push(
                 await createOrganisationPollSimulation({
-                  agent,
                   pollId,
                 })
               )
             }
+            await updatePollStats({ pollId }, { session: prisma })
           })
 
           test(`Then it returns a ${StatusCodes.OK} response with the private poll data`, async () => {

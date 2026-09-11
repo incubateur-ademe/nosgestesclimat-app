@@ -14,7 +14,6 @@ import {
   type Situation,
 } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
-import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
 import type Engine from 'publicodes'
 import * as v from 'valibot'
@@ -27,7 +26,6 @@ import { deepMergeSum } from '../../core/deep-merge.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
-import type { Locales } from '../../core/i18n/constant.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser } from '../../core/types/user.ts'
 
@@ -36,11 +34,7 @@ import {
   defaultVerifiedUserSelection,
   simulationSelection,
 } from '../../adapters/prisma/selection.ts'
-import { PollUpdatedEvent } from '../organisations/events/PollUpdated.event.ts'
-import type {
-  OrganisationPollCustomAdditionalQuestion,
-  PublicPollParams,
-} from '../organisations/organisations.validator.ts'
+import type { OrganisationPollCustomAdditionalQuestion } from '../organisations/organisations.validator.ts'
 import {
   createOrUpdateUser,
   fetchVerifiedUser,
@@ -51,7 +45,6 @@ import { carbonMetric, waterMetric } from './simulation.constant.ts'
 import {
   batchPollSimulations,
   createParticipantSimulation,
-  createPollUserSimulation,
   softDeleteSimulation as softDeleteSimulationFunc,
 } from './simulations.repository.ts'
 import {
@@ -208,98 +201,6 @@ export const softDeleteSimulation = async ({
 
   if (!simulation) {
     throw new EntityNotFoundException('Simulation not found')
-  }
-}
-
-export const createPollSimulation = async ({
-  locale,
-  params,
-  simulationDto,
-  user: requestUser,
-}: {
-  locale: Locales
-  params: PublicPollParams
-  simulationDto: SimulationCreateDto
-  user: PartialUser
-}) => {
-  try {
-    let user
-    const verifiedUser = isVerifiedUser(requestUser)
-      ? { id: requestUser.id, email: requestUser.email }
-      : undefined
-    // Case 1. The user is authentified
-    if (verifiedUser) {
-      const email = verifiedUser.email
-      user = await fetchVerifiedUser(
-        {
-          email,
-          select: defaultVerifiedUserSelection,
-        },
-        { session: prisma }
-      )
-
-      if (!user || user.id !== verifiedUser.id) {
-        throw new UnauthorizedException()
-      }
-    }
-
-    // Case 2. Not authentified
-    if (!user) {
-      const unverifiedUser = await transaction((session) =>
-        createOrUpdateUser(
-          {
-            id: requestUser.id,
-            user: {},
-            select: defaultUserSelection,
-          },
-          { session }
-        )
-      )
-      user = {
-        ...unverifiedUser.user,
-        ...unverifiedUser,
-      }
-    }
-
-    const { poll, simulation, created, updated, isNewParticipation } =
-      await transaction((session) =>
-        createPollUserSimulation(
-          { ...params, id: requestUser.id, ...verifiedUser },
-          simulationDto,
-          {
-            session,
-          }
-        )
-      )
-    const { organisation } = poll
-
-    const simulationUpsertedEvent = new SimulationUpsertedEvent({
-      user,
-      sendEmail: isNewParticipation,
-      organisation,
-      simulation,
-      created,
-      updated,
-      locale,
-      poll,
-    })
-
-    const pollUpdatedEvent = new PollUpdatedEvent({
-      poll,
-      organisation,
-    })
-
-    EventBus.emit(simulationUpsertedEvent).emit(pollUpdatedEvent)
-
-    // @ts-expect-error 2 events different types: TODO fix
-    await EventBus.once(simulationUpsertedEvent, pollUpdatedEvent)
-
-    return simulationToDto(simulation, requestUser)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Poll not found')
-    }
-    throw e
   }
 }
 
