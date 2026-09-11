@@ -11,6 +11,7 @@ import { getLocaleFromHeaders } from '@/helpers/server/getLocaleForNotFoundOrUna
 import logger from '@/logger'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { createEnqueuePollStatsComputation } from '@nosgestesclimat/core/features/polls/stats/services/enqueue-poll-stats-computation'
 import {
   type CompleteSimulationError,
   SimulationIncompleteError,
@@ -33,6 +34,9 @@ const completeSimulationService = createCompleteSimulation({
   captureException,
   sendEmail,
   addOrUpdateContact,
+  enqueuePollStatsComputation: createEnqueuePollStatsComputation({
+    cooldownTiers: env.POLL_STATS_COOLDOWN_TIERS,
+  }),
   origin: env.NEXT_PUBLIC_SITE_URL,
   // The action redirects: side effects must outlive the request.
   backgroundTaskRunner: after,

@@ -60,6 +60,7 @@ export function createCompleteSimulation({
   const sendGroupCreatedEmail = createSendGroupCreatedEmail(sendEmail)
   const sendGroupJoinedEmail = createSendGroupJoinedEmail(sendEmail)
   const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
+  const settle = createSettle({ logger, captureException })
 
   return async function completeSimulation({
     userSession,
@@ -132,7 +133,7 @@ export function createCompleteSimulation({
 
     backgroundTaskRunner(async () => {
       if (!userSession.isAuth) return
-      const promises = await Promise.allSettled([
+      await settle('side effects', [
         addOrUpdateContact({
           email: userSession.email,
           attributes: {
@@ -179,19 +180,6 @@ export function createCompleteSimulation({
           return success()
         })(),
       ])
-
-      for (const [index, promise] of promises.entries()) {
-        let error: unknown
-        if (promise.status === 'rejected') error = promise.reason
-        else if (!promise.value.success) error = promise.value.error
-        if (error) {
-          captureException(error)
-          logger.error('Failed to run side effect', {
-            index,
-            error,
-          })
-        }
-      }
     })
 
     return success({
@@ -200,3 +188,29 @@ export function createCompleteSimulation({
     })
   }
 }
+
+/**
+ * Waits for every side effect and reports the ones that failed, either by
+ * rejecting or by resolving to a failure: none of them fails the completion.
+ */
+const createSettle =
+  ({
+    logger,
+    captureException,
+  }: {
+    logger: Logger
+    captureException: CaptureException
+  }) =>
+  async (message: string, sideEffects: Promise<Result<void> | void>[]) => {
+    const results = await Promise.allSettled(sideEffects)
+
+    for (const [index, result] of results.entries()) {
+      let error: unknown
+      if (result.status === 'rejected') error = result.reason
+      else if (result.value && !result.value.success) error = result.value.error
+      if (error) {
+        captureException(error)
+        logger.error(`Failed to settle: ${message}`, { index, error })
+      }
+    }
+  }
