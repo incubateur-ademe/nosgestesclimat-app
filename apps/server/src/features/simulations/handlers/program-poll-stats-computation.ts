@@ -4,7 +4,7 @@ import type { Handler } from '../../../core/event-bus/handler.ts'
 import logger from '../../../logger.ts'
 import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event.ts'
 
-const enqueuePollStatsComputation = createEnqueuePollStatsComputation({
+const programPollStatsComputationService = createEnqueuePollStatsComputation({
   cooldownTiers: config.app.pollStatsCooldownTiers,
 })
 
@@ -14,7 +14,7 @@ export const programPollStatsComputation: Handler<
   if (simulation.progression !== 1 || !poll) return
 
   try {
-    await enqueuePollStatsComputation(poll.id)
+    await programPollStatsComputationService(poll.id)
   } catch (error) {
     logger.error('Poll stats enqueue failed', { pollId: poll.id, error })
   }
