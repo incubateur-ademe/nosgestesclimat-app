@@ -50,9 +50,9 @@ upstream scalingo {
     #
     # Ce nom résout 4 IP = 4 serveurs (avec un seul, max_fails est ignoré).
     # Défaut = 1 : un seul échec (timeout de lecture des en-têtes inclus) évince
-    # l'IP pendant fail_timeout, qui sert aussi de fenêtre de comptage.
+    # l'IP pendant 10 s (fail_timeout, qui sert aussi de fenêtre de comptage).
     # → http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server
-    server ${UPSTREAM}:443 resolve max_fails=3 fail_timeout=10s;
+    server ${UPSTREAM}:443 resolve max_fails=3;
     keepalive 64;
 }
 
