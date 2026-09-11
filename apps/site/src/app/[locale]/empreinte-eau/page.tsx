@@ -38,7 +38,7 @@ export const generateMetadata = getCommonMetadata({
 export default async function WaterFootprintLandingPage(
   props: DefaultPageProps
 ) {
-  const { t } = await getServerTranslation(props.params)
+  const { t } = getServerTranslation(await props.params)
   const { locale } = await props.params
 
   const userSession = await getUserSession()
