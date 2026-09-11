@@ -49,7 +49,7 @@ export default function CommunicationKit() {
       <div className="relative mx-auto h-70 w-60 md:mx-0 md:mr-16 md:min-w-75">
         <div className="absolute inset-0">
           <Image
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/illu_1_kit_communication_a6321fe7ec.png"
+            src="/_static/cms/illu_1_kit_communication_a6321fe7ec.png"
             width="200"
             height="200"
             className="border border-slate-300 object-contain"
@@ -58,7 +58,7 @@ export default function CommunicationKit() {
         </div>
         <div className="absolute top-1/2 right-0 z-10 -translate-y-1/2">
           <Image
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/illu_2_kit_communication_e7769e5e6b.png"
+            src="/_static/cms/illu_2_kit_communication_e7769e5e6b.png"
             width="150"
             height="150"
             alt=""

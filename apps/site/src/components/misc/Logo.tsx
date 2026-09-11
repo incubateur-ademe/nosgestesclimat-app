@@ -20,7 +20,7 @@ export default function Logo({ className, size = 'md' }: Props) {
   return (
     <div className={twMerge('flex items-center', className)}>
       <Image
-        src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_3x_f817f785ce.png"
+        src="/_static/cms/petit_logo_3x_f817f785ce.png"
         alt=""
         width="200"
         height="200"

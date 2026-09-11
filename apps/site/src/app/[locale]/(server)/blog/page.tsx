@@ -117,7 +117,7 @@ export default async function BlogHomePage({
             '@type': 'Organization',
             url: 'https://nosgestesclimat.fr',
             name: 'Nos Gestes Climat',
-            logo: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+            logo: '/_static/cms/petit_logo_006dd01955.png',
           },
         ]}
       />
@@ -131,7 +131,7 @@ export default async function BlogHomePage({
               image
                 ? { url: image.url }
                 : {
-                    url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_girl_reading_newspaper_d171290d3d.png',
+                    url: '/_static/cms/medium_girl_reading_newspaper_d171290d3d.png',
                   }
             }
           />

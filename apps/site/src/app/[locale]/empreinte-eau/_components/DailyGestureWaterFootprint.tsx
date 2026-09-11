@@ -51,7 +51,7 @@ export default async function DailyGestureWaterFootprint({
       gestures={{
         [gesturesKeysForTranslation.alimentation]: {
           imageSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_alimentation_8dce62c4e4.svg',
+            '/_static/cms/empreinte_alimentation_8dce62c4e4.svg',
           imageAlt: t(
             "Un épi de maïs et un avocat, illustrant le fait d'économiser l'eau dans l'alimentation"
           ),
@@ -63,7 +63,7 @@ export default async function DailyGestureWaterFootprint({
         },
         [gesturesKeysForTranslation.clothing]: {
           imageSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_textile_720345e437.svg',
+            '/_static/cms/empreinte_textile_720345e437.svg',
           imageAlt: t(
             "Une fille dans un magasin hésitant entre un pull en coton et un pull en lin, illustrant le fait de réduire l'utilisation d'eau des vêtements"
           ),

@@ -51,7 +51,7 @@ export default async function Releases({ params }: DefaultPageProps) {
 
         <Image
           className="ml-auto w-32 md:-mt-4 md:w-48"
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_girl_cooking_fa71604f8d.png"
+          src="/_static/cms/medium_girl_cooking_fa71604f8d.png"
           width="200"
           height="400"
           alt={t('Une femme préparant un bon petit plat.')}
