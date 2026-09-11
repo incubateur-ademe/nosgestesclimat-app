@@ -39,6 +39,7 @@ export default function PostalCodeInput({ postalCode, setPostalCode }: Props) {
       isAsync
       isSearchable
       cacheOptions
+      name="postal-code"
       value={
         postalCode
           ? {
