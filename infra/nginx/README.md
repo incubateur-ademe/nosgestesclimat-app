@@ -256,6 +256,50 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 `ui_host` reste `https://eu.i.posthog.com` (voir
 `apps/site/src/services/tracking/Posthog.ts`).
 
+## Cache HTTP
+
+Ce qui est mis en cache disque (bloc `proxy_cache ngc_cache`) :
+
+| Route                             | TTL      | Pourquoi c'est sûr                           |
+| --------------------------------- | -------- | -------------------------------------------- |
+| `/_next/static/…`                 | 1 an     | noms hashés par le contenu, immuables        |
+| `/_static/cms/…`                  | 30 jours | assets CMS versionnés par hash dans leur nom |
+| `/_next/image`, `/images`, `…`    | 30 jours | images dérivées, adressées par URL complète  |
+| `favicon`, `manifest`, `sitemap`… | 15 min   | noms non hashés, TTL court volontaire        |
+
+**Le HTML des pages publiques n'est PAS caché** (location « Pages publiques
+catégorie 2 », `proxy_cache off`), et ne doit pas le redevenir tel quel.
+
+Raison : le HTML référence les chunks JS de Next sous forme hashée par le
+contenu (`/_next/static/chunks/<hash>.js`). À chaque déploiement, le conteneur
+Scalingo est reconstruit et ces fichiers sont remplacés : les anciens
+disparaissent. Un HTML servi depuis le cache Nginx pointe alors vers des chunks
+404 et **React ne s'hydrate plus** (bannière cookies et interactivité absentes,
+sans erreur visible côté serveur). Incidents preprod du 2026-09-11 : E2E
+« cookie-banner-refuse-button » introuvable, jusqu'à 1 h après chaque
+déploiement, pour tous les navigateurs.
+
+Deux pièges rendent le diagnostic difficile — à garder en tête avant de
+réintroduire du cache HTML :
+
+- **`Vary: Accept-Encoding`** : Nginx partitionne ses entrées par
+  `Accept-Encoding`. Le HTML périmé n'était servi qu'aux requêtes compressées,
+  donc jamais à `curl` (non compressé) mais à tous les navigateurs.
+- **`Set-Cookie`** : les pages portent un `Set-Cookie` (`ngc_region`) ; Nginx
+  n'enregistre pas ces réponses, donc l'entrée n'est jamais rafraîchie et reste
+  en `X-Cache-Status: STALE` (mise à jour de fond qui ne remplace rien).
+
+Invalider ce cache au déploiement est impossible avec l'installation actuelle
+(pas de module de purge, pas de génération de clé à bumper). Les options si le
+besoin de performance revient : versionner l'URL du HTML par déploiement, ou
+servir les chunks depuis un stockage qui survit au déploiement. Les pages PPR
+sont de toute façon marquées `Cache-Control: no-store` par Next : on laisse
+l'app décider.
+
+Conséquence à surveiller : ces pages tapent désormais l'app à chaque requête
+(plus d'absorption Nginx). Voir `upstream_cache_status` / le taux de HIT sur
+`/_next/static/` pour suivre la charge.
+
 ## Tester avant bascule DNS
 
     curl -I --resolve preprod.nosgestesclimat.fr:443:<ip> \
@@ -270,6 +314,9 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 
     # Hit ratio sur l'instance
     tail -100 /var/log/nginx/access.log | grep -c HIT
+
+    # Ce qui est réellement mis en cache, et où (une entrée = un fichier)
+    grep -c "" /var/cache/nginx/*/*/* 2>/dev/null | head
 
     # Statut du timer de pull
     systemctl status nginx-config-pull.timer

@@ -22,18 +22,6 @@ proxy_cache_path /var/cache/nginx levels=1:2
                  max_size=30g inactive=3d use_temp_path=off;
 
 # ----------------------------------------------------------------------------
-# Auth derivation (cache bypass pour utilisateurs connectés)
-# ----------------------------------------------------------------------------
-
-# Pré-calcul binaire "session présente ?"
-map $cookie_ngc_session $ngc_is_auth {
-    # Cookie absent → 0 (anonyme, on cache).
-    ""       0;
-    # Cookie présent → 1 (authentifié, on bypass le cache).
-    default  1;
-}
-
-# ----------------------------------------------------------------------------
 # Résolution DNS dynamique (résilience aux pannes DNS transitoires)
 # ----------------------------------------------------------------------------
 
@@ -266,7 +254,7 @@ server {
     # panne upstream, sans entrée périmée à servir.
     #
     # Noms non hashés → TTL court (un déploiement se voit en 15 min). Identiques
-    # pour tous → pas d'`$ngc_is_auth` dans la clé, contrairement aux pages HTML.
+    # pour tous → pas de dimension d'auth dans la clé.
     location ~* ^/(favicon(\.ico|\.png)?|apple-touch-icon(-precomposed)?\.png|manifest\.webmanifest|robots\.txt|sitemap\.xml|scripts/iframeSimulation\.js|iframeSimulation\.js)$ {
         proxy_pass https://scalingo;
         proxy_ignore_headers Cache-Control Expires;
@@ -278,9 +266,29 @@ server {
     }
 
     # ── Pages publiques catégorie 2 ──────────────────────────────
-    # Contenu identique pour tous les utilisateurs anonymes.
-    # Cache-bypass automatique pour les utilisateurs authentifiés
-    # (détection via le cookie ngc_session). TTL 1h.
+    # PAS de cache : voir l'avertissement ci-dessous. Cette location ne sert
+    # plus qu'à exempter ces pages du rate limiting du catch-all (`limit_req
+    # zone=web`) : elles encaissent des pics légitimes venant d'IP partagées
+    # (NAT d'entreprise, CI) et l'app applique elle-même sa politique HTTP.
+    #
+    # ⚠️ NE PAS CACHER LE HTML ICI (régression 2026-09-11, chunk 404 /
+    # hydratation cassée sur preprod). Le HTML référence les chunks JS
+    # « content-hashés » de Next (`/_next/static/chunks/<hash>.js`), recréés à
+    # chaque déploiement : les anciens disparaissent du conteneur. Un HTML
+    # servi depuis le cache nginx — périmé d'une seconde comme d'une heure —
+    # pointe donc vers des chunks qui répondent 404, et React ne s'hydrate
+    # plus (bannière cookies absente, boutons inertes). Deux pièges en plus :
+    #   * le cache est partitionné par `Accept-Encoding` (Vary), donc seules
+    #     les requêtes *compressées* servaient le HTML périmé : invisible en
+    #     curl, visible pour tous les navigateurs ;
+    #   * les réponses portent `Set-Cookie` (ngc_region) : la mise à jour en
+    #     tâche de fond ne peut pas remplacer l'entrée, qui reste donc STALE.
+    # Invalider ce cache au déploiement est impossible ici (pas de module de
+    # purge sur cette installation, aucune génération de cache à bump). Seule
+    # politique sûre : laisser l'app décider (`Cache-Control: no-store` sur
+    # ces pages PPR). Si le besoin de perf revient, la bonne piste est de
+    # versionner l'URL du HTML par déploiement (ou de servir les chunks
+    # depuis un stockage qui survit au déploiement), pas de rallumer ceci.
     #
     # Exact-match : accueil, simulateur/tutoriel, empreinte-carbone,
     # empreinte-eau, cgu, mentions-legales,
@@ -294,29 +302,15 @@ server {
     # campagne-partenaire, evenement
     #
     # Note : /fr et /fr/* sont des 307 vers la locale par défaut,
-    # donc exclus volontairement de la regex. /en/* n'est volontairement
-    # PAS couvert : les pages anglaises (trafic minime) tombent dans le
-    # catch-all et ne sont pas forcées en cache — le middleware Next gère
-    # la langue côté app.
+    # donc exclus volontairement de la regex. /en/* n'est pas listé : les pages
+    # anglaises (trafic minime) tombent dans le catch-all, le middleware Next
+    # gère la langue côté app.
     location ~ ^/($|simulateur/tutoriel|empreinte-carbone|empreinte-eau|cgu|mentions-legales|mentions-legales-base-empreinte|politique-de-confidentialite|accessibilite|contact|diffuser|nos-relais|plan-du-site|budget|international|gestion-infolettres|newsletter-confirmation|partenaire|questions-frequentes|stats|blog($|/.*)|documentation($|/.*)|nouveautes($|/.*)|guide($|/.*)|themes($|/.*)|campagne-partenaire($|/.*)|evenement($|/.*))$ {
         proxy_pass https://scalingo;
-
-        # L'auth dans la clé : utilisateurs anonymes et authentifiés ont des caches distincts.
-        proxy_cache_key "$scheme$request_method$host$request_uri$ngc_is_auth";
-        proxy_cache_lock on;
-        # Quand un cache stale est servi, lance la mise à jour en tâche de fond
-        # sans bloquer la réponse.
-        proxy_cache_background_update on;
-        # L'app Next.js peut marquer Cache-Control sur ses réponses :
-        # on l'ignore et on applique notre politique à la place.
-        proxy_ignore_headers Cache-Control;
-        proxy_cache_valid 200 1h;
-        # Ne pas lire le cache si l'utilisateur est authentifié ou en websocket :
-        # bypass direct vers Scalingo.
-        proxy_cache_bypass $ngc_is_auth$http_upgrade;
-        # Et ne pas écrire dans le cache dans ces cas :
-        # sinon on pollue avec un mix anon/auth.
-        proxy_no_cache $ngc_is_auth$http_upgrade;
+        # Aucun cache : les entrées des versions précédentes de cette conf
+        # (clé explicite avec `$ngc_is_auth`) deviennent inaccessibles du même
+        # coup, ce qui purge de fait le HTML périmé au premier reload.
+        proxy_cache off;
     }
 
     # ── PostHog reverse proxy (pathname /revp/) ──────────────────
