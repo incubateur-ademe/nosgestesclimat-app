@@ -11,14 +11,21 @@ import { expect, test } from '@playwright/test'
  *   (see playwright.config.ts), without which `navigator.clipboard.readText()`
  *   returns an empty string in headless mode
  *
+ * The click is not retried: it used to be, to paper over the hydration
+ * mismatches that made React replace the clicked node. Those are fixed and
+ * guarded by `fixtures/hydration-guard.ts`, so a click that has no effect now
+ * has to fail the test rather than be silently replayed.
+ *
  * @see https://github.com/microsoft/playwright/issues/13037
  */
 export async function copyAndReadClipboard({
   page,
   copyAction,
+  timeout = 10_000,
 }: {
   page: Page
   copyAction: () => Promise<void>
+  timeout?: number
 }): Promise<string> {
   const browser = page.context().browser()
 
@@ -35,8 +42,7 @@ export async function copyAndReadClipboard({
   const readClipboard = () =>
     page.evaluate(() => navigator.clipboard.readText()).catch(() => '')
 
-  // Clipboard write requires the document to be focused: with parallel workers,
-  // this page may have lost focus, making writeText reject.
+  // Clipboard writes are refused when the document isn't focused.
   await page.bringToFront()
 
   const contentBeforeCopy = await readClipboard()
@@ -49,10 +55,13 @@ export async function copyAndReadClipboard({
   let clipboardContent = contentBeforeCopy
 
   await expect
-    .poll(async () => {
-      clipboardContent = await readClipboard()
-      return clipboardContent
-    })
+    .poll(
+      async () => {
+        clipboardContent = await readClipboard()
+        return clipboardContent
+      },
+      { timeout }
+    )
     .not.toBe(contentBeforeCopy)
 
   return clipboardContent

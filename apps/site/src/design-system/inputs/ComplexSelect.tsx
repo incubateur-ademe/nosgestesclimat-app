@@ -63,6 +63,11 @@ export default function ComplexSelect({
       )}
 
       <SelectTag
+        // Stable ids: react-select would otherwise derive them from a
+        // module-level counter, which differs between the server render and the
+        // client hydration (React then regenerates the whole tree).
+        instanceId={name}
+        inputId={name}
         // @ts-expect-error fix me
         defaultValue={value}
         options={options}

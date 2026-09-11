@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import { isValidElement, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface GetExternalLinkPropsParams {
   href: string
@@ -21,15 +21,22 @@ export function isExternalLink(href: string, siteUrl: string): boolean {
   }
 }
 
+/**
+ * Extracts the text of a link's children.
+ *
+ * Only literal text is used, and elements are never introspected: a server
+ * component child is rendered on the server but arrives on the client as its
+ * *output* (React Server Components), so walking it gives a different text on
+ * each side. The footer's logo link (`<Link href="https://ademe.fr"><Ademe />`)
+ * derived nothing on the server and `ADEME` on the client, which made React
+ * regenerate the whole tree after hydration — on every page.
+ */
 function nodeToText(node: ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') {
     return String(node)
   }
   if (Array.isArray(node)) {
     return node.map(nodeToText).join('')
-  }
-  if (isValidElement<{ children?: ReactNode }>(node)) {
-    return nodeToText(node.props.children)
   }
   return ''
 }
@@ -57,6 +64,9 @@ export function getExternalLinkProps({
   const resolvedRel =
     resolvedTarget === '_blank' ? (rel ?? 'noopener noreferrer') : rel
 
+  // Callers rendering a logo or an icon should pass an explicit `aria-label`
+  // (or rely on the child's own accessible name): the label can't be derived
+  // from it without diverging between the server and the client.
   let ariaLabel = explicitAriaLabel
   if (!ariaLabel && resolvedTarget === '_blank') {
     const text = nodeToText(children)

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from '../fixtures'
 
 export const DOCUMENTATION_TITLE = 'documentation-title'
 export const DOCUMENTATION_LAUNCH_BUTTON = 'documentation-launch-button'

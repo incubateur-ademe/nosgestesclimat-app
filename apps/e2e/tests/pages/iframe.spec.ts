@@ -1,5 +1,4 @@
-import { expect } from '@playwright/test'
-import { test } from '../fixtures/index'
+import { expect, test } from '../fixtures'
 
 test.describe('/demo-iframe-datashare.html', () => {
   test.beforeEach(async ({ page }) => {
