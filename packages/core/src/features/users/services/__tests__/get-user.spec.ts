@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../factories/user.factory.ts'
-import { verifiedUserFactory } from '../../factories/verified-user.factory.ts'
 import { getUser } from '../get-user.service.ts'
 
 describe('getUser', () => {
@@ -36,26 +35,10 @@ describe('getUser', () => {
   })
 
   it('returns a verified user when a verified user with the same userId exists', async () => {
-    const id = '00000000-0000-0000-0000-000000000000'
-    const user = await userFactory.create({ id })
-
-    const verifiedUser = await verifiedUserFactory.create({
-      id: user.id,
-    })
+    const user = await userFactory.verified().create()
 
     const result = await getUser({ userId: user.id })
 
-    expect(result).toEqual({
-      type: 'verified',
-      id: user.id,
-      name: user.name,
-      email: verifiedUser.email,
-      ageRange: user.ageRange,
-      telephone: verifiedUser.telephone,
-      position: verifiedUser.position,
-      optedInForCommunications: verifiedUser.optedInForCommunications,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    })
+    expect(result).toEqual({ ...user, type: 'verified' })
   })
 })

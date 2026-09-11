@@ -8,8 +8,11 @@ import { prisma } from '../../../prisma/client.ts'
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import { SimulationNotFoundError } from '../errors/simulations.error.ts'
+import { type NewSimulation } from '../helpers/new-simulation.ts'
+import type { Model } from '../types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import { serializeModel } from './model.mapper.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
 const simulationSelect = {
@@ -34,6 +37,65 @@ const simulationSelect = {
     orderBy: { createdAt: 'asc' },
   },
 } as const
+
+/**
+ * Inserts a simulation. The caller supplies every field, including the
+ * pristine defaults a new simulation is born with; the repository only
+ * persists what it receives.
+ */
+export const createSimulation = async (
+  {
+    id,
+    userId,
+    model,
+    date,
+    progression,
+    situation,
+    foldedSteps,
+    computedResults,
+  }: NewSimulation,
+  tx: Transaction = prisma
+): Promise<void> => {
+  await tx.simulation.create({
+    data: {
+      id,
+      userId,
+      model: serializeModel(model),
+      date,
+      progression,
+      situation: situation as unknown as Prisma.InputJsonValue,
+      foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
+      computedResults: computedResults as unknown as Prisma.InputJsonValue,
+    },
+    // `select` is narrowed to the id to reduce data transfer because Prisma
+    // always returns a row: nothing here reads it.
+    select: { id: true },
+  })
+}
+
+/**
+ * Inserts multiple simulations in a single query. Each caller-supplied field
+ * is persisted as-is; the repository only serializes the model. When `model`
+ * is omitted the database default applies. Rows whose `id` already exists are
+ * silently skipped so partial re-imports do not fail the whole batch.
+ */
+export const createManySimulations = async (
+  simulations: (Omit<NewSimulation, 'model'> & { model?: Model })[],
+  tx: Transaction = prisma
+): Promise<void> => {
+  if (simulations.length === 0) return
+
+  await tx.simulation.createMany({
+    data: simulations.map(({ model, ...rest }) => ({
+      ...rest,
+      ...(model ? { model: serializeModel(model) } : {}),
+      situation: rest.situation as unknown as Prisma.InputJsonValue,
+      foldedSteps: rest.foldedSteps as unknown as Prisma.InputJsonValue[],
+      computedResults: rest.computedResults as unknown as Prisma.InputJsonValue,
+    })),
+    skipDuplicates: true,
+  })
+}
 
 export const findLatestSimulation = async ({
   userId,

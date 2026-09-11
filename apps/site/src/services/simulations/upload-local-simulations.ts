@@ -1,9 +1,9 @@
 'use server'
 
-import { SIMULATION_URL } from '@/constants/urls/main'
-import { fetchServer } from '@/helpers/server/fetchServer'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { importLegacyLocalSimulations } from '@nosgestesclimat/core/features/simulations/services/import-legacy-local-simulations.service'
+import type { ComputedResults as CoreComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 
 /**
  * Uploads simulations found in localStorage on first authentication.
@@ -18,12 +18,16 @@ export const uploadLocalSimulations = async (simulations: Simulation[]) => {
   const session = await getUserSession()
   if (!session) return
 
-  return await Promise.allSettled(
-    simulations.map((simulation) =>
-      fetchServer(SIMULATION_URL, {
-        method: 'POST',
-        body: simulation,
-      })
-    )
-  )
+  await importLegacyLocalSimulations({
+    userId: session.id,
+    // `computedResults` has already been validated by
+    // `hasValidComputedResults` in `reconcileOnAuth`; the site and core types
+    // differ structurally (index signatures vs. strict schema) but are
+    // compatible at runtime.
+    simulations: simulations.map((simulation) => ({
+      ...simulation,
+      computedResults:
+        simulation.computedResults as unknown as CoreComputedResults,
+    })),
+  })
 }

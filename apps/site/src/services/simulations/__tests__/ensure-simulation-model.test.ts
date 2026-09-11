@@ -1,4 +1,4 @@
-import { GROUP_URL, SIMULATION_URL } from '@/constants/urls/main'
+import { GROUP_URL } from '@/constants/urls/main'
 import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
@@ -19,6 +19,7 @@ import { uploadLocalSimulations } from '../upload-local-simulations'
 const DATABASE_DEFAULT_MODEL = 'FR-fr-0.0.0'
 
 const getCurrentSimulationMock = vi.hoisted(() => vi.fn())
+const importLegacyLocalSimulationsMock = vi.hoisted(() => vi.fn())
 
 vi.mock('next/headers', () => ({
   headers: () =>
@@ -44,6 +45,13 @@ vi.mock('@/services/auth/create-app-session', () => ({
 vi.mock('@/services/simulations/get-current-simulation', () => ({
   getCurrentSimulation: getCurrentSimulationMock,
 }))
+
+vi.mock(
+  '@nosgestesclimat/core/features/simulations/services/import-legacy-local-simulations.service',
+  () => ({
+    importLegacyLocalSimulations: importLegacyLocalSimulationsMock,
+  })
+)
 
 /** A simulation as it comes out of long-lived client state: no model at all. */
 const modellessSimulation = (): Simulation => {
@@ -154,11 +162,16 @@ describe('simulation write paths', () => {
 
   describe('given legacy simulations uploaded from localStorage', () => {
     it('should leave them without a model, on purpose', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
+      importLegacyLocalSimulationsMock.mockResolvedValue(undefined)
 
       await uploadLocalSimulations([modellessSimulation()])
 
-      expect(captured.value?.model).toBeUndefined()
+      expect(importLegacyLocalSimulationsMock).toHaveBeenCalledTimes(1)
+      const { simulations } = importLegacyLocalSimulationsMock.mock
+        .calls[0][0] as {
+        simulations: { model?: string }[]
+      }
+      expect(simulations[0].model).toBeUndefined()
     })
   })
 })

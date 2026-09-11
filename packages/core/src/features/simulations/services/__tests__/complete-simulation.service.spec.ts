@@ -10,7 +10,6 @@ import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import { verifiedUserFactory } from '../../../users/factories/verified-user.factory.ts'
 import {
   SimulationCompletedError,
   SimulationIncompleteError,
@@ -38,7 +37,7 @@ describe('completeSimulation', () => {
 
   it('persists the answers and returns the groups and polls the simulation belongs to', async () => {
     const { completeSimulation } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
     const { poll } = await joinPoll(simulation.id)
     const group = await joinGroup({ simulationId: simulation.id, user })
@@ -81,7 +80,7 @@ describe('completeSimulation', () => {
 
   it('returns empty groups and polls for a simulation shared with nobody', async () => {
     const { completeSimulation } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
 
     const result = await completeSimulation({
@@ -98,7 +97,7 @@ describe('completeSimulation', () => {
 
   it('programs the computation when the model is supported', async () => {
     const { completeSimulation, logger, captureException } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
 
     await completeSimulation({
@@ -121,7 +120,7 @@ describe('completeSimulation', () => {
 
   it('reports an unsupported model and completes the simulation without programming a computation', async () => {
     const { completeSimulation, logger, captureException } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
       .withModelVersion({ publishedTag: '0.0.0' })
@@ -147,7 +146,7 @@ describe('completeSimulation', () => {
 
   it('fails with computation_already_exists and rolls the answers back when a computation is already programmed', async () => {
     const { completeSimulation } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
       .withProgression(0.2)
@@ -183,7 +182,7 @@ describe('completeSimulation', () => {
 
   it('fails with simulation_incomplete when the progression is not 1', async () => {
     const { completeSimulation, backgroundTaskRunner } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
 
     const result = await completeSimulation({
@@ -211,7 +210,7 @@ describe('completeSimulation', () => {
 
   it('fails with zero_footprint when the carbon footprint is zero as it is a sign of a bigger issue', async () => {
     const { completeSimulation, backgroundTaskRunner } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
 
     const result = await completeSimulation({
@@ -239,7 +238,7 @@ describe('completeSimulation', () => {
 
   it('fails with simulation_not_found for an unknown simulation', async () => {
     const { completeSimulation } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
 
     const result = await completeSimulation({
       userSession: authenticated(user),
@@ -255,7 +254,10 @@ describe('completeSimulation', () => {
 
   it('fails with simulation_not_found for a simulation owned by another user', async () => {
     const { completeSimulation } = setup()
-    const [user, other] = await Promise.all([verifiedUser(), verifiedUser()])
+    const [user, other] = await Promise.all([
+      userFactory.verified().create(),
+      userFactory.verified().create(),
+    ])
     const simulation = await startedSimulation(other.id)
 
     const result = await completeSimulation({
@@ -281,7 +283,7 @@ describe('completeSimulation', () => {
 
   it('refuses to complete an already completed simulation', async () => {
     const { completeSimulation, backgroundTaskRunner } = setup()
-    const user = await verifiedUser()
+    const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
       .completed()
@@ -312,7 +314,7 @@ describe('completeSimulation', () => {
     it('updates the contact with the footprint of the simulation it just completed', async () => {
       const { completeSimulation, addOrUpdateContact, settleBackground } =
         setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
 
       await completeSimulation({
@@ -336,7 +338,7 @@ describe('completeSimulation', () => {
 
     it('sends the poll joined email for the poll the user most recently joined', async () => {
       const { completeSimulation, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
       await joinPoll(simulation.id)
       const { poll } = await joinPoll(simulation.id)
@@ -364,7 +366,7 @@ describe('completeSimulation', () => {
 
     it('sends the poll joined email in the language of the request', async () => {
       const { completeSimulation, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
       await joinPoll(simulation.id)
 
@@ -385,7 +387,7 @@ describe('completeSimulation', () => {
 
     it('sends the group created email when the user is administrator of the group', async () => {
       const { completeSimulation, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
       const group = await joinGroup({
         simulationId: simulation.id,
@@ -415,7 +417,7 @@ describe('completeSimulation', () => {
     it('sends the group joined email when the user is participant of the group', async () => {
       const { completeSimulation, sendEmail, settleBackground } = setup()
       const [user, administrator] = await Promise.all([
-        verifiedUser(),
+        userFactory.verified().create(),
         userFactory.create(),
       ])
       const simulation = await startedSimulation(user.id)
@@ -442,7 +444,7 @@ describe('completeSimulation', () => {
 
     it('sends the poll email only when the simulation belongs to both a poll and a group', async () => {
       const { completeSimulation, sendEmail, settleBackground } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
       await joinPoll(simulation.id)
       await joinGroup({ simulationId: simulation.id, user })
@@ -469,7 +471,7 @@ describe('completeSimulation', () => {
         sendEmail,
         settleBackground,
       } = setup()
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
       await joinPoll(simulation.id)
 
@@ -495,7 +497,7 @@ describe('completeSimulation', () => {
       } = setup()
       const error = new Error('brevo is down')
       addOrUpdateContact.mockRejectedValue(error)
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
 
       const result = await completeSimulation({
@@ -523,7 +525,7 @@ describe('completeSimulation', () => {
       } = setup()
       const error = new EmailRequestError()
       sendEmail.mockResolvedValue({ success: false, error })
-      const user = await verifiedUser()
+      const user = await userFactory.verified().create()
       const simulation = await startedSimulation(user.id)
       await joinPoll(simulation.id)
 
@@ -582,19 +584,6 @@ const setup = () => {
     }),
     settleBackground: () => Promise.all(backgroundTasks),
   }
-}
-
-/**
- * An authenticated session always belongs to a user whose email is verified,
- * and only a verified user exposes an email to the emails sent in background.
- */
-const verifiedUser = async () => {
-  const user = await userFactory.create()
-  const { email } = await verifiedUserFactory.create({
-    id: user.id,
-    email: user.email!,
-  })
-  return { ...user, email }
 }
 
 const authenticated = (user: { id: string; email: string }): AppUser => ({

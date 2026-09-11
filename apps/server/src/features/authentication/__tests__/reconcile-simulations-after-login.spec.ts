@@ -48,7 +48,6 @@ describe('Given a NGC user with a previous anonymous session', () => {
       anonUserId = faker.string.uuid()
 
       simulation = await createSimulation({
-        agent,
         userId: anonUserId,
       })
 
@@ -116,7 +115,6 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
       // Then: create a simulation on a fresh anonymous session
       anonSimulation = await createSimulation({
-        agent,
         userId: anonUserId,
       })
     })
@@ -207,7 +205,6 @@ describe('Given a NGC user with a previous anonymous session', () => {
 
         // Create a simulation on the anonymous session
         anonSimulation = await createSimulation({
-          agent,
           userId: anonUserId,
         })
       })
