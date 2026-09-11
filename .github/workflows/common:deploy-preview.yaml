@@ -14,14 +14,20 @@ jobs:
   resolve-pr:
     name: Resolve PR info
     runs-on: ubuntu-latest
+    environment: Preview app
     outputs:
       pr_number: ${{ steps.resolve.outputs.pr_number }}
       head_sha: ${{ steps.resolve.outputs.head_sha }}
+      server_app_name: ${{ steps.resolve.outputs.server_app_name }}
+      site_app_name: ${{ steps.resolve.outputs.site_app_name }}
+      site_url: ${{ steps.resolve.outputs.site_url }}
     steps:
       - name: Resolve PR number and head SHA
         id: resolve
         env:
           GH_TOKEN: ${{ github.token }}
+          SCALINGO_SERVER_APP_NAME: ${{ vars.SCALINGO_SERVER_APP_NAME }}
+          SCALINGO_SITE_APP_NAME: ${{ vars.SCALINGO_SITE_APP_NAME }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             PR_NUMBER="${{ github.event.inputs.pr_number }}"
@@ -30,21 +36,16 @@ jobs:
             PR_NUMBER="${{ github.event.pull_request.number }}"
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           fi
+
+          SERVER_APP_NAME="${SCALINGO_SERVER_APP_NAME}-pr${PR_NUMBER}"
+          SITE_APP_NAME="${SCALINGO_SITE_APP_NAME}-pr${PR_NUMBER}"
+          SITE_URL="https://${SITE_APP_NAME}.osc-fr1.scalingo.io"
+
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
-
-  urls:
-    name: Compute preview URLs
-    needs: resolve-pr
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
-    environment: Preview app
-    outputs:
-      server_url: https://${{ vars.SCALINGO_SERVER_APP_NAME }}-pr${{ needs.resolve-pr.outputs.pr_number }}.osc-fr1.scalingo.io
-      site_url: https://${{ vars.SCALINGO_SITE_APP_NAME }}-pr${{ needs.resolve-pr.outputs.pr_number }}.osc-fr1.scalingo.io
-
-    steps:
-      - run: echo "Server URL computed"
+          echo "server_app_name=$SERVER_APP_NAME" >> "$GITHUB_OUTPUT"
+          echo "site_app_name=$SITE_APP_NAME" >> "$GITHUB_OUTPUT"
+          echo "site_url=$SITE_URL" >> "$GITHUB_OUTPUT"
 
   ensure-review-apps:
     name: Ensure review apps exist
@@ -88,7 +89,7 @@ jobs:
         with:
           fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
           fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
-          scalingo-app-name: ${{ vars.SCALINGO_SERVER_APP_NAME }}-pr${{ needs.resolve-pr.outputs.pr_number }}
+          scalingo-app-name: ${{ needs.resolve-pr.outputs.server_app_name }}
           git-ref: ${{ needs.resolve-pr.outputs.head_sha }}
 
   deploy-site-preview:
@@ -98,7 +99,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     environment:
       name: Preview app
-      url: ${{ needs.urls.outputs.site_url }}
+      url: ${{ needs.resolve-pr.outputs.site_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -108,13 +109,5 @@ jobs:
         with:
           fgp-deploy-token: ${{ secrets.FGP_DEPLOY_TOKEN }}
           fgp-deploy-url: ${{ vars.FGP_DEPLOY_URL }}
-          scalingo-app-name: ${{ vars.SCALINGO_SITE_APP_NAME }}-pr${{ needs.resolve-pr.outputs.pr_number }}
+          scalingo-app-name: ${{ needs.resolve-pr.outputs.site_app_name }}
           git-ref: ${{ needs.resolve-pr.outputs.head_sha }}
-
-  e2e:
-    name: Tests on preview
-    needs: [deploy-site-preview, deploy-server-preview, urls]
-    uses: ./.github/workflows/site:e2e.yaml
-    secrets: inherit
-    with:
-      site_url: ${{ needs.urls.outputs.site_url }}

@@ -44,14 +44,6 @@ yarn-error.log
 node_modules/
 .env
 
-# Playwright
-/test-results/
-/playwright-report/
-# Useful when investigating reports from the CI
-/playwright-report-*/
-/playwright/.cache/
-# They are automatically generated when running tests
-/tests/e2e/test-completion/persona-*.spec.ts
 dist
 
 # Sentry Config File

@@ -1,0 +1,27 @@
+{
+  "name": "@nosgestesclimat/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "mock": "node --experimental-strip-types mock/server.ts",
+    "test:e2e": "playwright test",
+    "test:ui": "playwright test --ui",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "format": "prettier --write \"**/*.{js,ts,mjs,md,json}\""
+  },
+  "dependencies": {
+    "@incubateur-ademe/nosgestesclimat": "4.15.1",
+    "@mswjs/http-middleware": "^0.10.3",
+    "@nosgestesclimat/core": "workspace:*",
+    "msw": "^2.12.14"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
+    "@playwright/test": "^1.62.1",
+    "dotenv": "^17.3.1",
+    "playwright": "^1.62.1",
+    "typescript": "5.9.3"
+  }
+}
