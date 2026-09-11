@@ -257,6 +257,26 @@ server {
         proxy_cache_lock on;
     }
 
+    # Fichiers statiques racine servis par l'app : favicon, icônes Apple,
+    # manifeste, robots/sitemap et les scripts d'iframe.
+    #
+    # Next.js les renvoie en `Cache-Control: max-age=0`, donc le catch-all ne
+    # les cache jamais : ils sont reproxyés à chaque chargement de page (~3000
+    # requêtes/jour rien que pour le manifeste) et tombent en 502 pendant une
+    # panne upstream, sans entrée périmée à servir.
+    #
+    # Noms non hashés → TTL court (un déploiement se voit en 15 min). Identiques
+    # pour tous → pas d'`$ngc_is_auth` dans la clé, contrairement aux pages HTML.
+    location ~* ^/(favicon(\.ico|\.png)?|apple-touch-icon(-precomposed)?\.png|manifest\.webmanifest|robots\.txt|sitemap\.xml|scripts/iframeSimulation\.js|iframeSimulation\.js)$ {
+        proxy_pass https://scalingo;
+        proxy_ignore_headers Cache-Control Expires;
+        proxy_cache_valid 200 15m;
+        proxy_cache_lock on;
+        proxy_cache_background_update on;
+        proxy_hide_header Cache-Control;
+        add_header Cache-Control "public, max-age=900";
+    }
+
     # ── Pages publiques catégorie 2 ──────────────────────────────
     # Contenu identique pour tous les utilisateurs anonymes.
     # Cache-bypass automatique pour les utilisateurs authentifiés
