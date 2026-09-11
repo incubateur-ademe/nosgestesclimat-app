@@ -9,6 +9,7 @@ import type { Prisma } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import { SimulationNotFoundError } from '../errors/simulations.error.ts'
 import { type NewSimulation } from '../helpers/new-simulation.ts'
+import type { Model } from '../types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import { serializeModel } from './model.mapper.ts'
@@ -69,6 +70,30 @@ export const createSimulation = async (
     // `select` is narrowed to the id to reduce data transfer because Prisma
     // always returns a row: nothing here reads it.
     select: { id: true },
+  })
+}
+
+/**
+ * Inserts multiple simulations in a single query. Each caller-supplied field
+ * is persisted as-is; the repository only serializes the model. When `model`
+ * is omitted the database default applies. Rows whose `id` already exists are
+ * silently skipped so partial re-imports do not fail the whole batch.
+ */
+export const createManySimulations = async (
+  simulations: (Omit<NewSimulation, 'model'> & { model?: Model })[],
+  tx: Transaction = prisma
+): Promise<void> => {
+  if (simulations.length === 0) return
+
+  await tx.simulation.createMany({
+    data: simulations.map(({ model, ...rest }) => ({
+      ...rest,
+      ...(model ? { model: serializeModel(model) } : {}),
+      situation: rest.situation as unknown as Prisma.InputJsonValue,
+      foldedSteps: rest.foldedSteps as unknown as Prisma.InputJsonValue[],
+      computedResults: rest.computedResults as unknown as Prisma.InputJsonValue,
+    })),
+    skipDuplicates: true,
   })
 }
 
