@@ -1,29 +1,11 @@
-import type {
-  DottedName,
-  FunFacts,
-  NGCRules,
-} from '@incubateur-ademe/nosgestesclimat'
-import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
-import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
-import {
-  ComputedResultsSchema,
-  type ComputedResults,
-} from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import {
-  SituationSchema,
-  type Situation,
-} from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
+import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
-import type Engine from 'publicodes'
 import * as v from 'valibot'
-import type { JsonValue, Prisma } from '../../adapters/prisma/generated.ts'
+import type { Prisma } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
-import { redis } from '../../adapters/redis/client.ts'
-import { KEYS } from '../../adapters/redis/constant.ts'
-import { deepMergeSum } from '../../core/deep-merge.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
@@ -45,7 +27,6 @@ import {
   createOrUpdateUser,
   fetchVerifiedUser,
 } from '../users/users.repository.ts'
-import type { SimulationAsyncEvent } from './events/SimulationUpserted.event.ts'
 import { SimulationUpsertedEvent } from './events/SimulationUpserted.event.ts'
 import { carbonMetric, waterMetric } from './simulation.constant.ts'
 import {
@@ -59,13 +40,6 @@ import {
   type SimulationCreateQuery,
   type SimulationParams,
 } from './simulations.validator.ts'
-import {
-  getSituationDottedNameValue,
-  getSituationDottedNameValueWithEngine,
-} from './situation/situation.service.ts'
-
-const frRules = modelRules as Partial<NGCRules>
-const funFactsRules = modelFunFacts as { [k in keyof FunFacts]: DottedName }
 
 /**
  * Transforms a simulation entity to a DTO format.
@@ -300,212 +274,6 @@ export const createPollSimulation = async ({
       throw new EntityNotFoundException('Poll not found')
     }
     throw e
-  }
-}
-
-const MAX_VALUE = 100000
-
-const isValidSimulation = <T>(
-  simulation: T &
-    (
-      | {
-          progression: number
-          computedResults: JsonValue
-          situation: JsonValue
-        }
-      | SimulationAsyncEvent
-    )
-): simulation is T & {
-  progression: number
-  computedResults: ComputedResults
-  situation: Situation
-} => {
-  if (simulation.progression !== 1) {
-    return false
-  }
-
-  const computedResults = v.safeParse(
-    ComputedResultsSchema,
-    simulation.computedResults
-  )
-
-  const situation = v.safeParse(SituationSchema, simulation.situation)
-
-  if (computedResults.issues || situation.issues) {
-    return false
-  }
-
-  return [
-    computedResults.output.carbone.bilan,
-    ...Object.values(computedResults.output.carbone.categories),
-  ].every((v) => v <= MAX_VALUE)
-}
-
-const getEmptyComputedResults = (): ComputedResults => ({
-  carbone: {
-    bilan: 0,
-    categories: {
-      'services sociétaux': 0,
-      alimentation: 0,
-      divers: 0,
-      logement: 0,
-      transport: 0,
-    },
-    subcategories: {},
-  },
-  eau: {
-    bilan: 0,
-    categories: {
-      'services sociétaux': 0,
-      alimentation: 0,
-      divers: 0,
-      logement: 0,
-      transport: 0,
-    },
-    subcategories: {},
-  },
-})
-
-const mergeComputedResults = (
-  computedResults1: ComputedResults,
-  computedResults2: ComputedResults
-) => {
-  return deepMergeSum(computedResults1, computedResults2) as ComputedResults
-}
-
-const computeAllStatValues = async (
-  { id, engine }: { id: string; engine?: Engine },
-  { session }: { session: Session }
-) => {
-  let simulationCount = 0
-  let computedResults = getEmptyComputedResults()
-  const funFactValues: { [key in DottedName]?: number } = {}
-  for await (const { simulation } of batchPollSimulations(
-    { id },
-    { session }
-  )) {
-    if (!isValidSimulation(simulation)) {
-      continue
-    }
-    simulationCount++
-
-    const { situation } = simulation
-
-    computedResults = mergeComputedResults(
-      computedResults,
-      simulation.computedResults
-    )
-
-    Object.values(funFactsRules).reduce((acc, dottedName) => {
-      if (dottedName in frRules) {
-        acc[dottedName] =
-          (acc[dottedName] || 0) +
-          (engine
-            ? getSituationDottedNameValueWithEngine({
-                dottedName,
-                situation,
-                engine,
-              })
-            : getSituationDottedNameValue({
-                dottedName,
-                situation,
-                rules: frRules,
-              }))
-      }
-      return acc
-    }, funFactValues)
-  }
-
-  return { simulationCount, funFactValues, computedResults }
-}
-
-type RedisPollFunFactsCache = {
-  simulationCount: number
-  funFactValues: { [key in DottedName]?: number }
-  computedResults: ComputedResults
-}
-
-const getStatValues = async (
-  {
-    id,
-    simulation,
-    engine,
-  }: { id: string; simulation?: SimulationAsyncEvent; engine?: Engine },
-  { session }: { session: Session }
-) => {
-  const redisKey = `${KEYS.pollsStatsResults}:${id}`
-
-  let result: RedisPollFunFactsCache | undefined
-  if (simulation) {
-    const rawPreviousFunFactValues = await redis.get(redisKey)
-    if (rawPreviousFunFactValues) {
-      result = JSON.parse(rawPreviousFunFactValues) as RedisPollFunFactsCache
-
-      if (isValidSimulation(simulation)) {
-        const { situation } = simulation
-
-        result.computedResults = mergeComputedResults(
-          result.computedResults,
-          simulation.computedResults
-        )
-
-        result.simulationCount++
-        Object.values(funFactsRules).reduce((acc, dottedName) => {
-          if (dottedName in frRules) {
-            acc[dottedName] =
-              (acc[dottedName] || 0) +
-              (engine
-                ? getSituationDottedNameValueWithEngine({
-                    dottedName,
-                    situation,
-                    engine,
-                  })
-                : getSituationDottedNameValue({
-                    dottedName,
-                    situation,
-                    rules: frRules,
-                  }))
-          }
-          return acc
-        }, result.funFactValues)
-      }
-    }
-  }
-
-  if (!result) {
-    result = await computeAllStatValues({ id, engine }, { session })
-  }
-
-  await redis.set(redisKey, JSON.stringify(result))
-  await redis.expire(redisKey, 60 * 60)
-
-  return result
-}
-
-export const getPollStats = async (
-  params: { id: string; simulation?: SimulationAsyncEvent; engine?: Engine },
-  session: { session: Session }
-) => {
-  const { computedResults, funFactValues, simulationCount } =
-    await getStatValues(params, session)
-
-  return {
-    computedResults,
-    funFacts: Object.fromEntries(
-      Object.entries(funFactsRules).map(([key, dottedName]) => {
-        let value = funFactValues[dottedName] || 0
-
-        if (key.startsWith('average')) {
-          value = value / simulationCount
-        }
-
-        if (key.startsWith('percentage')) {
-          value = (value / simulationCount) * 100
-        }
-
-        return [key, value]
-      })
-    ) as FunFacts,
   }
 }
 

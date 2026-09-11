@@ -1,3 +1,8 @@
+/**
+ * Ported from the legacy server (apps/server/src/core/deep-merge.ts).
+ * Does not meet core quality standards and will be replaced by an
+ * engine-based evaluation in Phase 2.
+ */
 type RecordToDeepMerge = {
   [key: string]: number | RecordToDeepMerge | undefined
 }
@@ -26,7 +31,7 @@ const deepMerge = (
     { ...record1 }
   )
 
-export const deepMergeSubstract = (
+export const sumNested = (
   record1: RecordToDeepMerge,
   record2: RecordToDeepMerge
-) => deepMerge(record1, record2, (a, b) => +(a - b).toPrecision(12))
+) => deepMerge(record1, record2, (a, b) => a + b)

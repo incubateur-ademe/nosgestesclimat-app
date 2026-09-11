@@ -296,6 +296,7 @@ describe('Given a NGC user', () => {
               count: 0,
               finished: 0,
               hasParticipated: false,
+              cooldownSeconds: 0,
             },
           })
         })
@@ -599,6 +600,7 @@ describe('Given a NGC user', () => {
                 count: 0,
                 finished: 0,
                 hasParticipated: false,
+                cooldownSeconds: 0,
               },
             })
           })
@@ -734,6 +736,7 @@ describe('Given a NGC user', () => {
               count: 0,
               finished: 0,
               hasParticipated: false,
+              cooldownSeconds: 0,
             },
           })
         })

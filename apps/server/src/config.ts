@@ -1,3 +1,4 @@
+import { parseCooldownTiers } from '@nosgestesclimat/core/features/polls/stats/helpers/cooldown-policy'
 import dotenv from 'dotenv'
 import * as v from 'valibot'
 
@@ -34,6 +35,7 @@ const AppSchema = v.strictObject({
     ListCommaSeparatedSchema,
     ''
   ),
+  pollStatsCooldownTiers: v.optional(v.string(), ''),
   port: v.optional(v.pipe(v.unknown(), v.toNumber(), v.number())),
   serverUrl: v.optional(v.string()),
   redis: v.strictObject({
@@ -135,6 +137,7 @@ const ConfigSchema = v.pipe(
     ...config,
     app: {
       ...app,
+      pollStatsCooldownTiers: parseCooldownTiers(app.pollStatsCooldownTiers),
       port:
         typeof app.port === 'number'
           ? app.port
@@ -173,6 +176,7 @@ const {
     NODE_ENV,
     ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
     ORIGIN,
+    POLL_STATS_COOLDOWN_TIERS,
     PORT,
     REDIS_URL,
     SCALEWAY_SECRET_ACCESS_KEY,
@@ -195,6 +199,7 @@ export const config = v.parse(ConfigSchema, {
     origin: ORIGIN,
     organisationIdsWithCustomQuestionsEnabled:
       ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
+    pollStatsCooldownTiers: POLL_STATS_COOLDOWN_TIERS,
     port: PORT,
     redis: {
       url: REDIS_URL,
