@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    // Type-only imports of the app under test (e.g. the feature flags
+    // contract). Never import values from there: the suite must stay a
+    // black box at runtime.
+    "paths": {
+      "@site/*": ["../site/src/*"]
+    }
+  },
+  "include": ["tests/**/*.ts", "mock/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules"]
+}

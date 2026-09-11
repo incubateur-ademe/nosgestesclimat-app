@@ -1,4 +1,4 @@
-name: 'Setup Playwright and App'
+name: 'Setup Playwright'
 description: 'Sets up dependencies and installs Playwright'
 inputs:
   browser:
@@ -13,5 +13,10 @@ runs:
 
     - name: Install Playwright
       shell: bash
-      working-directory: ./apps/site
-      run: pnpm playwright install ${{ inputs.browser }} ${{ inputs.browser == 'webkit' && '--with-deps' || '' }}
+      working-directory: ./apps/e2e
+      run: |
+        if [ "${{ inputs.browser }}" = "webkit" ]; then
+          pnpm playwright install webkit --with-deps
+        else
+          pnpm playwright install "${{ inputs.browser }}"
+        fi

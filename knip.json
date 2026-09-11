@@ -20,19 +20,16 @@
         "public/**",
         "src/locales/nouveautes/**",
         "scripts/**",
-        "src/constants/ab-test.ts",
-        "e2e/**"
+        "src/constants/ab-test.ts"
       ],
       "ignoreDependencies": [
-        "@axe-core/playwright",
         "i18next-parser",
         "yaml-loader",
-        "playwright-core",
         "react-tooltip",
         "eslint-plugin-react-hooks"
       ],
       "ignoreBinaries": ["only-allow"]
     }
   },
-  "ignoreWorkspaces": ["apps/server"]
+  "ignoreWorkspaces": ["apps/server", "apps/e2e"]
 }

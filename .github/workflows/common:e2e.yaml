@@ -1,0 +1,186 @@
+name: E2E
+
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    # CMS_URL/CMS_TOKEN (prerender CMS) viennent de l'env 'Test E2E'.
+    environment: Test E2E
+    # The build prerenders PPR pages that query the DB (e.g. /fr/actions).
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ngc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
+        run: pnpm -F @nosgestesclimat/server db:migrate
+
+      - name: Build site
+        working-directory: apps/site
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
+          CMS_URL: ${{ vars.CMS_URL }}
+          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
+          # Shared with the runtime (see e2e-stack) so sessions decrypt.
+          SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
+        run: |
+          # NEXT_PUBLIC_* and encryption keys come from .github/e2e-local.env
+          set -a
+          source ../../.github/e2e-local.env
+          set +a
+          pnpm build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v6
+        with:
+          name: next-build
+          path: apps/site/.next
+          # .next is a hidden dir: excluded by default
+          include-hidden-files: true
+          retention-days: 1
+
+  e2e-tests:
+    name: ${{ matrix.project }}
+    needs: build
+    runs-on: ubuntu-latest
+    # CMS_URL/CMS_TOKEN (pages dynamiques du site au runtime) — env 'Test E2E'.
+    environment: Test E2E
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: Chrome
+            browser: chromium
+          - project: Firefox
+            browser: firefox
+
+    # Local stack, no devcontainer: postgres and redis run as native GitHub
+    # Actions services; the mock server, API server, site and worker run as
+    # background processes on the runner. Playwright browsers stay on the host.
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ngc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Playwright
+        uses: ./.github/actions/setup-playwright
+        with:
+          browser: ${{ matrix.browser }}
+
+      # The `global setup` Playwright project runs in Desktop Chrome.
+      - name: Install Chromium for state generation
+        if: matrix.browser != 'chromium'
+        working-directory: apps/e2e
+        run: pnpm playwright install chromium
+
+      - name: Download build
+        uses: actions/download-artifact@v6
+        with:
+          name: next-build
+          path: apps/site/.next
+
+      - name: Start e2e stack
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
+          REDIS_URL: redis://localhost:6379
+          CMS_URL: ${{ vars.CMS_URL }}
+          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
+          SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
+        run: bash .github/scripts/e2e-stack.sh
+
+      - name: Run E2E tests (${{ matrix.project }})
+        working-directory: apps/e2e
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          E2E_MAILBOX: stub
+          E2E_MAILBOX_URL: http://localhost:3002
+          CI: 'true'
+        run: pnpm playwright test --project="${{ matrix.project }}"
+
+      - name: Upload blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: blob-report-${{ matrix.project }}
+          path: apps/e2e/blob-report
+          retention-days: 1
+
+      - name: Upload logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-logs-${{ matrix.project }}
+          path: |
+            mock.log
+            server.log
+            site.log
+            worker.log
+          retention-days: 7
+
+  merge-reports:
+    # Skip if e2e-tests was skipped (build failed) — nothing to merge.
+    if: ${{ !cancelled() && needs.e2e-tests.result != 'skipped' }}
+    needs: e2e-tests
+    runs-on: ubuntu-latest
+    name: Merge reports
+    defaults:
+      run:
+        working-directory: ./apps/e2e
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download blob reports
+        uses: actions/download-artifact@v6
+        with:
+          path: apps/e2e/all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report
+          path: apps/e2e/playwright-report/
+          retention-days: 30

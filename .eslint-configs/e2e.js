@@ -1,8 +1,8 @@
 import playwright from 'eslint-plugin-playwright'
 
 export default {
-  files: ['apps/site/e2e/**/*.ts'],
-  ignores: ['apps/site/e2e/fixtures/feature-flags.ts'],
+  files: ['apps/e2e/**/*.ts'],
+  ignores: ['apps/e2e/tests/fixtures/feature-flags.ts'],
   extends: [playwright.configs['flat/recommended']],
   plugins: {
     'ngc-e2e': {

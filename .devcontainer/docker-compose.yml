@@ -5,6 +5,8 @@ services:
     ports:
       - "3000:3000"
       - "3001:3001"
+      # mock server (e2e) — expose to the host for the Playwright tests
+      - "3002:3002"
     volumes:
       - ../:/workspaces/nosgestesclimat:cached,z
       - ngc-node-modules:/workspaces/nosgestesclimat/node_modules

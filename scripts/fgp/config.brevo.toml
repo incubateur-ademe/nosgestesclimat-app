@@ -1,0 +1,31 @@
+# config.brevo.toml
+#
+# Blob FGP pour l'acces LECTURE SEULE aux logs transactionnels Brevo, utilise
+# par le gate e2e preprod (pour retrouver les codes de verification). Le CI ne
+# detient donc jamais la cle Brevo complete.
+#
+# Difference cle avec config.toml (Scalingo) : le secret upstream est la cle API
+# Brevo (pas un token Scalingo), que FGP renvoie dans l'en-tete `api-key`.
+#
+# Usage :
+#   BREVO_API_KEY=xkeysib-xxx ./generate-configs.sh config.brevo.toml
+
+ttl = 0               # validite (s) du blob ; 0 = sans expiration
+
+[global]
+fgp_base_url = "https://fgp.incubateur.ademe.fr"
+api          = "https://api.brevo.com"
+auth         = "header:api-key"      # FGP ajoute `api-key: <token>` vers Brevo
+token_env    = "BREVO_API_KEY"       # variable d'env du secret upstream
+
+# ============================================================================ #
+# BREVO-READONLY       -> lecture seule des logs d'emails transactionnels
+# ============================================================================ #
+[env.brevo-readonly]
+
+routes = [
+  # historique des emails transactionnels (filtrable par email / templateId)
+  "GET:/v3/smtp/emails",
+  # detail d'un email (contenu rendu), si besoin
+  "GET:/v3/smtp/emails/*",
+]
