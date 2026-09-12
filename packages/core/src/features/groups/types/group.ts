@@ -11,4 +11,5 @@ export interface Group {
 export interface GroupSummary {
   id: string
   name: string
+  administratorId: string | null
 }
