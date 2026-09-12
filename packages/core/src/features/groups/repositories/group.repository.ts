@@ -14,6 +14,7 @@ const groupSelect = {
 const groupSummarySelect = {
   id: true,
   name: true,
+  administratorId: true,
 } as const
 
 export const findGroupById = async (id: string): Promise<Group | null> => {
@@ -34,4 +35,22 @@ export const findGroupSummaryById = async ({
     where: { id },
     select: groupSummarySelect,
   })
+}
+
+/**
+ * Return groups sorted by most recent participation
+ */
+export const findManyGroupSummariesBySimulationId = async ({
+  simulationId,
+}: {
+  simulationId: string
+}): Promise<GroupSummary[]> => {
+  const groupParticipants = await prisma.groupParticipant.findMany({
+    where: {
+      simulationId,
+    },
+    orderBy: { createdAt: 'desc' },
+    select: { group: { select: groupSummarySelect } },
+  })
+  return groupParticipants.map((gp) => gp.group)
 }

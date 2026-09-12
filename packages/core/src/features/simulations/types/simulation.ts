@@ -17,8 +17,4 @@ export interface Simulation {
   updatedAt: Date
   /** null if the user has deleted the simulation (soft delete) */
   userId: string | null
-  /** Only hydrated when the read includes them. */
-  polls?: { id: string; slug: string; name: string }[]
-  /** Only hydrated when the read includes them. */
-  groups?: { id: string }[]
 }

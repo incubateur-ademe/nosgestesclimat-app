@@ -16,8 +16,6 @@ type SimulationRow = {
   createdAt: Date
   updatedAt: Date
   userId: string | null
-  polls: { pollId: string; poll: { slug: string; name: string } }[]
-  groups: { groupId: string }[]
 }
 
 /**
@@ -44,11 +42,5 @@ export const mapSimulation = (row: SimulationRow): Simulation | null => {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     userId: row.userId,
-    polls: row.polls.map(({ pollId, poll }) => ({
-      id: pollId,
-      slug: poll.slug,
-      name: poll.name,
-    })),
-    groups: row.groups.map(({ groupId }) => ({ id: groupId })),
   }
 }
