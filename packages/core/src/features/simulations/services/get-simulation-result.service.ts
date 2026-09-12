@@ -1,6 +1,6 @@
-import { findGroupSummaryById } from '../../groups/repositories/group.repository.ts'
+import { findManyGroupSummariesBySimulationId } from '../../groups/repositories/group.repository.ts'
 import type { GroupSummary } from '../../groups/types/group.ts'
-import { findPollSummaryById } from '../../polls/repositories/poll.repository.ts'
+import { findManyPollSummariesBySimulationId } from '../../polls/repositories/poll.repository.ts'
 import type { PollSummary } from '../../polls/types/poll.ts'
 import { migrateSimulationIfNeeded } from '../helpers/migrate-simulation.ts'
 import { findSimulationById } from '../repository/simulation.repository.ts'
@@ -45,22 +45,22 @@ export const getSimulationResult = async ({
 export const findSimulationResultGroup = async (
   simulation: Simulation
 ): Promise<SimulationResultGroupInfo | null> => {
-  if (simulation.groups?.length) {
-    const groupSummary = await findGroupSummaryById({
-      id: simulation.groups[0].id,
-    })
-    if (groupSummary) {
-      return { type: 'group', value: groupSummary }
-    }
+  // Most recent poll this simulation participated in
+  const [poll] = await findManyPollSummariesBySimulationId({
+    simulationId: simulation.id,
+  })
+
+  if (poll) {
+    return { type: 'poll', value: poll }
   }
 
-  if (simulation.polls?.length) {
-    const pollSummary = await findPollSummaryById({
-      id: simulation.polls[0].id,
-    })
-    if (pollSummary) {
-      return { type: 'poll', value: pollSummary }
-    }
+  // Most recent group this simulation participated in
+  const [group] = await findManyGroupSummariesBySimulationId({
+    simulationId: simulation.id,
+  })
+
+  if (group) {
+    return { type: 'group', value: group }
   }
 
   return null
