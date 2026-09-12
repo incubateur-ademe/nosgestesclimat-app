@@ -548,10 +548,13 @@ describe('completeSimulation', () => {
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
       expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 0,
-        error,
-      })
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 0,
+          error,
+        }
+      )
     })
 
     it('reports a failed email without failing the completion', async () => {
@@ -577,10 +580,13 @@ describe('completeSimulation', () => {
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
       expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 1,
-        error,
-      })
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 1,
+          error,
+        }
+      )
     })
   })
 })

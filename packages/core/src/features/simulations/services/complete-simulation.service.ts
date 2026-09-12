@@ -201,7 +201,7 @@ const createSettle =
     logger: Logger
     captureException: CaptureException
   }) =>
-  async (message: string, sideEffects: Promise<Result<void> | void>[]) => {
+  async (label: string, sideEffects: Promise<Result<void> | void>[]) => {
     const results = await Promise.allSettled(sideEffects)
 
     for (const [index, result] of results.entries()) {
@@ -210,7 +210,7 @@ const createSettle =
       else if (result.value && !result.value.success) error = result.value.error
       if (error) {
         captureException(error)
-        logger.error(`Failed to settle: ${message}`, { index, error })
+        logger.error(`Failed to settle: ${label}`, { index, error })
       }
     }
   }
