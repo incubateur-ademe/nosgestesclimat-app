@@ -18,9 +18,10 @@ interface BrevoResponse {
 }
 
 // Brevo limite `GET /v3/smtp/emails` à 2 req/s (en-têtes `x-sib-ratelimit-*` sur
-// les 429, pas de `Retry-After`) et le global setup tourne en 3 process : on
-// espace les appels de 2,5 s par process, soit ~1,2 req/s au total.
-const MIN_INTERVAL_MS = 2_500
+// les 429, pas de `Retry-After`). Chrome et Firefox tournent en parallèle, 3
+// workers chacun : 6 process lisent en même temps, d'où 8 s d'espacement par
+// process (~0,75 req/s au total).
+const MIN_INTERVAL_MS = 8_000
 const MAX_RATE_LIMIT_RETRIES = 3
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

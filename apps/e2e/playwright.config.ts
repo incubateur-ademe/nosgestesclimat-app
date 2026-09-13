@@ -20,7 +20,9 @@ export default defineConfig<FixturesOptions>({
     actionTimeout: 10_000,
     navigationTimeout: 20_000,
   },
-  timeout: 60_000,
+  // La lecture du code de vérification passe par Brevo, dont la limite de débit
+  // impose de patienter (cf. tests/mailbox/brevo-mailbox.ts).
+  timeout: 90_000,
   expect: {
     timeout: 10_000,
   },
