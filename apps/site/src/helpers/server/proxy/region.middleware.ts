@@ -40,13 +40,11 @@ export async function middlewareRegion(
 
   request.headers.set('x-region', cookieValue)
 
-  // La région déduite n'est persistée que sur les requêtes non cacheables par le
-  // proxy (POST/… : server actions, appels API) : nginx n'enregistre jamais une
-  // réponse qui pose un `Set-Cookie`, donc un cookie sur un GET rendrait la page
-  // incachable — et le HTML servi vieillirait jusqu'à référencer des chunks JS
-  // qui n'existent plus. Les GET/HEAD restent géolocalisés (même valeur), sans
-  // appel réseau supplémentaire dès que le cookie a été posé par une action de
-  // l'utilisateur. Un forçage explicite (`?region=`) est persisté, même sur GET.
+  // Un `Set-Cookie` empêche nginx de cacher la réponse : on ne persiste la région
+  // déduite que sur les requêtes non cacheables par le proxy (POST/… : server
+  // actions, appels API). Les GET/HEAD restent géolocalisés — même valeur, sans
+  // appel réseau supplémentaire dès que le cookie a été posé par une action. Un
+  // forçage explicite (`?region=`) est persisté, même sur GET.
   const isCacheableRequest =
     request.method === 'GET' || request.method === 'HEAD'
 

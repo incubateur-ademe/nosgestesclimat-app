@@ -1,18 +1,11 @@
 import { test as base, expect } from '@playwright/test'
 
 /**
- * Fails the test as soon as an asset served from `/_next/static/…` comes back
- * in error.
- *
- * That is the signature of a *deployment skew*: the HTML the browser received
- * was built by a previous deployment (e.g. served from a proxy cache), so the
- * chunk it references no longer exists in the container → 404 → React never
- * hydrates. The page « looks » fine but is inert (no cookie banner, dead
- * buttons), which otherwise only shows up as a cryptic locator timeout
- * (`cookie-banner-refuse-button` never visible).
- *
- * Auto-applied to every test (including the global setup) so the real cause is
- * always reported next to the first failure.
+ * Fails the test as soon as an asset served from `/_next/static/…` comes back in
+ * error: the chunk no longer exists, so the served HTML comes from another
+ * deployment and React will never hydrate (page that looks fine but is inert,
+ * e.g. no cookie banner). Auto-applied so the cause is reported with the first
+ * failure instead of a cryptic locator timeout.
  */
 export const test = base.extend<{ staticAssetsAreServed: void }>({
   staticAssetsAreServed: [

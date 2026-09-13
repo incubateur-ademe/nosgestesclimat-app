@@ -21,9 +21,8 @@ export class UserMailbox {
   }
 
   async lookup(templateId: number): Promise<EmailRecord | undefined> {
-    // Transactional emails can take a few seconds to reach the mailbox, and the
-    // adapter throttles its calls (Brevo: 2 req/s, partagés par les workers):
-    // retry the lookup until they show up instead of failing on first query.
+    // Emails take a few seconds to appear, and the adapter throttles its calls
+    // (Brevo: 2 req/s total): poll until the deadline.
     const deadline = Date.now() + 30_000
     let email: EmailRecord | undefined
     while (!email && Date.now() < deadline) {

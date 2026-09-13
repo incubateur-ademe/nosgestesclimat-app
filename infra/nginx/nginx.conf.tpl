@@ -21,15 +21,9 @@ proxy_cache_path /var/cache/nginx levels=1:2
                  keys_zone=ngc_cache:500m
                  max_size=30g inactive=3d use_temp_path=off;
 
-# ----------------------------------------------------------------------------
-# Auth derivation (cache bypass pour utilisateurs connectés)
-# ----------------------------------------------------------------------------
-
-# Pré-calcul binaire "session présente ?"
+# "session présente ?" → 0 = anonyme (cachable), 1 = connecté (bypass).
 map $cookie_ngc_session $ngc_is_auth {
-    # Cookie absent → 0 (anonyme, on cache).
     ""       0;
-    # Cookie présent → 1 (authentifié, on bypass le cache).
     default  1;
 }
 
@@ -228,20 +222,11 @@ server {
                           http_500 http_502 http_503 http_504;
 
 
-    # Assets statiques Next.js : noms hashés par le contenu, donc immuables.
-    #   * `proxy_ignore_headers Cache-Control` + `proxy_cache_valid 200 365d` :
-    #     seuls les 200 sont cachés, et un an. Sans ces deux directives, nginx suit
-    #     le `Cache-Control` de l'app — or sa page 404 s'annonce en
-    #     `s-maxage=86400` : un asset manquant resterait donc en 404 *en cache*
-    #     pendant 24 h, pour tous les visiteurs, même après un rollback.
-    #   * `proxy_cache_use_stale … http_404` : si l'app répond 404 alors qu'une
-    #     copie est en cache, on sert la copie — c'est elle qui correspond au HTML
-    #     encore en cache qui la référence. Les anciens assets survivent ainsi aux
-    #     déploiements, ce qui laisse au HTML (caché 1 h, cf. « Pages publiques »)
-    #     le temps de se rafraîchir sans jamais pointer dans le vide.
-    #   * `proxy_ignore_headers` ne change rien pour le navigateur : il garde le
-    #     `max-age=31536000, immutable` envoyé par l'app.
-    #
+    # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
+    # Seuls les 200 sont cachés (`proxy_ignore_headers` + `proxy_cache_valid`) :
+    # sans ça, la page 404 de l'app (`s-maxage=86400`) ferait durer 24 h un asset
+    # manquant. `use_stale http_404` sert la copie en cache quand l'app ne connaît
+    # plus l'asset : le HTML encore caché qui la référence reste fonctionnel.
     # `proxy_cache_lock` évite le cache stampede.
     location /_next/static/ {
         proxy_pass https://scalingo;
@@ -263,8 +248,8 @@ server {
         proxy_pass https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
-        # Une image retirée du CMS reste servie depuis le cache plutôt que de
-        # casser une page qui la référence encore.
+        # Une image retirée du CMS reste servie depuis le cache au lieu de casser
+        # une page qui la référence encore.
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
@@ -278,7 +263,7 @@ server {
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
         # Idem assets : une image supprimée côté source reste servie depuis le
-        # cache au lieu de casser une page qui la référence encore.
+        # cache.
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
     }
@@ -306,29 +291,12 @@ server {
     }
 
     # ── Pages publiques catégorie 2 ──────────────────────────────
-    # Contenu identique pour tous les utilisateurs anonymes, caché 1 h.
-    # Les utilisateurs connectés (cookie `ngc_session`) sont en bypass : leurs
-    # réponses portent des cookies de session et ne doivent pas entrer au cache.
-    #
-    # ⚠️ INVARIANT : l'app ne pose aucun `Set-Cookie` sur une réponse cacheable
-    # (GET/HEAD anonyme, hors forçage `?region=`) — c'est le rôle de
-    # `apps/site/src/helpers/server/proxy/region.middleware.ts`. Nginx n'enregistre
-    # jamais une réponse qui pose un cookie : une seule exception suffit à vider ce
-    # cache de son sens (entrée jamais créée ni rafraîchie, donc HTML de plus en
-    # plus ancien face à des chunks JS hashés recréés à chaque déploiement).
-    #
-    # ⚠️ Les contournements ne sont pas des solutions :
-    #   * `proxy_ignore_headers Set-Cookie` rend la réponse cachable mais rejoue
-    #     les cookies stockés (région, feature flags, session) à tous les
-    #     visiteurs ;
-    #   * `proxy_hide_header Set-Cookie` masque *tous* les cookies de la location,
-    #     y compris ceux des utilisateurs connectés, et court-circuite l'héritage
-    #     des `add_header` du niveau `server` (dont HSTS) ; la directive n'a pas de
-    #     forme conditionnelle (elle est interdite dans un `if`).
-    #
-    # Diagnostic : `X-Cache-Status` alterne `MISS` puis `HIT` sur une page publique
-    # anonyme. Un `MISS` permanent vient d'un `Set-Cookie` ou d'un `Cache-Control`
-    # qui n'est plus ignoré.
+    # Contenu identique pour tous les anonymes → caché 1 h. Les utilisateurs
+    # connectés (cookie `ngc_session`) sont en bypass : leurs réponses portent des
+    # cookies de session.
+    # L'app ne pose pas de `Set-Cookie` sur ces réponses (`region.middleware.ts`) :
+    # nginx n'enregistre jamais une réponse qui en pose, sinon l'entrée n'est ni
+    # créée ni rafraîchie.
     #
     # Exact-match : accueil, simulateur/tutoriel, empreinte-carbone,
     # empreinte-eau, cgu, mentions-legales,
@@ -348,23 +316,15 @@ server {
     location ~ ^/($|simulateur/tutoriel|empreinte-carbone|empreinte-eau|cgu|mentions-legales|mentions-legales-base-empreinte|politique-de-confidentialite|accessibilite|contact|diffuser|nos-relais|plan-du-site|budget|international|gestion-infolettres|newsletter-confirmation|partenaire|questions-frequentes|stats|blog($|/.*)|documentation($|/.*)|nouveautes($|/.*)|guide($|/.*)|themes($|/.*)|campagne-partenaire($|/.*)|evenement($|/.*))$ {
         proxy_pass https://scalingo;
 
-        # La dimension d'auth dans la clé, en plus du bypass : par construction,
-        # aucune réponse authentifiée n'est jamais stockée ici.
-        # Le préfixe `ngc-html-v2` est une *génération* : le bumper rend toutes les
-        # entrées existantes inatteignables d'un coup (cette installation n'a pas de
-        # module de purge).
+        # Dimension d'auth dans la clé : aucune réponse authentifiée n'est stockée.
+        # Le préfixe est une génération : le bumper invalide tout le cache HTML.
         proxy_cache_key "ngc-html-v2$scheme$request_method$host$request_uri$ngc_is_auth";
         proxy_cache_lock on;
-        # Quand une entrée périmée est servie, la mise à jour se fait en tâche de
-        # fond sans bloquer la réponse — elle aboutit tant que l'app ne pose pas de
-        # cookie (cf. invariant ci-dessus).
+        # Sert l'entrée périmée et la rafraîchit en tâche de fond.
         proxy_cache_background_update on;
-        # Les pages PPR sont marquées `Cache-Control: no-store` par Next : on
-        # l'ignore et on applique la politique ci-dessus à la place.
+        # Les pages PPR sont en `Cache-Control: no-store` : on l'ignore ici.
         proxy_ignore_headers Cache-Control;
         proxy_cache_valid 200 1h;
-        # Ne pas lire/écrire le cache pour un utilisateur connecté (cookies de
-        # session) ni pendant une négociation websocket.
         proxy_cache_bypass $ngc_is_auth$http_upgrade;
         proxy_no_cache $ngc_is_auth$http_upgrade;
     }
