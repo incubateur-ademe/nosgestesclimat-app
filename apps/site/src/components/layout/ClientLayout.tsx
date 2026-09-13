@@ -5,8 +5,9 @@ import { GoogleTagIframe } from '@/components/googleTagManager/GoogleTagIframe'
 import { GoogleTagScript } from '@/components/googleTagManager/GoogleTagScript'
 import { PartnerProvider } from '@/contexts/partner/PartnerContext'
 import SkipToMainContentLink from '@/design-system/accessibility/SkipToMainContentLink'
-import BannerClient from '@/design-system/cms/BannerClient'
+import Banner from '@/design-system/cms/Banner'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import type { Locale } from '@/i18nConfig'
 import { UserProvider } from '@/publicodes-state'
 import type { SkipLinksDisplayed } from '@/types'
 import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
@@ -49,7 +50,7 @@ export const ClientLayout = ({
           </Suspense>
           <SkipToMainContentLink skipLinksDisplayed={skipLinksDisplayed} />
 
-          <BannerClient locale={locale} />
+          <Banner locale={locale as Locale} />
           {children}
           <GoogleTagScript />
           <GoogleTagIframe />
