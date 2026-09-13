@@ -11,7 +11,7 @@ export async function generateMetadata({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/alimentation'>) {
   const { locale } = await params
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return getMetadataObject({
     locale: locale as Locale,
@@ -34,7 +34,7 @@ export default async function Page({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/alimentation'>) {
   const { locale } = (await params) as { locale: Locale }
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>

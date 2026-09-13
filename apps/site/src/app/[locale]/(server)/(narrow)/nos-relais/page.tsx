@@ -49,7 +49,7 @@ export default async function OurPartners({
   const { locale } = await params
   const { [FILTER_SEARCH_PARAM_KEY]: categoryFilter } = await searchParams
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const { data: partners, isError } = await fetchPartners()
 

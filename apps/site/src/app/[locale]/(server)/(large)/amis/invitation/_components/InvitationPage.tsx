@@ -6,7 +6,7 @@ import type { Group } from '@/types/groups'
 import InvitationForm from './InvitationForm'
 import LaconicRanking from './LaconicRanking'
 
-export default async function InvitationPage({
+export default function InvitationPage({
   currentSimulation,
   group,
   locale,
@@ -15,7 +15,7 @@ export default async function InvitationPage({
   group: Group
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="p-4 md:p-8">

@@ -10,8 +10,8 @@ interface Props {
   locale: Locale
 }
 
-export default async function WaterActions({ locale }: Props) {
-  const { t } = await getServerTranslation({ locale })
+export default function WaterActions({ locale }: Props) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="mb-12">

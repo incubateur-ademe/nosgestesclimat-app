@@ -8,8 +8,7 @@ export default function DidYouKnowCarbon({ locale }: { locale: string }) {
       ctaButtons={<CTAButtons locale={locale} />}
       slides={[
         {
-          illustration:
-            '/_static/cms/icone_trophee_32ee5f6d9a.svg',
+          illustration: '/_static/cms/icone_trophee_32ee5f6d9a.svg',
           content: (
             <Trans locale={locale}>
               L'empreinte carbone moyenne d'un français est de{' '}
@@ -22,8 +21,7 @@ export default function DidYouKnowCarbon({ locale }: { locale: string }) {
           highlight: <Trans locale={locale}>Et la vôtre ?</Trans>,
         },
         {
-          illustration:
-            '/_static/cms/icone_avion_39cf1c300c.svg',
+          illustration: '/_static/cms/icone_avion_39cf1c300c.svg',
           content: (
             <Trans locale={locale}>
               Un aller-retour Paris-Athènes en avion représente{' '}

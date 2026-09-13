@@ -42,9 +42,3 @@ type SimulationAttributes = BaseSimulationUpsertedEventAttributes &
 export class SimulationUpsertedEvent extends EventBusEvent<SimulationAttributes> {
   name = 'SimulationUpsertedEvent'
 }
-
-export class SimulationUpsertedAsyncEvent extends EventBusEvent<
-  SimulationAttributes | ModelToDto<SimulationAttributes>
-> {
-  name = 'SimulationUpsertedAsyncEvent'
-}

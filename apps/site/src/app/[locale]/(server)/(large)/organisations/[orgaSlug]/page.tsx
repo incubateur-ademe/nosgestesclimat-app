@@ -20,7 +20,7 @@ export default async function OrganisationPage({
   const { orgaSlug, locale } = await params
   const { organisation } = await organisationAdminGuard(orgaSlug)
   const polls = await getOrganisationPolls(orgaSlug)
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>

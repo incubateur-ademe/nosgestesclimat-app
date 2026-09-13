@@ -13,11 +13,13 @@ import { userFactory } from '../../../users/factories/user.factory.ts'
 import { PollNotFoundError } from '../../errors/polls.error.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
 import { createPollParticipation } from '../../repositories/poll-participation.repository.ts'
+import { getPollStatsComputationStatus } from '../../stats/repositories/poll-stats-computations.repository.ts'
 import { createParticipateToPoll } from '../participate-to-poll.service.ts'
 
 describe('participateToPoll', () => {
   afterEach(async () => {
     await prisma.simulationPoll.deleteMany()
+    await prisma.pollStatsComputation.deleteMany()
     await prisma.poll.deleteMany()
     await prisma.organisation.deleteMany()
     await prisma.simulation.deleteMany()
@@ -78,9 +80,43 @@ describe('participateToPoll', () => {
 
       expect(sendEmail).not.toHaveBeenCalled()
     })
+    it('does not enqueue a poll stats recomputation for a simulation to answer', async () => {
+      const { participateToPoll, settleBackground } = setup()
+      const user = await userFactory.create()
+      const { poll } = await campaign()
+
+      await participateToPoll({
+        userSession: unverified(user),
+        pollId: poll.id,
+        locale: 'fr',
+        model,
+      })
+      await settleBackground()
+
+      expect(await prisma.pollStatsComputation.count()).toBe(0)
+    })
   })
 
   describe('reusing a completed simulation', () => {
+    it('enqueues a poll stats recomputation', async () => {
+      const { participateToPoll, settleBackground } = setup()
+      const user = await userFactory.create()
+      const { poll } = await campaign()
+      const simulation = await completedSimulation(user.id)
+
+      await participateToPoll({
+        userSession: unverified(user),
+        pollId: poll.id,
+        locale: 'fr',
+        reuseSimulationId: simulation.id,
+      })
+      await settleBackground()
+
+      expect(await getPollStatsComputationStatus(poll.id)).toEqual(
+        expect.objectContaining({ status: 'pending' })
+      )
+    })
+
     it('adds the membership without touching the simulation', async () => {
       const { participateToPoll } = setup()
       const user = await userFactory.create()

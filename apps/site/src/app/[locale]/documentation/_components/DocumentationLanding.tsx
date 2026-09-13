@@ -9,14 +9,14 @@ import Image from 'next/image'
 import SearchBar from './SearchBar'
 import DocumentationLandingCard from './documentationLanding/DocumentationLandingCard'
 
-export default async function DocumentationLanding({
+export default function DocumentationLanding({
   rules,
   locale,
 }: {
   rules: NGCRules
   locale: Locale
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   // We want to be able to define an order for the cards and their summary here
   const fixedCardSummaries = {

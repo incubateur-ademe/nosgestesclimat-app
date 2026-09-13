@@ -83,7 +83,6 @@ view AnonPoll {
   computedResults              Json?
   expectedNumberOfParticipants Int?
   customAdditionalQuestions    Json
-  computeRealTimeStats         Boolean
   organisationId               String
   organisation                 AnonOrganisation    @relation(fields: [organisationId], references: [id])
   simulations                  AnonSimulationPoll[]

@@ -23,6 +23,7 @@ import {
   findUserPollParticipations,
 } from '../repositories/poll-participation.repository.ts'
 import { findPollById } from '../repositories/poll.repository.ts'
+import { enqueuePollStatsComputation } from '../stats/services/enqueue-poll-stats-computation.ts'
 
 interface ParticipateToPollDependencies {
   logger: Logger
@@ -104,6 +105,12 @@ export function createParticipateToPoll({
       }
 
       await createPollParticipation({ pollId, simulationId }, tx)
+
+      // An already completed simulation is already counted in the poll totals,
+      // so entering it changes them.
+      if (reusedSimulation && isSimulationCompleted(reusedSimulation)) {
+        await enqueuePollStatsComputation(pollId, tx)
+      }
     })
     if (!result.success) return result
 

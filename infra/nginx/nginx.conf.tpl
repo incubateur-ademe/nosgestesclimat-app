@@ -21,15 +21,9 @@ proxy_cache_path /var/cache/nginx levels=1:2
                  keys_zone=ngc_cache:500m
                  max_size=30g inactive=3d use_temp_path=off;
 
-# ----------------------------------------------------------------------------
-# Auth derivation (cache bypass pour utilisateurs connectés)
-# ----------------------------------------------------------------------------
-
-# Pré-calcul binaire "session présente ?"
+# "session présente ?" → 0 = anonyme (cachable), 1 = connecté (bypass).
 map $cookie_ngc_session $ngc_is_auth {
-    # Cookie absent → 0 (anonyme, on cache).
     ""       0;
-    # Cookie présent → 1 (authentifié, on bypass le cache).
     default  1;
 }
 
@@ -133,6 +127,26 @@ map "$ngc_noisy$ngc_is_error" $ngc_loggable {
 }
 
 # ----------------------------------------------------------------------------
+# Blocage des scanners
+# ----------------------------------------------------------------------------
+
+# 1 si le User-Agent s'annonce comme un scanner de vulnérabilités connu.
+# `~*` = insensible à la casse. Motifs non ancrés : `nuclei/3.2.1` doit matcher.
+# Falsifiable en une ligne : coupe le bruit, ne protège de rien.
+map $http_user_agent $ngc_is_scanner {
+    default          0;
+    ~*nuclei         1;
+    ~*sqlmap         1;
+    ~*nikto          1;
+    ~*masscan        1;
+    ~*nmap           1;
+    ~*zmeu           1;
+    ~*dirbuster      1;
+    ~*gobuster       1;
+    ~*wpscan         1;
+}
+
+# ----------------------------------------------------------------------------
 # Redirections (HTTP → HTTPS, www → apex)
 # ----------------------------------------------------------------------------
 
@@ -157,6 +171,10 @@ server {
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
+    # Scanner bloqué avant la redirection : sinon il suit le 301 et la charge
+    # est payée deux fois.
+    if ($ngc_is_scanner) { return 444; }
+
     return 301 https://${DOMAIN}$request_uri;
 }
 
@@ -174,6 +192,10 @@ server {
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+
+    # `444` ferme la connexion sans répondre : pas de `$status`, donc pas de
+    # ligne dans access.log.
+    if ($ngc_is_scanner) { return 444; }
 
     # HSTS 2 ans sur tous les sous-domaines, y compris sur les réponses d'erreur (`always`).
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
@@ -228,11 +250,20 @@ server {
                           http_500 http_502 http_503 http_504;
 
 
-    # Assets statiques Next.js (hashés, immutables).
+    # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
+    # Seuls les 200 sont cachés (`proxy_ignore_headers` + `proxy_cache_valid`) :
+    # sans ça, la page 404 de l'app (`s-maxage=86400`) ferait durer 24 h un asset
+    # manquant. `use_stale http_404` sert la copie en cache quand l'app ne connaît
+    # plus l'asset : le HTML encore caché qui la référence reste fonctionnel.
     # `proxy_cache_lock` évite le cache stampede.
     location /_next/static/ {
         proxy_pass https://scalingo;
         proxy_cache_lock on;
+        proxy_ignore_headers Cache-Control Expires;
+        proxy_cache_valid 200 365d;
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
     }
 
     # Proxy vers le bucket S3 des assets CMS (images, PDF) avec cache 30 jours.
@@ -245,6 +276,10 @@ server {
         proxy_pass https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
+        # Une image retirée du CMS reste servie depuis le cache au lieu de casser
+        # une page qui la référence encore.
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
     }
@@ -255,6 +290,10 @@ server {
         proxy_pass https://scalingo;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
+        # Idem assets : une image supprimée côté source reste servie depuis le
+        # cache.
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
     }
 
     # Fichiers statiques racine servis par l'app : favicon, icônes Apple,
@@ -266,21 +305,26 @@ server {
     # panne upstream, sans entrée périmée à servir.
     #
     # Noms non hashés → TTL court (un déploiement se voit en 15 min). Identiques
-    # pour tous → pas d'`$ngc_is_auth` dans la clé, contrairement aux pages HTML.
+    # pour tous → pas de dimension d'auth dans la clé.
     location ~* ^/(favicon(\.ico|\.png)?|apple-touch-icon(-precomposed)?\.png|manifest\.webmanifest|robots\.txt|sitemap\.xml|scripts/iframeSimulation\.js|iframeSimulation\.js)$ {
         proxy_pass https://scalingo;
         proxy_ignore_headers Cache-Control Expires;
         proxy_cache_valid 200 15m;
         proxy_cache_lock on;
         proxy_cache_background_update on;
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=900";
     }
 
     # ── Pages publiques catégorie 2 ──────────────────────────────
-    # Contenu identique pour tous les utilisateurs anonymes.
-    # Cache-bypass automatique pour les utilisateurs authentifiés
-    # (détection via le cookie ngc_session). TTL 1h.
+    # Contenu identique pour tous les anonymes → caché 1 h. Les utilisateurs
+    # connectés (cookie `ngc_session`) sont en bypass : leurs réponses portent des
+    # cookies de session.
+    # L'app ne pose pas de `Set-Cookie` sur ces réponses (`region.middleware.ts`) :
+    # nginx n'enregistre jamais une réponse qui en pose, sinon l'entrée n'est ni
+    # créée ni rafraîchie.
     #
     # Exact-match : accueil, simulateur/tutoriel, empreinte-carbone,
     # empreinte-eau, cgu, mentions-legales,
@@ -294,28 +338,22 @@ server {
     # campagne-partenaire, evenement
     #
     # Note : /fr et /fr/* sont des 307 vers la locale par défaut,
-    # donc exclus volontairement de la regex. /en/* n'est volontairement
-    # PAS couvert : les pages anglaises (trafic minime) tombent dans le
-    # catch-all et ne sont pas forcées en cache — le middleware Next gère
-    # la langue côté app.
+    # donc exclus volontairement de la regex. /en/* n'est pas listé : les pages
+    # anglaises (trafic minime) tombent dans le catch-all, le middleware Next
+    # gère la langue côté app.
     location ~ ^/($|simulateur/tutoriel|empreinte-carbone|empreinte-eau|cgu|mentions-legales|mentions-legales-base-empreinte|politique-de-confidentialite|accessibilite|contact|diffuser|nos-relais|plan-du-site|budget|international|gestion-infolettres|newsletter-confirmation|partenaire|questions-frequentes|stats|blog($|/.*)|documentation($|/.*)|nouveautes($|/.*)|guide($|/.*)|themes($|/.*)|campagne-partenaire($|/.*)|evenement($|/.*))$ {
         proxy_pass https://scalingo;
 
-        # L'auth dans la clé : utilisateurs anonymes et authentifiés ont des caches distincts.
-        proxy_cache_key "$scheme$request_method$host$request_uri$ngc_is_auth";
+        # Dimension d'auth dans la clé : aucune réponse authentifiée n'est stockée.
+        # Le préfixe est une génération : le bumper invalide tout le cache HTML.
+        proxy_cache_key "ngc-html-v2$scheme$request_method$host$request_uri$ngc_is_auth";
         proxy_cache_lock on;
-        # Quand un cache stale est servi, lance la mise à jour en tâche de fond
-        # sans bloquer la réponse.
+        # Sert l'entrée périmée et la rafraîchit en tâche de fond.
         proxy_cache_background_update on;
-        # L'app Next.js peut marquer Cache-Control sur ses réponses :
-        # on l'ignore et on applique notre politique à la place.
+        # Les pages PPR sont en `Cache-Control: no-store` : on l'ignore ici.
         proxy_ignore_headers Cache-Control;
         proxy_cache_valid 200 1h;
-        # Ne pas lire le cache si l'utilisateur est authentifié ou en websocket :
-        # bypass direct vers Scalingo.
         proxy_cache_bypass $ngc_is_auth$http_upgrade;
-        # Et ne pas écrire dans le cache dans ces cas :
-        # sinon on pollue avec un mix anon/auth.
         proxy_no_cache $ngc_is_auth$http_upgrade;
     }
 

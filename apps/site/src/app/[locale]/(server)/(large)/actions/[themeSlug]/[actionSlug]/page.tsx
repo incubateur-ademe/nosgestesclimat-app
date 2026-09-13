@@ -50,7 +50,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { locale, actionSlug } = await params
 
   const user = await getUserSession()
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
   const [actionDetails, alternateLocales] = await Promise.all([
     getPersonalizedActionDetails(actionSlug, locale, user?.id),
     getActionAlternateLocales(actionSlug),

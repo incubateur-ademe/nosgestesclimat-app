@@ -256,6 +256,32 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 `ui_host` reste `https://eu.i.posthog.com` (voir
 `apps/site/src/services/tracking/Posthog.ts`).
 
+## Cache HTTP
+
+| Route                             | TTL      | Ce qui le rend sûr                           |
+| --------------------------------- | -------- | -------------------------------------------- |
+| Pages publiques (liste explicite) | 1 h      | anonymes : l'app n'y pose pas de cookie      |
+| `/_next/static/…`                 | 1 an     | noms hashés par le contenu, immuables        |
+| `/_static/cms/…`                  | 30 jours | assets CMS versionnés par hash dans leur nom |
+| `/_next/image`, `/images`, `…`    | 30 jours | images dérivées, adressées par URL complète  |
+| `favicon`, `manifest`, `sitemap`… | 15 min   | noms non hashés, TTL court volontaire        |
+
+Deux règles gouvernent tout le reste :
+
+- **Pas de `Set-Cookie` sur une réponse cacheable.** Nginx n'enregistre jamais une
+  réponse qui en pose : la page ne serait ni mise en cache ni rafraîchie. C'est
+  `apps/site/src/helpers/server/proxy/region.middleware.ts` qui s'en assure (la
+  région n'est persistée que sur les requêtes non cacheables et les forçages
+  `?region=`).
+- **Sur `/_next/static/`, seuls les 200 sont cachés, et un an**
+  (`proxy_ignore_headers` + `proxy_cache_valid 200 365d`). Les chunks sont hashés
+  par le contenu, donc immuables ; quand un déploiement en retire, `use_stale
+http_404` sert la copie en cache plutôt que de laisser un 404 que le HTML
+  encore en cache ne peut pas rattraper.
+
+L'invalidation se fait par **génération de clé** : bumper le préfixe
+`ngc-html-v2` dans `nginx.conf.tpl` vide le cache HTML.
+
 ## Tester avant bascule DNS
 
     curl -I --resolve preprod.nosgestesclimat.fr:443:<ip> \
@@ -270,6 +296,9 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 
     # Hit ratio sur l'instance
     tail -100 /var/log/nginx/access.log | grep -c HIT
+
+    # Ce qui est réellement mis en cache, et où (une entrée = un fichier)
+    grep -c "" /var/cache/nginx/*/*/* 2>/dev/null | head
 
     # Statut du timer de pull
     systemctl status nginx-config-pull.timer

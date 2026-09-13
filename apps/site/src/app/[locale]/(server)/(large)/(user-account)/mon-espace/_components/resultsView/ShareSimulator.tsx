@@ -9,8 +9,8 @@ interface Props {
   locale: Locale
 }
 
-export default async function ShareSimulator({ locale }: Props) {
-  const { t } = await getServerTranslation({ locale })
+export default function ShareSimulator({ locale }: Props) {
+  const { t } = getServerTranslation({ locale })
 
   const shareLink = `https://nosgestesclimat.fr${SIMULATOR_PATH}?${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
 

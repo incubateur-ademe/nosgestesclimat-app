@@ -20,17 +20,15 @@ export default defineConfig<FixturesOptions>({
     actionTimeout: 10_000,
     navigationTimeout: 20_000,
   },
-  timeout: 60_000,
+  // La lecture du code de vérification par Brevo impose de patienter (cf.
+  // tests/mailbox/brevo-mailbox.ts) : timeout élargi dans ce cas seulement.
+  timeout: process.env.E2E_MAILBOX === 'brevo' ? 90_000 : 60_000,
   expect: {
     timeout: 10_000,
   },
   reporter: process.env.CI
-    ? [['blob'], ['line'], ['./reporters/hydration-summary.ts']]
-    : [
-        ['line'],
-        ['html', { outputFolder: 'playwright-report' }],
-        ['./reporters/hydration-summary.ts'],
-      ],
+    ? [['blob'], ['line']]
+    : [['line'], ['html', { outputFolder: 'playwright-report' }]],
 
   /* Configure projects for major browsers */
   projects: [

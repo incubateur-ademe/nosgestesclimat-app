@@ -13,6 +13,38 @@ class PollFactory extends Factory<Poll, PollTransientParams, Poll> {
   scolaire() {
     return this.params({ mode: 'scolaire' })
   }
+
+  withStatsComputationStatus(
+    status: 'completed' | 'pending' | 'processing' | 'failed',
+    { scheduledAt, startedAt }: { scheduledAt?: Date; startedAt?: Date } = {}
+  ) {
+    return this.afterCreate(async (poll) => {
+      await prisma.pollStatsComputation.create({
+        data: { pollId: poll.id, status, scheduledAt, startedAt },
+      })
+      return poll
+    })
+  }
+
+  withPendingComputation(scheduledAt: Date) {
+    return this.withStatsComputationStatus('pending', { scheduledAt })
+  }
+
+  withCompletedComputation() {
+    return this.withStatsComputationStatus('completed')
+  }
+
+  withFailedComputation() {
+    return this.withStatsComputationStatus('failed')
+  }
+
+  withProcessingComputation(startedAt: Date = new Date()) {
+    return this.withStatsComputationStatus('processing', { startedAt })
+  }
+
+  withStaleProcessingComputation() {
+    return this.withProcessingComputation(new Date(Date.now() - 60 * 60 * 1000))
+  }
 }
 
 export const pollFactory = PollFactory.define(

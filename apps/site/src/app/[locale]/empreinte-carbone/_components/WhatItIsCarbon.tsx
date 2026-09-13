@@ -2,8 +2,8 @@ import WhatItIs from '@/components/landing-pages/WhatItIs'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
-export default async function WhatItIsCarbon({ locale }: { locale: string }) {
-  const { t } = await getServerTranslation({ locale })
+export default function WhatItIsCarbon({ locale }: { locale: string }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <WhatItIs

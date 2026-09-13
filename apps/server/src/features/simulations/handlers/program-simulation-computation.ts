@@ -4,15 +4,15 @@ import type { Handler } from '../../../core/event-bus/handler.ts'
 import logger from '../../../logger.ts'
 import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event.ts'
 
-const programSimulationComputation = createProgramSimulationComputation({
+const programSimulationComputationService = createProgramSimulationComputation({
   logger,
   captureException,
 })
 
-export const programComputation: Handler<SimulationUpsertedEvent> = async ({
-  attributes: { simulation },
-}) => {
+export const programSimulationComputation: Handler<
+  SimulationUpsertedEvent
+> = async ({ attributes: { simulation } }) => {
   if (simulation.progression !== 1) return
 
-  await programSimulationComputation(simulation.id)
+  await programSimulationComputationService(simulation.id)
 }

@@ -25,7 +25,7 @@ export const generateMetadata = getCommonMetadata({
 export default async function International({ params }: DefaultPageProps) {
   const { locale } = await params
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   // TODO: add back full width somehow
   return (

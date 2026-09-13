@@ -10,13 +10,13 @@ interface Props {
   endDate: Date
 }
 
-export default async function EventDetail({
+export default function EventDetail({
   locale,
   imageSrc,
   startDate,
   endDate,
 }: Props) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const dateLocale = locale === 'fr' ? 'fr-FR' : 'en-GB'
 

@@ -7,6 +7,7 @@ import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import { groupFactory } from '../../../groups/factories/group.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
+import { getPollStatsComputationStatus } from '../../../polls/stats/repositories/poll-stats-computations.repository.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
@@ -25,6 +26,7 @@ describe('completeSimulation', () => {
   afterEach(async () => {
     await prisma.simulationComputation.deleteMany()
     await prisma.simulationPoll.deleteMany()
+    await prisma.pollStatsComputation.deleteMany()
     await prisma.groupParticipant.deleteMany()
     await prisma.groupAdministrator.deleteMany()
     await prisma.group.deleteMany()
@@ -334,6 +336,43 @@ describe('completeSimulation', () => {
           [Attributes.LAST_SIMULATION_BILAN_FOOTPRINT]: '1',
         }),
       })
+    })
+
+    it('enqueues a poll stats recomputation for every poll the simulation is in', async () => {
+      const { completeSimulation, settleBackground } = setup()
+      const user = await userFactory.verified().create()
+      const simulation = await startedSimulation(user.id)
+      const { poll: first } = await joinPoll(simulation.id)
+      const { poll: second } = await joinPoll(simulation.id)
+
+      await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+      })
+      await settleBackground()
+
+      expect(await getPollStatsComputationStatus(first.id)).toEqual(
+        expect.objectContaining({ status: 'pending' })
+      )
+      expect(await getPollStatsComputationStatus(second.id)).toEqual(
+        expect.objectContaining({ status: 'pending' })
+      )
+    })
+
+    it('does not enqueue a poll stats recomputation without a poll', async () => {
+      const { completeSimulation, settleBackground } = setup()
+      const user = await userFactory.verified().create()
+      const simulation = await startedSimulation(user.id)
+
+      await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+      })
+      await settleBackground()
+
+      expect(await prisma.pollStatsComputation.count()).toBe(0)
     })
 
     it('sends the poll joined email for the poll the user most recently joined', async () => {
