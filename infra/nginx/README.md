@@ -260,45 +260,75 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 
 Ce qui est mis en cache disque (bloc `proxy_cache ngc_cache`) :
 
-| Route                             | TTL      | Pourquoi c'est sûr                           |
-| --------------------------------- | -------- | -------------------------------------------- |
-| `/_next/static/…`                 | 1 an     | noms hashés par le contenu, immuables        |
-| `/_static/cms/…`                  | 30 jours | assets CMS versionnés par hash dans leur nom |
-| `/_next/image`, `/images`, `…`    | 30 jours | images dérivées, adressées par URL complète  |
-| `favicon`, `manifest`, `sitemap`… | 15 min   | noms non hashés, TTL court volontaire        |
+| Route                             | TTL      | Pourquoi c'est sûr                            |
+| --------------------------------- | -------- | --------------------------------------------- |
+| Pages publiques (liste explicite) | 1 h      | anonymes uniquement, cf. invariant ci-dessous |
+| `/_next/static/…`                 | 1 an     | noms hashés par le contenu, immuables         |
+| `/_static/cms/…`                  | 30 jours | assets CMS versionnés par hash dans leur nom  |
+| `/_next/image`, `/images`, `…`    | 30 jours | images dérivées, adressées par URL complète   |
+| `favicon`, `manifest`, `sitemap`… | 15 min   | noms non hashés, TTL court volontaire         |
 
-**Le HTML des pages publiques n'est PAS caché** (location « Pages publiques
-catégorie 2 », `proxy_cache off`), et ne doit pas le redevenir tel quel.
+### Le HTML des pages publiques : l'invariant à respecter
 
-Raison : le HTML référence les chunks JS de Next sous forme hashée par le
-contenu (`/_next/static/chunks/<hash>.js`). À chaque déploiement, le conteneur
-Scalingo est reconstruit et ces fichiers sont remplacés : les anciens
-disparaissent. Un HTML servi depuis le cache Nginx pointe alors vers des chunks
-404 et **React ne s'hydrate plus** (bannière cookies et interactivité absentes,
-sans erreur visible côté serveur). Incidents preprod du 2026-09-11 : E2E
-« cookie-banner-refuse-button » introuvable, jusqu'à 1 h après chaque
-déploiement, pour tous les navigateurs.
+Ces pages sont cachées 1 h pour les visiteurs **anonymes** (les utilisateurs
+connectés, détectés par le cookie `ngc_session`, sont en `BYPASS` : leurs
+réponses portent des cookies de session).
 
-Deux pièges rendent le diagnostic difficile — à garder en tête avant de
-réintroduire du cache HTML :
+**Nginx n'enregistre jamais une réponse qui pose un `Set-Cookie`.** C'est ce qui
+a rendu ce cache nuisible en prod (2026-09-13) : l'app posait `ngc_region` sur
+chaque première visite, donc l'entrée n'était créée que par des visiteurs
+_revenants_, sa mise à jour en tâche de fond n'était jamais stockable (entrée
+`STALE` pour toujours) et le HTML servi finissait par être plus vieux que les
+chunks JS hashés qu'il référence → 404 sur un chunk, hydratation cassée
+(bannière cookies absente, boutons inertes). Mesures : **3 416 réponses 404
+d'assets servies depuis le cache en 24 h**, et 8 des 22 pages publiques
+échantillonnées concernées.
 
-- **`Vary: Accept-Encoding`** : Nginx partitionne ses entrées par
-  `Accept-Encoding`. Le HTML périmé n'était servi qu'aux requêtes compressées,
-  donc jamais à `curl` (non compressé) mais à tous les navigateurs.
-- **`Set-Cookie`** : les pages portent un `Set-Cookie` (`ngc_region`) ; Nginx
-  n'enregistre pas ces réponses, donc l'entrée n'est jamais rafraîchie et reste
-  en `X-Cache-Status: STALE` (mise à jour de fond qui ne remplace rien).
+C'est donc **l'app** qui garantit l'invariant :
+`apps/site/src/helpers/server/proxy/region.middleware.ts` ne persiste la région
+déduite que sur les requêtes non cacheables (POST/… : server actions, appels
+API) et sur les forçages explicites (`?region=`). Les GET anonymes n'ont donc
+plus aucun `Set-Cookie`, et le cache se remplit dès le premier visiteur.
 
-Invalider ce cache au déploiement est impossible avec l'installation actuelle
-(pas de module de purge, pas de génération de clé à bumper). Les options si le
-besoin de performance revient : versionner l'URL du HTML par déploiement, ou
-servir les chunks depuis un stockage qui survit au déploiement. Les pages PPR
-sont de toute façon marquées `Cache-Control: no-store` par Next : on laisse
-l'app décider.
+Deux fausses bonnes idées, si un `Set-Cookie` réapparaît un jour :
 
-Conséquence à surveiller : ces pages tapent désormais l'app à chaque requête
-(plus d'absorption Nginx). Voir `upstream_cache_status` / le taux de HIT sur
-`/_next/static/` pour suivre la charge.
+- **`proxy_ignore_headers Set-Cookie`** : la réponse devient cachable, mais
+  Nginx rejoue les cookies stockés à tout le monde (région, feature flags — et
+  session si elle était présente dans l'entrée).
+- **`proxy_hide_header Set-Cookie`** : masque _tous_ les cookies de la location,
+  y compris ceux des utilisateurs connectés, **et** court-circuite l'héritage
+  des `add_header` du niveau `server` (dont HSTS et `X-Cache-Status`). Il n'y a
+  pas de forme conditionnelle : `proxy_hide_header` n'est pas autorisé dans un
+  `if`, et ré-émettre la valeur via `$upstream_http_set_cookie` ne survit pas à
+  plusieurs cookies.
+
+Pour diagnostiquer : `X-Cache-Status` doit alterner `MISS` puis `HIT` sur une
+page publique anonyme. Un `MISS` permanent = un `Set-Cookie` (ou un
+`Cache-Control` qu'on n'ignore plus).
+
+### Côté assets : jamais de 404 en cache
+
+Le HTML référence des chunks hashés par le contenu : quand un déploiement en
+retire, le HTML encore en cache peut pointer vers un nom disparu. Deux réglages
+en conséquence :
+
+- `proxy_cache_valid 200 365d` + `proxy_ignore_headers Cache-Control` sur
+  `/_next/static/` : **seuls les 200 sont cachés**, et un an. Sans ça, la page
+  404 de Next (qui s'annonce en `s-maxage=86400`) faisait rester un chunk
+  manquant en 404 _en cache_ pendant 24 h, pour tous les visiteurs — mesuré :
+  3 416 réponses pour 64 URLs distinctes.
+- `proxy_cache_use_stale … http_404` : si l'app répond 404 alors qu'on a une
+  copie, on sert la copie — c'est elle qui correspond au HTML encore en cache
+  qui la référence. Un asset déjà vu survit ainsi aux déploiements.
+
+Note : les noms de chunks Turbopack sont bien des hashes **du contenu**
+(vérifié : même contenu → même nom, contenu modifié → nom changé, identique
+après retour en arrière et après suppression de `.next`), donc un nom donné ne
+peut pas contenir du JS périmé.
+
+Invalider ce cache au déploiement reste impossible avec l'installation actuelle
+(pas de module de purge, pas de génération de clé à bumper) : d'où le TTL 1 h
+côté HTML et le fait que les anciens chunks doivent survivre côté assets.
 
 ## Tester avant bascule DNS
 

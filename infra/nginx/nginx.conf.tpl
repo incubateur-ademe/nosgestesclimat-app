@@ -22,6 +22,18 @@ proxy_cache_path /var/cache/nginx levels=1:2
                  max_size=30g inactive=3d use_temp_path=off;
 
 # ----------------------------------------------------------------------------
+# Auth derivation (cache bypass pour utilisateurs connectés)
+# ----------------------------------------------------------------------------
+
+# Pré-calcul binaire "session présente ?"
+map $cookie_ngc_session $ngc_is_auth {
+    # Cookie absent → 0 (anonyme, on cache).
+    ""       0;
+    # Cookie présent → 1 (authentifié, on bypass le cache).
+    default  1;
+}
+
+# ----------------------------------------------------------------------------
 # Résolution DNS dynamique (résilience aux pannes DNS transitoires)
 # ----------------------------------------------------------------------------
 
@@ -303,29 +315,29 @@ server {
     }
 
     # ── Pages publiques catégorie 2 ──────────────────────────────
-    # PAS de cache : voir l'avertissement ci-dessous. Cette location ne sert
-    # plus qu'à exempter ces pages du rate limiting du catch-all (`limit_req
-    # zone=web`) : elles encaissent des pics légitimes venant d'IP partagées
-    # (NAT d'entreprise, CI) et l'app applique elle-même sa politique HTTP.
+    # Contenu identique pour tous les utilisateurs anonymes, caché 1 h.
+    # Cache-bypass automatique pour les utilisateurs authentifiés (cookie
+    # `ngc_session`) : leurs réponses portent des cookies de session et ne
+    # doivent jamais entrer dans le cache.
     #
-    # ⚠️ NE PAS CACHER LE HTML ICI (régression 2026-09-11, chunk 404 /
-    # hydratation cassée sur preprod). Le HTML référence les chunks JS
-    # « content-hashés » de Next (`/_next/static/chunks/<hash>.js`), recréés à
-    # chaque déploiement : les anciens disparaissent du conteneur. Un HTML
-    # servi depuis le cache nginx — périmé d'une seconde comme d'une heure —
-    # pointe donc vers des chunks qui répondent 404, et React ne s'hydrate
-    # plus (bannière cookies absente, boutons inertes). Deux pièges en plus :
-    #   * le cache est partitionné par `Accept-Encoding` (Vary), donc seules
-    #     les requêtes *compressées* servaient le HTML périmé : invisible en
-    #     curl, visible pour tous les navigateurs ;
-    #   * les réponses portent `Set-Cookie` (ngc_region) : la mise à jour en
-    #     tâche de fond ne peut pas remplacer l'entrée, qui reste donc STALE.
-    # Invalider ce cache au déploiement est impossible ici (pas de module de
-    # purge sur cette installation, aucune génération de cache à bump). Seule
-    # politique sûre : laisser l'app décider (`Cache-Control: no-store` sur
-    # ces pages PPR). Si le besoin de perf revient, la bonne piste est de
-    # versionner l'URL du HTML par déploiement (ou de servir les chunks
-    # depuis un stockage qui survit au déploiement), pas de rallumer ceci.
+    # ⚠️ INVARIANT : l'app ne doit poser AUCUN `Set-Cookie` sur une réponse
+    # cacheable (ici : GET/HEAD anonyme hors forçage `?region=`). Nginx refuse
+    # d'enregistrer une réponse qui pose un cookie, donc si ça arrive, cette
+    # location ne sert plus qu'à faire des MISS : l'entrée n'est jamais créée,
+    # celle qui existe n'est jamais rafraîchie (les mises à jour de fond ne sont
+    # pas stockables) et le HTML servi finit par être plus vieux que les chunks
+    # JS hashés qu'il référence → 404 sur un chunk, hydratation cassée (incident
+    # prod du 2026-09-13 : 3 416 réponses 404 d'assets servies *depuis le cache*
+    # en 24 h, 8 pages publiques sur 22 échantillonnées concernées).
+    # Côté app, c'est `apps/site/src/helpers/server/proxy/region.middleware.ts`
+    # qui ne persiste la région déduite que sur les requêtes non cacheables.
+    #
+    # ⚠️ NE PAS « corriger » un `Set-Cookie` résiduel avec
+    # `proxy_ignore_headers Set-Cookie` ni `proxy_hide_header Set-Cookie` : le
+    # premier ferait rejouer la région / les feature flags / la session d'un
+    # visiteur à tous les autres, le second supprimerait aussi les cookies de
+    # session des utilisateurs connectés (et court-circuiterait l'héritage des
+    # `add_header` du niveau `server`, dont HSTS).
     #
     # Exact-match : accueil, simulateur/tutoriel, empreinte-carbone,
     # empreinte-eau, cgu, mentions-legales,
@@ -344,10 +356,27 @@ server {
     # gère la langue côté app.
     location ~ ^/($|simulateur/tutoriel|empreinte-carbone|empreinte-eau|cgu|mentions-legales|mentions-legales-base-empreinte|politique-de-confidentialite|accessibilite|contact|diffuser|nos-relais|plan-du-site|budget|international|gestion-infolettres|newsletter-confirmation|partenaire|questions-frequentes|stats|blog($|/.*)|documentation($|/.*)|nouveautes($|/.*)|guide($|/.*)|themes($|/.*)|campagne-partenaire($|/.*)|evenement($|/.*))$ {
         proxy_pass https://scalingo;
-        # Aucun cache : les entrées des versions précédentes de cette conf
-        # (clé explicite avec `$ngc_is_auth`) deviennent inaccessibles du même
-        # coup, ce qui purge de fait le HTML périmé au premier reload.
-        proxy_cache off;
+
+        # La dimension d'auth dans la clé en plus du bypass : par construction,
+        # aucune réponse authentifiée n'est jamais stockée ici.
+        # Le préfixe `ngc-html-v2` est une *génération* de cache : la changer rend
+        # toutes les entrées existantes inatteignables d'un coup (pas de module de
+        # purge sur cette installation). C'est ce qui a évité de servir, au premier
+        # reload, les entrées périmées écrites avant le correctif du 2026-09-13.
+        proxy_cache_key "ngc-html-v2$scheme$request_method$host$request_uri$ngc_is_auth";
+        proxy_cache_lock on;
+        # Quand une entrée périmée est servie, la mise à jour se fait en tâche de
+        # fond sans bloquer la réponse (elle aboutit tant que l'app ne pose pas
+        # de cookie — cf. invariant ci-dessus).
+        proxy_cache_background_update on;
+        # Les pages PPR sont marquées `Cache-Control: no-store` par Next : on
+        # l'ignore et on applique la politique ci-dessus à la place.
+        proxy_ignore_headers Cache-Control;
+        proxy_cache_valid 200 1h;
+        # Ne pas lire/écrire le cache pour un utilisateur connecté (cookies de
+        # session) ni pendant une négociation websocket.
+        proxy_cache_bypass $ngc_is_auth$http_upgrade;
+        proxy_no_cache $ngc_is_auth$http_upgrade;
     }
 
     # ── PostHog reverse proxy (pathname /revp/) ──────────────────
