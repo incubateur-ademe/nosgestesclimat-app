@@ -12,10 +12,11 @@ import { settleBudget, watchHydrationMismatches } from '../helpers/hydration'
  * server HTML away and regenerates the tree on the client — the re-render blocks
  * the main thread for seconds, which is what made the suite lose clicks.
  *
- * Mismatches are logged, so they show up in the test output like any other
- * error, and do not fail the tests: a few are still open (see the
- * `hydration-mismatch-triage` skill). Set `HYDRATION_GUARD=strict` to make them
- * fail — that is how to check that the code base is clean again.
+ * The mismatch is logged, so it shows up next to the failing assertion, and
+ * fails the test: the code base is clean, and a mismatch is a real regression
+ * (React throws away the server HTML and re-renders the whole tree on the
+ * client). The known causes and the way to triage them are in the
+ * `hydration-mismatch-triage` skill.
  */
 const test = base.extend<{ hydrationGuard: void }>({
   hydrationGuard: [
@@ -50,9 +51,7 @@ const test = base.extend<{ hydrationGuard: void }>({
         `Hydration mismatch: React discarded the server HTML and regenerated the tree on the client.\n${summary}`
       )
 
-      if (process.env.HYDRATION_GUARD === 'strict') {
-        expect(mismatches, summary).toEqual([])
-      }
+      expect(mismatches, summary).toEqual([])
     },
     { auto: true },
   ],
