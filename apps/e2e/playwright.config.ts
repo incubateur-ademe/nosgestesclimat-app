@@ -20,9 +20,9 @@ export default defineConfig<FixturesOptions>({
     actionTimeout: 10_000,
     navigationTimeout: 20_000,
   },
-  // La lecture du code de vérification passe par Brevo, dont la limite de débit
-  // impose de patienter (cf. tests/mailbox/brevo-mailbox.ts).
-  timeout: 90_000,
+  // La lecture du code de vérification par Brevo impose de patienter (cf.
+  // tests/mailbox/brevo-mailbox.ts) : timeout élargi dans ce cas seulement.
+  timeout: process.env.E2E_MAILBOX === 'brevo' ? 90_000 : 60_000,
   expect: {
     timeout: 10_000,
   },
