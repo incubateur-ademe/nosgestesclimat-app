@@ -216,11 +216,38 @@ server {
                           http_500 http_502 http_503 http_504;
 
 
-    # Assets statiques Next.js (hashés, immutables).
+    # Assets statiques Next.js : hashés par le contenu, donc immuables, donc
+    # faits pour être servis depuis un cache très longtemps. Trois réglages qui
+    # vont ensemble (incident prod du 2026-09-13 : 3 259 réponses 404 de chunks
+    # servies *depuis le cache* en 24 h, et 78 assets morts référencés par 8 des
+    # 22 pages publiques échantillonnées) :
+    #
+    # 1. `proxy_ignore_headers Cache-Control` + `proxy_cache_valid 200 365d` :
+    #    seuls les 200 sont mis en cache, et pour un an. Sans ça, nginx suivait
+    #    le Cache-Control de l'app — or la page 404 de Next s'annonce en
+    #    `s-maxage=86400` : un chunk manquant restait donc en 404 *en cache*
+    #    pendant 24 h, pour tous les visiteurs, même après un rollback.
+    #    (`proxy_ignore_headers` ne change pas ce que voit le navigateur : il
+    #    garde bien le `max-age=31536000, immutable` de l'app.)
+    # 2. La copie gardée un an fait survivre un chunk à tous les déploiements :
+    #    c'est ce qui permet au HTML (lui, caché 1 h, cf. « Pages publiques »)
+    #    de continuer à fonctionner un instant après le remplacement du
+    #    conteneur — le nom étant un hash du contenu, le fichier est identique.
+    # 3. Si l'app répond 404 (chunk supprimé par un déploiement) alors qu'on en a
+    #    une copie, on sert la copie : c'est elle qui correspond au HTML encore
+    #    en cache qui la référence.
+    #
+    # Un 404 n'est donc jamais caché : dès que le chunk revient (rollback,
+    # redéploiement), la page repart, au lieu de rester cassée 24 h.
     # `proxy_cache_lock` évite le cache stampede.
     location /_next/static/ {
         proxy_pass https://scalingo;
         proxy_cache_lock on;
+        proxy_ignore_headers Cache-Control Expires;
+        proxy_cache_valid 200 365d;
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
     }
 
     # Proxy vers le bucket S3 des assets CMS (images, PDF) avec cache 30 jours.
@@ -233,6 +260,10 @@ server {
         proxy_pass https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
+        # Une image retirée du CMS reste servie depuis le cache plutôt que de
+        # casser une page qui la référence encore.
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
     }
@@ -243,6 +274,10 @@ server {
         proxy_pass https://scalingo;
         proxy_cache_valid 200 30d;
         proxy_cache_lock on;
+        # Idem assets : une image supprimée côté source reste servie depuis le
+        # cache au lieu de casser une page qui la référence encore.
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
     }
 
     # Fichiers statiques racine servis par l'app : favicon, icônes Apple,
@@ -261,6 +296,8 @@ server {
         proxy_cache_valid 200 15m;
         proxy_cache_lock on;
         proxy_cache_background_update on;
+        proxy_cache_use_stale error timeout updating
+                              http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=900";
     }
