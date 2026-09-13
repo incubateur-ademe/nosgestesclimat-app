@@ -17,10 +17,9 @@ interface BrevoResponse {
   messages?: BrevoMessage[]
 }
 
-// Brevo limite `GET /v3/smtp/emails` à 2 requêtes/seconde (en-têtes
-// `x-sib-ratelimit-limit/reset` renvoyés sur les 429, aucun `Retry-After`). Le
-// global setup lance plusieurs tests en parallèle (3 workers = 3 process), donc
-// on espace les appels *par process* : 3 x 1/2,5 s ≈ 1,2 req/s, sous la limite.
+// Brevo limite `GET /v3/smtp/emails` à 2 req/s (en-têtes `x-sib-ratelimit-*` sur
+// les 429, pas de `Retry-After`) et le global setup tourne en 3 process : on
+// espace les appels de 2,5 s par process, soit ~1,2 req/s au total.
 const MIN_INTERVAL_MS = 2_500
 const MAX_RATE_LIMIT_RETRIES = 3
 
@@ -39,21 +38,18 @@ const throttle = async () => {
 export class BrevoMailbox implements MailboxAdapter {
   private readonly url: string
   private readonly token: string
-  // The caller polls every second: log an upstream failure once per distinct
-  // message instead of once per attempt.
+  // The caller polls: log an upstream failure once per distinct message.
   private readonly loggedErrors = new Set<string>()
 
   constructor() {
-    // Resolved in the constructor (not at module load) so importing this file
-    // does not throw when E2E_MAILBOX=stub.
+    // Resolved here (not at module load) so importing this file does not throw
+    // when E2E_MAILBOX=stub.
     this.url = env('FGP_BREVO_READONLY_URL').replace(/\/$/, '')
     this.token = env('FGP_BREVO_READONLY_TOKEN')
   }
 
-  // Brevo's transactional log exposes the rendered subject, and the
-  // verification email template interpolates the 6-digit code into the subject
-  // line. We rely on that invariant (subject contains the code) rather than
-  // fetching the full email body.
+  // The verification template interpolates the code into the subject line, so we
+  // read the subject rather than fetching the full email body.
   async lookup(
     email: string,
     templateId: number
@@ -80,19 +76,16 @@ export class BrevoMailbox implements MailboxAdapter {
       if (!response.ok) {
         const body = await response.text()
 
-        // A rejected read never fixes itself by polling (rotated FGP blob, Brevo
-        // key revoked, Brevo egress IP not on the account's allow-list…): fail
-        // with the upstream reason rather than ending on a misleading "No
-        // verification code received". Brevo answers 401 "unrecognised IP
-        // address" when FGP's egress IP is missing from
-        // https://app.brevo.com/security/authorised_ips.
+        // Un 401/403 ne se résout pas en réessayant : blob FGP tourné, clé Brevo
+        // révoquée, ou IP de sortie absente de la liste autorisée du compte.
+        // On remonte la raison plutôt qu'un « No verification code received ».
         if (response.status === 401 || response.status === 403) {
           throw new Error(
             `Mailbox read rejected (HTTP ${response.status}): ${body}`
           )
         }
 
-        // Transient (5xx, 429 épuisé…): the caller retries until its deadline.
+        // Transient (5xx, 429 épuisé…) : au tour suivant du caller.
         this.warnOnce(`Mailbox read failed (HTTP ${response.status}): ${body}`)
 
         return undefined
