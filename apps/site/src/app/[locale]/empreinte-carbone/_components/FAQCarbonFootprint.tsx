@@ -4,12 +4,8 @@ import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 
-export default async function FAQCarbonFootprint({
-  locale,
-}: {
-  locale: Locale
-}) {
-  const { t } = await getServerTranslation({ locale })
+export default function FAQCarbonFootprint({ locale }: { locale: Locale }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <FAQ

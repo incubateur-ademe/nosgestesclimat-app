@@ -2,12 +2,12 @@ import MotivationSection from '@/components/landing-pages/MotivationSection'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
-export default async function MotivationSectionWaterFootprint({
+export default function MotivationSectionWaterFootprint({
   locale,
 }: {
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <MotivationSection

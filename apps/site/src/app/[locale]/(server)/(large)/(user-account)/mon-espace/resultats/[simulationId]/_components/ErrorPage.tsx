@@ -1,7 +1,7 @@
 import CarbonFootprintResults from '@/components/results/carbonFootprint/CarbonFootprintResults'
 import { modalClassName } from '@/design-system/modals/Modal'
-import type { ComputedResults } from '@/publicodes-state/types'
 import type { Locale } from '@/i18nConfig'
+import type { ComputedResults } from '@/publicodes-state/types'
 import type { PropsWithChildren } from 'react'
 
 const DUMMY_COMPUTED_RESULTS = {

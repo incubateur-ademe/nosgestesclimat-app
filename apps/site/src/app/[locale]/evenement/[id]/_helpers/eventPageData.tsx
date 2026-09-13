@@ -88,7 +88,7 @@ export async function getEventPageData({
   'use cache'
   cacheLife('minutes')
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const eventInfo = await getEventInfo(eventId)
 
@@ -99,8 +99,7 @@ export async function getEventPageData({
   const podiumItems = buildPodiumItems(eventInfo.organisations)
 
   return {
-    detailImageSrc:
-      '/_static/cms/VIGNETTE_SEDD_f711b1d37b.svg',
+    detailImageSrc: '/_static/cms/VIGNETTE_SEDD_f711b1d37b.svg',
     startDate: eventInfo.startDate,
     endDate: eventInfo.endDate,
     dynamicCounter: {
@@ -129,8 +128,7 @@ export async function getEventPageData({
             'event.testimonies.1.author.job',
             'Impact Officer chez HomeExchange'
           ),
-          avatarSrc:
-            '/_static/cms/elisa_papin_big_a21e5928cf.png',
+          avatarSrc: '/_static/cms/elisa_papin_big_a21e5928cf.png',
         },
       },
       {
@@ -144,8 +142,7 @@ export async function getEventPageData({
             'event.testimonies.2.author.job',
             'Responsable des relations avec les publics du Pass Culture'
           ),
-          avatarSrc:
-            '/_static/cms/theo_gasquet_big_780f9fce63.png',
+          avatarSrc: '/_static/cms/theo_gasquet_big_780f9fce63.png',
         },
       },
       {
@@ -244,8 +241,7 @@ export async function getEventPageData({
         },
       ],
     },
-    ctaImageSrc:
-      '/_static/cms/ILLUSTRATION_SEDD_e1a82fa2e2.svg',
+    ctaImageSrc: '/_static/cms/ILLUSTRATION_SEDD_e1a82fa2e2.svg',
     ctaHeading: t('event.ctas.heading', "Prêt·e à rejoindre l'aventure ?"),
     ctaDescription: t(
       'event.ctas.description',

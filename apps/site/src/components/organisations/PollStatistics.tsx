@@ -71,11 +71,13 @@ export default function PollStatistics({
           <FunFactsBlock funFacts={funFacts} className="md:mb-8" />
 
           {refreshNote && (
-            <p className="mb-8 text-right text-sm italic text-primary-700">
+            <p className="text-primary-700 mb-8 text-right text-sm italic">
               <Trans
                 i18nKey="pollResults.funFacts.refreshNote"
                 values={{ duration: refreshNote }}>
-                {'Les chiffres se mettent à jour toutes les {{duration}} environ'}
+                {
+                  'Les chiffres se mettent à jour toutes les {{duration}} environ'
+                }
               </Trans>
             </p>
           )}

@@ -2,14 +2,14 @@ import UnderstandToAct from '@/components/landing-pages/UnderstandToAct'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
-export default async function UnderstandToActWaterFootprint({
+export default function UnderstandToActWaterFootprint({
   pathname,
   locale,
 }: {
   pathname: string
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <UnderstandToAct
@@ -46,8 +46,7 @@ export default async function UnderstandToActWaterFootprint({
             'Les 3 réflexes à adopter pour une garde-robe économe en eau'
           ),
           href: '/blog/consommation/reflexes-textile-econome-empreinte-eau',
-          imageSrc:
-            '/_static/cms/medium_priscilla_du_preez_9d7a6e02a2.jpg',
+          imageSrc: '/_static/cms/medium_priscilla_du_preez_9d7a6e02a2.jpg',
         },
         {
           category: t('Empreinte eau'),

@@ -22,8 +22,7 @@ export const generateMetadata = getCommonMetadata({
     canonical: '/accueil-iframe',
   },
   robots: noIndexObject,
-  image:
-    '/_static/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',
+  image: '/_static/cms/calculer_empreinte_carbone_et_eau_ecccc9a625.png',
 })
 
 export default async function Homepage({ params }: DefaultPageProps) {

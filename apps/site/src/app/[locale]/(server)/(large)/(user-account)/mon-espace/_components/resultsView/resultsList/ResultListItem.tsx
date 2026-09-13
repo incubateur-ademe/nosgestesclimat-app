@@ -10,11 +10,7 @@ interface Props {
   locale: Locale
 }
 
-export async function ResultListItem({
-  simulation,
-  buttons = null,
-  locale,
-}: Props) {
+export function ResultListItem({ simulation, buttons = null, locale }: Props) {
   const { formattedValue, unit } = formatFootprint(
     simulation.computedResults.carbone.bilan,
     {
@@ -22,7 +18,7 @@ export async function ResultListItem({
       locale,
     }
   )
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <article className="flex flex-col items-baseline gap-2 rounded-lg border border-slate-200 px-6 py-4 md:flex-row">

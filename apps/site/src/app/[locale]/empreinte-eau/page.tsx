@@ -28,8 +28,7 @@ export const generateMetadata = getCommonMetadata({
   description: t(
     'Découvrez les litres d’eau cachés derrière chacun de vos repas, vêtements, appareils… Adoptez des actions concrètes pour réduire votre empreinte eau'
   ),
-  image:
-    '/_static/cms/calculer_son_empreinte_eau_9e5f8be16c.png',
+  image: '/_static/cms/calculer_son_empreinte_eau_9e5f8be16c.png',
   alternates: {
     canonical: '/empreinte-eau',
   },

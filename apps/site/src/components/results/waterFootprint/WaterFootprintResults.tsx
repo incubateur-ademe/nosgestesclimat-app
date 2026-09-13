@@ -1,6 +1,6 @@
 import { eauMetric } from '@/constants/model/metric'
-import type { ComputedResults } from '@/publicodes-state/types'
 import type { Locale } from '@/i18nConfig'
+import type { ComputedResults } from '@/publicodes-state/types'
 import Trans from '../../translation/trans/TransServer'
 import FootprintBlock from '../FootprintBlock'
 import FootprintDetail from '../FootprintDetail'

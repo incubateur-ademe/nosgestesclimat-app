@@ -2,12 +2,12 @@ import WhatDoWeMeasure from '@/components/landing-pages/WhatDoWeMeasure'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
-export default async function WhatDoWeMeasureWaterFootprint({
+export default function WhatDoWeMeasureWaterFootprint({
   locale,
 }: {
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <WhatDoWeMeasure

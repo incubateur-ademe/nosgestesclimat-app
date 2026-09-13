@@ -4,10 +4,7 @@ import FlagIcon from '@/components/icons/FlagIcon'
 import CountryFlag from '@/components/misc/CountryFlag'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
-import {
-  supportedRegions,
-  type Region,
-} from '@/helpers/server/model/models'
+import { supportedRegions, type Region } from '@/helpers/server/model/models'
 import { useIframe } from '@/hooks/useIframe'
 import { useLocale } from '@/hooks/useLocale'
 import { useUser } from '@/publicodes-state'

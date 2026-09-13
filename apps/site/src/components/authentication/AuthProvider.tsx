@@ -4,11 +4,16 @@ import { createContext, useContext, type ReactNode } from 'react'
 
 import type { AuthenticationMode } from '@/types/authentication'
 
+import { useAuthActions } from './_hooks/useAuthActions'
 import { useAuthCodeCreation } from './_hooks/useAuthCodeCreation'
 import { useAuthEffects } from './_hooks/useAuthEffects'
-import { useAuthActions } from './_hooks/useAuthActions'
 import { usePersistentAuthPhase } from './_hooks/usePersistentAuthPhase'
-import type { AuthPhase, AuthenticatedUser, Tracker, VerifyStrategy } from './types'
+import type {
+  AuthPhase,
+  AuthenticatedUser,
+  Tracker,
+  VerifyStrategy,
+} from './types'
 
 export interface AuthContextValue {
   state: AuthPhase
@@ -51,8 +56,9 @@ export function AuthProvider({
 }: AuthProviderProps) {
   const [state, dispatch] = usePersistentAuthPhase()
 
-  const { sendEmail, resendCode, isCreatingCode } =
-    useAuthCodeCreation({ dispatch })
+  const { sendEmail, resendCode, isCreatingCode } = useAuthCodeCreation({
+    dispatch,
+  })
 
   useAuthEffects({
     state,
@@ -63,8 +69,7 @@ export function AuthProvider({
     tracker,
   })
 
-  const { submitCode, goBack, reset, clearCodeError } =
-    useAuthActions(dispatch)
+  const { submitCode, goBack, reset, clearCodeError } = useAuthActions(dispatch)
 
   return (
     <AuthContext.Provider
