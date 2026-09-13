@@ -10,11 +10,12 @@ const env = (name: string): string => {
 
 interface BrevoMessage {
   subject?: string
-  sentAt?: string
+  /** Envoi, au format ISO 8601 (ex. 2026-09-13T16:31:42.475+02:00). */
+  date?: string
 }
 
 interface BrevoResponse {
-  messages?: BrevoMessage[]
+  transactionalEmails?: BrevoMessage[]
 }
 
 // Brevo limite `GET /v3/smtp/emails` à 2 req/s (en-têtes `x-sib-ratelimit-*` sur
@@ -93,13 +94,27 @@ export class BrevoMailbox implements MailboxAdapter {
       }
 
       const data = (await response.json()) as BrevoResponse
-      const messages = (data.messages ?? []).sort(
+      if (!Array.isArray(data.transactionalEmails)) {
+        // `{}` = aucun email pour ces critères (le cas tant que le code n'est pas
+        // encore parti). Toute autre forme est inattendue : la signaler évite
+        // qu'un changement de champ passe pour un code jamais reçu.
+        const keys = Object.keys(data)
+        if (keys.length > 0) {
+          this.warnOnce(
+            `Brevo: réponse sans 'transactionalEmails' (clés: ${keys.join(', ')})`
+          )
+        }
+        return undefined
+      }
+
+      // Plusieurs envois possibles pour un même email (code redemandé) : on
+      // garde le plus récent.
+      const [latest] = [...data.transactionalEmails].sort(
         (a, b) =>
-          (b.sentAt ? new Date(b.sentAt).getTime() : 0) -
-          (a.sentAt ? new Date(a.sentAt).getTime() : 0)
+          (b.date ? Date.parse(b.date) : 0) - (a.date ? Date.parse(a.date) : 0)
       )
 
-      return messages.length > 0 ? { subject: messages[0].subject } : undefined
+      return latest ? { subject: latest.subject } : undefined
     }
   }
 
