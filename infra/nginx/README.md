@@ -177,6 +177,31 @@ du collecteur et n'atteignent pas PostHog.
 - **body** de l'access log : supprimé côté collecteur (JSON brut redondant avec
   les attributs) — cf. « Fonctionnement ».
 
+### Blocage des scanners
+
+`nginx.conf.tpl` coupe les scanners de vulnérabilités connus sur leur
+User-Agent (`map $http_user_agent $ngc_is_scanner`) : `nuclei`, `sqlmap`,
+`nikto`, `masscan`, `nmap`, `zmeu`, `dirbuster`, `gobuster`, `wpscan`.
+
+La réponse est un **`444`** : nginx ferme la connexion sans rien renvoyer. Un
+`403` confirmerait au scanner qu'il est reconnu (donc l'inviterait à changer de
+UA) et un `429` serait pire — il signifie « réessaie plus tard », donc il
+reviendrait. `444` est indistinguable d'une panne réseau, ne lui apprend rien,
+et n'apparaît pas dans `access.log` (pas de `$status` écrit) : le volume ne
+part donc jamais vers PostHog.
+
+Le blocage est posé en tête des deux `server` HTTPS **avant** le `return 301`
+de `www` : sinon un scanner suit la redirection et la charge est payée deux
+fois.
+
+C'est du **confort, pas de la sécurité** : le User-Agent est fourni par le
+client et se falsifie en une ligne. Le but est de couper le bruit (volume de
+logs, CPU) d'un scan qui ne trouvera rien — ce nginx ne sert qu'un proxy vers
+une app Next.js, il n'y a ni PHP, ni Tomcat, ni WordPress à sonder. Cela ne
+dispense pas de garder l'app et ses dépendances à jour.
+
+Pour étendre la liste, ajouter une ligne `~*motif  1;` dans le `map`.
+
 ## Créer une instance
 
 Le script requiert désormais la variable d'environnement `POSTHOG_PROJECT_TOKEN`

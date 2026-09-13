@@ -127,6 +127,34 @@ map "$ngc_noisy$ngc_is_error" $ngc_loggable {
 }
 
 # ----------------------------------------------------------------------------
+# Blocage des scanners
+# ----------------------------------------------------------------------------
+
+# 1 si le User-Agent s'annonce comme un scanner de vulnérabilités connu.
+#
+# Confort, pas sécurité : le UA est fourni par le client et se falsifie en une
+# ligne. L'objectif est de couper le bruit (volume de logs PostHog, charge CPU)
+# d'un scan qui, de toute façon, ne trouvera rien ici : ce nginx ne sert qu'un
+# proxy vers une app Next.js, il n'y a ni PHP, ni Tomcat, ni WordPress à sonder.
+# Ne dispense donc en rien de garder l'app et ses dépendances à jour.
+#
+# `~*` = insensible à la casse. Motifs volontairement courts et non ancrés :
+# un UA suffixé d'un numéro de version (`nuclei/3.2.1`) doit matcher aussi, et
+# compter quelques faux négatifs coûte moins cher que de rater le scanner.
+map $http_user_agent $ngc_is_scanner {
+    default          0;
+    ~*nuclei         1;
+    ~*sqlmap         1;
+    ~*nikto          1;
+    ~*masscan        1;
+    ~*nmap           1;
+    ~*zmeu           1;
+    ~*dirbuster      1;
+    ~*gobuster       1;
+    ~*wpscan         1;
+}
+
+# ----------------------------------------------------------------------------
 # Redirections (HTTP → HTTPS, www → apex)
 # ----------------------------------------------------------------------------
 
@@ -151,6 +179,10 @@ server {
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
+    # Scanner bloqué avant la redirection : sinon il suit le 301 et la charge
+    # est payée deux fois.
+    if ($ngc_is_scanner) { return 444; }
+
     return 301 https://${DOMAIN}$request_uri;
 }
 
@@ -168,6 +200,12 @@ server {
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+
+    # Scanner bloqué avant tout traitement : `444` ferme la connexion sans
+    # répondre, donc rien à récolter (ni statut, ni bannière, ni timing) et
+    # aucune ligne dans access.log. Placé en tête de server pour ne pas payer
+    # le rate limiting, le cache ni un aller-retour upstream.
+    if ($ngc_is_scanner) { return 444; }
 
     # HSTS 2 ans sur tous les sous-domaines, y compris sur les réponses d'erreur (`always`).
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
