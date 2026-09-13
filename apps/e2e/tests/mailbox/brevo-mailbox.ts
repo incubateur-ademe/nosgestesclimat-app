@@ -68,17 +68,10 @@ export class BrevoMailbox implements MailboxAdapter {
     if (!response.ok) {
       const body = await response.text()
 
-      // Un 401/403 ne se résout pas en réessayant : blob FGP tourné, clé Brevo
-      // révoquée, ou IP de sortie absente de la liste autorisée du compte.
-      // On remonte la raison plutôt qu'un « No verification code received ».
-      if (response.status === 401 || response.status === 403) {
-        throw new Error(
-          `Mailbox read rejected (HTTP ${response.status}): ${body}`
-        )
-      }
-
-      // 429, 5xx… : au tour suivant du caller, que l'espacement ci-dessus
-      // empêche de transformer en rafale.
+      // 429, 5xx, et même 401/403 : Brevo rejette parfois une requête isolée
+      // (limite de débit, IP de sortie), donc au tour suivant du caller plutôt
+      // qu'un échec du test. Le corps est journalisé pour distinguer ça d'une
+      // vraie erreur de configuration (blob FGP tourné, clé révoquée…).
       this.warnOnce(`Mailbox read failed (HTTP ${response.status}): ${body}`)
 
       return undefined
