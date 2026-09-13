@@ -36,8 +36,11 @@ export enum NEWSLETTER_IDS {
 export type Newsletters = Awaited<ReturnType<typeof getNewsletters>>
 export type ListIds = NEWSLETTER_IDS[]
 
+// Un module `'use server'` n'expose que des fonctions async, même sans `await`
+// à faire :
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function getNewsletters({ locale }: { locale: string }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
   return [
     {
       brevoId: NEWSLETTER_IDS.ACTU,

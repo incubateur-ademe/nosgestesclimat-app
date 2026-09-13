@@ -2,16 +2,18 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import Image from 'next/image'
 import { cacheLife } from 'next/cache'
+import Image from 'next/image'
 import Wave from 'react-wavify'
 import Trans from '../translation/trans/TransServer'
 import LogoHeader from './headerServer/LogoHeader'
 
+// `'use cache'` impose une fonction async, même sans `await` à faire :
+// eslint-disable-next-line @typescript-eslint/require-await
 export default async function Route404({ locale }: { locale: Locale }) {
   'use cache'
   cacheLife('days')
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>

@@ -9,21 +9,17 @@ import { settleBudget, watchHydrationMismatches } from '../helpers/hydration'
  * because a page is only covered if some test actually loads it.
  *
  * It matters because a mismatch is silent in production: React simply throws the
- * server HTML away and regenerates the tree on the client. The re-render blocks
- * the main thread for seconds — which is what made the suite lose clicks — and
- * it is the kind of regression that would otherwise only show up as
- * "mysterious" flakes.
+ * server HTML away and regenerates the tree on the client — the re-render blocks
+ * the main thread for seconds, which is what made the suite lose clicks.
  *
- * The mismatches are collected as annotations and printed at the end of the run
- * (see `reporters/hydration-summary.ts`). They do not fail the tests yet: a few
- * are still open (they need a prerendering investigation of their own, see the
- * PR description). Set `HYDRATION_GUARD=strict` to make them fail — that is how
- * to check that the code base is clean again, and how to flip the guard for
- * good.
+ * Mismatches are logged, so they show up in the test output like any other
+ * error, and do not fail the tests: a few are still open (see the
+ * `hydration-mismatch-triage` skill). Set `HYDRATION_GUARD=strict` to make them
+ * fail — that is how to check that the code base is clean again.
  */
 const test = base.extend<{ hydrationGuard: void }>({
   hydrationGuard: [
-    async ({ page }, use, testInfo) => {
+    async ({ page }, use) => {
       const mismatches = watchHydrationMismatches(page)
 
       let loadedAt = 0
@@ -46,18 +42,16 @@ const test = base.extend<{ hydrationGuard: void }>({
         return
       }
 
-      const message = [
-        'React discarded the server HTML and regenerated the tree on the client.',
-        ...mismatches.map(({ path, detail }) => `${path} — ${detail}`),
-      ].join('\n')
+      const summary = mismatches
+        .map(({ path, detail }) => `${path} — ${detail}`)
+        .join('\n')
 
-      testInfo.annotations.push({
-        type: 'hydration-mismatch',
-        description: message,
-      })
+      console.warn(
+        `Hydration mismatch: React discarded the server HTML and regenerated the tree on the client.\n${summary}`
+      )
 
       if (process.env.HYDRATION_GUARD === 'strict') {
-        expect(mismatches, message).toEqual([])
+        expect(mismatches, summary).toEqual([])
       }
     },
     { auto: true },

@@ -27,12 +27,8 @@ export default defineConfig<FixturesOptions>({
     timeout: 10_000,
   },
   reporter: process.env.CI
-    ? [['blob'], ['line'], ['./reporters/hydration-summary.ts']]
-    : [
-        ['line'],
-        ['html', { outputFolder: 'playwright-report' }],
-        ['./reporters/hydration-summary.ts'],
-      ],
+    ? [['blob'], ['line']]
+    : [['line'], ['html', { outputFolder: 'playwright-report' }]],
 
   /* Configure projects for major browsers */
   projects: [

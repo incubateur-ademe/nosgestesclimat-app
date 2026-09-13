@@ -48,7 +48,7 @@ export async function generateMetadata({
   searchParams: { page: string }
 }>) {
   const { locale } = await params
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const pageNumber = await getPageNumber(searchParams)
 

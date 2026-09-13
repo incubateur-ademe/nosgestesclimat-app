@@ -3,12 +3,8 @@ import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import Image from 'next/image'
 
-export default async function CollectivelyCommit({
-  locale,
-}: {
-  locale: string
-}) {
-  await getServerTranslation({ locale })
+export default function CollectivelyCommit({ locale }: { locale: string }) {
+  getServerTranslation({ locale })
 
   return (
     <MotivationSection

@@ -24,7 +24,7 @@ export default async function Releases({ params }: DefaultPageProps) {
   const { locale } = await params
   const releases = await getPosts(locale)
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>

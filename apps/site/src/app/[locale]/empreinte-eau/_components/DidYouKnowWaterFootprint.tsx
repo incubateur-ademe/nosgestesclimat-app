@@ -12,8 +12,7 @@ export default function DidYouKnowWaterFootprint({
       ctaButtons={<CTAButtons locale={locale} />}
       slides={[
         {
-          illustration:
-            '/_static/cms/icone_ordinateur_392d915ff0.svg',
+          illustration: '/_static/cms/icone_ordinateur_392d915ff0.svg',
           content: (
             <Trans locale={locale}>
               La production d’un ordinateur nécessite 195 000 litres d’eau.
@@ -22,8 +21,7 @@ export default function DidYouKnowWaterFootprint({
           highlight: <Trans locale={locale}>Considérable, non ?</Trans>,
         },
         {
-          illustration:
-            '/_static/cms/icone_jeans_7373ebf3c3.svg',
+          illustration: '/_static/cms/icone_jeans_7373ebf3c3.svg',
           content: (
             <Trans locale={locale}>
               L’empreinte eau d'un jean est de 30 000 litres d'eau.
@@ -32,8 +30,7 @@ export default function DidYouKnowWaterFootprint({
           highlight: <Trans locale={locale}>Impressionnant, non ?</Trans>,
         },
         {
-          illustration:
-            '/_static/cms/icone_oeuf_035042441c.svg',
+          illustration: '/_static/cms/icone_oeuf_035042441c.svg',
           content: (
             <Trans locale={locale}>
               Il faut 75 litres d’eau pour produire un oeuf.

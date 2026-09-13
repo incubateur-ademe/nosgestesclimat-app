@@ -2,8 +2,8 @@ import { BannerContent } from '@/design-system/cms/BannerContent'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import Trans from '../translation/trans/TransServer'
 
-export default async function BetaBanner({ locale }: { locale: string }) {
-  const { t } = await getServerTranslation({ locale })
+export default function BetaBanner({ locale }: { locale: string }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="-mt-2 mb-8 md:-mt-4">
