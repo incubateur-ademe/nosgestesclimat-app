@@ -228,29 +228,20 @@ server {
                           http_500 http_502 http_503 http_504;
 
 
-    # Assets statiques Next.js : hashés par le contenu, donc immuables, donc
-    # faits pour être servis depuis un cache très longtemps. Trois réglages qui
-    # vont ensemble (incident prod du 2026-09-13 : 3 259 réponses 404 de chunks
-    # servies *depuis le cache* en 24 h, et 78 assets morts référencés par 8 des
-    # 22 pages publiques échantillonnées) :
+    # Assets statiques Next.js : noms hashés par le contenu, donc immuables.
+    #   * `proxy_ignore_headers Cache-Control` + `proxy_cache_valid 200 365d` :
+    #     seuls les 200 sont cachés, et un an. Sans ces deux directives, nginx suit
+    #     le `Cache-Control` de l'app — or sa page 404 s'annonce en
+    #     `s-maxage=86400` : un asset manquant resterait donc en 404 *en cache*
+    #     pendant 24 h, pour tous les visiteurs, même après un rollback.
+    #   * `proxy_cache_use_stale … http_404` : si l'app répond 404 alors qu'une
+    #     copie est en cache, on sert la copie — c'est elle qui correspond au HTML
+    #     encore en cache qui la référence. Les anciens assets survivent ainsi aux
+    #     déploiements, ce qui laisse au HTML (caché 1 h, cf. « Pages publiques »)
+    #     le temps de se rafraîchir sans jamais pointer dans le vide.
+    #   * `proxy_ignore_headers` ne change rien pour le navigateur : il garde le
+    #     `max-age=31536000, immutable` envoyé par l'app.
     #
-    # 1. `proxy_ignore_headers Cache-Control` + `proxy_cache_valid 200 365d` :
-    #    seuls les 200 sont mis en cache, et pour un an. Sans ça, nginx suivait
-    #    le Cache-Control de l'app — or la page 404 de Next s'annonce en
-    #    `s-maxage=86400` : un chunk manquant restait donc en 404 *en cache*
-    #    pendant 24 h, pour tous les visiteurs, même après un rollback.
-    #    (`proxy_ignore_headers` ne change pas ce que voit le navigateur : il
-    #    garde bien le `max-age=31536000, immutable` de l'app.)
-    # 2. La copie gardée un an fait survivre un chunk à tous les déploiements :
-    #    c'est ce qui permet au HTML (lui, caché 1 h, cf. « Pages publiques »)
-    #    de continuer à fonctionner un instant après le remplacement du
-    #    conteneur — le nom étant un hash du contenu, le fichier est identique.
-    # 3. Si l'app répond 404 (chunk supprimé par un déploiement) alors qu'on en a
-    #    une copie, on sert la copie : c'est elle qui correspond au HTML encore
-    #    en cache qui la référence.
-    #
-    # Un 404 n'est donc jamais caché : dès que le chunk revient (rollback,
-    # redéploiement), la page repart, au lieu de rester cassée 24 h.
     # `proxy_cache_lock` évite le cache stampede.
     location /_next/static/ {
         proxy_pass https://scalingo;
@@ -316,28 +307,28 @@ server {
 
     # ── Pages publiques catégorie 2 ──────────────────────────────
     # Contenu identique pour tous les utilisateurs anonymes, caché 1 h.
-    # Cache-bypass automatique pour les utilisateurs authentifiés (cookie
-    # `ngc_session`) : leurs réponses portent des cookies de session et ne
-    # doivent jamais entrer dans le cache.
+    # Les utilisateurs connectés (cookie `ngc_session`) sont en bypass : leurs
+    # réponses portent des cookies de session et ne doivent pas entrer au cache.
     #
-    # ⚠️ INVARIANT : l'app ne doit poser AUCUN `Set-Cookie` sur une réponse
-    # cacheable (ici : GET/HEAD anonyme hors forçage `?region=`). Nginx refuse
-    # d'enregistrer une réponse qui pose un cookie, donc si ça arrive, cette
-    # location ne sert plus qu'à faire des MISS : l'entrée n'est jamais créée,
-    # celle qui existe n'est jamais rafraîchie (les mises à jour de fond ne sont
-    # pas stockables) et le HTML servi finit par être plus vieux que les chunks
-    # JS hashés qu'il référence → 404 sur un chunk, hydratation cassée (incident
-    # prod du 2026-09-13 : 3 416 réponses 404 d'assets servies *depuis le cache*
-    # en 24 h, 8 pages publiques sur 22 échantillonnées concernées).
-    # Côté app, c'est `apps/site/src/helpers/server/proxy/region.middleware.ts`
-    # qui ne persiste la région déduite que sur les requêtes non cacheables.
+    # ⚠️ INVARIANT : l'app ne pose aucun `Set-Cookie` sur une réponse cacheable
+    # (GET/HEAD anonyme, hors forçage `?region=`) — c'est le rôle de
+    # `apps/site/src/helpers/server/proxy/region.middleware.ts`. Nginx n'enregistre
+    # jamais une réponse qui pose un cookie : une seule exception suffit à vider ce
+    # cache de son sens (entrée jamais créée ni rafraîchie, donc HTML de plus en
+    # plus ancien face à des chunks JS hashés recréés à chaque déploiement).
     #
-    # ⚠️ NE PAS « corriger » un `Set-Cookie` résiduel avec
-    # `proxy_ignore_headers Set-Cookie` ni `proxy_hide_header Set-Cookie` : le
-    # premier ferait rejouer la région / les feature flags / la session d'un
-    # visiteur à tous les autres, le second supprimerait aussi les cookies de
-    # session des utilisateurs connectés (et court-circuiterait l'héritage des
-    # `add_header` du niveau `server`, dont HSTS).
+    # ⚠️ Les contournements ne sont pas des solutions :
+    #   * `proxy_ignore_headers Set-Cookie` rend la réponse cachable mais rejoue
+    #     les cookies stockés (région, feature flags, session) à tous les
+    #     visiteurs ;
+    #   * `proxy_hide_header Set-Cookie` masque *tous* les cookies de la location,
+    #     y compris ceux des utilisateurs connectés, et court-circuite l'héritage
+    #     des `add_header` du niveau `server` (dont HSTS) ; la directive n'a pas de
+    #     forme conditionnelle (elle est interdite dans un `if`).
+    #
+    # Diagnostic : `X-Cache-Status` alterne `MISS` puis `HIT` sur une page publique
+    # anonyme. Un `MISS` permanent vient d'un `Set-Cookie` ou d'un `Cache-Control`
+    # qui n'est plus ignoré.
     #
     # Exact-match : accueil, simulateur/tutoriel, empreinte-carbone,
     # empreinte-eau, cgu, mentions-legales,
@@ -357,17 +348,16 @@ server {
     location ~ ^/($|simulateur/tutoriel|empreinte-carbone|empreinte-eau|cgu|mentions-legales|mentions-legales-base-empreinte|politique-de-confidentialite|accessibilite|contact|diffuser|nos-relais|plan-du-site|budget|international|gestion-infolettres|newsletter-confirmation|partenaire|questions-frequentes|stats|blog($|/.*)|documentation($|/.*)|nouveautes($|/.*)|guide($|/.*)|themes($|/.*)|campagne-partenaire($|/.*)|evenement($|/.*))$ {
         proxy_pass https://scalingo;
 
-        # La dimension d'auth dans la clé en plus du bypass : par construction,
+        # La dimension d'auth dans la clé, en plus du bypass : par construction,
         # aucune réponse authentifiée n'est jamais stockée ici.
-        # Le préfixe `ngc-html-v2` est une *génération* de cache : la changer rend
-        # toutes les entrées existantes inatteignables d'un coup (pas de module de
-        # purge sur cette installation). C'est ce qui a évité de servir, au premier
-        # reload, les entrées périmées écrites avant le correctif du 2026-09-13.
+        # Le préfixe `ngc-html-v2` est une *génération* : le bumper rend toutes les
+        # entrées existantes inatteignables d'un coup (cette installation n'a pas de
+        # module de purge).
         proxy_cache_key "ngc-html-v2$scheme$request_method$host$request_uri$ngc_is_auth";
         proxy_cache_lock on;
         # Quand une entrée périmée est servie, la mise à jour se fait en tâche de
-        # fond sans bloquer la réponse (elle aboutit tant que l'app ne pose pas
-        # de cookie — cf. invariant ci-dessus).
+        # fond sans bloquer la réponse — elle aboutit tant que l'app ne pose pas de
+        # cookie (cf. invariant ci-dessus).
         proxy_cache_background_update on;
         # Les pages PPR sont marquées `Cache-Control: no-store` par Next : on
         # l'ignore et on applique la politique ci-dessus à la place.

@@ -81,11 +81,11 @@ export class BrevoMailbox implements MailboxAdapter {
         const body = await response.text()
 
         // A rejected read never fixes itself by polling (rotated FGP blob, Brevo
-        // key revoked, Brevo egress IP not authorised…): fail with the upstream
-        // reason rather than ending on a misleading "No verification code
-        // received". Production case: Brevo answers 401 "unrecognised IP
-        // address" when FGP's egress IP is missing from the account's authorised
-        // IPs (https://app.brevo.com/security/authorised_ips).
+        // key revoked, Brevo egress IP not on the account's allow-list…): fail
+        // with the upstream reason rather than ending on a misleading "No
+        // verification code received". Brevo answers 401 "unrecognised IP
+        // address" when FGP's egress IP is missing from
+        // https://app.brevo.com/security/authorised_ips.
         if (response.status === 401 || response.status === 403) {
           throw new Error(
             `Mailbox read rejected (HTTP ${response.status}): ${body}`

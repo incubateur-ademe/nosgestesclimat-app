@@ -268,67 +268,58 @@ Ce qui est mis en cache disque (bloc `proxy_cache ngc_cache`) :
 | `/_next/image`, `/images`, `…`    | 30 jours | images dérivées, adressées par URL complète   |
 | `favicon`, `manifest`, `sitemap`… | 15 min   | noms non hashés, TTL court volontaire         |
 
-### Le HTML des pages publiques : l'invariant à respecter
+### HTML des pages publiques : l'invariant
 
-Ces pages sont cachées 1 h pour les visiteurs **anonymes** (les utilisateurs
-connectés, détectés par le cookie `ngc_session`, sont en `BYPASS` : leurs
-réponses portent des cookies de session).
+Ces pages sont cachées 1 h pour les visiteurs **anonymes**. Les utilisateurs
+connectés (cookie `ngc_session`) sont en `BYPASS` : leurs réponses portent des
+cookies de session et n'entrent pas au cache.
 
-**Nginx n'enregistre jamais une réponse qui pose un `Set-Cookie`.** C'est ce qui
-a rendu ce cache nuisible en prod (2026-09-13) : l'app posait `ngc_region` sur
-chaque première visite, donc l'entrée n'était créée que par des visiteurs
-_revenants_, sa mise à jour en tâche de fond n'était jamais stockable (entrée
-`STALE` pour toujours) et le HTML servi finissait par être plus vieux que les
-chunks JS hashés qu'il référence → 404 sur un chunk, hydratation cassée
-(bannière cookies absente, boutons inertes). Mesures : **3 416 réponses 404
-d'assets servies depuis le cache en 24 h**, et 8 des 22 pages publiques
-échantillonnées concernées.
+**Nginx n'enregistre jamais une réponse qui pose un `Set-Cookie`.** L'app doit
+donc s'en abstenir sur les réponses à cacher : c'est le rôle de
+`apps/site/src/helpers/server/proxy/region.middleware.ts`, qui ne persiste la
+région déduite que sur les requêtes non cacheables (POST/… : server actions,
+appels API) et sur les forçages explicites (`?region=`). Sinon la page n'est
+jamais cachée, l'entrée existante n'est jamais rafraîchie, et le HTML servi
+vieillit jusqu'à référencer des chunks JS qui n'existent plus (hydratation
+cassée, bannière cookies absente).
 
-C'est donc **l'app** qui garantit l'invariant :
-`apps/site/src/helpers/server/proxy/region.middleware.ts` ne persiste la région
-déduite que sur les requêtes non cacheables (POST/… : server actions, appels
-API) et sur les forçages explicites (`?region=`). Les GET anonymes n'ont donc
-plus aucun `Set-Cookie`, et le cache se remplit dès le premier visiteur.
+Deux contournements à écarter si un `Set-Cookie` réapparaît :
 
-Deux fausses bonnes idées, si un `Set-Cookie` réapparaît un jour :
-
-- **`proxy_ignore_headers Set-Cookie`** : la réponse devient cachable, mais
-  Nginx rejoue les cookies stockés à tout le monde (région, feature flags — et
-  session si elle était présente dans l'entrée).
+- **`proxy_ignore_headers Set-Cookie`** : rend la réponse cachable, mais Nginx
+  rejoue les cookies stockés à tout le monde (région, feature flags — et session
+  si elle est présente dans l'entrée).
 - **`proxy_hide_header Set-Cookie`** : masque _tous_ les cookies de la location,
-  y compris ceux des utilisateurs connectés, **et** court-circuite l'héritage
-  des `add_header` du niveau `server` (dont HSTS et `X-Cache-Status`). Il n'y a
-  pas de forme conditionnelle : `proxy_hide_header` n'est pas autorisé dans un
-  `if`, et ré-émettre la valeur via `$upstream_http_set_cookie` ne survit pas à
-  plusieurs cookies.
+  y compris ceux des utilisateurs connectés, et court-circuite l'héritage des
+  `add_header` du niveau `server` (dont HSTS et `X-Cache-Status`). La directive
+  n'a pas de forme conditionnelle (interdite dans un `if`), et ré-émettre la
+  valeur via `$upstream_http_set_cookie` ne survit pas à plusieurs cookies.
 
-Pour diagnostiquer : `X-Cache-Status` doit alterner `MISS` puis `HIT` sur une
-page publique anonyme. Un `MISS` permanent = un `Set-Cookie` (ou un
-`Cache-Control` qu'on n'ignore plus).
+Diagnostic : `X-Cache-Status` alterne `MISS` puis `HIT` sur une page publique
+anonyme. Un `MISS` permanent signale un `Set-Cookie` ou un `Cache-Control` qui
+n'est plus ignoré.
 
-### Côté assets : jamais de 404 en cache
+### Assets : seuls les 200, jamais un 404
 
 Le HTML référence des chunks hashés par le contenu : quand un déploiement en
-retire, le HTML encore en cache peut pointer vers un nom disparu. Deux réglages
-en conséquence :
+retire, le HTML encore en cache peut pointer vers un nom disparu. D'où :
 
 - `proxy_cache_valid 200 365d` + `proxy_ignore_headers Cache-Control` sur
-  `/_next/static/` : **seuls les 200 sont cachés**, et un an. Sans ça, la page
-  404 de Next (qui s'annonce en `s-maxage=86400`) faisait rester un chunk
-  manquant en 404 _en cache_ pendant 24 h, pour tous les visiteurs — mesuré :
-  3 416 réponses pour 64 URLs distinctes.
-- `proxy_cache_use_stale … http_404` : si l'app répond 404 alors qu'on a une
-  copie, on sert la copie — c'est elle qui correspond au HTML encore en cache
-  qui la référence. Un asset déjà vu survit ainsi aux déploiements.
+  `/_next/static/` : seuls les 200 sont cachés, et un an. Sans ces directives,
+  Nginx suivrait le `Cache-Control` de l'app, et sa page 404 (`s-maxage=86400`)
+  ferait durer un asset manquant 24 h _en cache_, pour tout le monde, y compris
+  après un rollback.
+- `proxy_cache_use_stale … http_404` : si l'app répond 404 alors qu'une copie est
+  en cache, on sert la copie — c'est elle qui correspond au HTML encore en cache
+  qui la référence.
 
-Note : les noms de chunks Turbopack sont bien des hashes **du contenu**
-(vérifié : même contenu → même nom, contenu modifié → nom changé, identique
-après retour en arrière et après suppression de `.next`), donc un nom donné ne
-peut pas contenir du JS périmé.
+Ces réglages sont sûrs parce que les noms de chunks Turbopack sont des hashes
+**du contenu** : même contenu → même nom ; contenu modifié → nom différent, y
+compris sur un build à cache vidé. Un nom donné ne peut donc pas contenir du JS
+périmé.
 
-Invalider ce cache au déploiement reste impossible avec l'installation actuelle
-(pas de module de purge, pas de génération de clé à bumper) : d'où le TTL 1 h
-côté HTML et le fait que les anciens chunks doivent survivre côté assets.
+Cette installation n'a pas de module de purge : l'invalidation se fait par
+**génération de clé** (`ngc-html-v2`, à bumper dans `nginx.conf.tpl` quand la
+politique change), et les TTL font office de borne.
 
 ## Tester avant bascule DNS
 

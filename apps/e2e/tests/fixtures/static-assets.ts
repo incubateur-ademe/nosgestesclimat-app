@@ -8,7 +8,7 @@ import { test as base, expect } from '@playwright/test'
  * was built by a previous deployment (e.g. served from a proxy cache), so the
  * chunk it references no longer exists in the container → 404 → React never
  * hydrates. The page « looks » fine but is inert (no cookie banner, dead
- * buttons), which used to surface as a cryptic locator timeout
+ * buttons), which otherwise only shows up as a cryptic locator timeout
  * (`cookie-banner-refuse-button` never visible).
  *
  * Auto-applied to every test (including the global setup) so the real cause is
