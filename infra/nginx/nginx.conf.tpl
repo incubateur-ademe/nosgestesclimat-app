@@ -127,6 +127,26 @@ map "$ngc_noisy$ngc_is_error" $ngc_loggable {
 }
 
 # ----------------------------------------------------------------------------
+# Blocage des scanners
+# ----------------------------------------------------------------------------
+
+# 1 si le User-Agent s'annonce comme un scanner de vulnérabilités connu.
+# `~*` = insensible à la casse. Motifs non ancrés : `nuclei/3.2.1` doit matcher.
+# Falsifiable en une ligne : coupe le bruit, ne protège de rien.
+map $http_user_agent $ngc_is_scanner {
+    default          0;
+    ~*nuclei         1;
+    ~*sqlmap         1;
+    ~*nikto          1;
+    ~*masscan        1;
+    ~*nmap           1;
+    ~*zmeu           1;
+    ~*dirbuster      1;
+    ~*gobuster       1;
+    ~*wpscan         1;
+}
+
+# ----------------------------------------------------------------------------
 # Redirections (HTTP → HTTPS, www → apex)
 # ----------------------------------------------------------------------------
 
@@ -151,6 +171,10 @@ server {
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 
+    # Scanner bloqué avant la redirection : sinon il suit le 301 et la charge
+    # est payée deux fois.
+    if ($ngc_is_scanner) { return 444; }
+
     return 301 https://${DOMAIN}$request_uri;
 }
 
@@ -168,6 +192,10 @@ server {
 
     ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+
+    # `444` ferme la connexion sans répondre : pas de `$status`, donc pas de
+    # ligne dans access.log.
+    if ($ngc_is_scanner) { return 444; }
 
     # HSTS 2 ans sur tous les sous-domaines, y compris sur les réponses d'erreur (`always`).
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
