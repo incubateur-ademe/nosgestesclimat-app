@@ -17,6 +17,25 @@ interface BrevoResponse {
   messages?: BrevoMessage[]
 }
 
+// Brevo limite `GET /v3/smtp/emails` à 2 requêtes/seconde (en-têtes
+// `x-sib-ratelimit-limit/reset` renvoyés sur les 429, aucun `Retry-After`). Le
+// global setup lance plusieurs tests en parallèle (3 workers = 3 process), donc
+// on espace les appels *par process* : 3 x 1/2,5 s ≈ 1,2 req/s, sous la limite.
+const MIN_INTERVAL_MS = 2_500
+const MAX_RATE_LIMIT_RETRIES = 3
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+let lastRequestAt = 0
+
+const throttle = async () => {
+  const wait = lastRequestAt + MIN_INTERVAL_MS - Date.now()
+  if (wait > 0) {
+    await sleep(wait)
+  }
+  lastRequestAt = Date.now()
+}
+
 export class BrevoMailbox implements MailboxAdapter {
   private readonly url: string
   private readonly token: string
@@ -44,39 +63,50 @@ export class BrevoMailbox implements MailboxAdapter {
       templateId: String(templateId),
     })
 
-    const response = await fetch(`${this.url}/v3/smtp/emails?${params}`, {
-      headers: { 'X-FGP-Key': this.token },
-    })
+    for (let attempt = 0; ; attempt++) {
+      await throttle()
 
-    if (!response.ok) {
-      const body = await response.text()
+      const response = await fetch(`${this.url}/v3/smtp/emails?${params}`, {
+        headers: { 'X-FGP-Key': this.token },
+      })
 
-      // A rejected read never fixes itself by polling (rotated FGP blob, Brevo
-      // key revoked, Brevo egress IP not authorised…): fail with the upstream
-      // reason rather than ending on a misleading "No verification code
-      // received". Production case: Brevo answers 401 "unrecognised IP
-      // address" when FGP's egress IP is missing from the account's authorised
-      // IPs (https://app.brevo.com/security/authorised_ips).
-      if (response.status === 401 || response.status === 403) {
-        throw new Error(
-          `Mailbox read rejected (HTTP ${response.status}): ${body}`
-        )
+      if (response.status === 429 && attempt < MAX_RATE_LIMIT_RETRIES) {
+        // `x-sib-ratelimit-reset` = secondes avant réouverture de la fenêtre.
+        const reset = Number(response.headers.get('x-sib-ratelimit-reset'))
+        await sleep((Number.isFinite(reset) ? reset : 1) * 1_000 + 250)
+        continue
       }
 
-      // Transient (5xx, 429…): the caller retries until its deadline.
-      this.warnOnce(`Mailbox read failed (HTTP ${response.status}): ${body}`)
+      if (!response.ok) {
+        const body = await response.text()
 
-      return undefined
+        // A rejected read never fixes itself by polling (rotated FGP blob, Brevo
+        // key revoked, Brevo egress IP not authorised…): fail with the upstream
+        // reason rather than ending on a misleading "No verification code
+        // received". Production case: Brevo answers 401 "unrecognised IP
+        // address" when FGP's egress IP is missing from the account's authorised
+        // IPs (https://app.brevo.com/security/authorised_ips).
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(
+            `Mailbox read rejected (HTTP ${response.status}): ${body}`
+          )
+        }
+
+        // Transient (5xx, 429 épuisé…): the caller retries until its deadline.
+        this.warnOnce(`Mailbox read failed (HTTP ${response.status}): ${body}`)
+
+        return undefined
+      }
+
+      const data = (await response.json()) as BrevoResponse
+      const messages = (data.messages ?? []).sort(
+        (a, b) =>
+          (b.sentAt ? new Date(b.sentAt).getTime() : 0) -
+          (a.sentAt ? new Date(a.sentAt).getTime() : 0)
+      )
+
+      return messages.length > 0 ? { subject: messages[0].subject } : undefined
     }
-
-    const data = (await response.json()) as BrevoResponse
-    const messages = (data.messages ?? []).sort(
-      (a, b) =>
-        (b.sentAt ? new Date(b.sentAt).getTime() : 0) -
-        (a.sentAt ? new Date(a.sentAt).getTime() : 0)
-    )
-
-    return messages.length > 0 ? { subject: messages[0].subject } : undefined
   }
 
   private warnOnce(message: string) {
