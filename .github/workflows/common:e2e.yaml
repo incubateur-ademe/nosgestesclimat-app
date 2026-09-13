@@ -44,9 +44,13 @@ jobs:
           # Shared with the runtime (see e2e-stack) so sessions decrypt.
           SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
         run: |
-          # NEXT_PUBLIC_* and encryption keys come from .github/e2e-local.env
+          # NEXT_PUBLIC_* and encryption keys come from .github/e2e-local.env.
+          # The site build evaluates server modules importing `env.server`
+          # (server components importing Brevo-using actions), so the mock
+          # third-party URLs from .env.e2e are needed here too.
           set -a
           source ../../.github/e2e-local.env
+          source .env.e2e
           set +a
           pnpm build
 
