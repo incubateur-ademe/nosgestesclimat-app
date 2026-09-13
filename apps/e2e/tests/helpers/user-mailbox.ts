@@ -21,16 +21,6 @@ export class UserMailbox {
   }
 
   async lookup(templateId: number): Promise<EmailRecord | undefined> {
-    // Emails take a few seconds to appear, and the adapter throttles its calls
-    // (Brevo: 2 req/s total): poll until the deadline.
-    const deadline = Date.now() + 30_000
-    let email: EmailRecord | undefined
-    while (!email && Date.now() < deadline) {
-      email = await adapter.lookup(this.email, templateId)
-      if (!email) {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-      }
-    }
-    return email
+    return adapter.lookup(this.email, templateId)
   }
 }
