@@ -10,7 +10,7 @@ const env = (name: string): string => {
 
 interface BrevoMessage {
   subject?: string
-  /** Envoi, au format ISO 8601 (ex. 2026-09-13T16:31:42.475+02:00). */
+  /** Send time, ISO 8601 (e.g. 2026-09-13T16:31:42.475+02:00). */
   date?: string
 }
 
@@ -18,10 +18,14 @@ interface BrevoResponse {
   transactionalEmails?: BrevoMessage[]
 }
 
-// Brevo limite `GET /v3/smtp/emails` à 2 req/s (`x-sib-ratelimit-limit`) et
-// Chrome et Firefox tournent en parallèle, 3 workers chacun : 6 process lisent en
-// même temps, d'où 8 s d'espacement par process (~0,75 req/s au total).
+// Brevo allows 2 req/s on `GET /v3/smtp/emails`, and the 6 processes of the CI
+// (Chrome + Firefox, 3 workers each) read concurrently: 8 s between requests per
+// process stays around 0.75 req/s.
 const MIN_INTERVAL_MS = 8_000
+
+// Brevo indexes sends with a variable delay (up to ~1 min): keep reading until
+// this deadline.
+const LOOKUP_DEADLINE_MS = 45_000
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -38,7 +42,7 @@ const throttle = async () => {
 export class BrevoMailbox implements MailboxAdapter {
   private readonly url: string
   private readonly token: string
-  // The caller polls: log an upstream failure once per distinct message.
+  // Retries repeat the same failure: warn once per distinct message.
   private readonly loggedErrors = new Set<string>()
 
   constructor() {
@@ -48,9 +52,23 @@ export class BrevoMailbox implements MailboxAdapter {
     this.token = env('FGP_BREVO_READONLY_TOKEN')
   }
 
-  // The verification template interpolates the code into the subject line, so we
-  // read the subject rather than fetching the full email body.
   async lookup(
+    email: string,
+    templateId: number
+  ): Promise<EmailRecord | undefined> {
+    const deadline = Date.now() + LOOKUP_DEADLINE_MS
+    let record: EmailRecord | undefined
+
+    do {
+      record = await this.fetchLastEmail(email, templateId)
+    } while (!record && Date.now() < deadline)
+
+    return record
+  }
+
+  // The verification template interpolates the code into the subject, so reading
+  // the subject is enough.
+  private async fetchLastEmail(
     email: string,
     templateId: number
   ): Promise<EmailRecord | undefined> {
@@ -68,17 +86,9 @@ export class BrevoMailbox implements MailboxAdapter {
     if (!response.ok) {
       const body = await response.text()
 
-      // Un 401/403 ne se résout pas en réessayant : blob FGP tourné, clé Brevo
-      // révoquée, ou IP de sortie absente de la liste autorisée du compte.
-      // On remonte la raison plutôt qu'un « No verification code received ».
-      if (response.status === 401 || response.status === 403) {
-        throw new Error(
-          `Mailbox read rejected (HTTP ${response.status}): ${body}`
-        )
-      }
-
-      // 429, 5xx… : au tour suivant du caller, que l'espacement ci-dessus
-      // empêche de transformer en rafale.
+      // 429, 5xx and even 401/403: Brevo rejects isolated requests (rate limit,
+      // egress IP), so let the next round retry. The body is what tells a real
+      // configuration error (rotated blob, revoked key…) from a transient one.
       this.warnOnce(`Mailbox read failed (HTTP ${response.status}): ${body}`)
 
       return undefined
@@ -86,9 +96,8 @@ export class BrevoMailbox implements MailboxAdapter {
 
     const data = (await response.json()) as BrevoResponse
     if (!Array.isArray(data.transactionalEmails)) {
-      // `{}` = aucun email pour ces critères (le cas tant que le code n'est pas
-      // encore parti). Toute autre forme est inattendue : la signaler évite
-      // qu'un changement de champ passe pour un code jamais reçu.
+      // `{}` means "no email for these criteria yet"; any other shape is
+      // unexpected and worth reporting.
       const keys = Object.keys(data)
       if (keys.length > 0) {
         this.warnOnce(
@@ -98,8 +107,7 @@ export class BrevoMailbox implements MailboxAdapter {
       return undefined
     }
 
-    // Plusieurs envois possibles pour un même email (code redemandé) : on garde
-    // le plus récent.
+    // A code can be requested twice for the same address: keep the latest one.
     const [latest] = [...data.transactionalEmails].sort(
       (a, b) =>
         (b.date ? Date.parse(b.date) : 0) - (a.date ? Date.parse(a.date) : 0)

@@ -22,7 +22,7 @@ export default defineConfig<FixturesOptions>({
   },
   // La lecture du code de vérification par Brevo impose de patienter (cf.
   // tests/mailbox/brevo-mailbox.ts) : timeout élargi dans ce cas seulement.
-  timeout: process.env.E2E_MAILBOX === 'brevo' ? 90_000 : 60_000,
+  timeout: process.env.E2E_MAILBOX === 'brevo' ? 120_000 : 60_000,
   expect: {
     timeout: 10_000,
   },
