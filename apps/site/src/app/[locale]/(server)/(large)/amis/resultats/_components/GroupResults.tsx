@@ -1,62 +1,52 @@
-'use client'
-
-import FootprintSelector from '@/components/footprints/FootprintSelector'
+import ActionsBlock from '@/components/results/ActionsBlock'
+import CategoriesAccordion from '@/components/results/CategoriesAccordion'
 import CategoriesChart from '@/components/results/CategoriesChart'
-import Trans from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransServer'
 import { carboneMetric } from '@/constants/model/metric'
 import Separator from '@/design-system/layout/Separator'
-import { useGetGroupStats } from '@/hooks/groups/useGetGroupStats'
 import type { Locale } from '@/i18nConfig'
+import type { ComputedResults, Metric } from '@/publicodes-state/types'
+import type { Group } from '@/types/groups'
+import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
-import type { Group, Results } from '@/types/groups'
-import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
-import type { ReactNode } from 'react'
-import { useState } from 'react'
 import { isGroupOwner } from '../../_helpers/isGroupOwner'
+import GroupFootprintSelector from './groupResults/GroupFootprintSelector'
+import GroupPointsFortsFaibles from './groupResults/GroupPointsFortsFaibles'
 import InviteBlock from './groupResults/InviteBlock'
 import OwnerAdminSection from './groupResults/OwnerAdminSection'
 import ParticipantAdminSection from './groupResults/ParticipantAdminSection'
-import PointsFortsFaibles from './groupResults/PointsFortsFaibles'
 import Ranking from './groupResults/Ranking'
 
 export default function GroupResults({
+  locale,
   group,
   user,
-  categoriesAccordion,
-  actionsSection,
+  metric,
+  rules,
+  computedResults,
 }: {
   locale: Locale
   group: Group
   user: AppUser
-  categoriesAccordion?: ReactNode
-  actionsSection?: ReactNode
+  metric: Metric
+  rules: Partial<NGCRules>
+  computedResults: ComputedResults
 }) {
   const isOwner = isGroupOwner(group, user)
 
-  const [footprintSelected, setFootprintSelected] =
-    useState<Metrics>(carboneMetric)
-
-  const isCarbonFootprintSelected = footprintSelected === carboneMetric
-
-  const results: Results = useGetGroupStats({
-    groupMembers: group.participants,
-    userId: user.id,
-  })
+  const isCarbonFootprintSelected = metric === carboneMetric
 
   return (
     <>
       <div className="mt-4 flex items-center justify-between">
         <h2 className="m-0 text-base font-bold md:text-lg">
-          <Trans>Le classement</Trans>
+          <Trans locale={locale}>Le classement</Trans>
         </h2>
 
-        <FootprintSelector
-          footprintSelected={footprintSelected}
-          onChange={setFootprintSelected}
-        />
+        <GroupFootprintSelector metric={metric} />
       </div>
 
-      <Ranking group={group} metric={footprintSelected} user={user} />
+      <Ranking group={group} metric={metric} user={user} />
 
       <InviteBlock group={group} />
 
@@ -64,10 +54,7 @@ export default function GroupResults({
         <>
           <Separator />
 
-          <PointsFortsFaibles
-            pointsFaibles={results?.pointsFaibles}
-            pointsForts={results?.pointsForts}
-          />
+          <GroupPointsFortsFaibles group={group} user={user} />
         </>
       )}
 
@@ -78,14 +65,19 @@ export default function GroupResults({
         isCarbonFootprintSelected && (
           <>
             <h2 data-testid="votre-empreinte-title" className="mt-8">
-              <Trans>Votre empreinte</Trans>
+              <Trans locale={locale}>Votre empreinte</Trans>
             </h2>
 
             <CategoriesChart />
 
-            {categoriesAccordion}
+            <CategoriesAccordion
+              locale={locale}
+              rules={rules}
+              computedResults={computedResults}
+              metric={metric}
+            />
 
-            {actionsSection}
+            <ActionsBlock locale={locale} className="my-6" />
           </>
         )
       }

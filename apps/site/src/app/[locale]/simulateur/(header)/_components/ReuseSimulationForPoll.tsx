@@ -15,14 +15,14 @@ interface ReuseSimulationForPollProps {
   disclaimer: React.ReactNode
   simulation: Simulation
 }
-export default async function ReuseSimulationForPoll({
+export default function ReuseSimulationForPoll({
   reuseSimulation,
   createNewSimulation,
   locale,
   disclaimer,
   simulation,
 }: ReuseSimulationForPollProps) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const { formattedValue, unit } = formatFootprint(
     simulation.computedResults.carbone.bilan,

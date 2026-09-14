@@ -1,8 +1,8 @@
 import playwright from 'eslint-plugin-playwright'
 
 export default {
-  files: ['apps/site/e2e/**/*.ts'],
-  ignores: ['apps/site/e2e/fixtures/feature-flags.ts'],
+  files: ['apps/e2e/**/*.ts'],
+  ignores: ['apps/e2e/tests/fixtures/feature-flags.ts'],
   extends: [playwright.configs['flat/recommended']],
   plugins: {
     'ngc-e2e': {
@@ -35,5 +35,11 @@ export default {
   },
   rules: {
     'ngc-e2e/no-browser-newpage': 'error',
+    // Les helpers d'assertion maison (cf. apps/e2e/tests/helpers) contiennent
+    // les `expect` : on les déclare pour éviter le faux positif « no assertions ».
+    'playwright/expect-expect': [
+      'warn',
+      { assertFunctionNames: ['expect', 'expectNoBrokenImages'] },
+    ],
   },
 }

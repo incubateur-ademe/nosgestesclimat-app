@@ -10,12 +10,12 @@ interface Props {
   basePathname: string
 }
 
-export default async function FootprintsLinks({
+export default function FootprintsLinks({
   locale,
   currentPage,
   basePathname,
 }: Props) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="mb-6 text-center md:mb-8 md:text-right">

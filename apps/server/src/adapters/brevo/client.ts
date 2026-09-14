@@ -425,59 +425,6 @@ export const sendGroupParticipantSimulationUpsertedEmail = ({
   })
 }
 
-export const sendPollSimulationUpsertedEmail = async ({
-  email,
-  locale,
-  origin,
-  organisation: { name, slug: organisationSlug },
-  poll: { slug: pollSlug },
-  simulation: { id },
-}: Readonly<{
-  email: string
-  origin: string
-  locale: Locales
-  organisation: Pick<Organisation, 'name' | 'slug'>
-  poll: Pick<Poll, 'slug'>
-  simulation: Pick<Simulation, 'id'>
-}>) => {
-  const templateId = TemplateIds[locale].ORGANISATION_JOINED
-
-  const detailedViewUrl = new URL(
-    `${origin}/organisations/${organisationSlug}/campagnes/${pollSlug}`
-  )
-  const { searchParams: detailedViewUrlSearchParams } = detailedViewUrl
-  detailedViewUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  detailedViewUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[templateId]
-  )
-  const simulationUrl = new URL(origin)
-  simulationUrl.pathname = 'fin'
-  const { searchParams: simulationUrlSearchParams } = simulationUrl
-  simulationUrlSearchParams.append('sid', id)
-  simulationUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  simulationUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[TemplateIds[Locales.fr].SIMULATION_COMPLETED]
-  )
-
-  await sendEmail({
-    email,
-    templateId,
-    params: {
-      ORGANISATION_NAME: name,
-      DETAILED_VIEW_URL: detailedViewUrl.toString(),
-      SIMULATION_URL: simulationUrl.toString(),
-    },
-  })
-}
-
 export const sendNewsLetterConfirmationEmail = ({
   code,
   email,

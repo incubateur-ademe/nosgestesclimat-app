@@ -40,7 +40,7 @@ export default function NoResultsBlock({ locale }: { locale: Locale }) {
 
       <div className="flex justify-center">
         <img
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/engagement_collectif_pour_le_climat_4f8f1edfc1.svg"
+          src="/_static/cms/engagement_collectif_pour_le_climat_4f8f1edfc1.svg"
           alt=""
           width={340}
           className="grayscale"

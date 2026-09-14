@@ -19,7 +19,7 @@ export default function PasserTestBanner({ locale }: { locale: string }) {
 async function PasserTestBannerServer({ locale }: { locale: string }) {
   const user = await getUserSession()
   const journey = await getUserSimulationJourney()
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   if (hasCompletedCurrentSimulation(journey)) return null
   return (

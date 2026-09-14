@@ -1,7 +1,8 @@
 import HideInIframe from '@/components/layout/HideInIframe'
-import type { SimulationResult } from '@/helpers/server/model/simulationResult'
-import type { Tendency } from '@/helpers/server/model/utils/getTendency'
+import type { GroupDisplayInfo } from '@/helpers/server/model/utils/getGroupDisplayInfo'
 import type { Locale } from '@/i18nConfig'
+import type { ComputedResults } from '@/publicodes-state/types'
+import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
 import Trans from '../../translation/trans/TransServer'
 import ActionsBlock from '../ActionsBlock'
 import FootprintBlock from '../FootprintBlock'
@@ -11,19 +12,21 @@ import Objective from '../objective/Objective'
 import SaveResultsBlock from '../SaveResultsBlock'
 
 interface Props {
-  simulationResult: SimulationResult
+  computedResults: ComputedResults
   locale: Locale
   hideSaveBlock?: boolean
   tendency?: Tendency
   hasPreviousSimulation?: boolean
+  group?: GroupDisplayInfo | null
 }
 
 export default function CarbonFootprintResults({
-  simulationResult,
+  computedResults,
   locale,
-  tendency,
   hideSaveBlock = false,
+  tendency,
   hasPreviousSimulation = false,
+  group,
 }: Props) {
   return (
     <>
@@ -31,7 +34,7 @@ export default function CarbonFootprintResults({
         className="mb-8 md:mb-12"
         tendency={tendency}
         locale={locale}
-        value={simulationResult.computedResults.carbone.bilan}
+        value={computedResults.carbone.bilan}
         title={
           <Trans locale={locale} i18nKey="simulation.carbone.title">
             Vos émissions annuelles :
@@ -40,20 +43,18 @@ export default function CarbonFootprintResults({
         metric="carbone"
         unitSuffix={
           <Trans locale={locale} i18nKey="common.co2eAn.title">
-            CO₂e / an
+            CO₂e&nbsp;/&nbsp;an
           </Trans>
         }
       />
 
       <FootprintDetail
-        computedResults={simulationResult.computedResults}
+        computedResults={computedResults}
         locale={locale}
         metric="carbone"
       />
 
-      {simulationResult.group && (
-        <GroupThankYouBlock locale={locale} group={simulationResult.group} />
-      )}
+      {group && <GroupThankYouBlock locale={locale} group={group} />}
 
       {!hideSaveBlock && (
         <SaveResultsBlock
@@ -65,7 +66,7 @@ export default function CarbonFootprintResults({
       <HideInIframe>
         <Objective
           locale={locale}
-          carbonFootprint={simulationResult.computedResults.carbone.bilan}
+          carbonFootprint={computedResults.carbone.bilan}
         />
       </HideInIframe>
 

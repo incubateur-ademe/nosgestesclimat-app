@@ -141,13 +141,13 @@ const getObjectiveData = ({
   }
 }
 
-export default async function ObjectiveWithRhythm({
+export default function ObjectiveWithRhythm({
   locale,
   carbonFootprint,
   className,
   shouldDisplayBadge = true,
 }: Props) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
   const {
     displayValue,
     unit,

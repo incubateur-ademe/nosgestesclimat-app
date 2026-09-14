@@ -3,6 +3,7 @@ import type supertest from 'supertest'
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
+import * as v from 'valibot'
 import {
   brevoRemoveFromList,
   brevoSendEmail,
@@ -17,7 +18,10 @@ import {
 } from '../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../core/event-bus/event-bus.ts'
 import { getSimulationPayload } from '../../../simulations/__tests__/fixtures/simulations.fixtures.ts'
-import type { SimulationCreateInputDto } from '../../../simulations/simulations.validator.ts'
+import {
+  SimulationParticipantCreateDto,
+  type SimulationParticipantCreateInputDto,
+} from '../../../simulations/simulations.validator.ts'
 import type {
   OrganisationCreateDto,
   OrganisationPollCreateDto,
@@ -53,9 +57,6 @@ export const DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT_ROUTE =
 
 export const FETCH_ORGANISATION_PUBLIC_POLL_ROUTE =
   '/organisations/v1/public-polls/:pollIdOrSlug'
-
-export const CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE =
-  '/organisations/v1/public-polls/:pollIdOrSlug/simulations'
 
 type TestAgent = ReturnType<typeof supertest>
 
@@ -172,64 +173,52 @@ export const createOrganisationPoll = async ({
   return response.body
 }
 
+/**
+ * Seeds a poll participation in database: joining a poll no longer goes
+ * through this API (see core `participate-to-poll` service).
+ */
 export const createOrganisationPollSimulation = async ({
-  agent,
   userId = faker.string.uuid(),
-  email,
   pollId,
   simulation = {},
 }: {
-  agent: TestAgent
   userId?: string
-  email?: string
   pollId: string
-  simulation?: Partial<SimulationCreateInputDto>
+  simulation?: Partial<
+    Omit<SimulationParticipantCreateInputDto, 'additionalQuestionsAnswers'>
+  >
 }) => {
-  const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
+  const {
+    id,
+    date,
+    model,
+    situation,
+    foldedSteps,
+    progression,
+    computedResults,
+  } = v.parse(SimulationParticipantCreateDto, getSimulationPayload(simulation))
 
-  // The user identity (id/email) is resolved from the session by the proxy and
-  // forwarded as headers; it is never part of the request body.
-  const contactEmail = email
+  await prisma.user.upsert({
+    where: { id: userId },
+    create: { id: userId },
+    update: {},
+  })
 
-  mswServer.use(
-    brevoUpdateContact(),
-    brevoRemoveFromList(27, { invalid: true })
-  )
+  await prisma.simulation.create({
+    data: {
+      id,
+      date,
+      model,
+      situation,
+      foldedSteps,
+      progression,
+      computedResults,
+      userId,
+      polls: { create: { pollId } },
+    },
+  })
 
-  if (contactEmail) {
-    const existingParticipation = await prisma.simulationPoll.findFirst({
-      where: {
-        pollId,
-        simulation: {
-          user: {
-            email: contactEmail,
-          },
-        },
-      },
-      select: { id: true },
-    })
-
-    if (!existingParticipation) {
-      mswServer.use(brevoSendEmail())
-    }
-  }
-
-  const response = await agent
-    .post(
-      CREATE_ORGANISATION_PUBLIC_POLL_SIMULATION_ROUTE.replace(
-        ':pollIdOrSlug',
-        pollId
-      )
-    )
-    .set(authHeaders({ userId, email }))
-    .send(payload)
-    .expect(StatusCodes.CREATED)
-
-  await EventBus.flush()
-
-  resetMswServer()
-
-  return response.body
+  return { id, progression, computedResults, user: { id: userId } }
 }
 
 export const downloadOrganisationPollSimulationsResult = async ({

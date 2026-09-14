@@ -38,7 +38,12 @@ describe('Link', () => {
     expect(link).not.toHaveAttribute('aria-label')
   })
 
-  it('derives the aria-label from JSX children', () => {
+  it('does not derive the aria-label from JSX children', () => {
+    // A child element is rendered on the server but arrives as its *output* on
+    // the client (React Server Components), so deriving a label from it gives
+    // different results on each side and makes React regenerate the whole tree
+    // after hydrating. Only literal text is used; anchors wrapping a logo or an
+    // icon rely on the child's own accessible name or an explicit aria-label.
     render(
       <Link href="https://agirpourlatransition.ademe.fr">
         <span>
@@ -48,10 +53,7 @@ describe('Link', () => {
     )
 
     const link = screen.getByRole('link')
-    expect(link).toHaveAttribute(
-      'aria-label',
-      'Découvrez les conseils (ouvrir dans une nouvelle fenêtre)'
-    )
+    expect(link).not.toHaveAttribute('aria-label')
   })
 
   it('respects an explicit target', () => {

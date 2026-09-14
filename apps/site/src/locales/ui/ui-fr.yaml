@@ -774,6 +774,7 @@ entries:
   pollResults.waterFootprint.averageLabel: empreinte eau moyenne des participants
   pollResults.waterFootprint.body: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
   pollResults.waterFootprint.learnMore: En savoir plus
+  pollResults.funFacts.refreshNote: Les chiffres se mettent à jour toutes les {{duration}} environ
   common.category.alimentationShort: Alim.
   pollResults.footprintBarChart.targetLabelMobile: 'Objectif 2050 :'
   Empreinte carbone moyenne: Empreinte carbone moyenne
@@ -1101,7 +1102,7 @@ entries:
   simulation.eau.documentation.description: Notre calculateur repose sur un modèle de données, dont l'intégralité des calculs est documentée ; les données affichées sont directement associées à votre test.
   simulation.eau.documentation.link: Comprendre le calcul
   simulation.eau.documentation.title: Comment est calculée votre empreinte ?
-  simulation.eau.title: L’empreinte eau qui sert à produire ce que vous consommez
+  simulation.eau.title: L'empreinte eau qui sert à produire ce que vous consommez
   simulation.eau.whatIsWaterFootprint.description: "L'empreinte eau, c'est <2>l'ensemble de l'eau consommée</2> pour <5>produire</5>et <7>distribuer</7> les biens et services de votre quotidien. Par exemple il faut de l'eau pour :"
   simulation.eau.whatIsWaterFootprint.list.animals: l'alimentation des <1>animaux</1> que vous consommez
   simulation.eau.whatIsWaterFootprint.list.cotton: la culture du <1>coton</1> que vous portez
@@ -1279,8 +1280,8 @@ entries:
   common.authentication.verifyEmail: Vérifier mon adresse e-mail
   common.optional: facultatif
   common.skip: Passer
-  tutorial.email.contest.default: Votre e-mail sera utilisé pour le tirage au sort.
-  tutorial.email.contest.youth: Ton e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.default: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.youth: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.seeMore: En savoir plus
   tutorial.email.subtitle.default: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
@@ -1375,7 +1376,7 @@ entries:
   event.ctas.card1.buttonAriaLabel: Je participe, ouvrir dans une nouvelle fenêtre
   event.ctas.card2.buttonAriaLabel: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
   event.testimonies.4.text: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
-  event.countdown.date: Lancement le {{date}}
+  event.countdown.date: Rejoignez l'opération jusqu'au {{date}}
   event.countdown.description: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   event.countdown.label: Début dans
   event.statistics.title: Les données en direct apparaîtront au lancement
@@ -1396,7 +1397,7 @@ entries:
   event.podium.empty.type.public-services: collectivité
   results.footprintBlock.actionsBlock.link: Découvrir mes actions
   results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
-  common.co2eAn.title: CO₂e / an
+  common.co2eAn.title: CO₂e / an
   iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
   iframe.safari.errorTitle: Version de Safari incompatible
@@ -1459,6 +1460,8 @@ entries:
   event.dynamicCounter.target.title.default: Objectif
   event.dynamicCounter.target.title.over: Objectif dépassé
   event.dynamicCounter.target.title.topped: Objectif atteint
+  tutorial.email.title.defaultContest: Votre adresse e-mail pour le tirage au sort
+  tutorial.email.title.youthContest: Ton adresse e-mail pour le tirage au sort
   poll.creation.mode.error: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
   poll.creation.mode.select: Sélectionner
   poll.creation.mode.tempDisabled: Fonctionnalité désactivée temporairement, en cours d'amélioration

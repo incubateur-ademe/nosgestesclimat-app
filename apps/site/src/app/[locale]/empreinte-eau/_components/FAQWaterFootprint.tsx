@@ -3,12 +3,8 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-export default async function FAQWaterFootprint({
-  locale,
-}: {
-  locale: Locale
-}) {
-  const { t } = await getServerTranslation({ locale })
+export default function FAQWaterFootprint({ locale }: { locale: Locale }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <FAQ

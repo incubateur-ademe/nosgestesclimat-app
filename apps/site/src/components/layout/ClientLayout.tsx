@@ -9,8 +9,8 @@ import Banner from '@/design-system/cms/Banner'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { UserProvider } from '@/publicodes-state'
-import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
 import type { SkipLinksDisplayed } from '@/types'
+import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
 import type { PropsWithChildren } from 'react'
 import { Suspense } from 'react'
 
@@ -50,9 +50,7 @@ export const ClientLayout = ({
           </Suspense>
           <SkipToMainContentLink skipLinksDisplayed={skipLinksDisplayed} />
 
-          <Suspense fallback={null}>
-            <Banner locale={locale as Locale} />
-          </Suspense>
+          <Banner locale={locale as Locale} />
           {children}
           <GoogleTagScript />
           <GoogleTagIframe />

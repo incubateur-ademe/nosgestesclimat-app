@@ -12,7 +12,7 @@ export interface CarouselProps extends React.ComponentPropsWithoutRef<'div'> {
   slidesPerGroup?: { mobile?: number; desktop?: number }
 }
 
-export default async function Carousel({
+export default function Carousel({
   className,
   innerClassName,
   slideClassName,
@@ -21,7 +21,7 @@ export default async function Carousel({
   slidesPerGroup,
   ...rest
 }: CarouselProps) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const translations = {
     prevSlideMessage: t(

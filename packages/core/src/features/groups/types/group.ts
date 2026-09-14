@@ -7,3 +7,8 @@ export interface Group {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface GroupSummary {
+  id: string
+  name: string
+}

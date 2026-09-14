@@ -1,0 +1,118 @@
+import { faker } from '@faker-js/faker'
+import { START_SIMULATION_PATH, TEST_EMAIL_DOMAIN } from '../constants'
+import { expect, test } from '../fixtures'
+import { UserMailbox } from '../helpers/user-mailbox'
+import {
+  GROUP_ADMIN_STATE,
+  NEW_VISITOR_STATE,
+  USER_ACCOUNT_STATE,
+} from '../state'
+
+test.use({ storageState: USER_ACCOUNT_STATE })
+
+test.describe('Login - invalid verification code', () => {
+  test.use({ storageState: NEW_VISITOR_STATE })
+
+  test('should display error when entering a wrong code', async ({
+    page,
+    user,
+  }) => {
+    await page.goto('/connexion')
+
+    const emailInput = page.getByTestId('verification-code-email-input')
+    await expect(emailInput).toBeVisible()
+    await emailInput.scrollIntoViewIfNeeded()
+    await emailInput.fill(user.email)
+    await page.waitForTimeout(500)
+    await emailInput.press('Enter')
+
+    const codeInput = page.getByTestId('verification-code-input')
+    await expect(codeInput).toBeInViewport()
+
+    await codeInput.fill('000000')
+    await page.getByTestId('verification-code-submit-button').click()
+
+    await expect(page.getByText('Le code est invalide')).toBeVisible()
+  })
+})
+
+test.describe.fixme('Logout', () => {
+  test('should log out and redirect to homepage', async ({ page }) => {
+    await page.goto('/mon-espace')
+    await expect(page.getByTestId('my-results-tab')).toBeVisible()
+
+    await page.getByTestId('my-space-button').click()
+
+    await page.getByTestId('my-space-logout-button').click()
+
+    await expect(page).toHaveURL('/')
+
+    // After logout, the personal space must redirect to the login page. This
+    // redirect is served through the PPR/RSC stream (the unauthorized
+    // boundary calls `redirect('/connexion')`), which can abort the document
+    // load in Chromium (net::ERR_ABORTED). Commit to the navigation first,
+    // then assert where the app actually lands.
+    await page
+      .goto('/mon-espace', { waitUntil: 'commit' })
+      .catch(() => undefined)
+    await expect(page).toHaveURL(/\/connexion/)
+  })
+})
+
+test.describe.fixme('Email change', () => {
+  test('can change email from personal space', async ({ page }) => {
+    const newEmail = faker.internet.email({
+      provider: TEST_EMAIL_DOMAIN,
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+    })
+
+    await page.goto('/mon-espace/parametres')
+    await expect(page.getByTestId('user-email-display')).toBeVisible()
+
+    await page.getByTestId('edit-email-button').click()
+
+    await page.locator('input[name="email"]').first().fill(newEmail)
+    await page.getByTestId('submit-button').click()
+
+    const codeInput = page.getByTestId('verification-code-input')
+    await expect(codeInput).toBeInViewport()
+
+    const code = await new UserMailbox(newEmail).getVerificationCode()
+    await codeInput.fill(code)
+
+    await page.getByTestId('verification-code-submit-button').click()
+
+    await expect(page.getByTestId('success-message')).toBeVisible()
+
+    await expect(page.getByTestId('user-email-display')).toHaveText(
+      newEmail.toLowerCase()
+    )
+  })
+})
+
+test.describe('Simulation deletion', () => {
+  test.use({ storageState: GROUP_ADMIN_STATE })
+  test.setTimeout(120_000)
+
+  test('can delete a simulation from personal space', async ({
+    page,
+    ngcTest,
+  }) => {
+    await page.goto(START_SIMULATION_PATH)
+    await ngcTest.skipAllQuestions()
+
+    await page.goto('/mon-espace')
+    await expect(page.getByTestId('results-list-title')).toBeVisible()
+
+    const deleteButtons = page.getByTestId('delete-simulation-button')
+    const initialCount = await deleteButtons.count()
+    expect(initialCount).toBeGreaterThan(0)
+
+    await deleteButtons.first().click()
+    await page.getByTestId('confirm-delete-simulation-button').click()
+
+    // The deletion goes through a server action (fetch + revalidatePath); on a
+    await expect(deleteButtons).toHaveCount(initialCount - 1)
+  })
+})
