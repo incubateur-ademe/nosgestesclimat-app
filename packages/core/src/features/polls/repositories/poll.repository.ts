@@ -21,7 +21,8 @@ const pollSummarySelect = {
   id: true,
   name: true,
   slug: true,
-  organisation: { select: { slug: true } },
+  mode: true,
+  organisation: { select: { name: true, slug: true } },
 } as const
 
 export const findPollById = async (id: string): Promise<Poll | null> => {
@@ -29,19 +30,6 @@ export const findPollById = async (id: string): Promise<Poll | null> => {
     where: { id },
     select: pollSelect,
   })
-  return row ? toPoll(row) : null
-}
-
-export const findPollByIdOrSlug = async ({
-  pollIdOrSlug,
-}: {
-  pollIdOrSlug: string
-}): Promise<Poll | null> => {
-  const row = await prisma.poll.findUnique({
-    where: isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug },
-    select: pollSelect,
-  })
-
   return row ? toPoll(row) : null
 }
 
@@ -78,6 +66,17 @@ export const findPollSummaryById = async ({
 }): Promise<PollSummary | null> => {
   return prisma.poll.findUnique({
     where: { id },
+    select: pollSummarySelect,
+  })
+}
+
+export const findPollSummaryByIdOrSlug = async ({
+  pollIdOrSlug,
+}: {
+  pollIdOrSlug: string
+}): Promise<PollSummary | null> => {
+  return prisma.poll.findUnique({
+    where: isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug },
     select: pollSummarySelect,
   })
 }
