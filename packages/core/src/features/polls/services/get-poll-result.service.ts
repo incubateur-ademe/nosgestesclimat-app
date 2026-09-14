@@ -1,6 +1,6 @@
 import { findLatestCompletedPollSimulation } from '../../simulations/repository/simulation.repository.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
-import { MIN_PARTICIPANTS_FOR_RESULTS } from '../helpers/results-visibility.ts'
+import { resolveAnonymity } from '../helpers/anonymity-policy.ts'
 import { countPollParticipants } from '../repositories/poll-participation.repository.ts'
 import {
   findPollByIdOrSlugInOrganisation,
@@ -8,9 +8,14 @@ import {
 } from '../repositories/poll.repository.ts'
 import { resolveCooldownSeconds } from '../stats/helpers/cooldown-policy.ts'
 import { pollStatsCooldownTiers } from '../stats/helpers/poll-stats-cooldown-tiers.ts'
-import type { Poll, PollResults } from '../types/poll.ts'
+import type {
+  Poll,
+  PollAnonymityNotReached,
+  PollAnonymityReached,
+  PollResults,
+} from '../types/poll.ts'
 
-export interface PollResult {
+interface PollResultBase {
   poll: Poll
   /**
    * Delay the worker applies between two recomputations of this poll's
@@ -20,11 +25,6 @@ export interface PollResult {
   cooldownSeconds: number
   /** Finished simulations: an unfinished one is not a participant. */
   participants: number
-  /**
-   * `null` below `MIN_PARTICIPANTS_FOR_RESULTS`, and until the worker has
-   * computed them.
-   */
-  results: PollResults | null
   /** `null` until the user has a finished simulation for this poll. */
   userParticipation: Simulation | null
 }
@@ -34,6 +34,25 @@ export interface PollResult {
  * its aggregates when they may be published, and the viewer's own contribution
  * to compare against them.
  *
+ * `anonymity` and `results` answer two different questions — may anything be
+ * published, and has the worker computed it — and the type only lets the second
+ * be answered once the first is.
+ */
+export type PollResult = PollResultBase &
+  (
+    | { anonymity: PollAnonymityNotReached; results: null }
+    | {
+        anonymity: PollAnonymityReached
+        /**
+         * `null` while the worker has not computed them: a completion queues
+         * its first run, and later ones can be deferred by the cooldown or
+         * fail.
+         */
+        results: PollResults | null
+      }
+  )
+
+/**
  * Returns `null` when the poll does not exist, or does not belong to the
  * organisation it is addressed through.
  */
@@ -60,14 +79,21 @@ export const getPollResult = async ({
     findPollResults({ pollId: poll.id }),
   ])
 
-  return {
+  const base = {
     poll,
     cooldownSeconds: resolveCooldownSeconds(
       pollStatsCooldownTiers,
       participants
     ),
     participants,
-    results: participants >= MIN_PARTICIPANTS_FOR_RESULTS ? results : null,
     userParticipation,
   }
+
+  const anonymity = resolveAnonymity(participants)
+
+  if (!anonymity.isReached) {
+    return { ...base, anonymity, results: null }
+  }
+
+  return { ...base, anonymity, results }
 }

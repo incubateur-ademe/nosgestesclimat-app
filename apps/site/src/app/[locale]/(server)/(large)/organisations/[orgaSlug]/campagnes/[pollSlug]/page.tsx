@@ -26,6 +26,7 @@ export default async function CampagnePage({
   const {
     poll,
     participants,
+    anonymity,
     userParticipation,
     cooldownSeconds,
     results,
@@ -94,6 +95,7 @@ export default async function CampagnePage({
 
           <PollStatistics
             participants={participants}
+            anonymity={anonymity}
             cooldownSeconds={cooldownSeconds}
             computedResults={results?.computedResults ?? null}
             funFacts={results?.funFacts ?? null}

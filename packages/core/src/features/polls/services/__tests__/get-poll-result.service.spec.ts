@@ -181,6 +181,10 @@ describe('getPollResult', () => {
     })
 
     expect(result?.participants).toBe(belowThreshold)
+    expect(result?.anonymity).toEqual({
+      minParticipants: 3,
+      isReached: false,
+    })
     expect(result?.results).toBeNull()
   })
 
@@ -200,6 +204,7 @@ describe('getPollResult', () => {
       userId: null,
     })
 
+    expect(result?.anonymity).toEqual({ minParticipants: 3, isReached: true })
     expect(result?.results).toEqual({ computedResults, funFacts: null })
   })
 
@@ -218,6 +223,7 @@ describe('getPollResult', () => {
       userId: null,
     })
 
+    expect(result?.anonymity.isReached).toBe(true)
     expect(result?.results).toBeNull()
   })
 })
