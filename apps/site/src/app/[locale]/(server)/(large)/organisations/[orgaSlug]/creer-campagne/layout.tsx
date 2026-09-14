@@ -10,7 +10,7 @@ export async function generateMetadata({
 }>) {
   const { orgaSlug, locale } = await params
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return getMetadataObject({
     locale,

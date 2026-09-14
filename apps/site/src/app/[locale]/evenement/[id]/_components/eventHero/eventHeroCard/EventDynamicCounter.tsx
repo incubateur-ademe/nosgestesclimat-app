@@ -15,7 +15,7 @@ interface Props {
   secondaryCtaHref: string
 }
 
-export default async function EventDynamicCounter({
+export default function EventDynamicCounter({
   locale,
   currentValue,
   targetValue,
@@ -23,7 +23,7 @@ export default async function EventDynamicCounter({
   primaryCtaHref,
   secondaryCtaHref,
 }: Props) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (

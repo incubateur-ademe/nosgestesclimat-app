@@ -29,9 +29,5 @@ pnpm -F site dev
 
 ### Tests end-to-end
 
-Nous utilisons [Playwright](https://playwright.dev/) pour les tests end-to-end.
-
-Pour lancer les tests :
-
-1. lancez le serveur local : `pnpm -F site dev`
-2. dans un autre terminal, lancez `pnpm -F site e2e` pour ouvrir l'interface Playwright.
+Les tests end-to-end (Playwright) vivent désormais dans le package `apps/e2e`.
+Voir le [README du package e2e](../e2e/README.md) pour les lancer en local.

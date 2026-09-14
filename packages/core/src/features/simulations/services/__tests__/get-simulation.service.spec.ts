@@ -2,10 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import {
-  simulationFactory,
-  validComputedResults,
-} from '../../factories/simulation.factory.ts'
+import { computedResultsFactory } from '../../factories/computed-results.factory.ts'
+import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { getSimulation } from '../get-simulation.service.ts'
 
 vi.mock('../../helpers/migrate-simulation.ts', () => ({
@@ -59,7 +57,7 @@ describe('getSimulation', () => {
       progression: 0.5,
       situation: {},
       foldedSteps: [],
-      computedResults: validComputedResults,
+      computedResults: computedResultsFactory.valid().build(),
       createdAt: simulation.createdAt,
       updatedAt: simulation.updatedAt,
       userId: user.id,

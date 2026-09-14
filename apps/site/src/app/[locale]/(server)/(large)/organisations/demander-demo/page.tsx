@@ -9,7 +9,7 @@ export default async function DemanderDemoPage({
   params,
 }: PageProps<'/[locale]/organisations/demander-demo'>) {
   const { locale } = await params
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>

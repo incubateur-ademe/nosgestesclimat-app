@@ -26,11 +26,6 @@ const deepMerge = (
     { ...record1 }
   )
 
-export const deepMergeSum = (
-  record1: RecordToDeepMerge,
-  record2: RecordToDeepMerge
-) => deepMerge(record1, record2, (a, b) => +(a + b).toPrecision(12))
-
 export const deepMergeSubstract = (
   record1: RecordToDeepMerge,
   record2: RecordToDeepMerge

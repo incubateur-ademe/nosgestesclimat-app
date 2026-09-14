@@ -96,7 +96,8 @@ describe('getExternalLinkProps', () => {
     expect(props.ariaLabel).toBe('Ouvrir les conseils ADEME')
   })
 
-  it('derives the aria-label from the children JSX', () => {
+  it('does not derive the aria-label from JSX children', () => {
+    // Elements are never introspected: see the note in `externalLink.ts`.
     const props = getExternalLinkProps({
       href: 'https://agirpourlatransition.ademe.fr',
       siteUrl: SITE_URL,
@@ -105,6 +106,17 @@ describe('getExternalLinkProps', () => {
           Découvrez <strong>les conseils</strong>
         </span>
       ),
+      t,
+    })
+
+    expect(props.ariaLabel).toBeUndefined()
+  })
+
+  it('derives the aria-label from a text child', () => {
+    const props = getExternalLinkProps({
+      href: 'https://agirpourlatransition.ademe.fr',
+      siteUrl: SITE_URL,
+      children: ['Découvrez ', 'les conseils'],
       t,
     })
 

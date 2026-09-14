@@ -9,14 +9,14 @@ import Image from 'next/image'
 import SearchBar from './SearchBar'
 import DocumentationLandingCard from './documentationLanding/DocumentationLandingCard'
 
-export default async function DocumentationLanding({
+export default function DocumentationLanding({
   rules,
   locale,
 }: {
   rules: NGCRules
   locale: Locale
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   // We want to be able to define an order for the cards and their summary here
   const fixedCardSummaries = {
@@ -60,7 +60,7 @@ export default async function DocumentationLanding({
         {/* Displayed on mobile only */}
         <Image
           className="ml-auto h-auto w-48 md:hidden md:w-full"
-          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_girl_reading_newspaper_d171290d3d.png"
+          src="/_static/cms/medium_girl_reading_newspaper_d171290d3d.png"
           width="400"
           height="300"
           alt={t(
@@ -71,7 +71,7 @@ export default async function DocumentationLanding({
         <SquareImageContainer className="hidden max-w-96 md:flex">
           <Image
             className="ml-auto h-auto w-48 md:w-full"
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/medium_girl_reading_newspaper_d171290d3d.png"
+            src="/_static/cms/medium_girl_reading_newspaper_d171290d3d.png"
             width="400"
             height="300"
             alt={t(

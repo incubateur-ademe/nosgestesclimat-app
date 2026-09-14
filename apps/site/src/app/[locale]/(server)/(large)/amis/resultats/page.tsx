@@ -1,3 +1,4 @@
+import { carboneMetric, eauMetric } from '@/constants/model/metric'
 import {
   END_PAGE_GROUPS_PATH,
   MON_ESPACE_GROUPS_PATH,
@@ -12,8 +13,15 @@ import { groupResultsGuard } from './guard'
 export default async function GroupResultsPage({
   params,
   searchParams,
-}: DefaultPageProps<{ searchParams: Promise<{ groupId: string }> }>) {
+}: DefaultPageProps<{
+  searchParams: Promise<{ groupId: string; metric?: string }>
+}>) {
   const locale = (await params).locale
+
+  // La métrique vit dans l'URL (cf. `GroupFootprintSelector`) : le serveur peut
+  // donc rendre directement le bloc correspondant.
+  const metric =
+    (await searchParams)?.metric === eauMetric ? eauMetric : carboneMetric
 
   const [{ user, group, userSimulation }, rules] = await Promise.all([
     groupResultsGuard(searchParams),
@@ -43,6 +51,7 @@ export default async function GroupResultsPage({
           <GroupPage
             group={group}
             locale={locale}
+            metric={metric}
             user={user}
             userSimulation={userSimulation}
           />

@@ -29,7 +29,7 @@ const orderClasses = {
   3: 'order-3',
 } as const
 
-export default async function PodiumVisual({
+export default function PodiumVisual({
   items,
   className,
   locale,
@@ -41,7 +41,7 @@ export default async function PodiumVisual({
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 15)
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const organisationType = {
     all: t('event.podium.empty.type.all', 'organisation'),

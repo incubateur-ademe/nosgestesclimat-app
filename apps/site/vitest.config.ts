@@ -11,6 +11,8 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_SITE_URL: 'http://localhost:3000',
       SESSION_ENCRYPTION_KEY: 'fake-test-key-256bit-not-a-secret',
+      BREVO_URL: 'https://api.brevo.test',
+      BREVO_API_KEY: 'fake-test-brevo-api-key',
     },
     css: true,
     exclude: ['**/node_modules/**', '**/e2e/**', '**/.next/**'],

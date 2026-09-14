@@ -1,16 +1,22 @@
 import { Exception } from '../../../exception.ts'
-import type { Model } from '../../simulations/types/model.ts'
+import { DomainError } from '../../../lib/errors.ts'
 
-export class SimulationComputationFailedException extends Exception<{
-  simulationId: string
-}> {
-  level = 'fatal' as const
-}
+export class SimulationComputationFailedError extends DomainError<'simulation_computation_failed'> {
+  public readonly simulationId: string
 
-export class ComputationAlreadyExistsException extends Exception<{
-  simulationId: string
-}> {
-  level = 'error' as const
+  constructor({
+    simulationId,
+    cause,
+  }: {
+    simulationId: string
+    cause?: unknown
+  }) {
+    super('simulation_computation_failed', 'Simulation computation failed')
+    this.simulationId = simulationId
+    if (cause !== undefined) {
+      this.cause = cause
+    }
+  }
 }
 
 export class SimulationNotFinishedException extends Exception<{
@@ -18,10 +24,4 @@ export class SimulationNotFinishedException extends Exception<{
   progression: number
 }> {
   level = 'error' as const
-}
-
-export class UnsupportedModelException extends Exception<{
-  model: Model
-}> {
-  level = 'warning' as const
 }

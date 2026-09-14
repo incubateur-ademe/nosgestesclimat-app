@@ -79,7 +79,8 @@ export class PostHog {
     }
 
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_API_HOST,
+      ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST,
       cookieless_mode: 'on_reject',
       defaults: '2026-01-30',
       debug: APP_ENV !== 'production',

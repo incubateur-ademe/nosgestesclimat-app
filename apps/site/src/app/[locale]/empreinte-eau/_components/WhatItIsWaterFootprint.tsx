@@ -3,12 +3,8 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
-export default async function WhatItIsWaterFootprint({
-  locale,
-}: {
-  locale: string
-}) {
-  const { t } = await getServerTranslation({ locale })
+export default function WhatItIsWaterFootprint({ locale }: { locale: string }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <WhatItIs
@@ -50,7 +46,7 @@ export default async function WhatItIsWaterFootprint({
         </section>
       }
       illustration={{
-        url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/definition_empreinte_eau_39d3fa00e2.svg',
+        url: '/_static/cms/definition_empreinte_eau_39d3fa00e2.svg',
         alternativeText: t(
           "Une balance indiquant la quantité d'eau nécessaire pour produire un ordinateur"
         ),

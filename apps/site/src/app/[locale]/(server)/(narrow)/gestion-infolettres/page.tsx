@@ -29,10 +29,8 @@ export default async function NewsletterManagementPage({
     redirect(`${MON_ESPACE_SETTINGS_PATH}#infolettres`)
   }
   const { locale } = await params
-  const [{ t }, newsletters] = await Promise.all([
-    getServerTranslation({ locale }),
-    getNewsletters({ locale }),
-  ])
+  const { t } = getServerTranslation({ locale })
+  const newsletters = await getNewsletters({ locale })
 
   return (
     <div className="mb-12">

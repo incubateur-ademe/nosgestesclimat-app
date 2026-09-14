@@ -11,7 +11,7 @@ import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/(ro
 import { useFormState } from '@/publicodes-state'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { useEndTest } from '../_hooks/useEndPage'
+import { useCompleteSimulation } from '../_hooks/useCompleteSimulation'
 import FunFact from './form/FunFact'
 import ResultsBlocksDesktop from './form/ResultsBlockDesktop'
 import ResultsBlockMobile from './form/ResultsBlockMobile'
@@ -24,7 +24,7 @@ export default function Form() {
     currentCategory,
   } = useFormState()
 
-  const { endTest, isPending } = useEndTest()
+  const { completeSimulation, isPending } = useCompleteSimulation()
 
   const { isIframe } = useIframe()
 
@@ -55,7 +55,7 @@ export default function Form() {
                 key="iframe-navigation"
                 question={currentQuestion}
                 remainingQuestions={remainingQuestions}
-                onComplete={endTest}
+                onComplete={completeSimulation}
                 isPending={isPending}
               />
             )}
@@ -83,7 +83,7 @@ export default function Form() {
           key="default-navigation"
           question={currentQuestion}
           remainingQuestions={remainingQuestions}
-          onComplete={endTest}
+          onComplete={completeSimulation}
           isPending={isPending}
         />
       )}
