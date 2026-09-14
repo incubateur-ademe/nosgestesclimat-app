@@ -22,12 +22,8 @@ export function useSwitchLanguage(): {
   const currentLocale = useCurrentLocale(i18nConfig)! as Locale
   const alternatePaths = useAlternateLanguagePaths()
 
-  // Keep the current origin and search params, swap only the pathname for
-  // the one declared by the page's hreflang metadata — handles pages whose
-  // slugs differ per locale (e.g. action detail pages)
-  const generateLanguageUrl = (alternatePath: string): string => {
-    if (typeof window === 'undefined') return ''
-
+  // Preserve search params ; also slugs may differ per locale (e.g. action detail pages)
+  const buildUrlWhilePreservingParams = (alternatePath: string): string => {
     const url = new URL(window.location.href)
 
     url.pathname = alternatePath
@@ -36,18 +32,16 @@ export function useSwitchLanguage(): {
   }
 
   return useMemo(() => {
-    // There is no english version for the current page
-    // we don't need to return the language objects
     if (!alternatePaths.en || !alternatePaths.fr) return null
 
     const languages: Record<Locale, Language> = {
       [LOCALE_FR_KEY]: {
-        url: generateLanguageUrl(alternatePaths.fr),
+        url: buildUrlWhilePreservingParams(alternatePaths.fr),
         flag: '🇫🇷',
         completeLanguageString: t('shared.french', 'français'),
       },
       [LOCALE_EN_KEY]: {
-        url: generateLanguageUrl(alternatePaths.en),
+        url: buildUrlWhilePreservingParams(alternatePaths.en),
         flag: '🇬🇧',
         completeLanguageString: t('shared.english', 'anglais'),
       },
