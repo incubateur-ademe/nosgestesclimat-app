@@ -58,22 +58,12 @@ interface BaseOrganisationPoll {
   simulations: {
     count: number
     finished: number
-    hasParticipated: boolean
     cooldownSeconds: number
   }
-  progression?: number
   /**
    * computedResults de toutes les simulations (somme)
    */
   computedResults?: ComputedResults | null
-  /**
-   * computedResults de l'utilisateur si il a participé
-   */
-  userComputedResults?: ComputedResults
-  /**
-   * computedResults de toutes les simulations moins ceux de l'utilisateur si il a participé
-   */
-  otherComputedResults?: ComputedResults
   funFacts?: FunFacts | null
 }
 
