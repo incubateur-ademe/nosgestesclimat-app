@@ -15,7 +15,7 @@ interface Language {
 }
 
 export function useSwitchLanguage(): {
-  languages: Record<Locale, Language>
+  languagesData: Record<Locale, Language>
   activeLocale: Locale
   inactiveLocale: Locale
 } | null {
@@ -34,7 +34,7 @@ export function useSwitchLanguage(): {
   return useMemo(() => {
     if (!alternatePaths.en || !alternatePaths.fr) return null
 
-    const languages: Record<Locale, Language> = {
+    const languagesData: Record<Locale, Language> = {
       [LOCALE_FR_KEY]: {
         url: buildUrlWhilePreservingParams(alternatePaths.fr),
         flag: '🇫🇷',
@@ -48,7 +48,7 @@ export function useSwitchLanguage(): {
     }
 
     return {
-      languages,
+      languagesData,
       activeLocale: currentLocale,
       inactiveLocale:
         currentLocale === LOCALE_FR_KEY ? LOCALE_EN_KEY : LOCALE_FR_KEY,

@@ -24,12 +24,12 @@ export default function LanguageSwitchButton({ className }: Props) {
 
   const { t } = useClientTranslation()
 
-  const result = useSwitchLanguage()
-  if (!result) return null
+  const switchLanguageObject = useSwitchLanguage()
+  if (!switchLanguageObject) return null
 
-  const { languages, activeLocale, inactiveLocale } = result
-  const activeLang = languages[activeLocale]
-  const inactiveLang = languages[inactiveLocale]
+  const { languagesData, activeLocale, inactiveLocale } = switchLanguageObject
+  const activeLang = languagesData[activeLocale]
+  const inactiveLang = languagesData[inactiveLocale]
 
   const triggerTitle = t(
     'switchLang.linkTitle',

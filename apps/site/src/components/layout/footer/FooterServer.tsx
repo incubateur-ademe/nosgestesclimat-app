@@ -1,7 +1,6 @@
 import Ademe from '@/components/images/partners/Ademe'
 import Marianne from '@/components/images/partners/Marianne'
 import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
-import Link from '@/components/Link'
 import Logo from '@/components/misc/Logo'
 import Trans from '@/components/translation/trans/TransServer'
 
@@ -10,6 +9,7 @@ import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { cacheLife } from 'next/cache'
+import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
@@ -245,7 +245,13 @@ export default async function FooterServer({
           <div className="flex gap-4 self-end pb-1">
             <Marianne className="h-auto w-12 md:w-auto" />
 
-            <Link href="https://ademe.fr" target="_blank">
+            <Link
+              aria-label={t(
+                'footer.ademe.ariaLabel',
+                'ADEME (ouvrir dans une nouvelle fenêtre)'
+              )}
+              href="https://ademe.fr"
+              target="_blank">
               <Ademe className="h-auto w-10 md:w-auto" />
             </Link>
           </div>

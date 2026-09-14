@@ -114,11 +114,12 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
           <ChevronRight
             className={twMerge(
               'max-tiny:ml-1.5 ml-3 inline-block w-2 transition-transform',
-              isPopoverOpen ? 'rotate-[-90deg]' : 'rotate-90'
+              isPopoverOpen ? '-rotate-90deg' : 'rotate-90'
             )}
           />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="relative z-400! w-80 bg-white">
         <DropdownMenuGroup>
           <DropdownMenuItem className={commonItemClassNames}>
@@ -134,6 +135,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
               </Trans>
             </Link>
           </DropdownMenuItem>
+
           <DropdownMenuItem className={commonItemClassNames}>
             <button
               type="button"
