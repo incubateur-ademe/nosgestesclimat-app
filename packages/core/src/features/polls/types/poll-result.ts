@@ -32,8 +32,9 @@ export type PollResult = {
   | {
       anonymity: PollAnonymityReached
       /**
-       * `null` while the worker has not computed them: a completion queues its
-       * first run, and later ones can be deferred by the cooldown or fail.
+       * `null` until the worker has processed the job a completion queued for
+       * this poll. A failed computation stays `null` until the next completion
+       * re-arms it.
        */
       stats: PollStats | null
     }
