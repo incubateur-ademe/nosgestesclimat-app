@@ -5,7 +5,7 @@ import MeanFootprintDistribution from './_components/MeanFootprintDistribution'
 interface Props {
   computedResults?: ComputedResults | null
   userComputedResults?: ComputedResults | null
-  participants?: number
+  participants: number
   organisationName?: string
   isAdmin: boolean
 }
@@ -17,12 +17,7 @@ export default function FootprintDistribution({
   organisationName,
   isAdmin,
 }: Props) {
-  if (
-    !computedResults ||
-    typeof participants === 'undefined' ||
-    participants < 3
-  )
-    return null
+  if (!computedResults) return null
 
   return (
     <section className="mb-8">

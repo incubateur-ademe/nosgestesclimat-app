@@ -19,14 +19,21 @@ export default async function CampagnePage({
 }: PageProps<'/[locale]/organisations/[orgaSlug]/campagnes/[pollSlug]'>) {
   const { locale, orgaSlug, pollSlug } = await params
 
-  // Legacy links all point at a placeholder slug: the campaign they meant has
-  // to be resolved before anything is read.
   if ((await searchParams).isRedirectFromLegacy) {
     await redirectFromLegacy(orgaSlug)
   }
 
-  const { poll, participants, userParticipation, cooldownSeconds, isAdmin } =
-    await getPollResult({ organisationSlug: orgaSlug, pollIdOrSlug: pollSlug })
+  const {
+    poll,
+    participants,
+    userParticipation,
+    cooldownSeconds,
+    results,
+    isAdmin,
+  } = await getPollResult({
+    organisationSlug: orgaSlug,
+    pollIdOrSlug: pollSlug,
+  })
 
   const { t } = getServerTranslation({ locale })
 
@@ -88,8 +95,8 @@ export default async function CampagnePage({
           <PollStatistics
             participants={participants}
             cooldownSeconds={cooldownSeconds}
-            computedResults={poll.computedResults}
-            funFacts={poll.funFacts}
+            computedResults={results?.computedResults ?? null}
+            funFacts={results?.funFacts ?? null}
             title={
               <Trans locale={locale}>Résultats de votre test collectif</Trans>
             }
@@ -98,7 +105,7 @@ export default async function CampagnePage({
           />
 
           <FootprintDistribution
-            computedResults={poll.computedResults}
+            computedResults={results?.computedResults ?? null}
             userComputedResults={userParticipation?.computedResults}
             participants={participants}
             organisationName={poll.organisation.name}
@@ -106,7 +113,7 @@ export default async function CampagnePage({
           />
 
           <WaterFootprintSection
-            computedResults={poll.computedResults}
+            computedResults={results?.computedResults ?? null}
             participants={participants}
           />
 

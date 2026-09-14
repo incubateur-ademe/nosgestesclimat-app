@@ -29,7 +29,7 @@ export default function WaterFootprintSection({
   const meanWaterFootprintLitresPerDay =
     (computedResults?.eau.bilan ?? 0) / Math.max(participants, 1) / 365
 
-  if (participants < 3 || meanWaterFootprintLitresPerDay <= 0) {
+  if (meanWaterFootprintLitresPerDay <= 0) {
     return null
   }
 

@@ -2,8 +2,9 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
-import { userFactory } from '../../../users/factories/user.factory.ts'
+import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
+import { userFactory } from '../../../users/factories/user.factory.ts'
 import { getPollResult } from '../get-poll-result.service.ts'
 
 describe('getPollResult', () => {
@@ -160,7 +161,68 @@ describe('getPollResult', () => {
     // The default tiers recompute immediately below 100 participants.
     expect(result?.cooldownSeconds).toBe(0)
   })
+
+  it('withholds the aggregates below the participation threshold', async () => {
+    const organisation = await organisationFactory.create()
+    const poll = await createPollIn(organisation.id, {
+      computedResults: computedResultsFactory.valid().build(),
+    })
+    const belowThreshold = 2
+    await Promise.all(
+      Array.from({ length: belowThreshold }, () =>
+        simulationFactory.completed().withPollId(poll.id).create()
+      )
+    )
+
+    const result = await getPollResult({
+      organisationSlug: organisation.slug,
+      pollIdOrSlug: poll.slug,
+      userId: null,
+    })
+
+    expect(result?.participants).toBe(belowThreshold)
+    expect(result?.results).toBeNull()
+  })
+
+  it('exposes the aggregates once three people took part', async () => {
+    const organisation = await organisationFactory.create()
+    const computedResults = computedResultsFactory.valid().build()
+    const poll = await createPollIn(organisation.id, { computedResults })
+    await Promise.all(
+      Array.from({ length: 3 }, () =>
+        simulationFactory.completed().withPollId(poll.id).create()
+      )
+    )
+
+    const result = await getPollResult({
+      organisationSlug: organisation.slug,
+      pollIdOrSlug: poll.slug,
+      userId: null,
+    })
+
+    expect(result?.results).toEqual({ computedResults, funFacts: null })
+  })
+
+  it('has no results until the worker computed them', async () => {
+    const organisation = await organisationFactory.create()
+    const poll = await createPollIn(organisation.id)
+    await Promise.all(
+      Array.from({ length: 3 }, () =>
+        simulationFactory.completed().withPollId(poll.id).create()
+      )
+    )
+
+    const result = await getPollResult({
+      organisationSlug: organisation.slug,
+      pollIdOrSlug: poll.slug,
+      userId: null,
+    })
+
+    expect(result?.results).toBeNull()
+  })
 })
 
-const createPollIn = (organisationId: string) =>
-  pollFactory.create({}, { transient: { organisationId } })
+const createPollIn = (
+  organisationId: string,
+  poll: Parameters<typeof pollFactory.create>[0] = {}
+) => pollFactory.create(poll, { transient: { organisationId } })

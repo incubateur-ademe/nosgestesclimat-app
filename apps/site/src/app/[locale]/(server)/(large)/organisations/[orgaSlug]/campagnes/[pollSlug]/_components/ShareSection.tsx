@@ -24,9 +24,9 @@ interface Props {
 }
 
 /**
- * Built from the configured public origin rather than `window.location.origin`:
- * the page is a Server Component now, so this has to render identically on the
- * server, where `window` does not exist.
+ * `window.location.origin` is browser-only, and this link has to be the same on
+ * both renders: the origin comes from the configuration, which is inlined at
+ * build time.
  */
 const buildLink = ({
   orgaSlug,
