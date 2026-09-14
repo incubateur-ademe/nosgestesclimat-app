@@ -4,7 +4,6 @@ import { getLinkToTutoriel } from '@/helpers/navigation/simulateurPages'
 import { stringifyModel } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { createSimulation } from '@/services/simulations/create-simulation'
 import { getUserSimulationJourney } from '@/services/simulations/get-user-simulation-journey'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
 import {
@@ -12,6 +11,7 @@ import {
   hasCurrentSimulationInProgress,
   hasSimulation,
 } from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
+import { startSimulation } from '@nosgestesclimat/core/features/simulations/services/start-simulation.service'
 import { redirect } from 'next/navigation'
 
 export default async function Commencer({
@@ -21,6 +21,7 @@ export default async function Commencer({
   const session = await getUserSession()
   const locale = (await params).locale as Locale
   const resolvedSearchParams = await searchParams
+
   if (!session) {
     const tutorielSearchParams = new URLSearchParams()
     for (const [key, value] of Object.entries(resolvedSearchParams)) {
@@ -44,8 +45,9 @@ export default async function Commencer({
     hasCurrentSimulationInProgress(journey) ||
     hasCompletedCurrentSimulation(journey)
   ) {
-    await createSimulation(model)
+    await startSimulation({ userId: session.id, model })
   }
+
   redirect(
     hasCurrentSimulationInProgress(journey) ||
       hasCompletedCurrentSimulation(journey)

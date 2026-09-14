@@ -162,7 +162,6 @@ describe('Given a NGC user', () => {
             computedResults,
             user: { id: userId },
           } = await createOrganisationPollSimulation({
-            agent,
             pollId,
           }))
         })
@@ -320,7 +319,6 @@ describe('Given a NGC user', () => {
             while (simulations.length < 3) {
               simulations.push(
                 await createOrganisationPollSimulation({
-                  agent,
                   pollId,
                 })
               )

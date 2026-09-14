@@ -4,7 +4,7 @@ import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Emoji from '@/design-system/utils/Emoji'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { createPollSimulation } from '@/services/organisations/create-poll-simulation'
+import { participateToPoll } from '@/services/organisations/participate-to-poll'
 import { getPoll } from '@/services/polls/get-poll'
 import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import { getPollParticipation } from '@/services/simulations/get-poll-participation'
@@ -40,8 +40,8 @@ export default async function CampagnePage({
 
   const createNewSimulation = async () => {
     'use server'
-    await createPollSimulation({
-      poll,
+    await participateToPoll({
+      pollId: poll.id,
       locale,
       model: await resolveNewSimulationModel({
         searchParams: await searchParams,
@@ -55,10 +55,10 @@ export default async function CampagnePage({
   const reuseSimulation = async () => {
     'use server'
     if (!lastCompletedSimulation) return
-    await createPollSimulation({
-      poll,
-      simulation: lastCompletedSimulation,
+    await participateToPoll({
+      pollId: poll.id,
       locale,
+      reuseSimulationId: lastCompletedSimulation.id,
     })
     redirect(SIMULATOR_PATH)
   }
@@ -71,7 +71,7 @@ export default async function CampagnePage({
     poll.mode === 'standard' &&
     getSimulationMode(lastCompletedSimulation) === 'standard' &&
     !currentPollSimulation &&
-    // eslint-disable-next-line react-hooks/purity
+    // eslint-disable-next-line react-hooks/purity -- Server Component, rendered once per request
     Date.now() - new Date(lastCompletedSimulation.date as string).getTime() <
       6 * 30 * 24 * 3600 * 1000
 

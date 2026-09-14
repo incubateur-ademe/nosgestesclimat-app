@@ -1,3 +1,4 @@
+import type { Transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 
 // Must exceed the maximum duration of a poll stats recomputation so a worker
@@ -43,17 +44,21 @@ export const markPollStatsComputationFailed = (pollId: string) =>
     data: { status: 'failed', scheduledAt: null, startedAt: null },
   })
 
-export const getPollStatsComputationStatus = (pollId: string) =>
-  prisma.pollStatsComputation.findUnique({
+export const getPollStatsComputationStatus = (
+  pollId: string,
+  tx: Transaction = prisma
+) =>
+  tx.pollStatsComputation.findUnique({
     where: { pollId },
     select: { status: true, scheduledAt: true, startedAt: true },
   })
 
 export const schedulePollStatsComputation = (
   pollId: string,
-  scheduledAt: Date
+  scheduledAt: Date,
+  tx: Transaction = prisma
 ) =>
-  prisma.pollStatsComputation.upsert({
+  tx.pollStatsComputation.upsert({
     where: { pollId },
     create: { pollId, status: 'pending', scheduledAt },
     update: { status: 'pending', scheduledAt },
