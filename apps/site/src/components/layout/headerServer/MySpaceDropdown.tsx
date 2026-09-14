@@ -12,7 +12,6 @@ import { useUser } from '@/publicodes-state'
 import { PostHog } from '@/services/tracking/Posthog'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
-import posthog from 'posthog-js'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 

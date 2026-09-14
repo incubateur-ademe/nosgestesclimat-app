@@ -85,7 +85,6 @@ export type GroupTemplateId =
   | typeof FrTemplateIds.GROUP_CREATED
   | typeof FrTemplateIds.GROUP_JOINED
 
-// Matomo campaigns & keywords
 export const TRACKING_SOURCE = 'NGC'
 export const TRACKING_MEDIUM = 'email-automatise'
 export const TRACKING_CAMPAIGNS = {
