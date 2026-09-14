@@ -1,10 +1,8 @@
 'use server'
 
 import { isOrganisationAdministrator } from '@nosgestesclimat/core/features/organisations/services/is-organisation-administrator.service'
-import {
-  getPollResult as getPollResultService,
-  type PollResult,
-} from '@nosgestesclimat/core/features/polls/services/get-poll-result.service'
+import { getPollResult as getPollResultService } from '@nosgestesclimat/core/features/polls/services/get-poll-result.service'
+import type { PollResult } from '@nosgestesclimat/core/features/polls/types/poll-result'
 
 import { getUserSession } from '@/services/auth/get-user-session'
 import { notFound } from 'next/navigation'

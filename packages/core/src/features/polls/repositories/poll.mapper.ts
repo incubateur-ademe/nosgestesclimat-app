@@ -2,7 +2,7 @@ import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { JsonValue } from '@prisma/client/runtime/client'
 import type { PollMode } from '../../../prisma/generated/client.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
-import type { Poll, PollResults } from '../types/poll.ts'
+import type { Poll, PollStats } from '../types/poll.ts'
 
 export interface PollRow {
   id: string
@@ -33,7 +33,7 @@ export const toPoll = (row: PollRow): Poll => {
   }
 }
 
-export interface PollResultsRow {
+export interface PollStatsRow {
   computedResults: JsonValue | null
   funFacts: JsonValue | null
 }
@@ -42,7 +42,7 @@ export interface PollResultsRow {
  * A poll is only exploitable once its aggregates have been computed: until
  * then there is no `ComputedResults` to expose, only a number of participants.
  */
-export const toPollResults = (row: PollResultsRow): PollResults | null => {
+export const toPollStats = (row: PollStatsRow): PollStats | null => {
   if (row.computedResults === null) {
     return null
   }

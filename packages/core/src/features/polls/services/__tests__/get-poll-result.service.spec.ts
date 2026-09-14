@@ -162,7 +162,7 @@ describe('getPollResult', () => {
     expect(result?.cooldownSeconds).toBe(0)
   })
 
-  it('withholds the aggregates below the participation threshold', async () => {
+  it('withholds the stats below the participation threshold', async () => {
     const organisation = await organisationFactory.create()
     const poll = await createPollIn(organisation.id, {
       computedResults: computedResultsFactory.valid().build(),
@@ -185,10 +185,10 @@ describe('getPollResult', () => {
       minParticipants: 3,
       isReached: false,
     })
-    expect(result?.results).toBeNull()
+    expect(result?.stats).toBeNull()
   })
 
-  it('exposes the aggregates once three people took part', async () => {
+  it('exposes the stats once three people took part', async () => {
     const organisation = await organisationFactory.create()
     const computedResults = computedResultsFactory.valid().build()
     const poll = await createPollIn(organisation.id, { computedResults })
@@ -205,10 +205,10 @@ describe('getPollResult', () => {
     })
 
     expect(result?.anonymity).toEqual({ minParticipants: 3, isReached: true })
-    expect(result?.results).toEqual({ computedResults, funFacts: null })
+    expect(result?.stats).toEqual({ computedResults, funFacts: null })
   })
 
-  it('has no results until the worker computed them', async () => {
+  it('has no stats until the worker computed them', async () => {
     const organisation = await organisationFactory.create()
     const poll = await createPollIn(organisation.id)
     await Promise.all(
@@ -224,7 +224,7 @@ describe('getPollResult', () => {
     })
 
     expect(result?.anonymity.isReached).toBe(true)
-    expect(result?.results).toBeNull()
+    expect(result?.stats).toBeNull()
   })
 })
 

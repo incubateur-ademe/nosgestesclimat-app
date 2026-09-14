@@ -29,7 +29,7 @@ export default async function CampagnePage({
     anonymity,
     userParticipation,
     cooldownSeconds,
-    results,
+    stats,
     isAdmin,
   } = await getPollResult({
     organisationSlug: orgaSlug,
@@ -97,8 +97,8 @@ export default async function CampagnePage({
             participants={participants}
             anonymity={anonymity}
             cooldownSeconds={cooldownSeconds}
-            computedResults={results?.computedResults ?? null}
-            funFacts={results?.funFacts ?? null}
+            computedResults={stats?.computedResults ?? null}
+            funFacts={stats?.funFacts ?? null}
             title={
               <Trans locale={locale}>Résultats de votre test collectif</Trans>
             }
@@ -107,7 +107,7 @@ export default async function CampagnePage({
           />
 
           <FootprintDistribution
-            computedResults={results?.computedResults ?? null}
+            computedResults={stats?.computedResults ?? null}
             userComputedResults={userParticipation?.computedResults}
             participants={participants}
             organisationName={poll.organisation.name}
@@ -115,7 +115,7 @@ export default async function CampagnePage({
           />
 
           <WaterFootprintSection
-            computedResults={results?.computedResults ?? null}
+            computedResults={stats?.computedResults ?? null}
             participants={participants}
           />
 
