@@ -1,8 +1,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Card from '@/design-system/layout/Card'
-import { useIsOrganisationAdmin } from '@/hooks/organisations/useIsOrganisationAdmin'
-import type { ComputedResults } from '@/publicodes-state/types'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
+import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import CategoryDistribution from './CategoryDistribution'
 import CategoryRadarChart from './CategoryRadarChart'
 import FootprintBarChart from './FootprintBarChart'
@@ -11,17 +10,17 @@ interface Props {
   organisationName?: string
   groupComputedResults?: ComputedResults | null
   userComputedResults?: ComputedResults | null
-  simulationsCount?: number
+  participants?: number
+  isAdmin: boolean
 }
 
 export default function MeanFootprintDistribution({
   organisationName,
   groupComputedResults,
   userComputedResults,
-  simulationsCount,
+  participants,
+  isAdmin,
 }: Props) {
-  const { isAdmin } = useIsOrganisationAdmin()
-
   if (!groupComputedResults) return null
 
   const {
@@ -32,7 +31,7 @@ export default function MeanFootprintDistribution({
     'services sociétaux': meanServices,
   } = Object.entries(groupComputedResults.carbone.categories).reduce(
     (accObject, [key, value]) => {
-      accObject[key as Categories] = value / (simulationsCount ?? 1)
+      accObject[key as Categories] = value / (participants ?? 1)
 
       return accObject
     },
@@ -59,7 +58,7 @@ export default function MeanFootprintDistribution({
           <Card className="bg-primary-100 w-full flex-1 items-center border-0 p-6">
             <FootprintBarChart
               groupFootprint={
-                groupComputedResults?.carbone?.bilan / (simulationsCount ?? 1)
+                groupComputedResults?.carbone?.bilan / (participants ?? 1)
               }
               userFootprint={userComputedResults?.carbone?.bilan}
             />

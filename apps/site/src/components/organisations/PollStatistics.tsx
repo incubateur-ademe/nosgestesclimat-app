@@ -5,13 +5,13 @@ import { organisationsDashboardExportData } from '@/constants/tracking/pages/org
 import { captureExportPollData } from '@/constants/tracking/posthogTrackers'
 import { formatPollStatsRefreshDuration } from '@/helpers/organisations/formatPollStatsRefreshDuration'
 import { useLocale } from '@/hooks/useLocale'
-import type { ComputedResults } from '@/publicodes-state/types'
-import type { PublicOrganisationPoll } from '@/types/organisations'
+import type { PollIdentifier } from '@/types/organisations'
 import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
+import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import type { ReactNode } from 'react'
 import ExportDataButton from './ExportDataButton'
 import DetailedStatistics from './orgaStatistics/DetailedStatistics'
@@ -20,24 +20,24 @@ import StatisticsBlocks from './orgaStatistics/StatisticsBlocks'
 
 export default function PollStatistics({
   title,
-  simulationsCount,
+  participants,
+  cooldownSeconds,
   computedResults,
   funFacts,
   poll,
   isAdmin,
 }: {
   title?: string | ReactNode
-  simulationsCount: number
+  participants: number
+  cooldownSeconds: number
   computedResults?: ComputedResults | null
   funFacts?: FunFacts | null
-  poll: PublicOrganisationPoll
+  poll: PollIdentifier
   isAdmin: boolean
 }) {
-  const hasAtLeastThreeParticipants = simulationsCount > 2
+  const hasAtLeastThreeParticipants = participants > 2
 
   const locale = useLocale()
-
-  const cooldownSeconds = poll.simulations.cooldownSeconds
 
   const refreshNote = formatPollStatsRefreshDuration(cooldownSeconds, locale)
 
@@ -46,7 +46,7 @@ export default function PollStatistics({
       <div className="flex flex-col items-baseline justify-between sm:flex-row md:flex-nowrap">
         <h2 className="flex-1">{title ?? <Trans>Statistiques</Trans>}</h2>
 
-        {poll.simulations.count >= 3 && isAdmin && (
+        {participants >= 3 && isAdmin && (
           <ExportDataButton
             poll={poll}
             color="borderless"
@@ -61,8 +61,9 @@ export default function PollStatistics({
 
       <section className="relative mb-8 flex gap-4">
         <StatisticsBlocks
-          simulationsCount={simulationsCount}
+          participants={participants}
           computedResults={computedResults}
+          isAdmin={isAdmin}
         />
       </section>
 

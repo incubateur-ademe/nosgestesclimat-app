@@ -3,15 +3,16 @@
 import HourglassIcon from '@/components/icons/HourglassIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import Card from '@/design-system/layout/Card'
-import { useIsOrganisationAdmin } from '@/hooks/organisations/useIsOrganisationAdmin'
 
 interface Props {
+  isAdmin: boolean
   hasLessThan3Participants: boolean
 }
 
-export default function ResultsSoonBanner({ hasLessThan3Participants }: Props) {
-  const { isAdmin } = useIsOrganisationAdmin()
-
+export default function ResultsSoonBanner({
+  isAdmin,
+  hasLessThan3Participants,
+}: Props) {
   return (
     <div className="relative col-span-1">
       <div className="absolute top-0 left-0 z-10 h-full w-full p-10 pb-0">

@@ -81,8 +81,13 @@ export type OrganisationPoll = BaseOrganisationPoll & {
   organisation: Omit<Organisation, 'polls'>
 }
 
-export type PublicOrganisationPoll = BaseOrganisationPoll & {
-  organisation: PublicOrganisation
+/**
+ * Ce qu'il faut d'un test collectif pour l'adresser : sa propre adresse, et
+ * celle de son organisation.
+ */
+export interface PollIdentifier {
+  slug: string
+  organisation: { slug: string }
 }
 
 export type PublicPollSimulation = Pick<
