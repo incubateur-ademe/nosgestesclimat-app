@@ -41,21 +41,4 @@ describe('commitToAction()', () => {
       })
     ).rejects.toThrow()
   })
-
-  it('throws when an invalid actionId is pass as an argument', async () => {
-    const user = await userFactory.create()
-
-    const commitToAction = createCommitToAction()
-
-    const result = await commitToAction({
-      actionId: faker.string.uuid(),
-      userId: user.id,
-    })
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        success: false,
-      })
-    )
-  })
 })

@@ -26,3 +26,18 @@ export const createActionChoice = async ({
     throw error
   }
 }
+
+export const deleteActionChoice = async ({
+  actionChoiceId,
+  userId,
+}: {
+  actionChoiceId: string
+  userId: string
+}) => {
+  await prisma.actionChoice.delete({
+    where: {
+      id: actionChoiceId,
+      userId,
+    },
+  })
+}
