@@ -43,9 +43,7 @@ export default function Badge({
   border?: boolean
   ['data-testid']?: string
 }>) {
-  const {
-    'data-testid': dataTestId,
-  } = props
+  const { 'data-testid': dataTestId } = props
   const Tag = tag
   return (
     <Tag

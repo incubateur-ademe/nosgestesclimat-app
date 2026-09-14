@@ -7,8 +7,8 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 
-export default async function WelcomeBanner({ locale }: { locale: Locale }) {
-  const { t } = await getServerTranslation({ locale })
+export default function WelcomeBanner({ locale }: { locale: Locale }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="relative mb-10 rounded-lg bg-blue-50 p-4 md:p-6">

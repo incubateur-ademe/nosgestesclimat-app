@@ -34,7 +34,7 @@ export const updateBrevoContact: Handler<SimulationUpsertedEvent> = async ({
       lastSimulationDate,
       subscribeToGroupNewsletter,
     })
-  } else if (!attributes.group && !attributes.organisation) {
+  } else if (!attributes.group) {
     return addOrUpdateContactAfterIncompleteSimulationCreated({
       name,
       email,

@@ -12,6 +12,7 @@ import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import { findGroupById } from '../../groups/repositories/group.repository.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import { findPollById } from '../../polls/repositories/poll.repository.ts'
+import { enqueuePollStatsComputation } from '../../polls/stats/services/enqueue-poll-stats-computation.ts'
 import { UnsupportedModelError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
@@ -118,7 +119,11 @@ export function createCompleteSimulation({
         if (!computation.success) return computation
       }
 
-      // TODO: create poll stats computation
+      // The completed simulation changes the poll totals; every poll it belongs
+      // to is queued for a full recomputation.
+      for (const { id } of simulation.polls ?? []) {
+        await enqueuePollStatsComputation(id, tx)
+      }
 
       return success()
     })

@@ -7,10 +7,10 @@ import Image from 'next/image'
 const getLocalisedSrc = (locale: Locale) => {
   switch (locale) {
     case 'en':
-      return 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/graphique_empreinte_eau_en_9f638fe3e3.png'
+      return '/_static/cms/graphique_empreinte_eau_en_9f638fe3e3.png'
     case 'fr':
     default:
-      return 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/graphique_empreinte_eau_fr_de3e685ba4.png'
+      return '/_static/cms/graphique_empreinte_eau_fr_de3e685ba4.png'
   }
 }
 

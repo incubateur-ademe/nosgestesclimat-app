@@ -1,6 +1,5 @@
 import { getLinkToSimulateur } from '@/helpers/navigation/simulateurPages'
 import { useDebug } from '@/hooks/useDebug'
-import { useLocale } from '@/hooks/useLocale'
 import getNamespace from '@/publicodes-state/helpers/getNamespace'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat/types/dottedNames'
 import { usePathname, useSearchParams } from 'next/navigation'
@@ -46,17 +45,12 @@ export const useSyncQuestionWithQueryParams = (
   currentQuestion: DottedName | null
 ) => {
   const searchParams = useSearchParams()
-  const locale = useLocale()
   useEffect(() => {
     if (!currentQuestion) return
     window.history.replaceState(
       null,
       '',
-      getLinkToSimulateur({
-        question: currentQuestion,
-        locale,
-        searchParams,
-      })
+      getLinkToSimulateur({ question: currentQuestion, searchParams })
     )
   }, [currentQuestion])
 }

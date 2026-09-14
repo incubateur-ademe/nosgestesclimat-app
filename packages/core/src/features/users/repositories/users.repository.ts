@@ -1,37 +1,50 @@
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { User } from '../types/user.ts'
+import type { UnverifiedUser, User } from '../types/user.ts'
+import { mapUnverifiedUser, mapUser } from './user.mapper.ts'
 
-export const findUserById = async (userId: string): Promise<User | null> => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { verifiedUsers: true },
+const unverifiedUserSelect = {
+  id: true,
+  name: true,
+  ageRange: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
+const userSelect = {
+  ...unverifiedUserSelect,
+  verifiedUsers: {
+    select: {
+      email: true,
+      telephone: true,
+      position: true,
+      optedInForCommunications: true,
+    },
+  },
+} as const
+
+/**
+ * Persists a user. The caller supplies the id, which has no database default.
+ * An anonymous account has nothing else to store: the row *is* its id until
+ * the user verifies an email.
+ */
+export const createUser = async (
+  { id }: { id: string },
+  tx: Transaction = prisma
+): Promise<UnverifiedUser> => {
+  const row = await tx.user.create({
+    data: { id },
+    select: unverifiedUserSelect,
   })
 
-  if (!user) return null
+  return mapUnverifiedUser(row)
+}
 
-  const verifiedUser = user.verifiedUsers[0]
-  if (verifiedUser) {
-    return {
-      type: 'verified',
-      id: user.id,
-      name: user.name,
-      email: verifiedUser.email,
-      ageRange: user.ageRange,
-      telephone: verifiedUser.telephone,
-      position: verifiedUser.position,
-      optedInForCommunications: verifiedUser.optedInForCommunications,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }
-  }
+export const findUserById = async (userId: string): Promise<User | null> => {
+  const row = await prisma.user.findUnique({
+    where: { id: userId },
+    select: userSelect,
+  })
 
-  return {
-    type: 'unverified',
-    id: user.id,
-    name: user.name,
-    email: null, // user's table email field is deprecated
-    ageRange: user.ageRange,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  }
+  return row ? mapUser(row) : null
 }

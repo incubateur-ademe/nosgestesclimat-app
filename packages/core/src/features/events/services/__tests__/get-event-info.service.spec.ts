@@ -18,16 +18,19 @@ const seedPoll = async (
     simulationDates?: Date[]
   } = {}
 ) => {
-  const poll = await pollFactory.withOrganisation(organisationId).create({
-    name: `Poll ${organisationId}`,
-    slug: `poll-${organisationId}-${Math.random().toString(36).slice(2, 8)}`,
-    createdAt:
-      options.pollCreatedAt ??
-      new Date(
-        event.startDate.getTime() +
-          (event.endDate.getTime() - event.startDate.getTime()) / 2
-      ),
-  })
+  const poll = await pollFactory.create(
+    {
+      name: `Poll ${organisationId}`,
+      slug: `poll-${organisationId}-${Math.random().toString(36).slice(2, 8)}`,
+      createdAt:
+        options.pollCreatedAt ??
+        new Date(
+          event.startDate.getTime() +
+            (event.endDate.getTime() - event.startDate.getTime()) / 2
+        ),
+    },
+    { transient: { organisationId } }
+  )
 
   const simulationCreatedAt = (i: number) =>
     options.simulationDates?.[i] ??

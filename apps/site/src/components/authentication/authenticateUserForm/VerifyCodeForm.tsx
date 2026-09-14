@@ -1,9 +1,9 @@
 'use client'
 
-import Trans from '@/components/translation/trans/TransClient'
 import { useAuth } from '@/components/authentication/AuthProvider'
-import VerificationCodeForm from './verifyCodeForm/VerificationCodeForm'
+import Trans from '@/components/translation/trans/TransClient'
 import NotReceived from './verifyCodeForm/NotReceived'
+import VerificationCodeForm from './verifyCodeForm/VerificationCodeForm'
 
 export default function VerifyCode() {
   const { state } = useAuth()
