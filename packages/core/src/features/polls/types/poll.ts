@@ -18,13 +18,15 @@ export interface Poll {
 }
 
 /**
- * The aggregates the worker computed for a poll.
+ * What the worker computed for a poll: the sum of its participants' footprints,
+ * and the fun facts that come with it. Both are written at once, hence one
+ * value.
  *
- * They are deliberately absent from `Poll`: a read of the poll itself must not
- * carry them, so that exposing results always goes through the rule deciding
- * whether they may be published.
+ * Deliberately absent from `Poll`: a read of the poll itself must not carry
+ * them, so that exposing stats always goes through the rule deciding whether
+ * they may be published.
  */
-export interface PollResults {
+export interface PollStats {
   computedResults: ComputedResults
   funFacts: FunFacts | null
 }

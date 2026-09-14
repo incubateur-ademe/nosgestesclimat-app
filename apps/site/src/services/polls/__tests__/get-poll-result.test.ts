@@ -1,5 +1,6 @@
 import { pollFactory } from '@nosgestesclimat/core/features/polls/factories/poll.factory'
 import type { PollAnonymityReached } from '@nosgestesclimat/core/features/polls/types/poll'
+import type { PollResult } from '@nosgestesclimat/core/features/polls/types/poll-result'
 import { computedResultsFactory } from '@nosgestesclimat/core/features/simulations/factories/computed-results.factory'
 import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
 import { v4 as randomUUID } from 'uuid'
@@ -42,7 +43,7 @@ const buildCoreResult = () => {
     cooldownSeconds: 0,
     participants: 3,
     anonymity,
-    results: null,
+    stats: null,
     userParticipation: null,
   }
 }
@@ -128,13 +129,13 @@ describe('getPollResult', () => {
 
   it('exposes the core result as is', async () => {
     const userParticipation = simulationFactory.withModelRegion('FR').build()
-    const results = {
+    const stats = {
       computedResults: computedResultsFactory.valid().build(),
       funFacts: null,
     }
-    const coreResult = {
+    const coreResult: PollResult = {
       ...buildCoreResult(),
-      results,
+      stats,
       userParticipation,
     }
     serviceMock.getPollResultService.mockResolvedValue(coreResult)
@@ -147,7 +148,7 @@ describe('getPollResult', () => {
     expect(result.poll).toEqual(coreResult.poll)
     expect(result.participants).toBe(3)
     expect(result.cooldownSeconds).toBe(0)
-    expect(result.results).toEqual(results)
+    expect(result.stats).toEqual(stats)
     expect(result.userParticipation).toEqual(userParticipation)
   })
 })
