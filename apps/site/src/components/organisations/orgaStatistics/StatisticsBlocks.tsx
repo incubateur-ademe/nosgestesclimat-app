@@ -5,7 +5,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
-import { MIN_PARTICIPANTS_FOR_RESULTS } from '@nosgestesclimat/core/features/polls/helpers/results-visibility'
+import type { PollAnonymity } from '@nosgestesclimat/core/features/polls/types/poll'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import ResultsSoonBanner from './statisticsBlocks/ResultsSoonBanner'
 
@@ -23,19 +23,19 @@ const mockResults = {
 
 export default function StatisticsBlocks({
   participants,
+  anonymity,
   computedResults,
   isAdmin,
 }: {
   participants: number
+  anonymity: PollAnonymity
   computedResults?: ComputedResults | null
   isAdmin: boolean
 }) {
   const locale = useLocale()
   const { t } = useClientTranslation()
 
-  const hasLessThan3Participants = participants < MIN_PARTICIPANTS_FOR_RESULTS
-
-  const result = hasLessThan3Participants ? mockResults : computedResults
+  const result = anonymity.isReached ? computedResults : mockResults
 
   if (!result) return null
 
@@ -65,16 +65,13 @@ export default function StatisticsBlocks({
         </p>
       </div>
 
-      {hasLessThan3Participants && (
-        <ResultsSoonBanner
-          isAdmin={isAdmin}
-          hasLessThan3Participants={hasLessThan3Participants}
-        />
+      {!anonymity.isReached && (
+        <ResultsSoonBanner isAdmin={isAdmin} anonymity={anonymity} />
       )}
 
       {
         // Display blocks only if simulations where fetched
-        !hasLessThan3Participants && !!computedResults && (
+        anonymity.isReached && !!computedResults && (
           <div className="bg-rainbow-rotation overflow-hidden rounded-xl p-8">
             <p className="text-primary-700 text-4xl font-bold">
               {formattedValue}{' '}

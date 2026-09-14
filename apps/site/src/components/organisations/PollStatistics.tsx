@@ -11,7 +11,7 @@ import {
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { MIN_PARTICIPANTS_FOR_RESULTS } from '@nosgestesclimat/core/features/polls/helpers/results-visibility'
+import type { PollAnonymity } from '@nosgestesclimat/core/features/polls/types/poll'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import type { ReactNode } from 'react'
 import ExportDataButton from './ExportDataButton'
@@ -22,6 +22,7 @@ import StatisticsBlocks from './orgaStatistics/StatisticsBlocks'
 export default function PollStatistics({
   title,
   participants,
+  anonymity,
   cooldownSeconds,
   computedResults,
   funFacts,
@@ -30,15 +31,13 @@ export default function PollStatistics({
 }: {
   title?: string | ReactNode
   participants: number
+  anonymity: PollAnonymity
   cooldownSeconds: number
   computedResults?: ComputedResults | null
   funFacts?: FunFacts | null
   poll: PollIdentifier
   isAdmin: boolean
 }) {
-  const hasAtLeastThreeParticipants =
-    participants >= MIN_PARTICIPANTS_FOR_RESULTS
-
   const locale = useLocale()
 
   const refreshNote = formatPollStatsRefreshDuration(cooldownSeconds, locale)
@@ -48,7 +47,7 @@ export default function PollStatistics({
       <div className="flex flex-col items-baseline justify-between sm:flex-row md:flex-nowrap">
         <h2 className="flex-1">{title ?? <Trans>Statistiques</Trans>}</h2>
 
-        {isAdmin && hasAtLeastThreeParticipants && (
+        {isAdmin && anonymity.isReached && (
           <ExportDataButton
             poll={poll}
             color="borderless"
@@ -64,12 +63,13 @@ export default function PollStatistics({
       <section className="relative mb-8 flex gap-4">
         <StatisticsBlocks
           participants={participants}
+          anonymity={anonymity}
           computedResults={computedResults}
           isAdmin={isAdmin}
         />
       </section>
 
-      {hasAtLeastThreeParticipants && (
+      {anonymity.isReached && (
         <>
           <FunFactsBlock funFacts={funFacts} className="md:mb-8" />
 

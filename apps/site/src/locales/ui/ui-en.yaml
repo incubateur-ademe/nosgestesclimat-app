@@ -179,7 +179,6 @@ entries:
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.: Nosgestesclimat.fr is not affiliated to the {{ parent }} website.
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}..lock: Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.
   Partage de vos résultats à {{ parent }} ?: 'Share your results with {{ parent }} '
-  (Données consultables à partir de 3 participants, dans un souci d'anonymat): (Data can be consulted for 3 or more participants, to ensure anonymity)
   En cliquant sur le bouton Accepter, vous autorisez {{ parent }} à récupérer le bilan de votre empreinte climat.: By clicking on the Accept button, you authorise {{ parent }} to retrieve your climate footprint.
   Découvrir le calculateur: Discover the simulator
   'Je ne trouve pas réponse à ma question ': "I can't find the answer to my question "
@@ -263,7 +262,6 @@ entries:
   Voir le détail: See details
   Votre téléphone: Your telephone
   'Paramètres de ': 'Parameters of '
-  Données consultables à partir de 3 participants, dans un souci d'anonymat.: Data can be consulted from 3 participants onwards, to ensure anonymity.
   Sans titre: Untitled
   Date (récentes > anciennes): Date (recent > old)
   Date (anciennes > récentes): Date (old > recent)
@@ -841,6 +839,8 @@ entries:
   common.slider.stop.lock: Arrêter
   common.category.logement: Housing
   common.category.logement.lock: Logement
+  pollResults.anonymityNotice: Data can be consulted from {{ minParticipants }} participants onwards, to ensure anonymity.
+  pollResults.anonymityNotice.lock: Données consultables à partir de {{ minParticipants }} participants, dans un souci d'anonymat.
   pollResults.categoryDistribution.accessibleDescription.category: '{{name}}: {{value}} {{unit}}.'
   pollResults.categoryDistribution.accessibleDescription.category.lock: '{{name}}: {{value}} {{unit}}.'
   common.category.services: Services

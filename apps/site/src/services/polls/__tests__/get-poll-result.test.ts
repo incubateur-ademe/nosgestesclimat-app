@@ -1,5 +1,5 @@
 import { pollFactory } from '@nosgestesclimat/core/features/polls/factories/poll.factory'
-import type { PollResult } from '@nosgestesclimat/core/features/polls/services/get-poll-result.service'
+import type { PollAnonymityReached } from '@nosgestesclimat/core/features/polls/types/poll'
 import { computedResultsFactory } from '@nosgestesclimat/core/features/simulations/factories/computed-results.factory'
 import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
 import { v4 as randomUUID } from 'uuid'
@@ -31,13 +31,21 @@ vi.mock(
   })
 )
 
-const buildCoreResult = (): PollResult => ({
-  poll: pollFactory.build(),
-  cooldownSeconds: 0,
-  participants: 3,
-  results: null,
-  userParticipation: null,
-})
+const buildCoreResult = () => {
+  const anonymity: PollAnonymityReached = {
+    minParticipants: 3,
+    isReached: true,
+  }
+
+  return {
+    poll: pollFactory.build(),
+    cooldownSeconds: 0,
+    participants: 3,
+    anonymity,
+    results: null,
+    userParticipation: null,
+  }
+}
 
 describe('getPollResult', () => {
   beforeEach(() => {
@@ -124,7 +132,7 @@ describe('getPollResult', () => {
       computedResults: computedResultsFactory.valid().build(),
       funFacts: null,
     }
-    const coreResult: PollResult = {
+    const coreResult = {
       ...buildCoreResult(),
       results,
       userParticipation,

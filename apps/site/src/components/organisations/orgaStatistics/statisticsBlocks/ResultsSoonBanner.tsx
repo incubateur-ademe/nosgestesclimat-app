@@ -3,16 +3,14 @@
 import HourglassIcon from '@/components/icons/HourglassIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import Card from '@/design-system/layout/Card'
+import type { PollAnonymityNotReached } from '@nosgestesclimat/core/features/polls/types/poll'
 
 interface Props {
   isAdmin: boolean
-  hasLessThan3Participants: boolean
+  anonymity: PollAnonymityNotReached
 }
 
-export default function ResultsSoonBanner({
-  isAdmin,
-  hasLessThan3Participants,
-}: Props) {
+export default function ResultsSoonBanner({ isAdmin, anonymity }: Props) {
   return (
     <div className="relative col-span-1">
       <div className="absolute top-0 left-0 z-10 h-full w-full p-10 pb-0">
@@ -33,22 +31,21 @@ export default function ResultsSoonBanner({
                       Partagez le test pour obtenir vos premiers résultats.
                     </Trans>
                   </span>
-                  {hasLessThan3Participants && (
-                    <span>
-                      {' '}
-                      <Trans>
-                        (Données consultables à partir de 3 participants, dans
-                        un souci d'anonymat)
-                      </Trans>
-                    </span>
-                  )}
+                  <span>
+                    {' ('}
+                    <Trans
+                      i18nKey="pollResults.anonymityNotice"
+                      values={{ minParticipants: anonymity.minParticipants }}
+                    />
+                    {')'}
+                  </span>
                 </p>
               ) : (
                 <p className="mb-0">
-                  <Trans>
-                    Données consultables à partir de 3 participants, dans un
-                    souci d'anonymat.
-                  </Trans>
+                  <Trans
+                    i18nKey="pollResults.anonymityNotice"
+                    values={{ minParticipants: anonymity.minParticipants }}
+                  />
                 </p>
               )}
             </div>
