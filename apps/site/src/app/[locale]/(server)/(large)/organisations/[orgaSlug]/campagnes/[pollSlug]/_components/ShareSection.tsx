@@ -8,20 +8,26 @@ import { UTM_MEDIUM_KEY, UTM_SOURCE_KEY } from '@/constants/urls/utm'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import CopyButton from '@/design-system/buttons/CopyButton'
 import Card from '@/design-system/layout/Card'
+import { publicEnv } from '@/env.public'
 import { getShareTrackEvent } from '@/helpers/tracking/share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import type { PublicOrganisationPoll } from '@/types/organisations'
+import type { PollIdentifier } from '@/types/organisations'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
-  poll: PublicOrganisationPoll
+  poll: PollIdentifier
   className?: string
   title?: ReactNode
 }
 
+/**
+ * Built from the configured public origin rather than `window.location.origin`:
+ * the page is a Server Component now, so this has to render identically on the
+ * server, where `window` does not exist.
+ */
 const buildLink = ({
   orgaSlug,
   pollSlug,
@@ -29,7 +35,7 @@ const buildLink = ({
   orgaSlug: string
   pollSlug: string
 }) => {
-  return `${window.location.origin}/o/${orgaSlug}/${pollSlug}?${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
+  return `${publicEnv.NEXT_PUBLIC_SITE_URL}/o/${orgaSlug}/${pollSlug}?${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
 }
 
 export default function ShareSection({ poll, className, title }: Props) {
@@ -70,7 +76,7 @@ export default function ShareSection({ poll, className, title }: Props) {
               orgaSlug,
               pollSlug,
             })}>
-            {`${window.location.origin}/o/${orgaSlug}/${pollSlug}`
+            {`${publicEnv.NEXT_PUBLIC_SITE_URL}/o/${orgaSlug}/${pollSlug}`
               .replace('https://', '')
               .replace('http://', '')}
           </Link>

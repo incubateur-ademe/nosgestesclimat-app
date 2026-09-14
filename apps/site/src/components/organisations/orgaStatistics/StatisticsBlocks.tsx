@@ -5,7 +5,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
-import type { ComputedResults } from '@/publicodes-state/types'
+import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import ResultsSoonBanner from './statisticsBlocks/ResultsSoonBanner'
 
 // Create a mock results object with the default carbon footprints values for each category
@@ -21,23 +21,25 @@ const mockResults = {
 }
 
 export default function StatisticsBlocks({
-  simulationsCount,
+  participants,
   computedResults,
+  isAdmin,
 }: {
-  simulationsCount: number
+  participants: number
   computedResults?: ComputedResults | null
+  isAdmin: boolean
 }) {
   const locale = useLocale()
   const { t } = useClientTranslation()
 
-  const hasLessThan3Participants = simulationsCount < 3
+  const hasLessThan3Participants = participants < 3
 
   const result = hasLessThan3Participants ? mockResults : computedResults
 
   if (!result) return null
 
   const { formattedValue, unit } = formatFootprint(
-    result.carbone.bilan / simulationsCount,
+    result.carbone.bilan / participants,
     {
       metric: carboneMetric,
       maximumFractionDigits: 1,
@@ -50,11 +52,11 @@ export default function StatisticsBlocks({
     <div className="grid w-full auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="bg-primary-100 rounded-xl p-8">
         <p className="text-primary-700 text-4xl font-bold">
-          {simulationsCount.toLocaleString(locale)}
+          {participants.toLocaleString(locale)}
         </p>
 
         <p className="text-xl">
-          {simulationsCount <= 1 ? (
+          {participants <= 1 ? (
             <Trans>Simulation terminée</Trans>
           ) : (
             <Trans>Simulations terminées</Trans>
@@ -64,6 +66,7 @@ export default function StatisticsBlocks({
 
       {hasLessThan3Participants && (
         <ResultsSoonBanner
+          isAdmin={isAdmin}
           hasLessThan3Participants={hasLessThan3Participants}
         />
       )}
