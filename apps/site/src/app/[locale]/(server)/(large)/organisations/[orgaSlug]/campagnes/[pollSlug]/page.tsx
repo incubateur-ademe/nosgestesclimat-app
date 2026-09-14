@@ -40,7 +40,7 @@ export default async function CampagnePage({
   return (
     <>
       <OrganisationFilAriane
-        organisation={isAdmin ? poll.organisation : undefined}
+        organisation={poll.organisation}
         poll={poll}
         t={t}
         isAdmin={isAdmin}
