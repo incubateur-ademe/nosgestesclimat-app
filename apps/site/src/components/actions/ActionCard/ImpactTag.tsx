@@ -5,8 +5,7 @@ import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
 
-export interface ImpactTagProps
-  extends React.ComponentPropsWithoutRef<'span'> {
+export interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
   impact?: number
   assessmentStatus?: SimulationComputationStatus | null
   locale: Locale

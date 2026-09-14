@@ -92,6 +92,12 @@ pnpm -F core db:migrate:rollback <migration_name>
 
 Par ailleurs, il est possible de vérifier si une migration a été appliquée ou non en consultant la table `prisma_migrations` du schéma `public` (après s'être connecté à la base de données localement).
 
+## Tests end-to-end
+
+Les tests end-to-end Playwright s'exécutent sur une stack locale : sur chaque pull request (postgres, redis, mock server, server, site et worker), et contre `https://preprod.nosgestesclimat.fr` avant chaque déploiement en production.
+
+Pour les lancer en local, voir [le README du package e2e](./apps/e2e/README.md).
+
 ## Réutilisations de ce code
 
 Attention, même si la licence MIT vous permet de réutiliser ce code à votre guise, en citant clairement le fait que vous reprenez nos travaux, vous ne pouvez pas réutiliser la marque Nos Gestes Climat. [Veuillez lire notre guide de personnalisation](https://accelerateur-transition-ecologique-ademe.notion.site/Personnaliser-Nos-Gestes-Climat-87f3e91110f8460f8089a4f15c870d6b)

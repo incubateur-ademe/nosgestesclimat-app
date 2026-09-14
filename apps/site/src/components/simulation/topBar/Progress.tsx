@@ -2,6 +2,7 @@ import {
   getBackgroundDarkColor,
   getBackgroundLightColor,
 } from '@/helpers/getCategoryColorClass'
+import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
 import { twMerge } from 'tailwind-merge'
 
@@ -10,6 +11,16 @@ export default function Progress() {
 
   // Calculer le pourcentage pour l'accessibilité
   const percentage = Math.round(testAdvancement * 100)
+
+  // Both the advancement and the category come from the engine, which only
+  // exists on the client: rendered on the server the bar would keep its default
+  // colour (and a stale value), and React would regenerate the tree after
+  // hydrating a question URL opened directly.
+  const isClient = useIsClient()
+
+  if (!isClient) {
+    return null
+  }
 
   return (
     <div

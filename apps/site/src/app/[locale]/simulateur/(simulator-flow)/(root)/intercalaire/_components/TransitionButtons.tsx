@@ -10,7 +10,7 @@ import getNamespace from '@/publicodes-state/helpers/getNamespace'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import { useEndTest } from '../../bilan/_hooks/useEndPage'
+import { useCompleteSimulation } from '../../bilan/_hooks/useCompleteSimulation'
 export default function TransitionButtons() {
   const { gotoNextQuestion, nextQuestion } = useFormState()
   const nextQuestionCategory = getNamespace(nextQuestion)
@@ -18,12 +18,12 @@ export default function TransitionButtons() {
 
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const { endTest } = useEndTest()
+  const { completeSimulation } = useCompleteSimulation()
   function handleGoToNextQuestion() {
     if (isPending) return
     startTransition(() => {
       if (!nextQuestionCategory) {
-        endTest()
+        completeSimulation()
       } else {
         router.push(SIMULATOR_PATH)
         gotoNextQuestion()

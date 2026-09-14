@@ -1,16 +1,19 @@
 import initI18next from '@/locales/initServer'
 
-export async function getServerTranslation(
-  params: { locale: string } | Promise<{ locale: string }>,
+/**
+ * Synchrone à dessein : les traductions sont embarquées dans le bundle.
+ * En faire un `await` transformait chaque composant qui affiche du texte en
+ * composant asynchrone, donc en boundary Suspense (et en trou dynamique du
+ * pré-rendu), pour une donnée immédiatement disponible.
+ */
+export function getServerTranslation(
+  params: { locale: string },
   namespace?: string,
   options?: { keyPrefix: string }
 ) {
-  const resolvedParams = await params
-  const locale = resolvedParams.locale
+  const { locale } = params
 
-  const i18nextInstance = await initI18next(locale)
-
-  i18nextInstance.getFixedT(locale, 'translation', options?.keyPrefix ?? '')
+  const i18nextInstance = initI18next(locale)
 
   return {
     t: i18nextInstance.getFixedT(

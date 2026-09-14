@@ -1,4 +1,4 @@
-import { GROUP_URL, SIMULATION_URL } from '@/constants/urls/main'
+import { GROUP_URL } from '@/constants/urls/main'
 import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
@@ -8,7 +8,6 @@ import { mswServer } from '../../../__tests__/server'
 import { mockAuthenticatedSession } from '../../../helpers/tests/mockAuthenticatedSession'
 import { createGroup } from '../../groups/create-group'
 import { updateGroupParticipant } from '../../groups/update-group-participant'
-import { saveSimulation } from '../save-simulation'
 import { uploadLocalSimulations } from '../upload-local-simulations'
 
 /**
@@ -20,6 +19,7 @@ import { uploadLocalSimulations } from '../upload-local-simulations'
 const DATABASE_DEFAULT_MODEL = 'FR-fr-0.0.0'
 
 const getCurrentSimulationMock = vi.hoisted(() => vi.fn())
+const importLegacyLocalSimulationsMock = vi.hoisted(() => vi.fn())
 
 vi.mock('next/headers', () => ({
   headers: () =>
@@ -45,6 +45,13 @@ vi.mock('@/services/auth/create-app-session', () => ({
 vi.mock('@/services/simulations/get-current-simulation', () => ({
   getCurrentSimulation: getCurrentSimulationMock,
 }))
+
+vi.mock(
+  '@nosgestesclimat/core/features/simulations/services/import-legacy-local-simulations.service',
+  () => ({
+    importLegacyLocalSimulations: importLegacyLocalSimulationsMock,
+  })
+)
 
 /** A simulation as it comes out of long-lived client state: no model at all. */
 const modellessSimulation = (): Simulation => {
@@ -79,15 +86,6 @@ describe('simulation write paths', () => {
   })
 
   describe('given a simulation without a model', () => {
-    it('should resolve a model before saving it', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
-
-      await saveSimulation({ simulation: modellessSimulation() })
-
-      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
-      expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
-    })
-
     it('should resolve a model before adding a group participant', async () => {
       const captured = captureSimulationBody(
         'post',
@@ -162,25 +160,18 @@ describe('simulation write paths', () => {
     })
   })
 
-  describe('given a simulation that already has a model', () => {
-    it('should keep it untouched', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
-      const simulation = modellessSimulation()
-      simulation.model = 'ED-fr-pr-42'
-
-      await saveSimulation({ simulation })
-
-      expect(captured.value?.model).toBe('ED-fr-pr-42')
-    })
-  })
-
   describe('given legacy simulations uploaded from localStorage', () => {
     it('should leave them without a model, on purpose', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
+      importLegacyLocalSimulationsMock.mockResolvedValue(undefined)
 
       await uploadLocalSimulations([modellessSimulation()])
 
-      expect(captured.value?.model).toBeUndefined()
+      expect(importLegacyLocalSimulationsMock).toHaveBeenCalledTimes(1)
+      const { simulations } = importLegacyLocalSimulationsMock.mock
+        .calls[0][0] as {
+        simulations: { model?: string }[]
+      }
+      expect(simulations[0].model).toBeUndefined()
     })
   })
 })

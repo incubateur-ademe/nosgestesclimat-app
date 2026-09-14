@@ -1,3 +1,4 @@
+import { mapComputedResultsToContactAttributes } from '@nosgestesclimat/core/features/simulations/emails/map-computed-results-to-contact-attributes'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
@@ -171,59 +172,6 @@ const sendEmail = ({
       },
     }
   )
-}
-
-const lastSimulationResult = ({
-  computedResults,
-  locale,
-}: {
-  computedResults?: ComputedResults | null
-  locale: Locales
-}) => {
-  const bilan = computedResults?.carbone?.bilan ?? 0
-  const transport = computedResults?.carbone?.categories?.transport ?? 0
-  const alimentation = computedResults?.carbone?.categories?.alimentation ?? 0
-  const logement = computedResults?.carbone?.categories?.logement ?? 0
-  const divers = computedResults?.carbone?.categories?.divers ?? 0
-  const services =
-    computedResults?.carbone?.categories?.['services sociétaux'] ?? 0
-  const eau = computedResults?.eau?.bilan ?? 0
-
-  return {
-    [Attributes.LAST_SIMULATION_BILAN_FOOTPRINT]: (
-      bilan / NUMBER_OF_KG_IN_A_TON
-    ).toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    }),
-    [Attributes.LAST_SIMULATION_TRANSPORTS_FOOTPRINT]: (
-      transport / NUMBER_OF_KG_IN_A_TON
-    ).toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    }),
-    [Attributes.LAST_SIMULATION_ALIMENTATION_FOOTPRINT]: (
-      alimentation / NUMBER_OF_KG_IN_A_TON
-    ).toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    }),
-    [Attributes.LAST_SIMULATION_LOGEMENT_FOOTPRINT]: (
-      logement / NUMBER_OF_KG_IN_A_TON
-    ).toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    }),
-    [Attributes.LAST_SIMULATION_DIVERS_FOOTPRINT]: (
-      divers / NUMBER_OF_KG_IN_A_TON
-    ).toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    }),
-    [Attributes.LAST_SIMULATION_SERVICES_FOOTPRINT]: (
-      services / NUMBER_OF_KG_IN_A_TON
-    ).toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    }),
-    [Attributes.LAST_SIMULATION_BILAN_WATER]: Math.round(
-      eau / NUMBER_OF_DAYS_IN_A_YEAR
-    ).toString(),
-  }
 }
 
 export const sendVerificationCodeEmail = ({
@@ -426,10 +374,10 @@ export const sendSimulationUpsertedEmail = ({
       params: {
         SIMULATION_URL: simulationUrl.toString(),
         DASHBOARD_URL: dashBoardUrl.toString(),
-        ...lastSimulationResult({
-          locale,
-          computedResults: simulation.computedResults as ComputedResults | null,
-        }),
+        ...mapComputedResultsToContactAttributes(
+          simulation.computedResults as ComputedResults | null,
+          locale
+        ),
       },
     })
   }
@@ -451,13 +399,10 @@ export const sendSimulationUpsertedEmail = ({
     params: {
       SIMULATION_URL: simulationUrl.toString(),
       ...(isSimulationCompleted
-        ? {
-            ...lastSimulationResult({
-              locale: Locales.fr,
-              computedResults:
-                simulation.computedResults as ComputedResults | null,
-            }),
-          }
+        ? mapComputedResultsToContactAttributes(
+            simulation.computedResults as ComputedResults | null,
+            Locales.fr
+          )
         : {}),
     },
   })
@@ -477,59 +422,6 @@ export const sendGroupParticipantSimulationUpsertedEmail = ({
     origin,
     group,
     user,
-  })
-}
-
-export const sendPollSimulationUpsertedEmail = async ({
-  email,
-  locale,
-  origin,
-  organisation: { name, slug: organisationSlug },
-  poll: { slug: pollSlug },
-  simulation: { id },
-}: Readonly<{
-  email: string
-  origin: string
-  locale: Locales
-  organisation: Pick<Organisation, 'name' | 'slug'>
-  poll: Pick<Poll, 'slug'>
-  simulation: Pick<Simulation, 'id'>
-}>) => {
-  const templateId = TemplateIds[locale].ORGANISATION_JOINED
-
-  const detailedViewUrl = new URL(
-    `${origin}/organisations/${organisationSlug}/campagnes/${pollSlug}`
-  )
-  const { searchParams: detailedViewUrlSearchParams } = detailedViewUrl
-  detailedViewUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  detailedViewUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[templateId]
-  )
-  const simulationUrl = new URL(origin)
-  simulationUrl.pathname = 'fin'
-  const { searchParams: simulationUrlSearchParams } = simulationUrl
-  simulationUrlSearchParams.append('sid', id)
-  simulationUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  simulationUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[TemplateIds[Locales.fr].SIMULATION_COMPLETED]
-  )
-
-  await sendEmail({
-    email,
-    templateId,
-    params: {
-      ORGANISATION_NAME: name,
-      DETAILED_VIEW_URL: detailedViewUrl.toString(),
-      SIMULATION_URL: simulationUrl.toString(),
-    },
   })
 }
 
@@ -743,10 +635,6 @@ export const addOrUpdateParticipantContactAfterGroupChange = async ({
   }
 }
 
-const NUMBER_OF_DAYS_IN_A_YEAR = 365
-
-const NUMBER_OF_KG_IN_A_TON = 1000
-
 export const addOrUpdateContactAfterSimulationCreated = async ({
   name,
   email,
@@ -767,10 +655,7 @@ export const addOrUpdateContactAfterSimulationCreated = async ({
   const attributes = {
     [Attributes.USER_ID]: userId,
     [Attributes.LAST_SIMULATION_DATE]: lastSimulationDate.toISOString(),
-    ...lastSimulationResult({
-      locale: Locales.fr,
-      computedResults,
-    }),
+    ...mapComputedResultsToContactAttributes(computedResults, Locales.fr),
     ...(name
       ? {
           [Attributes.PRENOM]: name,

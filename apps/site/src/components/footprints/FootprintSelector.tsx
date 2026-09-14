@@ -99,6 +99,10 @@ export default function FootprintSelector({
     <div className="relative rounded-lg">
       <div className="relative block h-full">
         <Select
+          // react-select derives every id from this prefix. Without it they come
+          // from a module-level counter, which differs between the server render
+          // and the client hydration, so React regenerates the tree.
+          instanceId="footprint-selector"
           aria-labelledby="footprint-select-label"
           inputId="footprint-select-input"
           options={options}

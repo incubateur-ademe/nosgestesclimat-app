@@ -359,14 +359,12 @@ describe('Given a NGC user', () => {
               beforeEach(async () => {
                 // Create a complete simulation (progression: 1)
                 await createOrganisationPollSimulation({
-                  agent,
                   pollId,
                   simulation: { progression: 1 },
                 })
 
                 // Create an incomplete simulation (progression: 0.5)
                 await createOrganisationPollSimulation({
-                  agent,
                   pollId,
                   simulation: { progression: 0.5 },
                 })

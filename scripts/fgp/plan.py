@@ -20,8 +20,9 @@ Traduction mecanique des [[env.<x>.scope]] :
           { present = true }  -> {type:"wildcard", value:"*"}
       Plusieurs cles sous .body = plusieurs bodyFilters (tous combines en AND).
 
-La cible (target) vient de env.<x>.api, sinon global.api. La base FGP et le TTL
-viennent du haut du TOML. Le script print pour chaque env la valeur url + token
+La cible (target) vient de env.<x>.api, sinon global.api. La base FGP, le TTL,
+le mode d'auth et le nom de la variable d'env du secret upstream viennent du
+[global] du TOML. Le script print pour chaque env la valeur url + token
 (tok = cle client) — pas d'affectation nommee : juste les valeurs.
 
 Sortie : JSON valide sur stdout (aucun log sur stderr sauf erreur).
@@ -89,9 +90,7 @@ def as_int(value, default: int) -> int:
 
 
 def main(argv: list[str]) -> int:
-    conf = Path(
-        argv[1] if len(argv) >= 2 else Path(__file__).resolve().parent / "config.toml"
-    )
+    conf = Path(argv[0] if argv else Path(__file__).resolve().parent / "config.toml")
     if not conf.is_file():
         print(f"config introuvable : {conf}", file=sys.stderr)
         return 2
@@ -107,6 +106,8 @@ def main(argv: list[str]) -> int:
     g = cfg.get("global", {})
     fgp_base = g.get("fgp_base_url", "https://fgp.incubateur.ademe.fr")
     default_api = g.get("api", "https://api.osc-fr1.scalingo.com")
+    auth = g.get("auth", "scalingo-exchange")
+    token_env = g.get("token_env", "SCALINGO_API_TOKEN")
 
     envs = []
     for key, ecfg in cfg.get("env", {}).items():
@@ -124,7 +125,16 @@ def main(argv: list[str]) -> int:
             }
         )
 
-    json.dump({"fgp_base_url": fgp_base, "envs": envs}, sys.stdout, ensure_ascii=False)
+    json.dump(
+        {
+            "fgp_base_url": fgp_base,
+            "auth": auth,
+            "token_env": token_env,
+            "envs": envs,
+        },
+        sys.stdout,
+        ensure_ascii=False,
+    )
     return 0
 
 

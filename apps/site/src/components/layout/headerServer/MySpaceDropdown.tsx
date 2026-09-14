@@ -24,7 +24,7 @@ import {
 } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import posthog from 'posthog-js'
-import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react'
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 const MAX_EMAIL_LENGTH = 20
@@ -43,8 +43,14 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
   const menuRef = useRef<HTMLDivElement>(null)
   const firstMenuItemRef = useRef<HTMLAnchorElement>(null)
   const logoutButtonRef = useRef<HTMLButtonElement>(null)
-  const buttonId = useId()
-  const menuId = useId()
+  // `useId` ne convient pas ici : le menu part dans un segment sérialisé du
+  // HTML, et l'id calculé au rendu serveur ne correspond plus à celui du rendu
+  // client — React signale un mismatch d'hydratation et régénère l'arbre. On
+  // fige donc les ids, en les dérivant de l'email pour rester uniques si le
+  // menu venait à être rendu deux fois.
+  const idSuffix = email.replace(/[^a-z0-9]/gi, '').slice(-8)
+  const buttonId = `my-space-button-${idSuffix}`
+  const menuId = `my-space-menu-${idSuffix}`
 
   const { setUser, setSimulation } = useUser()
 

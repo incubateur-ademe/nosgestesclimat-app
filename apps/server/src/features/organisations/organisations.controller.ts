@@ -2,16 +2,11 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
-import { ImmutableSimulationException } from '../../core/errors/ImmutableSimulationException.ts'
-import { UnauthorizedException } from '../../core/errors/UnauthorizedException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import logger from '../../logger.ts'
 import { authentificationMiddleware } from '../../middlewares/authentificationMiddleware.ts'
-import { rateLimitSameRequestMiddleware } from '../../middlewares/rateLimitSameRequestMiddleware.ts'
 import { validateRequest } from '../../middlewares/validateRequest.ts'
-import { createPollSimulation } from '../simulations/simulations.service.ts'
-import { OrganisationPollSimulationCreateValidator } from '../simulations/simulations.validator.ts'
 import { OrganisationCreatedEvent } from './events/OrganisationCreated.event.ts'
 import { OrganisationUpdatedEvent } from './events/OrganisationUpdated.event.ts'
 import { PollCreatedEvent } from './events/PollCreated.event.ts'
@@ -389,49 +384,6 @@ router
         }
 
         logger.error('Poll download simulations failed', err)
-
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-      }
-    }
-  )
-
-/**
- * Upserts simulation poll for an organisation and an id or a slug
- */
-router
-  .route('/v1/public-polls/:pollIdOrSlug/simulations')
-  .post(
-    rateLimitSameRequestMiddleware(),
-    authentificationMiddleware(),
-    validateRequest(OrganisationPollSimulationCreateValidator),
-    async (req, res) => {
-      try {
-        const simulation = await createPollSimulation({
-          simulationDto: req.body,
-          locale: req.query.locale,
-          params: req.params,
-          user: req.user!,
-        })
-
-        return res.status(StatusCodes.CREATED).json(simulation)
-      } catch (err) {
-        if (err instanceof ImmutableSimulationException) {
-          return res.status(StatusCodes.BAD_REQUEST).send(err.message).end()
-        }
-
-        if (err instanceof ForbiddenException) {
-          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-        }
-
-        if (err instanceof UnauthorizedException) {
-          return res.status(StatusCodes.UNAUTHORIZED).end()
-        }
-
-        if (err instanceof EntityNotFoundException) {
-          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-        }
-
-        logger.error('Poll simulation creation failed', err)
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }

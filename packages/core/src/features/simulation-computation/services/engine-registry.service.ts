@@ -5,7 +5,7 @@ import * as v from 'valibot'
 import { currentMemoryMB } from '../../../lib/memory.ts'
 import type { Logger } from '../../logger/index.ts'
 import type { Model, ModelRegion } from '../../simulations/types/model.ts'
-import { UnsupportedModelException } from '../exceptions/simulation-computation.exception.ts'
+import { UnsupportedModelError } from '../errors/simulation-computation.error.ts'
 import type { HotKey } from '../model-support/hot-key.schema.ts'
 import { HotKeySchema } from '../model-support/hot-key.schema.ts'
 import type { ModelVersionKind } from '../model-support/model-versions.ts'
@@ -147,7 +147,7 @@ export function createGetEngineForModel(deps: EngineRegistryDeps) {
     const { logger } = deps
     const versionKind = resolveVersionKind(model)
     if (versionKind === null) {
-      throw new UnsupportedModelException({ model })
+      throw new UnsupportedModelError(model)
     }
 
     const key = engineKey(model.region, versionKind)

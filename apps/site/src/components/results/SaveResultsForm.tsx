@@ -6,7 +6,7 @@ import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 
 import { UserProvider } from '@/publicodes-state'
-import type { UserSession } from '@/services/auth/get-user-session'
+import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
 
 export default function SaveResultsForm({
   userSession,

@@ -1,7 +1,6 @@
 import {
   sendGroupCreatedEmail,
   sendGroupParticipantSimulationUpsertedEmail,
-  sendPollSimulationUpsertedEmail,
   sendSimulationUpsertedEmail,
 } from '../../../adapters/brevo/client.ts'
 import { config } from '../../../config.ts'
@@ -10,15 +9,7 @@ import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event
 
 export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
   attributes,
-  attributes: {
-    user,
-    organisation,
-    simulation,
-    sendEmail,
-    verified,
-    locale,
-    poll,
-  },
+  attributes: { user, simulation, sendEmail, verified, locale },
 }) => {
   if (!user.email || !sendEmail) {
     return
@@ -28,17 +19,6 @@ export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
   const origin = config.app.origin
 
   if (simulation?.progression === 1) {
-    if (organisation) {
-      return sendPollSimulationUpsertedEmail({
-        organisation,
-        simulation,
-        locale,
-        origin,
-        email,
-        poll,
-      })
-    }
-
     if (attributes.group) {
       const { user, administrator, group } = attributes
       const isAdministrator = user.id === administrator.id

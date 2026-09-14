@@ -62,8 +62,8 @@ interface Props {
   params: Record<string, string | string[] | undefined>
 }
 
-export default async function EventTabs({ filter, locale, params }: Props) {
-  const { t } = await getServerTranslation({ locale })
+export default function EventTabs({ filter, locale, params }: Props) {
+  const { t } = getServerTranslation({ locale })
 
   const rawFilter = Array.isArray(filter) ? filter[0] : filter
   const activeFilter: FilterValue =

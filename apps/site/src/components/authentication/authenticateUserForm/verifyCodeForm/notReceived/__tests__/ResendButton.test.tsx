@@ -1,14 +1,16 @@
+import type { AuthContextValue } from '@/components/authentication/AuthProvider'
+import { useAuth } from '@/components/authentication/AuthProvider'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useAuth } from '@/components/authentication/AuthProvider'
-import type { AuthContextValue } from '@/components/authentication/AuthProvider'
 import ResendButton from '../ResendButton'
 
 vi.mock('@/utils/analytics/trackEvent')
 vi.mock('@/components/authentication/AuthProvider', async () => {
-  const actual = await vi.importActual('@/components/authentication/AuthProvider')
+  const actual = await vi.importActual(
+    '@/components/authentication/AuthProvider'
+  )
   return { ...actual, useAuth: vi.fn() }
 })
 

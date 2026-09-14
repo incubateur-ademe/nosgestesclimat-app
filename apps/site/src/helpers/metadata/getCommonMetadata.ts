@@ -41,7 +41,7 @@ export const getCommonMetadata = <T extends DefaultPageProps>({
     const awaitedParams = await params
     const { locale } = awaitedParams
 
-    const { t } = await getServerTranslation({ locale })
+    const { t } = getServerTranslation({ locale })
 
     const resolvedAlternates = alternates
       ? typeof alternates === 'function'
