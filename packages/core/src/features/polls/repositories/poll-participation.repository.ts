@@ -18,6 +18,23 @@ export const findUserPollParticipations = async ({
     select: { simulationId: true },
   })
 
+/**
+ * The finished simulations of this poll. An unfinished one is not a
+ * participation: it carries no results and must not count towards the
+ * thresholds that gate their display.
+ *
+ * `progression: 1` mirrors `isSimulationCompleted`, which the aggregate loop
+ * applies in memory — the filter lives in SQL here so the count stays cheap,
+ * and the two must agree.
+ */
+export const countPollParticipants = (
+  pollId: string,
+  tx: Transaction = prisma
+): Promise<number> =>
+  tx.simulationPoll.count({
+    where: { pollId, simulation: { progression: 1 } },
+  })
+
 export const createPollParticipation = async (
   {
     pollId,
