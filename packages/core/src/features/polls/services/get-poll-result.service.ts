@@ -20,19 +20,15 @@ export const getPollResult = async ({
   pollIdOrSlug: string
   userId: string | null
 }): Promise<PollResult | null> => {
-  const poll = await findPollByIdOrSlugInOrganisation({
-    pollIdOrSlug,
-    organisationSlug,
-  })
+  // The participation does not depend on the poll, so both are read at once.
+  const [poll, userParticipation] = await Promise.all([
+    findPollByIdOrSlugInOrganisation({ pollIdOrSlug, organisationSlug }),
+    userId ? findLatestCompletedPollSimulation({ userId, pollIdOrSlug }) : null,
+  ])
   if (!poll) return null
 
-  // The count needs the poll's id, the two other reads do not: reading all
-  // three once the poll is known keeps this to two round trips.
-  const [participants, userParticipation, stats] = await Promise.all([
-    countPollParticipants(poll.id),
-    userId ? findLatestCompletedPollSimulation({ userId, pollIdOrSlug }) : null,
-    findPollStats({ pollId: poll.id }),
-  ])
+  const participants = await countPollParticipants(poll.id)
+  const anonymity = resolveAnonymity(participants)
 
   const base = {
     poll,
@@ -44,11 +40,11 @@ export const getPollResult = async ({
     userParticipation,
   }
 
-  const anonymity = resolveAnonymity(participants)
-
+  // The threshold governs the read, not only what comes out of it: a withheld
+  // poll's stats are never loaded.
   if (!anonymity.isReached) {
     return { ...base, anonymity, stats: null }
   }
 
-  return { ...base, anonymity, stats }
+  return { ...base, anonymity, stats: await findPollStats({ pollId: poll.id }) }
 }
