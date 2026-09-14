@@ -1,0 +1,3 @@
+.language-switch-button[aria-expanded='true'] > svg {
+  @apply -rotate-90!;
+}

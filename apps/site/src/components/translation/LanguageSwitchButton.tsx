@@ -11,8 +11,8 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
-import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import './languageSwitchButton/style.css'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
 
 interface Props {
@@ -20,8 +20,6 @@ interface Props {
 }
 
 export default function LanguageSwitchButton({ className }: Props) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-
   const { t } = useClientTranslation()
 
   const switchLanguageObject = useSwitchLanguage()
@@ -42,22 +40,21 @@ export default function LanguageSwitchButton({ className }: Props) {
 
   return (
     <div className={twMerge('max-tiny:mr-1 mr-2', className)}>
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+      <Popover>
         <PopoverTrigger
           color="secondary"
           aria-label={triggerTitle}
           lang={activeLocale}
           title={triggerTitle}
           data-testid="language-switch-button"
-          className="hover:bg-primary-100 active:bg-primary-200 transitions-colors inline-flex items-center gap-2 rounded-lg px-2 py-2 sm:px-4 sm:py-3">
+          className="language-switch-button hover:bg-primary-100 active:bg-primary-200 transitions-colors inline-flex items-center gap-2 rounded-lg px-2 py-2 sm:px-4 sm:py-3">
           <Emoji>{activeLang.flag}</Emoji>
           <span className="text-primary-700 capitalize">
             {activeLocale.toUpperCase()}
           </span>{' '}
           <ChevronRight
             className={twMerge(
-              'ml-1 inline-block w-1.5 transition-transform',
-              isPopoverOpen ? '-rotate-90' : 'rotate-90'
+              'ml-1 inline-block w-1.5 rotate-90 transition-transform'
             )}
           />
         </PopoverTrigger>
@@ -79,7 +76,6 @@ export default function LanguageSwitchButton({ className }: Props) {
               trackPosthogEvent(
                 captureClickLanguage({ locale: inactiveLocale })
               )
-              setIsPopoverOpen(false)
             }}
             className="hover:bg-primary-50 active:bg-primary-100 rounded-sm px-2 py-2">
             <Emoji className="mr-2">{inactiveLang.flag}</Emoji>
