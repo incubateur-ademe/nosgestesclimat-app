@@ -3,7 +3,7 @@
 import type { Region } from '@/helpers/server/model/models'
 import { useTrackPageview } from '@/hooks/tracking/useTrackPageview'
 import type { Locale } from '@/i18nConfig'
-import posthog from 'posthog-js'
+import { registerSessionProperties } from '@/services/tracking/posthogSessionProperties'
 import { useEffect } from 'react'
 
 export function ClientTrackers({
@@ -14,15 +14,14 @@ export function ClientTrackers({
   region: Region | undefined
 }) {
   useEffect(() => {
-    posthog.register_for_session({
+    registerSessionProperties({
       locale,
     })
   }, [locale])
 
   useEffect(() => {
     if (!region) return
-
-    posthog.register_for_session({
+    registerSessionProperties({
       region,
     })
   }, [region])

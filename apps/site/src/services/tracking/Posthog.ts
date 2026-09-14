@@ -5,6 +5,7 @@ import {
   getIframeInformation,
   type IframeInformation,
 } from './iframeInformation'
+import { reapplySessionProperties } from './posthogSessionProperties'
 
 export type PostHogCookieState = 'accepted' | 'refused' | 'do_not_track'
 
@@ -38,6 +39,11 @@ export class PostHog {
         cookieState satisfies never
     }
     this.registerProperties()
+
+    // Answering the banner rebuilds the SDK session manager, which drops every
+    // session property registered so far (they were not persisted yet while the
+    // consent was undecided). Replay them now that the consent is known.
+    reapplySessionProperties()
   }
 
   /**
@@ -108,6 +114,10 @@ export class PostHog {
 
       loaded: () => {
         this.registerProperties()
+        // Inside an iframe `posthog.init()` is deferred until the visitor
+        // scrolls; trackers may already have registered session properties by
+        // then, when the SDK could not store them.
+        reapplySessionProperties()
       },
     })
 
