@@ -61,11 +61,20 @@ describe('getPoll', () => {
       slug: poll.slug,
       mode: 'scolaire',
       expectedNumberOfParticipants: 42,
-      funFacts: null,
-      computedResults,
       createdAt: poll.createdAt,
       updatedAt: poll.updatedAt,
       organisation: poll.organisation,
     })
+  })
+
+  it('exposes no aggregate, even a computed one', async () => {
+    const poll = await pollFactory.create({
+      computedResults: computedResultsFactory.valid().build(),
+    })
+
+    const result = await getPoll({ pollIdOrSlug: poll.slug })
+
+    expect(result).not.toHaveProperty('computedResults')
+    expect(result).not.toHaveProperty('funFacts')
   })
 })

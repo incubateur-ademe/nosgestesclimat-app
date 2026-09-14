@@ -1,7 +1,7 @@
 import { isCuid } from '../../../lib/cuid.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { Poll, PollSummary } from '../types/poll.ts'
-import { toPoll } from './poll.mapper.ts'
+import type { Poll, PollResults, PollSummary } from '../types/poll.ts'
+import { toPoll, toPollResults } from './poll.mapper.ts'
 
 const pollSelect = {
   id: true,
@@ -10,13 +10,16 @@ const pollSelect = {
   mode: true,
   organisationId: true,
   expectedNumberOfParticipants: true,
-  funFacts: true,
-  computedResults: true,
   createdAt: true,
   updatedAt: true,
   organisation: {
     select: { id: true, name: true, slug: true },
   },
+} as const
+
+const pollResultsSelect = {
+  computedResults: true,
+  funFacts: true,
 } as const
 
 const pollSummarySelect = {
@@ -52,9 +55,8 @@ export const findPollByIdOrSlug = async ({
  * this slug.
  *
  * A poll slug is unique on its own, so the organisation in the URL carries
- * navigation and permissions rather than identity. This read answers `null`
- * when the two disagree, instead of serving a poll under an organisation it
- * does not belong to.
+ * navigation and permissions rather than identity: this read answers `null`
+ * when the two disagree.
  */
 export const findPollByIdOrSlugInOrganisation = async ({
   pollIdOrSlug,
@@ -83,4 +85,21 @@ export const findPollSummaryById = async ({
     where: { id },
     select: pollSummarySelect,
   })
+}
+
+/**
+ * The aggregates the worker computed, read apart from the poll itself: they
+ * only leave the database through a read that asks for them.
+ */
+export const findPollResults = async ({
+  pollId,
+}: {
+  pollId: string
+}): Promise<PollResults | null> => {
+  const row = await prisma.poll.findUnique({
+    where: { id: pollId },
+    select: pollResultsSelect,
+  })
+
+  return row ? toPollResults(row) : null
 }

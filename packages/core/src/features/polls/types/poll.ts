@@ -8,9 +8,6 @@ export interface Poll {
   slug: string
   mode: PollMode
   expectedNumberOfParticipants: number | null
-  funFacts: FunFacts | null
-  /** null until the poll's aggregated results have been computed server-side */
-  computedResults: ComputedResults | null
   createdAt: Date
   updatedAt: Date
   organisation: {
@@ -18,6 +15,18 @@ export interface Poll {
     name: string
     slug: string
   }
+}
+
+/**
+ * The aggregates the worker computed for a poll.
+ *
+ * They are deliberately absent from `Poll`: a read of the poll itself must not
+ * carry them, so that exposing results always goes through the rule deciding
+ * whether they may be published.
+ */
+export interface PollResults {
+  computedResults: ComputedResults
+  funFacts: FunFacts | null
 }
 
 export interface PollSummary {

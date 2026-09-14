@@ -5,6 +5,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
+import { MIN_PARTICIPANTS_FOR_RESULTS } from '@nosgestesclimat/core/features/polls/helpers/results-visibility'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import ResultsSoonBanner from './statisticsBlocks/ResultsSoonBanner'
 
@@ -32,7 +33,7 @@ export default function StatisticsBlocks({
   const locale = useLocale()
   const { t } = useClientTranslation()
 
-  const hasLessThan3Participants = participants < 3
+  const hasLessThan3Participants = participants < MIN_PARTICIPANTS_FOR_RESULTS
 
   const result = hasLessThan3Participants ? mockResults : computedResults
 
