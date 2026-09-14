@@ -920,7 +920,7 @@ entries:
   pollResults.waterFootprint.body.lock: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
   pollResults.waterFootprint.learnMore: Learn more
   pollResults.waterFootprint.learnMore.lock: En savoir plus
-  pollResults.funFacts.refreshNote: The figures update about every {{duration}}
+  pollResults.funFacts.refreshNote: 'The figures are updated approximately every {{duration}} '
   pollResults.footprintBarChart.targetLabelMobile: 'Target 2050:'
   pollResults.footprintBarChart.targetLabelMobile.lock: 'Objectif 2050 :'
   common.category.alimentationShort: Food
@@ -2027,8 +2027,8 @@ entries:
   event.countdown.label.lock: Début dans
   event.statistics.title: Live data will appear on launch
   event.statistics.title.lock: Les données en direct apparaîtront au lancement
-  event.countdown.date: Launch on {{date}}
-  event.countdown.date.lock: Lancement le {{date}}
+  event.countdown.date: Join the campaign until {{date}}
+  event.countdown.date.lock: Rejoignez l'opération jusqu'au {{date}}
   event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
   event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   Éducation: Education
@@ -2195,3 +2195,4 @@ entries:
   poll.creation.mode.error.lock: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
   poll.creation.mode.title: Select the test mode
   poll.creation.mode.title.lock: Choisissez le mode du test
+  pollResults.funFacts.refreshNote.lock: Les chiffres se mettent à jour toutes les {{duration}} environ
