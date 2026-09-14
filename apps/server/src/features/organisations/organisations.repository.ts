@@ -23,7 +23,6 @@ import type {
   OrganisationPollParams,
   OrganisationPollUpdateDto,
   OrganisationUpdateDto,
-  PublicPollParams,
 } from './organisations.validator.ts'
 
 const findModelUniqueSlug = (model: 'organisation' | 'poll') => {
@@ -651,44 +650,6 @@ export const fetchOrganisationPoll = async (
     simulationsInfos,
     organisation,
     poll: sanitizePollComputedResults(poll),
-  }
-}
-
-export const fetchOrganisationPublicPoll = async (
-  { pollIdOrSlug, user }: PublicPollParams & { user?: PartialUser },
-  { session }: { session: Session }
-) => {
-  const { organisation, ...poll } = await session.poll.findFirstOrThrow({
-    where: {
-      OR: [
-        {
-          id: pollIdOrSlug,
-        },
-        {
-          slug: pollIdOrSlug,
-        },
-      ],
-    },
-    select: {
-      ...defaultPollSelection,
-      organisation: {
-        select: defaultOrganisationSelectionWithoutPolls,
-      },
-    },
-  })
-
-  const simulationsInfos = await fetchPollSimulationsInfo(
-    {
-      poll,
-      user,
-    },
-    { session }
-  )
-
-  return {
-    poll: sanitizePollComputedResults(poll),
-    simulationsInfos,
-    organisation,
   }
 }
 
