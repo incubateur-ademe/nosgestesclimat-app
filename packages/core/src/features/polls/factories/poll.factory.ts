@@ -20,7 +20,12 @@ type PollFactoryParams = DeepPartial<Poll> & {
   funFacts?: FunFacts | null
 }
 
-class PollFactory extends Factory<Poll, PollTransientParams, Poll, PollFactoryParams> {
+class PollFactory extends Factory<
+  Poll,
+  PollTransientParams,
+  Poll,
+  PollFactoryParams
+> {
   scolaire() {
     return this.params({ mode: 'scolaire' })
   }
