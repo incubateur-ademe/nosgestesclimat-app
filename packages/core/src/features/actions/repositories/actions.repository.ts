@@ -304,3 +304,14 @@ const findLastCompletedSimulationByUserId = async (
     orderBy: { createdAt: 'desc' },
   })
 }
+
+export const findActionById = async (actionId: string | undefined) => {
+  if (!actionId) return null
+
+  return prisma.action.findFirst({
+    select: { id: true },
+    where: {
+      id: actionId,
+    },
+  })
+}

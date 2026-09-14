@@ -30,6 +30,7 @@ interface ActionsPageProps extends Omit<
    */
   totalFootprint?: number
   textOverrides?: { highestImpactSectionDescription?: React.ReactNode }
+  aside?: React.ReactNode
 }
 
 export default function ActionsPage({
@@ -45,6 +46,7 @@ export default function ActionsPage({
   from,
   totalFootprint,
   textOverrides,
+  aside,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -78,99 +80,106 @@ export default function ActionsPage({
     </>
   )
 
+  const mainContent = (
+    <div {...props} className={twMerge('pb-24', className)}>
+      <div className="mb-10">
+        <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">{title}</h1>
+        <p className="text-base/normal text-slate-500 md:text-lg/normal">
+          {description}
+        </p>
+      </div>
+
+      {topActions && topActions.length > 0 && (
+        <HighestImpactActionsSectionSwitch
+          control={
+            <>
+              <HighestImpactActionsSection
+                actions={topActions}
+                className="mb-10"
+                locale={locale}
+                assessmentStatus={assessmentStatus}
+                from={from}
+                textOverrides={
+                  textOverrides?.highestImpactSectionDescription
+                    ? {
+                        description:
+                          textOverrides.highestImpactSectionDescription,
+                      }
+                    : undefined
+                }
+              />
+              <Separator variant="full" className="my-10 hidden md:block" />
+
+              {cta && (
+                <>
+                  {cta}
+                  <Separator variant="full" className="my-10 hidden md:block" />
+                </>
+              )}
+            </>
+          }
+          testWhiteBackground={
+            <>
+              <HighestImpactActionsSectionWhiteBackground
+                actions={topActions}
+                className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
+                locale={locale}
+                assessmentStatus={assessmentStatus}
+                from={from}
+                totalFootprint={totalFootprint}
+              />
+              {testVariantsTrailingContent}
+            </>
+          }
+          testDarkBackground={
+            <>
+              <HighestImpactActionsSectionDarkBackground
+                actions={topActions}
+                className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
+                locale={locale}
+                assessmentStatus={assessmentStatus}
+                from={from}
+                totalFootprint={totalFootprint}
+              />
+              {testVariantsTrailingContent}
+            </>
+          }
+        />
+      )}
+
+      <div className="relative flex flex-col gap-5 md:gap-10">
+        {themes
+          .filter((theme) => {
+            const actions = actionsByTheme[theme.key]
+            return actions && actions.length > 0
+          })
+          .map((theme) => {
+            return (
+              <ThemeSection
+                key={theme.id}
+                theme={theme}
+                locale={locale}
+                assessmentStatus={assessmentStatus}
+                actions={actionsByTheme[theme.key] ?? []}
+                from={from}
+              />
+            )
+          })}
+      </div>
+    </div>
+  )
+
   return (
     <>
       <BetaBanner locale={locale} />
 
-      <div {...props} className={twMerge('pb-24', className)}>
-        <div className="mb-10">
-          <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">{title}</h1>
-          <p className="text-base/normal text-slate-500 md:text-lg/normal">
-            {description}
-          </p>
+      {!aside ? (
+        mainContent
+      ) : (
+        <div className="flex gap-8">
+          {mainContent} {aside}
         </div>
-
-        {topActions && topActions.length > 0 && (
-          <HighestImpactActionsSectionSwitch
-            control={
-              <>
-                <HighestImpactActionsSection
-                  actions={topActions}
-                  className="mb-10"
-                  locale={locale}
-                  assessmentStatus={assessmentStatus}
-                  from={from}
-                  textOverrides={
-                    textOverrides?.highestImpactSectionDescription
-                      ? {
-                          description:
-                            textOverrides.highestImpactSectionDescription,
-                        }
-                      : undefined
-                  }
-                />
-                <Separator variant="full" className="my-10 hidden md:block" />
-
-                {cta && (
-                  <>
-                    {cta}
-                    <Separator
-                      variant="full"
-                      className="my-10 hidden md:block"
-                    />
-                  </>
-                )}
-              </>
-            }
-            testWhiteBackground={
-              <>
-                <HighestImpactActionsSectionWhiteBackground
-                  actions={topActions}
-                  className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
-                  locale={locale}
-                  assessmentStatus={assessmentStatus}
-                  from={from}
-                  totalFootprint={totalFootprint}
-                />
-                {testVariantsTrailingContent}
-              </>
-            }
-            testDarkBackground={
-              <>
-                <HighestImpactActionsSectionDarkBackground
-                  actions={topActions}
-                  className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
-                  locale={locale}
-                  assessmentStatus={assessmentStatus}
-                  from={from}
-                  totalFootprint={totalFootprint}
-                />
-                {testVariantsTrailingContent}
-              </>
-            }
-          />
-        )}
-
-        <div className="relative flex flex-col gap-5 md:gap-10">
-          {themes
-            .filter((theme) => {
-              const actions = actionsByTheme[theme.key]
-              return actions && actions.length > 0
-            })
-            .map((theme) => {
-              return (
-                <ThemeSection
-                  key={theme.id}
-                  theme={theme}
-                  locale={locale}
-                  assessmentStatus={assessmentStatus}
-                  actions={actionsByTheme[theme.key] ?? []}
-                  from={from}
-                />
-              )
-            })}
-        </div>
-      </div>
+      )}
     </>
   )
 }
