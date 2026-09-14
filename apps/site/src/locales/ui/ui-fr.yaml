@@ -1376,7 +1376,7 @@ entries:
   event.ctas.card1.buttonAriaLabel: Je participe, ouvrir dans une nouvelle fenêtre
   event.ctas.card2.buttonAriaLabel: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
   event.testimonies.4.text: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
-  event.countdown.date: Lancement le {{date}}
+  event.countdown.date: Rejoignez l'opération jusqu'au {{date}}
   event.countdown.description: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   event.countdown.label: Début dans
   event.statistics.title: Les données en direct apparaîtront au lancement
