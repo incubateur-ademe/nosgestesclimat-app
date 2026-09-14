@@ -6,7 +6,7 @@ import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { fetchPartnerCampaign } from '@/services/cms/fetchPartnerCampaign'
-import { getPoll } from '@/services/polls/get-poll'
+import { getPollSummary } from '@/services/polls/get-poll-summary'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ClientLayout } from '../../../../components/layout/ClientLayout'
@@ -39,7 +39,7 @@ export default async function PartnerCampaignPage({
 
   const [partnerCampaign, poll] = await Promise.all([
     fetchPartnerCampaign({ locale, pollSlug }),
-    getPoll(pollSlug),
+    getPollSummary(pollSlug),
   ])
 
   if (!partnerCampaign || !poll) {

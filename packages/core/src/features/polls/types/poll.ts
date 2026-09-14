@@ -41,5 +41,6 @@ export interface PollSummary {
   id: string
   name: string
   slug: string
-  organisation: { slug: string }
+  mode: PollMode
+  organisation: { name: string; slug: string }
 }
