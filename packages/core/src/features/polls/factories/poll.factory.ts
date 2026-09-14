@@ -3,9 +3,9 @@ import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import { Factory, type DeepPartial } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import { Prisma } from '../../../prisma/generated/client.ts'
+import { organisationFactory } from '../../organisations/factories/organisation.factory.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
 import type { Poll } from '../types/poll.ts'
-import { organisationFactory } from './organisation.factory.ts'
 
 interface PollTransientParams {
   organisationId: string
@@ -28,6 +28,16 @@ class PollFactory extends Factory<
 > {
   scolaire() {
     return this.params({ mode: 'scolaire' })
+  }
+
+  /**
+   * Points the poll at an organisation that already exists, instead of letting
+   * the factory create one, and names it in the poll it returns as the row does.
+   */
+  withOrganisation(organisation: Poll['organisation']) {
+    return this.transient({ organisationId: organisation.id }).params({
+      organisation,
+    })
   }
 
   withStatsComputationStatus(
