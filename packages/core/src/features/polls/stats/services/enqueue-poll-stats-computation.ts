@@ -2,10 +2,10 @@ import type { Transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { countPollParticipants } from '../../repositories/poll-participation.repository.ts'
 import {
-  parseCooldownTiers,
   resolveCooldownSeconds,
   type CooldownTier,
 } from '../helpers/cooldown-policy.ts'
+import { pollStatsCooldownTiers } from '../helpers/poll-stats-cooldown-tiers.ts'
 import {
   getPollStatsComputationStatus,
   schedulePollStatsComputation,
@@ -46,10 +46,6 @@ export function createEnqueuePollStatsComputation({
   }
 }
 
-/**
- * The tiers are also advertised as the polls' refresh delay in the server
- * DTOs, so both must resolve them identically.
- */
 export const enqueuePollStatsComputation = createEnqueuePollStatsComputation({
-  cooldownTiers: parseCooldownTiers(process.env.POLL_STATS_COOLDOWN_TIERS),
+  cooldownTiers: pollStatsCooldownTiers,
 })
