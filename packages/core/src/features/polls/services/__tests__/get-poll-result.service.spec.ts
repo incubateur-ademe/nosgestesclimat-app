@@ -73,7 +73,7 @@ describe('getPollResult', () => {
     expect(result?.poll.id).toBe(poll.id)
   })
 
-  it('has no user participation without a viewer', async () => {
+  it('has no user participation when there is no userId', async () => {
     const organisation = await organisationFactory.create()
     const poll = await createPollIn(organisation.id)
 
@@ -86,7 +86,7 @@ describe('getPollResult', () => {
     expect(result?.userParticipation).toBeNull()
   })
 
-  it('exposes the viewer participation once finished', async () => {
+  it('exposes the user participation once finished', async () => {
     const organisation = await organisationFactory.create()
     const poll = await createPollIn(organisation.id)
     const user = await userFactory.create()

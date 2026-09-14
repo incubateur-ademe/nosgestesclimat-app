@@ -54,7 +54,7 @@ describe('getPollResult', () => {
     ).rejects.toThrow('NEXT_NOT_FOUND')
   })
 
-  it('has no viewer without a session', async () => {
+  it('forwards no identity when the visitor has no session', async () => {
     vi.mocked(getUserSession).mockResolvedValue(null)
 
     const result = await getPollResult({
@@ -71,9 +71,10 @@ describe('getPollResult', () => {
     expect(result.isAdmin).toBe(false)
   })
 
-  it('does not look for an administrator on an anonymous session', async () => {
+  it('forwards the anonymous identity, and asks for no administrator right', async () => {
+    const userId = randomUUID()
     vi.mocked(getUserSession).mockResolvedValue({
-      id: randomUUID(),
+      id: userId,
       isAuth: false,
     })
 
@@ -82,11 +83,16 @@ describe('getPollResult', () => {
       pollIdOrSlug: 'my-poll',
     })
 
+    expect(serviceMock.getPollResultService).toHaveBeenCalledWith({
+      organisationSlug: 'my-org',
+      pollIdOrSlug: 'my-poll',
+      userId,
+    })
     expect(serviceMock.isOrganisationAdministrator).not.toHaveBeenCalled()
     expect(result.isAdmin).toBe(false)
   })
 
-  it('asks for the administrator right on a signed-in session', async () => {
+  it('forwards the signed-in identity, and asks for the administrator right', async () => {
     const userId = randomUUID()
     vi.mocked(getUserSession).mockResolvedValue({
       id: userId,
