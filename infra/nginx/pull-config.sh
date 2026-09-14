@@ -27,6 +27,20 @@ export DOMAIN UPSTREAM ENVIRONMENT REPO TEMPLATE_REF
 
 mkdir -p "$STATE_DIR"
 
+# ─── Pré-chauffage du cache page d'erreur ────────────────────────
+# L'entrée de /app-crash doit exister AVANT une panne : la sous-requête
+# d'`error_page` repart sinon vers l'upstream, qui est injoignable.
+# Non fatal : nginx n'existe pas encore au first boot (pas de certificat).
+warm_app_crash_cache() {
+    systemctl is-active --quiet nginx || return 0
+    curl -fsS --max-time 10 \
+        --resolve "${DOMAIN}:443:127.0.0.1" \
+        "https://${DOMAIN}/app-crash" -o /dev/null ||
+        echo "WARN: app-crash cache pre-warm failed (non fatal)"
+}
+
+warm_app_crash_cache
+
 # ─── Get latest commit SHA ───────────────────────────────────────
 SHA=$(curl -fsSL --max-time 30 --retry 3 \
     -H "Accept: application/vnd.github+json" \

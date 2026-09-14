@@ -282,6 +282,17 @@ http_404` sert la copie en cache plutôt que de laisser un 404 que le HTML
 L'invalidation se fait par **génération de clé** : bumper le préfixe
 `ngc-html-v2` dans `nginx.conf.tpl` vide le cache HTML.
 
+## Page d'erreur applicative (indispo / timeout upstream)
+
+Sur 502/503/504, nginx sert `/app-crash` via `error_page`. C'est une page
+statique Next (`s-maxage=86400`) : pas de TTL propre, juste une clé en `$uri`
+au lieu du `$request_uri` du catch-all, car la sous-requête d'`error_page`
+conserve l'URI d'origine. `pull-config.sh` pré-chauffe l'entrée toutes les
+5 min : sans elle, la sous-requête repart vers l'upstream, injoignable.
+
+Le `500` n'est pas intercepté : l'erreur applicative garde la page 500 de Next.
+La page est en `noindex` et interdite dans `robots.txt`.
+
 ## Tester avant bascule DNS
 
     curl -I --resolve preprod.nosgestesclimat.fr:443:<ip> \
