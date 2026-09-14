@@ -4,12 +4,12 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import MessageTemplate from '../../../../components/layout/MessageTemplate'
 
-export default async function NewsletterInvalidMessage({
+export default function NewsletterInvalidMessage({
   locale,
 }: {
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
   return (
     <MessageTemplate
       title={t("L'invitation a expiré")}

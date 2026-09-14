@@ -22,6 +22,8 @@ ttl = 0               # validite (s) du blob ; 0 = sans expiration
 fgp_base_url = "https://fgp.incubateur.ademe.fr"
 api          = "https://api.osc-fr1.scalingo.com"   # region STANDARD (defaut)
 github_repo  = "incubateur-ademe/nosgestesclimat-app"
+auth         = "scalingo-exchange"                  # FGP echange le token Scalingo
+token_env    = "SCALINGO_API_TOKEN"                 # variable d'env du secret upstream
 # NB : la prod vit sur la region securisee osc-secnum-fr1 ; [env.prod].api l'ecrase.
 
 # ============================================================================ #

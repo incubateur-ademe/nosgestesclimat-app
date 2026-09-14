@@ -41,7 +41,7 @@
     "db:migrate:rollback": "prisma migrate resolve --rolled-back",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "db:seed": "node --env-file .env --experimental-strip-types prisma/seed.ts",
+    "db:seed": "node --env-file-if-exists=.env --experimental-strip-types prisma/seed.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },

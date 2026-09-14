@@ -2,35 +2,25 @@
 
 import type { PartnerCampaignType } from '@/adapters/cmsClient'
 import Trans from '@/components/translation/trans/TransClient'
-import Alert from '@/design-system/alerts/alert/Alert'
-import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Hero from '@/design-system/layout/landingPage/Hero'
-import Loader from '@/design-system/layout/Loader'
 import Main from '@/design-system/layout/Main'
-import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 
 export default function PartnerCampaignContent({
   pollSlug,
+  organisationSlug,
   partnerCampaign,
   partnersComponent,
   faqComponent,
 }: {
   pollSlug: string
+  organisationSlug: string
   partnerCampaign: PartnerCampaignType
   partnersComponent: ReactNode
   faqComponent?: ReactNode
 }) {
-  const {
-    data: pollInfo,
-    isError,
-    isLoading,
-  } = useFetchPublicPoll({
-    pollIdOrSlug: pollSlug,
-  })
-
   return (
     <Main>
       <Hero
@@ -54,45 +44,17 @@ export default function PartnerCampaignContent({
               }}
             />
 
-            {isError && (
-              <Alert
-                type="error"
-                className="mt-4"
-                description={
-                  <Trans>
-                    Oups ! Une erreur s'est produite au moment de récupérer les
-                    informations du test collectif. Veuillez réessayer
-                    ultérieurement.
-                  </Trans>
-                }
-              />
-            )}
-
-            {
-              // Loading state
-              !isError && isLoading && (
-                <Button className="mt-2 w-40 md:mt-10" size="lg" disabled>
-                  <Loader color="light" />
-                </Button>
-              )
-            }
-
-            {
-              // Data fetched successfully state
-              !isError && !isLoading && (
-                <ButtonLink
-                  size="lg"
-                  className="mt-2 md:mt-10"
-                  href={`/o/${pollInfo?.organisation?.slug}/${pollSlug}`}>
-                  {partnerCampaign?.labelCTA ?? <Trans>Passer le test</Trans>}
-                </ButtonLink>
-              )
-            }
+            <ButtonLink
+              size="lg"
+              className="mt-2 md:mt-10"
+              href={`/o/${organisationSlug}/${pollSlug}`}>
+              {partnerCampaign?.labelCTA ?? <Trans>Passer le test</Trans>}
+            </ButtonLink>
 
             <Image
               src={
                 partnerCampaign.image?.url ??
-                'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg'
+                '/_static/cms/girl_holding_earth_3373a344b0.svg'
               }
               width={300}
               height={300}
@@ -105,7 +67,7 @@ export default function PartnerCampaignContent({
           <Image
             src={
               partnerCampaign.image?.url ??
-              'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg'
+              '/_static/cms/girl_holding_earth_3373a344b0.svg'
             }
             width={400}
             height={300}

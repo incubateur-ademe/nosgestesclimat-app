@@ -46,7 +46,7 @@ export default function EmptyState() {
             tag="li"
             className="flex max-w-56 items-center gap-4 border-none bg-blue-50 p-6">
             <img
-              src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/environmentalism_1_0657edeb28.svg"
+              src="/_static/cms/environmentalism_1_0657edeb28.svg"
               alt=""
               width={40}
               height={40}
@@ -61,7 +61,7 @@ export default function EmptyState() {
             tag="li"
             className="flex items-center gap-4 border-none bg-blue-50 p-6 lg:max-w-40 lg:-translate-y-4">
             <img
-              src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/cheers_c44311442b.svg"
+              src="/_static/cms/cheers_c44311442b.svg"
               alt=""
               width={40}
               height={40}
@@ -76,7 +76,7 @@ export default function EmptyState() {
             tag="li"
             className="flex max-w-64 items-center gap-4 border-none bg-blue-50 p-6">
             <img
-              src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/familly_10373dd34c.svg"
+              src="/_static/cms/familly_10373dd34c.svg"
               alt=""
               width={40}
               height={40}

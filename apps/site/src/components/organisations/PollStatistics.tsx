@@ -2,6 +2,8 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { captureExportPollData } from '@/constants/tracking/trackers'
+import { formatPollStatsRefreshDuration } from '@/helpers/organisations/formatPollStatsRefreshDuration'
+import { useLocale } from '@/hooks/useLocale'
 import type { ComputedResults } from '@/publicodes-state/types'
 import type { PublicOrganisationPoll } from '@/types/organisations'
 import { trackEvent } from '@/utils/analytics/trackEvent'
@@ -28,6 +30,12 @@ export default function PollStatistics({
   isAdmin: boolean
 }) {
   const hasAtLeastThreeParticipants = simulationsCount > 2
+
+  const locale = useLocale()
+
+  const cooldownSeconds = poll.simulations.cooldownSeconds
+
+  const refreshNote = formatPollStatsRefreshDuration(cooldownSeconds, locale)
 
   return (
     <>
@@ -56,6 +64,18 @@ export default function PollStatistics({
       {hasAtLeastThreeParticipants && (
         <>
           <FunFactsBlock funFacts={funFacts} className="md:mb-8" />
+
+          {refreshNote && (
+            <p className="text-primary-700 mb-8 text-right text-sm italic">
+              <Trans
+                i18nKey="pollResults.funFacts.refreshNote"
+                values={{ duration: refreshNote }}>
+                {
+                  'Les chiffres se mettent à jour toutes les {{duration}} environ'
+                }
+              </Trans>
+            </p>
+          )}
 
           <DetailedStatistics funFacts={funFacts} className="mb-8" />
         </>

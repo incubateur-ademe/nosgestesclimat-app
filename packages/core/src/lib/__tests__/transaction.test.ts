@@ -31,6 +31,19 @@ describe('transaction', () => {
     ).resolves.toMatchObject({ id })
   })
 
+  it('treats a callback that returns void as a success', async () => {
+    const id = randomUUID()
+
+    const result = await transaction(async (tx) => {
+      await tx.user.create({ data: { id } })
+    })
+
+    expect(result).toEqual({ success: true })
+    await expect(
+      prisma.user.findUnique({ where: { id } })
+    ).resolves.toMatchObject({ id })
+  })
+
   it('rolls back the callback writes and returns its failure result', async () => {
     const id = randomUUID()
     const error = new TestError('nope')

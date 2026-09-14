@@ -12,7 +12,7 @@ export async function generateMetadata({
   params,
 }: PageProps<'/[locale]/simulateur/intercalaire/logement'>) {
   const { locale } = await params
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return getMetadataObject({
     locale: locale as Locale,

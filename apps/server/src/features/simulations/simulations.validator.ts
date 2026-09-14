@@ -10,7 +10,6 @@ import {
   SimulationAdditionalQuestionAnswerType,
 } from '../../adapters/prisma/generated.ts'
 import { LocaleQuery } from '../../core/i18n/lang.validator.ts'
-import { PublicPollParams } from '../organisations/organisations.validator.ts'
 
 const MODEL_REGEX =
   /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
@@ -66,14 +65,6 @@ export type SimulationParticipantCreateInputDto = v.InferInput<
   typeof SimulationParticipantCreateDto
 >
 
-const SimulationCreateDto = v.object({
-  ...SimulationParticipantCreateDto.entries,
-})
-
-export type SimulationCreateDto = v.InferOutput<typeof SimulationCreateDto>
-
-export type SimulationCreateInputDto = v.InferInput<typeof SimulationCreateDto>
-
 const SimulationCreateNewsletterList = v.pipe(
   v.union([
     v.optional(
@@ -98,20 +89,8 @@ const SimulationCreateQuery = v.strictObject({
 
 export type SimulationCreateQuery = v.InferOutput<typeof SimulationCreateQuery>
 
-export const SimulationCreateValidator = {
-  body: SimulationCreateDto,
-  params: v.optional(v.strictObject({})),
-  query: SimulationCreateQuery,
-}
-
 export const SimulationFetchValidator = {
   body: v.optional(v.strictObject({})),
   params: SimulationParams,
-  query: LocaleQuery,
-}
-
-export const OrganisationPollSimulationCreateValidator = {
-  body: SimulationCreateDto,
-  params: PublicPollParams,
   query: LocaleQuery,
 }

@@ -7,10 +7,10 @@ import {
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
+import { computedResultsFactory } from '../../factories/computed-results.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { parseModelString } from '../../repository/model.mapper.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
-import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { updateSimulationSituation } from '../update-simulation-situation.service.ts'
 
 describe('updateSimulationSituation', () => {
@@ -273,35 +273,12 @@ describe('updateSimulationSituation', () => {
   })
 })
 
-const computedResults: ComputedResults = {
-  carbone: {
-    bilan: 1000,
-    categories: {
-      alimentation: 300,
-      transport: 400,
-      logement: 200,
-      divers: 50,
-      'services sociétaux': 50,
-    },
-    subcategories: {},
-  },
-  eau: {
-    bilan: 500,
-    categories: {
-      alimentation: 150,
-      transport: 200,
-      logement: 100,
-      divers: 25,
-      'services sociétaux': 25,
-    },
-    subcategories: {},
-  },
-}
+const computedResults = computedResultsFactory.valid().build()
 
-const zeroedComputedResults: ComputedResults = {
-  ...computedResults,
-  carbone: { ...computedResults.carbone, bilan: 0 },
-}
+const zeroedComputedResults = computedResultsFactory
+  .valid()
+  .withCarboneBilan(0)
+  .build()
 
 const situation = {
   'transport . voiture . km': 12000,

@@ -14,12 +14,8 @@ interface Props {
   }
 }
 
-export default async function EventStatistics({
-  locale,
-  hasStarted,
-  values,
-}: Props) {
-  const { t } = await getServerTranslation({ locale })
+export default function EventStatistics({ locale, hasStarted, values }: Props) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="bg-primary-700 py-12">

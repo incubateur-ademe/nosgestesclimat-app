@@ -1,3 +1,4 @@
+import { parseCooldownTiers } from '@nosgestesclimat/core/features/polls/stats/helpers/cooldown-policy'
 import dotenv from 'dotenv'
 import * as v from 'valibot'
 
@@ -14,6 +15,7 @@ const AppEnvSchema = v.picklist([
   'development',
   'production',
   'test',
+  'e2e',
   'preproduction',
   'review',
 ])
@@ -33,6 +35,7 @@ const AppSchema = v.strictObject({
     ListCommaSeparatedSchema,
     ''
   ),
+  pollStatsCooldownTiers: v.optional(v.string(), ''),
   port: v.optional(v.pipe(v.unknown(), v.toNumber(), v.number())),
   serverUrl: v.optional(v.string()),
   redis: v.strictObject({
@@ -112,6 +115,7 @@ const ConfigSchema = v.pipe(
     ...config,
     app: {
       ...app,
+      pollStatsCooldownTiers: parseCooldownTiers(app.pollStatsCooldownTiers),
       port:
         typeof app.port === 'number'
           ? app.port
@@ -145,6 +149,7 @@ const {
     NODE_ENV,
     ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
     ORIGIN,
+    POLL_STATS_COOLDOWN_TIERS,
     PORT,
     POSTHOG_PROJECT_ID,
     POSTHOG_PERSONAL_API_KEY,
@@ -170,6 +175,7 @@ export const config = v.parse(ConfigSchema, {
     origin: ORIGIN,
     organisationIdsWithCustomQuestionsEnabled:
       ORGANISATION_IDS_WITH_CUSTOM_QUESTIONS_ENABLED,
+    pollStatsCooldownTiers: POLL_STATS_COOLDOWN_TIERS,
     port: PORT,
     redis: {
       url: REDIS_URL,
@@ -231,6 +237,8 @@ const up = (str: string) => new URLPattern(str) // improves readability of confi
 const ALLOWED_ORIGINS_BY_APP_ENV: Record<AppEnv, URLPattern[]> = {
   development: [up('http://localhost:3000'), up('https://localhost:3000')],
   test: [up('https://nosgestesclimat.test')],
+  // The e2e stack (apps/e2e) serves the site from localhost:3000.
+  e2e: [up('http://localhost:3000'), up('https://localhost:3000')],
   preproduction: [up('https://preprod.nosgestesclimat.fr')],
   review: [up('https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io')],
   production: [up('https://nosgestesclimat.fr')],

@@ -28,7 +28,7 @@ export const generateMetadata = getCommonMetadata({
 export default async function Connexion({ params }: DefaultPageProps) {
   const { locale } = await params
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const userSession = await getUserSession()
 

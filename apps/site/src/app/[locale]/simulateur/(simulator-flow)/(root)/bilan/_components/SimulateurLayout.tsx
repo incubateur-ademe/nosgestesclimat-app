@@ -3,6 +3,7 @@
 import TopBar from '@/components/simulation/TopBar'
 import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
+import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
 import { useCallback, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -15,7 +16,14 @@ export default function SimulateurLayout({
   children: React.ReactNode
 }) {
   const { isIframe } = useIframe()
-  const { currentCategory: isInitialized } = useFormState()
+  const { currentCategory } = useFormState()
+
+  // The engine — and therefore the current category — only exists on the client
+  // (see `useEngine`), so the skeleton must stay until the client has taken
+  // over: on the first client render the category is already known, and the
+  // skeleton rendered by the server would be swapped during hydration.
+  const isClient = useIsClient()
+  const isInitialized = isClient && !!currentCategory
 
   const [isQuestionListOpen, setIsQuestionListOpen] = useState(false)
   const toggleQuestionList = useCallback(() => {

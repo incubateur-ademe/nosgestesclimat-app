@@ -430,55 +430,6 @@ export const sendGroupParticipantSimulationUpsertedEmail = ({
   })
 }
 
-export const sendPollSimulationUpsertedEmail = async ({
-  email,
-  locale,
-  origin,
-  organisation: { name, slug: organisationSlug },
-  poll: { slug: pollSlug },
-  simulation: { id },
-}: Readonly<{
-  email: string
-  origin: string
-  locale: Locales
-  organisation: Pick<Organisation, 'name' | 'slug'>
-  poll: Pick<Poll, 'slug'>
-  simulation: Pick<Simulation, 'id'>
-}>) => {
-  const templateId = TemplateIds[locale].ORGANISATION_JOINED
-
-  const detailedViewUrl = new URL(
-    `${origin}/organisations/${organisationSlug}/campagnes/${pollSlug}`
-  )
-  const { searchParams: detailedViewUrlSearchParams } = detailedViewUrl
-  detailedViewUrlSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
-  detailedViewUrlSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
-  detailedViewUrlSearchParams.append(
-    UTM_CAMPAIGN_KEY,
-    TRACKING_CAMPAIGNS[templateId]
-  )
-  const simulationUrl = new URL(origin)
-  simulationUrl.pathname = 'fin'
-  const { searchParams: simulationUrlSearchParams } = simulationUrl
-  simulationUrlSearchParams.append('sid', id)
-  simulationUrlSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
-  simulationUrlSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
-  simulationUrlSearchParams.append(
-    UTM_CAMPAIGN_KEY,
-    TRACKING_CAMPAIGNS[TemplateIds[Locales.fr].SIMULATION_COMPLETED]
-  )
-
-  await sendEmail({
-    email,
-    templateId,
-    params: {
-      ORGANISATION_NAME: name,
-      DETAILED_VIEW_URL: detailedViewUrl.toString(),
-      SIMULATION_URL: simulationUrl.toString(),
-    },
-  })
-}
-
 export const sendNewsLetterConfirmationEmail = ({
   code,
   email,

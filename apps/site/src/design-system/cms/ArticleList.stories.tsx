@@ -27,7 +27,7 @@ const mockArticles = [
       htmlTitle: 'Écologie',
     },
     image: {
-      url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      url: '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
       alternativeText: 'Image écologie',
     },
   },
@@ -52,7 +52,7 @@ const mockArticles = [
       htmlTitle: 'Énergie',
     },
     image: {
-      url: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      url: '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
       alternativeText: 'Image énergie',
     },
   },

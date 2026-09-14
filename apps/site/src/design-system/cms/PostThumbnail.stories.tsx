@@ -41,7 +41,7 @@ export const Default: Story = {
     title: 'Comment réduire son empreinte carbone au quotidien',
     category: 'Écologie',
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     href: '/blog/article-1',
   },
 }
@@ -52,7 +52,7 @@ export const LongTitle: Story = {
       "Un titre très long qui pourrait déborder sur plusieurs lignes pour tester l'affichage",
     category: 'Développement durable',
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     href: '/blog/article-2',
   },
 }
@@ -62,7 +62,7 @@ export const ShortTitle: Story = {
     title: 'Titre court',
     category: 'Technologie',
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     href: '/blog/article-3',
   },
 }
@@ -72,7 +72,7 @@ export const WithoutTracking: Story = {
     title: 'Article sans tracking',
     category: 'Innovation',
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     href: '/blog/article-4',
   },
 }
@@ -82,7 +82,7 @@ export const CustomStyling: Story = {
     title: 'Article avec style personnalisé',
     category: 'Économie',
     imageSrc:
-      'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
+      '/_static/cms/ella_olsson_KP_Db_Ry_FO_Tn_E_unsplash_9b029eb7e6.jpg',
     href: '/blog/article-5',
     className: 'border-2 border-blue-500',
   },

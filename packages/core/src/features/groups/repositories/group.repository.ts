@@ -1,5 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { Group } from '../types/group.ts'
+import type { Group, GroupSummary } from '../types/group.ts'
 import { toGroup } from './group.mapper.ts'
 
 const groupSelect = {
@@ -11,6 +11,11 @@ const groupSelect = {
   updatedAt: true,
 } as const
 
+const groupSummarySelect = {
+  id: true,
+  name: true,
+} as const
+
 export const findGroupById = async (id: string): Promise<Group | null> => {
   const row = await prisma.group.findUnique({
     where: { id },
@@ -18,4 +23,15 @@ export const findGroupById = async (id: string): Promise<Group | null> => {
   })
 
   return row ? toGroup(row) : null
+}
+
+export const findGroupSummaryById = async ({
+  id,
+}: {
+  id: string
+}): Promise<GroupSummary | null> => {
+  return prisma.group.findUnique({
+    where: { id },
+    select: groupSummarySelect,
+  })
 }

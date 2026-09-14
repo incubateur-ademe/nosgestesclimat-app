@@ -5,16 +5,14 @@
 # (endpoint OTLP HTTP). Déployé sur l'instance Scaleway par cloud-init,
 # service systemd `otelcol-contrib` (user `otelcol-contrib`).
 #
-# Résilience :
-#   - `file_storage` (offsets de lecture) → reprise exacte après restart,
-#     ni trou ni doublon lors des rotations de logs.
-#   - `sending_queue.storage` (file-queue) + `retry_on_failure` → si PostHog ou
-#     le réseau est indisponible, les logs sont mis en attente sur disque et
-#     réexpédiés avec backoff (aucune perte, nginx n'est jamais impacté).
+# Résilience : les offsets de lecture (`file_storage`) et la file d'export
+# (persistée sur disque) survivent à un redémarrage — reprise exacte après
+# rotation de logs (ni trou ni doublon), et aucune perte si PostHog est
+# injoignable. nginx n'a aucune dépendance vers le collecteur.
 #
-# Les variables ${env:...} sont résolues par le collecteur au démarrage depuis
-# son environnement, chargé par systemd via
-# /etc/otelcol-contrib/otelcol-contrib.env (cf. cloud-init.tpl.yaml).
+# Les variables ${env:...} sont résolues au démarrage depuis l'environnement
+# chargé par systemd (/etc/otelcol-contrib/otelcol-contrib.env, cf.
+# cloud-init.tpl.yaml).
 # ----------------------------------------------------------------------------
 
 extensions:
@@ -29,7 +27,15 @@ receivers:
     start_at: end
     include_file_path: true
     storage: file_storage
+    attributes:
+      'event.name': nginx.access
     operators:
+      # Emails masqués avant parsing : la règle couvre alors toute la ligne,
+      # donc tous les champs.
+      - type: regex_replace
+        field: body
+        regex: '[\w.+-]+@[\w.-]+'
+        replace_with: '[email]'
       - type: json_parser
         parse_to: attributes
         timestamp:
@@ -42,25 +48,54 @@ receivers:
         trace:
           trace_id:
             parse_from: attributes.request_id
-      # Champs déjà extraits dans attributes : on supprime le body (JSON brut
-      # redondant) pour alléger le volume envoyé à PostHog.
+      # `$server_protocol` brut ("HTTP/1.1") → semconv ("1.1", "2", "3").
+      - type: regex_replace
+        field: attributes["network.protocol.version"]
+        regex: '^HTTP/(1\.[01]|[23]).*'
+        # Sans `$$`, le collecteur lit `${1}` comme une variable d'env.
+        replace_with: '$${1}'
+      # Champs déjà exploités ailleurs : retirés pour alléger le volume.
       - type: remove
         field: body
+      # `time_iso8601` a posé le timestamp du record.
+      - type: remove
+        field: attributes.time_iso8601
+      # `request_id` a posé le trace_id du record.
+      - type: remove
+        field: attributes.request_id
 
   # error.log : format texte d'nginx OSS. Le JSON (`error_log json`) est
   # réservé à NGINX Plus. Le préfixe est stable :
   #   YYYY/MM/DD HH:MM:SS [level] pid#tid: message
   #   ex. 2024/09/10 11:16:00 [error] 1234#1234: *567 upstream timed out
-  # La regex extrait date/heure + niveau ; le message reste en `body` où les
-  # IP/emails sont masqués par le processor `transform/scrub_pii` avant envoi.
+  # La regex extrait date/heure + niveau ; le message reste en `body` (conservé
+  # pour l'analyse, contrairement à l'access log).
   filelog/error:
     include: [/var/log/nginx/error.log]
     start_at: end
     include_file_path: true
     storage: file_storage
+    attributes:
+      'event.name': nginx.error
     operators:
+      # Emails, IP client et query du referrer masqués avant parsing.
+      - type: regex_replace
+        field: body
+        regex: '[\w.+-]+@[\w.-]+'
+        replace_with: '[email]'
+      - type: regex_replace
+        field: body
+        regex: 'client:? [0-9a-fA-F:.]+'
+        replace_with: 'client [ip]'
+      - type: regex_replace
+        field: body
+        regex: 'referrer: "([^"?]*)\?[^"]*"'
+        replace_with: 'referrer: "$${1}"'
+      # Préfixe fixe : `time [level] pid#tid: *connection`.
       - type: regex_parser
-        regex: '^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\]'
+        regex: >-
+          ^(?P<time>\S+ \S+) \[(?P<sev>[a-z]+)\] (?P<pid>\d+)#(?P<tid>\d+):
+          \*(?P<connection>\d+)
         timestamp:
           parse_from: attributes.time
           layout_type: strptime
@@ -76,6 +111,20 @@ receivers:
             crit: fatal
             alert: fatal
             emerg: fatal
+      # Contexte de requête (optionnel selon le type d'erreur). On ancre sur les
+      # libellés (pas la position). `client`/`referrer` exclus : PII.
+      - type: regex_parser
+        regex: 'server: (?P<server>[^,]+)'
+        on_error: send
+      - type: regex_parser
+        regex: 'request: "(?P<request>[^"]*)"'
+        on_error: send
+      - type: regex_parser
+        regex: 'upstream: "(?P<upstream>[^"]*)"'
+        on_error: send
+      - type: regex_parser
+        regex: 'host: "(?P<host>[^"]*)"'
+        on_error: send
 
 processors:
   resource/nginx:
@@ -91,16 +140,16 @@ processors:
     send_batch_size: 1000
     timeout: 5s
 
-  # Masque les IP (`client: <ip>` d'error.log) et emails avant envoi à PostHog.
-  # Emails : body (ligne brute) + toutes les valeurs d'attributs (request_uri…).
-  transform/scrub_pii:
+  # `EventName` est un champ du LogRecord, que stanza ne sait pas écrire :
+  # chaque receiver pose l'attribut semconv `event.name`, promu ici en champ
+  # puis retiré (il ne doit pas partir dans le volume).
+  transform/event-name:
     error_mode: ignore
     log_statements:
       - context: log
         statements:
-          - 'replace_pattern(body, "client:? [0-9:.]+", "client [ip]")'
-          - 'replace_pattern(body, "[\\w.+-]+@[\\w.-]+", "[email]")'
-          - 'replace_all_patterns(attributes, "value", "[\\w.+-]+@[\\w.-]+", "@")' # yamllint disable-line rule:line-length
+          - 'set(log.event_name, log.attributes["event.name"])'
+          - 'delete_key(log.attributes, "event.name")'
 
 exporters:
   otlphttp/posthog:
@@ -108,15 +157,8 @@ exporters:
     endpoint: https://eu.i.posthog.com/i
     headers:
       Authorization: Bearer ${env:POSTHOG_PROJECT_TOKEN}
-    retry_on_failure:
-      enabled: true
-      initial_interval: 5s
-      max_interval: 30s
-      max_elapsed_time: 5m
+    # File d'export persistée sur disque : survit à un redémarrage.
     sending_queue:
-      enabled: true
-      num_consumers: 1
-      queue_size: 5000
       storage: file_storage
 
 service:
@@ -124,5 +166,5 @@ service:
   pipelines:
     logs/nginx:
       receivers: [filelog/access, filelog/error]
-      processors: [resource/nginx, transform/scrub_pii, batch]
+      processors: [resource/nginx, transform/event-name, batch]
       exporters: [otlphttp/posthog]

@@ -94,7 +94,7 @@ export default async function ThematicLandingPage({
             '@type': 'Organization',
             url: 'https://nosgestesclimat.fr',
             name: 'Nos Gestes Climat',
-            logo: 'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/petit_logo_006dd01955.png',
+            logo: '/_static/cms/petit_logo_006dd01955.png',
           },
 
           {

@@ -47,9 +47,12 @@ vi.mock('react-i18next', () => ({
 
 // Mock getServerTranslation
 vi.mock('@/helpers/getServerTranslation', () => ({
-  getServerTranslation: vi.fn().mockResolvedValue({
+  getServerTranslation: vi.fn(() => ({
     t: (key: string) => key,
-  }),
+    i18n: {
+      changeLanguage: () => new Promise(() => {}),
+    },
+  })),
 }))
 
 // Mock useClientTranslation

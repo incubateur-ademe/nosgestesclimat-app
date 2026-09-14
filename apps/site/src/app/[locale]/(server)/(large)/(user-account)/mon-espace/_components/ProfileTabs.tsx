@@ -14,14 +14,14 @@ import Tabs from '@/design-system/layout/Tabs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { twMerge } from 'tailwind-merge'
 
-export default async function ProfileTab({
+export default function ProfileTab({
   activePath,
   locale,
 }: {
   activePath: string
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const tabsItems: TabItem[] = [
     {

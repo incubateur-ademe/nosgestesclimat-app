@@ -87,28 +87,34 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
 ### Fonctionnement
 
 - `nginx.conf.tpl` écrit `access.log` au format JSON (`log_format json_combined`),
-  chaque champ devenant un attribut filtrable dans PostHog
-  (`upstream_cache_status`, `status`, `request_uri`, `request_time`,
-  `connection`, `upstream_addr`, `upstream_status`, …) — sans IP, sans referer.
+  chaque champ devenant un attribut filtrable dans PostHog — sans IP, sans
+  referer. Les champs `http.*`, `url.*`, `network.*`, `server.*` et
+  `user_agent.original` suivent les **conventions sémantiques OTel** (semconv) ;
+  les champs upstream restent nginx-spécifiques (`upstream_cache_status`, …).
 - Logging conditionnel : les routes bavardes (assets `/_next/`, `/_static/cms/`,
   `/(images|misc|fonts)/` et proxy PostHog `/revp/`) ne sont écrites dans
   `access.log` qu'en cas d'erreur (4xx/5xx) → moins de volume et de bruit.
 - `otelcol-contrib` (service systemd, user `otelcol-contrib`) :
-  - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte, préfixe
-    stable parsé par regex — le `error_log json` est réservé à NGINX Plus) ;
-  - supprime le `body` de l'access log (JSON brut redondant avec les attributs)
-    pour alléger le volume envoyé à PostHog ;
-  - masque les IP (`client: <ip>` dans error.log) et emails
-    (`transform/scrub_pii`) avant l'envoi ;
+  - lit `/var/log/nginx/access.log` (JSON) et `error.log` (texte parsé par
+    regex : préfixe `time [level] pid#tid: *connection` + contexte `server`,
+    `request`, `upstream`, `host` — `client` et `referrer` ne sont pas extraits,
+    et le `error_log json` est Plus-only) ;
+  - masque sur la ligne brute, **avant parsing** : emails, IP client (IPv4 et
+    IPv6) et query du `referrer` — donc dans tous les champs d'un coup ;
+  - normalise `network.protocol.version` en semconv (`HTTP/1.1` → `1.1`,
+    `HTTP/2.0` → `2`) et retire le `body` de l'access log (JSON brut redondant
+    avec les attributs) pour alléger le volume ;
+  - pose `event_name=nginx.access|nginx.error` : attribut semconv promu en
+    champ natif `EventName` (que stanza ne sait pas écrire) puis retiré ;
   - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
   - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
     `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
 - Corrélation : `$request_id` (généré par nginx) est propagé à l'app via
-  `X-Request-ID` et mappé en `trace_id` du log côté collecteur (convention
-  OTel) — pour relier logs nginx et logs applicatifs partageant cet ID.
-  `$connection` (logué) relie en plus une ligne d'`access.log` à la ligne
-  correspondante d'`error.log` (préfixe `*N`) ; `$upstream_addr` distingue un
-  502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
+  `X-Request-ID` et mappé en `trace_id` du log (convention OTel), pour relier
+  logs nginx et logs applicatifs partageant cet ID.
+  `connection` (extrait des deux logs) permet de filtrer dans PostHog une ligne
+  d'`access.log` et la ligne d'`error.log` correspondante ; `upstream_addr`
+  distingue un 502 « upstream a répondu » d'un 502 « aucun serveur joignable ».
 - La clé est stockée dans `/etc/otelcol-contrib/otelcol-contrib.env` (0600),
   chargée par systemd (`EnvironmentFile`).
 
@@ -118,21 +124,24 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
   indisponibles, le trafic n'est pas affecté et les logs restent sur disque.
 - Offsets de lecture persistés (`file_storage`) : reprise exacte après restart
   ou rotation de logs (ni trou, ni doublon).
-- File-queue persistée + retry avec backoff (5s → 30s, 5 min max) : coupure
-  réseau absorbée sans perte.
+- File d'export persistée sur disque : les logs en attente survivent à un
+  redémarrage du collecteur et repartent à la reprise (coupure réseau absorbée).
 
 ### Données personnelles (RGPD)
 
 Aucune donnée directement identifiante n'est envoyée à PostHog :
 
 - **IP** : retirée de `access.log` (pas de `remote_addr`). Dans `error.log`
-  (format nginx figé, qui inclut `client: <ip>`), elles sont masquées côté
-  collecteur (`transform/scrub_pii`) avant l'envoi.
-- **Query strings** : conservées (`request_uri`) pour le debugging, mais les
-  emails qu'elles peuvent contenir sont masqués côté collecteur.
+  (format nginx figé, qui inclut `client: <ip>`), elles sont masquées par le
+  collecteur — **IPv4 et IPv6**.
+- **Query strings** : conservées (attribut `url.query`, séparé du chemin
+  `url.path`) pour le debugging, mais les emails qu'elles contiennent sont
+  masqués côté collecteur.
 - **Bodies POST** : jamais loggés par nginx (pas de `$request_body`). Attention
   en revanche aux logs applicatifs Next.js, qui sont hors de ce pipeline.
-- **Referer** : retiré des logs.
+- **Referer** : retiré de `access.log`. Dans `error.log` (où nginx l'ajoute au
+  message), on ne garde que le **chemin** : la **query** — où vit la PII — est
+  supprimée (`referrer: "https://host/path"`).
 
 Restent : méthode, chemin + query string (emails masqués), statut, tailles,
 temps de réponse, statut cache et user-agent (borderline — retirable si besoin).
@@ -247,6 +256,32 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 `ui_host` reste `https://eu.i.posthog.com` (voir
 `apps/site/src/services/tracking/Posthog.ts`).
 
+## Cache HTTP
+
+| Route                             | TTL      | Ce qui le rend sûr                           |
+| --------------------------------- | -------- | -------------------------------------------- |
+| Pages publiques (liste explicite) | 1 h      | anonymes : l'app n'y pose pas de cookie      |
+| `/_next/static/…`                 | 1 an     | noms hashés par le contenu, immuables        |
+| `/_static/cms/…`                  | 30 jours | assets CMS versionnés par hash dans leur nom |
+| `/_next/image`, `/images`, `…`    | 30 jours | images dérivées, adressées par URL complète  |
+| `favicon`, `manifest`, `sitemap`… | 15 min   | noms non hashés, TTL court volontaire        |
+
+Deux règles gouvernent tout le reste :
+
+- **Pas de `Set-Cookie` sur une réponse cacheable.** Nginx n'enregistre jamais une
+  réponse qui en pose : la page ne serait ni mise en cache ni rafraîchie. C'est
+  `apps/site/src/helpers/server/proxy/region.middleware.ts` qui s'en assure (la
+  région n'est persistée que sur les requêtes non cacheables et les forçages
+  `?region=`).
+- **Sur `/_next/static/`, seuls les 200 sont cachés, et un an**
+  (`proxy_ignore_headers` + `proxy_cache_valid 200 365d`). Les chunks sont hashés
+  par le contenu, donc immuables ; quand un déploiement en retire, `use_stale
+http_404` sert la copie en cache plutôt que de laisser un 404 que le HTML
+  encore en cache ne peut pas rattraper.
+
+L'invalidation se fait par **génération de clé** : bumper le préfixe
+`ngc-html-v2` dans `nginx.conf.tpl` vide le cache HTML.
+
 ## Tester avant bascule DNS
 
     curl -I --resolve preprod.nosgestesclimat.fr:443:<ip> \
@@ -261,6 +296,9 @@ Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 
     # Hit ratio sur l'instance
     tail -100 /var/log/nginx/access.log | grep -c HIT
+
+    # Ce qui est réellement mis en cache, et où (une entrée = un fichier)
+    grep -c "" /var/cache/nginx/*/*/* 2>/dev/null | head
 
     # Statut du timer de pull
     systemctl status nginx-config-pull.timer

@@ -1,8 +1,5 @@
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import type {
-  PollDefaultAdditionalQuestionType,
-  PollMode,
-} from '../../../prisma/generated/client.ts'
+import type { PollMode } from '../../../prisma/generated/client.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
 
 export interface Poll {
@@ -12,10 +9,8 @@ export interface Poll {
   mode: PollMode
   expectedNumberOfParticipants: number | null
   funFacts: FunFacts | null
-  /** null when the persisted results predate the current carbone/eau shape */
+  /** null until the poll's aggregated results have been computed server-side */
   computedResults: ComputedResults | null
-  defaultAdditionalQuestions: PollDefaultAdditionalQuestionType[]
-  customAdditionalQuestions: unknown
   createdAt: Date
   updatedAt: Date
   organisation: {
@@ -23,4 +18,11 @@ export interface Poll {
     name: string
     slug: string
   }
+}
+
+export interface PollSummary {
+  id: string
+  name: string
+  slug: string
+  organisation: { slug: string }
 }

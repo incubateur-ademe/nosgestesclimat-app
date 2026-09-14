@@ -3,8 +3,8 @@ import Marianne from '@/components/images/partners/Marianne'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import Image from 'next/image'
 
-export default async function Partners({ locale }: { locale: string }) {
-  const { t } = await getServerTranslation({ locale })
+export default function Partners({ locale }: { locale: string }) {
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="flex justify-center md:-mt-10">
@@ -18,7 +18,7 @@ export default async function Partners({ locale }: { locale: string }) {
         <div>
           <Image
             priority
-            src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/logo_abc_web_01c99cfe74.webp"
+            src="/_static/cms/logo_abc_web_01c99cfe74.webp"
             alt={t(
               'common.partners.abc.ariaLabel',
               'Association pour la transition Bas Carbone'

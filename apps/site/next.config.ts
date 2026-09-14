@@ -40,6 +40,25 @@ const nextConfig = withMDX({
 
     return [...redirects, ...enRedirects]
   },
+  // Les assets du CMS sont référencés sous /_static/cms/.
+  //
+  // En prod/preprod, c'est nginx qui les sert depuis S3 (cache immutable) : les
+  // requêtes du navigateur n'atteignent jamais Next.js. Mais l'optimiseur
+  // d'images récupère les images locales par une requête interne vers l'app
+  // (`/_next/image?url=/_static/cms/…`), et nginx réécrit le `Host` vers l'app
+  // Scalingo : cette requête interne ne traverse donc pas nginx. Sans ce proxy,
+  // elle reçoit un 404 et l'optimiseur répond 400.
+  //
+  // On proxy donc /_static/cms/ vers S3 dans tous les environnements.
+  async rewrites() {
+    return [
+      {
+        source: '/_static/cms/:path*',
+        destination:
+          'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/:path*',
+      },
+    ]
+  },
   productionBrowserSourceMaps: true,
   turbopack: {
     root: new URL('../../', import.meta.url).pathname,

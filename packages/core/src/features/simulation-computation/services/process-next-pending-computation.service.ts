@@ -1,6 +1,7 @@
 import type Engine from 'publicodes'
+import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
-import { SimulationComputationFailedException } from '../exceptions/simulation-computation.exception.ts'
+import { SimulationComputationFailedError } from '../exceptions/simulation-computation.exception.ts'
 import {
   claimNextPendingSimulationComputation,
   markSimulationComputationCompleted,
@@ -18,7 +19,8 @@ interface ProcessNextPendingComputationDeps {
  * matching the job's model, processes the job with it,
  * and marks it as completed or failed.
  *
- * Returns `true` if a job was processed, `false` if the queue was empty.
+ * Returns `success(true)` when a job was processed, `success(false)` when the
+ * queue was empty, and a failure otherwise.
  */
 export function createProcessNextPendingComputation(
   deps: ProcessNextPendingComputationDeps
@@ -26,9 +28,11 @@ export function createProcessNextPendingComputation(
   const { assessActions } = deps
   return async function processNextPendingComputation(
     getEngine: (model: Simulation['model']) => Promise<Engine> | Engine
-  ): Promise<boolean> {
+  ): Promise<Result<boolean, SimulationComputationFailedError>> {
     const job = await claimNextPendingSimulationComputation()
-    if (!job) return false
+    if (!job) {
+      return success(false)
+    }
     let engine: Engine | undefined
     try {
       // Computes all data derived from a simulation in a single engine pass.
@@ -37,20 +41,24 @@ export function createProcessNextPendingComputation(
       engine.setSituation(job.simulation.situation)
       await assessActions(engine, job.simulation.id)
       await markSimulationComputationCompleted(job.simulation.id)
-      return true
+      return success(true)
     } catch (error) {
       try {
         await markSimulationComputationFailed(job.simulation.id)
       } catch (cleanupError) {
-        throw new SimulationComputationFailedException({
-          simulationId: job.simulation.id,
-          cause: new SuppressedError(cleanupError, error),
-        })
+        return failure(
+          new SimulationComputationFailedError({
+            simulationId: job.simulation.id,
+            cause: new SuppressedError(cleanupError, error),
+          })
+        )
       }
-      throw new SimulationComputationFailedException({
-        simulationId: job.simulation.id,
-        cause: error,
-      })
+      return failure(
+        new SimulationComputationFailedError({
+          simulationId: job.simulation.id,
+          cause: error,
+        })
+      )
     } finally {
       // The registry keeps engines alive across jobs, so the evaluation cache
       // built above would be retained until this engine's next job — forever,
