@@ -150,6 +150,39 @@ export const findLatestCompletedSimulation = async ({
   return row ? mapSimulation(row) : null
 }
 
+/**
+ * The latest simulation this user finished for this poll, or `null`.
+ *
+ * The completion filter belongs in SQL: the latest simulation is not
+ * necessarily the latest finished one, so filtering after the read would
+ * answer `null` to a user whose older simulation is the one that counts.
+ */
+export const findLatestCompletedPollSimulation = async ({
+  userId,
+  pollIdOrSlug,
+}: {
+  userId: string
+  pollIdOrSlug: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: {
+      userId,
+      progression: 1,
+      polls: {
+        some: {
+          poll: isCuid(pollIdOrSlug)
+            ? { id: pollIdOrSlug }
+            : { slug: pollIdOrSlug },
+        },
+      },
+    },
+    orderBy: { date: 'desc' },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
 export const findCompletedSimulations = async ({
   userId,
   limit,

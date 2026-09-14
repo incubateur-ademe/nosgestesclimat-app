@@ -47,6 +47,33 @@ export const findPollByIdOrSlug = async ({
   return row ? toPoll(row) : null
 }
 
+/**
+ * The poll with this id or slug, only when it belongs to the organisation with
+ * this slug.
+ *
+ * A poll slug is unique on its own, so the organisation in the URL carries
+ * navigation and permissions rather than identity. This read answers `null`
+ * when the two disagree, instead of serving a poll under an organisation it
+ * does not belong to.
+ */
+export const findPollByIdOrSlugInOrganisation = async ({
+  pollIdOrSlug,
+  organisationSlug,
+}: {
+  pollIdOrSlug: string
+  organisationSlug: string
+}): Promise<Poll | null> => {
+  const row = await prisma.poll.findFirst({
+    where: {
+      ...(isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug }),
+      organisation: { slug: organisationSlug },
+    },
+    select: pollSelect,
+  })
+
+  return row ? toPoll(row) : null
+}
+
 export const findPollSummaryById = async ({
   id,
 }: {
