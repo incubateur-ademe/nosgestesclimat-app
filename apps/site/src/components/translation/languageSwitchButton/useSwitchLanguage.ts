@@ -1,22 +1,23 @@
-import { captureClickLanguage } from '@/constants/tracking/posthogTrackers'
+import { t } from '@/helpers/metadata/fakeMetadataT'
 import { useAlternateLanguagePaths } from '@/hooks/useAlternateLanguagePaths'
-import i18nConfig, { type Locale } from '@/i18nConfig'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import i18nConfig, {
+  LOCALE_EN_KEY,
+  LOCALE_FR_KEY,
+  type Locale,
+} from '@/i18nConfig'
 import { useCurrentLocale } from 'next-i18n-router/client'
 import { useMemo } from 'react'
 
-interface LanguageReturnedObject {
+interface Language {
   url: string
-  onLanguageChange: () => void
-  label: string
   flag: string
-  title: string
-  locale: Locale
+  completeLanguageString: string
 }
 
 export function useSwitchLanguage(): {
-  activeLang: LanguageReturnedObject
-  inactiveLang: LanguageReturnedObject
+  languages: Record<Locale, Language>
+  activeLocale: Locale
+  inactiveLocale: Locale
 } | null {
   const currentLocale = useCurrentLocale(i18nConfig)! as Locale
   const alternatePaths = useAlternateLanguagePaths()
@@ -34,54 +35,29 @@ export function useSwitchLanguage(): {
     return url.toString()
   }
 
-  const onLanguageChange = (newLocale: Locale) => {
-    trackPosthogEvent(captureClickLanguage({ locale: newLocale }))
-  }
-
   return useMemo(() => {
     // There is no english version for the current page
     // we don't need to return the language objects
     if (!alternatePaths.en || !alternatePaths.fr) return null
 
-    let activeLang
-    let inactiveLang
-
-    const frBaseProps = {
-      url: generateLanguageUrl(alternatePaths.fr),
-      onLanguageChange: () => onLanguageChange('fr'),
-      label: 'FR',
-      flag: '🇫🇷',
-      locale: 'fr' as Locale,
+    const languages: Record<Locale, Language> = {
+      [LOCALE_FR_KEY]: {
+        url: generateLanguageUrl(alternatePaths.fr),
+        flag: '🇫🇷',
+        completeLanguageString: t('shared.french', 'français'),
+      },
+      [LOCALE_EN_KEY]: {
+        url: generateLanguageUrl(alternatePaths.en),
+        flag: '🇬🇧',
+        completeLanguageString: t('shared.english', 'anglais'),
+      },
     }
 
-    const enBaseProps = {
-      url: generateLanguageUrl(alternatePaths.en),
-      onLanguageChange: () => onLanguageChange('en'),
-      label: 'EN',
-      flag: '🇬🇧',
-      locale: 'en' as Locale,
+    return {
+      languages,
+      activeLocale: currentLocale,
+      inactiveLocale:
+        currentLocale === LOCALE_FR_KEY ? LOCALE_EN_KEY : LOCALE_FR_KEY,
     }
-
-    if (currentLocale === 'fr') {
-      activeLang = {
-        title: 'FR - Langue actuelle, français. Cliquer pour changer la langue',
-        ...frBaseProps,
-      }
-      inactiveLang = {
-        title: 'EN - Set the website language to english',
-        ...enBaseProps,
-      }
-    } else {
-      inactiveLang = {
-        title: 'FR - Définir le français comme langue du site',
-        ...frBaseProps,
-      }
-      activeLang = {
-        title: 'EN - Current language, english. Click to modify the language',
-        ...enBaseProps,
-      }
-    }
-
-    return { activeLang, inactiveLang }
   }, [currentLocale, alternatePaths])
 }

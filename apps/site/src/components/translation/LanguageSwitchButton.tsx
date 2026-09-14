@@ -1,12 +1,15 @@
 'use client'
 
 import ChevronRight from '@/components/icons/ChevronRight'
+import { captureClickLanguage } from '@/constants/tracking/posthogTrackers'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/design-system/shadcn/popover'
 import Emoji from '@/design-system/utils/Emoji'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -18,25 +21,38 @@ interface Props {
 
 export default function LanguageSwitchButton({ className }: Props) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const languages = useSwitchLanguage()
 
-  if (!languages) return null
+  const { t } = useClientTranslation()
 
-  const { activeLang, inactiveLang } = languages
+  const result = useSwitchLanguage()
+  if (!result) return null
+
+  const { languages, activeLocale, inactiveLocale } = result
+  const activeLang = languages[activeLocale]
+  const inactiveLang = languages[inactiveLocale]
+
+  const triggerTitle = t(
+    'switchLang.linkTitle',
+    '{{languageAbbreviation}} - Langue actuelle, {{completeLanguageString}}. Cliquer pour changer la langue',
+    {
+      languageAbbreviation: activeLocale.toUpperCase(),
+      completeLanguageString: activeLang.completeLanguageString,
+    }
+  )
 
   return (
     <div className={twMerge('max-tiny:mr-1 mr-2', className)}>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger
           color="secondary"
-          aria-label={activeLang.title}
-          lang={activeLang.locale}
-          title={activeLang.title}
+          aria-label={triggerTitle}
+          lang={activeLocale}
+          title={triggerTitle}
           data-testid="language-switch-button"
           className="hover:bg-primary-100 active:bg-primary-200 transitions-colors inline-flex items-center gap-2 rounded-lg px-2 py-2 sm:px-4 sm:py-3">
           <Emoji>{activeLang.flag}</Emoji>
           <span className="text-primary-700 capitalize">
-            {activeLang.label}
+            {activeLocale.toUpperCase()}
           </span>{' '}
           <ChevronRight
             className={twMerge(
@@ -49,17 +65,26 @@ export default function LanguageSwitchButton({ className }: Props) {
           <Link
             prefetch={false}
             href={inactiveLang.url}
-            lang={inactiveLang.locale}
-            data-testid={`language-switch-button-${inactiveLang.locale}`}
-            title={inactiveLang.title}
+            lang={inactiveLocale}
+            data-testid={`language-switch-button-${inactiveLocale}`}
+            title={t(
+              'switchLang.linkTitle',
+              '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site',
+              {
+                languageAbbreviation: inactiveLocale.toUpperCase(),
+                completeLanguageString: inactiveLang.completeLanguageString,
+              }
+            )}
             onClick={() => {
-              inactiveLang.onLanguageChange()
+              trackPosthogEvent(
+                captureClickLanguage({ locale: inactiveLocale })
+              )
               setIsPopoverOpen(false)
             }}
             className="hover:bg-primary-50 active:bg-primary-100 rounded-sm px-2 py-2">
             <Emoji className="mr-2">{inactiveLang.flag}</Emoji>
             <span className="text-primary-700 text-base font-normal capitalize">
-              {inactiveLang.label}
+              {inactiveLocale.toUpperCase()}
             </span>
           </Link>
         </PopoverContent>
