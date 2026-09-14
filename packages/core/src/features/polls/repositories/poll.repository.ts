@@ -1,7 +1,7 @@
 import { isCuid } from '../../../lib/cuid.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { Poll, PollStats, PollSummary } from '../types/poll.ts'
-import { toPoll, toPollStats } from './poll.mapper.ts'
+import type { Poll, PollSummary } from '../types/poll.ts'
+import { toPoll } from './poll.mapper.ts'
 
 const pollSelect = {
   id: true,
@@ -15,11 +15,6 @@ const pollSelect = {
   organisation: {
     select: { id: true, name: true, slug: true },
   },
-} as const
-
-const pollStatsSelect = {
-  computedResults: true,
-  funFacts: true,
 } as const
 
 const pollSummarySelect = {
@@ -85,21 +80,4 @@ export const findPollSummaryById = async ({
     where: { id },
     select: pollSummarySelect,
   })
-}
-
-/**
- * The aggregates the worker computed, read apart from the poll itself: they
- * only leave the database through a read that asks for them.
- */
-export const findPollStats = async ({
-  pollId,
-}: {
-  pollId: string
-}): Promise<PollStats | null> => {
-  const row = await prisma.poll.findUnique({
-    where: { id: pollId },
-    select: pollStatsSelect,
-  })
-
-  return row ? toPollStats(row) : null
 }

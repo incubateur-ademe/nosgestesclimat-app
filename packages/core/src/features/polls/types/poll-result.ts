@@ -1,9 +1,9 @@
 import type { Simulation } from '../../simulations/types/simulation.ts'
+import type { PollStats } from '../stats/types/poll-stats.ts'
 import type {
   Poll,
   PollAnonymityNotReached,
   PollAnonymityReached,
-  PollStats,
 } from './poll.ts'
 
 /**

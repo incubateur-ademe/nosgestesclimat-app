@@ -1,12 +1,10 @@
 import { findLatestCompletedPollSimulation } from '../../simulations/repository/simulation.repository.ts'
 import { resolveAnonymity } from '../helpers/anonymity-policy.ts'
 import { countPollParticipants } from '../repositories/poll-participation.repository.ts'
-import {
-  findPollByIdOrSlugInOrganisation,
-  findPollStats,
-} from '../repositories/poll.repository.ts'
+import { findPollByIdOrSlugInOrganisation } from '../repositories/poll.repository.ts'
 import { resolveCooldownSeconds } from '../stats/helpers/cooldown-policy.ts'
 import { pollStatsCooldownTiers } from '../stats/helpers/poll-stats-cooldown-tiers.ts'
+import { findPollStats } from '../stats/repositories/poll-stats.repository.ts'
 import type { PollResult } from '../types/poll-result.ts'
 
 /**
