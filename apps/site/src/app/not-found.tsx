@@ -3,7 +3,7 @@ import { noIndexObject } from '@/constants/metadata'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import i18nConfig from '@/i18nConfig'
 import { Suspense } from 'react'
-import './[locale]/globals.css'
+import '../styles/globals.css'
 import { marianne } from './[locale]/marianne'
 
 export function generateMetadata() {

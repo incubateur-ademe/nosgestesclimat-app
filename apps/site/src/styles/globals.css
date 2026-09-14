@@ -1,15 +1,42 @@
-@import 'tailwindcss';
+@import './theme.css';
 
-@config '../../../tailwind.config.js';
-
-@theme {
-  --color-heroLightBackground: #f0f8ff;
-  --color-default: #1a1a1a;
-  --color-water: #5152d0;
-  --font-marianne: 'Marianne', Arial, sans-serif;
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
-
-@custom-variant dark (&:where(.dark, .dark *));
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -40,6 +67,7 @@
   html {
     background-color: #fff;
     color: #1a1a1a;
+    @apply font-sans;
   }
 
   button {
@@ -114,20 +142,6 @@
   }
 }
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 * {
   box-sizing: border-box;
 }
@@ -180,97 +194,6 @@ html[data-useragent*='Trident'] #js {
 }
 
 /*
-	Animated illustration
-*/
-.landing-animated-illustration > svg {
-  max-width: 32rem;
-  height: auto;
-  margin: 1rem auto;
-  border-radius: 0.8rem;
-  width: 95%;
-}
-
-.landing-animated-illustration--small > svg {
-  max-width: 15rem;
-}
-
-.prefix__avion {
-  animation: traversée 90s infinite;
-  animation-timing-function: linear;
-}
-
-@keyframes traversée {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
-
-.prefix__fenetres rect:nth-child(3) {
-  animation: jour-nuit 60s infinite;
-  animation-delay: 1s;
-  animation-timing-function: steps(5, end);
-}
-
-.prefix__fenetres rect:nth-child(5) {
-  animation: jour-nuit 60s infinite;
-  animation-delay: 3s;
-  animation-timing-function: steps(5, end);
-}
-
-.prefix__fenetres rect:nth-child(10) {
-  animation: jour-nuit 60s infinite;
-  animation-delay: 5s;
-  animation-timing-function: steps(5, end);
-}
-
-@keyframes jour-nuit {
-  0% {
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  40% {
-    opacity: 0;
-  }
-  60% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.landing-animated-illustration--cycling .prefix__cycliste {
-  animation: traversée-inversée 45s infinite; /*, saute linear 1s infinite; Pas possible de combiner les deux, à cause du transform:*/
-}
-.landing-animated-illustration--cycling .prefix__velo {
-  animation: traversée-inversée 45s infinite;
-}
-@keyframes saute {
-  from {
-    transform: translateY(0%);
-  }
-  to {
-    transform: translateY(5%);
-  }
-}
-@keyframes traversée-inversée {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-
-/*
 	RegionGrid
 */
 .region-grid {
@@ -280,142 +203,6 @@ html[data-useragent*='Trident'] #js {
   .region-grid {
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   }
-}
-
-.news-page ul {
-  padding-left: 1rem;
-  list-style: '› ';
-}
-
-.news-page ul li {
-  margin-bottom: 0.5rem;
-}
-
-/*
-	Gamecard
-*/
-.game-card-1 {
-  @apply fill-primary-700;
-  fill-opacity: 0.996078;
-  fill-rule: 'evenodd';
-  @apply stroke-primary-700;
-  stroke-width: 7.2062;
-  stroke-linecap: 'round';
-  stroke-linejoin: 'round';
-  stroke-miterlimit: 19.2;
-  stroke-dasharray: 'none';
-  stroke-opacity: 1;
-}
-
-.game-card-2 {
-  @apply fill-primary-700;
-  fill-opacity: 0.996078;
-  fill-rule: 'evenodd';
-  @apply stroke-primary-700;
-  stroke-width: 7.2062;
-  stroke-linecap: 'round';
-  stroke-linejoin: 'round';
-  stroke-miterlimit: 19.2;
-  stroke-dasharray: 'none';
-  stroke-opacity: 1;
-}
-
-.game-card-3 {
-  fill: white;
-  fill-opacity: 0.997404;
-  fill-rule: 'evenodd';
-  @apply stroke-primary-700;
-  stroke-width: 10.1932;
-  stroke-linecap: 'round';
-  stroke-linejoin: 'round';
-  stroke-miterlimit: 19.2;
-  stroke-dasharray: 'none';
-  stroke-opacity: 1;
-}
-
-.game-card-3-active {
-  @apply fill-green-700;
-}
-
-.game-card-number {
-  font-size: 1rem;
-  line-height: 1.25;
-  letter-spacing: 0;
-  stroke-width: 0.385599;
-  fill: 'white';
-  font-weight: 'bold';
-}
-
-/*
-  Statistics (temporary)
-*/
-.statistics-iframe-table {
-  table-layout: fixed;
-  width: 100%;
-  margin-bottom: 0.5rem;
-  background-color: #fff;
-  border-bottom: 2px solid #f0f0f0;
-  border-collapse: collapse;
-  overflow: hidden;
-}
-.statistics-iframe-table tr:nth-child(2n + 1) {
-  background-color: #f9f8f6;
-}
-
-.statistics-iframe-table th {
-  padding: 0.75rem 0 0.75rem 0.75rem;
-  font-size: 0.875rem;
-  text-align: left;
-  border-bottom: 2px solid #1e1e1e;
-}
-.statistics-iframe-table td {
-  font-size: 0.8125rem;
-  width: 60%;
-  padding: 0.5rem;
-}
-.statistics-iframe-table td + td,
-.statistics-iframe-table th + th {
-  width: 20%;
-  font-weight: 700;
-  text-align: right;
-}
-.statistics-figure-wrapper {
-  width: 100%;
-  text-align: center;
-  padding-top: 0rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-.statistics-table {
-  table-layout: fixed;
-  width: 100%;
-  margin-bottom: 0.5rem;
-  background-color: #fff;
-  border-bottom: 2px solid #f0f0f0;
-  border-collapse: collapse;
-  overflow: hidden;
-}
-.statistics-table tr:nth-child(2n + 1) {
-  background-color: #f9f8f6;
-}
-
-.statistics-table th {
-  padding: 0.75rem 0 0.75rem 0.75rem;
-  font-size: 0.875rem;
-  text-align: left;
-  border-bottom: 2px solid #1e1e1e;
-}
-.statistics-table .statistics-table td {
-  font-size: 0.8125rem;
-  width: 60%;
-  padding: 0.5rem;
-}
-.statistics-table td + td,
-.statistics-table th + th {
-  width: 20%;
-  font-weight: 700;
-  text-align: right;
 }
 
 /*
