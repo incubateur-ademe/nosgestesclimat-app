@@ -44,7 +44,6 @@ import {
   deleteOrganisationPoll,
   fetchOrganisationPoll,
   fetchOrganisationPolls,
-  fetchOrganisationPublicPoll,
   fetchUserOrganisation,
   fetchUserOrganisations,
   findOrganisationPollById,
@@ -60,7 +59,6 @@ import {
   type OrganisationPollParams,
   type OrganisationPollUpdateDto,
   type OrganisationUpdateDto,
-  type PublicPollParams,
 } from './organisations.validator.ts'
 
 const { bucket, rootPath } = config.thirdParty.scaleway
@@ -428,40 +426,6 @@ export const fetchPoll = async ({
     )
 
     return pollToDto({ poll, organisation, simulationsInfos, user })
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Poll not found')
-    }
-    throw e
-  }
-}
-
-export const fetchPublicPoll = async ({
-  params,
-  user,
-}: {
-  params: PublicPollParams
-  user?: PartialUser
-}) => {
-  try {
-    const { poll, organisation, simulationsInfos } = await transaction(
-      (session) =>
-        fetchOrganisationPublicPoll(
-          {
-            ...params,
-            user,
-          },
-          { session }
-        ),
-      prisma
-    )
-
-    return pollToDto({
-      poll,
-      organisation,
-      simulationsInfos,
-      user,
-    })
   } catch (e) {
     if (isPrismaErrorNotFound(e)) {
       throw new EntityNotFoundException('Poll not found')
