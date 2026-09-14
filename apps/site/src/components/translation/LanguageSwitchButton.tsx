@@ -57,7 +57,7 @@ export default function LanguageSwitchButton({ className }: Props) {
           <ChevronRight
             className={twMerge(
               'ml-1 inline-block w-1.5 transition-transform',
-              isPopoverOpen ? 'rotate-[-90deg]' : 'rotate-90'
+              isPopoverOpen ? '-rotate-90' : 'rotate-90'
             )}
           />
         </PopoverTrigger>
