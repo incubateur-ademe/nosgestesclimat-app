@@ -3,6 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useIsClient } from '@/hooks/useIsClient'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import isMobile from 'is-mobile'
 import {
@@ -28,10 +29,16 @@ export default function CategoryRadarChart({
   className,
 }: Props) {
   const { t } = useClientTranslation()
+  const isClient = useIsClient()
+
+  // `is-mobile` reads the user agent, which does not exist while the server
+  // renders: the first render has to be the server's one, so the switch waits
+  // for the client.
+  const isMobileLayout = isClient && isMobile()
 
   const categoryLabels = {
     transport: t('common.category.transport', 'Transport'),
-    alimentation: isMobile()
+    alimentation: isMobileLayout
       ? t('common.category.alimentationShort', 'Alim.')
       : t('common.category.alimentation', 'Alimentation'),
     logement: t('common.category.logement', 'Logement'),
@@ -170,7 +177,7 @@ export default function CategoryRadarChart({
       </div>
 
       <div className="relative rounded-xl bg-white">
-        <ResponsiveContainer width="100%" height={isMobile() ? 240 : 330}>
+        <ResponsiveContainer width="100%" height={isMobileLayout ? 240 : 330}>
           <RadarChart
             accessibilityLayer
             data={data}
@@ -181,7 +188,7 @@ export default function CategoryRadarChart({
             <PolarAngleAxis
               dataKey="name"
               tick={{
-                fontSize: isMobile() ? 12 : 16,
+                fontSize: isMobileLayout ? 12 : 16,
                 fill: '#444',
                 transform: 'rotate(0)',
               }}
