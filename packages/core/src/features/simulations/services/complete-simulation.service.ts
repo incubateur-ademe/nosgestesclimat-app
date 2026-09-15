@@ -131,7 +131,8 @@ export function createCompleteSimulation({
       // The completed simulation changes the poll totals; every poll it belongs
       // to is queued for a full recomputation.
       for (const { id } of polls) {
-        await enqueuePollStatsComputation(id, tx)
+        const enqueued = await enqueuePollStatsComputation(id, tx)
+        if (!enqueued.success) return enqueued
       }
 
       return success()
