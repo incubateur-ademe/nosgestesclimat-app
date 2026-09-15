@@ -90,6 +90,7 @@ describe('getSimulationResult', () => {
   it('returns group info with type "group" when simulation has a group', async () => {
     const userId = randomUUID()
     const groupId = randomUUID()
+    const administratorId = randomUUID()
     vi.mocked(getUserSession).mockResolvedValue({
       id: userId,
       email: 'alice@example.com',
@@ -99,7 +100,10 @@ describe('getSimulationResult', () => {
     const entity = simulationFactory.withModelRegion('FR').build()
     const coreResult: SimulationResult = {
       simulation: entity,
-      group: { type: 'group', value: { id: groupId, name: 'My Group' } },
+      group: {
+        type: 'group',
+        value: { id: groupId, name: 'My Group', administratorId },
+      },
       tendency: null,
     }
     serviceMock.getSimulationResultService.mockResolvedValue(coreResult)
@@ -109,7 +113,7 @@ describe('getSimulationResult', () => {
     expect(result).not.toBeNull()
     expect(result.group).toEqual({
       type: 'group',
-      value: { id: groupId, name: 'My Group' },
+      value: { id: groupId, name: 'My Group', administratorId },
     })
   })
 
@@ -131,7 +135,7 @@ describe('getSimulationResult', () => {
           id: pollId,
           name: 'My Poll',
           slug: 'my-poll',
-          organisation: { slug: 'my-org' },
+          organisation: { name: 'My Org', slug: 'my-org' },
         },
       },
       tendency: null,
@@ -147,7 +151,7 @@ describe('getSimulationResult', () => {
         id: pollId,
         name: 'My Poll',
         slug: 'my-poll',
-        organisation: { slug: 'my-org' },
+        organisation: { name: 'My Org', slug: 'my-org' },
       },
     })
   })

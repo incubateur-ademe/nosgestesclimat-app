@@ -24,5 +24,5 @@ export interface PollSummary {
   id: string
   name: string
   slug: string
-  organisation: { slug: string }
+  organisation: { name: string; slug: string }
 }
