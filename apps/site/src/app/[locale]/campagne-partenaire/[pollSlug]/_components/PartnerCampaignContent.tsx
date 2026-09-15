@@ -46,7 +46,7 @@ export default function PartnerCampaignContent({
 
             <ButtonLink
               size="lg"
-              className="mt-2 md:mt-10"
+              className="mt-2 text-sm md:mt-10 md:text-lg"
               href={`/o/${organisationSlug}/${pollSlug}`}>
               {partnerCampaign.labelCTA ?? <Trans>Passer le test</Trans>}
             </ButtonLink>
