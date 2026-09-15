@@ -131,7 +131,8 @@ describe('getSimulationResult', () => {
           id: pollId,
           name: 'My Poll',
           slug: 'my-poll',
-          organisation: { slug: 'my-org' },
+          mode: 'standard',
+          organisation: { name: 'My Organisation', slug: 'my-org' },
         },
       },
       tendency: null,
@@ -147,7 +148,8 @@ describe('getSimulationResult', () => {
         id: pollId,
         name: 'My Poll',
         slug: 'my-poll',
-        organisation: { slug: 'my-org' },
+        mode: 'standard',
+        organisation: { name: 'My Organisation', slug: 'my-org' },
       },
     })
   })

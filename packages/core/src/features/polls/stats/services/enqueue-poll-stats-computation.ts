@@ -1,15 +1,15 @@
 import type { Transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { countPollParticipants } from '../../repositories/poll-participation.repository.ts'
 import {
-  parseCooldownTiers,
   resolveCooldownSeconds,
   type CooldownTier,
 } from '../helpers/cooldown-policy.ts'
+import { pollStatsCooldownTiers } from '../helpers/poll-stats-cooldown-tiers.ts'
 import {
   getPollStatsComputationStatus,
   schedulePollStatsComputation,
 } from '../repositories/poll-stats-computations.repository.ts'
-import { countPollSimulations } from '../repositories/poll-stats.repository.ts'
 
 export type EnqueuePollStatsComputation = (
   pollId: string,
@@ -34,8 +34,11 @@ export function createEnqueuePollStatsComputation({
 
     let scheduledAt = new Date()
     if (current?.status === 'completed') {
-      const count = await countPollSimulations(pollId, tx)
-      const cooldownSeconds = resolveCooldownSeconds(cooldownTiers, count)
+      const participants = await countPollParticipants(pollId, tx)
+      const cooldownSeconds = resolveCooldownSeconds(
+        cooldownTiers,
+        participants
+      )
       scheduledAt = new Date(Date.now() + cooldownSeconds * 1000)
     }
 
@@ -43,10 +46,6 @@ export function createEnqueuePollStatsComputation({
   }
 }
 
-/**
- * The server reads the same variable to advertise the refresh delay in the
- * public poll DTO, so both must resolve the tiers identically.
- */
 export const enqueuePollStatsComputation = createEnqueuePollStatsComputation({
-  cooldownTiers: parseCooldownTiers(process.env.POLL_STATS_COOLDOWN_TIERS),
+  cooldownTiers: pollStatsCooldownTiers,
 })

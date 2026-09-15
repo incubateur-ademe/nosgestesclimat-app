@@ -2,6 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useIsClient } from '@/hooks/useIsClient'
 import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import isMobile from 'is-mobile'
 import type { PropsWithChildren, ReactNode } from 'react'
@@ -33,6 +34,7 @@ export default function CopyButton({
   'data-testid': dataTestId,
 }: PropsWithChildren<Props>) {
   const { t } = useClientTranslation()
+  const isClient = useIsClient()
   const [isCopied, setIsCopied] = useState(false)
   const [isError, setIsError] = useState(false)
 
@@ -47,8 +49,13 @@ export default function CopyButton({
     }
   }, [])
 
+  // `navigator.share` only exists in the browser: the first render has to be the
+  // server's one, where sharing is not offered, so the label switches after
+  // mount.
   const isShareDefined =
-    typeof navigator !== 'undefined' && navigator.share !== undefined
+    isClient &&
+    typeof navigator !== 'undefined' &&
+    navigator.share !== undefined
 
   const handleShareOrCopy = async () => {
     setIsError(false)

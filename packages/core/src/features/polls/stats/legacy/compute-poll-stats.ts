@@ -95,7 +95,7 @@ async function* batchPollSimulations(pollId: string) {
       take: BATCH_SIZE,
       skip: cursor ? 1 : 0,
       ...(cursor ? { cursor } : {}),
-      where: { pollId },
+      where: { pollId, simulation: { progression: 1 } },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
       select: {
         id: true,

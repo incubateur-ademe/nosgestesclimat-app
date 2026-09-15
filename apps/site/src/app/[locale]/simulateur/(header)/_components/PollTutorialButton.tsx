@@ -3,10 +3,10 @@ import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
-import type { Poll } from '@nosgestesclimat/core/features/polls/types/poll'
+import type { PollSummary } from '@nosgestesclimat/core/features/polls/types/poll'
 
 interface Props {
-  poll: Poll
+  poll: PollSummary
   hasCompletedPollSimulation: boolean
   createSimulation: () => void
   locale: Locale

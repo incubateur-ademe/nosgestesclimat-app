@@ -124,7 +124,11 @@ describe('getSimulationResult', () => {
         id: poll.id,
         name: poll.name,
         slug: poll.slug,
-        organisation: { slug: poll.organisation.slug },
+        mode: poll.mode,
+        organisation: {
+          name: poll.organisation.name,
+          slug: poll.organisation.slug,
+        },
       },
     })
   })

@@ -28,12 +28,6 @@ export type OrganisationPollParams = v.InferOutput<
   typeof OrganisationPollParams
 >
 
-export const PublicPollParams = v.strictObject({
-  ...PollParams.entries,
-})
-
-export type PublicPollParams = v.InferOutput<typeof PublicPollParams>
-
 const OrganisationCreateAdministrator = v.strictObject({
   name: v.optional(v.nullable(v.string())),
   telephone: v.optional(v.nullable(v.string())),
@@ -203,16 +197,4 @@ export const OrganisationPollSimulationsDownloadValidator = {
   body: v.optional(v.strictObject({})),
   params: OrganisationPollParams,
   query: OrganisationPollSimulationsDownloadQuery,
-}
-
-export const OrganisationPublicPollFetchValidator = {
-  body: v.optional(v.strictObject({})),
-  params: PublicPollParams,
-  query: LocaleQuery,
-}
-
-export const OrganisationPublicPollDashboardValidator = {
-  body: v.optional(v.strictObject({})),
-  params: PublicPollParams,
-  query: LocaleQuery,
 }

@@ -14,7 +14,7 @@ import {
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
-import type { PartialUser, PartialVerifiedUser } from '../../core/types/user.ts'
+import type { PartialVerifiedUser } from '../../core/types/user.ts'
 import { createOrUpdateVerifiedUser } from '../users/users.repository.ts'
 import type {
   OrganisationCreateDto,
@@ -23,7 +23,6 @@ import type {
   OrganisationPollParams,
   OrganisationPollUpdateDto,
   OrganisationUpdateDto,
-  PublicPollParams,
 } from './organisations.validator.ts'
 
 const findModelUniqueSlug = (model: 'organisation' | 'poll') => {
@@ -320,22 +319,13 @@ const findUniquePollSlug = findModelUniqueSlug('poll')
 type SimulationsInfo = {
   count: number
   finished: number
-} & (
-  | {
-      hasParticipated: false
-    }
-  | {
-      hasParticipated: true
-      progression: number
-      userComputedResults: ComputedResults
-    }
-)
+}
 
 const fetchPollSimulationsInfo = async (
-  { poll: { id }, user }: { poll: { id: string }; user?: PartialUser },
+  { poll: { id } }: { poll: { id: string } },
   { session }: { session: Session }
 ): Promise<SimulationsInfo> => {
-  const [count, finished, userSimulation] = await Promise.all([
+  const [count, finished] = await Promise.all([
     session.simulationPoll.count({
       where: {
         pollId: id,
@@ -349,51 +339,9 @@ const fetchPollSimulationsInfo = async (
         },
       },
     }),
-    user
-      ? session.simulationPoll.findFirst({
-          where: {
-            pollId: id,
-            simulation: {
-              user: {
-                id: user.id,
-              },
-            },
-          },
-          select: {
-            simulation: {
-              select: {
-                computedResults: true,
-                progression: true,
-              },
-            },
-          },
-          orderBy: {
-            simulation: {
-              createdAt: 'desc',
-            },
-          },
-        })
-      : null,
   ])
 
-  const userComputedResults = v.safeParse(
-    ComputedResultsSchema,
-    userSimulation?.simulation.computedResults
-  )
-
-  return {
-    count,
-    finished,
-    ...(userComputedResults.success
-      ? {
-          hasParticipated: true,
-          progression: userSimulation!.simulation.progression,
-          userComputedResults: userComputedResults.output,
-        }
-      : {
-          hasParticipated: false,
-        }),
-  }
+  return { count, finished }
 }
 
 const sanitizePollComputedResults = <T extends { computedResults: JsonValue }>({
@@ -463,13 +411,7 @@ export const createOrganisationPoll = async (
     },
   })
 
-  const simulationsInfos = await fetchPollSimulationsInfo(
-    {
-      poll,
-      user,
-    },
-    { session }
-  )
+  const simulationsInfos = await fetchPollSimulationsInfo({ poll }, { session })
 
   return {
     poll: sanitizePollComputedResults(poll),
@@ -556,13 +498,7 @@ export const updateOrganisationPoll = async (
     },
   })
 
-  const simulationsInfos = await fetchPollSimulationsInfo(
-    {
-      poll,
-      user,
-    },
-    { session }
-  )
+  const simulationsInfos = await fetchPollSimulationsInfo({ poll }, { session })
 
   return {
     poll: sanitizePollComputedResults(poll),
@@ -611,10 +547,7 @@ export const fetchOrganisationPolls = async (
     polls: await Promise.all(
       polls.map(async (poll) => ({
         poll: sanitizePollComputedResults(poll),
-        simulationsInfos: await fetchPollSimulationsInfo(
-          { poll, user },
-          { session }
-        ),
+        simulationsInfos: await fetchPollSimulationsInfo({ poll }, { session }),
       }))
     ),
   }
@@ -639,56 +572,12 @@ export const fetchOrganisationPoll = async (
     { session }
   )
 
-  const simulationsInfos = await fetchPollSimulationsInfo(
-    {
-      poll,
-      user,
-    },
-    { session }
-  )
+  const simulationsInfos = await fetchPollSimulationsInfo({ poll }, { session })
 
   return {
     simulationsInfos,
     organisation,
     poll: sanitizePollComputedResults(poll),
-  }
-}
-
-export const fetchOrganisationPublicPoll = async (
-  { pollIdOrSlug, user }: PublicPollParams & { user?: PartialUser },
-  { session }: { session: Session }
-) => {
-  const { organisation, ...poll } = await session.poll.findFirstOrThrow({
-    where: {
-      OR: [
-        {
-          id: pollIdOrSlug,
-        },
-        {
-          slug: pollIdOrSlug,
-        },
-      ],
-    },
-    select: {
-      ...defaultPollSelection,
-      organisation: {
-        select: defaultOrganisationSelectionWithoutPolls,
-      },
-    },
-  })
-
-  const simulationsInfos = await fetchPollSimulationsInfo(
-    {
-      poll,
-      user,
-    },
-    { session }
-  )
-
-  return {
-    poll: sanitizePollComputedResults(poll),
-    simulationsInfos,
-    organisation,
   }
 }
 

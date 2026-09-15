@@ -2,6 +2,7 @@
 
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useIsClient } from '@/hooks/useIsClient'
 import isMobile from 'is-mobile'
 import {
   Bar,
@@ -28,6 +29,12 @@ export default function FootprintBarChart({
   className,
 }: Props) {
   const { t } = useClientTranslation()
+  const isClient = useIsClient()
+
+  // `is-mobile` reads the user agent, which does not exist while the server
+  // renders: the first render has to be the server's one, so the switch waits
+  // for the client.
+  const isMobileLayout = isClient && isMobile()
 
   const groupFormatted = formatFootprint(groupFootprint, {
     maximumFractionDigits: 1,
@@ -182,7 +189,7 @@ export default function FootprintBarChart({
           textAnchor="start"
           dominantBaseline="middle"
           fill="black"
-          fontSize={isMobile() ? 12 : 16}
+          fontSize={isMobileLayout ? 12 : 16}
           fontWeight="600">
           {formattedValue}
         </text>
@@ -200,7 +207,7 @@ export default function FootprintBarChart({
         {getAccessibleDescription()}
       </div>
       <div className="w-full">
-        <ResponsiveContainer width="100%" height={isMobile() ? 240 : 300}>
+        <ResponsiveContainer width="100%" height={isMobileLayout ? 240 : 300}>
           <BarChart
             data={data}
             margin={{
@@ -218,7 +225,7 @@ export default function FootprintBarChart({
               domain={[0, maxValue + 5]}
               axisLine
               tickLine
-              tick={{ fontSize: isMobile() ? 12 : 16, fill: '#444' }}
+              tick={{ fontSize: isMobileLayout ? 12 : 16, fill: '#444' }}
               tickFormatter={(value) => {
                 return `${value} ${value > 1 ? groupFormatted.unit : `${groupFormatted.unit?.replace('s', '')}`}`
               }}

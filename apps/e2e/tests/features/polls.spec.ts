@@ -74,6 +74,18 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
   })
 })
 
+test.describe('The legacy results address', () => {
+  test('hands the administrator over to its campaign', async ({
+    page,
+    poll,
+    organisation,
+  }) => {
+    await page.goto(`${organisation.url}/resultats-detailles`)
+
+    await expect(page).toHaveURL(poll.url)
+  })
+})
+
 test.describe('A new user', () => {
   test.use({ storageState: NEW_VISITOR_STATE })
 
