@@ -920,7 +920,7 @@ entries:
   pollResults.waterFootprint.body.lock: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
   pollResults.waterFootprint.learnMore: Learn more
   pollResults.waterFootprint.learnMore.lock: En savoir plus
-  pollResults.funFacts.refreshNote: The figures update about every {{duration}}
+  pollResults.funFacts.refreshNote: 'The figures are updated approximately every {{duration}} '
   pollResults.footprintBarChart.targetLabelMobile: 'Target 2050:'
   pollResults.footprintBarChart.targetLabelMobile.lock: 'Objectif 2050 :'
   common.category.alimentationShort: Food
@@ -1790,10 +1790,10 @@ entries:
   tutorial.email.title.default.lock: Votre adresse e-mail
   common.authentication.verifyEmail: Verify my email address
   common.authentication.verifyEmail.lock: Vérifier mon adresse e-mail
-  tutorial.email.contest.youth: Your e-mail address will be used for the prize draw.
-  tutorial.email.contest.youth.lock: Ton e-mail sera utilisé pour le tirage au sort.
-  tutorial.email.contest.default: Your e-mail address will be used for the prize draw.
-  tutorial.email.contest.default.lock: Votre e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.youth: Check your email for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be saved in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.youth.lock: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.default: Please check your email address for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
@@ -2027,8 +2027,8 @@ entries:
   event.countdown.label.lock: Début dans
   event.statistics.title: Live data will appear on launch
   event.statistics.title.lock: Les données en direct apparaîtront au lancement
-  event.countdown.date: Launch on {{date}}
-  event.countdown.date.lock: Lancement le {{date}}
+  event.countdown.date: Join the campaign until {{date}}
+  event.countdown.date.lock: Rejoignez l'opération jusqu'au {{date}}
   event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
   event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   Éducation: Education
@@ -2181,12 +2181,18 @@ entries:
   actions.components.highestImpactActionsSection.publicDescription.lock: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
   actions.detailPage.sections.otherThemeActions.title: Find out about other ways to reduce your carbon footprint
   actions.detailPage.sections.otherThemeActions.title.lock: Découvrez d’autres actions pour réduire votre empreinte
+  actions.components.actionCard.ctaVariant.link: See the<1> "{{actionTitle}}"</1> campaign
+  actions.components.actionCard.ctaVariant.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
   event.dynamicCounter.target.title.default: Objective
   event.dynamicCounter.target.title.default.lock: Objectif
   event.dynamicCounter.target.title.topped: Target achieved
   event.dynamicCounter.target.title.topped.lock: Objectif atteint
   event.dynamicCounter.target.title.over: Target exceeded
   event.dynamicCounter.target.title.over.lock: Objectif dépassé
+  tutorial.email.title.youthContest: Your email address for the prize draw
+  tutorial.email.title.youthContest.lock: Ton adresse e-mail pour le tirage au sort
+  tutorial.email.title.defaultContest: Your email address for the prize draw
+  tutorial.email.title.defaultContest.lock: Votre adresse e-mail pour le tirage au sort
   poll.creation.mode.select: Select
   poll.creation.mode.select.lock: Sélectionner
   poll.creation.mode.tempDisabled: This feature has been temporarily disabled whilst improvements are being made
@@ -2195,3 +2201,4 @@ entries:
   poll.creation.mode.error.lock: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
   poll.creation.mode.title: Select the test mode
   poll.creation.mode.title.lock: Choisissez le mode du test
+  pollResults.funFacts.refreshNote.lock: Les chiffres se mettent à jour toutes les {{duration}} environ

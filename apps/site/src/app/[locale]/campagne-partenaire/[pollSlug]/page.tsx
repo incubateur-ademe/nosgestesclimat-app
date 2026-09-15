@@ -67,7 +67,7 @@ export default async function PartnerCampaignPage({
         partnerCampaign={partnerCampaign}
         partnersComponent={<Partners locale={locale} />}
         faqComponent={
-          !!partnerCampaign.faq?.questions?.length && (
+          !!partnerCampaign.faq?.questions.length && (
             <FAQ
               isBackgroundSkewed={false}
               className="bg-white"

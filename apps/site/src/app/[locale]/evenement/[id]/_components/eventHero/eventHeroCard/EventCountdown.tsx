@@ -165,7 +165,7 @@ export default function EventCountdown({
       </div>
 
       <p className="text-center text-xs text-slate-600">
-        {t('event.countdown.date', 'Lancement le {{date}}', {
+        {t('event.countdown.date', "Rejoignez l'opération jusqu'au {{date}}", {
           date: launchDateLabel,
         })}
       </p>
