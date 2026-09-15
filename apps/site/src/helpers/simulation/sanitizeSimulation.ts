@@ -8,7 +8,5 @@ export function sanitizeSimulation(simulation: Simulation): Simulation {
   } = { ...simulation }
   delete sanitized.createdAt
   delete sanitized.updatedAt
-  delete sanitized.groups
-  delete sanitized.polls
   return sanitized
 }
