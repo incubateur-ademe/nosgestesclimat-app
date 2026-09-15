@@ -2,96 +2,19 @@ import Trans from '@/components/translation/trans/TransServer'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
 import Emoji from '@/design-system/utils/Emoji'
-import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import { getUserSession } from '@/services/auth/get-user-session'
 import { participateToPoll } from '@/services/organisations/participate-to-poll'
-import { getPoll } from '@/services/polls/get-poll'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
 import type { Poll } from '@nosgestesclimat/core/features/polls/types/poll'
-import { getSimulationMode } from '@nosgestesclimat/core/features/simulations/helpers/get-simulation-mode'
 import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
-import { getLastCompletedSimulation } from '@nosgestesclimat/core/features/simulations/services/get-last-completed-simulation.service'
-import { getPollParticipation } from '@nosgestesclimat/core/features/simulations/services/get-poll-participation.service'
 import type { SearchParams } from 'next/dist/server/request/search-params'
-import { notFound, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
-import { toSimulationDto } from '../../../../../../services/simulations/simulation.dto'
 import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
 import Tutorial from '../../_components/Tutorial'
 import YouthTutorial from '../../_components/YouthTutorial'
-
-type Options =
-  | {
-      poll: Poll
-      currentPollSimulation: Simulation | null
-      canReuseExistingSimulation: false
-    }
-  | {
-      poll: Poll
-      currentPollSimulation: Simulation | null
-      canReuseExistingSimulation: true
-      reusableSimulation: Simulation
-      reusableSimulationPolls: Poll[]
-    }
-
-async function getPollParticipationOptions(
-  pollIdOrSlug: string
-): Promise<Options> {
-  const session = await getUserSession()
-  const poll = await getPoll(pollIdOrSlug)
-
-  if (!poll) notFound()
-  if (!session)
-    return {
-      poll,
-      currentPollSimulation: null,
-      canReuseExistingSimulation: false,
-    }
-
-  const [currentPollSimulation, maybeReusableSimulation] = await Promise.all([
-    getPollParticipation({ userId: session.id, pollIdOrSlug }),
-    getLastCompletedSimulation({ userId: session.id }),
-  ])
-
-  if (currentPollSimulation && !isSimulationCompleted(currentPollSimulation)) {
-    redirect(SIMULATOR_PATH)
-  }
-
-  const currentPollSimulationDto = currentPollSimulation
-    ? toSimulationDto(currentPollSimulation)
-    : null
-
-  // A completed simulation is only offered for reuse when :
-  // - the previous completed simulation has "mode" === "standard"
-  // - the newer simulation also has "mode" === "standard"
-  const canReuseExistingSimulation =
-    !!maybeReusableSimulation &&
-    poll.mode === 'standard' &&
-    getSimulationMode(maybeReusableSimulation) === 'standard' &&
-    !currentPollSimulation &&
-    Date.now() - maybeReusableSimulation.date.getTime() <
-      6 * 30 * 24 * 3600 * 1000
-
-  if (!canReuseExistingSimulation)
-    return {
-      poll,
-      currentPollSimulation: currentPollSimulationDto,
-      canReuseExistingSimulation,
-    }
-
-  // TODO
-  // const reusableSimulationPolls = await polls()
-
-  return {
-    poll,
-    currentPollSimulation: currentPollSimulationDto,
-    canReuseExistingSimulation,
-    reusableSimulation: toSimulationDto(maybeReusableSimulation),
-    reusableSimulationPolls: [],
-  }
-}
+import { getPollParticipationOptions } from './_actions/get-poll-participation-options'
 
 export default async function CampagnePage({
   params,
