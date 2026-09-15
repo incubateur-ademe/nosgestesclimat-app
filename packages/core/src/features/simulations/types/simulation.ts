@@ -16,3 +16,5 @@ export interface Simulation {
   /** null if the user has deleted the simulation (soft delete) */
   userId: string | null
 }
+
+export type SimulationMode = 'scolaire' | 'standard'
