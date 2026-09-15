@@ -2,11 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { QUESTION_DESCRIPTION_BUTTON_ID } from '@/constants/accessibility'
-import { captureClickInfo } from '@/constants/tracking/posthogTrackers'
-import {
-  questionCloseInfo,
-  questionOpenInfo,
-} from '@/constants/tracking/question'
+import { captureClickInfo } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import Markdown from '@/design-system/utils/Markdown'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
@@ -14,10 +10,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useOptionalSimulation } from '@/publicodes-state'
 import { MUST_SHOW_DESCRIPTION } from '@/publicodes-state/constants/questions'
 import type { QuestionSize } from '@/types/values'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
@@ -115,15 +108,9 @@ export default function Label({
             type="button"
             onClick={() => {
               if (isOpen) {
-                trackMatomoEvent__deprecated(questionCloseInfo({ question }))
-                trackPosthogEvent(
-                  captureClickInfo({ question, state: 'closed' })
-                )
+                trackEvent(captureClickInfo({ question, state: 'closed' }))
               } else {
-                trackMatomoEvent__deprecated(questionOpenInfo({ question }))
-                trackPosthogEvent(
-                  captureClickInfo({ question, state: 'opened' })
-                )
+                trackEvent(captureClickInfo({ question, state: 'opened' }))
               }
               setIsOpen((previsOpen) => !previsOpen)
             }}
@@ -179,7 +166,6 @@ export default function Label({
                 size="xs"
                 color="secondary"
                 onClick={() => {
-                  trackMatomoEvent__deprecated(questionCloseInfo({ question }))
                   setIsOpen(false)
                 }}
                 title={t('Fermer')}>

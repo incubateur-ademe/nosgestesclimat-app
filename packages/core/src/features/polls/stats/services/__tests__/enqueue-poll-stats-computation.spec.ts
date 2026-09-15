@@ -33,9 +33,7 @@ describe('enqueuePollStatsComputation', () => {
   })
 
   it('re-arms a completed computation immediately when the cooldown is 0s', async () => {
-    const poll = await pollFactory
-      .withCompletedComputation()
-      .create()
+    const poll = await pollFactory.withCompletedComputation().create()
 
     const before = Date.now()
     await immediateEnqueue(poll.id)
@@ -48,9 +46,7 @@ describe('enqueuePollStatsComputation', () => {
   })
 
   it('defers a completed computation when the cooldown is large', async () => {
-    const poll = await pollFactory
-      .withCompletedComputation()
-      .create()
+    const poll = await pollFactory.withCompletedComputation().create()
 
     await deferredEnqueue(poll.id)
 
@@ -62,9 +58,7 @@ describe('enqueuePollStatsComputation', () => {
   })
 
   it('reschedules a failed computation to pending now', async () => {
-    const poll = await pollFactory
-      .withFailedComputation()
-      .create()
+    const poll = await pollFactory.withFailedComputation().create()
 
     const before = Date.now()
     await immediateEnqueue(poll.id)
@@ -77,9 +71,7 @@ describe('enqueuePollStatsComputation', () => {
   })
 
   it('keeps the scheduledAt when a deferred computation is enqueued again', async () => {
-    const poll = await pollFactory
-      .withCompletedComputation()
-      .create()
+    const poll = await pollFactory.withCompletedComputation().create()
 
     await deferredEnqueue(poll.id)
     const firstScheduledAt = (await getPollStatsComputationStatus(poll.id))!
@@ -104,8 +96,7 @@ describe('enqueuePollStatsComputation', () => {
     },
     {
       name: 'leaves a processing computation untouched',
-      create: () =>
-        pollFactory.withProcessingComputation().create(),
+      create: () => pollFactory.withProcessingComputation().create(),
     },
   ])('$name', async ({ create }) => {
     const poll = await create()

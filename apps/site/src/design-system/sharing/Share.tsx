@@ -4,9 +4,7 @@ import CopyIcon from '@/components/icons/share/CopyIcon'
 import ShareIcon from '@/components/icons/ShareIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import { getShareTrackEvent } from '@/helpers/tracking/share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import getIsMobile from 'is-mobile'
 import { type ReactNode, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -20,7 +18,6 @@ interface ShareItem {
   icon: ReactNode
   link: string
   mobileOnly?: boolean
-  eventTracked: string[]
 }
 
 export default function Share({
@@ -101,14 +98,6 @@ export default function Share({
               <CopyButton
                 className="max-h-10"
                 color="secondary"
-                onCopied={() =>
-                  trackMatomoEvent__deprecated(
-                    getShareTrackEvent({
-                      page: 'Fin',
-                      target: 'Copier-coller',
-                    })
-                  )
-                }
                 copiedStateText={
                   <span className="flex items-center gap-4 text-sm text-green-700">
                     <CheckIcon className="fill-green-700" />
@@ -123,27 +112,23 @@ export default function Share({
               </CopyButton>
             </li>
 
-            {shareItems.map(
-              ({ label, icon, link, mobileOnly, eventTracked }, index) =>
-                mobileOnly && !isMobile ? null : (
-                  <li key={link} className="w-full">
-                    <ButtonLink
-                      data-testid={`share-button-link-${index}`}
-                      className="max-h-10 w-full text-sm!"
-                      color="secondary"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={link}
-                      onClick={() =>
-                        trackMatomoEvent__deprecated(eventTracked)
-                      }>
-                      <span className="flex items-center gap-2">
-                        {label}
-                        {icon}
-                      </span>
-                    </ButtonLink>
-                  </li>
-                )
+            {shareItems.map(({ label, icon, link, mobileOnly }, index) =>
+              mobileOnly && !isMobile ? null : (
+                <li key={link} className="w-full">
+                  <ButtonLink
+                    data-testid={`share-button-link-${index}`}
+                    className="max-h-10 w-full text-sm!"
+                    color="secondary"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={link}>
+                    <span className="flex items-center gap-2">
+                      {label}
+                      {icon}
+                    </span>
+                  </ButtonLink>
+                </li>
+              )
             )}
           </ul>
         </Modal>

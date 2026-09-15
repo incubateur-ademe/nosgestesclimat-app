@@ -53,9 +53,7 @@ describe('processNextPendingPollStats', () => {
 
   it('leaves a deferred pending job untouched', async () => {
     const scheduledAt = new Date(Date.now() + 60 * 1000)
-    const poll = await pollFactory
-      .withPendingComputation(scheduledAt)
-      .create()
+    const poll = await pollFactory.withPendingComputation(scheduledAt).create()
 
     const result = await processNextPendingPollStats()
 
@@ -68,9 +66,7 @@ describe('processNextPendingPollStats', () => {
   })
 
   it('reclaims a stale processing job', async () => {
-    const poll = await pollFactory
-      .withStaleProcessingComputation()
-      .create()
+    const poll = await pollFactory.withStaleProcessingComputation().create()
 
     const result = await processNextPendingPollStats()
 
@@ -83,9 +79,7 @@ describe('processNextPendingPollStats', () => {
   })
 
   it('does not recompute a poll whose computation is currently being processed', async () => {
-    const poll = await pollFactory
-      .withProcessingComputation()
-      .create()
+    const poll = await pollFactory.withProcessingComputation().create()
 
     const result = await processNextPendingPollStats()
 

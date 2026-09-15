@@ -20,9 +20,7 @@ export const generateMetadata = getCommonMetadata({
 
 export default async function PartenairePage({
   searchParams,
-  params,
 }: PageProps<'/[locale]/partenaire'>) {
-  const { locale } = await params
   const searchParamsObject = (await searchParams) ?? { partner: '' }
 
   const partner = (searchParamsObject[PARTNER_KEY] as string) ?? ''
@@ -41,7 +39,7 @@ export default async function PartenairePage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <HeaderServer />
 
       <Main>
         <div className="min-h-screen">

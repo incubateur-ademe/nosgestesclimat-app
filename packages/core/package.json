@@ -32,7 +32,7 @@
     "clean": "rm -rf dist tsconfig.build.tsbuildinfo",
     "dev": "tsc -p tsconfig.build.json --watch",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint",
-    "format": "prettier --write ./**/*.{js,ts,tsx,json,md}",
+    "format": "prettier --write ./**/*.{js,ts,json}",
     "typecheck": "tsc --noEmit",
     "generate": "pnpm db:generate",
     "db:generate": "prisma generate",

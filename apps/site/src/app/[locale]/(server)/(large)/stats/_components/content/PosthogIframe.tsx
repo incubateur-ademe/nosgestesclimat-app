@@ -8,15 +8,15 @@ interface Props {
   id: string
   title: string
   src: string
-  height?: string
-  description?: string // Nouvelle prop pour une description plus détaillée
+  height: string
+  description: string
 }
 
-export default function MetabaseIframe({
+export default function PosthogIframe({
   id,
   title,
   src,
-  height = '450px',
+  height,
   description,
 }: Props) {
   const [isIFrameLoaded, setIsIFrameLoaded] = useState(false)
@@ -56,7 +56,6 @@ export default function MetabaseIframe({
           {description}
         </p>
       )}
-
       <iframe
         id={id}
         title={title}
@@ -64,7 +63,8 @@ export default function MetabaseIframe({
         width="100%"
         // Fix height for mobile
         height={height}
-        className="border-none"
+        sandbox="allow-scripts allow-same-origin allow-popups"
+        className="rounded-xl border-none"
         aria-describedby={description ? `${id}-description` : undefined}
         onLoad={() => setIsIFrameLoaded(true)}
         onError={() => setHasError(true)}

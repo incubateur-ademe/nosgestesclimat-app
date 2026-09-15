@@ -682,8 +682,8 @@ describe('Given a NGC user', () => {
             ],
             templateId: 57,
             params: {
-              GROUP_URL: `https://nosgestesclimat.test/amis/resultats?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-voir-classement`,
-              SHARE_URL: `https://nosgestesclimat.test/amis/invitation?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage`,
+              GROUP_URL: `https://nosgestesclimat.test/amis/resultats?groupId=${groupId}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-voir-classement`,
+              SHARE_URL: `https://nosgestesclimat.test/amis/invitation?groupId=${groupId}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-url-partage`,
               GROUP_NAME: groupName,
               NAME: administratorName,
             },

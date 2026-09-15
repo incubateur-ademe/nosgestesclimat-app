@@ -2,7 +2,6 @@
 
 import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import {
   type HtmlHTMLAttributes,
   type KeyboardEvent,
@@ -28,7 +27,6 @@ interface Props {
   title?: string
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void
   onKeyDown?: (e: KeyboardEvent<HTMLAnchorElement>) => void
-  trackingEvent?: (string | null)[]
   target?: string
   scroll?: boolean
   loading?: boolean
@@ -45,7 +43,6 @@ export default function ButtonLink({
   title,
   onClick,
   onKeyDown,
-  trackingEvent,
   target = '_self',
   scroll = true,
   loading,
@@ -75,9 +72,6 @@ export default function ButtonLink({
         if (onClick) {
           onClick(e)
         }
-        if (trackingEvent) {
-          trackMatomoEvent__deprecated(trackingEvent)
-        }
       }}
       onKeyDown={(e) => {
         if (isDisabled) {
@@ -85,10 +79,6 @@ export default function ButtonLink({
         }
         if (onKeyDown) {
           onKeyDown(e)
-        }
-
-        if (trackingEvent) {
-          trackMatomoEvent__deprecated(trackingEvent)
         }
       }}
       title={title}

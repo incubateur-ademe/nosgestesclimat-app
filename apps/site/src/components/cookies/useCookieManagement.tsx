@@ -1,8 +1,8 @@
 'use client'
 
-import { captureCookieBannerStatus } from '@/constants/tracking/posthogTrackers'
+import { captureCookieBannerStatus } from '@/constants/tracking/trackers'
 import { GoogleTagManager } from '@/services/tracking/GoogleTagManager'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { PropsWithChildren } from 'react'
 import { createContext, useContext, useState } from 'react'
 import {
@@ -72,7 +72,7 @@ export function useCookieManagement(): {
     posthog.update(cookieState.posthog)
     googleTagManager.update(cookieState.googleTag)
 
-    trackPosthogEvent(captureCookieBannerStatus({ cookieState }))
+    trackEvent(captureCookieBannerStatus({ cookieState }))
   }
 
   return {

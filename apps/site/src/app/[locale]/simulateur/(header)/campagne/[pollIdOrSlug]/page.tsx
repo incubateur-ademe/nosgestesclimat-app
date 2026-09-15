@@ -89,19 +89,6 @@ export default async function CampagnePage({
     </div>
   )
 
-  if (allowToReuseExistingSimulation) {
-    return (
-      <ReuseSimulationForPoll
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        createNewSimulation={createNewSimulation}
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        reuseSimulation={reuseSimulation}
-        locale={locale}
-        disclaimer={disclaimer}
-        simulation={lastCompletedSimulation}
-      />
-    )
-  }
   const buttonNext = (
     <PollTutorialButton
       poll={poll}
@@ -113,11 +100,22 @@ export default async function CampagnePage({
       createSimulation={createNewSimulation}
     />
   )
+
   return (
     <>
       <PollTracker poll={poll} />
 
-      {poll.mode === 'scolaire' ? (
+      {allowToReuseExistingSimulation ? (
+        <ReuseSimulationForPoll
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          createNewSimulation={createNewSimulation}
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          reuseSimulation={reuseSimulation}
+          locale={locale}
+          disclaimer={disclaimer}
+          simulation={lastCompletedSimulation}
+        />
+      ) : poll.mode === 'scolaire' ? (
         <YouthTutorial locale={locale} buttonNext={buttonNext} />
       ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       poll.mode === 'standard' ? (

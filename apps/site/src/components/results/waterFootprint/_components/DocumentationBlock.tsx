@@ -1,9 +1,5 @@
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
-import {
-  captureEndClickDocumentationServer,
-  endClickDocumentationServer,
-} from '@/constants/tracking/pages/end'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
 
@@ -30,11 +26,7 @@ export default function DocumentationBlock({ locale }: Props) {
         </Trans>
       </p>
 
-      <Link
-        href="/documentation/bilan"
-        className="flex items-center"
-        data-track-event={endClickDocumentationServer}
-        data-track-posthog={captureEndClickDocumentationServer}>
+      <Link href="/documentation/bilan" className="flex items-center">
         <Trans locale={locale} i18nKey="simulation.eau.documentation.link">
           Comprendre le calcul
         </Trans>
