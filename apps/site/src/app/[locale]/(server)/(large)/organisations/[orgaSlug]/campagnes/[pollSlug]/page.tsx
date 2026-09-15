@@ -11,17 +11,11 @@ import CommunicationKit from './_components/CommunicationKit'
 import ShareSection from './_components/ShareSection'
 import FootprintDistribution from './_components/footPrintDistribution/FootprintDistribution'
 import WaterFootprintSection from './_components/waterFootprint/WaterFootprintSection'
-import { redirectFromLegacy } from './_helpers/redirect-from-legacy'
 
 export default async function CampagnePage({
   params,
-  searchParams,
 }: PageProps<'/[locale]/organisations/[orgaSlug]/campagnes/[pollSlug]'>) {
   const { locale, orgaSlug, pollSlug } = await params
-
-  if ((await searchParams).isRedirectFromLegacy) {
-    await redirectFromLegacy(orgaSlug)
-  }
 
   const {
     poll,
