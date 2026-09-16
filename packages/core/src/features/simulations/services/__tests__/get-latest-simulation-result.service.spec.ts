@@ -280,7 +280,7 @@ describe('getLatestSimulationResult', () => {
 
     expect(result?.group).toEqual({
       type: 'group',
-      value: { id: group.id, name: group.name },
+      value: group,
     })
   })
 
@@ -308,7 +308,10 @@ describe('getLatestSimulationResult', () => {
         id: poll.id,
         name: poll.name,
         slug: poll.slug,
-        organisation: { slug: poll.organisation.slug },
+        organisation: {
+          name: poll.organisation.name,
+          slug: poll.organisation.slug,
+        },
       },
     })
   })

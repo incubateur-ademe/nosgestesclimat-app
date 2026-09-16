@@ -60,8 +60,6 @@ describe('participateToPoll', () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         userId: user.id,
-        polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
-        groups: [],
       })
     })
 
@@ -144,7 +142,6 @@ describe('participateToPoll', () => {
           progression: 1,
           updatedAt: simulation.updatedAt,
           situation: simulation.situation,
-          polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
         })
       )
     })
