@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { Factory, type DeepPartial } from 'fishery'
+import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import { Prisma } from '../../../prisma/generated/client.ts'
 import { organisationFactory } from '../../organisations/factories/organisation.factory.ts'
@@ -12,10 +12,11 @@ interface PollTransientParams {
 }
 
 /**
- * The aggregates are columns of the poll that the entity does not carry: a test
- * has to be able to seed them without a read ever returning them.
+ * `Partial<Poll>` covers the entity; the aggregates are added on top because
+ * `Poll` deliberately does not carry them, and a spec has to be able to seed
+ * them all the same.
  */
-type PollFactoryParams = DeepPartial<Poll> & {
+type PollFactoryParams = Partial<Poll> & {
   computedResults?: ComputedResults | null
   funFacts?: FunFacts | null
 }
