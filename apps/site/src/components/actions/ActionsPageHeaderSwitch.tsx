@@ -5,6 +5,12 @@ import { useFeatureFlag } from '@/hooks/useFeatureFlag'
 interface ActionsPageHeaderSwitchProps {
   /** Rendered for the control group, and until the flag resolves client-side */
   control: React.ReactNode
+  /**
+   * Page title, kept as a sr-only `h1` for the `test-fond-blanc` and
+   * `test-fond-bleu` variants so the page still has one even though the
+   * visible header is hidden for them.
+   */
+  title: React.ReactNode
 }
 
 /**
@@ -17,13 +23,14 @@ interface ActionsPageHeaderSwitchProps {
  */
 export default function ActionsPageHeaderSwitch({
   control,
+  title,
 }: ActionsPageHeaderSwitchProps) {
   const variant = useFeatureFlag('abc-test-layout-catalogue')
 
   switch (variant) {
     case 'test-fond-blanc':
     case 'test-fond-bleu':
-      return null
+      return <h1 className="sr-only">{title}</h1>
     case 'control':
     case undefined:
       return control

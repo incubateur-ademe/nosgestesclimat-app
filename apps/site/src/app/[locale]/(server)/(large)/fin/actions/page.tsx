@@ -41,33 +41,25 @@ export default async function ResultatsActionsPage({
   }
 
   return (
-    <>
-      <h1 className="sr-only">
+    <ActionsPage
+      title={
         <Trans locale={locale} i18nKey="actions.listPage.title">
           Vos actions personnalisées pour diminuer votre empreinte
         </Trans>
-      </h1>
-
-      <ActionsPage
-        title={
-          <Trans locale={locale} i18nKey="actions.listPage.title">
-            Vos actions personnalisées pour diminuer votre empreinte
-          </Trans>
-        }
-        description={
-          <Trans locale={locale} i18nKey="actions.listPage.description">
-            Ces actions sont personnalisées selon vos réponses au test.
-            Choisissez celles qui vous semblent atteignables et lancez-vous !
-          </Trans>
-        }
-        topActions={actionsCatalogue.topActions}
-        actions={actionsCatalogue.actions}
-        assessmentStatus={actionsCatalogue.assessmentStatus}
-        themes={themes}
-        locale={locale}
-        from="fin"
-        totalFootprint={currentSimulation?.computedResults.carbone.bilan}
-      />
-    </>
+      }
+      description={
+        <Trans locale={locale} i18nKey="actions.listPage.description">
+          Ces actions sont personnalisées selon vos réponses au test. Choisissez
+          celles qui vous semblent atteignables et lancez-vous !
+        </Trans>
+      }
+      topActions={actionsCatalogue.topActions}
+      actions={actionsCatalogue.actions}
+      assessmentStatus={actionsCatalogue.assessmentStatus}
+      themes={themes}
+      locale={locale}
+      from="fin"
+      totalFootprint={currentSimulation?.computedResults.carbone.bilan}
+    />
   )
 }
