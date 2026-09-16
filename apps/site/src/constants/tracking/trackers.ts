@@ -1,8 +1,8 @@
 import type { CookieState } from '@/services/tracking/cookieStateStore'
+import type { AuthenticationMode } from '@/types/authentication'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
 interface PosthogProps {
   question?: DottedName | null
-  action?: DottedName
   label?: string
   answer?: NodeValue | string
   timeSpentOnQuestion?: number
@@ -12,11 +12,7 @@ interface PosthogProps {
   actionType?: 'précédent' | 'suivant' | 'passer'
   state?: 'opened' | 'closed'
   locale?: string //should be Locale
-  region?: string
   category?: string
-  subcategory?: string
-  url?: string
-  tab?: string
   status?: 'authenticated' | 'unauthenticated'
   cookieState?: CookieState
 }
@@ -139,53 +135,8 @@ export const captureFooterClickLanguage = ({ locale }: PosthogProps) => ({
     locale,
   },
 })
-// Actions
 
-export const captureTrackingCategoryFilter = ({ category }: PosthogProps) => ({
-  // /!\ This event is also sent for "relais"
-  eventName: 'Actions click category filter',
-  properties: {
-    category,
-  },
-})
-
-// Fin
-
-export const captureEndClickCategory = ({ category, action }: PosthogProps) => {
-  return {
-    eventName: 'Results page click see details category',
-    properties: {
-      category,
-      action,
-    },
-  }
-}
-
-// Landing
-
-export const captureLearnMoreCarbonLink = {
-  eventName: 'Accueil click En savoir plus LP carbone',
-}
-
-export const captureLearnMoreWaterLink = {
-  eventName: 'Accueil click En savoir plus LP eau',
-}
-
-export const captureCreateGroupLink = {
-  eventName: 'Accueil click Groupes',
-}
-
-// Compte U (server)
-
-export const captureClickMonEspaceTabServer = ({ tab }: PosthogProps) =>
-  JSON.stringify({
-    eventName: 'click tab mon espace',
-    properties: { tab },
-  })
-
-export const captureClickMySpaceNoResultsStartTest = JSON.stringify({
-  eventName: 'click mon espace pas de résultats',
-})
+// Compte U
 
 export const captureLoginComplete = {
   eventName: 'Connexion - Verification code validé',
@@ -195,78 +146,42 @@ export const captureSignupComplete = {
   eventName: 'Mon Espace - Inscription - Verification code validé',
 }
 
+export const captureAmisCreationConnexionComplete = {
+  eventName: 'Amis Creation - Verification code validé',
+}
+
+export const captureOrganisationsLoginComplete = {
+  eventName: 'Organisations Login - Verification code validé',
+}
+
+export const captureClickSubmitEmail = ({
+  mode,
+}: {
+  mode?: AuthenticationMode
+}) => {
+  return {
+    eventName: 'click submit email',
+    properties: {
+      mode,
+    },
+  }
+}
+
 // User Account
 
-export const captureClickHeaderMonEspaceAuthenticatedServer = {
+export const captureClickHeaderMonEspace = ({
+  status,
+  state,
+}: PosthogProps) => ({
   eventName: 'click header mon espace',
   properties: {
-    status: 'authenticated',
-  },
-}
-
-export const captureClickHeaderAccessMySpaceAuthenticatedServer = {
-  eventName: 'click header accéder à mon espace',
-  properties: {
-    status: 'authenticated',
-  },
-}
-
-export const captureClickHeaderLogoutAuthenticatedServer = {
-  eventName: 'click header logout',
-  properties: {
-    status: 'authenticated',
-  },
-}
-
-export const captureClickHeaderMonEspaceUnauthenticatedServer = JSON.stringify({
-  eventName: 'click header mon espace',
-  properties: {
-    status: 'unauthenticated',
+    status,
+    state,
   },
 })
-
-export const captureClickDashboardGroupPageNoGroupsCreate = {
-  eventName: 'click dashboard group page create group',
-}
-
-export const captureClickDashboardGroupPageCreateOrganisation = {
-  eventName: 'click dashboard group page create organisation',
-}
-
-export const captureClickLatestResultsViewDetail = JSON.stringify({
-  eventName: 'click latest results view detail',
-})
-
-export const captureClickResultsListResultViewDetail = {
-  eventName: 'click results list result view detail',
-}
 
 export const captureClickShareSimulationButton = {
   eventName: 'click share simulation button',
-}
-
-export const captureClickCategorySelector = ({ category }: PosthogProps) => ({
-  eventName: 'click category selector',
-  properties: {
-    category,
-  },
-})
-
-export const captureClickCategorySelectorMobile = ({
-  category,
-}: PosthogProps) => ({
-  eventName: 'click category selector mobile',
-  properties: {
-    category,
-  },
-})
-
-export const captureClickUpdateUserEmail = {
-  eventName: 'click update user email',
-}
-
-export const captureClickUpdateUserNewsletters = {
-  eventName: 'click update newsletters',
 }
 
 // Cookies

@@ -10,7 +10,6 @@ export default () => {
   process.env.JOB_SECRET = 'mySuperTestJobSecret'
   process.env.JWT_SECRET = 'mySuperTestJwtSecret'
   process.env.INTERNAL_API_KEY = 'mySuperTestInternalApiKey'
-  process.env.MATOMO_BETA_TOKEN = 'mySuperTestMatomoBetaToken'
   process.env.ORIGIN = 'https://nosgestesclimat.test'
   process.env.TWO_TONS_URL = 'https://api.two-tons.com'
   process.env.TWO_TONS_BEARER_TOKEN = 'mySuperTestTwoTonsSecret'
@@ -24,4 +23,7 @@ export default () => {
   process.env.SERVER_URL = 'https://server.nosgestesclimat.fr'
   process.env.NOTION_API_KEY = 'mySuperTestNotionApiKey'
   process.env.NOTION_ACTION_DATABASE_ID = 'mySuperTestNotionActionDatabaseId'
+  process.env.POSTHOG_PROJECT_ID = 'mySuperTestPosthogProjectId'
+  process.env.POSTHOG_PERSONAL_API_KEY = 'mySuperTestPosthogPersonalApiKey'
+  process.env.POSTHOG_URL = 'https://eu.posthog.com'
 }

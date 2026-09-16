@@ -4,14 +4,15 @@ import MailIcon from '@/components/icons/share/MailIcon'
 import Link from '@/components/Link'
 import QRCode from '@/components/sharing/QRCode'
 import Trans from '@/components/translation/trans/TransClient'
-import { UTM_MEDIUM_KEY, UTM_SOURCE_KEY } from '@/constants/urls/utm'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import CopyButton from '@/design-system/buttons/CopyButton'
 import Card from '@/design-system/layout/Card'
-import { getShareTrackEvent } from '@/helpers/tracking/share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { PublicOrganisationPoll } from '@/types/organisations'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
+import {
+  UTM_MEDIUM_KEY,
+  UTM_SOURCE_KEY,
+} from '@nosgestesclimat/core/features/tracking/utm'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -101,15 +102,7 @@ export default function ShareSection({ poll, className, title }: Props) {
           color="secondary"
           target="_blank"
           rel="noopener noreferrer"
-          href={`mailto:?subject=${t('Voici mes empreintes carbone et eau ; tu connais les tiennes ?')}&body=${url}`}
-          onClick={() =>
-            trackMatomoEvent__deprecated(
-              getShareTrackEvent({
-                page: 'Fin',
-                target: 'E-mail',
-              })
-            )
-          }>
+          href={`mailto:?subject=${t('Voici mes empreintes carbone et eau ; tu connais les tiennes ?')}&body=${url}`}>
           <span className="flex items-center gap-2">
             <Trans i18nKey="poll.shareSection.sendByEmail">
               Envoyer par e-mail
