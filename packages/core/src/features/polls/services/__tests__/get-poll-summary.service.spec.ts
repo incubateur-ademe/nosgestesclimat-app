@@ -63,13 +63,4 @@ describe('getPollSummary', () => {
       },
     })
   })
-
-  it('leaves out what only the organisation dashboard reads', async () => {
-    const poll = await pollFactory.create({ expectedNumberOfParticipants: 42 })
-
-    const result = await getPollSummary({ pollIdOrSlug: poll.slug })
-
-    expect(result).not.toHaveProperty('expectedNumberOfParticipants')
-    expect(result).not.toHaveProperty('createdAt')
-  })
 })

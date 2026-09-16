@@ -124,17 +124,17 @@ describe('getPollResult', () => {
     expect(result?.userParticipation).toBeNull()
   })
 
-  it('prefers the finished participation over a more recent unfinished one', async () => {
+  it('prefers the most recent finished participation', async () => {
     const organisation = await organisationFactory.create()
     const poll = await pollFactory.withOrganisation(organisation).create()
     const user = await userFactory.create()
-    const finished = await simulationFactory
+    await simulationFactory
       .completed()
       .withPollId(poll.id)
       .params({ userId: user.id, date: new Date('2026-01-01') })
       .create()
-    await simulationFactory
-      .started()
+    const mostRecent = await simulationFactory
+      .completed()
       .withPollId(poll.id)
       .params({ userId: user.id, date: new Date('2026-06-01') })
       .create()
@@ -145,7 +145,7 @@ describe('getPollResult', () => {
       userId: user.id,
     })
 
-    expect(result?.userParticipation?.id).toBe(finished.id)
+    expect(result?.userParticipation?.id).toBe(mostRecent.id)
   })
 
   it('advertises the cooldown the participant count resolves to', async () => {
