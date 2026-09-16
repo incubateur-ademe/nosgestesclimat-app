@@ -5,9 +5,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
 import { participateToPoll } from '@/services/organisations/participate-to-poll'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
-import type { Poll } from '@nosgestesclimat/core/features/polls/types/poll'
 import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
-import type { SearchParams } from 'next/dist/server/request/search-params'
 import { redirect } from 'next/navigation'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import PollTutorialButton from '../../_components/PollTutorialButton'
@@ -29,6 +27,18 @@ export default async function CampagnePage({
   const data = await getPollParticipationOptions(pollIdOrSlug)
   const poll = data.poll
 
+  async function createNewSimulation() {
+    'use server'
+    const model = await resolveNewSimulationModel({
+      searchParams,
+      locale,
+      mode: poll.mode,
+    })
+    const result = await participateToPoll({ pollId: poll.id, locale, model })
+    if (!result.success) return result
+    redirect(SIMULATOR_PATH)
+  }
+
   const disclaimer = (
     <div className="relative pl-8">
       <Emoji className="absolute left-0">🏢</Emoji>
@@ -44,25 +54,25 @@ export default async function CampagnePage({
   )
 
   if (data.canReuseExistingSimulation) {
+    const reuseSimulationId = data.reusableSimulation.id
+
+    async function reuseSimulation() {
+      'use server'
+      const result = await participateToPoll({
+        pollId: poll.id,
+        locale,
+        reuseSimulationId,
+      })
+      if (!result.success) return result
+      redirect(SIMULATOR_PATH)
+    }
+
     return (
       <ReuseSimulationForPoll
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        createNewSimulation={() =>
-          createNewSimulation({
-            pollId: poll.id,
-            mode: poll.mode,
-            searchParams,
-            locale,
-          })
-        }
+        createNewSimulation={createNewSimulation}
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        reuseSimulation={() =>
-          reuseSimulation({
-            pollId: poll.id,
-            reuseSimulationId: data.reusableSimulation.id,
-            locale,
-          })
-        }
+        reuseSimulation={reuseSimulation}
         locale={locale}
         disclaimer={disclaimer}
         simulation={data.reusableSimulation}
@@ -79,14 +89,7 @@ export default async function CampagnePage({
       }
       locale={locale}
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      createSimulation={() =>
-        createNewSimulation({
-          pollId: poll.id,
-          mode: poll.mode,
-          searchParams,
-          locale,
-        })
-      }
+      createSimulation={createNewSimulation}
     />
   )
   return (
@@ -95,9 +98,9 @@ export default async function CampagnePage({
 
       {(() => {
         switch (poll.mode) {
-          case 'standard':
-            return <YouthTutorial locale={locale} buttonNext={buttonNext} />
           case 'scolaire':
+            return <YouthTutorial locale={locale} buttonNext={buttonNext} />
+          case 'standard':
             return (
               <Tutorial
                 locale={locale}
@@ -112,49 +115,4 @@ export default async function CampagnePage({
       })()}
     </>
   )
-}
-
-const createNewSimulation = async ({
-  pollId,
-  mode,
-  searchParams,
-  locale,
-}: {
-  pollId: string
-  mode: Poll['mode']
-  searchParams: SearchParams
-  locale: Locale
-}) => {
-  'use server'
-  const model = await resolveNewSimulationModel({
-    searchParams,
-    locale,
-    mode,
-  })
-  const result = await participateToPoll({
-    pollId: pollId,
-    locale,
-    model,
-  })
-  if (!result.success) return result
-  redirect(SIMULATOR_PATH)
-}
-
-const reuseSimulation = async ({
-  pollId,
-  reuseSimulationId,
-  locale,
-}: {
-  pollId: string
-  reuseSimulationId: string
-  locale: Locale
-}) => {
-  'use server'
-  const result = await participateToPoll({
-    pollId,
-    locale,
-    reuseSimulationId,
-  })
-  if (!result.success) return result
-  redirect(SIMULATOR_PATH)
 }
