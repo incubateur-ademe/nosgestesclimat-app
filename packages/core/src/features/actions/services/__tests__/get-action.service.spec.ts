@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { getAction } from '../get-action.service.ts'
 
 describe('getAction', () => {
   afterEach(async () => {
-    await prisma.action.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns null when no action matches the slug', async () => {

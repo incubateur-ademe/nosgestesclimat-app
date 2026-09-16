@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -24,16 +25,7 @@ describe('Given a NGC user', () => {
   const url = FETCH_ORGANISATION_PUBLIC_POLL_ROUTE
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.organisationAdministrator.deleteMany(),
-      prisma.simulationPoll.deleteMany(),
-    ])
-    await Promise.all([
-      prisma.organisation.deleteMany(),
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When fetching a public organisation poll', () => {
