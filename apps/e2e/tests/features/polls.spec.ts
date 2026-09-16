@@ -72,10 +72,8 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
       page.getByTestId('poll-admin-section-see-parameters-button')
     ).toBeVisible()
   })
-})
 
-test.describe('The legacy results address', () => {
-  test('hands the administrator over to its campaign', async ({
+  test('reaches its campaign from the legacy results address', async ({
     page,
     poll,
     organisation,

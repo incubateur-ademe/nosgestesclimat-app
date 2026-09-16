@@ -839,6 +839,10 @@ entries:
   common.slider.stop.lock: Arrêter
   common.category.logement: Housing
   common.category.logement.lock: Logement
+  pollResults.participantsCount_one: Completed simulation
+  pollResults.participantsCount_one.lock: Simulation terminée
+  pollResults.participantsCount_other: Completed simulations
+  pollResults.participantsCount_other.lock: Simulations terminées
   pollResults.anonymityNotice: Data can be consulted from {{ minParticipants }} participants onwards, to ensure anonymity.
   pollResults.anonymityNotice.lock: Données consultables à partir de {{ minParticipants }} participants, dans un souci d'anonymat.
   pollResults.categoryDistribution.accessibleDescription.category: '{{name}}: {{value}} {{unit}}.'

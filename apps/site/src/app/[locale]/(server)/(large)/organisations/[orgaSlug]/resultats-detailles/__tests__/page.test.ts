@@ -36,7 +36,7 @@ describe('LegacyPollResultsPage', () => {
       searchParams: Promise.resolve({}),
     })
 
-  it('hands over to the first campaign of the organisation', async () => {
+  it('redirects to a campaign of the organisation', async () => {
     vi.mocked(getOrganisationPolls).mockResolvedValue(
       asPolls([{ slug: 'my-poll' }])
     )
@@ -48,7 +48,7 @@ describe('LegacyPollResultsPage', () => {
     )
   })
 
-  it('sends an administrator with no campaign to its dashboard', async () => {
+  it('redirects to the dashboard when the organisation has no campaign', async () => {
     vi.mocked(getOrganisationPolls).mockResolvedValue([])
 
     await expect(render()).rejects.toThrow('NEXT_REDIRECT')
@@ -58,7 +58,7 @@ describe('LegacyPollResultsPage', () => {
     )
   })
 
-  it('calls notFound when the polls are not readable', async () => {
+  it('calls notFound when the campaigns are not readable', async () => {
     vi.mocked(getOrganisationPolls).mockRejectedValue(new Error('Forbidden'))
 
     await expect(render()).rejects.toThrow('NEXT_NOT_FOUND')

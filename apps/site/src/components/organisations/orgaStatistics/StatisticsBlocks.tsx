@@ -57,11 +57,7 @@ export default function StatisticsBlocks({
         </p>
 
         <p className="text-xl">
-          {participants <= 1 ? (
-            <Trans>Simulation terminée</Trans>
-          ) : (
-            <Trans>Simulations terminées</Trans>
-          )}
+          {t('pollResults.participantsCount', { count: participants })}
         </p>
       </div>
 

@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 /**
  * The address the organisation dashboard used before the poll redesign. There
  * is nothing to show at that level any more: results belong to a campaign, so
- * this page hands over to the organisation's first one.
+ * this page hands over to the organisation's most recent one.
  *
  * Listing an organisation's polls requires being signed in. An unreadable list
  * is therefore a 404, where an empty one means the administrator has no campaign
@@ -18,8 +18,8 @@ export default async function LegacyPollResultsPage({
   const polls = await getOrganisationPolls(orgaSlug).catch(() => null)
   if (polls === null) notFound()
 
-  const firstPoll = polls.at(0)
-  if (!firstPoll) redirect(`/organisations/${orgaSlug}`)
+  const mostRecentPoll = polls.at(0)
+  if (!mostRecentPoll) redirect(`/organisations/${orgaSlug}`)
 
-  redirect(`/organisations/${orgaSlug}/campagnes/${firstPoll.slug}`)
+  redirect(`/organisations/${orgaSlug}/campagnes/${mostRecentPoll.slug}`)
 }
