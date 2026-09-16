@@ -1,5 +1,5 @@
-import { findManyGroupSummariesBySimulationId } from '../../groups/repositories/group.repository.ts'
-import type { GroupSummary } from '../../groups/types/group.ts'
+import { findManyGroupsBySimulationId } from '../../groups/repositories/group.repository.ts'
+import type { Group } from '../../groups/types/group.ts'
 import { findManyPollSummariesBySimulationId } from '../../polls/repositories/poll.repository.ts'
 import type { PollSummary } from '../../polls/types/poll.ts'
 import { migrateSimulationIfNeeded } from '../helpers/migrate-simulation.ts'
@@ -9,7 +9,7 @@ import type { Simulation } from '../types/simulation.ts'
 export type Tendency = 'increase' | 'decrease'
 
 export type SimulationResultGroupInfo =
-  | { type: 'group'; value: GroupSummary }
+  | { type: 'group'; value: Group }
   | { type: 'poll'; value: PollSummary }
 
 export interface SimulationResult {
@@ -55,7 +55,7 @@ export const findSimulationResultGroup = async (
   }
 
   // Most recent group this simulation participated in
-  const [group] = await findManyGroupSummariesBySimulationId({
+  const [group] = await findManyGroupsBySimulationId({
     simulationId: simulation.id,
   })
 

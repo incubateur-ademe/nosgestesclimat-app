@@ -133,7 +133,14 @@ describe('getLatestSimulationResult', () => {
       simulation: entity,
       group: {
         type: 'group',
-        value: { id: groupId, name: 'My Group', administratorId },
+        value: {
+          id: groupId,
+          name: 'My Group',
+          emoji: '🌍',
+          administratorId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       },
       tendency: null,
     }
@@ -144,7 +151,14 @@ describe('getLatestSimulationResult', () => {
     expect(result).not.toBeNull()
     expect(result.group).toEqual({
       type: 'group',
-      value: { id: groupId, name: 'My Group', administratorId },
+      value: {
+        id: groupId,
+        name: 'My Group',
+        emoji: '🌍',
+        administratorId,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
     })
   })
 })
