@@ -9,8 +9,8 @@ import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import { findManyGroupSummariesBySimulationId } from '../../groups/repositories/group.repository.ts'
-import type { GroupSummary } from '../../groups/types/group.ts'
+import { findManyGroupsBySimulationId } from '../../groups/repositories/group.repository.ts'
+import type { Group } from '../../groups/types/group.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import { findManyPollSummariesBySimulationId } from '../../polls/repositories/poll.repository.ts'
 import { enqueuePollStatsComputation } from '../../polls/stats/services/enqueue-poll-stats-computation.ts'
@@ -85,10 +85,7 @@ export function createCompleteSimulation({
     computedResults: ComputedResults
     locale: ISOSupportedLanguage
   }): Promise<
-    Result<
-      { groups: GroupSummary[]; polls: PollSummary[] },
-      CompleteSimulationError
-    >
+    Result<{ groups: Group[]; polls: PollSummary[] }, CompleteSimulationError>
   > {
     const userId = userSession.id
 
@@ -151,7 +148,7 @@ export function createCompleteSimulation({
 
     if (!updated.success) return updated
 
-    const groups = await findManyGroupSummariesBySimulationId({
+    const groups = await findManyGroupsBySimulationId({
       simulationId,
     })
 

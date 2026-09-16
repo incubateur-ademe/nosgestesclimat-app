@@ -275,7 +275,7 @@ describe('getLatestSimulationResult', () => {
 
     expect(result?.group).toEqual({
       type: 'group',
-      value: { id: group.id, name: group.name },
+      value: group,
     })
   })
 

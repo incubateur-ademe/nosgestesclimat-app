@@ -47,8 +47,18 @@ describe('completeSimulation', () => {
     expect(result).toEqual({
       success: true,
       data: {
-        groups: [{ id: group.id }],
-        polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
+        groups: [group],
+        polls: [
+          {
+            id: poll.id,
+            slug: poll.slug,
+            name: poll.name,
+            organisation: {
+              name: poll.organisation.name,
+              slug: poll.organisation.slug,
+            },
+          },
+        ],
       },
     })
 
@@ -68,8 +78,6 @@ describe('completeSimulation', () => {
       createdAt: simulation.createdAt,
       updatedAt: expect.any(Date),
       userId: user.id,
-      polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
-      groups: [{ id: group.id }],
     })
     expect(await findSimulationComputation(simulation.id)).not.toBeNull()
   })

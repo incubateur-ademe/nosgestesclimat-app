@@ -85,8 +85,6 @@ describe('listCompletedSimulations', () => {
         createdAt: newer.createdAt,
         updatedAt: newer.updatedAt,
         userId: user.id,
-        polls: [],
-        groups: [],
       },
       expect.objectContaining({ id: older.id, progression: 1 }),
     ])
