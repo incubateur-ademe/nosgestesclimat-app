@@ -57,7 +57,11 @@ export default function StatisticsBlocks({
         </p>
 
         <p className="text-xl">
-          {t('pollResults.participantsCount', { count: participants })}
+          {t('pollResults.participantsCount', 'Simulation terminée', {
+            count: participants,
+            defaultValue_other: 'Simulations terminées',
+            defaultValue_many: 'Simulations terminées',
+          })}
         </p>
       </div>
 

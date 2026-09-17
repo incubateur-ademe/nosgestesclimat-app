@@ -35,6 +35,7 @@ export default function ResultsSoonBanner({ isAdmin, anonymity }: Props) {
                     {' ('}
                     <Trans
                       i18nKey="pollResults.anonymityNotice"
+                      defaults="Données consultables à partir de {{minParticipants}} participants, dans un souci d'anonymat."
                       values={{ minParticipants: anonymity.minParticipants }}
                     />
                     {')'}
@@ -44,6 +45,7 @@ export default function ResultsSoonBanner({ isAdmin, anonymity }: Props) {
                 <p className="mb-0">
                   <Trans
                     i18nKey="pollResults.anonymityNotice"
+                    defaults="Données consultables à partir de {{minParticipants}} participants, dans un souci d'anonymat."
                     values={{ minParticipants: anonymity.minParticipants }}
                   />
                 </p>

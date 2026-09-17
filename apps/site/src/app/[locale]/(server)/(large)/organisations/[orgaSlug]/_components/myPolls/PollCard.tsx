@@ -41,8 +41,10 @@ export default function PollCard({ poll }: Props) {
         </p>
 
         <p className="text-default text-base font-light">
-          {t('pollResults.participantsCount', {
+          {t('pollResults.participantsCount', 'Simulation terminée', {
             count: poll.simulations.finished,
+            defaultValue_other: 'Simulations terminées',
+            defaultValue_many: 'Simulations terminées',
           })}
         </p>
       </div>

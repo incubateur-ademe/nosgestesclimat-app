@@ -841,10 +841,12 @@ entries:
   common.category.logement.lock: Logement
   pollResults.participantsCount_one: Completed simulation
   pollResults.participantsCount_one.lock: Simulation terminée
+  pollResults.participantsCount_many: Completed simulations
+  pollResults.participantsCount_many.lock: Simulations terminées
   pollResults.participantsCount_other: Completed simulations
   pollResults.participantsCount_other.lock: Simulations terminées
-  pollResults.anonymityNotice: Data can be consulted from {{ minParticipants }} participants onwards, to ensure anonymity.
-  pollResults.anonymityNotice.lock: Données consultables à partir de {{ minParticipants }} participants, dans un souci d'anonymat.
+  pollResults.anonymityNotice: Data can be consulted from {{minParticipants}} participants onwards, to ensure anonymity.
+  pollResults.anonymityNotice.lock: Données consultables à partir de {{minParticipants}} participants, dans un souci d'anonymat.
   pollResults.categoryDistribution.accessibleDescription.category: '{{name}}: {{value}} {{unit}}.'
   pollResults.categoryDistribution.accessibleDescription.category.lock: '{{name}}: {{value}} {{unit}}.'
   common.category.services: Services
