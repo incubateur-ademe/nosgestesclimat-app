@@ -252,6 +252,17 @@ Ces `location` désactivent le cache disque (`proxy_cache off`) — l'API PostHo
 dynamique — et réécrivent `Host` vers PostHog (le `server` force par défaut
 `Host ${UPSTREAM}`).
 
+Trois écarts au routage strict, alignés sur la
+[conf de référence PostHog](https://posthog.com/docs/advanced/proxy/nginx) :
+
+- `Cookie` et `Authorization` vidés avant l'envoi : l'ingestion n'utilise que
+  l'identifiant lu côté navigateur, les cookies de session NGC n'ont pas à
+  transiter vers un tiers.
+- Vérification TLS active sur les trois `location` — `/revp/static/` sert du JS
+  exécuté par les navigateurs.
+- `client_max_body_size 64M` sur `/revp/` : les enregistrements de session
+  PostHog montent à 64 Mo, contre 1 Mo par défaut.
+
 Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 `ui_host` reste `https://eu.i.posthog.com` (voir
 `apps/site/src/services/tracking/Posthog.ts`).

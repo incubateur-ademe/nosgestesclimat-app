@@ -11,6 +11,31 @@ limit_req_zone $binary_remote_addr zone=web:10m rate=30r/s;
 limit_req_status 429;
 
 # ----------------------------------------------------------------------------
+# Timeouts côté client
+# ----------------------------------------------------------------------------
+
+# Défaut = 60 s : un client qui cesse d'émettre au milieu de ses en-têtes ou de
+# son corps occupait une connexion une minute entière.
+#
+# Le délai court entre deux lectures, pas sur le transfert total : un envoi qui
+# progresse n'est jamais coupé, seul un silence l'est. 10/15 s couvre une reprise
+# TCP mobile et borne les Server Actions suspendues (CVE-2024-56332), que
+# Next.js standalone n'encadre pas lui-même.
+# → http://nginx.org/en/docs/http/ngx_http_core_module.html#client_header_timeout
+# → http://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout
+client_header_timeout 10s;
+client_body_timeout 15s;
+
+# Défaut = 60 s, entre deux écritures : même logique pour un lecteur qui décroche.
+# → http://nginx.org/en/docs/http/ngx_http_core_module.html#send_timeout
+send_timeout 15s;
+
+# Défaut = off : sans lui, un socket expiré garde ses buffers en FIN_WAIT1 au
+# lieu de rendre la mémoire et le descripteur.
+# → http://nginx.org/en/docs/http/ngx_http_core_module.html#reset_timedout_connection
+reset_timedout_connection on;
+
+# ----------------------------------------------------------------------------
 # Cache disque partagé
 # ----------------------------------------------------------------------------
 
@@ -230,6 +255,17 @@ server {
     # → https://gateway.envoyproxy.io/docs/tasks/traffic/http-timeouts
     proxy_read_timeout 65s;
 
+    # Défaut = une page mémoire (4k|8k) : au-delà, nginx abandonne la réponse et
+    # rend un 502 (« upstream sent too big header »). Seul le buffer d'en-têtes
+    # est en jeu.
+    #
+    # `proxy_busy_buffers_size` doit suivre : il dérive par défaut de
+    # `proxy_buffer_size`, si bien que relever ce dernier seul fait échouer
+    # `nginx -t`. Laisser `proxy_buffers` au défaut.
+    # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffer_size
+    proxy_buffer_size 16k;
+    proxy_busy_buffers_size 16k;
+
     # Défaut = illimité : des reprises de 60 s sur chacune des IP faisaient
     # durer une requête jusqu'à 296 s. Doit rester > proxy_connect_timeout.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream_timeout
@@ -238,8 +274,9 @@ server {
     # total (donc 2 reprises), comme le NGINX Ingress Controller.
     proxy_next_upstream_tries 3;
     # Défaut = `error timeout`, qu'on garde : les 4 IP sont les fronts d'une même
-    # app, donc réessayer un 5xx du routeur (503 « file pleine ») ajouterait de la
-    # charge sans réparer. Les non-idempotentes ne sont jamais réessayées.
+    # app, donc réessayer un 5xx du routeur ajouterait de la charge sans réparer.
+    # Les non-idempotentes ne sont jamais réessayées ; en cas de panne, c'est
+    # `proxy_cache_use_stale` plus bas qui sert l'entrée périmée.
     # → http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_next_upstream
 
 
@@ -360,32 +397,54 @@ server {
     # ── PostHog reverse proxy (pathname /revp/) ──────────────────
     # https://posthog.com/docs/advanced/proxy/nginx
     # Check LVAO config https://github.com/incubateur-ademe/quefairedemesobjets/blob/main/servers.conf.erb#L83-L98
+    #
+    # Chaque `location` repose son propre `proxy_set_header` : les en-têtes du
+    # niveau `server` (X-Forwarded-*, X-Request-ID, Upgrade) ne sont PAS hérités
+    # ici, tout ajout doit être répété dans les trois.
 
+    # Sert du JS exécuté par les navigateurs : un certificat non vérifié y laisse
+    # passer du code tiers.
     location /revp/static/ {
         proxy_pass https://eu-assets.i.posthog.com/static/;
         proxy_set_header Host eu-assets.i.posthog.com;
+        proxy_set_header Cookie "";
+        proxy_set_header Authorization "";
         proxy_ssl_server_name on;
         proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
     }
 
     location /revp/array/ {
         proxy_pass https://eu-assets.i.posthog.com/array/;
         proxy_set_header Host eu-assets.i.posthog.com;
+        proxy_set_header Cookie "";
+        proxy_set_header Authorization "";
         proxy_ssl_server_name on;
         proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
     }
 
     location /revp/ {
         proxy_pass https://eu.i.posthog.com/;
         proxy_set_header Host eu.i.posthog.com;
+        proxy_set_header Cookie "";
+        proxy_set_header Authorization "";
         proxy_ssl_server_name on;
         proxy_ssl_name eu.i.posthog.com;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
+        # `$remote_addr` et non `$proxy_add_x_forwarded_for` : nginx est en frontal,
+        # donc l'IP source est la vraie, là où un en-tête client la fausserait.
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        # Défaut = 1m : les enregistrements de session PostHog montent à 64 Mo.
+        # → https://posthog.com/docs/advanced/proxy/proxy-reference
+        client_max_body_size 64M;
         proxy_cache off;
     }
 
