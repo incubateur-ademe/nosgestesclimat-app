@@ -3,9 +3,8 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useIsClient } from '@/hooks/useIsClient'
+import { useIsMobileLayout } from '@/hooks/useIsMobileLayout'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
-import isMobile from 'is-mobile'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
 interface Props {
@@ -26,12 +25,7 @@ export default function CategoryDistribution({
   className,
 }: Props) {
   const { t } = useClientTranslation()
-  const isClient = useIsClient()
-
-  // `is-mobile` reads the user agent, which does not exist while the server
-  // renders: the first render has to be the server's one, so the switch waits
-  // for the client.
-  const isMobileLayout = isClient && isMobile()
+  const isMobileLayout = useIsMobileLayout()
 
   const categoryLabels = {
     transport: t('common.category.transport', 'Transport'),
