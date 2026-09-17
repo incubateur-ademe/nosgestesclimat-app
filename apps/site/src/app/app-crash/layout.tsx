@@ -23,7 +23,7 @@ export default function AppCrashLayout({ children }: { children: ReactNode }) {
         {/* Logo only: a sign-in button would depend on the session and break the
             shared nginx cache. */}
         <header className="h-20 items-center bg-white shadow-xs">
-          <LogoHeader />
+          <LogoHeader unoptimizedLogo />
         </header>
 
         {children}
