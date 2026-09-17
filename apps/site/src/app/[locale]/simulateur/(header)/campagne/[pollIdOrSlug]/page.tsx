@@ -5,7 +5,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { participateToPoll } from '@/services/organisations/participate-to-poll'
-import { getPoll } from '@/services/polls/get-poll'
+import { getPollSummary } from '@/services/polls/get-poll-summary'
 import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import { getPollParticipation } from '@/services/simulations/get-poll-participation'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
@@ -28,7 +28,7 @@ export default async function CampagnePage({
 
   const [poll, lastCompletedSimulation, currentPollSimulation] =
     await Promise.all([
-      getPoll(pollIdOrSlug),
+      getPollSummary(pollIdOrSlug),
       getLastCompletedSimulation(),
       getPollParticipation(pollIdOrSlug),
     ])

@@ -2,6 +2,7 @@ import type { PartnerCampaignType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
 import { captureException } from '@sentry/nextjs'
+import { cacheLife } from 'next/cache'
 
 export async function fetchPartnerCampaign({
   locale,
@@ -10,6 +11,9 @@ export async function fetchPartnerCampaign({
   locale: Locale
   pollSlug: string
 }): Promise<PartnerCampaignType | null> {
+  'use cache'
+  cacheLife('hours')
+
   try {
     const partnerCampaignSearchParams = new URLSearchParams({
       locale,
