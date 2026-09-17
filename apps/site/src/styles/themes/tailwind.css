@@ -1,0 +1,123 @@
+@theme {
+  --color-heroLightBackground: #f0f8ff;
+  --color-default: #1a1a1a;
+  --color-water: #5152d0;
+  --font-marianne: 'Marianne', Arial, sans-serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Very small screens (below 360px): compact header layout */
+@custom-variant max-tiny (@media (max-width: 360px));
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number'] {
+    -webkit-appearance: none;
+    margin: 0;
+    appearance: none;
+    -moz-appearance: textfield !important;
+  }
+
+  html {
+    background-color: #fff;
+    color: #1a1a1a;
+    @apply font-sans;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  h1 {
+    @apply text-2xl;
+    @apply md:text-3xl;
+    @apply mb-6;
+    @apply font-medium;
+    @apply leading-tight;
+  }
+
+  h2 {
+    @apply text-xl;
+    @apply md:text-2xl;
+    @apply mb-4;
+    @apply font-medium;
+    @apply leading-tight;
+  }
+
+  h3 {
+    @apply text-lg;
+    @apply md:text-xl;
+    @apply mb-4;
+    @apply font-medium;
+    @apply leading-tight;
+  }
+
+  h3 {
+    @apply text-base;
+    @apply md:text-lg;
+    @apply mb-4;
+    @apply font-medium;
+    @apply leading-tight;
+  }
+
+  h4,
+  h5,
+  h6 {
+    @apply font-medium;
+    @apply leading-tight;
+  }
+
+  p {
+    @apply mb-4;
+  }
+  p:last-child {
+    @apply mb-0;
+  }
+
+  blockquote,
+  .blog-frame {
+    @apply bg-gray-100;
+    @apply rounded-md;
+    padding: 1rem 1rem 0.25rem;
+    margin: 1rem 0;
+    @apply text-primary-700;
+  }
+
+  code {
+    @apply inline-flex;
+    @apply text-left;
+    @apply items-center;
+    @apply space-x-4;
+    @apply w-full;
+    @apply rounded-xl;
+    @apply bg-gray-800;
+    @apply text-white;
+    @apply p-4;
+  }
+}

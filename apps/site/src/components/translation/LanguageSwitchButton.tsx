@@ -47,7 +47,7 @@ export default function LanguageSwitchButton({ className }: Props) {
           lang={activeLocale}
           title={triggerTitle}
           data-testid="language-switch-button"
-          className="language-switch-button hover:bg-primary-100 active:bg-primary-200 transitions-colors inline-flex items-center gap-2 rounded-lg px-2 py-2 sm:px-4 sm:py-3">
+          className="hover:bg-primary-100 active:bg-primary-200 transitions-colors inline-flex items-center gap-2 rounded-lg px-2 py-2 sm:px-4 sm:py-3 [&[aria-expanded=true]>svg]:-rotate-90!">
           <Emoji>{activeLang.flag}</Emoji>
           <span className="text-primary-700 capitalize">
             {activeLocale.toUpperCase()}

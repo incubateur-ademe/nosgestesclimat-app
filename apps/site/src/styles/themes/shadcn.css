@@ -1,16 +1,5 @@
-@import 'tailwindcss';
 @import '@radix-ui/themes/styles.css';
 @import 'shadcn/tailwind.css';
-
-@theme {
-  --color-heroLightBackground: #f0f8ff;
-  --color-default: #1a1a1a;
-  --color-water: #5152d0;
-  --font-marianne: 'Marianne', Arial, sans-serif;
-}
-
-/* Very small screens (below 360px): compact header layout */
-@custom-variant max-tiny (@media (max-width: 360px));
 
 @theme inline {
   --color-background: var(--background);
