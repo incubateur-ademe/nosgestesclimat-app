@@ -21,7 +21,7 @@ import StatisticsBlocks from './orgaStatistics/StatisticsBlocks'
 
 export default function PollStatistics({
   title,
-  participants,
+  participantsCount,
   anonymity,
   cooldownSeconds,
   computedResults,
@@ -30,7 +30,7 @@ export default function PollStatistics({
   isAdmin,
 }: {
   title?: string | ReactNode
-  participants: number
+  participantsCount: number
   anonymity: PollAnonymity
   cooldownSeconds: number
   computedResults?: ComputedResults | null
@@ -62,7 +62,7 @@ export default function PollStatistics({
 
       <section className="relative mb-8 flex gap-4">
         <StatisticsBlocks
-          participantsCount={participants}
+          participantsCount={participantsCount}
           anonymity={anonymity}
           computedResults={computedResults}
           isAdmin={isAdmin}

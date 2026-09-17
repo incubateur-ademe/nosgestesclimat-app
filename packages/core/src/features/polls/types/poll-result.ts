@@ -19,12 +19,12 @@ export type PollResult = {
   poll: Poll
   /**
    * Delay the worker applies between two recomputations of this poll's stats,
-   * in seconds. `stats` can be that much older than `participants`, which is
-   * counted live.
+   * in seconds. `stats` can be that much older than `participantsCount`, which
+   * is counted live.
    */
   cooldownSeconds: number
   /** Finished simulations: an unfinished one is not a participant. */
-  participants: number
+  participantsCount: number
   /** `null` until the user has a finished simulation for this poll. */
   userParticipation: Simulation | null
 } & (

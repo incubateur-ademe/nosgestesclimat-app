@@ -150,13 +150,6 @@ export const findLatestCompletedSimulation = async ({
   return row ? mapSimulation(row) : null
 }
 
-/**
- * The latest simulation this user finished for this poll, or `null`.
- *
- * The completion filter belongs in SQL: the latest simulation is not
- * necessarily the latest finished one, so filtering after the read would
- * answer `null` to a user whose older simulation is the one that counts.
- */
 export const findLatestCompletedPollSimulation = async ({
   userId,
   pollIdOrSlug,

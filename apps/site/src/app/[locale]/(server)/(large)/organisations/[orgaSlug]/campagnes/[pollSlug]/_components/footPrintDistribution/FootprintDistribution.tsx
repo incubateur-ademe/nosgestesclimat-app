@@ -5,7 +5,7 @@ import MeanFootprintDistribution from './_components/MeanFootprintDistribution'
 interface Props {
   computedResults?: ComputedResults | null
   userComputedResults?: ComputedResults | null
-  participants: number
+  participantsCount: number
   organisationName?: string
   isAdmin: boolean
 }
@@ -13,7 +13,7 @@ interface Props {
 export default function FootprintDistribution({
   computedResults,
   userComputedResults,
-  participants,
+  participantsCount,
   organisationName,
   isAdmin,
 }: Props) {
@@ -31,7 +31,7 @@ export default function FootprintDistribution({
         organisationName={organisationName}
         groupComputedResults={computedResults}
         userComputedResults={userComputedResults}
-        participants={participants}
+        participantsCount={participantsCount}
         isAdmin={isAdmin}
       />
     </section>

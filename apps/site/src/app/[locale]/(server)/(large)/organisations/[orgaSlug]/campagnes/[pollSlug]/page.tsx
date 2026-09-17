@@ -19,7 +19,7 @@ export default async function CampagnePage({
 
   const {
     poll,
-    participants,
+    participantsCount,
     anonymity,
     userParticipation,
     cooldownSeconds,
@@ -73,7 +73,7 @@ export default async function CampagnePage({
         </div>
 
         <div className="mt-8">
-          {isAdmin && participants <= 0 && (
+          {isAdmin && participantsCount <= 0 && (
             <ShareSection
               className="mt-0"
               poll={poll}
@@ -85,10 +85,10 @@ export default async function CampagnePage({
             />
           )}
 
-          {isAdmin && participants === 0 && <CommunicationKit />}
+          {isAdmin && participantsCount === 0 && <CommunicationKit />}
 
           <PollStatistics
-            participants={participants}
+            participantsCount={participantsCount}
             anonymity={anonymity}
             cooldownSeconds={cooldownSeconds}
             computedResults={stats?.computedResults ?? null}
@@ -103,17 +103,17 @@ export default async function CampagnePage({
           <FootprintDistribution
             computedResults={stats?.computedResults ?? null}
             userComputedResults={userParticipation?.computedResults}
-            participants={participants}
+            participantsCount={participantsCount}
             organisationName={poll.organisation.name}
             isAdmin={isAdmin}
           />
 
           <WaterFootprintSection
             computedResults={stats?.computedResults ?? null}
-            participants={participants}
+            participantsCount={participantsCount}
           />
 
-          {isAdmin && participants > 0 && (
+          {isAdmin && participantsCount > 0 && (
             <>
               <ShareSection poll={poll} />
               <CommunicationKit />

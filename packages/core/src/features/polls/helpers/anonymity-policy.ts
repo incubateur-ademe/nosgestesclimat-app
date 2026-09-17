@@ -7,7 +7,7 @@ import type { PollAnonymity } from '../types/poll.ts'
 export const ANONYMITY_THRESHOLD = 3
 
 /** The threshold, and whether that many people took part. */
-export const resolveAnonymity = (participants: number): PollAnonymity =>
-  participants < ANONYMITY_THRESHOLD
+export const resolveAnonymity = (participantsCount: number): PollAnonymity =>
+  participantsCount < ANONYMITY_THRESHOLD
     ? { minParticipants: ANONYMITY_THRESHOLD, isReached: false }
     : { minParticipants: ANONYMITY_THRESHOLD, isReached: true }

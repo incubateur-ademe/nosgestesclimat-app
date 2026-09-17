@@ -34,10 +34,10 @@ export function createEnqueuePollStatsComputation({
 
     let scheduledAt = new Date()
     if (current?.status === 'completed') {
-      const participants = await countPollParticipants(pollId, tx)
+      const participantsCount = await countPollParticipants(pollId, tx)
       const cooldownSeconds = resolveCooldownSeconds(
         cooldownTiers,
-        participants
+        participantsCount
       )
       scheduledAt = new Date(Date.now() + cooldownSeconds * 1000)
     }

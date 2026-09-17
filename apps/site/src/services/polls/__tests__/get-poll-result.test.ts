@@ -41,7 +41,7 @@ const buildCoreResult = () => {
   return {
     poll: pollFactory.build(),
     cooldownSeconds: 0,
-    participants: 3,
+    participantsCount: 3,
     anonymity,
     stats: null,
     userParticipation: null,
@@ -146,7 +146,7 @@ describe('getPollResult', () => {
     })
 
     expect(result.poll).toEqual(coreResult.poll)
-    expect(result.participants).toBe(3)
+    expect(result.participantsCount).toBe(3)
     expect(result.cooldownSeconds).toBe(0)
     expect(result.stats).toEqual(stats)
     expect(result.userParticipation).toEqual(userParticipation)

@@ -57,7 +57,7 @@ describe('getPollResult', () => {
     })
 
     expect(result?.poll.id).toBe(poll.id)
-    expect(result?.participants).toBe(2)
+    expect(result?.participantsCount).toBe(2)
   })
 
   it('resolves the poll by id', async () => {
@@ -180,7 +180,7 @@ describe('getPollResult', () => {
       userId: null,
     })
 
-    expect(result?.participants).toBe(belowThreshold)
+    expect(result?.participantsCount).toBe(belowThreshold)
     expect(result?.anonymity).toEqual({
       minParticipants: 3,
       isReached: false,

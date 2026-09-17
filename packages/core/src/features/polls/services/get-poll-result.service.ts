@@ -27,16 +27,16 @@ export const getPollResult = async ({
   ])
   if (!poll) return null
 
-  const participants = await countPollParticipants(poll.id)
-  const anonymity = resolveAnonymity(participants)
+  const participantsCount = await countPollParticipants(poll.id)
+  const anonymity = resolveAnonymity(participantsCount)
 
   const base = {
     poll,
     cooldownSeconds: resolveCooldownSeconds(
       pollStatsCooldownTiers,
-      participants
+      participantsCount
     ),
-    participants,
+    participantsCount,
     userParticipation,
   }
 
