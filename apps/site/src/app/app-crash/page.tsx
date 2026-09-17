@@ -40,26 +40,28 @@ export default function AppCrash() {
       }
       description={
         <Trans>
-          Nous mettons tout en œuvre pour rétablir l'accès rapidement.
-          <br />
-          Merci pour votre patience et votre mobilisation pour le climat !
+          Nous mettons tout en œuvre pour rétablir l'accès rapidement,
+          n'hésitez pas à réessayer dans quelques minutes. Merci de votre
+          patience et de votre mobilisation pour le climat !
         </Trans>
       }>
-      <div className="mt-12 w-full max-w-xl border-t border-gray-200 pt-12">
-        <h2 className="text-lg font-bold md:text-xl">
-          <Trans>
-            Pour patienter, vous pouvez tester vos connaissances avec le
-            quizz carbone de l'ADEME
-          </Trans>
-        </h2>
+      <div className="bg-primary-100 mt-12 w-full px-4 pt-12 pb-10 text-center md:px-10">
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6">
+          <h2 className="mb-0 text-2xl font-bold tracking-tight text-balance md:text-3xl">
+            <Trans>
+              Pour patienter, testez vos connaissances avec le Quiz Carbone de
+              l'ADEME
+            </Trans>
+          </h2>
 
-        <ImpactCO2Iframe
-          type="quiz"
-          locale={LOCALE}
-          title="Quiz carbone - Impact CO2"
-          hideButtons
-          className="mt-6 min-h-144 [&_iframe]:-my-4! md:[&_iframe]:-my-8!"
-        />
+          <ImpactCO2Iframe
+            type="quiz"
+            locale={LOCALE}
+            title="Quiz carbone - Impact CO2"
+            hideButtons
+            className="min-h-144 w-full max-w-xl [&_iframe]:-my-4! md:[&_iframe]:-my-8!"
+          />
+        </div>
       </div>
     </ErrorPage>
   )
