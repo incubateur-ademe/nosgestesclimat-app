@@ -1,4 +1,4 @@
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 
 /**
  * Send a message to the integrator (parent window and/or React Native WebView).
@@ -22,7 +22,7 @@ export function postMessageToIntegrator(message: unknown) {
   try {
     window.parent.postMessage(message, '*')
   } catch (error) {
-    captureException(error)
+    captureErrorForSentryAndPosthog(error)
   }
 
   try {
@@ -34,6 +34,6 @@ export function postMessageToIntegrator(message: unknown) {
       rnWebView.postMessage(JSON.stringify(message))
     }
   } catch (error) {
-    captureException(error)
+    captureErrorForSentryAndPosthog(error)
   }
 }

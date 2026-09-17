@@ -21,9 +21,7 @@ export default function ResultsList({
 }: Props) {
   return (
     <div className="mb-8 md:mb-10">
-      <h2
-        className="mb-6 text-2xl md:mb-8"
-        data-testid="results-list-title">
+      <h2 className="mb-6 text-2xl md:mb-8" data-testid="results-list-title">
         <Trans locale={locale} i18nKey="mon-espace.resultsList.title">
           Tous mes résultats
         </Trans>
@@ -102,7 +100,7 @@ const getShouldDisplayHelperText = ({
   // Or that have one simulation created in the past
   if (
     simulations.length === 1 &&
-    dayjs(simulations[0].updated_at).isBefore(dayjs())
+    dayjs(simulations[0].updatedAt).isBefore(dayjs())
   )
     return true
 

@@ -7,7 +7,7 @@ import { cacheLife } from 'next/cache'
 
 export async function fetchBanner(locale: Locale): Promise<BannerType | null> {
   'use cache'
-  cacheLife('hours')
+  cacheLife('days')
 
   try {
     const currentDate = dayjs()

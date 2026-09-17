@@ -45,6 +45,7 @@ const marieResults: ComputedResults = {
       divers: 400,
       'services sociétaux': 700,
     } as Record<DottedName, number>,
+    subcategories: {} as Record<DottedName, number>,
   },
 }
 
@@ -86,6 +87,7 @@ const corentinResults: ComputedResults = {
       divers: 700,
       'services sociétaux': 1000,
     } as Record<DottedName, number>,
+    subcategories: {} as Record<DottedName, number>,
   },
 }
 
@@ -127,6 +129,7 @@ const gerardResults: ComputedResults = {
       divers: 1100,
       'services sociétaux': 1400,
     } as Record<DottedName, number>,
+    subcategories: {} as Record<DottedName, number>,
   },
 }
 

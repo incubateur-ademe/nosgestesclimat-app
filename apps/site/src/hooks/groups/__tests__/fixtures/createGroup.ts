@@ -26,7 +26,6 @@ function createSimulation({ persona }: { persona?: string }) {
     id: faker.string.uuid(),
     date: faker.date.recent().toISOString(),
     foldedSteps: [],
-    actionChoices: {},
     situation: {},
     computedResults: getComputedResults({
       categories: orderedCategories,

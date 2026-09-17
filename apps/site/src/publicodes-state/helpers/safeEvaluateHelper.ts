@@ -1,5 +1,5 @@
 import type { Engine } from '@/publicodes-state/types'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type { EvaluatedNode, PublicodesExpression } from 'publicodes'
 
 export const safeEvaluateHelper = (
@@ -12,7 +12,7 @@ export const safeEvaluateHelper = (
   } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error)
-    captureException(error)
+    captureErrorForSentryAndPosthog(error)
   }
   return evaluation
 }

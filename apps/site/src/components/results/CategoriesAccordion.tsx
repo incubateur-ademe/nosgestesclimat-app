@@ -21,13 +21,13 @@ interface Props {
 // Makes the bars in the chart just the right width
 const BEAUTIFUL_COEFFICIENT = 0.75
 
-export default async function CategoriesAccordion({
+export default function CategoriesAccordion({
   rules,
   computedResults,
   metric = carboneMetric,
   locale,
 }: Props) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const categories = getCategoriesDisplayData({
     computedResults,

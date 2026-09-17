@@ -1,12 +1,10 @@
-import ActionsBlock from '@/components/results/ActionsBlock'
-import CategoriesAccordion from '@/components/results/CategoriesAccordion'
-import { carboneMetric } from '@/constants/model/metric'
 import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
-import type { AppUser } from '@/services/auth/get-user-session'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
+import type { Metric } from '@/publicodes-state/types'
+import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import type { Group } from '@/types/groups'
+import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import dayjs from 'dayjs'
 import EditableGroupTitle from './EditableGroupTitle'
 import GroupResults from './GroupResults'
@@ -17,6 +15,7 @@ interface Props {
   locale: Locale
   user: AppUser
   userSimulation: Simulation
+  metric: Metric
 }
 
 export default async function GroupPage({
@@ -24,15 +23,14 @@ export default async function GroupPage({
   locale,
   user,
   userSimulation,
+  metric,
 }: Props) {
   const rules = await getCachedRules({ locale })
 
   // The user may have completed a newer test since joining the group; offer to
   // update their participation with it. Resolved server-side so it stays in
   // sync with `group` after `revalidatePath`.
-  const [latestCompletedSimulation] = await getCompletedSimulations({
-    pageSize: 1,
-  })
+  const latestCompletedSimulation = await getLastCompletedSimulation()
   const newSimulation =
     latestCompletedSimulation &&
     latestCompletedSimulation.id !== userSimulation.id &&
@@ -54,15 +52,9 @@ export default async function GroupPage({
         locale={locale}
         group={group}
         user={user}
-        categoriesAccordion={
-          <CategoriesAccordion
-            locale={locale}
-            rules={rules}
-            computedResults={userSimulation.computedResults}
-            metric={carboneMetric}
-          />
-        }
-        actionsSection={<ActionsBlock locale={locale} className="my-6" />}
+        metric={metric}
+        rules={rules}
+        computedResults={userSimulation.computedResults}
       />
     </>
   )

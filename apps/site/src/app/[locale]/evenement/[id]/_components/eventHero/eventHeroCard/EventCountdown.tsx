@@ -121,7 +121,7 @@ export default function EventCountdown({
         </span>
         <AnimatedNumber
           value={timeLeft.seconds}
-          label={t('common.seconds', 'seconds')}
+          label={t('common.seconds', 'secondes')}
         />
       </div>
 
@@ -165,7 +165,7 @@ export default function EventCountdown({
       </div>
 
       <p className="text-center text-xs text-slate-600">
-        {t('event.countdown.date', 'Lancement le {{date}}', {
+        {t('event.countdown.date', "Rejoignez l'opération jusqu'au {{date}}", {
           date: launchDateLabel,
         })}
       </p>

@@ -920,6 +920,7 @@ entries:
   pollResults.waterFootprint.body.lock: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
   pollResults.waterFootprint.learnMore: Learn more
   pollResults.waterFootprint.learnMore.lock: En savoir plus
+  pollResults.funFacts.refreshNote: 'The figures are updated approximately every {{duration}} '
   pollResults.footprintBarChart.targetLabelMobile: 'Target 2050:'
   pollResults.footprintBarChart.targetLabelMobile.lock: 'Objectif 2050 :'
   common.category.alimentationShort: Food
@@ -1467,8 +1468,8 @@ entries:
   simulation.eau.climateAndWater.title.lock: Eau, climat, même combat ?
   endpage.meta.title.carbon: My carbon footprint - Nos Gestes Climat
   endpage.meta.title.carbon.lock: Mon empreinte carbone - Nos Gestes Climat
-  simulation.eau.title: The water footprint used to produce what you consume
-  simulation.eau.title.lock: L’empreinte eau qui sert à produire ce que vous consommez
+  simulation.eau.title: The water footprint involved in producing what you consume
+  simulation.eau.title.lock: L'empreinte eau qui sert à produire ce que vous consommez
   simulation.eau.whatIsWaterFootprint.vigieEau: Visit VigiEau to find out more.
   simulation.eau.whatIsWaterFootprint.vigieEau.lock: Rendez-vous sur VigiEau pour en savoir plus.
   simulation.eau.documentation.title: How is your footprint calculated?
@@ -1789,10 +1790,10 @@ entries:
   tutorial.email.title.default.lock: Votre adresse e-mail
   common.authentication.verifyEmail: Verify my email address
   common.authentication.verifyEmail.lock: Vérifier mon adresse e-mail
-  tutorial.email.contest.youth: Your e-mail address will be used for the prize draw.
-  tutorial.email.contest.youth.lock: Ton e-mail sera utilisé pour le tirage au sort.
-  tutorial.email.contest.default: Your e-mail address will be used for the prize draw.
-  tutorial.email.contest.default.lock: Votre e-mail sera utilisé pour le tirage au sort.
+  tutorial.email.contest.youth: Check your email for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be saved in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.youth.lock: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.default: Please check your email address for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
@@ -1904,8 +1905,6 @@ entries:
   event.tutorial.carousel.prevSlide.lock: Diapositive précédente
   event.dynamicCounter.target.text: carbon footprint calculations
   event.dynamicCounter.target.text.lock: calculs d'empreinte carbone
-  event.dynamicCounter.target.title: Objective
-  event.dynamicCounter.target.title.lock: Objectif
   event.testimonies.subtitle: They took the plunge
   event.testimonies.subtitle.lock: Ils ont franchi le pas
   event.tutorial.org.2.title: Share the link
@@ -1920,8 +1919,6 @@ entries:
   event.tutorial.individual.1.title.lock: Répondez aux questions
   event.tutorial.org.3.title: Follow the results
   event.tutorial.org.3.title.lock: Suivez les résultats
-  event.podium.yourOrg: Organisation 1
-  event.podium.yourOrg.lock: Organisation 1
   event.hero.title.part2: when it is collective
   event.hero.title.part2.lock: quand il est collectif
   event.dynamicCounter.text: LIVE
@@ -2024,24 +2021,14 @@ entries:
   event.ctas.card1.buttonAriaLabel.lock: Je participe, ouvrir dans une nouvelle fenêtre
   event.ctas.card2.buttonAriaLabel: Start a collective test, open in a new window
   event.ctas.card2.buttonAriaLabel.lock: Je crée un test collectif, ouvrir dans une nouvelle fenêtre
-  event.podium.categories.all: All
-  event.podium.categories.all.lock: Toutes
-  event.podium.categories.companies: Companies
-  event.podium.categories.companies.lock: Entreprises
-  event.podium.categories.associations: Associations
-  event.podium.categories.associations.lock: Associations
-  event.podium.categories.education: Education
-  event.podium.categories.education.lock: Éducation
-  event.podium.categories.publicServices: Public services
-  event.podium.categories.publicServices.lock: Services publics
   event.testimonies.4.text: I was surprised to find that the bulk of my carbon footprint doesn’t come from my direct actions, such as my journeys, but rather from more invisible aspects of daily life, such as public services or the production of the goods I buy. It made me realise that carbon impact is often indirect.
   event.testimonies.4.text.lock: J'ai été surprise de voir que l’essentiel de mon empreinte ne vient pas de mes actions directes comme mes déplacements, mais plutôt de choses plus invisibles au quotidien comme les services publics ou la production des biens que j’achète. Ça m’a fait réaliser que l’impact carbone est souvent indirect.
   event.countdown.label: Starting in
   event.countdown.label.lock: Début dans
   event.statistics.title: Live data will appear on launch
   event.statistics.title.lock: Les données en direct apparaîtront au lancement
-  event.countdown.date: Launch on {{date}}
-  event.countdown.date.lock: Lancement le {{date}}
+  event.countdown.date: Join the campaign until {{date}}
+  event.countdown.date.lock: Rejoignez l'opération jusqu'au {{date}}
   event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
   event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   Éducation: Education
@@ -2072,7 +2059,7 @@ entries:
   results.footprintBlock.actionsBlock.link: Find out about my activities
   results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
   common.co2eAn.title: CO₂e per year
-  common.co2eAn.title.lock: CO₂e / an
+  common.co2eAn.title.lock: CO₂e / an
   results.footprintBlock.actionsBlock.title: 'How to reduce your carbon footprint:'
   results.footprintBlock.actionsBlock.title.lock: 'Comment réduire votre empreinte :'
   iframe.safari.openInNewTab: Open the calculator in a new tab
@@ -2102,7 +2089,7 @@ entries:
   common.minutes: Minutes
   common.minutes.lock: Minutes
   common.seconds: seconds
-  common.seconds.lock: seconds
+  common.seconds.lock: secondes
   common.hours: hours
   common.hours.lock: heures
   Toutes: All
@@ -2192,17 +2179,28 @@ entries:
   La valeur maximum pour ce champ est de: The maximum value for this field is
   actions.components.highestImpactActionsSection.publicDescription: The top 3 actions you can take to limit or reduce your CO<1>2</1> emissions
   actions.components.highestImpactActionsSection.publicDescription.lock: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
-  actions.detailPage.sections.otherThemeActions.description: Selected according to your answers to the simulator
-  actions.detailPage.sections.otherThemeActions.description.lock: Sélectionnées selon vos réponses au simulateur
   actions.detailPage.sections.otherThemeActions.title: Find out about other ways to reduce your carbon footprint
   actions.detailPage.sections.otherThemeActions.title.lock: Découvrez d’autres actions pour réduire votre empreinte
   actions.components.actionCard.ctaVariant.link: See the<1> "{{actionTitle}}"</1> campaign
   actions.components.actionCard.ctaVariant.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
+  event.dynamicCounter.target.title.default: Objective
+  event.dynamicCounter.target.title.default.lock: Objectif
   event.dynamicCounter.target.title.topped: Target achieved
   event.dynamicCounter.target.title.topped.lock: Objectif atteint
   event.dynamicCounter.target.title.over: Target exceeded
   event.dynamicCounter.target.title.over.lock: Objectif dépassé
   footer.ademe.ariaLabel: ADEME (opens in a new window)
   footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
-  event.dynamicCounter.target.title.default: Objective
-  event.dynamicCounter.target.title.default.lock: Objectif
+  tutorial.email.title.youthContest: Your email address for the prize draw
+  tutorial.email.title.youthContest.lock: Ton adresse e-mail pour le tirage au sort
+  tutorial.email.title.defaultContest: Your email address for the prize draw
+  tutorial.email.title.defaultContest.lock: Votre adresse e-mail pour le tirage au sort
+  poll.creation.mode.select: Select
+  poll.creation.mode.select.lock: Sélectionner
+  poll.creation.mode.tempDisabled: This feature has been temporarily disabled whilst improvements are being made
+  poll.creation.mode.tempDisabled.lock: Fonctionnalité désactivée temporairement, en cours d'amélioration
+  poll.creation.mode.error: An error has occurred whilst creating your group test. Please try again.
+  poll.creation.mode.error.lock: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
+  poll.creation.mode.title: Select the test mode
+  poll.creation.mode.title.lock: Choisissez le mode du test
+  pollResults.funFacts.refreshNote.lock: Les chiffres se mettent à jour toutes les {{duration}} environ

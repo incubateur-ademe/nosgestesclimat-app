@@ -4,7 +4,7 @@ import Form from '@/design-system/form/Form'
 import Separator from '@/design-system/layout/Separator'
 import { useUpdateOrganisation } from '@/hooks/organisations/useUpdateOrganisation'
 import type { OrgaSettingsInputsType } from '@/types/organisations'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import {
   type SubmitHandler,
   useForm as useReactHookForm,
@@ -38,7 +38,7 @@ export default function OrganisationForm({
         formData,
       })
     } catch (error) {
-      captureException(error)
+      captureErrorForSentryAndPosthog(error)
     }
   }
 

@@ -1,10 +1,10 @@
+import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type {
   DottedName,
   NGCRule,
   NGCRuleNode,
   NGCRulesNodes,
 } from '@incubateur-ademe/nosgestesclimat'
-import * as Sentry from '@sentry/nextjs'
 import { utils } from 'publicodes'
 import getSomme from './getSomme'
 
@@ -29,7 +29,7 @@ export function getSubcategories({
         console.error(
           `[useCategories:subcategories] No rule found for ${currentValue}`
         )
-        Sentry.captureMessage(
+        captureMessageForSentryAndPosthog(
           `[useCategories:subcategories] No rule found for ${currentValue}`
         )
         return accumulator
@@ -41,7 +41,7 @@ export function getSubcategories({
         console.error(
           `[useCategories:subcategories] No [somme] found for ${currentValue}`
         )
-        Sentry.captureMessage(
+        captureMessageForSentryAndPosthog(
           `[useCategories:subcategories] No [somme] found for ${currentValue}`
         )
         return accumulator

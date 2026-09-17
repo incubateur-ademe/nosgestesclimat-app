@@ -2,12 +2,12 @@ import DailyGestures from '@/components/landing-pages/DailyGestures'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
-export default async function DailyGestureCarbonFootprint({
+export default function DailyGestureCarbonFootprint({
   locale,
 }: {
   locale: string
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const gesturesKeysForTranslation = {
     transport: t('Transport'),
@@ -42,8 +42,7 @@ export default async function DailyGestureCarbonFootprint({
       locale={locale}
       gestures={{
         [gesturesKeysForTranslation.transport]: {
-          imageSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_carbone_velo_a7262d1e2e.svg',
+          imageSrc: '/_static/cms/empreinte_carbone_velo_a7262d1e2e.svg',
           imageAlt: t(
             'Une mère et son fils sur un vélo, illustrant la possibilité de réduire son empreinte carbone en privilégiant les transports doux'
           ),
@@ -55,7 +54,7 @@ export default async function DailyGestureCarbonFootprint({
         },
         [gesturesKeysForTranslation.alimentation]: {
           imageSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_carbone_cuisine_alimentation_6c7f46b1d6.svg',
+            '/_static/cms/empreinte_carbone_cuisine_alimentation_6c7f46b1d6.svg',
           imageAlt: t(
             "Une jeune femme cuisinant, illustrant l'importance de ses choix d'alimentation dans le calcul de son empreinte carbone"
           ),
@@ -66,8 +65,7 @@ export default async function DailyGestureCarbonFootprint({
           ],
         },
         [gesturesKeysForTranslation.logement]: {
-          imageSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_carbone_logement_0c8aefd3a5.svg',
+          imageSrc: '/_static/cms/empreinte_carbone_logement_0c8aefd3a5.svg',
           imageAlt: t(
             "Une jeune femme lisant un journal, illustrant l'empreinte carbone liée à son logement"
           ),
@@ -81,8 +79,7 @@ export default async function DailyGestureCarbonFootprint({
           ],
         },
         [gesturesKeysForTranslation.consommation]: {
-          imageSrc:
-            'https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/empreinte_carbone_achats_be9fd99289.svg',
+          imageSrc: '/_static/cms/empreinte_carbone_achats_be9fd99289.svg',
           imageAlt: t(
             "Une jeune femme réfléchissant à ses choix de consommation, illustrant l'importance de ses achats dans le calcul de son empreinte carbone"
           ),

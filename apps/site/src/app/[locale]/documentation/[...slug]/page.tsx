@@ -19,7 +19,7 @@ export async function generateMetadata({
   params: { slug: string[] }
 }>) {
   const { locale, slug } = await params
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const rules = await getRules({
     isOptim: false,

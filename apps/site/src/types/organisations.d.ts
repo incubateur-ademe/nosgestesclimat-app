@@ -59,6 +59,7 @@ interface BaseOrganisationPoll {
     count: number
     finished: number
     hasParticipated: boolean
+    cooldownSeconds: number
   }
   progression?: number
   /**

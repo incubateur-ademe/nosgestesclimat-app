@@ -53,3 +53,5 @@ Puis, côté site :
 ```bash
 pnpm dev
 ```
+
+Pour lancer les tests end-to-end (Playwright), voir le [README du package e2e](./apps/e2e/README.md).

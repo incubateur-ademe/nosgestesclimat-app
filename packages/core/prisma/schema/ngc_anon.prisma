@@ -83,7 +83,6 @@ view AnonPoll {
   computedResults              Json?
   expectedNumberOfParticipants Int?
   customAdditionalQuestions    Json
-  computeRealTimeStats         Boolean
   organisationId               String
   organisation                 AnonOrganisation    @relation(fields: [organisationId], references: [id])
   simulations                  AnonSimulationPoll[]
@@ -145,5 +144,21 @@ view AnonGroupParticipant {
 
   @@unique([groupId, userId])
   @@map("GroupParticipant")
+  @@schema("ngc_anon")
+}
+
+view AnonMatomoStats {
+  id                  String            @unique @db.Uuid
+  date                DateTime          @db.Date
+  source              MatomoStatsSource
+  kind                StatsKind
+  referrer            String
+  device              MatomoStatsDevice
+  iframe              Boolean
+  visits              Int               @db.Integer
+  firstAnswer         Int               @db.Integer
+  finishedSimulations Int               @db.Integer
+
+  @@map("MatomoStats")
   @@schema("ngc_anon")
 }

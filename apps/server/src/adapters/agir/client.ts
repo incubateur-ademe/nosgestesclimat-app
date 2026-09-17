@@ -1,10 +1,10 @@
+import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
 import * as v from 'valibot'
 import { config } from '../../config.ts'
 import { isNetworkOrTimeoutOrRetryableError } from '../../core/typeguards/isRetryableAxiosError.ts'
 import type { SituationExportQueryParamsSchema } from '../../features/integrations/integrations.validator.ts'
-import type { SituationSchema } from '../../features/simulations/simulations.validator.ts'
 
 const agir = axios.create({
   baseURL: config.thirdParty.agir.url,
@@ -25,7 +25,7 @@ const AgirResponseSchema = v.strictObject({
 })
 
 export const exportSituation = async (
-  situation: SituationSchema,
+  situation: Situation,
   _: SituationExportQueryParamsSchema
 ) => {
   const { data } = await agir.post<{ redirect_url: string }>(

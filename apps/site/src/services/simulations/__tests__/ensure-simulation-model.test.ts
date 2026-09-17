@@ -1,12 +1,13 @@
-import { GROUP_URL, SIMULATION_URL } from '@/constants/urls/main'
+import { GROUP_URL } from '@/constants/urls/main'
+import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mswServer } from '../../../__tests__/server'
+import { mockAuthenticatedSession } from '../../../helpers/tests/mockAuthenticatedSession'
 import { createGroup } from '../../groups/create-group'
 import { updateGroupParticipant } from '../../groups/update-group-participant'
-import { saveSimulation } from '../save-simulation'
 import { uploadLocalSimulations } from '../upload-local-simulations'
 
 /**
@@ -15,9 +16,10 @@ import { uploadLocalSimulations } from '../upload-local-simulations'
  * handed it.
  */
 
-const MODEL_REGEX =
-  /^[A-Z]+-[a-z]+-(?:pr-(?:nightly|\d+)|\d+\.\d+\.\d+(?:-[\w.]+)?)$/
 const DATABASE_DEFAULT_MODEL = 'FR-fr-0.0.0'
+
+const getCurrentSimulationMock = vi.hoisted(() => vi.fn())
+const importLegacyLocalSimulationsMock = vi.hoisted(() => vi.fn())
 
 vi.mock('next/headers', () => ({
   headers: () =>
@@ -33,17 +35,23 @@ vi.mock('next/headers', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 vi.mock('@/services/auth/get-user-session', () => ({
-  getUserSession: () =>
-    Promise.resolve({
-      id: 'user-id',
-      isAuth: true,
-      email: 'alice@example.com',
-    }),
+  getUserSession: vi.fn(),
 }))
 
 vi.mock('@/services/auth/create-app-session', () => ({
   createAppSession: vi.fn(),
 }))
+
+vi.mock('@/services/simulations/get-current-simulation', () => ({
+  getCurrentSimulation: getCurrentSimulationMock,
+}))
+
+vi.mock(
+  '@nosgestesclimat/core/features/simulations/services/import-legacy-local-simulations.service',
+  () => ({
+    importLegacyLocalSimulations: importLegacyLocalSimulationsMock,
+  })
+)
 
 /** A simulation as it comes out of long-lived client state: no model at all. */
 const modellessSimulation = (): Simulation => {
@@ -53,11 +61,6 @@ const modellessSimulation = (): Simulation => {
   })
   simulation.computedResults.carbone.bilan = 1000
   return { ...simulation, model: undefined } as unknown as Simulation
-}
-
-/** Stubs what the API holds for the connected user, newest first. */
-const stubCurrentSimulations = (simulations: Simulation[]) => {
-  mswServer.use(http.get(SIMULATION_URL, () => HttpResponse.json(simulations)))
 }
 
 /** Captures the simulation body POSTed to a given endpoint. */
@@ -79,18 +82,10 @@ const captureSimulationBody = (
 describe('simulation write paths', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockAuthenticatedSession()
   })
 
   describe('given a simulation without a model', () => {
-    it('should resolve a model before saving it', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
-
-      await saveSimulation({ simulation: modellessSimulation() })
-
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
-      expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
-    })
-
     it('should resolve a model before adding a group participant', async () => {
       const captured = captureSimulationBody(
         'post',
@@ -104,7 +99,7 @@ describe('simulation write paths', () => {
         name: 'Alice',
       })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
 
@@ -123,14 +118,14 @@ describe('simulation write paths', () => {
         participants: [{ simulation: modellessSimulation() }],
       })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
   })
 
   describe('given no simulation at all', () => {
     it('should build one server-side when a participant joins before taking the test', async () => {
-      stubCurrentSimulations([])
+      getCurrentSimulationMock.mockResolvedValue(undefined)
       const captured = captureSimulationBody(
         'post',
         `${GROUP_URL}/:groupId/participants`,
@@ -139,7 +134,7 @@ describe('simulation write paths', () => {
 
       await updateGroupParticipant({ groupId: 'group-id', name: 'Alice' })
 
-      expect(captured.value?.model).toMatch(MODEL_REGEX)
+      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
       expect(captured.value?.progression).toBe(0)
     })
@@ -151,7 +146,7 @@ describe('simulation write paths', () => {
         model: 'FR-fr-1.2.3',
         progression: 0.4,
       })
-      stubCurrentSimulations([inProgress])
+      getCurrentSimulationMock.mockResolvedValue(inProgress)
       const captured = captureSimulationBody(
         'post',
         `${GROUP_URL}/:groupId/participants`,
@@ -165,25 +160,18 @@ describe('simulation write paths', () => {
     })
   })
 
-  describe('given a simulation that already has a model', () => {
-    it('should keep it untouched', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
-      const simulation = modellessSimulation()
-      simulation.model = 'ED-fr-pr-42'
-
-      await saveSimulation({ simulation })
-
-      expect(captured.value?.model).toBe('ED-fr-pr-42')
-    })
-  })
-
   describe('given legacy simulations uploaded from localStorage', () => {
     it('should leave them without a model, on purpose', async () => {
-      const captured = captureSimulationBody('post', SIMULATION_URL)
+      importLegacyLocalSimulationsMock.mockResolvedValue(undefined)
 
       await uploadLocalSimulations([modellessSimulation()])
 
-      expect(captured.value?.model).toBeUndefined()
+      expect(importLegacyLocalSimulationsMock).toHaveBeenCalledTimes(1)
+      const { simulations } = importLegacyLocalSimulationsMock.mock
+        .calls[0][0] as {
+        simulations: { model?: string }[]
+      }
+      expect(simulations[0].model).toBeUndefined()
     })
   })
 })

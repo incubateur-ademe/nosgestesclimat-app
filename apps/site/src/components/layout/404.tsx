@@ -2,16 +2,18 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import Image from 'next/image'
 import { cacheLife } from 'next/cache'
+import Image from 'next/image'
 import Wave from 'react-wavify'
 import Trans from '../translation/trans/TransServer'
 import LogoHeader from './headerServer/LogoHeader'
 
+// `'use cache'` impose une fonction async, même sans `await` à faire :
+// eslint-disable-next-line @typescript-eslint/require-await
 export default async function Route404({ locale }: { locale: Locale }) {
   'use cache'
   cacheLife('days')
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>
@@ -30,7 +32,7 @@ export default async function Route404({ locale }: { locale: Locale }) {
                 <span className="island relative leading-none">
                   <Image
                     className="hover:animate-jump absolute -top-8 right-0 left-0 m-auto w-10 motion-reduce:hover:animate-none md:top-3 md:w-12"
-                    src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/404_bonhomme_17c7e762b9.svg"
+                    src="/_static/cms/404_bonhomme_17c7e762b9.svg"
                     width="60"
                     height="60"
                     alt={t('Un bonhomme se demandant où il est')}

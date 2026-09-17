@@ -25,7 +25,6 @@ export function buildNewSimulationPayload({
   date = new Date().toISOString(),
   situation = {},
   foldedSteps = [],
-  actionChoices = {},
   persona,
   computedResults = metrics.reduce((acc, metric) => {
     acc[metric] = {
@@ -51,7 +50,6 @@ export function buildNewSimulationPayload({
     date,
     situation,
     foldedSteps,
-    actionChoices,
     persona,
     computedResults,
     progression,

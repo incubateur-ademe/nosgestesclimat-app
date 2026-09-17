@@ -1,14 +1,230 @@
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import type { Situation } from 'publicodes'
+import { isCuid } from '../../../lib/cuid.ts'
+import type { Result } from '../../../lib/result.ts'
+import { failure, success } from '../../../lib/result.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import { SimulationNotFound } from '../exceptions/simulations.exception.ts'
+import type { Prisma } from '../../../prisma/generated/client.ts'
+import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
+import { SimulationNotFoundError } from '../errors/simulations.error.ts'
+import { type NewSimulation } from '../helpers/new-simulation.ts'
+import type { Model } from '../types/model.ts'
 import type { Simulation } from '../types/simulation.ts'
+import type { ComputedResults } from '../validators/computed-results.schema.ts'
+import { serializeModel } from './model.mapper.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
-export const getSimulationById = async (id: string): Promise<Simulation> => {
-  const simulation = await prisma.simulation.findUnique({ where: { id } })
+const simulationSelect = {
+  id: true,
+  date: true,
+  model: true,
+  progression: true,
+  situation: true,
+  foldedSteps: true,
+  computedResults: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  polls: {
+    select: { pollId: true, poll: { select: { slug: true, name: true } } },
+    // Oldest first: the last entry is the poll the user most recently joined.
+    orderBy: { createdAt: 'asc' },
+  },
+  groups: {
+    select: { groupId: true },
+    // Oldest first: the last entry is the group the user most recently joined.
+    orderBy: { createdAt: 'asc' },
+  },
+} as const
 
-  if (!simulation) {
-    throw new SimulationNotFound({ simulationId: id })
+/**
+ * Inserts a simulation. The caller supplies every field, including the
+ * pristine defaults a new simulation is born with; the repository only
+ * persists what it receives.
+ */
+export const createSimulation = async (
+  {
+    id,
+    userId,
+    model,
+    date,
+    progression,
+    situation,
+    foldedSteps,
+    computedResults,
+  }: NewSimulation,
+  tx: Transaction = prisma
+): Promise<void> => {
+  await tx.simulation.create({
+    data: {
+      id,
+      userId,
+      model: serializeModel(model),
+      date,
+      progression,
+      situation: situation as unknown as Prisma.InputJsonValue,
+      foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
+      computedResults: computedResults as unknown as Prisma.InputJsonValue,
+    },
+    // `select` is narrowed to the id to reduce data transfer because Prisma
+    // always returns a row: nothing here reads it.
+    select: { id: true },
+  })
+}
+
+/**
+ * Inserts multiple simulations in a single query. Each caller-supplied field
+ * is persisted as-is; the repository only serializes the model. When `model`
+ * is omitted the database default applies. Rows whose `id` already exists are
+ * silently skipped so partial re-imports do not fail the whole batch.
+ */
+export const createManySimulations = async (
+  simulations: (Omit<NewSimulation, 'model'> & { model?: Model })[],
+  tx: Transaction = prisma
+): Promise<void> => {
+  if (simulations.length === 0) return
+
+  await tx.simulation.createMany({
+    data: simulations.map(({ model, ...rest }) => ({
+      ...rest,
+      ...(model ? { model: serializeModel(model) } : {}),
+      situation: rest.situation as unknown as Prisma.InputJsonValue,
+      foldedSteps: rest.foldedSteps as unknown as Prisma.InputJsonValue[],
+      computedResults: rest.computedResults as unknown as Prisma.InputJsonValue,
+    })),
+    skipDuplicates: true,
+  })
+}
+
+export const findLatestSimulation = async ({
+  userId,
+}: {
+  userId: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: { userId },
+    orderBy: { date: 'desc' },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
+export const findLatestPollSimulation = async ({
+  userId,
+  pollIdOrSlug,
+}: {
+  userId: string
+  pollIdOrSlug: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: {
+      userId,
+      polls: {
+        some: {
+          poll: isCuid(pollIdOrSlug)
+            ? { id: pollIdOrSlug }
+            : { slug: pollIdOrSlug },
+        },
+      },
+    },
+    orderBy: { date: 'desc' },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
+export const findLatestCompletedSimulation = async ({
+  userId,
+}: {
+  userId: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: { userId, progression: 1 },
+    orderBy: { date: 'desc' },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
+export const findCompletedSimulations = async ({
+  userId,
+  limit,
+}: {
+  userId: string
+  limit?: number
+}): Promise<Simulation[]> => {
+  const rows = await prisma.simulation.findMany({
+    where: { userId, progression: 1 },
+    orderBy: { date: 'desc' },
+    take: limit,
+    select: simulationSelect,
+  })
+
+  return rows
+    .map(mapSimulation)
+    .filter((simulation): simulation is Simulation => simulation !== null)
+}
+
+export const findSimulationById = async ({
+  id,
+  userId,
+}: {
+  id: string
+  userId: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: { id, userId },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
+export const updateSimulation = async (
+  {
+    id,
+    userId,
+    situation,
+    foldedSteps,
+    progression,
+    computedResults,
+    model,
+  }: {
+    id: string
+    userId: string
+    situation: Situation<DottedName>
+    foldedSteps: DottedName[]
+    progression: number
+    computedResults: ComputedResults
+    model?: string
+  },
+  tx: Transaction = prisma
+): Promise<Result<void, SimulationNotFoundError>> => {
+  try {
+    await tx.simulation.update({
+      // `userId` stays in the `where` so that ownership is enforced atomically at write time rather than by a preceding read.
+      where: { id, userId },
+      data: {
+        situation: situation as unknown as Prisma.InputJsonValue,
+        foldedSteps: foldedSteps as unknown as Prisma.InputJsonValue[],
+        progression,
+        computedResults: computedResults as unknown as Prisma.InputJsonValue,
+        ...(model ? { model } : {}),
+      },
+      // `select` is narrowed to the id to reduce data transfer because Prisma
+      // always returns a row: nothing here reads it.
+      select: { id: true },
+    })
+
+    return success()
+  } catch (error) {
+    if (isPrismaErrorNotFound(error)) {
+      return failure(new SimulationNotFoundError())
+    }
+    throw error
   }
-
-  return mapSimulation(simulation)
 }

@@ -7,8 +7,8 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { throwNextError } from '@/helpers/server/error'
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
 import { requireAuthUser } from '@/services/auth/require-auth-user'
+import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import type { DefaultPageProps } from '@/types'
 import NameForm from './_components/NameForm'
 
@@ -30,10 +30,10 @@ export default async function GroupNamePage({
   const { [SHOW_STEP_KEY]: showStep } = (await searchParams) ?? {}
 
   await requireAuthUser()
-  const [lastSimulation] = await throwNextError(() =>
-    getCompletedSimulations({ pageSize: 1 })
+  const lastSimulation = await throwNextError(() =>
+    getLastCompletedSimulation()
   )
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <div className="pb-8">

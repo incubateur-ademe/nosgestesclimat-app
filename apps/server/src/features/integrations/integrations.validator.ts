@@ -1,5 +1,5 @@
+import { SituationSchema } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import * as v from 'valibot'
-import { SituationSchema } from '../simulations/simulations.validator.ts'
 
 export const ExternalServiceTypeEnum = {
   agir: 'agir',

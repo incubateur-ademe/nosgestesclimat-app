@@ -94,7 +94,57 @@ async function createPGliteAdapter(pgClient: PGlite) {
       }
     }
   }
+
+  patchJsonArrayResults(baseProto)
+
   return adapter
+}
+
+// PGlite deserializes the elements of a `json[]` / `jsonb[]` column into JS
+// values, whereas the Prisma runtime expects each element as JSON *text* — that
+// is what @prisma/adapter-pg returns, and the runtime `JSON.parse`s it back.
+// Without this, reading a `Json[]` column holding plain strings (`foldedSteps`)
+// throws `SyntaxError: … is not valid JSON`.
+//
+// Fix: re-serialize the elements of those columns on the way out, using the
+// PostgreSQL type OIDs the driver already reports.
+const JSON_ARRAY_TYPE_IDS = new Set([199, 3807]) // json[], jsonb[]
+
+function patchJsonArrayResults(baseProto: {
+  performIO: (query: unknown) => Promise<PGliteResults>
+}) {
+  const originalPerformIO = baseProto.performIO
+
+  baseProto.performIO = async function (query: unknown) {
+    const result = await originalPerformIO.call(this, query)
+
+    const jsonArrayIndexes = result.fields.flatMap(({ dataTypeID }, index) =>
+      JSON_ARRAY_TYPE_IDS.has(dataTypeID) ? [index] : []
+    )
+
+    if (jsonArrayIndexes.length === 0) {
+      return result
+    }
+
+    for (const row of result.rows) {
+      for (const index of jsonArrayIndexes) {
+        const value = row[index]
+        if (Array.isArray(value)) {
+          row[index] = value.map((element) =>
+            element === null ? null : JSON.stringify(element)
+          )
+        }
+      }
+    }
+
+    return result
+  }
+}
+
+// The rows are queried with `rowMode: 'array'`, hence the positional values.
+interface PGliteResults {
+  fields: { dataTypeID: number }[]
+  rows: unknown[][]
 }
 
 // Map raw PostgreSQL error codes to Prisma P-codes.

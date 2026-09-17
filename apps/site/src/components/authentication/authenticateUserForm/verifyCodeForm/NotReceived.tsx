@@ -1,9 +1,9 @@
 'use client'
 
-import Trans from '@/components/translation/trans/TransClient'
-import Button from '@/design-system/buttons/Button'
 import { useAuth } from '@/components/authentication/AuthProvider'
 import { useSecondsLeft } from '@/components/authentication/_hooks/useSecondsLeft'
+import Trans from '@/components/translation/trans/TransClient'
+import Button from '@/design-system/buttons/Button'
 import ResendButton from './notReceived/ResendButton'
 
 export default function NotReceived() {
@@ -16,7 +16,8 @@ export default function NotReceived() {
     return null
   }
 
-  const hasResendError = state.phase === 'code_sent' && state.resendError !== null
+  const hasResendError =
+    state.phase === 'code_sent' && state.resendError !== null
   const isResending = state.phase === 'code_sent' ? state.isResending : false
   const isRetryDisabled = isResending || secondsLeft > 0
 
@@ -44,7 +45,8 @@ export default function NotReceived() {
         <div className="text-red-800 dark:text-white">
           <p>
             <Trans i18nKey="signIn.verificationForm.notReceived.error">
-              Oups, une erreur s'est produite au moment de l'envoi de votre code...
+              Oups, une erreur s'est produite au moment de l'envoi de votre
+              code...
             </Trans>
           </p>
           <div>

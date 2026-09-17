@@ -15,14 +15,14 @@ interface ReuseSimulationForPollProps {
   disclaimer: React.ReactNode
   simulation: Simulation
 }
-export default async function ReuseSimulationForPoll({
+export default function ReuseSimulationForPoll({
   reuseSimulation,
   createNewSimulation,
   locale,
   disclaimer,
   simulation,
 }: ReuseSimulationForPollProps) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   const { formattedValue, unit } = formatFootprint(
     simulation.computedResults.carbone.bilan,
@@ -34,7 +34,7 @@ export default async function ReuseSimulationForPoll({
   return (
     <Card className="mt-10 items-start rounded-2xl border-slate-100 p-8 shadow-md">
       <Title
-        data-testid="commencer-title"
+        data-testid="reuse-simulation-banner-title"
         className="text-lg font-bold md:text-xl"
         title={
           <span className="flex items-center">
@@ -53,7 +53,7 @@ export default async function ReuseSimulationForPoll({
             i18nKey="reuseSimulationForPoll.testDate.testDone">
             Test réalisé le
           </Trans>{' '}
-          {dayjs(simulation.updated_at)
+          {dayjs(simulation.updatedAt)
             .toDate()
             .toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
               day: '2-digit',
@@ -63,7 +63,7 @@ export default async function ReuseSimulationForPoll({
           <Trans locale={locale} i18nKey="reuseSimulationForPoll.testDate.at">
             à
           </Trans>{' '}
-          {dayjs(simulation.updated_at)
+          {dayjs(simulation.updatedAt)
             .toDate()
             .toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
               hour: '2-digit',

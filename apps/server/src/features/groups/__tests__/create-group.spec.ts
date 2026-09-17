@@ -376,7 +376,6 @@ describe('Given a NGC user', () => {
                 updatedAt: expect.any(String),
                 polls: [],
                 foldedSteps: [],
-                actionChoices: {},
                 additionalQuestionsAnswers: [],
               },
               createdAt: expect.any(String),
@@ -530,7 +529,6 @@ describe('Given a NGC user', () => {
                 attributes: {
                   USER_ID: userId,
                   LAST_SIMULATION_DATE: date.toISOString(),
-                  ACTIONS_SELECTED_NUMBER: 0,
                   LAST_SIMULATION_BILAN_FOOTPRINT: (
                     computedResults.carbone.bilan / 1000
                   ).toLocaleString('fr-FR', {

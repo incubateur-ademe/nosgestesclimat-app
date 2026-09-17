@@ -1,7 +1,5 @@
 import type {
   Group,
-  Organisation,
-  Poll,
   Simulation,
   User,
 } from '../../../adapters/prisma/generated.ts'
@@ -12,12 +10,7 @@ import type { SimulationCreateQuery } from '../simulations.validator.ts'
 
 export type SimulationEvent = Pick<
   Simulation,
-  | 'id'
-  | 'progression'
-  | 'actionChoices'
-  | 'computedResults'
-  | 'date'
-  | 'situation'
+  'id' | 'progression' | 'computedResults' | 'date' | 'situation'
 >
 
 export type SimulationAsyncEvent = SimulationEvent | ModelToDto<SimulationEvent>
@@ -37,32 +30,15 @@ type SimulationAttributes = BaseSimulationUpsertedEventAttributes &
     | {
         group?: undefined
         administrator?: undefined
-        organisation?: undefined
-        poll?: undefined
         newsletters: SimulationCreateQuery['newsletters']
       }
     | {
         group: Pick<Group, 'id' | 'name'>
         administrator: Pick<User, 'id'>
-        organisation?: undefined
-        poll?: undefined
-        newsletters?: undefined
-      }
-    | {
-        group?: undefined
-        administrator?: undefined
-        organisation: Pick<Organisation, 'name' | 'slug'>
-        poll: Pick<Poll, 'slug'>
         newsletters?: undefined
       }
   )
 
 export class SimulationUpsertedEvent extends EventBusEvent<SimulationAttributes> {
   name = 'SimulationUpsertedEvent'
-}
-
-export class SimulationUpsertedAsyncEvent extends EventBusEvent<
-  SimulationAttributes | ModelToDto<SimulationAttributes>
-> {
-  name = 'SimulationUpsertedAsyncEvent'
 }

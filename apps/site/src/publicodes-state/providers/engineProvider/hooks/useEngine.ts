@@ -4,13 +4,13 @@ import { carboneMetric } from '@/constants/model/metric'
 import { safeEvaluateHelper } from '@/publicodes-state/helpers/safeEvaluateHelper'
 import { safeGetRuleHelper } from '@/publicodes-state/helpers/safeGetRuleHelper'
 import type { Metric, SafeEvaluate, Situation } from '@/publicodes-state/types'
+import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { isServerSide } from '@/utils/nextjs/isServerSide'
 import type {
   DottedName,
   NGCRuleNode,
   NGCRules,
 } from '@incubateur-ademe/nosgestesclimat'
-import { captureException } from '@sentry/nextjs'
 import type { PublicodesExpression } from 'publicodes'
 import Engine from 'publicodes'
 import { useCallback, useMemo } from 'react'
@@ -43,9 +43,9 @@ export function useEngine(
         error(msg: string) {
           console.error(`[publicodes:error] ${msg}`)
 
-          // If it's a situation error, we throw it to sentry
+          // If it's a situation error, we report it to Sentry (as a message) and PostHog
           if (/[ Erreur lors de la mise à jour de la situation ]/.exec(msg)) {
-            captureException(new Error(msg))
+            captureMessageForSentryAndPosthog(msg)
           }
         },
       },

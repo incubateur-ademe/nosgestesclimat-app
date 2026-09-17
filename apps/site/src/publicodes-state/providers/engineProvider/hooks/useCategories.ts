@@ -1,12 +1,12 @@
 import { orderedCategories } from '@/constants/model/orderedCategories'
 import getSomme from '@/publicodes-state/helpers/getSomme'
 import { getSubcategories } from '@/publicodes-state/helpers/getSubcategories'
+import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type {
   DottedName,
   NGCRuleNode,
   NGCRulesNodes,
 } from '@incubateur-ademe/nosgestesclimat'
-import * as Sentry from '@sentry/nextjs'
 import { useMemo } from 'react'
 
 interface Props {
@@ -28,7 +28,7 @@ export function useCategories({
       // eslint-disable-next-line no-console
       console.error(`[useCategories] No rule found for ${root}`)
 
-      Sentry.captureMessage(
+      captureMessageForSentryAndPosthog(
         `[useCategories:categories] No rule found for ${root}`
       )
       return []
@@ -38,7 +38,7 @@ export function useCategories({
       // eslint-disable-next-line no-console
       console.error(`[useCategories] No [somme] found for ${root}`)
 
-      Sentry.captureMessage(
+      captureMessageForSentryAndPosthog(
         `[useCategories:categories] No [somme] found for ${root}`
       )
       return []

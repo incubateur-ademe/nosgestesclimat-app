@@ -1,8 +1,11 @@
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 
-import { getCompletedSimulations } from '@/services/simulations/get-completed-simulations'
-import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { getUserSimulationJourney } from '@/services/simulations/get-user-simulation-journey'
+import {
+  hasCompletedSimulation,
+  hasCurrentSimulationInProgress,
+} from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
 import { redirect } from 'next/navigation'
 import Tutorial from '../_components/Tutorial'
 import ButtonNext from './_components/ButtonNext'
@@ -14,14 +17,12 @@ export default async function TutorielPage({
   const { locale } = await params
   const resolvedSearchParams = await searchParams
 
-  const [currentSimulation, completedSimulations] = await Promise.all([
-    getCurrentSimulation(),
-    getCompletedSimulations({ pageSize: 1 }),
-  ])
+  const journey = await getUserSimulationJourney()
+  const { currentSimulation } = journey
 
   if (
-    (currentSimulation && currentSimulation.progression > 0) ||
-    completedSimulations.length
+    hasCurrentSimulationInProgress(journey) ||
+    hasCompletedSimulation(journey)
   ) {
     redirect(SIMULATOR_PATH)
   }

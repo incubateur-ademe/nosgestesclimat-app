@@ -16,7 +16,6 @@ const anonSessionOptions = {
   ttl: 0,
 }
 
-
 // Options figées sur l'état des cookies legacy au moment de leur pose (avant
 // la refonte authentification, ec804e964^).
 const LEGACY_COOKIE_DELETION_OPTIONS = {

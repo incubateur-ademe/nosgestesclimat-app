@@ -47,9 +47,12 @@ vi.mock('react-i18next', () => ({
 
 // Mock getServerTranslation
 vi.mock('@/helpers/getServerTranslation', () => ({
-  getServerTranslation: vi.fn().mockResolvedValue({
+  getServerTranslation: vi.fn(() => ({
     t: (key: string) => key,
-  }),
+    i18n: {
+      changeLanguage: () => new Promise(() => {}),
+    },
+  })),
 }))
 
 // Mock useClientTranslation
@@ -88,6 +91,7 @@ vi.mock('uuid', () => ({
 // Mock Sentry
 vi.mock('@sentry/nextjs', () => ({
   captureException: vi.fn(),
+  captureMessage: vi.fn(),
   setExtra: vi.fn(),
 }))
 

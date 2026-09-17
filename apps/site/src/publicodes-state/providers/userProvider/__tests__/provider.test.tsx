@@ -17,7 +17,6 @@ const serverSimulation = {
   date: new Date(),
   situation: {},
   foldedSteps: [],
-  actionChoices: {},
   computedResults: { carbone: {}, eau: {} },
   progression: 0,
   model: 'FR-fr-9.9.9',

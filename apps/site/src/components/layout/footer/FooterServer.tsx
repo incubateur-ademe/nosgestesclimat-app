@@ -22,6 +22,8 @@ interface Props {
   className?: string
 }
 
+// `'use cache'` impose une fonction async, même sans `await` à faire :
+// eslint-disable-next-line @typescript-eslint/require-await
 export default async function FooterServer({
   backgroundColor = 'default',
   locale,
@@ -30,7 +32,7 @@ export default async function FooterServer({
   'use cache'
   cacheLife('days')
 
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   return (
     <footer

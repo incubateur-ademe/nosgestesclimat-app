@@ -1,0 +1,4 @@
+.env
+/playwright-report/
+/blob-report/
+/test-results/

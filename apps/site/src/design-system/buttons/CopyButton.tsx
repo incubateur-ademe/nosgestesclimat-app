@@ -2,7 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { captureException } from '@sentry/nextjs'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import isMobile from 'is-mobile'
 import type { PropsWithChildren, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -67,7 +67,7 @@ export default function CopyButton({
         if (err instanceof DOMException && err.name === 'AbortError') {
           return
         }
-        captureException(err)
+        captureErrorForSentryAndPosthog(err)
         setIsError(true)
       }
     }
@@ -85,7 +85,7 @@ export default function CopyButton({
           buttonRef.current?.focus()
         }, 100)
       } catch (err) {
-        captureException(err)
+        captureErrorForSentryAndPosthog(err)
         setIsError(true)
       }
     }

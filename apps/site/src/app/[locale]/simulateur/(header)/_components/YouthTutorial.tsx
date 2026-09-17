@@ -48,7 +48,7 @@ export default function YouthTutorial({ locale, buttonNext }: Props) {
 
           <div className="-mt-4 max-w-36 md:min-w-48">
             <Image
-              src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg"
+              src="/_static/cms/girl_holding_earth_3373a344b0.svg"
               width="180"
               height="150"
               alt=""

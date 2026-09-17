@@ -2,8 +2,11 @@
 
 import { v4 as randomUUID } from 'uuid'
 
+import type {
+  AnonUser,
+  AppUser,
+} from '@nosgestesclimat/core/features/auth/types/user-session'
 import { createAppSession } from './create-app-session'
-import type { AnonUser, AppUser } from './get-user-session'
 import { getUserSession } from './get-user-session'
 
 /**

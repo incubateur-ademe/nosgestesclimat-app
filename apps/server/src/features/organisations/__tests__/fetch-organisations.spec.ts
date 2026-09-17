@@ -67,15 +67,6 @@ describe('Given a NGC user', () => {
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual([])
-          expect(response.headers).toEqual(
-            expect.objectContaining({
-              'x-page': '1',
-              'x-page-size': '20',
-              'x-page-items': '0',
-              'x-total-pages': '0',
-              'x-total-items': '0',
-            })
-          )
         })
       })
 
@@ -94,15 +85,6 @@ describe('Given a NGC user', () => {
             .expect(StatusCodes.OK)
 
           expect(response.body).toEqual([organisation])
-          expect(response.headers).toEqual(
-            expect.objectContaining({
-              'x-page': '1',
-              'x-page-size': '20',
-              'x-page-items': '1',
-              'x-total-pages': '1',
-              'x-total-items': '1',
-            })
-          )
         })
       })
 

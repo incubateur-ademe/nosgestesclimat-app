@@ -3,14 +3,14 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import Image from 'next/image'
 
-export default async function AuthorBlock({
+export default function AuthorBlock({
   author,
   locale,
 }: {
   author?: AuthorType | null
   locale: Locale
 }) {
-  const { t } = await getServerTranslation({ locale })
+  const { t } = getServerTranslation({ locale })
 
   if (!author) return null
 

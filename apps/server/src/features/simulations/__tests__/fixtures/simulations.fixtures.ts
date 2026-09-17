@@ -3,37 +3,18 @@ import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
-import { StatusCodes } from 'http-status-codes'
+import {
+  SituationSchema,
+  type Situation,
+} from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import type { PublicodesExpression } from 'publicodes'
 import Engine, { utils } from 'publicodes'
-import type supertest from 'supertest'
 import * as v from 'valibot'
 import { carbonMetric, waterMetric } from '../../simulation.constant.ts'
 
-import {
-  brevoRemoveFromList,
-  brevoUpdateContact,
-} from '../../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
-import { authHeaders } from '../../../../core/__tests__/fixtures/authentication.fixture.ts'
-import {
-  mswServer,
-  resetMswServer,
-} from '../../../../core/__tests__/fixtures/server.fixture.ts'
-import { EventBus } from '../../../../core/event-bus/event-bus.ts'
 import type { Metric } from '../../../../types/types.ts'
-import type {
-  SimulationCreateInputDto,
-  SimulationParticipantCreateInputDto,
-} from '../../simulations.validator.ts'
-import { SituationSchema } from '../../simulations.validator.ts'
-
-type TestAgent = ReturnType<typeof supertest>
-
-export const CREATE_SIMULATION_ROUTE = '/simulations/v1'
-
-export const FETCH_USER_SIMULATIONS_ROUTE = '/simulations/v1'
-
-export const FETCH_USER_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
+import { type SimulationParticipantCreateInputDto } from '../../simulations.validator.ts'
 
 export const DELETE_SIMULATION_ROUTE = '/simulations/v1/:simulationId'
 
@@ -153,7 +134,7 @@ const computeMetricResults = (metric: Metric, parsedRules: RuleName) => ({
   ),
 })
 
-const getComputedResults = (situation: SituationSchema) => {
+const getComputedResults = (situation: Situation) => {
   engine.setSituation(situation)
 
   const parsedRules = engine.getParsedRules()
@@ -188,7 +169,6 @@ export const getSimulationPayload = ({
   situation,
   foldedSteps,
   progression,
-  actionChoices,
   computedResults,
   additionalQuestionsAnswers,
 }: Partial<SimulationParticipantCreateInputDto> = {}): SimulationParticipantCreateInputDto => {
@@ -204,47 +184,45 @@ export const getSimulationPayload = ({
     situation,
     foldedSteps,
     progression: progression || 1,
-    actionChoices,
     computedResults,
     additionalQuestionsAnswers,
   }
 }
 
 export const createSimulation = async ({
-  agent,
   userId,
   email,
   simulation = {},
 }: {
-  agent: TestAgent
   userId?: string
   email?: string
-  simulation?: Partial<SimulationCreateInputDto>
+  simulation?: Partial<SimulationParticipantCreateInputDto>
 }) => {
   userId = userId ?? faker.string.uuid()
-  const payload: SimulationCreateInputDto = getSimulationPayload(simulation)
+  const payload = getSimulationPayload(simulation)
 
-  if (email) {
-    mswServer.use(
-      brevoUpdateContact(),
-      brevoRemoveFromList(22, { invalid: true }),
-      brevoRemoveFromList(32, { invalid: true }),
-      brevoRemoveFromList(36, { invalid: true }),
-      brevoRemoveFromList(40, { invalid: true }),
-      brevoRemoveFromList(41, { invalid: true }),
-      brevoRemoveFromList(42, { invalid: true })
-    )
+  await prisma.user.upsert({
+    where: { id: userId },
+    create: { id: userId },
+    update: {},
+  })
+
+  const createdSimulation = await prisma.simulation.create({
+    data: {
+      id: payload.id,
+      model: payload.model,
+      date: (payload.date ?? new Date()) as Date,
+      situation: payload.situation as never,
+      foldedSteps: (payload.foldedSteps ?? []) as never,
+      progression: payload.progression,
+      computedResults: payload.computedResults as never,
+      user: { connect: { id: userId } },
+      ...(email ? { verifiedUser: { connect: { email } } } : {}),
+    },
+  })
+
+  return {
+    id: createdSimulation.id,
+    user: { id: userId },
   }
-
-  const request = agent
-    .post(CREATE_SIMULATION_ROUTE)
-    .set(authHeaders({ userId, email }))
-
-  const response = await request.send(payload).expect(StatusCodes.CREATED)
-
-  await EventBus.flush()
-
-  resetMswServer()
-
-  return response.body
 }
