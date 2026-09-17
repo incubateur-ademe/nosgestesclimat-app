@@ -1,5 +1,5 @@
 import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
-import ErrorPage from '@/components/layout/ErrorPage'
+import ErrorIllustration from '@/components/layout/ErrorIllustration'
 import Trans from '@/components/translation/trans/TransClient'
 import { noIndexObject } from '@/constants/metadata'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -30,21 +30,28 @@ export function generateMetadata() {
 
 export default function AppCrash() {
   return (
-    <ErrorPage
-      illustrationSrc="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg"
-      title={
-        <Trans>
-          Face à une affluence très élevée, notre site connaît quelques
-          ralentissements.
-        </Trans>
-      }
-      description={
-        <Trans>
-          Nous mettons tout en œuvre pour rétablir l'accès rapidement,
-          n'hésitez pas à réessayer dans quelques minutes. Merci de votre
-          patience et de votre mobilisation pour le climat !
-        </Trans>
-      }>
+    <>
+      <main className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-4 py-8 text-center md:max-h-[70vh] md:justify-center md:py-12">
+        <ErrorIllustration src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg" />
+
+        <h1 className="mb-0 text-4xl font-bold tracking-tight text-balance md:text-5xl">
+          <Trans>
+            Face à une affluence très élevée, notre site connaît quelques
+            ralentissements.
+          </Trans>
+        </h1>
+
+        <p className="mb-0 max-w-xl text-lg">
+          <Trans>
+            Nous mettons tout en œuvre pour rétablir l'accès rapidement,
+            n'hésitez pas à réessayer dans quelques minutes. Merci de votre
+            patience et de votre mobilisation pour le climat !
+          </Trans>
+        </p>
+      </main>
+
+      {/* Sibling of `<main>`, outside its centered `max-w-6xl` column, so the
+          band can span the full page width. */}
       <div className="bg-primary-100 mt-12 w-full px-4 pt-12 pb-10 text-center md:px-10">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-6">
           <h2 className="mb-0 text-2xl font-bold tracking-tight text-balance md:text-3xl">
@@ -63,6 +70,6 @@ export default function AppCrash() {
           />
         </div>
       </div>
-    </ErrorPage>
+    </>
   )
 }
