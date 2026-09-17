@@ -1,4 +1,5 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
+import Button from '@/design-system/buttons/Button'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
@@ -9,6 +10,7 @@ import type { SimulationComputationStatus } from '@nosgestesclimat/core/features
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
+import PlusIcon from '../icons/PlusIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionTracker from './ActionTracker'
 import { ThemeBadge } from './ThemeBadge'
@@ -108,7 +110,7 @@ export default function HighlightedActionCard({
           ) : null}
         </div>
 
-        <div className="flex">
+        <div className="flex gap-4">
           <ButtonLinkServer href={href} size="sm" className="h-12 gap-2 px-6">
             <Trans
               locale={locale}
@@ -120,6 +122,15 @@ export default function HighlightedActionCard({
             <span className="sr-only">{` "${action.title}"`}</span>
             <ArrowNarrowRightIcon />
           </ButtonLinkServer>
+
+          <Button color="secondary">
+            <Trans
+              locale={locale}
+              i18nKey="actions.components.actionCard.highlighted.addButton">
+              <PlusIcon className="stroke-primary-700 mr-2 inline-block" />{' '}
+              Ajouter
+            </Trans>
+          </Button>
         </div>
       </div>
 

@@ -37,6 +37,7 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   rank?: number
   from?: 'fin' | 'mon-espace' | 'index'
   source?: ActionEventSource
+  cta?: React.ReactNode
 }
 
 export default function ActionCard({
@@ -50,6 +51,7 @@ export default function ActionCard({
   source,
   withCta,
   withDescription,
+  cta,
   ...props
 }: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
   const rankEmoji = rankToEmoji(rank)
@@ -127,21 +129,24 @@ export default function ActionCard({
           </span>
         </div>
       ) : null}
-      <Link
-        href={href}
-        className={twMerge(
-          'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
-          styles.actionLink
-        )}>
-        <span className="sr-only">
-          <Trans
-            locale={locale}
-            i18nKey="actions.components.actionCard.link"
-            values={{ actionTitle: action.title }}>
-            Voir l'action<span className="sr-only"> "{'{{actionTitle}}'}"</span>
-          </Trans>
-        </span>
-      </Link>
+      {cta ?? (
+        <Link
+          href={href}
+          className={twMerge(
+            'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
+            styles.actionLink
+          )}>
+          <span className="sr-only">
+            <Trans
+              locale={locale}
+              i18nKey="actions.components.actionCard.link"
+              values={{ actionTitle: action.title }}>
+              Voir l'action
+              <span className="sr-only"> "{'{{actionTitle}}'}"</span>
+            </Trans>
+          </span>
+        </Link>
+      )}
     </article>
   )
 }

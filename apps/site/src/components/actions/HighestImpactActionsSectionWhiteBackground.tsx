@@ -31,7 +31,7 @@ export default function HighestImpactActionsSectionWhiteBackground({
       aria-labelledby={headingId}
       className={twMerge('flex flex-col gap-4 md:gap-8', className)}>
       <div>
-        <h2
+        <h1
           id={headingId}
           className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
           <Trans
@@ -39,7 +39,7 @@ export default function HighestImpactActionsSectionWhiteBackground({
             i18nKey="actions.components.highestImpactActionsSection.testWhiteBackground.title">
             Voici vos 3 actions qui auront le plus d'impact
           </Trans>
-        </h2>
+        </h1>
         <p className="mb-0 text-lg/normal">
           <Trans
             locale={locale}
