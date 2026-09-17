@@ -2189,6 +2189,8 @@ entries:
   event.dynamicCounter.target.title.topped.lock: Objectif atteint
   event.dynamicCounter.target.title.over: Target exceeded
   event.dynamicCounter.target.title.over.lock: Objectif dépassé
+  footer.ademe.ariaLabel: ADEME (opens in a new window)
+  footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
   tutorial.email.title.youthContest: Your email address for the prize draw
   tutorial.email.title.youthContest.lock: Ton adresse e-mail pour le tirage au sort
   tutorial.email.title.defaultContest: Your email address for the prize draw
