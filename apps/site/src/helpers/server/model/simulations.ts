@@ -15,8 +15,6 @@ export interface Simulation {
   computedResults: ComputedResults
   progression: number
   model: string
-  polls?: { id: string; slug: string; name?: string }[]
-  groups?: { id: string }[]
   /** Server-owned: absent on simulations that have not been persisted yet. */
   updatedAt?: string
 }

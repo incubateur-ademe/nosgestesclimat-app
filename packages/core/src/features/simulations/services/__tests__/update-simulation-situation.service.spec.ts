@@ -77,8 +77,6 @@ describe('updateSimulationSituation', () => {
         progression: 0.5,
         computedResults,
         date: new Date('2024-01-01'),
-        groups: [{ id: group.id }],
-        polls: [{ id: poll.id, slug: 'test-poll', name: 'Test Poll' }],
       })
     )
   })

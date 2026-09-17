@@ -53,8 +53,18 @@ describe('completeSimulation', () => {
     expect(result).toEqual({
       success: true,
       data: {
-        groups: [{ id: group.id }],
-        polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
+        groups: [group],
+        polls: [
+          {
+            id: poll.id,
+            slug: poll.slug,
+            name: poll.name,
+            organisation: {
+              name: poll.organisation.name,
+              slug: poll.organisation.slug,
+            },
+          },
+        ],
       },
     })
 
@@ -74,8 +84,6 @@ describe('completeSimulation', () => {
       createdAt: simulation.createdAt,
       updatedAt: expect.any(Date),
       userId: user.id,
-      polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
-      groups: [{ id: group.id }],
     })
     expect(await findSimulationComputation(simulation.id)).not.toBeNull()
   })
@@ -548,10 +556,13 @@ describe('completeSimulation', () => {
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
       expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 0,
-        error,
-      })
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 0,
+          error,
+        }
+      )
     })
 
     it('reports a failed email without failing the completion', async () => {
@@ -577,10 +588,13 @@ describe('completeSimulation', () => {
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
       expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 1,
-        error,
-      })
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 1,
+          error,
+        }
+      )
     })
   })
 })

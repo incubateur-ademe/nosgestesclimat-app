@@ -42,22 +42,6 @@ describe('toSimulationDto', () => {
     expect(dto.computedResults).toEqual(entity.computedResults)
   })
 
-  it('passes through polls and groups when present', () => {
-    const polls = [{ id: 'poll-1', slug: 'test-poll', name: 'Test Poll' }]
-    const groups = [{ id: 'group-1' }]
-    const dto = toSimulationDto(buildEntity({ polls, groups }))
-
-    expect(dto.polls).toEqual(polls)
-    expect(dto.groups).toEqual(groups)
-  })
-
-  it('omits polls and groups when absent', () => {
-    const dto = toSimulationDto(buildEntity())
-
-    expect(dto.polls).toBeUndefined()
-    expect(dto.groups).toBeUndefined()
-  })
-
   it('does not set persona', () => {
     const dto = toSimulationDto(buildEntity())
 

@@ -37,6 +37,13 @@ vi.mock(
   })
 )
 
+vi.mock(
+  '@nosgestesclimat/core/features/polls/stats/services/enqueue-poll-stats-computation',
+  () => ({
+    createEnqueuePollStatsComputation: vi.fn(),
+  })
+)
+
 vi.mock('next/cache', () => ({
   revalidatePath: nextMock.revalidatePath,
 }))

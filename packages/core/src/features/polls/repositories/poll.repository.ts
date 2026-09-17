@@ -23,7 +23,7 @@ const pollSummarySelect = {
   id: true,
   name: true,
   slug: true,
-  organisation: { select: { slug: true } },
+  organisation: { select: { name: true, slug: true } },
 } as const
 
 export const findPollById = async (id: string): Promise<Poll | null> => {
@@ -56,4 +56,20 @@ export const findPollSummaryById = async ({
     where: { id },
     select: pollSummarySelect,
   })
+}
+
+/**
+ * Return polls sorted by most recent participation
+ */
+export const findManyPollSummariesBySimulationId = async ({
+  simulationId,
+}: {
+  simulationId: string
+}): Promise<PollSummary[]> => {
+  const simulationPolls = await prisma.simulationPoll.findMany({
+    where: { simulationId: simulationId },
+    orderBy: { createdAt: 'desc' },
+    select: { poll: { select: pollSummarySelect } },
+  })
+  return simulationPolls.map((sp) => sp.poll)
 }

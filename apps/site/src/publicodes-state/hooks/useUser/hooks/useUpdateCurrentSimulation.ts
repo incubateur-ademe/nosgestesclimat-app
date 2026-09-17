@@ -21,7 +21,6 @@ export default function useUpdateCurrentSimulation({ setSimulation }: Props) {
       foldedStepToAdd,
       computedResults,
       progression,
-      groupToDelete,
     }: UpdateCurrentSimulationProps) => {
       setSimulation((prevSimulation) => {
         if (!prevSimulation) return prevSimulation
@@ -56,12 +55,6 @@ export default function useUpdateCurrentSimulation({ setSimulation }: Props) {
 
         if (progression !== undefined) {
           simulationToUpdate.progression = progression
-        }
-
-        if (groupToDelete && simulationToUpdate.groups) {
-          simulationToUpdate.groups = simulationToUpdate.groups.filter(
-            (group) => group.id !== groupToDelete
-          )
         }
 
         return simulationToUpdate

@@ -9,10 +9,12 @@ import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import { findGroupById } from '../../groups/repositories/group.repository.ts'
+import { findManyGroupsBySimulationId } from '../../groups/repositories/group.repository.ts'
+import type { Group } from '../../groups/types/group.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
-import { findPollById } from '../../polls/repositories/poll.repository.ts'
+import { findManyPollSummariesBySimulationId } from '../../polls/repositories/poll.repository.ts'
 import { enqueuePollStatsComputation } from '../../polls/stats/services/enqueue-poll-stats-computation.ts'
+import type { PollSummary } from '../../polls/types/poll.ts'
 import { UnsupportedModelError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
@@ -35,7 +37,6 @@ import {
   findSimulationById,
   updateSimulation,
 } from '../repository/simulation.repository.ts'
-import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 interface CompleteSimulationDependencies {
@@ -60,6 +61,7 @@ export function createCompleteSimulation({
   const sendGroupCreatedEmail = createSendGroupCreatedEmail(sendEmail)
   const sendGroupJoinedEmail = createSendGroupJoinedEmail(sendEmail)
   const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
+  const settle = createSettle({ logger, captureException })
 
   return async function completeSimulation({
     userSession,
@@ -78,7 +80,7 @@ export function createCompleteSimulation({
     computedResults: ComputedResults
     locale: ISOSupportedLanguage
   }): Promise<
-    Result<Pick<Simulation, 'groups' | 'polls'>, CompleteSimulationError>
+    Result<{ groups: Group[]; polls: PollSummary[] }, CompleteSimulationError>
   > {
     const userId = userSession.id
 
@@ -99,6 +101,10 @@ export function createCompleteSimulation({
       logger.error(exception.message, { model: exception.model })
       captureException(exception)
     }
+
+    const polls = await findManyPollSummariesBySimulationId({
+      simulationId,
+    })
 
     const updated = await transaction(async (tx) => {
       const update = await updateSimulation(
@@ -121,8 +127,9 @@ export function createCompleteSimulation({
 
       // The completed simulation changes the poll totals; every poll it belongs
       // to is queued for a full recomputation.
-      for (const { id } of simulation.polls ?? []) {
-        await enqueuePollStatsComputation(id, tx)
+      for (const { id } of polls) {
+        const enqueued = await enqueuePollStatsComputation(id, tx)
+        if (!enqueued.success) return enqueued
       }
 
       return success()
@@ -130,9 +137,13 @@ export function createCompleteSimulation({
 
     if (!updated.success) return updated
 
+    const groups = await findManyGroupsBySimulationId({
+      simulationId,
+    })
+
     backgroundTaskRunner(async () => {
       if (!userSession.isAuth) return
-      const promises = await Promise.allSettled([
+      await settle('side effects', [
         addOrUpdateContact({
           email: userSession.email,
           attributes: {
@@ -143,35 +154,30 @@ export function createCompleteSimulation({
         }),
         (async () => {
           // The most recent membership is the one the user just completed.
-          const lastPoll = simulation.polls?.at(-1)
+          const lastPoll = polls[0]
           if (lastPoll) {
-            const poll = await findPollById(lastPoll.id)
-            invariant(poll)
             return sendPollJoinedEmail({
-              organisation: poll.organisation,
+              organisation: lastPoll.organisation,
               simulationId,
               locale,
               origin,
               email: userSession.email,
-              poll,
+              poll: lastPoll,
             })
           }
 
           // Only try to find group if no poll was found (polls are more frequent than groups)
-          const lastGroup = simulation.groups?.at(-1)
+          const lastGroup = groups[0]
           if (lastGroup) {
-            const [group, user] = await Promise.all([
-              findGroupById(lastGroup.id),
-              findUserById(userId),
-            ])
-            invariant(group && user && user.email) // safe as retrieve by reliable ids
+            const user = await findUserById(userId)
+            invariant(user && user.email) // safe as retrieve by reliable ids
             const params = {
-              group,
+              group: lastGroup,
               origin,
               user,
             }
 
-            return group.administratorId === userId
+            return lastGroup.administratorId === userId
               ? sendGroupCreatedEmail(params)
               : sendGroupJoinedEmail(params)
           }
@@ -179,24 +185,37 @@ export function createCompleteSimulation({
           return success()
         })(),
       ])
-
-      for (const [index, promise] of promises.entries()) {
-        let error: unknown
-        if (promise.status === 'rejected') error = promise.reason
-        else if (!promise.value.success) error = promise.value.error
-        if (error) {
-          captureException(error)
-          logger.error('Failed to run side effect', {
-            index,
-            error,
-          })
-        }
-      }
     })
 
     return success({
-      groups: simulation.groups,
-      polls: simulation.polls,
+      groups,
+      polls,
     })
   }
 }
+
+/**
+ * Waits for every side effect and reports the ones that failed, either by
+ * rejecting or by resolving to a failure: none of them fails the completion.
+ */
+const createSettle =
+  ({
+    logger,
+    captureException,
+  }: {
+    logger: Logger
+    captureException: CaptureException
+  }) =>
+  async (label: string, sideEffects: Promise<Result<void> | void>[]) => {
+    const results = await Promise.allSettled(sideEffects)
+
+    for (const [index, result] of results.entries()) {
+      let error: unknown
+      if (result.status === 'rejected') error = result.reason
+      else if (result.value && !result.value.success) error = result.value.error
+      if (error) {
+        captureException(error)
+        logger.error(`Failed to settle: ${label}`, { index, error })
+      }
+    }
+  }

@@ -61,8 +61,6 @@ describe('getSimulation', () => {
       createdAt: simulation.createdAt,
       updatedAt: simulation.updatedAt,
       userId: user.id,
-      polls: [],
-      groups: [],
     })
   })
 
@@ -111,51 +109,6 @@ describe('getSimulation', () => {
     const result = await getSimulation({ id: simulation.id, userId: user.id })
 
     expect(result).toBeNull()
-  })
-
-  it('hydrates polls and groups when present', async () => {
-    const user = await userFactory.create()
-    const simulation = await simulationFactory
-      .withModelRegion('FR')
-      .withProgression(0.5)
-      .withValidComputedResults()
-      .params({ userId: user.id })
-      .create()
-
-    const organisation = await prisma.organisation.create({
-      data: { name: 'Test Org', slug: 'test-org' },
-    })
-    const poll = await prisma.poll.create({
-      data: {
-        name: 'Test Poll',
-        slug: 'test-poll',
-        organisationId: organisation.id,
-        customAdditionalQuestions: [],
-      },
-    })
-    await prisma.simulationPoll.create({
-      data: { pollId: poll.id, simulationId: simulation.id },
-    })
-
-    const group = await prisma.group.create({
-      data: { name: 'Test Group', emoji: '🌍' },
-    })
-    await prisma.groupParticipant.create({
-      data: {
-        userId: user.id,
-        simulationId: simulation.id,
-        groupId: group.id,
-      },
-    })
-
-    const result = await getSimulation({ id: simulation.id, userId: user.id })
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        polls: [{ id: poll.id, slug: 'test-poll', name: 'Test Poll' }],
-        groups: [{ id: group.id }],
-      })
-    )
   })
 
   it('delegates migration to migrateSimulationIfNeeded', async () => {
