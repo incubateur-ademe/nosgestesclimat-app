@@ -1,10 +1,10 @@
 import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
-import ErrorIllustration from '@/components/layout/ErrorIllustration'
 import Trans from '@/components/translation/trans/TransClient'
 import { noIndexObject } from '@/constants/metadata'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
+import Image from 'next/image'
 
 // Served outside `[locale]` (root), reached through nginx `error_page`: pin the
 // default locale.
@@ -32,7 +32,17 @@ export default function AppCrash() {
   return (
     <>
       <main className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-4 py-8 text-center md:max-h-[70vh] md:justify-center md:py-12">
-        <ErrorIllustration src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg" />
+        {/* `unoptimized`: nginx sert cette page pendant une panne, donc elle ne
+            peut pas dépendre de l'optimiseur d'images de Next (`/_next/image`),
+            qui fait partie de l'app. */}
+        <Image
+          src="https://nosgestesclimat-prod.s3.fr-par.scw.cloud/cms/girl_holding_earth_3373a344b0.svg"
+          width={280}
+          height={280}
+          alt=""
+          priority
+          unoptimized
+        />
 
         <h1 className="mb-0 text-4xl font-bold tracking-tight text-balance md:text-5xl">
           <Trans>
