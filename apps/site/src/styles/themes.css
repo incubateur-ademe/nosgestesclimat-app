@@ -2,8 +2,6 @@
 @import '@radix-ui/themes/styles.css';
 @import 'shadcn/tailwind.css';
 
-@config '../../tailwind.config.js';
-
 @theme {
   --color-heroLightBackground: #f0f8ff;
   --color-default: #1a1a1a;

@@ -3,8 +3,8 @@ import { twMerge } from 'tailwind-merge'
 
 const imageClassSize = {
   xs: 'w-6',
-  sm: 'w-[38px]',
-  md: 'w-[42px] max-tiny:w-8 md:w-[50px]',
+  sm: 'w-9.5',
+  md: 'w-10.5 max-tiny:w-8 md:w-12.5',
 }
 const textClassSize = {
   xs: 'ml-1 text-xs',
