@@ -22,12 +22,12 @@ const mockResults = {
 }
 
 export default function StatisticsBlocks({
-  participants,
+  participantsCount,
   anonymity,
   computedResults,
   isAdmin,
 }: {
-  participants: number
+  participantsCount: number
   anonymity: PollAnonymity
   computedResults?: ComputedResults | null
   isAdmin: boolean
@@ -40,7 +40,7 @@ export default function StatisticsBlocks({
   if (!result) return null
 
   const { formattedValue, unit } = formatFootprint(
-    result.carbone.bilan / participants,
+    result.carbone.bilan / participantsCount,
     {
       metric: carboneMetric,
       maximumFractionDigits: 1,
@@ -53,12 +53,12 @@ export default function StatisticsBlocks({
     <div className="grid w-full auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="bg-primary-100 rounded-xl p-8">
         <p className="text-primary-700 text-4xl font-bold">
-          {participants.toLocaleString(locale)}
+          {participantsCount.toLocaleString(locale)}
         </p>
 
         <p className="text-xl">
           {t('pollResults.participantsCount', 'Simulation terminée', {
-            count: participants,
+            count: participantsCount,
             defaultValue_other: 'Simulations terminées',
             defaultValue_many: 'Simulations terminées',
           })}

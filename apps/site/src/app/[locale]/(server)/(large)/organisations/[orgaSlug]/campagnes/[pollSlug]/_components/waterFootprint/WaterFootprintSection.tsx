@@ -11,6 +11,9 @@ import WaterFootprintCard from './waterFootprintSection/WaterFootprintCard'
 const DEFAULT_LEARN_MORE_HREF =
   '/blog/environnement/lexique-eau-tout-comprendre'
 
+// The stored water footprint is a yearly total, the card shows a daily figure.
+const DAYS_PER_YEAR = 365
+
 interface Props {
   computedResults?: ComputedResults | null
   participants: number
@@ -27,7 +30,9 @@ export default function WaterFootprintSection({
   const locale = useLocale()
 
   const meanWaterFootprintLitresPerDay =
-    (computedResults?.eau.bilan ?? 0) / Math.max(participants, 1) / 365
+    (computedResults?.eau.bilan ?? 0) /
+    Math.max(participants, 1) /
+    DAYS_PER_YEAR
 
   if (meanWaterFootprintLitresPerDay <= 0) {
     return null

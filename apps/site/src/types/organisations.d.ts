@@ -72,8 +72,8 @@ export type OrganisationPoll = BaseOrganisationPoll & {
 }
 
 /**
- * Ce qu'il faut d'un test collectif pour l'adresser : sa propre adresse, et
- * celle de son organisation.
+ * What is needed to address a collective test: its own address, and that of its
+ * organisation.
  */
 export interface PollIdentifier {
   slug: string

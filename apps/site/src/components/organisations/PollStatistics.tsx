@@ -62,7 +62,7 @@ export default function PollStatistics({
 
       <section className="relative mb-8 flex gap-4">
         <StatisticsBlocks
-          participants={participants}
+          participantsCount={participants}
           anonymity={anonymity}
           computedResults={computedResults}
           isAdmin={isAdmin}
