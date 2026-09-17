@@ -72,6 +72,16 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
       page.getByTestId('poll-admin-section-see-parameters-button')
     ).toBeVisible()
   })
+
+  test('reaches its campaign from the legacy results address', async ({
+    page,
+    poll,
+    organisation,
+  }) => {
+    await page.goto(`${organisation.url}/resultats-detailles`)
+
+    await expect(page).toHaveURL(poll.url)
+  })
 })
 
 test.describe('A new user', () => {

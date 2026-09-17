@@ -1,76 +1,41 @@
-'use client'
-
 import SettingsIcon from '@/components/icons/SettingsIcon'
 import OrganisationFilAriane from '@/components/layout/FilAriane'
-import PollLoader from '@/components/organisations/PollLoader'
 import PollStatistics from '@/components/organisations/PollStatistics'
-import Trans from '@/components/translation/trans/TransClient'
-import { pollDashboardClickParameters } from '@/constants/tracking/pages/pollDashboard'
-import { captureClickPollSettings } from '@/constants/tracking/posthogTrackers'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
+import Trans from '@/components/translation/trans/TransServer'
+import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import Title from '@/design-system/layout/Title'
-import { useFetchPublicPoll } from '@/hooks/organisations/polls/useFetchPublicPoll'
-import useFetchOrganisation from '@/hooks/organisations/useFetchOrganisation'
-import { useHandleRedirectFromLegacy } from '@/hooks/organisations/useHandleRedirectFromLegacy'
-import { isOrganisationAdmin } from '@/services/organisations/is-organisation-admin'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
-import { useQuery } from '@tanstack/react-query'
+import { getServerTranslation } from '@/helpers/getServerTranslation'
+import { getPollResult } from '@/services/polls/get-poll-result'
 import dayjs from 'dayjs'
-import { useParams, useSearchParams } from 'next/navigation'
-import { useTranslation } from 'react-i18next'
 import CommunicationKit from './_components/CommunicationKit'
-import PollNotFound from './_components/PollNotFound'
 import ShareSection from './_components/ShareSection'
 import FootprintDistribution from './_components/footPrintDistribution/FootprintDistribution'
 import WaterFootprintSection from './_components/waterFootprint/WaterFootprintSection'
 
-export default function CampagnePage() {
-  const { orgaSlug, pollSlug } = useParams()
-  const searchParams = useSearchParams()
-  const isRedirectFromLegacy = Boolean(searchParams.get('isRedirectFromLegacy'))
-
-  useHandleRedirectFromLegacy()
-
-  const { data: poll, isLoading: isLoadingPoll } = useFetchPublicPoll({
-    enabled: !isRedirectFromLegacy,
-  })
+export default async function CampagnePage({
+  params,
+}: PageProps<'/[locale]/organisations/[orgaSlug]/campagnes/[pollSlug]'>) {
+  const { locale, orgaSlug, pollSlug } = await params
 
   const {
-    name,
-    organisation: pollOrganisation,
-    createdAt,
-    simulations,
-    computedResults,
-    userComputedResults,
-    funFacts,
-  } = poll ?? {}
-
-  // Organisation can only be fetched by a authentified organisation administrator
-  const { data: organisation } = useFetchOrganisation()
-
-  const { data: isAdmin = false } = useQuery({
-    queryKey: ['isOrganisationAdmin', orgaSlug],
-    queryFn: () => isOrganisationAdmin(orgaSlug as string),
-    enabled: !!orgaSlug,
+    poll,
+    participantsCount,
+    anonymity,
+    userParticipation,
+    cooldownSeconds,
+    stats,
+    isAdmin,
+  } = await getPollResult({
+    organisationSlug: orgaSlug,
+    pollIdOrSlug: pollSlug,
   })
 
-  const { t } = useTranslation()
-
-  if (isLoadingPoll) {
-    return <PollLoader />
-  }
-
-  if (!poll) {
-    return <PollNotFound />
-  }
+  const { t } = getServerTranslation({ locale })
 
   return (
     <>
       <OrganisationFilAriane
-        organisation={organisation}
+        organisation={poll.organisation}
         poll={poll}
         t={t}
         isAdmin={isAdmin}
@@ -78,83 +43,77 @@ export default function CampagnePage() {
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
         <div className="flex flex-col items-start justify-between sm:flex-row md:items-center">
           <Title
-            title={<span className="text-primary-700">{name}</span>}
+            title={<span className="text-primary-700">{poll.name}</span>}
             subtitle={
-              poll ? (
-                <span>
-                  <Trans>Test collectif créé par</Trans>{' '}
-                  <strong className="text-primary-700">
-                    {pollOrganisation?.name}
-                  </strong>
-                  <Trans>, le</Trans> {dayjs(createdAt).format('DD/MM/YYYY')}
-                </span>
-              ) : (
-                ''
-              )
+              <span>
+                <Trans locale={locale}>Test collectif créé par</Trans>{' '}
+                <strong className="text-primary-700">
+                  {poll.organisation.name}
+                </strong>
+                <Trans locale={locale}>, le</Trans>{' '}
+                {dayjs(poll.createdAt).format('DD/MM/YYYY')}
+              </span>
             }
           />
 
           {isAdmin && (
             <div>
-              <ButtonLink
+              <ButtonLinkServer
                 href={`/organisations/${orgaSlug}/campagnes/${pollSlug}/parametres`}
-                onClick={() => {
-                  trackMatomoEvent__deprecated(pollDashboardClickParameters)
-                  trackPosthogEvent(captureClickPollSettings)
-                }}
                 color="secondary"
                 size="sm"
                 data-testid="poll-admin-section-see-parameters-button"
                 className="flex items-center">
                 <SettingsIcon className="fill-primary-700 mr-2" />
 
-                <Trans>Voir les paramètres</Trans>
-              </ButtonLink>
+                <Trans locale={locale}>Voir les paramètres</Trans>
+              </ButtonLinkServer>
             </div>
           )}
         </div>
 
         <div className="mt-8">
-          {isAdmin && simulations && simulations.count <= 0 && (
+          {isAdmin && participantsCount <= 0 && (
             <ShareSection
               className="mt-0"
               poll={poll}
               title={
-                <Trans className="pollResults.adminSection.customTitle">
+                <Trans locale={locale}>
                   C'est prêt ! Voici votre lien à partager
                 </Trans>
               }
             />
           )}
 
-          {isAdmin && simulations?.count === 0 && <CommunicationKit />}
+          {isAdmin && participantsCount === 0 && <CommunicationKit />}
 
           <PollStatistics
-            simulationsCount={simulations?.finished ?? 0}
-            computedResults={computedResults}
-            funFacts={funFacts}
-            title={<Trans>Résultats de votre test collectif</Trans>}
+            participantsCount={participantsCount}
+            anonymity={anonymity}
+            cooldownSeconds={cooldownSeconds}
+            computedResults={stats?.computedResults ?? null}
+            funFacts={stats?.funFacts ?? null}
+            title={
+              <Trans locale={locale}>Résultats de votre test collectif</Trans>
+            }
             poll={poll}
             isAdmin={isAdmin}
           />
 
           <FootprintDistribution
-            computedResults={computedResults}
-            userComputedResults={userComputedResults}
-            simulationsCount={simulations?.finished ?? 0}
-            organisationName={pollOrganisation?.name}
+            computedResults={stats?.computedResults ?? null}
+            userComputedResults={userParticipation?.computedResults}
+            participantsCount={participantsCount}
+            organisationName={poll.organisation.name}
+            isAdmin={isAdmin}
           />
 
           <WaterFootprintSection
-            meanWaterFootprintLitresPerDay={
-              (computedResults?.eau?.bilan ?? 0) /
-              Math.max(simulations?.finished ?? 0, 1) /
-              365
-            }
-            simulationsCount={simulations?.finished ?? 0}
+            computedResults={stats?.computedResults ?? null}
+            participantsCount={participantsCount}
           />
 
-          {isAdmin && simulations && simulations.count > 0 && (
+          {isAdmin && participantsCount > 0 && (
             <>
               <ShareSection poll={poll} />
               <CommunicationKit />

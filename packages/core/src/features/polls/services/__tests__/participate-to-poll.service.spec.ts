@@ -380,10 +380,7 @@ const setup = () => {
 
 const campaign = async () => {
   const organisation = await organisationFactory.create()
-  const poll = await pollFactory.create(
-    {},
-    { transient: { organisationId: organisation.id } }
-  )
+  const poll = await pollFactory.withOrganisation(organisation).create()
   return { poll, organisation }
 }
 

@@ -1,17 +1,16 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
-import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
-import { getPoll } from '../get-poll.service.ts'
+import { getPollSummary } from '../get-poll-summary.service.ts'
 
-describe('getPoll', () => {
+describe('getPollSummary', () => {
   afterEach(async () => {
     await prisma.poll.deleteMany()
     await prisma.organisation.deleteMany()
   })
 
   it('returns null when no poll matches', async () => {
-    const result = await getPoll({ pollIdOrSlug: 'does-not-exist' })
+    const result = await getPollSummary({ pollIdOrSlug: 'does-not-exist' })
 
     expect(result).toBeNull()
   })
@@ -19,7 +18,7 @@ describe('getPoll', () => {
   it('finds the poll by id', async () => {
     const poll = await pollFactory.create()
 
-    const result = await getPoll({ pollIdOrSlug: poll.id })
+    const result = await getPollSummary({ pollIdOrSlug: poll.id })
 
     expect(result).toEqual(expect.objectContaining({ id: poll.id }))
   })
@@ -27,7 +26,7 @@ describe('getPoll', () => {
   it('finds the poll by slug', async () => {
     const poll = await pollFactory.create()
 
-    const result = await getPoll({ pollIdOrSlug: poll.slug })
+    const result = await getPollSummary({ pollIdOrSlug: poll.slug })
 
     expect(result).toEqual(expect.objectContaining({ id: poll.id }))
   })
@@ -40,32 +39,28 @@ describe('getPoll', () => {
       slug: 'cslugthatlookslikeapollid',
     })
 
-    const result = await getPoll({ pollIdOrSlug: poll.slug })
+    const result = await getPollSummary({ pollIdOrSlug: poll.slug })
 
     expect(result).toBeNull()
   })
 
-  it('exposes the poll and its organisation', async () => {
-    const computedResults = computedResultsFactory.valid().build()
+  it('exposes the poll, how it runs, and its organisation', async () => {
     const poll = await pollFactory.create({
       mode: 'scolaire',
       expectedNumberOfParticipants: 42,
-      computedResults,
     })
 
-    const result = await getPoll({ pollIdOrSlug: poll.slug })
+    const result = await getPollSummary({ pollIdOrSlug: poll.slug })
 
     expect(result).toEqual({
       id: poll.id,
       name: poll.name,
       slug: poll.slug,
       mode: 'scolaire',
-      expectedNumberOfParticipants: 42,
-      funFacts: null,
-      computedResults,
-      createdAt: poll.createdAt,
-      updatedAt: poll.updatedAt,
-      organisation: poll.organisation,
+      organisation: {
+        name: poll.organisation.name,
+        slug: poll.organisation.slug,
+      },
     })
   })
 })

@@ -2,6 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
+import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { OrganisationPoll } from '@/types/organisations'
 import dayjs from 'dayjs'
 import { useParams } from 'next/navigation'
@@ -13,6 +14,7 @@ interface Props {
 
 export default function PollCard({ poll }: Props) {
   const { orgaSlug } = useParams()
+  const { t } = useClientTranslation()
 
   if (!poll) return null
 
@@ -39,11 +41,11 @@ export default function PollCard({ poll }: Props) {
         </p>
 
         <p className="text-default text-base font-light">
-          {poll.simulations.finished > 1 ? (
-            <Trans>Simulations terminées</Trans>
-          ) : (
-            <Trans>Simulation terminée</Trans>
-          )}
+          {t('pollResults.participantsCount', 'Simulation terminée', {
+            count: poll.simulations.finished,
+            defaultValue_other: 'Simulations terminées',
+            defaultValue_many: 'Simulations terminées',
+          })}
         </p>
       </div>
 

@@ -4,14 +4,14 @@ import type { ButtonProps } from '@/design-system/buttons/Button'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import { downloadPollResults } from '@/services/organisations/download-poll-results'
-import type { PublicOrganisationPoll } from '@/types/organisations'
+import type { PollIdentifier } from '@/types/organisations'
 import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { useTransition } from 'react'
 import DownloadIcon from '../icons/DownloadIcon'
 import Trans from '../translation/trans/TransClient'
 
 interface Props {
-  poll: PublicOrganisationPoll
+  poll: PollIdentifier
   color?: 'primary' | 'secondary' | 'borderless'
   onClick?: () => void
 }
