@@ -62,7 +62,7 @@ export const config = {
      * - robots.txt (robots file)
      * - sitemap.xml (root sitemap file)
      * - datashare (iframe datashare modal)
-     * - app-crash (page d'erreur hors i18n, servie par nginx sur panne)
+     * - app-crash (error page outside i18n, served by nginx on upstream outage)
      */
     {
       source:

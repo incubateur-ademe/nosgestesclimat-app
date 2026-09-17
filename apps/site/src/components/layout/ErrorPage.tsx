@@ -11,15 +11,15 @@ interface Props {
   title?: ReactNode
 }
 
-/** Contenu partagé entre `/app-crash` et la page 500 (`layout/500`). */
+/** Content shared by `/app-crash` and the 500 page (`layout/500`). */
 export default function ErrorPage({ testId, illustrationSrc, title }: Props) {
   return (
     <main
       data-testid={testId}
       className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl flex-col items-center px-4 py-16 text-center md:py-24">
       {illustrationSrc && (
-        // `unoptimized` : l'image ne doit pas dépendre de l'optimiseur Next
-        // (`/_next/image`), indisponible si l'app est HS.
+        // `unoptimized`: the image must not depend on the Next optimizer
+        // (`/_next/image`), unavailable when the app is down.
         <Image
           src={illustrationSrc}
           width={280}
@@ -52,10 +52,10 @@ export default function ErrorPage({ testId, illustrationSrc, title }: Props) {
         </Trans>
       </p>
 
-      {/* Recharge l'URL courante : sur /app-crash, l'URL du navigateur reste
-          celle qui a échoué, on rejoue donc bien la page demandée. */}
+      {/* Reloads the current URL: on /app-crash the browser URL is still the one
+          that failed, so the requested page is replayed. */}
       <Button className="mt-10" onClick={() => window.location.reload()}>
-        <Trans i18nKey="common.errors.retry">Réessayer</Trans>
+        <Trans i18nKey="common.errors.reload">Recharger la page</Trans>
       </Button>
     </main>
   )

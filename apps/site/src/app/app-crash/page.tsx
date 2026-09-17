@@ -4,8 +4,8 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
 import type { Locale } from '@/i18nConfig'
 
-// Page servie hors `[locale]` (racine), atteinte via `error_page` de nginx :
-// on fixe la locale par défaut.
+// Served outside `[locale]` (root), reached through nginx `error_page`: pin the
+// default locale.
 const LOCALE: Locale = 'fr'
 
 export function generateMetadata() {
@@ -18,7 +18,7 @@ export function generateMetadata() {
       'appCrash.metadata.description',
       "L'application rencontre quelques difficultés en ce moment, nos équipes sont sur le coup."
     ),
-    // `noIndexObject` laisse `googleBot.index` à true : on le durcit ici.
+    // `noIndexObject` leaves `googleBot.index` at true: harden it here.
     robots: {
       ...noIndexObject,
       googleBot: { ...noIndexObject.googleBot, index: false },

@@ -2212,8 +2212,8 @@ entries:
   appCrash.metadata.description.lock: L'application rencontre quelques difficultés en ce moment, nos équipes sont sur le coup.
   appCrash.metadata.title: Error - Nos Gestes Climat
   appCrash.metadata.title.lock: Erreur - Nos Gestes Climat
-  common.errors.retry: Try again
-  common.errors.retry.lock: Réessayer
+  common.errors.reload: Reload the page
+  common.errors.reload.lock: Recharger la page
   common.errors.description: The application is experiencing some difficulties at the moment. Our teams have been notified and are doing everything they can to restore the situation as quickly as possible.
   common.errors.description.lock: L'application rencontre quelques difficultés en ce moment. Nos équipes sont prévenues et mettent tout en œuvre pour rétablir la situation au plus vite.
   common.errors.retryLater: Please try again in a few minutes.
