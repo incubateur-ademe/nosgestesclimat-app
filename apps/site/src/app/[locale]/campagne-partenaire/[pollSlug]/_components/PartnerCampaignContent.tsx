@@ -31,14 +31,14 @@ export default function PartnerCampaignContent({
         }
         className="pt-8 pb-0 md:pt-16 md:pb-20"
         style={
-          partnerCampaign?.backgroundColor
-            ? { backgroundColor: partnerCampaign?.backgroundColor }
+          partnerCampaign.backgroundColor
+            ? { backgroundColor: partnerCampaign.backgroundColor }
             : {}
         }
         description={
           <>
             <div
-              className="markdown text-left"
+              className="markdown mb-4 text-left md:mb-8"
               dangerouslySetInnerHTML={{
                 __html: partnerCampaign.htmlContent,
               }}
@@ -46,9 +46,9 @@ export default function PartnerCampaignContent({
 
             <ButtonLink
               size="lg"
-              className="mt-2 md:mt-10"
+              className="mt-2 text-sm md:mt-10 md:text-lg"
               href={`/o/${organisationSlug}/${pollSlug}`}>
-              {partnerCampaign?.labelCTA ?? <Trans>Passer le test</Trans>}
+              {partnerCampaign.labelCTA ?? <Trans>Passer le test</Trans>}
             </ButtonLink>
 
             <Image
