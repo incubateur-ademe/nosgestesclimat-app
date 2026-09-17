@@ -2,14 +2,14 @@ import Image from 'next/image'
 import { twMerge } from 'tailwind-merge'
 
 const imageClassSize = {
-  xs: 'w-[24px]',
-  sm: 'w-[38px]',
-  md: 'w-[42px] md:w-[50px]',
+  xs: 'w-6',
+  sm: 'w-9.5',
+  md: 'w-10.5 max-tiny:w-8 md:w-12.5',
 }
 const textClassSize = {
   xs: 'ml-1 text-xs',
   sm: 'ml-1 text-sm',
-  md: 'ml-2 text-base md:text-lg',
+  md: 'ml-2 text-base max-tiny:ml-1 max-tiny:text-xs md:text-lg',
 }
 interface Props {
   onClick?: () => void

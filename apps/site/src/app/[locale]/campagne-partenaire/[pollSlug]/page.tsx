@@ -53,7 +53,7 @@ export default async function PartnerCampaignPage({
         alt={partnerCampaign.logo?.alternativeText ?? ''}>
         {/* Mobile */}
         <div className="block sm:hidden">
-          <LanguageSwitchButton size="xs" />
+          <LanguageSwitchButton />
         </div>
 
         {/* Desktop */}

@@ -27,7 +27,7 @@ export const BannerContent = ({
   banner: Pick<BannerType, 'link' | 'text' | 'id'> | null
   color?: BannerColor
 }) => {
-  const [shouldHideBanner, setShouldHideBanner] = useState(false)
+  const [shouldHideBanner, setShouldHideBanner] = useState(true)
 
   // Necessary to let hydration occur first
   useEffect(() => {
