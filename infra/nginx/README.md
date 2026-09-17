@@ -295,11 +295,12 @@ L'invalidation se fait par **génération de clé** : bumper le préfixe
 
 ## Page d'erreur applicative (indispo / timeout upstream)
 
-Sur 502/503/504, nginx sert `/app-crash` via `error_page`. C'est une page
-statique Next (`s-maxage=86400`) : pas de TTL propre, juste une clé en `$uri`
-au lieu du `$request_uri` du catch-all, car la sous-requête d'`error_page`
-conserve l'URI d'origine. `pull-config.sh` pré-chauffe l'entrée toutes les
-5 min : sans elle, la sous-requête repart vers l'upstream, injoignable.
+Sur 502/503/504, nginx sert `/app-crash` via `error_page`, avec `=code` pour que
+le statut d'origine remonte jusqu'au client. La clé de cache et le TTL restent
+ceux par défaut : la page est statique (`s-maxage=86400`), et dans la
+sous-requête `$uri` vaut `/app-crash` avec `$args` vide, donc la clé héritée est
+déjà celle du pré-chauffage. `pull-config.sh` réécrit l'entrée toutes les 5 min :
+sans elle, la sous-requête repart vers l'upstream, injoignable.
 
 Le `500` n'est pas intercepté : l'erreur applicative garde la page 500 de Next.
 La page est en `noindex` et interdite dans `robots.txt`.

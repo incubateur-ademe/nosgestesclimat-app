@@ -302,29 +302,21 @@ server {
     # ── Page d'erreur applicative (indispo / timeout upstream) ───
     # `error_page` interroge l'upstream en sous-requête : la page ne peut être
     # servie pendant une panne que si son entrée de cache existe déjà, d'où le
-    # pré-chauffage par `pull-config.sh`. Les locations non-HTML désactivent
-    # l'interception : une erreur doit y rester une erreur.
+    # pré-chauffage par `pull-config.sh`.
+
     proxy_intercept_errors on;
+
     # `=code` conserve le statut : sans lui nginx renvoie celui de /app-crash
     # (200), et plus aucun monitor ne voit la panne.
     error_page 502 =502 /app-crash;
     error_page 503 =503 /app-crash;
     error_page 504 =504 /app-crash;
 
-    # Clé en `$uri` : la sous-requête d'`error_page` conserve l'URI d'origine,
-    # donc la clé du catch-all raterait l'entrée de /app-crash.
     location = /app-crash {
         proxy_pass https://scalingo;
         # Évite la boucle error_page → /app-crash → error_page.
         proxy_intercept_errors off;
 
-        proxy_cache ngc_cache;
-        proxy_cache_key "ngc-crash$scheme$host$uri";
-        # Next peut répondre `no-store` (page non statique) et nginx respecte
-        # cet en-tête par défaut : sans ces deux lignes l'entrée n'est jamais
-        # créée, et la page manque précisément quand elle sert.
-        proxy_ignore_headers Cache-Control;
-        proxy_cache_valid 200 1h;
         proxy_cache_use_stale error timeout updating
                               http_500 http_502 http_503 http_504;
         proxy_cache_background_update on;
