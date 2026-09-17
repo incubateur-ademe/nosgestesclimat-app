@@ -5,7 +5,7 @@ import { fetchServer } from '@/helpers/server/fetchServer'
 import type {
   AcceptedExcelExportType,
   ExcelExportType,
-  PublicOrganisationPoll,
+  PollIdentifier,
 } from '@/types/organisations'
 
 const POLL_DELAY_MS = 500
@@ -20,7 +20,7 @@ export async function downloadPollResults({
     organisation: { slug: orgaIdOrSlug },
   },
 }: {
-  poll: PublicOrganisationPoll
+  poll: PollIdentifier
 }): Promise<ExcelExportType> {
   return await new Promise<ExcelExportType>((resolve, reject) => {
     const performRequest = async (jobId?: string) => {

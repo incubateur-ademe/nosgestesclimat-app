@@ -5,7 +5,8 @@ import { carboneMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
-import type { ComputedResults } from '@/publicodes-state/types'
+import type { PollAnonymity } from '@nosgestesclimat/core/features/polls/types/poll'
+import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import ResultsSoonBanner from './statisticsBlocks/ResultsSoonBanner'
 
 // Create a mock results object with the default carbon footprints values for each category
@@ -21,23 +22,25 @@ const mockResults = {
 }
 
 export default function StatisticsBlocks({
-  simulationsCount,
+  participantsCount,
+  anonymity,
   computedResults,
+  isAdmin,
 }: {
-  simulationsCount: number
+  participantsCount: number
+  anonymity: PollAnonymity
   computedResults?: ComputedResults | null
+  isAdmin: boolean
 }) {
   const locale = useLocale()
   const { t } = useClientTranslation()
 
-  const hasLessThan3Participants = simulationsCount < 3
-
-  const result = hasLessThan3Participants ? mockResults : computedResults
+  const result = anonymity.isReached ? computedResults : mockResults
 
   if (!result) return null
 
   const { formattedValue, unit } = formatFootprint(
-    result.carbone.bilan / simulationsCount,
+    result.carbone.bilan / participantsCount,
     {
       metric: carboneMetric,
       maximumFractionDigits: 1,
@@ -50,27 +53,25 @@ export default function StatisticsBlocks({
     <div className="grid w-full auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="bg-primary-100 rounded-xl p-8">
         <p className="text-primary-700 text-4xl font-bold">
-          {simulationsCount.toLocaleString(locale)}
+          {participantsCount.toLocaleString(locale)}
         </p>
 
         <p className="text-xl">
-          {simulationsCount <= 1 ? (
-            <Trans>Simulation terminée</Trans>
-          ) : (
-            <Trans>Simulations terminées</Trans>
-          )}
+          {t('pollResults.participantsCount', 'Simulation terminée', {
+            count: participantsCount,
+            defaultValue_other: 'Simulations terminées',
+            defaultValue_many: 'Simulations terminées',
+          })}
         </p>
       </div>
 
-      {hasLessThan3Participants && (
-        <ResultsSoonBanner
-          hasLessThan3Participants={hasLessThan3Participants}
-        />
+      {!anonymity.isReached && (
+        <ResultsSoonBanner isAdmin={isAdmin} anonymity={anonymity} />
       )}
 
       {
         // Display blocks only if simulations where fetched
-        !hasLessThan3Participants && !!computedResults && (
+        anonymity.isReached && !!computedResults && (
           <div className="bg-rainbow-rotation overflow-hidden rounded-xl p-8">
             <p className="text-primary-700 text-4xl font-bold">
               {formattedValue}{' '}

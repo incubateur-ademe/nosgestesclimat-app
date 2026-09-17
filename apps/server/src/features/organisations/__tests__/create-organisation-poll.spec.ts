@@ -295,7 +295,6 @@ describe('Given a NGC user', () => {
             simulations: {
               count: 0,
               finished: 0,
-              hasParticipated: false,
               cooldownSeconds: 0,
             },
           })
@@ -599,7 +598,6 @@ describe('Given a NGC user', () => {
               simulations: {
                 count: 0,
                 finished: 0,
-                hasParticipated: false,
                 cooldownSeconds: 0,
               },
             })
@@ -735,7 +733,6 @@ describe('Given a NGC user', () => {
             simulations: {
               count: 0,
               finished: 0,
-              hasParticipated: false,
               cooldownSeconds: 0,
             },
           })

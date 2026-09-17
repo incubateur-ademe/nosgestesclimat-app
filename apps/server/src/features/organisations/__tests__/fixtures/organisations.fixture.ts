@@ -55,9 +55,6 @@ export const FETCH_ORGANISATION_POLL_ROUTE =
 export const DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT_ROUTE =
   '/organisations/v1/:organisationIdOrSlug/polls/:pollIdOrSlug/simulations/download'
 
-export const FETCH_ORGANISATION_PUBLIC_POLL_ROUTE =
-  '/organisations/v1/public-polls/:pollIdOrSlug'
-
 type TestAgent = ReturnType<typeof supertest>
 
 const organisationTypes = Object.values(OrganisationType)
