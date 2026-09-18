@@ -494,9 +494,11 @@ server {
     # Catch-all : rate-limit + cache générique, bypass sur websocket.
     location / {
         proxy_pass https://scalingo;
-        # 20 requêtes supplémentaires peuvent déborder immédiatement (burst),
-        # au-delà → 429 sans délai.
-        limit_req zone=web burst=20 nodelay;
+        # The burst absorbs the batch of prefetch requests a listing page
+        # produces — Next.js asks for every visible link at once — which is not
+        # sustained traffic. The rate is what bounds a client that keeps
+        # hammering. Past both → 429 without delay.
+        limit_req zone=web burst=100 nodelay;
 
         proxy_cache_lock on;
         proxy_cache_background_update on;
