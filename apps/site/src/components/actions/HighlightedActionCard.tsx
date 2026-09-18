@@ -1,14 +1,17 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
+import Button from '@/design-system/buttons/Button'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
+import { commitToAction } from '@/services/actions/commit-to-action'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
+import PlusIcon from '../icons/PlusIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionTracker from './ActionTracker'
 import { ThemeBadge } from './ThemeBadge'
@@ -77,6 +80,18 @@ export default function HighlightedActionCard({
   const href = from ? `${actionPath}?from=${from}` : actionPath
   const description = action.metadata.description
 
+  const handleCommitToAction = async () => {
+    try {
+      const result = await commitToAction(action.id)
+
+      if (!result?.success) {
+        // display error toast
+      }
+    } catch {
+      // display error toast
+    }
+  }
+
   return (
     <article
       {...props}
@@ -108,7 +123,7 @@ export default function HighlightedActionCard({
           ) : null}
         </div>
 
-        <div className="flex">
+        <div className="flex gap-4">
           <ButtonLinkServer href={href} size="sm" className="h-12 gap-2 px-6">
             <Trans
               locale={locale}
@@ -120,6 +135,15 @@ export default function HighlightedActionCard({
             <span className="sr-only">{` "${action.title}"`}</span>
             <ArrowNarrowRightIcon />
           </ButtonLinkServer>
+
+          <Button color="secondary" onClick={handleCommitToAction}>
+            <Trans
+              locale={locale}
+              i18nKey="actions.components.actionCard.highlighted.addButton">
+              <PlusIcon className="stroke-primary-700 mr-2 inline-block" />{' '}
+              Ajouter
+            </Trans>
+          </Button>
         </div>
       </div>
 

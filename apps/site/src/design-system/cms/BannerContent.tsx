@@ -8,16 +8,26 @@ import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import Button from '../buttons/Button'
 import BannerLink from './banner/BannerLink'
 
 export type BannerColor = 'primary' | 'secondary'
 
 export const STORAGE_KEY_PREFIX = 'hide-banner-'
 
-const colorClassNames: Record<BannerColor, string> = {
-  primary: 'bg-primary-700 text-white',
-  secondary: 'text-secondary-900 bg-secondary-100',
+const colorClassNames: Record<
+  BannerColor,
+  { container: string; closeButton: string; closeIcon: string }
+> = {
+  primary: {
+    container: 'bg-primary-700 text-white',
+    closeButton: 'bg-primary-700 hover:bg-primary-800 active:bg-primary-900',
+    closeIcon: 'fill-white hover:fill-primary-800 active:scale-90',
+  },
+  secondary: {
+    container: 'text-secondary-900 bg-secondary-100',
+    closeButton: 'bg-secondary-100',
+    closeIcon: 'fill-secondary-800 hover:fill-secondary-900 active:scale-90',
+  },
 }
 
 export const BannerContent = ({
@@ -51,25 +61,27 @@ export const BannerContent = ({
   return (
     <div
       className={twMerge(
-        colorClassNames[color],
-        'xs:flex-row xs:items-center xs:gap-2 relative inline-flex w-full flex-col items-start justify-center gap-1 px-4 py-2 text-sm md:h-12'
+        colorClassNames[color].container,
+        'xs:gap-2 relative inline-flex w-full flex-row items-start justify-center gap-1 px-4 py-2 text-sm sm:items-center md:h-12'
       )}>
       <p className="mb-0 block sm:inline!">{banner.text}</p>
       {banner.link && (
         <BannerLink href={banner.link.URL} label={banner.link.label} />
       )}
 
-      <Button
+      <button
         onClick={() => {
           safeLocalStorage.setItem(`${STORAGE_KEY_PREFIX}-${banner.id}`, 'true')
           setShouldHideBanner(true)
         }}
-        color="secondary"
+        color={color}
         aria-label={closeButtonString}
         title={closeButtonString}
-        className="bg-primary-700 hover:bg-primary-700 -m-2.5 ml-1 border-none p-2.5! md:absolute md:top-2.5 md:right-4">
-        <CloseIcon className="hover:fill-primary-200 max-h-6 min-w-6 fill-white transition-colors" />
-      </Button>
+        className={`-mt-1 -mr-2 border-none md:absolute md:top-2.5 md:right-4 md:-m-2.5 md:ml-1 md:p-2.5! ${colorClassNames[color].closeButton}`}>
+        <CloseIcon
+          className={`max-h-6 min-w-6 transition-transform ${colorClassNames[color].closeIcon}`}
+        />
+      </button>
     </div>
   )
 }
