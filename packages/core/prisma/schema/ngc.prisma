@@ -379,6 +379,9 @@ model Simulation {
   @@index([userId])
   @@index([userEmail])
   @@index([createdAt])
+  // Created partial (progression = 1) by the migration: Prisma cannot express
+  // the predicate, so a schema edit would rebuild it whole.
+  @@index([createdAt, id])
   @@index([progression])
   @@schema("ngc")
 }
