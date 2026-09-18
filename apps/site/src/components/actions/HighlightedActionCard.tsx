@@ -4,6 +4,7 @@ import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
+import { commitToAction } from '@/services/actions/commit-to-action'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
@@ -79,6 +80,18 @@ export default function HighlightedActionCard({
   const href = from ? `${actionPath}?from=${from}` : actionPath
   const description = action.metadata.description
 
+  const handleCommitToAction = async () => {
+    try {
+      const result = await commitToAction(action.id)
+
+      if (!result?.success) {
+        // display error toast
+      }
+    } catch {
+      // display error toast
+    }
+  }
+
   return (
     <article
       {...props}
@@ -123,7 +136,7 @@ export default function HighlightedActionCard({
             <ArrowNarrowRightIcon />
           </ButtonLinkServer>
 
-          <Button color="secondary">
+          <Button color="secondary" onClick={handleCommitToAction}>
             <Trans
               locale={locale}
               i18nKey="actions.components.actionCard.highlighted.addButton">
