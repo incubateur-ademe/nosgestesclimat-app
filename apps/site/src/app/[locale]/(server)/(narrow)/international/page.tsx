@@ -54,6 +54,7 @@ export default async function International({ params }: DefaultPageProps) {
             <div>
               <ButtonLink
                 href={getLinkToSimulateur()}
+                prefetch={true}
                 size="lg"
                 className="px-20">
                 <span>

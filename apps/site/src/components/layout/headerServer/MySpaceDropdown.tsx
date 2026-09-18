@@ -15,6 +15,7 @@ import {
 } from '@/constants/tracking/user-account'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
+import Link from '@/design-system/links/Link'
 import { resetLocalState } from '@/helpers/user/resetLocalState'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
@@ -22,7 +23,6 @@ import {
   trackMatomoEvent__deprecated,
   trackPosthogEvent,
 } from '@/utils/analytics/trackEvent'
-import Link from 'next/link'
 import posthog from 'posthog-js'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'

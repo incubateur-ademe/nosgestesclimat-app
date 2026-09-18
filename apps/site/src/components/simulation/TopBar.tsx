@@ -1,9 +1,9 @@
 'use client'
 
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
+import Link from '@/design-system/links/Link'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
-import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import Logo from '../misc/Logo'
 import TotalFootprintNumber from '../misc/TotalFootprintNumber'
