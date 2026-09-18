@@ -27,7 +27,13 @@ export async function createTestDatabase(): Promise<TestDb> {
       )
       .reduce(async (promise, filename) => {
         // start reading…
-        const migration = await readFile(filename, 'utf8')
+        // PGlite holds a single connection and cannot build an index
+        // concurrently. The test databases are empty, so the plain form is
+        // equivalent.
+        const migration = (await readFile(filename, 'utf8')).replaceAll(
+          'CREATE INDEX CONCURRENTLY',
+          'CREATE INDEX'
+        )
         // …while previous migration resolves
         await promise
         await pgClient.exec(migration)

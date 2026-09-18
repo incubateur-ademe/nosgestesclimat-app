@@ -26,14 +26,23 @@ export const findPollStats = async ({
   return row ? toPollStats(row) : null
 }
 
+/**
+ * Single writer for the poll aggregates: the participant count cannot disagree
+ * with the stats it is written with.
+ */
 export const updatePollStats = (
   pollId: string,
   {
     computedResults,
     funFacts,
-  }: { computedResults: ComputedResults; funFacts: FunFacts }
+    participantsCount,
+  }: {
+    computedResults: ComputedResults
+    funFacts: FunFacts
+    participantsCount: number
+  }
 ) =>
   prisma.poll.update({
     where: { id: pollId },
-    data: { computedResults, funFacts },
+    data: { computedResults, funFacts, participantsCount },
   })

@@ -65,6 +65,10 @@ class PollFactory extends Factory<
     return this.withStatsComputationStatus('failed')
   }
 
+  withParticipantsCount(participantsCount: number) {
+    return this.params({ participantsCount })
+  }
+
   withProcessingComputation(startedAt: Date = new Date()) {
     return this.withStatsComputationStatus('processing', { startedAt })
   }
@@ -91,6 +95,7 @@ export const pollFactory = PollFactory.define(
           mode: data.mode,
           organisationId: organisation.id,
           expectedNumberOfParticipants: data.expectedNumberOfParticipants,
+          participantsCount: params.participantsCount ?? 0,
           funFacts:
             (params.funFacts as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
           computedResults:
@@ -107,6 +112,7 @@ export const pollFactory = PollFactory.define(
 
       return {
         ...data,
+        participantsCount: params.participantsCount ?? 0,
         organisation: {
           id: organisation.id,
           name: organisation.name,
@@ -124,6 +130,7 @@ export const pollFactory = PollFactory.define(
       name,
       slug: `${faker.helpers.slugify(name).toLocaleLowerCase()}-${faker.string.alphanumeric(6)}`,
       mode: 'standard' as const,
+      participantsCount: params.participantsCount ?? 0,
       expectedNumberOfParticipants: null,
       createdAt: new Date(),
       updatedAt: new Date(),
