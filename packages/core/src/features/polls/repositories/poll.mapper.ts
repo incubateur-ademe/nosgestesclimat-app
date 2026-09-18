@@ -7,6 +7,7 @@ export interface PollRow {
   slug: string
   mode: PollMode
   organisationId: string
+  participantsCount: number
   expectedNumberOfParticipants: number | null
   createdAt: Date
   updatedAt: Date
@@ -23,6 +24,7 @@ export const toPoll = (row: PollRow): Poll => {
     name: row.name,
     slug: row.slug,
     mode: row.mode,
+    participantsCount: row.participantsCount,
     expectedNumberOfParticipants: row.expectedNumberOfParticipants,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

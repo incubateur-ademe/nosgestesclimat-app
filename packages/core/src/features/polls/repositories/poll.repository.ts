@@ -1,4 +1,5 @@
 import { isCuid } from '../../../lib/cuid.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { Poll, PollSummary } from '../types/poll.ts'
 import { toPoll } from './poll.mapper.ts'
@@ -9,6 +10,7 @@ const pollSelect = {
   slug: true,
   mode: true,
   organisationId: true,
+  participantsCount: true,
   expectedNumberOfParticipants: true,
   createdAt: true,
   updatedAt: true,
@@ -25,8 +27,11 @@ const pollSummarySelect = {
   organisation: { select: { name: true, slug: true } },
 } as const
 
-export const findPollById = async (id: string): Promise<Poll | null> => {
-  const row = await prisma.poll.findUnique({
+export const findPollById = async (
+  id: string,
+  tx: Transaction = prisma
+): Promise<Poll | null> => {
+  const row = await tx.poll.findUnique({
     where: { id },
     select: pollSelect,
   })

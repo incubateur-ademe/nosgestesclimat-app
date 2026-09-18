@@ -42,13 +42,12 @@ describe('getPollResult', () => {
     expect(result).toBeNull()
   })
 
-  it('exposes the poll and counts its finished simulations', async () => {
+  it('exposes the poll and its participant count', async () => {
     const organisation = await organisationFactory.create()
-    const poll = await pollFactory.withOrganisation(organisation).create()
-
-    await simulationFactory.completed().withPollId(poll.id).create()
-    await simulationFactory.completed().withPollId(poll.id).create()
-    await simulationFactory.started().withPollId(poll.id).create()
+    const poll = await pollFactory
+      .withOrganisation(organisation)
+      .withParticipantsCount(2)
+      .create()
 
     const result = await getPollResult({
       organisationSlug: organisation.slug,
@@ -164,15 +163,11 @@ describe('getPollResult', () => {
 
   it('withholds the stats below the participation threshold', async () => {
     const organisation = await organisationFactory.create()
+    const belowThreshold = 2
     const poll = await pollFactory
       .withOrganisation(organisation)
+      .withParticipantsCount(belowThreshold)
       .create({ computedResults: computedResultsFactory.valid().build() })
-    const belowThreshold = 2
-    await Promise.all(
-      Array.from({ length: belowThreshold }, () =>
-        simulationFactory.completed().withPollId(poll.id).create()
-      )
-    )
 
     const result = await getPollResult({
       organisationSlug: organisation.slug,
@@ -193,12 +188,8 @@ describe('getPollResult', () => {
     const computedResults = computedResultsFactory.valid().build()
     const poll = await pollFactory
       .withOrganisation(organisation)
+      .withParticipantsCount(3)
       .create({ computedResults })
-    await Promise.all(
-      Array.from({ length: 3 }, () =>
-        simulationFactory.completed().withPollId(poll.id).create()
-      )
-    )
 
     const result = await getPollResult({
       organisationSlug: organisation.slug,
@@ -212,12 +203,10 @@ describe('getPollResult', () => {
 
   it('has no stats until the worker computed them', async () => {
     const organisation = await organisationFactory.create()
-    const poll = await pollFactory.withOrganisation(organisation).create()
-    await Promise.all(
-      Array.from({ length: 3 }, () =>
-        simulationFactory.completed().withPollId(poll.id).create()
-      )
-    )
+    const poll = await pollFactory
+      .withOrganisation(organisation)
+      .withParticipantsCount(3)
+      .create()
 
     const result = await getPollResult({
       organisationSlug: organisation.slug,

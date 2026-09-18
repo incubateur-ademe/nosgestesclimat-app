@@ -19,11 +19,10 @@ export type PollResult = {
   poll: Poll
   /**
    * Delay the worker applies between two recomputations of this poll's stats,
-   * in seconds. `stats` can be that much older than `participantsCount`, which
-   * is counted live.
+   * in seconds.
    */
   cooldownSeconds: number
-  /** Finished simulations: an unfinished one is not a participant. */
+  /** Finished simulations, as of the last stats recomputation. */
   participantsCount: number
   /** `null` until the user has a finished simulation for this poll. */
   userParticipation: Simulation | null

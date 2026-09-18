@@ -1,6 +1,7 @@
+import { invariant } from '../../../../lib/invariant.ts'
 import type { Transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
-import { countPollParticipants } from '../../repositories/poll-participation.repository.ts'
+import { findPollById } from '../../repositories/poll.repository.ts'
 import {
   resolveCooldownSeconds,
   type CooldownTier,
@@ -34,10 +35,12 @@ export function createEnqueuePollStatsComputation({
 
     let scheduledAt = new Date()
     if (current?.status === 'completed') {
-      const participantsCount = await countPollParticipants(pollId, tx)
+      const poll = await findPollById(pollId, tx)
+      invariant(poll) // a computation row implies its poll
+
       const cooldownSeconds = resolveCooldownSeconds(
         cooldownTiers,
-        participantsCount
+        poll.participantsCount
       )
       scheduledAt = new Date(Date.now() + cooldownSeconds * 1000)
     }

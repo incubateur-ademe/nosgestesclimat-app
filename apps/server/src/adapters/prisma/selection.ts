@@ -125,6 +125,7 @@ export const defaultPollSelection = {
   organisationId: true,
   funFacts: true,
   computedResults: true,
+  participantsCount: true,
   defaultAdditionalQuestions: true,
   customAdditionalQuestions: true,
   expectedNumberOfParticipants: true,
