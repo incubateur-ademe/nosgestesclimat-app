@@ -13,8 +13,10 @@ interface ActionsPageProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
   'title'
 > {
-  title: React.ReactNode
-  description: React.ReactNode
+  title?: React.ReactNode
+  description?: React.ReactNode
+  otherActionsTitle?: React.ReactNode
+  otherActionsDescription?: React.ReactNode
   cta?: React.ReactNode
   topActions?: MaybePersonalizedAction[]
   themes: Theme[]
@@ -31,6 +33,8 @@ interface ActionsPageProps extends Omit<
 export default function ActionsPage({
   title,
   description,
+  otherActionsTitle,
+  otherActionsDescription,
   cta,
   topActions,
   actions,
@@ -57,18 +61,22 @@ export default function ActionsPage({
       )}
 
       <h2 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
-        <Trans
-          locale={locale}
-          i18nKey="actions.components.themeSections.testWhiteBackground.title">
-          Voici d’autres actions qui vous aideront à réduire votre empreinte
-        </Trans>
+        {otherActionsTitle ?? (
+          <Trans
+            locale={locale}
+            i18nKey="actions.components.themeSections.testWhiteBackground.title">
+            Voici d’autres actions qui vous aideront à réduire votre empreinte
+          </Trans>
+        )}
       </h2>
       <p className="mb-4 text-lg/normal md:mb-8">
-        <Trans
-          locale={locale}
-          i18nKey="actions.components.themeSections.testWhiteBackground.description">
-          À impact variable : des gestes à fort impact aux petit pas.
-        </Trans>
+        {otherActionsDescription ?? (
+          <Trans
+            locale={locale}
+            i18nKey="actions.components.themeSections.testWhiteBackground.description">
+            À impact variable : des gestes à fort impact aux petit pas.
+          </Trans>
+        )}
       </p>
     </>
   )

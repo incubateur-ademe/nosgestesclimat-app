@@ -27,7 +27,7 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
   const { locale } = await params
 
   const user = await getUserSession()
-  console.log(user)
+
   if (!user) {
     redirect(ACTIONS_PATH)
   }
@@ -39,16 +39,20 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
 
   return (
     <ActionsPage
-      title={
-        <Trans locale={locale} i18nKey="actions.mySuggestions.title">
-          Construire mon plan d'actions
+      otherActionsTitle={
+        <Trans
+          locale={locale}
+          i18nKey="actions.mySuggestions.otherActionsTitle">
+          Toutes vos actions, classées par catégorie
         </Trans>
       }
-      description={
-        <Trans locale={locale} i18nKey="actions.mySuggestions.description">
-          Ces actions sont personnalisées selon vos réponses au test.
-          <br />
-          Choisissez celles qui vous semblent atteignables et lancez-vous&nbsp;!
+      otherActionsDescription={
+        <Trans
+          locale={locale}
+          i18nKey="actions.mySuggestions.otherActionsDescription">
+          Ces actions sont personnalisées selon vos réponses au test. Choisissez
+          celles qui vous semblent atteignables et ajoutez-les à votre plan
+          d’action !
         </Trans>
       }
       topActions={personnalizedActionsCatalogue.topActions}
@@ -56,17 +60,7 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
       themes={themes}
       locale={locale}
       from="index"
-      textOverrides={{
-        highestImpactSectionDescription: (
-          <Trans
-            locale={locale}
-            i18nKey="actions.components.highestImpactActionsSection.publicDescription">
-            Le top 3 des actions qui permettent de limiter ou réduire ses
-            émissions de CO<sub>2</sub>
-          </Trans>
-        ),
-      }}
-      aside={<div className="h-32 w-96 bg-red-500">porjfoen</div>}
+      assessmentStatus={personnalizedActionsCatalogue.assessmentStatus}
     />
   )
 }
