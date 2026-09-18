@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
-import { createCommitToAction } from '../commit-to-action.service.service.ts'
+import { commitToAction } from '../commit-to-action.service.ts'
 
 describe('commitToAction()', () => {
   afterEach(async () => {
@@ -17,8 +17,6 @@ describe('commitToAction()', () => {
 
     const user = await userFactory.create()
 
-    const commitToAction = createCommitToAction()
-
     await expect(
       commitToAction({
         actionId: action.id,
@@ -31,8 +29,6 @@ describe('commitToAction()', () => {
     const action = await actionFactory.published().create()
 
     await userFactory.create()
-
-    const commitToAction = createCommitToAction()
 
     await expect(
       commitToAction({
