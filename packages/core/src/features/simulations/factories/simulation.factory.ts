@@ -45,10 +45,10 @@ class SimulationFactory extends Factory<
     })
   }
 
-  withPollId(pollId: string) {
+  withPollId(pollId: string, { createdAt }: { createdAt?: Date } = {}) {
     return this.afterCreate(async (data) => {
       await prisma.simulationPoll.create({
-        data: { pollId, simulationId: data.id },
+        data: { pollId, simulationId: data.id, createdAt },
       })
       return data
     })
