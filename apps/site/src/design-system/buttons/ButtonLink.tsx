@@ -3,6 +3,7 @@
 import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
 import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
+import type { LinkProps } from 'next/link'
 import {
   type HtmlHTMLAttributes,
   type KeyboardEvent,
@@ -31,6 +32,7 @@ interface Props {
   trackingEvent?: (string | null)[]
   target?: string
   scroll?: boolean
+  prefetch?: LinkProps['prefetch']
   loading?: boolean
   disabled?: boolean
   showLoadingOnClick?: boolean

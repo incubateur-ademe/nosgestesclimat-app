@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransClient'
+import Link from '@/design-system/links/Link'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
-import Link from 'next/link'
 import type { ComponentPropsWithoutRef } from 'react'
 import type { UseFormRegisterReturn } from 'react-hook-form'
 

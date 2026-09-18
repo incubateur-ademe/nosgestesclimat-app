@@ -1,12 +1,12 @@
 'use client'
 
+import BaseLink from '@/design-system/links/Link'
 import { getExternalLinkProps } from '@/helpers/navigation/externalLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import NextLink from 'next/link'
 import type { MouseEventHandler } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-export interface LinkProps extends React.ComponentProps<typeof NextLink> {
+export interface LinkProps extends React.ComponentProps<typeof BaseLink> {
   href: string
   className?: string
   onClick?: MouseEventHandler<HTMLAnchorElement>
@@ -42,7 +42,7 @@ export default function Link({
   })
 
   return (
-    <NextLink
+    <BaseLink
       href={href}
       className={twMerge(
         'text-primary-700 hover:text-primary-800 break-words underline transition-colors',
@@ -55,6 +55,6 @@ export default function Link({
       aria-label={resolvedAriaLabel}
       {...props}>
       {children}
-    </NextLink>
+    </BaseLink>
   )
 }

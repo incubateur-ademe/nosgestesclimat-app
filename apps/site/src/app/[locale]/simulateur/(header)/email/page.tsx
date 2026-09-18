@@ -134,6 +134,7 @@ export default async function Email({
                 color="secondary"
                 showLoadingOnClick
                 href={END_PAGE_PATH}
+                prefetch={true}
                 data-testid="skip-email-button">
                 <Trans i18nKey="common.skip" locale={locale}>
                   Passer
