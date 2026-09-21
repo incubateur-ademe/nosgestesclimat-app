@@ -3,6 +3,7 @@ import {
   ADEME_SLUG,
   MOBILISED_ORGANISATION_MIN_SIMULATIONS,
   PODIUM_LIMIT_PER_TYPE,
+  PODIUM_ORGANISATION_TYPES,
 } from '../constants/podium.ts'
 import type { EventOrganisation } from '../types/event-info.ts'
 import { mapEventComputationToOrganisation } from './event.mapper.ts'
@@ -16,33 +17,41 @@ export const findEvent = async (eventIdOrSlug: string) =>
 export const findPodiumOrganisations = async (
   eventId: string
 ): Promise<EventOrganisation[]> => {
-  const filteredEventComputations = await prisma.eventComputation.findMany({
-    where: {
-      eventId,
-      simulationsCount: { gte: MOBILISED_ORGANISATION_MIN_SIMULATIONS },
-      NOT: {
-        organisation: {
-          slug: {
-            startsWith: ADEME_SLUG,
+  const filteredEventComputations = await Promise.all(
+    PODIUM_ORGANISATION_TYPES.map((type) =>
+      prisma.eventComputation.findMany({
+        where: {
+          eventId,
+          simulationsCount: { gte: MOBILISED_ORGANISATION_MIN_SIMULATIONS },
+          organisation: {
+            slug: {
+              not: {
+                startsWith: ADEME_SLUG,
+              },
+            },
+            type,
           },
         },
-      },
-    },
-    include: {
-      organisation: {
-        select: { id: true, name: true, slug: true, type: true },
-      },
-    },
-    orderBy: [{ simulationsCount: 'desc' }, { organisationId: 'asc' }],
-    take: PODIUM_LIMIT_PER_TYPE,
-  })
-
-  return filteredEventComputations.map((row) =>
-    mapEventComputationToOrganisation({
-      simulationsCount: row.simulationsCount,
-      organisation: row.organisation!,
-    })
+        include: {
+          organisation: {
+            select: { id: true, name: true, slug: true, type: true },
+          },
+        },
+        orderBy: [{ simulationsCount: 'desc' }, { organisationId: 'asc' }],
+        take: PODIUM_LIMIT_PER_TYPE,
+      })
+    )
   )
+
+  return filteredEventComputations
+    .flat()
+    .filter((row) => !!row.organisation)
+    .map((row) =>
+      mapEventComputationToOrganisation({
+        simulationsCount: row.simulationsCount,
+        organisation: row.organisation!,
+      })
+    )
 }
 
 export const countEventSimulations = async (
