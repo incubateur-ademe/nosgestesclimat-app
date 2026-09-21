@@ -54,11 +54,7 @@ export default function OrganisationForm({
           <Trans>Votre organisation</Trans>
         </h2>
 
-        <OrganisationFields
-          defaultValues={defaultValues}
-          register={register}
-          errors={errors}
-        />
+        <OrganisationFields register={register} errors={errors} />
 
         <Separator className="my-6" />
 
@@ -66,7 +62,7 @@ export default function OrganisationForm({
           <Trans>Vos informations personnelles</Trans>
         </h2>
 
-        <PersonalInfoFields defaultValues={defaultValues} register={register} />
+        <PersonalInfoFields register={register} />
 
         {updateOrganisation.isSuccess && (
           <p className="mt-4 mb-0 text-green-700" data-testid="success-message">
