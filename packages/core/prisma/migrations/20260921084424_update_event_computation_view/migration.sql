@@ -19,7 +19,7 @@ SELECT
     NULL::TEXT AS "organisationId",
     COUNT(simulation.id)::INTEGER AS "simulationsCount"
 FROM "ngc"."Event" event
-LEFT JOIN "ngc"."Simulation" simulation ON simulation."createdAt" >= event."startDate" AND simulation."createdAt" <= event."endDate" AND simulation."progression" = 1
+LEFT JOIN "ngc"."Simulation" simulation ON simulation."updatedAt" >= event."startDate" AND simulation."updatedAt" <= event."endDate" AND simulation."progression" = 1
 GROUP BY event.id
 
 UNION
@@ -31,7 +31,7 @@ SELECT
     organisation.id AS "organisationId",
     COUNT(DISTINCT simulation.id)::INTEGER AS "simulationsCount"
 FROM "ngc"."Event" event
-INNER JOIN "ngc"."Simulation" simulation ON simulation."createdAt" >= event."startDate" AND simulation."createdAt" <= event."endDate" AND simulation."progression" = 1
+INNER JOIN "ngc"."Simulation" simulation ON simulation."updatedAt" >= event."startDate" AND simulation."updatedAt" <= event."endDate" AND simulation."progression" = 1
 INNER JOIN "ngc"."SimulationPoll" simulationPoll ON simulationPoll."simulationId" = simulation.id
 INNER JOIN "ngc"."Poll" poll ON poll.id = simulationPoll."pollId"
 INNER JOIN "ngc"."Organisation" organisation ON poll."organisationId" = organisation.id
