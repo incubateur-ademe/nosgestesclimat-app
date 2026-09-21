@@ -1,10 +1,5 @@
 import { mapComputedResultsToContactAttributes } from '@nosgestesclimat/core/features/simulations/emails/map-computed-results-to-contact-attributes'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import {
-  UTM_CAMPAIGN_KEY,
-  UTM_MEDIUM_KEY,
-  UTM_SOURCE_KEY,
-} from '@nosgestesclimat/core/features/tracking/utm'
 import type { AxiosError } from 'axios'
 import axios, { isAxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
