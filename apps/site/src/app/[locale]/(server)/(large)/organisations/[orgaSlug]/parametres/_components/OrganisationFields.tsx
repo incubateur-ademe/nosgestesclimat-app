@@ -9,31 +9,22 @@ import type { OrgaSettingsInputsType } from '@/types/organisations'
 import type { FieldErrors, UseFormRegister } from 'react-hook-form'
 
 interface Props {
-  defaultValues?: OrgaSettingsInputsType
   register: UseFormRegister<OrgaSettingsInputsType>
   errors: FieldErrors
 }
 
-export default function OrganisationFields({
-  defaultValues,
-  register,
-  errors,
-}: Props) {
+export default function OrganisationFields({ register, errors }: Props) {
   const { t } = useClientTranslation()
-
-  if (!defaultValues) return null
 
   return (
     <div className="flex flex-col gap-4">
       <TextInput
         label={<Trans>Votre organisation</Trans>}
-        value={defaultValues.name}
         data-testid="input-organisation-name"
         {...register('name')}
       />
       <SelectInput
         label={<Trans>Type d'organisation</Trans>}
-        value={defaultValues.organisationType}
         {...register('organisationType', {
           required: t('Ce champ est requis'),
         })}>
@@ -54,7 +45,6 @@ export default function OrganisationFields({
             </span>
           </p>
         }
-        value={defaultValues.numberOfCollaborators}
         {...register('numberOfCollaborators', {
           min: {
             value: 0,
