@@ -23,8 +23,9 @@ test.describe('when a user starts to answer test', () => {
     await ngcTest.skipButton().click()
     await ngcTest.skipButton().click()
     await ngcTest.skipButton().click()
-    // Wait for the autosave to trigger
-    await page.waitForTimeout(5000)
+    // Wait for the autosave to trigger: the hook debounces by 5 s, so this
+    // has to stay above it.
+    await page.waitForTimeout(7000)
   })
 
   test('it should not be displayed if the user continue the test', async ({

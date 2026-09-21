@@ -22,7 +22,7 @@
     "build": "DATABASE_POOL_MAX=1 next build",
     "build:analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
-    "start": "next start",
+    "start": "DATABASE_POOL_MAX=6 DATABASE_STATEMENT_TIMEOUT_MS=15000 next start",
     "start:e2e": "NODE_OPTIONS=\"--require dotenv/config\" DOTENV_CONFIG_PATH=.env.e2e next start",
     "start:worker": "DATABASE_POOL_MAX=3 node --experimental-strip-types ./worker/worker.ts",
     "start:all": "pnpm run '/start(:worker)?$/'",
