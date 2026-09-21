@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW "ngc"."event_computation";
+DROP MATERIALIZED VIEW "ngc"."event_computation" CASCADE;
 
 -- Index Simulation.createdAt and Simulation.progression for the counter query,
 -- created before the materialized view so the initial build benefits from them.
@@ -29,7 +29,7 @@ UNION
 SELECT
     event.id AS "eventId",
     organisation.id AS "organisationId",
-    COUNT(DISTINCT s.id)::INTEGER AS "simulationsCount"
+    COUNT(DISTINCT simulation.id)::INTEGER AS "simulationsCount"
 FROM "ngc"."Event" event
 INNER JOIN "ngc"."Simulation" simulation ON simulation."createdAt" >= event."startDate" AND simulation."createdAt" <= event."endDate" AND simulation."progression" = 1
 INNER JOIN "ngc"."SimulationPoll" simulationPoll ON simulationPoll."simulationId" = simulation.id
