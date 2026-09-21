@@ -8,7 +8,7 @@ export default function RedirectLink({
   children,
 }: PropsWithChildren<{ href: string }>) {
   return (
-    <ButtonLink className="px-3" size="sm" href={href}>
+    <ButtonLink className="px-3" size="sm" href={href} prefetch={true}>
       {children}
     </ButtonLink>
   )

@@ -148,12 +148,6 @@ const redirects = [
     permanent: true,
   },
   {
-    source: '/organisations/:orgaSlug/resultats-detailles',
-    destination:
-      '/organisations/:orgaSlug/campagnes/campagne-1?isRedirectFromLegacy=true',
-    permanent: true,
-  },
-  {
     source: '/ambassadeurs',
     destination: '/nos-relais',
     permanent: true,

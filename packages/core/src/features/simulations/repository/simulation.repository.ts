@@ -150,6 +150,32 @@ export const findLatestCompletedSimulation = async ({
   return row ? mapSimulation(row) : null
 }
 
+export const findLatestCompletedPollSimulation = async ({
+  userId,
+  pollIdOrSlug,
+}: {
+  userId: string
+  pollIdOrSlug: string
+}): Promise<Simulation | null> => {
+  const row = await prisma.simulation.findFirst({
+    where: {
+      userId,
+      progression: 1,
+      polls: {
+        some: {
+          poll: isCuid(pollIdOrSlug)
+            ? { id: pollIdOrSlug }
+            : { slug: pollIdOrSlug },
+        },
+      },
+    },
+    orderBy: { date: 'desc' },
+    select: simulationSelect,
+  })
+
+  return row ? mapSimulation(row) : null
+}
+
 export const findCompletedSimulations = async ({
   userId,
   limit,

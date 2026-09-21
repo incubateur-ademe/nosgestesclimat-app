@@ -24,7 +24,7 @@ describe('computePollStats', () => {
 
   it('sums computedResults across valid simulations and ignores invalid ones', async () => {
     const organisation = await organisationFactory.create()
-    const poll = await pollFactory.create({}, { transient: { organisationId: organisation.id } })
+    const poll = await pollFactory.withOrganisation(organisation).create()
 
     const validSimulation1 = await simulationFactory
       .completed()
@@ -36,17 +36,21 @@ describe('computePollStats', () => {
       .create()
     await simulationFactory.started().withPollId(poll.id).create()
 
-    const { computedResults } = await computePollStats(poll.id)
+    const { computedResults, participantsCount } = await computePollStats(
+      poll.id
+    )
 
     expect(computedResults.carbone.bilan).toBe(
       validSimulation1.computedResults.carbone.bilan +
         validSimulation2.computedResults.carbone.bilan
     )
+    // The simulation still being answered is not a participant.
+    expect(participantsCount).toBe(2)
   })
 
   it('derives fun facts from the situation', async () => {
     const organisation = await organisationFactory.create()
-    const poll = await pollFactory.create({}, { transient: { organisationId: organisation.id } })
+    const poll = await pollFactory.withOrganisation(organisation).create()
 
     await simulationFactory
       .completed()

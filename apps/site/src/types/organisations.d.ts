@@ -58,22 +58,12 @@ interface BaseOrganisationPoll {
   simulations: {
     count: number
     finished: number
-    hasParticipated: boolean
     cooldownSeconds: number
   }
-  progression?: number
   /**
    * computedResults de toutes les simulations (somme)
    */
   computedResults?: ComputedResults | null
-  /**
-   * computedResults de l'utilisateur si il a participé
-   */
-  userComputedResults?: ComputedResults
-  /**
-   * computedResults de toutes les simulations moins ceux de l'utilisateur si il a participé
-   */
-  otherComputedResults?: ComputedResults
   funFacts?: FunFacts | null
 }
 
@@ -81,8 +71,13 @@ export type OrganisationPoll = BaseOrganisationPoll & {
   organisation: Omit<Organisation, 'polls'>
 }
 
-export type PublicOrganisationPoll = BaseOrganisationPoll & {
-  organisation: PublicOrganisation
+/**
+ * What is needed to address a collective test: its own address, and that of its
+ * organisation.
+ */
+export interface PollIdentifier {
+  slug: string
+  organisation: { slug: string }
 }
 
 export type PublicPollSimulation = Pick<

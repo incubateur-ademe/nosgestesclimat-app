@@ -1,9 +1,4 @@
 import Breadcrumbs from '@/design-system/layout/Breadcrumbs'
-import type {
-  Organisation,
-  OrganisationPoll,
-  PublicOrganisationPoll,
-} from '@/types/organisations'
 import type { TFunction } from 'i18next'
 import type { ComponentProps } from 'react'
 
@@ -17,9 +12,9 @@ export default function OrganisationFilAriane({
   t,
 }: {
   className?: string
-  organisation?: Organisation
+  organisation?: { name: string; slug: string }
   isAdmin?: boolean
-  poll?: OrganisationPoll | PublicOrganisationPoll
+  poll?: { name: string; slug: string }
   currentPage?: Item
   t: TFunction
 }) {

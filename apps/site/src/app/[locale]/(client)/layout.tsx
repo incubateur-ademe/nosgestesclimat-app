@@ -13,7 +13,7 @@ export default async function LargeLayout({ children, params }: LayoutProps) {
   return (
     <>
       <ClientLayout locale={locale} userSession={userSession}>
-        <HeaderServer locale={locale} />
+        <HeaderServer />
         {children}
       </ClientLayout>
       <Footer backgroundColor="white" locale={locale} />

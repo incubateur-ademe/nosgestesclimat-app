@@ -1,4 +1,5 @@
 import Emoji from '@/design-system/utils/Emoji'
+import { useIsClient } from '@/hooks/useIsClient'
 import { useRule } from '@/publicodes-state'
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'tailwind-merge'
@@ -18,9 +19,14 @@ export default function FunFactsItem({
 }: Props) {
   const { title, icons } = useRule(dottedName)
 
+  // The engine only exists on the client (see `useEngine`): the icon and the
+  // title it holds would be missing from the server's render, and React would
+  // regenerate the tree. Waiting for the mount keeps both renders identical.
+  const isClient = useIsClient()
+
   const itemValue = funFacts?.[funFactKey as keyof FunFacts]
 
-  if (itemValue === undefined || itemValue === null) {
+  if (!isClient || itemValue === undefined || itemValue === null) {
     return null
   }
 

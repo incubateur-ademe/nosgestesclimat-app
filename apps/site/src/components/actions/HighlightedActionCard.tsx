@@ -1,6 +1,7 @@
 import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
+import Link from '@/design-system/links/Link'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
@@ -8,7 +9,6 @@ import { commitToAction } from '@/services/actions/commit-to-action'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
-import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
 import PlusIcon from '../icons/PlusIcon'
@@ -112,6 +112,7 @@ export default function HighlightedActionCard({
           <h3 className="mb-0 text-2xl/normal font-extrabold">
             <Link
               href={href}
+              prefetch={true}
               className="text-inherit no-underline hover:underline">
               {action.title}
             </Link>
@@ -124,7 +125,11 @@ export default function HighlightedActionCard({
         </div>
 
         <div className="flex gap-4">
-          <ButtonLinkServer href={href} size="sm" className="h-12 gap-2 px-6">
+          <ButtonLinkServer
+            href={href}
+            prefetch={true}
+            size="sm"
+            className="h-12 gap-2 px-6">
             <Trans
               locale={locale}
               i18nKey="actions.components.actionCard.highlighted.link">

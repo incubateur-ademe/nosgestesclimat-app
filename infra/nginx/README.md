@@ -252,6 +252,17 @@ Ces `location` désactivent le cache disque (`proxy_cache off`) — l'API PostHo
 dynamique — et réécrivent `Host` vers PostHog (le `server` force par défaut
 `Host ${UPSTREAM}`).
 
+Trois écarts au routage strict, alignés sur la
+[conf de référence PostHog](https://posthog.com/docs/advanced/proxy/nginx) :
+
+- `Cookie` et `Authorization` vidés avant l'envoi : l'ingestion n'utilise que
+  l'identifiant lu côté navigateur, les cookies de session NGC n'ont pas à
+  transiter vers un tiers.
+- Vérification TLS active sur les trois `location` — `/revp/static/` sert du JS
+  exécuté par les navigateurs.
+- `client_max_body_size 64M` sur `/revp/` : les enregistrements de session
+  PostHog montent à 64 Mo, contre 1 Mo par défaut.
+
 Côté app, `api_host` pointe sur `/revp` (chemin relatif au domaine courant) et
 `ui_host` reste `https://eu.i.posthog.com` (voir
 `apps/site/src/services/tracking/Posthog.ts`).
@@ -281,6 +292,18 @@ http_404` sert la copie en cache plutôt que de laisser un 404 que le HTML
 
 L'invalidation se fait par **génération de clé** : bumper le préfixe
 `ngc-html-v2` dans `nginx.conf.tpl` vide le cache HTML.
+
+## Page d'erreur applicative (indispo / timeout upstream)
+
+Sur 502/503/504, nginx sert `/app-crash` via `error_page`, avec `=code` pour que
+le statut d'origine remonte jusqu'au client. La clé de cache et le TTL restent
+ceux par défaut : la page est statique (`s-maxage=86400`), et dans la
+sous-requête `$uri` vaut `/app-crash` avec `$args` vide, donc la clé héritée est
+déjà celle du pré-chauffage. `pull-config.sh` réécrit l'entrée toutes les 5 min :
+sans elle, la sous-requête repart vers l'upstream, injoignable.
+
+Le `500` n'est pas intercepté : l'erreur applicative garde la page 500 de Next.
+La page est en `noindex` et interdite dans `robots.txt`.
 
 ## Tester avant bascule DNS
 

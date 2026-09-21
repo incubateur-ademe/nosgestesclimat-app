@@ -58,6 +58,7 @@ view AnonOrganisation {
   updatedAt             DateTime
   anonPolls             AnonPoll[]
   administrators        AnonOrganisationAdministrator[]
+  eventComputations     AnonEventComputation[]
 
   @@map("Organisation")
   @@schema("ngc_anon")
@@ -160,5 +161,34 @@ view AnonMatomoStats {
   finishedSimulations Int               @db.Integer
 
   @@map("MatomoStats")
+  @@schema("ngc_anon")
+}
+
+view AnonEvent {
+  id        String   @unique
+  slug      String
+  name      String
+  startDate DateTime @db.Timestamptz(3)
+  endDate   DateTime @db.Timestamptz(3)
+  createdAt DateTime
+  updatedAt DateTime
+
+  eventComputations AnonEventComputation[]
+
+  @@map("Event")
+  @@schema("ngc_anon")
+}
+
+view AnonEventComputation {
+  eventId          String
+  organisationId   String?
+  simulationsCount Int
+  event            AnonEvent         @relation(fields: [eventId], references: [id])
+  organisation     AnonOrganisation? @relation(fields: [organisationId], references: [id])
+
+  // The materialized view already has a unique index on (eventId,
+  // organisationId): declaring it enables relations on the view.
+  @@unique([eventId, organisationId])
+  @@map("event_computation")
   @@schema("ngc_anon")
 }

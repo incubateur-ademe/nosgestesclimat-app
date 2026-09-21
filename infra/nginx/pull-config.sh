@@ -27,6 +27,34 @@ export DOMAIN UPSTREAM ENVIRONMENT REPO TEMPLATE_REF
 
 mkdir -p "$STATE_DIR"
 
+# ─── Pré-chauffage du cache page d'erreur ────────────────────────
+# L'entrée de /app-crash doit exister AVANT une panne : la sous-requête
+# d'`error_page` repart sinon vers l'upstream, qui est injoignable.
+#
+# Le second appel lit ce que le premier vient d'écrire. Vérifier que l'amont
+# répond ne suffirait pas : c'est l'entrée de cache qui fait tenir la page.
+# Non fatal : nginx n'existe pas encore au first boot (pas de certificat).
+crash_cache_status() {
+    curl -sS -o /dev/null -D - --max-time 10 \
+        --resolve "${DOMAIN}:443:127.0.0.1" \
+        "https://${DOMAIN}/app-crash" 2>/dev/null |
+        tr -d '\r' | awk 'tolower($1) == "x-cache-status:" { print $2 }' || true
+}
+
+warm_app_crash_cache() {
+    systemctl is-active --quiet nginx || return 0
+
+    local first second
+    first=$(crash_cache_status)
+    second=$(crash_cache_status)
+
+    if [ "$second" != "HIT" ]; then
+        echo "WARN: app-crash non mis en cache (1er=${first:-?} 2e=${second:-?}) — injoignable en panne"
+    fi
+}
+
+warm_app_crash_cache
+
 # ─── Get latest commit SHA ───────────────────────────────────────
 SHA=$(curl -fsSL --max-time 30 --retry 3 \
     -H "Accept: application/vnd.github+json" \

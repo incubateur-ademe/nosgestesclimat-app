@@ -24,7 +24,6 @@ import {
   fetchOrganisations,
   fetchPoll,
   fetchPolls,
-  fetchPublicPoll,
   getDownloadPollSimulationResultJob,
   startDownloadPollSimulationResultJob,
   updateOrganisation,
@@ -40,7 +39,6 @@ import {
   OrganisationPollsFetchValidator,
   OrganisationPollSimulationsDownloadValidator,
   OrganisationPollUpdateValidator,
-  OrganisationPublicPollFetchValidator,
   OrganisationsFetchValidator,
   OrganisationUpdateValidator,
 } from './organisations.validator.ts'
@@ -384,38 +382,6 @@ router
         }
 
         logger.error('Poll download simulations failed', err)
-
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
-      }
-    }
-  )
-
-/**
- * Returns poll informations for public or administrator users following authentication
- */
-router
-  .route('/v1/public-polls/:pollIdOrSlug')
-  .get(
-    authentificationMiddleware({ passIfUnauthorized: true }),
-    validateRequest(OrganisationPublicPollFetchValidator),
-    async (req, res) => {
-      try {
-        const poll = await fetchPublicPoll({
-          params: req.params,
-          user: req.user,
-        })
-
-        return res.status(StatusCodes.OK).json(poll)
-      } catch (err) {
-        if (err instanceof EntityNotFoundException) {
-          return res.status(StatusCodes.NOT_FOUND).send(err.message).end()
-        }
-
-        if (err instanceof ForbiddenException) {
-          return res.status(StatusCodes.FORBIDDEN).send(err.message).end()
-        }
-
-        logger.error('Public poll fetch failed', err)
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end()
       }

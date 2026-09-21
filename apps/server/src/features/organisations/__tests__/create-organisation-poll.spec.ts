@@ -287,6 +287,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            participantsCount: 0,
             mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -295,7 +296,6 @@ describe('Given a NGC user', () => {
             simulations: {
               count: 0,
               finished: 0,
-              hasParticipated: false,
               cooldownSeconds: 0,
             },
           })
@@ -427,8 +427,9 @@ describe('Given a NGC user', () => {
           })
 
           const searchParams = new URLSearchParams()
-          searchParams.set('mtm_campaign', `Organisation_${organisation.name}`)
-          searchParams.set('mtm_kwd', payload.name)
+          searchParams.set('utm_source', 'NGC')
+          searchParams.set('utm_medium', 'email-automatise')
+          searchParams.set('utm_campaign', 'poll-admin-creation')
 
           mswServer.use(
             brevoSendEmail({
@@ -442,7 +443,7 @@ describe('Given a NGC user', () => {
                 templateId: 126,
                 params: {
                   ADMINISTRATOR_NAME: null,
-                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=poll-admin-creation`,
                   POLL_NAME: payload.name,
                   POLL_URL: `https://nosgestesclimat.test/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
                 },
@@ -473,11 +474,9 @@ describe('Given a NGC user', () => {
             })
 
             const searchParams = new URLSearchParams()
-            searchParams.set(
-              'mtm_campaign',
-              `Organisation_${organisation.name}`
-            )
-            searchParams.set('mtm_kwd', payload.name)
+            searchParams.set('utm_source', 'NGC')
+            searchParams.set('utm_medium', 'email-automatise')
+            searchParams.set('utm_campaign', 'poll-admin-creation')
 
             mswServer.use(
               brevoSendEmail({
@@ -491,7 +490,7 @@ describe('Given a NGC user', () => {
                   templateId: 126,
                   params: {
                     ADMINISTRATOR_NAME: null,
-                    DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
+                    DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=poll-admin-creation`,
                     POLL_NAME: payload.name,
                     POLL_URL: `https://nosgestesclimat.test/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
                   },
@@ -524,11 +523,9 @@ describe('Given a NGC user', () => {
             })
 
             const searchParams = new URLSearchParams()
-            searchParams.set(
-              'mtm_campaign',
-              `Organisation_${organisation.name}`
-            )
-            searchParams.set('mtm_kwd', payload.name)
+            searchParams.set('utm_source', 'NGC')
+            searchParams.set('utm_medium', 'email-automatise')
+            searchParams.set('utm_campaign', 'poll-admin-creation')
 
             mswServer.use(
               brevoSendEmail({
@@ -542,7 +539,7 @@ describe('Given a NGC user', () => {
                   templateId: 127,
                   params: {
                     ADMINISTRATOR_NAME: null,
-                    DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?mtm_campaign=email-automatise&mtm_kwd=poll-admin-creation`,
+                    DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${orgaSlug}/campagnes/${pollSlug}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=poll-admin-creation`,
                     POLL_NAME: payload.name,
                     POLL_URL: `https://nosgestesclimat.test/o/${orgaSlug}/${pollSlug}?${searchParams.toString()}`,
                   },
@@ -591,6 +588,7 @@ describe('Given a NGC user', () => {
               defaultAdditionalQuestions: [],
               customAdditionalQuestions: [],
               expectedNumberOfParticipants: null,
+              participantsCount: 0,
               mode: 'standard',
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
@@ -599,7 +597,6 @@ describe('Given a NGC user', () => {
               simulations: {
                 count: 0,
                 finished: 0,
-                hasParticipated: false,
                 cooldownSeconds: 0,
               },
             })
@@ -727,6 +724,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            participantsCount: 0,
             mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -735,7 +733,6 @@ describe('Given a NGC user', () => {
             simulations: {
               count: 0,
               finished: 0,
-              hasParticipated: false,
               cooldownSeconds: 0,
             },
           })
