@@ -26,7 +26,7 @@ export const findPodiumOrganisations = async (
           organisation: {
             slug: {
               not: {
-                startsWith: ADEME_SLUG,
+                equals: ADEME_SLUG,
               },
             },
             type,

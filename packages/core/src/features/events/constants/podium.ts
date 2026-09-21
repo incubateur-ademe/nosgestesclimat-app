@@ -1,6 +1,6 @@
 import type { OrganisationType } from '../../../prisma/generated/enums.ts'
 
-export const ADEME_SLUG = 'ademe-'
+export const ADEME_SLUG = 'ademe-sedd'
 
 export const MOBILISED_ORGANISATION_MIN_SIMULATIONS = 3
 
