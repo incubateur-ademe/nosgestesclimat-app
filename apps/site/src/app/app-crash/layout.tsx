@@ -1,9 +1,9 @@
 import '@/locales/initClient'
 import '@/locales/initServer'
 
-import '@/app/[locale]/globals.css'
 import { marianne } from '@/app/[locale]/marianne'
 import LogoHeader from '@/components/layout/headerServer/LogoHeader'
+import '@/styles/globals.css'
 import type { ReactNode } from 'react'
 
 /**
