@@ -69,6 +69,11 @@ export default function LanguageSwitchButton({ className }: Props) {
                 completeLanguageString: inactiveLang.completeLanguageString,
               }
             )}
+            onClick={() => {
+              trackPosthogEvent(
+                captureClickLanguage({ locale: inactiveLocale })
+              )
+            }}
             className="hover:bg-primary-50 active:bg-primary-100 rounded-sm px-2 py-2">
             <Emoji className="mr-2">{inactiveLang.flag}</Emoji>
             <span className="text-primary-700 text-base font-normal capitalize">
