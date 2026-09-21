@@ -1,8 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { captureClickFormNav } from '@/constants/tracking/posthogTrackers'
-import { questionClickPass } from '@/constants/tracking/question'
+import { captureClickFormNav } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
@@ -13,10 +12,7 @@ import {
   useUser,
 } from '@/publicodes-state'
 import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useCallback } from 'react'
 
@@ -63,11 +59,7 @@ export default function DontKnowButton({ question }: Props) {
   }, [question, questionsOfMosaicFromParent, updateCurrentSimulation, getValue])
 
   const handleClick = () => {
-    trackMatomoEvent__deprecated(
-      // Dummy time for AB test
-      questionClickPass({ question, timeSpentOnQuestion: 0 })
-    )
-    trackPosthogEvent(
+    trackEvent(
       captureClickFormNav({
         actionType: 'passer',
         question,

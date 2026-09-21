@@ -2,16 +2,9 @@
 
 import ExternalLinkIcon from '@/components/icons/ExternalLinkIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  organisationsDashboardClickAteliers,
-  organisationsDashboardClickImpactCo2,
-  organisationsDashboardDownloadKit,
-} from '@/constants/tracking/pages/organisationsDashboard'
-import { MATOMO_CAMPAIGN_KEY } from '@/constants/urls/utm'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Title from '@/design-system/layout/Title'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import CTACard from './CTACard'
 
 export default function OurTools() {
@@ -35,9 +28,6 @@ export default function OurTools() {
               </Trans>
             }>
             <ButtonLink
-              onClick={() => {
-                trackMatomoEvent__deprecated(organisationsDashboardDownloadKit)
-              }}
               className="mt-auto w-full justify-center align-bottom"
               color="secondary"
               href="https://accelerateur-transition-ecologique-ademe.notion.site/Kit-de-communication-Nos-Gestes-Climat-1156523d57d780fbb2a2dd413aef2681"
@@ -73,7 +63,6 @@ export default function OurTools() {
             }>
             <ButtonLink
               color="secondary"
-              trackingEvent={organisationsDashboardClickAteliers}
               className="mt-auto w-full justify-center"
               href="https://drive.google.com/drive/folders/1dORmBbDLDG31PLLOblP8Wg5CrrksAfjV"
               target="_blank"
@@ -109,9 +98,8 @@ export default function OurTools() {
             <ButtonLink
               className="mt-auto w-full justify-center align-bottom"
               color="secondary"
-              href={`https://impactco2.fr/comparateur?${MATOMO_CAMPAIGN_KEY}=ngc-orga`}
+              href="https://impactco2.fr/comparateur"
               target="_blank"
-              trackingEvent={organisationsDashboardClickImpactCo2}
               aria-label={t(
                 'Découvrez le calculateur, ouvrir dans une nouvelle fenêtre'
               )}>

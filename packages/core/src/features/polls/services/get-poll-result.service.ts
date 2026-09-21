@@ -1,6 +1,5 @@
 import { findLatestCompletedPollSimulation } from '../../simulations/repository/simulation.repository.ts'
 import { resolveAnonymity } from '../helpers/anonymity-policy.ts'
-import { countPollParticipants } from '../repositories/poll-participation.repository.ts'
 import { findPollByIdOrSlugInOrganisation } from '../repositories/poll.repository.ts'
 import { resolveCooldownSeconds } from '../stats/helpers/cooldown-policy.ts'
 import { pollStatsCooldownTiers } from '../stats/helpers/poll-stats-cooldown-tiers.ts'
@@ -27,7 +26,7 @@ export const getPollResult = async ({
   ])
   if (!poll) return null
 
-  const participantsCount = await countPollParticipants(poll.id)
+  const participantsCount = poll.participantsCount
   const anonymity = resolveAnonymity(participantsCount)
 
   const base = {

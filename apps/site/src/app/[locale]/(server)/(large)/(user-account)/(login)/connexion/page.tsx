@@ -3,7 +3,7 @@ import AuthenticateUserForm from '@/components/authentication/AuthenticateUserFo
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNIN_MODE } from '@/constants/authentication/modes'
-import { captureLoginComplete } from '@/constants/tracking/posthogTrackers'
+import { captureLoginComplete } from '@/constants/tracking/trackers'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
 import { t } from '@/helpers/metadata/fakeMetadataT'

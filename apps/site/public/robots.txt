@@ -4,5 +4,6 @@ Disallow: /simulation/*
 Disallow: /infos/*
 Disallow: /partage/*
 Disallow: /tutoriel/*
+Disallow: /app-crash
 
 Sitemap: https://nosgestesclimat.fr/sitemap.xml

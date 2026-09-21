@@ -2,10 +2,10 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { START_SIMULATION_PATH } from '@/constants/urls/paths'
+import Link from '@/design-system/links/Link'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Locale } from '@/i18nConfig'
 import isMobile from 'is-mobile'
-import Link from 'next/link'
 import {
   CartesianGrid,
   Line,

@@ -74,7 +74,7 @@ export default async function EvenementPage({
 
   return (
     <>
-      <Header locale={locale} />
+      <Header />
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">

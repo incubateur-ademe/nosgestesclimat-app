@@ -1,11 +1,6 @@
 {
   "jobs": [
     {
-      "command": "0 7 * * * pnpm jobs:recoverMatomoStats",
-      "size": "M"
-    },
-
-    {
       "command": "0 3 * * * pnpm jobs:syncNotionActions; pnpm jobs:cleanupExpiredTokens; pnpm jobs:syncBrevoContacts ; pnpm jobs:recoverNewsletterStats",
       "size": "M"
     },

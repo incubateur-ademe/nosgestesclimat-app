@@ -1,10 +1,8 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { tutorielClickQuestion } from '@/constants/tracking/pages/tutoriel'
 import { usePollQueryParams } from '@/hooks/organisations/usePollQueryParams'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 
 export default function OrganisationPrivacy() {
   const { pollSlug } = usePollQueryParams()
@@ -24,20 +22,12 @@ export default function OrganisationPrivacy() {
           role="button"
           tabIndex={0}
           aria-expanded="false"
-          onClick={() =>
-            trackMatomoEvent__deprecated(
-              tutorielClickQuestion('Mes données restent-elles privées ?')
-            )
-          }
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault()
               const details = e.currentTarget
                 .parentElement as HTMLDetailsElement
               details.open = !details.open
-              trackMatomoEvent__deprecated(
-                tutorielClickQuestion('Mes données restent-elles privées ?')
-              )
             }
           }}>
           {t('Mes données restent-elles privées\u202f?')}

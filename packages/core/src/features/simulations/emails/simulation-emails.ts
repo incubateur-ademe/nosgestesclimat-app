@@ -1,13 +1,17 @@
 import type { GroupTemplateId } from '../../emails/email.constant.ts'
 import {
-  MATOMO_CAMPAIGN_EMAIL_AUTOMATISE,
-  MATOMO_CAMPAIGN_KEY,
-  MATOMO_KEYWORD_KEY,
-  MATOMO_KEYWORDS,
   TemplateIds,
+  TRACKING_CAMPAIGNS,
+  TRACKING_MEDIUM,
+  TRACKING_SOURCE,
 } from '../../emails/email.constant.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import {
+  UTM_CAMPAIGN_KEY,
+  UTM_MEDIUM_KEY,
+  UTM_SOURCE_KEY,
+} from '../../tracking/utm.ts'
 import type { Simulation } from '../types/simulation.ts'
 import { mapComputedResultsToContactAttributes } from './map-computed-results-to-contact-attributes.ts'
 
@@ -65,14 +69,16 @@ const createGroupEmail = ({
   const groupUrl = new URL(`${origin}/amis/resultats`)
   const { searchParams: groupSp } = groupUrl
   groupSp.append('groupId', groupId)
-  groupSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  groupSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].GROUP_URL)
+  groupSp.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  groupSp.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  groupSp.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId].GROUP_URL)
 
   const shareUrl = new URL(`${origin}/amis/invitation`)
   const { searchParams: shareSp } = shareUrl
   shareSp.append('groupId', groupId)
-  shareSp.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  shareSp.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId].SHARE_URL)
+  shareSp.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  shareSp.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  shareSp.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId].SHARE_URL)
 
   return {
     email,
@@ -100,26 +106,22 @@ const createPollJoinedEmail = ({
     `${origin}/organisations/${organisationSlug}/campagnes/${pollSlug}`
   )
   const { searchParams: detailedViewUrlSearchParams } = detailedViewUrl
+  detailedViewUrlSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  detailedViewUrlSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
   detailedViewUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  detailedViewUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[templateId]
+    UTM_CAMPAIGN_KEY,
+    TRACKING_CAMPAIGNS[templateId]
   )
 
   const simulationUrl = new URL(origin)
   simulationUrl.pathname = 'fin'
   const { searchParams: simulationUrlSearchParams } = simulationUrl
   simulationUrlSearchParams.append('sid', simulationId)
+  simulationUrlSearchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  simulationUrlSearchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
   simulationUrlSearchParams.append(
-    MATOMO_CAMPAIGN_KEY,
-    MATOMO_CAMPAIGN_EMAIL_AUTOMATISE
-  )
-  simulationUrlSearchParams.append(
-    MATOMO_KEYWORD_KEY,
-    MATOMO_KEYWORDS[TemplateIds.fr.SIMULATION_COMPLETED]
+    UTM_CAMPAIGN_KEY,
+    TRACKING_CAMPAIGNS[TemplateIds.fr.SIMULATION_COMPLETED]
   )
 
   return {
@@ -146,8 +148,9 @@ const createSimulationCompletedEmail = ({
   simulationUrl.pathname = 'fin'
   const { searchParams } = simulationUrl
   searchParams.append('sid', simulationId)
-  searchParams.append(MATOMO_CAMPAIGN_KEY, MATOMO_CAMPAIGN_EMAIL_AUTOMATISE)
-  searchParams.append(MATOMO_KEYWORD_KEY, MATOMO_KEYWORDS[templateId])
+  searchParams.append(UTM_SOURCE_KEY, TRACKING_SOURCE)
+  searchParams.append(UTM_MEDIUM_KEY, TRACKING_MEDIUM)
+  searchParams.append(UTM_CAMPAIGN_KEY, TRACKING_CAMPAIGNS[templateId])
 
   const dashboardUrl = new URL(`${origin}/mon-espace`)
 

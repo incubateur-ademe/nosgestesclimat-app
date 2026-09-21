@@ -5,6 +5,8 @@ export interface Poll {
   name: string
   slug: string
   mode: PollMode
+  /** Finished simulations, as of the last stats recomputation. */
+  participantsCount: number
   expectedNumberOfParticipants: number | null
   createdAt: Date
   updatedAt: Date

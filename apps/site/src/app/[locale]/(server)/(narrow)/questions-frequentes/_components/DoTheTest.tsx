@@ -19,7 +19,7 @@ export default async function DoTheTest({ locale }: { locale: string }) {
       <div>
         <Trans i18nKey="faq.doTheTest.notStarted" locale={locale}>
           Vous n'avez pas encore débuté votre test,{' '}
-          <InlineLink href={getLinkToSimulateur()}>
+          <InlineLink href={getLinkToSimulateur()} prefetch={true}>
             <strong>lancez-vous !</strong>
           </InlineLink>
         </Trans>
@@ -31,7 +31,7 @@ export default async function DoTheTest({ locale }: { locale: string }) {
     <div>
       <Trans i18nKey="faq.doTheTest.started" locale={locale}>
         Vous avez commencé votre test,{' '}
-        <InlineLink href={getLinkToSimulateur()}>
+        <InlineLink href={getLinkToSimulateur()} prefetch={true}>
           <strong>cliquez ici pour le reprendre !</strong>
         </InlineLink>
       </Trans>

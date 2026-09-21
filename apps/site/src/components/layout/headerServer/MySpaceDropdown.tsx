@@ -3,16 +3,6 @@
 import ChevronRight from '@/components/icons/ChevronRight'
 import LogOutIcon from '@/components/icons/LogOutIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  captureClickHeaderAccessMySpaceAuthenticatedServer,
-  captureClickHeaderLogoutAuthenticatedServer,
-  captureClickHeaderMonEspaceAuthenticatedServer,
-} from '@/constants/tracking/posthogTrackers'
-import {
-  headerClickAccessMySpaceAuthenticatedServer,
-  headerClickLogoutAuthenticatedServer,
-  headerClickMonEspaceAuthenticatedServer,
-} from '@/constants/tracking/user-account'
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
 import {
@@ -25,16 +15,14 @@ import {
 import { resetLocalState } from '@/helpers/user/resetLocalState'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { PostHog } from '@/services/tracking/Posthog'
 import Link from 'next/link'
-import posthog from 'posthog-js'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 const MAX_EMAIL_LENGTH = 20
+
+const posthog = new PostHog()
 
 interface Props {
   email: string
@@ -53,24 +41,12 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
       ? `${email.substring(0, MAX_EMAIL_LENGTH)}…`
       : email
 
-  const trackToggle = () => {
-    trackMatomoEvent__deprecated(headerClickMonEspaceAuthenticatedServer)
-    trackPosthogEvent(captureClickHeaderMonEspaceAuthenticatedServer)
-  }
-
-  const trackAccess = () => {
-    trackMatomoEvent__deprecated(headerClickAccessMySpaceAuthenticatedServer)
-    trackPosthogEvent(captureClickHeaderAccessMySpaceAuthenticatedServer)
-  }
-
   const handleLogout = async (closeMenu: () => void) => {
-    trackMatomoEvent__deprecated(headerClickLogoutAuthenticatedServer)
-    trackPosthogEvent(captureClickHeaderLogoutAuthenticatedServer)
     closeMenu()
 
     resetLocalState({ setUser, setSimulation })
 
-    posthog.reset()
+    posthog.resetIdentity()
 
     await onLogout()
 
@@ -105,10 +81,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
           className="max-tiny:px-2 max-tiny:py-2 inline-flex gap-1 align-baseline"
           data-testid="my-space-button"
           aria-label={ariaLabelTitle}
-          title={ariaLabelTitle}
-          onClick={() => {
-            trackToggle()
-          }}>
+          title={ariaLabelTitle}>
           <Trans i18nKey="header.monEspace.title">Mon espace</Trans>{' '}
           <span className="hidden md:inline">({displayEmail})</span>
           <ChevronRight
@@ -126,10 +99,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
             <Link
               href={MON_ESPACE_PATH}
               data-testid="my-space-link"
-              className="text-default"
-              onClick={() => {
-                trackAccess()
-              }}>
+              className="text-default">
               <Trans i18nKey="header.monEspace.access">
                 Accéder à mon espace
               </Trans>

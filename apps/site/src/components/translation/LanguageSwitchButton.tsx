@@ -1,7 +1,6 @@
 'use client'
 
 import ChevronRight from '@/components/icons/ChevronRight'
-import { captureClickLanguage } from '@/constants/tracking/posthogTrackers'
 import {
   Popover,
   PopoverContent,
@@ -9,10 +8,8 @@ import {
 } from '@/design-system/shadcn/popover'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
-import './languageSwitchButton/style.css'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
 
 interface Props {

@@ -1,6 +1,6 @@
 import QRCode from '@/components/sharing/QRCode'
-import { captureDownloadPollQRCode } from '@/constants/tracking/posthogTrackers'
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { captureDownloadPollQRCode } from '@/constants/tracking/trackers'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -34,7 +34,6 @@ vi.mock('jszip', () => ({
 // Mock trackEvent
 vi.mock('@/utils/analytics/trackEvent', () => ({
   trackEvent: vi.fn(),
-  trackPosthogEvent: vi.fn(),
 }))
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
@@ -162,7 +161,7 @@ describe('QRCode', () => {
     // Wait for async operations
     await vi.runAllTimersAsync()
 
-    expect(trackPosthogEvent).toHaveBeenCalledWith(captureDownloadPollQRCode)
+    expect(trackEvent).toHaveBeenCalledWith(captureDownloadPollQRCode)
 
     // Restore original createElement
     document.createElement = originalCreateElement
@@ -300,7 +299,7 @@ describe('QRCode', () => {
 
     // The tracking event is called before the context check, so it will be called
     // This is the actual behavior of the component
-    expect(trackPosthogEvent).toHaveBeenCalledWith(captureDownloadPollQRCode)
+    expect(trackEvent).toHaveBeenCalledWith(captureDownloadPollQRCode)
 
     // Restore original createElement
     document.createElement = originalCreateElement
@@ -323,7 +322,7 @@ describe('QRCode', () => {
     fireEvent.click(button)
 
     expect(createElementSpy).not.toHaveBeenCalledWith('canvas')
-    expect(trackPosthogEvent).not.toHaveBeenCalled()
+    expect(trackEvent).not.toHaveBeenCalled()
   })
 
   it('does not download when SVG element is not found', () => {
@@ -343,7 +342,7 @@ describe('QRCode', () => {
     fireEvent.click(button)
 
     expect(createElementSpy).not.toHaveBeenCalledWith('canvas')
-    expect(trackPosthogEvent).not.toHaveBeenCalled()
+    expect(trackEvent).not.toHaveBeenCalled()
   })
 
   it('has correct SVG attributes', () => {

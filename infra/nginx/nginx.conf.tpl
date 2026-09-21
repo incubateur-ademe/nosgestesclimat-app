@@ -281,10 +281,47 @@ server {
 
 
     proxy_cache ngc_cache;
-    # Sert le cache même si l'upstream est en panne (500-504)
-    # ou en revalidation par un autre worker (updating).
+    # Sert le cache même si l'upstream est en panne (502-504) ou en
+    # revalidation par un autre worker (updating).
+    # Pas de `http_500` : une erreur applicative doit laisser s'afficher la
+    # page 500 de Next.
     proxy_cache_use_stale error timeout updating
-                          http_500 http_502 http_503 http_504;
+                          http_502 http_503 http_504;
+
+    # ── Statut nginx (supervision locale) ────────────────────────
+    # Défaut : module compilé mais non exposé. Sans lui, aucune lecture des
+    # connexions actives — or la saturation se manifeste d'abord par des
+    # connexions jetées par le noyau, invisibles dans les logs.
+    # → http://nginx.org/en/docs/http/ngx_http_stub_status_module.html
+    location = /nginx-status {
+        allow 127.0.0.1;
+        deny all;
+        stub_status;
+    }
+
+    # ── Page d'erreur applicative (indispo / timeout upstream) ───
+    # `error_page` interroge l'upstream en sous-requête : la page ne peut être
+    # servie pendant une panne que si son entrée de cache existe déjà, d'où le
+    # pré-chauffage par `pull-config.sh`.
+
+    proxy_intercept_errors on;
+
+    # `=code` conserve le statut : sans lui nginx renvoie celui de /app-crash
+    # (200), et plus aucun monitor ne voit la panne.
+    error_page 502 =502 /app-crash;
+    error_page 503 =503 /app-crash;
+    error_page 504 =504 /app-crash;
+
+    location = /app-crash {
+        proxy_pass https://scalingo;
+        # Évite la boucle error_page → /app-crash → error_page.
+        proxy_intercept_errors off;
+
+        proxy_cache_use_stale error timeout updating
+                              http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
+        proxy_cache_lock on;
+    }
 
 
     # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
@@ -301,6 +338,7 @@ server {
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
         proxy_cache_background_update on;
+        proxy_intercept_errors off;
     }
 
     # Proxy vers le bucket S3 des assets CMS (images, PDF) avec cache 30 jours.
@@ -319,6 +357,7 @@ server {
                               http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
+        proxy_intercept_errors off;
     }
 
     # Images Next.js (optimiseur `/_next/image?url=…`), fonts et assets divers
@@ -331,6 +370,7 @@ server {
         # cache.
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
+        proxy_intercept_errors off;
     }
 
     # Fichiers statiques racine servis par l'app : favicon, icônes Apple,
@@ -414,6 +454,7 @@ server {
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     location /revp/array/ {
@@ -426,6 +467,7 @@ server {
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     location /revp/ {
@@ -446,14 +488,17 @@ server {
         # → https://posthog.com/docs/advanced/proxy/proxy-reference
         client_max_body_size 64M;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     # Catch-all : rate-limit + cache générique, bypass sur websocket.
     location / {
         proxy_pass https://scalingo;
-        # 20 requêtes supplémentaires peuvent déborder immédiatement (burst),
-        # au-delà → 429 sans délai.
-        limit_req zone=web burst=20 nodelay;
+        # The burst absorbs the batch of prefetch requests a listing page
+        # produces — Next.js asks for every visible link at once — which is not
+        # sustained traffic. The rate is what bounds a client that keeps
+        # hammering. Past both → 429 without delay.
+        limit_req zone=web burst=100 nodelay;
 
         proxy_cache_lock on;
         proxy_cache_background_update on;

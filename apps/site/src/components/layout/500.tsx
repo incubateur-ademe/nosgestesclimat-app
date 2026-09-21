@@ -1,28 +1,38 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import InlineLink from '@/design-system/inputs/InlineLink'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
+import Button from '@/design-system/buttons/Button'
 
+/** Fallback rendered by Next's global error boundary (`app/global-error`). */
 export default function Error500() {
-  const { t } = useClientTranslation()
-
   return (
-    <div
+    <main
       data-testid="500-error"
-      className="text-primary-700 mx-auto my-16 text-center">
-      <h1 className="flex items-center justify-center">
-        {t('Oups\u202f! Une erreur est survenue')} 
-        <span role="img" aria-hidden>
-          😮
-        </span>
+      className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl flex-col items-center px-4 py-16 text-center md:py-24">
+      <h1 className="text-primary-700 mt-8 text-2xl font-bold md:text-4xl">
+        <Trans i18nKey="common.errors.title">
+          Oups, une erreur est survenue
+        </Trans>
       </h1>
 
-      <InlineLink href="/" className="flex flex-col items-center text-center!">
-        <em>
-          <Trans i18nKey="404.action">Revenir en lieu sûr</Trans>
-        </em>
-      </InlineLink>
-    </div>
+      <p className="mt-6 max-w-xl text-lg">
+        <Trans i18nKey="common.errors.description">
+          L'application rencontre quelques difficultés en ce moment. Nos équipes
+          sont prévenues et mettent tout en œuvre pour rétablir la situation au
+          plus vite.
+        </Trans>
+      </p>
+
+      <p className="mt-2 max-w-xl text-lg">
+        <Trans i18nKey="common.errors.retryLater">
+          Merci de réessayer dans quelques minutes.
+        </Trans>
+      </p>
+
+      {/* Reloads the current URL, replaying the request that may now succeed. */}
+      <Button className="mt-10" onClick={() => window.location.reload()}>
+        <Trans i18nKey="common.errors.reload">Recharger la page</Trans>
+      </Button>
+    </main>
   )
 }
