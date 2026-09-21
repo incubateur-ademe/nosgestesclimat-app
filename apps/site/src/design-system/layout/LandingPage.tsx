@@ -25,7 +25,7 @@ export default function LandingPage({
 }: Props) {
   return (
     <>
-      {withHeader && <HeaderServer locale={locale} />}
+      {withHeader && <HeaderServer />}
 
       <Main>
         <Hero

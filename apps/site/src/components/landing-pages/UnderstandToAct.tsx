@@ -1,7 +1,5 @@
-import { trackingActionClickPostThumbnail } from '@/constants/tracking/actions'
 import PostThumbnail from '@/design-system/cms/PostThumbnail'
 import ColorLine from '@/design-system/layout/ColorLine'
-import { getLandingClickPostThumbnail } from '@/helpers/tracking/landings'
 import type { LandingPagePostType } from '@/types/landing-page'
 import type { JSX, ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -11,14 +9,12 @@ export default function UnderstandToAct({
   title,
   description,
   posts,
-  pathname,
   locale,
   ctaLink,
 }: {
   title?: JSX.Element | string
   description?: JSX.Element | string
   posts: Omit<LandingPagePostType, 'trackingEvent'>[]
-  pathname: string
   locale: string
   ctaLink?: ReactNode
 }) {
@@ -50,14 +46,7 @@ export default function UnderstandToAct({
           )}>
           {posts.map((post, index) => (
             <li key={`${index}-post-thumbnail`}>
-              <PostThumbnail
-                {...post}
-                className="bg-white"
-                trackingEvent={getLandingClickPostThumbnail(
-                  pathname,
-                  `${trackingActionClickPostThumbnail} ${index + 1}`
-                )}
-              />
+              <PostThumbnail {...post} className="bg-white" />
             </li>
           ))}
         </ul>

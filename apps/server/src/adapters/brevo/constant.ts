@@ -5,11 +5,10 @@ import type { ValueOf } from '../../types/types.ts'
 export {
   Attributes,
   ListIds,
-  MATOMO_CAMPAIGN_EMAIL_AUTOMATISE,
-  MATOMO_CAMPAIGN_KEY,
-  MATOMO_KEYWORD_KEY,
-  MATOMO_KEYWORDS,
   TemplateIds,
+  TRACKING_CAMPAIGNS,
+  TRACKING_MEDIUM,
+  TRACKING_SOURCE,
   type GroupTemplateId,
   type TemplateId,
 } from '@nosgestesclimat/core/features/emails/email.constant'

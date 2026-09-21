@@ -1,6 +1,5 @@
 import StepsDisplay from '@/components/groups/StepsDisplay'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
-import { amisCreationVotreGroupeRetour } from '@/constants/tracking/pages/amisCreation'
 import GoBackButton from '@/design-system/inputs/GoBackButton'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -37,10 +36,7 @@ export default async function GroupNamePage({
 
   return (
     <div className="pb-8">
-      <GoBackButton
-        className="mb-4 font-bold"
-        eventTracked={amisCreationVotreGroupeRetour}
-      />
+      <GoBackButton className="mb-4 font-bold" />
 
       {Boolean(showStep) && <StepsDisplay currentStep={2} />}
 
