@@ -119,10 +119,6 @@ export const captureDownloadPollQRCode = {
   eventName: 'download poll QR code',
 }
 
-export const captureClickPollSettings = {
-  eventName: 'click poll settings',
-}
-
 export const captureExportPollData = {
   eventName: 'export poll data',
 }

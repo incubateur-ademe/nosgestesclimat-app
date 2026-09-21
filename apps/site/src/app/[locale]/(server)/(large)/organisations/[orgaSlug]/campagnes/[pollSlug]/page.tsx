@@ -2,12 +2,10 @@ import SettingsIcon from '@/components/icons/SettingsIcon'
 import OrganisationFilAriane from '@/components/layout/FilAriane'
 import PollStatistics from '@/components/organisations/PollStatistics'
 import Trans from '@/components/translation/trans/TransServer'
-import { captureClickPollSettings } from '@/constants/tracking/trackers'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getPollResult } from '@/services/polls/get-poll-result'
-import { trackEvent } from '@/utils/analytics/trackEvent'
 import dayjs from 'dayjs'
 import CommunicationKit from './_components/CommunicationKit'
 import ShareSection from './_components/ShareSection'
@@ -62,9 +60,6 @@ export default async function CampagnePage({
             <div>
               <ButtonLinkServer
                 href={`/organisations/${orgaSlug}/campagnes/${pollSlug}/parametres`}
-                onClick={() => {
-                  trackEvent(captureClickPollSettings)
-                }}
                 color="secondary"
                 size="sm"
                 data-testid="poll-admin-section-see-parameters-button"
