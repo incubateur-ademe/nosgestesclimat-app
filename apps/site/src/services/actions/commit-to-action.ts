@@ -1,3 +1,6 @@
+'use server'
+
+import { ACTIONS_SUGGESTED_PATH } from '@/constants/urls/paths'
 import { commitToAction as _commitToAction } from '@nosgestesclimat/core/features/actions/services/commit-to-action.service'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { revalidatePath } from 'next/cache'
@@ -8,8 +11,6 @@ import {
   type CommitToActionPayload,
 } from './commit-to-action-payload.schema'
 
-import { ACTIONS_SUGGESTED_PATH } from '@/constants/urls/paths'
-
 export async function commitToAction(payload: CommitToActionPayload) {
   const session = await getUserSession()
 
@@ -18,11 +19,11 @@ export async function commitToAction(payload: CommitToActionPayload) {
   const parsed = validatePayload(CommitToActionPayloadSchema, payload)
   if (!parsed.success) return parsed
 
-  const { actionId, userId } = parsed.data
+  const actionId = parsed.data
 
   const result = await _commitToAction({
     actionId,
-    userId,
+    userId: session.id,
   })
 
   if (!result.success) return result
