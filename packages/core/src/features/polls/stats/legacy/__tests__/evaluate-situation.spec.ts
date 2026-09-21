@@ -1,8 +1,8 @@
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
 
 import { describe, expect, test } from 'vitest'
-import { getSituationDottedNameValue } from '../evaluate-situation.ts'
 import type { Situation } from '../../../../simulations/validators/situation.schema.ts'
+import { getSituationDottedNameValue } from '../evaluate-situation.ts'
 
 describe('getSituationDottedNameValue', () => {
   describe('Given nested conditions', () => {

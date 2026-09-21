@@ -10,7 +10,6 @@ import {
   isPrismaErrorNotFound,
   isPrismaErrorUniqueConstraintFailed,
 } from '@nosgestesclimat/core/prisma/utils'
-import * as v from 'valibot'
 import { utils, write } from 'xlsx'
 import type { Organisation } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
@@ -51,7 +50,6 @@ import {
   updateOrganisationPoll,
 } from './organisations.repository.ts'
 import {
-  OrganisationPollCustomAdditionalQuestions,
   type OrganisationCreateDto,
   type OrganisationParams,
   type OrganisationPollCreateDto,
@@ -511,29 +509,18 @@ const generatePollSimulationsResultExcel = async (
   }: JobParams<typeof JobKind.DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT>,
   { session }: { session: Session }
 ) => {
-  const { id, slug, customAdditionalQuestions } =
-    await findOrganisationPollById(
-      {
-        id: pollId,
-        select: {
-          id: true,
-          slug: true,
-          customAdditionalQuestions: true,
-        },
-      },
-      { session }
-    )
-
-  const excelData = await getPollSimulationsExcelData(
+  const { id, slug } = await findOrganisationPollById(
     {
-      id,
-      customAdditionalQuestions: v.parse(
-        OrganisationPollCustomAdditionalQuestions,
-        customAdditionalQuestions
-      ),
+      id: pollId,
+      select: {
+        id: true,
+        slug: true,
+      },
     },
     { session }
   )
+
+  const excelData = await getPollSimulationsExcelData({ id }, { session })
 
   const worksheet = utils.json_to_sheet(excelData)
 

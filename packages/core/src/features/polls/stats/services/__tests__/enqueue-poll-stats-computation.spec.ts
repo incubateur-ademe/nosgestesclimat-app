@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, test } from 'vitest'
 import { prisma } from '../../../../../prisma/client.ts'
-import { simulationFactory } from '../../../../simulations/factories/simulation.factory.ts'
 import { pollFactory } from '../../../factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../repositories/poll-stats-computations.repository.ts'
 import { createEnqueuePollStatsComputation } from '../enqueue-poll-stats-computation.ts'
@@ -79,20 +78,30 @@ describe('enqueuePollStatsComputation', () => {
     expect(computation!.scheduledAt?.getTime()).toBeLessThanOrEqual(after)
   })
 
-  it('resolves the cooldown from the finished simulations only', async () => {
-    const poll = await pollFactory.withCompletedComputation().create()
-
-    await simulationFactory.completed().withPollId(poll.id).create()
-    await simulationFactory.completed().withPollId(poll.id).create()
-    // Simulations still being answered are not participants: they must not
-    // push the poll into the next cooldown tier.
-    await simulationFactory.started().withPollId(poll.id).create()
-    await simulationFactory.started().withPollId(poll.id).create()
+  it('resolves the cooldown from the poll participant count', async () => {
+    const poll = await pollFactory
+      .withCompletedComputation()
+      .withParticipantsCount(2)
+      .create()
 
     await tieredEnqueue(poll.id)
 
     const computation = await getPollStatsComputationStatus(poll.id)
     expect(computation!.scheduledAt!.getTime()).toBeLessThanOrEqual(Date.now())
+  })
+
+  it('defers once the participant count crosses the tier', async () => {
+    const poll = await pollFactory
+      .withCompletedComputation()
+      .withParticipantsCount(3)
+      .create()
+
+    await tieredEnqueue(poll.id)
+
+    const computation = await getPollStatsComputationStatus(poll.id)
+    expect(computation!.scheduledAt!.getTime()).toBeGreaterThan(
+      Date.now() + 30 * 60 * 1000
+    )
   })
 
   it('keeps the scheduledAt when a deferred computation is enqueued again', async () => {

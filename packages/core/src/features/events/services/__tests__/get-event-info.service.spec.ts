@@ -454,10 +454,7 @@ describe('getEventInfo', () => {
     const orgB = await organisationFactory.create({ name: 'B', slug: 'b' })
     const orgA = await organisationFactory.create({ name: 'A', slug: 'a' })
 
-    await Promise.all([
-      seedPoll(event, orgB, 3),
-      seedPoll(event, orgA, 3),
-    ])
+    await Promise.all([seedPoll(event, orgB, 3), seedPoll(event, orgA, 3)])
 
     await refreshEventComputation()
 

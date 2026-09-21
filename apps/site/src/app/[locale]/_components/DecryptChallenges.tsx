@@ -24,7 +24,6 @@ export default async function DecryptChallenges({
   return (
     <UnderstandToAct
       locale={locale}
-      pathname={'/'}
       title={
         <Trans locale={locale}>Décryptez les défis environnementaux</Trans>
       }

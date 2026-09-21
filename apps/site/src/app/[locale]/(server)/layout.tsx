@@ -16,7 +16,7 @@ export default async function LargeLayout({
       <MainHooks />
       <SkipToMainContentLink />
       <Banner locale={locale as Locale} />
-      <HeaderServer locale={locale} />
+      <HeaderServer />
       {children}
       <GoogleTagScript />
       <GoogleTagIframe />

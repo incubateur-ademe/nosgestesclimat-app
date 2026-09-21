@@ -15,8 +15,14 @@ interface Props {
   onClick?: () => void
   className?: string
   size?: 'xs' | 'sm' | 'md'
+  /**
+   * Request the logo from `/_static/cms` instead of `/_next/image`. Set it when
+   * the logo must render while the app is down (`/_next/image` is part of the
+   * app): nginx serves `/_static/cms` from S3.
+   */
+  unoptimized?: boolean
 }
-export default function Logo({ className, size = 'md' }: Props) {
+export default function Logo({ className, size = 'md', unoptimized }: Props) {
   return (
     <div className={twMerge('flex items-center', className)}>
       <Image
@@ -24,6 +30,7 @@ export default function Logo({ className, size = 'md' }: Props) {
         alt=""
         width="200"
         height="200"
+        unoptimized={unoptimized}
         className={twMerge('h-auto', imageClassSize[size])}
       />
 

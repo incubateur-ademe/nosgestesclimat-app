@@ -1,5 +1,5 @@
+import Link from '@/design-system/links/Link'
 import Emoji from '@/design-system/utils/Emoji'
-import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import type { CtaCard } from '../../_helpers/eventPageData'
 

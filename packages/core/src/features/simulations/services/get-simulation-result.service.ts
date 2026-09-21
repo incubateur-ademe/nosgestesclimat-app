@@ -55,8 +55,10 @@ export const findSimulationResultGroup = async (
   }
 
   if (simulation.polls?.length) {
+    // The read orders participations oldest first: the last one is the poll the
+    // user joined most recently, which is the one to show in the result.
     const pollSummary = await findPollSummaryById({
-      id: simulation.polls[0].id,
+      id: simulation.polls.at(-1)!.id,
     })
     if (pollSummary) {
       return { type: 'poll', value: pollSummary }

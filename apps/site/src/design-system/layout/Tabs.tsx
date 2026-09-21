@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/design-system/links/Link'
 import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 

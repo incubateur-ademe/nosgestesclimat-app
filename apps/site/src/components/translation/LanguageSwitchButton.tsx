@@ -1,16 +1,12 @@
 'use client'
 
-import { footerClickLanguage } from '@/constants/tracking/layout'
-import { captureFooterClickLanguage } from '@/constants/tracking/posthogTrackers'
+import { captureFooterClickLanguage } from '@/constants/tracking/trackers'
 import ButtonAnchor from '@/design-system/buttons/ButtonAnchor'
 import Emoji from '@/design-system/utils/Emoji'
 import { updateLangCookie } from '@/helpers/language/updateLangCookie'
 import { useAlternateLanguagePaths } from '@/hooks/useAlternateLanguagePaths'
 import i18nConfig, { type Locale } from '@/i18nConfig'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import { useCurrentLocale } from 'next-i18n-router/client'
 import { useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -32,8 +28,7 @@ const generateLanguageUrl = (alternatePath: string): string => {
 }
 
 const handleLanguageClick = (newLocale: Locale) => {
-  trackMatomoEvent__deprecated(footerClickLanguage(newLocale))
-  trackPosthogEvent(captureFooterClickLanguage({ locale: newLocale }))
+  trackEvent(captureFooterClickLanguage({ locale: newLocale }))
   updateLangCookie(newLocale)
 }
 

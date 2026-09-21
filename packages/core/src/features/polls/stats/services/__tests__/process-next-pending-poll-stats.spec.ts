@@ -19,6 +19,7 @@ describe('processNextPendingPollStats', () => {
     mockComputePollStats.mockResolvedValue({
       computedResults: computedResultsFactory.valid().build(),
       funFacts: {},
+      participantsCount: 3,
     })
   })
 
@@ -49,13 +50,17 @@ describe('processNextPendingPollStats', () => {
     expect(computation!.startedAt).toBeNull()
 
     expect(mockComputePollStats).toHaveBeenCalledWith(poll.id)
+
+    const updated = await prisma.poll.findUnique({
+      where: { id: poll.id },
+      select: { participantsCount: true },
+    })
+    expect(updated!.participantsCount).toBe(3)
   })
 
   it('leaves a deferred pending job untouched', async () => {
     const scheduledAt = new Date(Date.now() + 60 * 1000)
-    const poll = await pollFactory
-      .withPendingComputation(scheduledAt)
-      .create()
+    const poll = await pollFactory.withPendingComputation(scheduledAt).create()
 
     const result = await processNextPendingPollStats()
 
@@ -68,9 +73,7 @@ describe('processNextPendingPollStats', () => {
   })
 
   it('reclaims a stale processing job', async () => {
-    const poll = await pollFactory
-      .withStaleProcessingComputation()
-      .create()
+    const poll = await pollFactory.withStaleProcessingComputation().create()
 
     const result = await processNextPendingPollStats()
 
@@ -83,9 +86,7 @@ describe('processNextPendingPollStats', () => {
   })
 
   it('does not recompute a poll whose computation is currently being processed', async () => {
-    const poll = await pollFactory
-      .withProcessingComputation()
-      .create()
+    const poll = await pollFactory.withProcessingComputation().create()
 
     const result = await processNextPendingPollStats()
 

@@ -1,5 +1,6 @@
+import Link from '@/design-system/links/Link'
 import type { ButtonSize } from '@/types/values'
-import Link from 'next/link'
+import type { LinkProps } from 'next/link'
 import type { HtmlHTMLAttributes, PropsWithChildren } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { baseClassNames, colorClassNames, sizeClassNames } from './buttonStyles'
@@ -11,6 +12,7 @@ interface Props {
   size?: ButtonSize
   title?: string
   target?: string
+  prefetch?: LinkProps['prefetch']
 }
 
 export default function ButtonLinkServer({
@@ -32,7 +34,6 @@ export default function ButtonLinkServer({
         className
       )}
       target={target}
-      prefetch={false}
       {...props}>
       {children}
     </Link>

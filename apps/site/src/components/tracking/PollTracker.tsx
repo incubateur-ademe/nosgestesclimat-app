@@ -1,6 +1,7 @@
 'use client'
 
 import type { SimulationMode } from '@/helpers/server/model/simulations'
+import { registerSessionProperties } from '@/services/tracking/posthogSessionProperties'
 import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
@@ -12,7 +13,7 @@ interface TrackedPoll {
 
 export function PollTracker({ poll }: { poll: TrackedPoll }) {
   useEffect(() => {
-    posthog.register_for_session({
+    registerSessionProperties({
       organisation: poll.organisation.slug,
       poll: poll.slug,
     })
