@@ -21,7 +21,7 @@
     "typecheck": "tsc --noEmit",
     "start": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/index.ts",
     "start:e2e": "NODE_OPTIONS=--max-old-space-size=8192 node --env-file=.env.e2e --experimental-strip-types ./src/index.ts",
-    "start:worker": "NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/worker.ts",
+    "start:worker": "DATABASE_POOL_MAX=2 NODE_OPTIONS=--max-old-space-size=8192 node --experimental-strip-types ./src/worker.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "postdeploy": "npm run db:migrate && npm run db:post-migrate && bash scripts/review-app-postdeploy.sh"

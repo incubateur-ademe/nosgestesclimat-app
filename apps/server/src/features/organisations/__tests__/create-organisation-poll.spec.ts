@@ -287,6 +287,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            participantsCount: 0,
             mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -295,7 +296,6 @@ describe('Given a NGC user', () => {
             simulations: {
               count: 0,
               finished: 0,
-              hasParticipated: false,
               cooldownSeconds: 0,
             },
           })
@@ -588,6 +588,7 @@ describe('Given a NGC user', () => {
               defaultAdditionalQuestions: [],
               customAdditionalQuestions: [],
               expectedNumberOfParticipants: null,
+              participantsCount: 0,
               mode: 'standard',
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
@@ -596,7 +597,6 @@ describe('Given a NGC user', () => {
               simulations: {
                 count: 0,
                 finished: 0,
-                hasParticipated: false,
                 cooldownSeconds: 0,
               },
             })
@@ -724,6 +724,7 @@ describe('Given a NGC user', () => {
             defaultAdditionalQuestions: [],
             customAdditionalQuestions: [],
             expectedNumberOfParticipants: null,
+            participantsCount: 0,
             mode: 'standard',
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -732,7 +733,6 @@ describe('Given a NGC user', () => {
             simulations: {
               count: 0,
               finished: 0,
-              hasParticipated: false,
               cooldownSeconds: 0,
             },
           })

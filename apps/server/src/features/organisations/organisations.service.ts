@@ -10,14 +10,12 @@ import {
   isPrismaErrorNotFound,
   isPrismaErrorUniqueConstraintFailed,
 } from '@nosgestesclimat/core/prisma/utils'
-import * as v from 'valibot'
 import { utils, write } from 'xlsx'
 import type { Organisation } from '../../adapters/prisma/generated.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
 import { client } from '../../adapters/scaleway/client.ts'
 import { config } from '../../config.ts'
-import { deepMergeSubstract } from '../../core/deep-merge.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
@@ -44,7 +42,6 @@ import {
   deleteOrganisationPoll,
   fetchOrganisationPoll,
   fetchOrganisationPolls,
-  fetchOrganisationPublicPoll,
   fetchUserOrganisation,
   fetchUserOrganisations,
   findOrganisationPollById,
@@ -53,14 +50,12 @@ import {
   updateOrganisationPoll,
 } from './organisations.repository.ts'
 import {
-  OrganisationPollCustomAdditionalQuestions,
   type OrganisationCreateDto,
   type OrganisationParams,
   type OrganisationPollCreateDto,
   type OrganisationPollParams,
   type OrganisationPollUpdateDto,
   type OrganisationUpdateDto,
-  type PublicPollParams,
 } from './organisations.validator.ts'
 
 const { bucket, rootPath } = config.thirdParty.scaleway
@@ -251,8 +246,7 @@ const isOrganisationAdmin = (
 
 const pollToDto = ({
   poll: { organisationId: _1, ...poll },
-  simulationsInfos: { count, finished, hasParticipated },
-  simulationsInfos,
+  simulationsInfos: { count, finished },
   organisation,
   user,
 }: {
@@ -279,26 +273,11 @@ const pollToDto = ({
   simulations: {
     count,
     finished,
-    hasParticipated,
     cooldownSeconds: resolveCooldownSeconds(
       config.app.pollStatsCooldownTiers,
       count
     ),
   },
-  ...(simulationsInfos.hasParticipated
-    ? {
-        progression: simulationsInfos.progression,
-        userComputedResults: simulationsInfos.userComputedResults,
-        ...(poll.computedResults
-          ? {
-              otherComputedResults: deepMergeSubstract(
-                poll.computedResults,
-                simulationsInfos.userComputedResults
-              ),
-            }
-          : {}),
-      }
-    : {}),
 })
 
 export const createPoll = async ({
@@ -436,40 +415,6 @@ export const fetchPoll = async ({
   }
 }
 
-export const fetchPublicPoll = async ({
-  params,
-  user,
-}: {
-  params: PublicPollParams
-  user?: PartialUser
-}) => {
-  try {
-    const { poll, organisation, simulationsInfos } = await transaction(
-      (session) =>
-        fetchOrganisationPublicPoll(
-          {
-            ...params,
-            user,
-          },
-          { session }
-        ),
-      prisma
-    )
-
-    return pollToDto({
-      poll,
-      organisation,
-      simulationsInfos,
-      user,
-    })
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Poll not found')
-    }
-    throw e
-  }
-}
-
 export const startDownloadPollSimulationResultJob = async ({
   params,
   user,
@@ -564,29 +509,18 @@ const generatePollSimulationsResultExcel = async (
   }: JobParams<typeof JobKind.DOWNLOAD_ORGANISATION_POLL_SIMULATIONS_RESULT>,
   { session }: { session: Session }
 ) => {
-  const { id, slug, customAdditionalQuestions } =
-    await findOrganisationPollById(
-      {
-        id: pollId,
-        select: {
-          id: true,
-          slug: true,
-          customAdditionalQuestions: true,
-        },
-      },
-      { session }
-    )
-
-  const excelData = await getPollSimulationsExcelData(
+  const { id, slug } = await findOrganisationPollById(
     {
-      id,
-      customAdditionalQuestions: v.parse(
-        OrganisationPollCustomAdditionalQuestions,
-        customAdditionalQuestions
-      ),
+      id: pollId,
+      select: {
+        id: true,
+        slug: true,
+      },
     },
     { session }
   )
+
+  const excelData = await getPollSimulationsExcelData({ id }, { session })
 
   const worksheet = utils.json_to_sheet(excelData)
 

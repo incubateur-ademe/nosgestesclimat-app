@@ -1,6 +1,6 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
-import { getPoll } from '@/services/polls/get-poll'
+import { getPollSummary } from '@/services/polls/get-poll-summary'
 
 interface EmailPageData {
   isSchoolMode: boolean
@@ -25,7 +25,7 @@ export async function getEmailPageData(
 
   if (hasContest && pollSlug) {
     // Tolerates an unknown poll: organisationName simply stays undefined.
-    const poll = await getPoll(pollSlug)
+    const poll = await getPollSummary(pollSlug)
     organisationName = poll?.organisation.name
   }
 

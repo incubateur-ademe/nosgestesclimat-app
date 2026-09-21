@@ -3,8 +3,8 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useIsMobileLayout } from '@/hooks/useIsMobileLayout'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
-import isMobile from 'is-mobile'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
 interface Props {
@@ -25,6 +25,7 @@ export default function CategoryDistribution({
   className,
 }: Props) {
   const { t } = useClientTranslation()
+  const isMobileLayout = useIsMobileLayout()
 
   const categoryLabels = {
     transport: t('common.category.transport', 'Transport'),
@@ -87,7 +88,7 @@ export default function CategoryDistribution({
     const { cx, cy, midAngle, innerRadius, outerRadius, name, formattedValue } =
       props
     const RADIAN = Math.PI / 180
-    const radius = isMobile()
+    const radius = isMobileLayout
       ? innerRadius + (outerRadius - innerRadius) * 1.2
       : innerRadius + (outerRadius - innerRadius) * 1.5
     const x = cx + radius * Math.cos(-midAngle * RADIAN)
@@ -100,15 +101,15 @@ export default function CategoryDistribution({
         fill="black"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
-        fontSize={isMobile() ? '14' : '16'}
+        fontSize={isMobileLayout ? '14' : '16'}
         fontWeight="600">
         {name}
         <tspan
           x={x}
           y={y + 8}
-          dy={isMobile() ? '12' : '16'}
+          dy={isMobileLayout ? '12' : '16'}
           fontWeight="normal"
-          fontSize={isMobile() ? '12' : '14'}>
+          fontSize={isMobileLayout ? '12' : '14'}>
           {formattedValue.formattedValue} {formattedValue.unit}
         </tspan>
       </text>
@@ -133,7 +134,7 @@ export default function CategoryDistribution({
       </div>
 
       <div className="relative">
-        <ResponsiveContainer width="100%" height={isMobile() ? 240 : 320}>
+        <ResponsiveContainer width="100%" height={isMobileLayout ? 240 : 320}>
           <PieChart>
             <Pie
               data={formattedData}
@@ -141,8 +142,8 @@ export default function CategoryDistribution({
               cy="50%"
               labelLine={false}
               label={CustomLabel}
-              outerRadius={isMobile() ? 80 : 100}
-              innerRadius={isMobile() ? 40 : 50}
+              outerRadius={isMobileLayout ? 80 : 100}
+              innerRadius={isMobileLayout ? 40 : 50}
               fill="#8884d8"
               dataKey="value">
               {formattedData.map((entry, index) => (

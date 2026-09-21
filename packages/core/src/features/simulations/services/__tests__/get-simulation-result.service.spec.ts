@@ -124,9 +124,40 @@ describe('getSimulationResult', () => {
         id: poll.id,
         name: poll.name,
         slug: poll.slug,
-        organisation: { slug: poll.organisation.slug },
+        mode: poll.mode,
+        organisation: {
+          name: poll.organisation.name,
+          slug: poll.organisation.slug,
+        },
       },
     })
+  })
+
+  it('resolves the most recently joined poll when the simulation has several', async () => {
+    const user = await userFactory.create()
+    const [firstPoll, lastPoll] = await Promise.all([
+      pollFactory.create(),
+      pollFactory.create(),
+    ])
+    const simulation = await simulationFactory
+      .withModelRegion('FR')
+      .withValidComputedResults()
+      .params({ userId: user.id })
+      .withPollId(firstPoll.id, { createdAt: new Date('2024-01-01') })
+      .withPollId(lastPoll.id, { createdAt: new Date('2024-06-01') })
+      .create()
+
+    const result = await getSimulationResult({
+      id: simulation.id,
+      userId: user.id,
+    })
+
+    expect(result?.group).toEqual(
+      expect.objectContaining({
+        type: 'poll',
+        value: expect.objectContaining({ id: lastPoll.id }),
+      })
+    )
   })
 
   it('delegates migration to migrateSimulationIfNeeded', async () => {

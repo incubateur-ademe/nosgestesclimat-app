@@ -12,11 +12,19 @@ const deferredEnqueue = createEnqueuePollStatsComputation({
   cooldownTiers: [{ upTo: null, cooldownSeconds: 3600 }],
 })
 
+const tieredEnqueue = createEnqueuePollStatsComputation({
+  cooldownTiers: [
+    { upTo: 2, cooldownSeconds: 0 },
+    { upTo: null, cooldownSeconds: 3600 },
+  ],
+})
+
 describe('enqueuePollStatsComputation', () => {
   afterEach(async () => {
     await prisma.pollStatsComputation.deleteMany()
     await prisma.poll.deleteMany()
     await prisma.organisation.deleteMany()
+    await prisma.simulation.deleteMany()
   })
 
   it('creates an immediate pending computation when no row exists', async () => {
@@ -68,6 +76,32 @@ describe('enqueuePollStatsComputation', () => {
     expect(computation!.status).toBe('pending')
     expect(computation!.scheduledAt?.getTime()).toBeGreaterThanOrEqual(before)
     expect(computation!.scheduledAt?.getTime()).toBeLessThanOrEqual(after)
+  })
+
+  it('resolves the cooldown from the poll participant count', async () => {
+    const poll = await pollFactory
+      .withCompletedComputation()
+      .withParticipantsCount(2)
+      .create()
+
+    await tieredEnqueue(poll.id)
+
+    const computation = await getPollStatsComputationStatus(poll.id)
+    expect(computation!.scheduledAt!.getTime()).toBeLessThanOrEqual(Date.now())
+  })
+
+  it('defers once the participant count crosses the tier', async () => {
+    const poll = await pollFactory
+      .withCompletedComputation()
+      .withParticipantsCount(3)
+      .create()
+
+    await tieredEnqueue(poll.id)
+
+    const computation = await getPollStatsComputationStatus(poll.id)
+    expect(computation!.scheduledAt!.getTime()).toBeGreaterThan(
+      Date.now() + 30 * 60 * 1000
+    )
   })
 
   it('keeps the scheduledAt when a deferred computation is enqueued again', async () => {

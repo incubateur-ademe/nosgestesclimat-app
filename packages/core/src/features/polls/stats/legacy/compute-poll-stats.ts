@@ -95,7 +95,7 @@ async function* batchPollSimulations(pollId: string) {
       take: BATCH_SIZE,
       skip: cursor ? 1 : 0,
       ...(cursor ? { cursor } : {}),
-      where: { pollId },
+      where: { pollId, simulation: { progression: 1 } },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
       select: {
         id: true,
@@ -125,12 +125,18 @@ export function createComputePollStats({ logger }: { logger: Logger }) {
   return async function computePollStats(pollId: string): Promise<{
     computedResults: ComputedResults
     funFacts: FunFacts
+    participantsCount: number
   }> {
     let simulationCount = 0
+    let participantsCount = 0
     let computedResults = getEmptyComputedResults()
     const funFactValues: { [key in DottedName]?: number } = {}
 
     for await (const simulation of batchPollSimulations(pollId)) {
+      // Counted even when the results cannot be aggregated: the simulation
+      // took part.
+      participantsCount++
+
       if (!isValidSimulation(simulation)) {
         continue
       }
@@ -174,6 +180,6 @@ export function createComputePollStats({ logger }: { logger: Logger }) {
       })
     ) as FunFacts
 
-    return { computedResults, funFacts }
+    return { computedResults, funFacts, participantsCount }
   }
 }

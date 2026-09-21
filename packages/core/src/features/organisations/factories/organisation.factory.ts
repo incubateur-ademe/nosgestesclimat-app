@@ -3,7 +3,17 @@ import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import type { Organisation } from '../../../prisma/generated/client.ts'
 
-class OrganisationFactory extends Factory<Organisation> {}
+class OrganisationFactory extends Factory<Organisation> {
+  /** Registers this email as an administrator of the organisation. */
+  withAdministrator(userEmail: string) {
+    return this.afterCreate(async (organisation) => {
+      await prisma.organisationAdministrator.create({
+        data: { userEmail, organisationId: organisation.id },
+      })
+      return organisation
+    })
+  }
+}
 
 export const organisationFactory = OrganisationFactory.define(
   ({ onCreate }) => {

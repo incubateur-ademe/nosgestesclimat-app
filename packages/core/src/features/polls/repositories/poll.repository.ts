@@ -1,4 +1,5 @@
 import { isCuid } from '../../../lib/cuid.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { Poll, PollSummary } from '../types/poll.ts'
 import { toPoll } from './poll.mapper.ts'
@@ -9,9 +10,8 @@ const pollSelect = {
   slug: true,
   mode: true,
   organisationId: true,
+  participantsCount: true,
   expectedNumberOfParticipants: true,
-  funFacts: true,
-  computedResults: true,
   createdAt: true,
   updatedAt: true,
   organisation: {
@@ -23,24 +23,41 @@ const pollSummarySelect = {
   id: true,
   name: true,
   slug: true,
-  organisation: { select: { slug: true } },
+  mode: true,
+  organisation: { select: { name: true, slug: true } },
 } as const
 
-export const findPollById = async (id: string): Promise<Poll | null> => {
-  const row = await prisma.poll.findUnique({
+export const findPollById = async (
+  id: string,
+  tx: Transaction = prisma
+): Promise<Poll | null> => {
+  const row = await tx.poll.findUnique({
     where: { id },
     select: pollSelect,
   })
   return row ? toPoll(row) : null
 }
 
-export const findPollByIdOrSlug = async ({
+/**
+ * The poll with this id or slug, only when it belongs to the organisation with
+ * this slug.
+ *
+ * A poll slug is unique on its own, so the organisation in the URL carries
+ * navigation and permissions rather than identity: this read answers `null`
+ * when the two disagree.
+ */
+export const findPollByIdOrSlugInOrganisation = async ({
   pollIdOrSlug,
+  organisationSlug,
 }: {
   pollIdOrSlug: string
+  organisationSlug: string
 }): Promise<Poll | null> => {
-  const row = await prisma.poll.findUnique({
-    where: isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug },
+  const row = await prisma.poll.findFirst({
+    where: {
+      ...(isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug }),
+      organisation: { slug: organisationSlug },
+    },
     select: pollSelect,
   })
 
@@ -54,6 +71,17 @@ export const findPollSummaryById = async ({
 }): Promise<PollSummary | null> => {
   return prisma.poll.findUnique({
     where: { id },
+    select: pollSummarySelect,
+  })
+}
+
+export const findPollSummaryByIdOrSlug = async ({
+  pollIdOrSlug,
+}: {
+  pollIdOrSlug: string
+}): Promise<PollSummary | null> => {
+  return prisma.poll.findUnique({
+    where: isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug },
     select: pollSummarySelect,
   })
 }

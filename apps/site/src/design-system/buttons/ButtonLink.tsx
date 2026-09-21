@@ -2,6 +2,7 @@
 
 import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
+import type { LinkProps } from 'next/link'
 import {
   type HtmlHTMLAttributes,
   type KeyboardEvent,
@@ -29,6 +30,7 @@ interface Props {
   onKeyDown?: (e: KeyboardEvent<HTMLAnchorElement>) => void
   target?: string
   scroll?: boolean
+  prefetch?: LinkProps['prefetch']
   loading?: boolean
   disabled?: boolean
   showLoadingOnClick?: boolean

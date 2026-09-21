@@ -179,7 +179,6 @@ entries:
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.: Nosgestesclimat.fr is not affiliated to the {{ parent }} website.
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}..lock: Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.
   Partage de vos résultats à {{ parent }} ?: 'Share your results with {{ parent }} '
-  (Données consultables à partir de 3 participants, dans un souci d'anonymat): (Data can be consulted for 3 or more participants, to ensure anonymity)
   En cliquant sur le bouton Accepter, vous autorisez {{ parent }} à récupérer le bilan de votre empreinte climat.: By clicking on the Accept button, you authorise {{ parent }} to retrieve your climate footprint.
   Découvrir le calculateur: Discover the simulator
   'Je ne trouve pas réponse à ma question ': "I can't find the answer to my question "
@@ -263,7 +262,6 @@ entries:
   Voir le détail: See details
   Votre téléphone: Your telephone
   'Paramètres de ': 'Parameters of '
-  Données consultables à partir de 3 participants, dans un souci d'anonymat.: Data can be consulted from 3 participants onwards, to ensure anonymity.
   Sans titre: Untitled
   Date (récentes > anciennes): Date (recent > old)
   Date (anciennes > récentes): Date (old > recent)
@@ -841,6 +839,14 @@ entries:
   common.slider.stop.lock: Arrêter
   common.category.logement: Housing
   common.category.logement.lock: Logement
+  pollResults.participantsCount_one: Completed simulation
+  pollResults.participantsCount_one.lock: Simulation terminée
+  pollResults.participantsCount_many: Completed simulations
+  pollResults.participantsCount_many.lock: Simulations terminées
+  pollResults.participantsCount_other: Completed simulations
+  pollResults.participantsCount_other.lock: Simulations terminées
+  pollResults.anonymityNotice: Data can be consulted from {{minParticipants}} participants onwards, to ensure anonymity.
+  pollResults.anonymityNotice.lock: Données consultables à partir de {{minParticipants}} participants, dans un souci d'anonymat.
   pollResults.categoryDistribution.accessibleDescription.category: '{{name}}: {{value}} {{unit}}.'
   pollResults.categoryDistribution.accessibleDescription.category.lock: '{{name}}: {{value}} {{unit}}.'
   common.category.services: Services
@@ -920,7 +926,7 @@ entries:
   pollResults.waterFootprint.body.lock: C'est l'eau nécessaire pour produire et distribuer vos <2>biens et services</2>. En règle générale, les empreintes eau varient entre <4>3 000</4> et <7>9 000</7> litres par jour. L'eau dite "domestique" (douche, toilettes, cuisine...) n'est pas comptée.
   pollResults.waterFootprint.learnMore: Learn more
   pollResults.waterFootprint.learnMore.lock: En savoir plus
-  pollResults.funFacts.refreshNote: The figures update about every {{duration}}
+  pollResults.funFacts.refreshNote: 'The figures are updated approximately every {{duration}} '
   pollResults.footprintBarChart.targetLabelMobile: 'Target 2050:'
   pollResults.footprintBarChart.targetLabelMobile.lock: 'Objectif 2050 :'
   common.category.alimentationShort: Food
@@ -2027,8 +2033,8 @@ entries:
   event.countdown.label.lock: Début dans
   event.statistics.title: Live data will appear on launch
   event.statistics.title.lock: Les données en direct apparaîtront au lancement
-  event.countdown.date: Launch on {{date}}
-  event.countdown.date.lock: Lancement le {{date}}
+  event.countdown.date: Join the campaign until {{date}}
+  event.countdown.date.lock: Rejoignez l'opération jusqu'au {{date}}
   event.countdown.description: The live scoreboard and standings for the<1></1>will be available when the event begins.
   event.countdown.description.lock: Le compteur et le classement en direct<1></1>seront disponibles au lancement de l'évènement.
   Éducation: Education
@@ -2201,3 +2207,16 @@ entries:
   poll.creation.mode.error.lock: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
   poll.creation.mode.title: Select the test mode
   poll.creation.mode.title.lock: Choisissez le mode du test
+  pollResults.funFacts.refreshNote.lock: Les chiffres se mettent à jour toutes les {{duration}} environ
+  appCrash.metadata.description: The application is experiencing some difficulties at the moment, our teams are on it.
+  appCrash.metadata.description.lock: L'application rencontre quelques difficultés en ce moment, nos équipes sont sur le coup.
+  appCrash.metadata.title: Error - Nos Gestes Climat
+  appCrash.metadata.title.lock: Erreur - Nos Gestes Climat
+  common.errors.reload: Reload the page
+  common.errors.reload.lock: Recharger la page
+  common.errors.description: The application is experiencing some difficulties at the moment. Our teams have been notified and are doing everything they can to restore the situation as quickly as possible.
+  common.errors.description.lock: L'application rencontre quelques difficultés en ce moment. Nos équipes sont prévenues et mettent tout en œuvre pour rétablir la situation au plus vite.
+  common.errors.retryLater: Please try again in a few minutes.
+  common.errors.retryLater.lock: Merci de réessayer dans quelques minutes.
+  common.errors.title: Oops, an error has occurred
+  common.errors.title.lock: Oups, une erreur est survenue

@@ -5,7 +5,7 @@ import {
   colorClassNames,
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
-import Link from 'next/link'
+import Link from '@/design-system/links/Link'
 import { twMerge } from 'tailwind-merge'
 
 export default function SeeDetailLink({ className }: { className?: string }) {

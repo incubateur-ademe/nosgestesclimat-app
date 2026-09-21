@@ -19,6 +19,7 @@ describe('processNextPendingPollStats', () => {
     mockComputePollStats.mockResolvedValue({
       computedResults: computedResultsFactory.valid().build(),
       funFacts: {},
+      participantsCount: 3,
     })
   })
 
@@ -49,6 +50,12 @@ describe('processNextPendingPollStats', () => {
     expect(computation!.startedAt).toBeNull()
 
     expect(mockComputePollStats).toHaveBeenCalledWith(poll.id)
+
+    const updated = await prisma.poll.findUnique({
+      where: { id: poll.id },
+      select: { participantsCount: true },
+    })
+    expect(updated!.participantsCount).toBe(3)
   })
 
   it('leaves a deferred pending job untouched', async () => {

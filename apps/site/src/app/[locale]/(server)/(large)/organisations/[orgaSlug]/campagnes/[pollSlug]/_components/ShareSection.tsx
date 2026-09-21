@@ -7,8 +7,9 @@ import Trans from '@/components/translation/trans/TransClient'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import CopyButton from '@/design-system/buttons/CopyButton'
 import Card from '@/design-system/layout/Card'
+import { publicEnv } from '@/env.public'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import type { PublicOrganisationPoll } from '@/types/organisations'
+import type { PollIdentifier } from '@/types/organisations'
 import {
   UTM_MEDIUM_KEY,
   UTM_SOURCE_KEY,
@@ -18,11 +19,16 @@ import type { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 interface Props {
-  poll: PublicOrganisationPoll
+  poll: PollIdentifier
   className?: string
   title?: ReactNode
 }
 
+/**
+ * `window.location.origin` is browser-only, and this link has to be the same on
+ * both renders: the origin comes from the configuration, which is inlined at
+ * build time.
+ */
 const buildLink = ({
   orgaSlug,
   pollSlug,
@@ -30,7 +36,7 @@ const buildLink = ({
   orgaSlug: string
   pollSlug: string
 }) => {
-  return `${window.location.origin}/o/${orgaSlug}/${pollSlug}?${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
+  return `${publicEnv.NEXT_PUBLIC_SITE_URL}/o/${orgaSlug}/${pollSlug}?${UTM_MEDIUM_KEY}=sharelink&${UTM_SOURCE_KEY}=NGC`
 }
 
 export default function ShareSection({ poll, className, title }: Props) {
@@ -71,7 +77,7 @@ export default function ShareSection({ poll, className, title }: Props) {
               orgaSlug,
               pollSlug,
             })}>
-            {`${window.location.origin}/o/${orgaSlug}/${pollSlug}`
+            {`${publicEnv.NEXT_PUBLIC_SITE_URL}/o/${orgaSlug}/${pollSlug}`
               .replace('https://', '')
               .replace('http://', '')}
           </Link>

@@ -7,9 +7,9 @@ import {
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import Separator from '@/design-system/layout/Separator'
+import Link from '@/design-system/links/Link'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
-import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 
 export default function InstructionsBanner({ locale }: { locale: Locale }) {

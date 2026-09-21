@@ -61,7 +61,10 @@ export default function EmailConfirmation({ organisationName }: Props) {
           </Trans>
         </p>
 
-        <ButtonLink href={END_PAGE_PATH} data-testid="see-results-button">
+        <ButtonLink
+          href={END_PAGE_PATH}
+          prefetch={true}
+          data-testid="see-results-button">
           <Trans i18nKey="emailConfirmation.seeResults">
             Voir mes résultats
           </Trans>

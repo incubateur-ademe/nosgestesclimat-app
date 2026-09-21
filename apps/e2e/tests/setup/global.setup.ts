@@ -2,6 +2,7 @@ import { expect, test as setup } from '../fixtures'
 import { Group } from '../fixtures/groups'
 import { UserSpace } from '../fixtures/user-account'
 import { saveContext } from '../helpers/save-context'
+import { BREVO_TEST_TIMEOUT_MS } from '../mailbox/brevo-mailbox'
 
 import {
   COMPLETED_TEST_STATE,
@@ -11,7 +12,9 @@ import {
   USER_ACCOUNT_STATE,
 } from '../state'
 
-setup.setTimeout(120_000)
+setup.setTimeout(
+  process.env.E2E_MAILBOX === 'brevo' ? BREVO_TEST_TIMEOUT_MS : 120_000
+)
 
 setup('new visitor', async ({ page, cookieBanner }) => {
   // We go to the blog to not create a userId from the start
