@@ -26,7 +26,8 @@ const meta: Meta<typeof Button> = {
     },
     loading: {
       control: 'boolean',
-      description: 'Whether the button is in a loading state (shows a spinner and auto-disables)',
+      description:
+        'Whether the button is in a loading state (shows a spinner and auto-disables)',
     },
     onClick: {
       action: 'clicked',

@@ -6,10 +6,9 @@ import MySpaceButton from './headerServer/MySpaceButton'
 
 interface Props {
   isSticky?: boolean
-  locale: string
 }
 
-export default function HeaderServer({ isSticky = true, locale }: Props) {
+export default function HeaderServer({ isSticky = true }: Props) {
   return (
     <header
       id="header-server-container"
@@ -22,7 +21,7 @@ export default function HeaderServer({ isSticky = true, locale }: Props) {
           <Suspense fallback={null}>
             {/*Suspense for enabling partial prerendering */}
             <HideInIframe hideIfNotFrenchRegion>
-              <MySpaceButton locale={locale} />
+              <MySpaceButton />
             </HideInIframe>
           </Suspense>
         }

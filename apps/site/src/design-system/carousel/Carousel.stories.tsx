@@ -20,13 +20,7 @@ const meta: Meta<typeof Carousel> = {
 export default meta
 type Story = StoryObj<typeof Carousel>
 
-const SampleCard = ({
-  color,
-  label,
-}: {
-  color: string
-  label: string
-}) => (
+const SampleCard = ({ color, label }: { color: string; label: string }) => (
   <div
     className="flex h-40 items-center justify-center rounded-xl p-6 text-lg font-bold text-white"
     style={{ backgroundColor: color }}>
@@ -59,8 +53,6 @@ export const TwoSlides: Story = {
 export const SingleSlide: Story = {
   args: {
     locale: 'fr',
-    children: [
-      <SampleCard key="1" color="#D97706" label="Seule slide" />,
-    ],
+    children: [<SampleCard key="1" color="#D97706" label="Seule slide" />],
   },
 }

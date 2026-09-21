@@ -1,15 +1,11 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { organisationsDashboardExportData } from '@/constants/tracking/pages/organisationsDashboard'
-import { captureExportPollData } from '@/constants/tracking/posthogTrackers'
+import { captureExportPollData } from '@/constants/tracking/trackers'
 import { formatPollStatsRefreshDuration } from '@/helpers/organisations/formatPollStatsRefreshDuration'
 import { useLocale } from '@/hooks/useLocale'
 import type { PollIdentifier } from '@/types/organisations'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import type { PollAnonymity } from '@nosgestesclimat/core/features/polls/types/poll'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
@@ -52,8 +48,7 @@ export default function PollStatistics({
             poll={poll}
             color="borderless"
             onClick={() => {
-              trackMatomoEvent__deprecated(organisationsDashboardExportData)
-              trackPosthogEvent(captureExportPollData)
+              trackEvent(captureExportPollData)
             }}
             className="h-14"
           />

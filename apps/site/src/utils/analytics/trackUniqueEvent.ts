@@ -1,4 +1,4 @@
-import { trackPosthogEvent } from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import posthog from 'posthog-js'
 import { APP_ENV } from '../../../config/app-env'
@@ -37,7 +37,7 @@ export const captureUniqueSessionActionEvent = ({
   const eventNameKey = eventName.replace(' ', '_')
 
   if (!getIsEventTracked(eventNameKey, actionTrackingId, sessionId)) {
-    trackPosthogEvent({
+    trackEvent({
       eventName,
       properties: {
         action_name: actionTrackingId,

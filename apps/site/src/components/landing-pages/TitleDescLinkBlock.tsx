@@ -6,7 +6,6 @@ export default function TitleDescLinkBlock({
   title,
   description,
   link,
-  trackingEvent,
 }: {
   title: ReactNode
   description: ReactNode
@@ -14,7 +13,6 @@ export default function TitleDescLinkBlock({
     href: string
     text: ReactNode
   }
-  trackingEvent?: string[]
 }) {
   return (
     <div className="flex flex-1 flex-col">
@@ -24,7 +22,7 @@ export default function TitleDescLinkBlock({
 
       <p className="mb-6 text-sm md:text-lg">{description}</p>
 
-      <TitleDescLink {...link} trackingEvent={trackingEvent} />
+      <TitleDescLink {...link} />
     </div>
   )
 }
