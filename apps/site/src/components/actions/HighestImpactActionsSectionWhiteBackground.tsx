@@ -24,6 +24,7 @@ export default function HighestImpactActionsSectionWhiteBackground({
   totalFootprint,
   ...props
 }: HighestImpactActionsSectionWhiteBackgroundProps) {
+  console.log(actions)
   const headingId = useId()
   return (
     <section

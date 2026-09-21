@@ -245,7 +245,12 @@ export const findVisiblePersonalizedActionBySlug = async (
   ])
 
   if (!action) return null
-  if (!simulation) return mapPersonalizedAction(action, null)
+  if (!simulation)
+    return mapPersonalizedAction({
+      action,
+      assessment: null,
+      actionChoice: null,
+    })
 
   const assessment = await prisma.actionAssessment.findUnique({
     where: {
@@ -256,7 +261,16 @@ export const findVisiblePersonalizedActionBySlug = async (
     },
   })
 
-  return mapPersonalizedAction(action, assessment)
+  const actionChoice = await prisma.actionChoice.findUnique({
+    where: {
+      userId_actionId: {
+        actionId: action.id,
+        userId,
+      },
+    },
+  })
+
+  return mapPersonalizedAction({ action, assessment })
 }
 
 export const findAllVisiblePersonalizedActions = async (

@@ -66,6 +66,7 @@ export default function HighlightedActionCard({
   totalFootprint,
   ...props
 }: HighlightedActionCardProps) {
+  console.log(assessmentStatus)
   const classes = classesByTheme[action.theme.key]
   const actionDetailPath = ACTION_DETAIL_PATH(action.theme.slug, action.slug)
   // On an /en page, an unprefixed (fr) path would be redirected to /en by the
