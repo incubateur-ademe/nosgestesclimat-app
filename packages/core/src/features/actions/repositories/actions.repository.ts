@@ -285,18 +285,3 @@ export const findAllVisiblePersonalizedActions = async (
     mapPersonalizedAction(action, latestByActionId.get(action.id) ?? null)
   )
 }
-
-// TODO: move to a separate repository file
-const findLastCompletedSimulationByUserId = async (
-  userId: string | undefined
-) => {
-  if (!userId) return null
-  return prisma.simulation.findFirst({
-    select: { id: true },
-    where: {
-      userId,
-      progression: 1,
-    },
-    orderBy: { createdAt: 'desc' },
-  })
-}
