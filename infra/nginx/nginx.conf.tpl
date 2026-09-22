@@ -442,41 +442,55 @@ server {
     # niveau `server` (X-Forwarded-*, X-Request-ID, Upgrade) ne sont PAS hérités
     # ici, tout ajout doit être répété dans les trois.
 
+    # Un hostname littéral dans `proxy_pass` est résolu une seule fois, au
+    # chargement : l'IP de l'ingestion PostHog change (load balancers AWS) et le
+    # proxy continuerait de servir l'ancienne, sans rien pour le détecter.
+    # nginx ne re-résout que les noms passés par variable, via le `resolver` du
+    # niveau `http` (30 s).
+    # → https://posthog.com/docs/advanced/proxy/nginx
+    set $ph_assets eu-assets.i.posthog.com;
+    set $ph_api eu.i.posthog.com;
+
+    # Avec une variable, l'URI de `proxy_pass` est prise littéralement : chaque
+    # `location` porte donc le chemin à transmettre, et capture le suffixe pour
+    # le conserver. Ce sont des regex : c'est leur ordre qui départage
+    # `/revp/static/` de `/revp/`, la première qui matche l'emporte.
+
     # Sert du JS exécuté par les navigateurs : un certificat non vérifié y laisse
     # passer du code tiers.
-    location /revp/static/ {
-        proxy_pass https://eu-assets.i.posthog.com/static/;
-        proxy_set_header Host eu-assets.i.posthog.com;
+    location ~ ^/revp/static/(.*)$ {
+        proxy_pass https://$ph_assets/static/$1;
+        proxy_set_header Host $ph_assets;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
         proxy_ssl_server_name on;
-        proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_name $ph_assets;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
         proxy_intercept_errors off;
     }
 
-    location /revp/array/ {
-        proxy_pass https://eu-assets.i.posthog.com/array/;
-        proxy_set_header Host eu-assets.i.posthog.com;
+    location ~ ^/revp/array/(.*)$ {
+        proxy_pass https://$ph_assets/array/$1;
+        proxy_set_header Host $ph_assets;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
         proxy_ssl_server_name on;
-        proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_name $ph_assets;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
         proxy_intercept_errors off;
     }
 
-    location /revp/ {
-        proxy_pass https://eu.i.posthog.com/;
-        proxy_set_header Host eu.i.posthog.com;
+    location ~ ^/revp/(.*)$ {
+        proxy_pass https://$ph_api/$1;
+        proxy_set_header Host $ph_api;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
         proxy_ssl_server_name on;
-        proxy_ssl_name eu.i.posthog.com;
+        proxy_ssl_name $ph_api;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
