@@ -1,7 +1,7 @@
 import { orderedCategories } from '@/constants/model/orderedCategories'
 import getSomme from '@/publicodes-state/helpers/getSomme'
 import { getSubcategories } from '@/publicodes-state/helpers/getSubcategories'
-import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { trackModelWarning } from '@/utils/analytics/trackModelWarning'
 import type {
   DottedName,
   NGCRuleNode,
@@ -28,9 +28,7 @@ export function useCategories({
       // eslint-disable-next-line no-console
       console.error(`[useCategories] No rule found for ${root}`)
 
-      captureMessageForSentryAndPosthog(
-        `[useCategories:categories] No rule found for ${root}`
-      )
+      trackModelWarning(`[useCategories:categories] No rule found for ${root}`)
       return []
     }
     const sum = getSomme(rootRule.rawNode)
@@ -38,7 +36,7 @@ export function useCategories({
       // eslint-disable-next-line no-console
       console.error(`[useCategories] No [somme] found for ${root}`)
 
-      captureMessageForSentryAndPosthog(
+      trackModelWarning(
         `[useCategories:categories] No [somme] found for ${root}`
       )
       return []

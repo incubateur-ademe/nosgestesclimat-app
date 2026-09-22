@@ -1,4 +1,4 @@
-import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { trackModelWarning } from '@/utils/analytics/trackModelWarning'
 import type {
   DottedName,
   NGCRule,
@@ -29,7 +29,7 @@ export function getSubcategories({
         console.error(
           `[useCategories:subcategories] No rule found for ${currentValue}`
         )
-        captureMessageForSentryAndPosthog(
+        trackModelWarning(
           `[useCategories:subcategories] No rule found for ${currentValue}`
         )
         return accumulator
@@ -41,7 +41,7 @@ export function getSubcategories({
         console.error(
           `[useCategories:subcategories] No [somme] found for ${currentValue}`
         )
-        captureMessageForSentryAndPosthog(
+        trackModelWarning(
           `[useCategories:subcategories] No [somme] found for ${currentValue}`
         )
         return accumulator

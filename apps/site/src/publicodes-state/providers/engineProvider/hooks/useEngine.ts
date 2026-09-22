@@ -4,7 +4,7 @@ import { carboneMetric } from '@/constants/model/metric'
 import { safeEvaluateHelper } from '@/publicodes-state/helpers/safeEvaluateHelper'
 import { safeGetRuleHelper } from '@/publicodes-state/helpers/safeGetRuleHelper'
 import type { Metric, SafeEvaluate, Situation } from '@/publicodes-state/types'
-import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { trackModelWarning } from '@/utils/analytics/trackModelWarning'
 import { isServerSide } from '@/utils/nextjs/isServerSide'
 import type {
   DottedName,
@@ -45,7 +45,7 @@ export function useEngine(
 
           // If it's a situation error, we report it to Sentry (as a message) and PostHog
           if (/[ Erreur lors de la mise à jour de la situation ]/.exec(msg)) {
-            captureMessageForSentryAndPosthog(msg)
+            trackModelWarning(msg)
           }
         },
       },
