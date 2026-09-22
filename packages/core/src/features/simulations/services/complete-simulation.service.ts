@@ -4,16 +4,17 @@ import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.t
 import { invariant } from '../../../lib/invariant.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
+import { toError } from '../../../lib/to-error.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
+import type { EmailRequestError } from '../../emails/errors.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import { findGroupById } from '../../groups/repositories/group.repository.ts'
-import type { CaptureException, Logger } from '../../logger/index.ts'
+import type { Logger } from '../../logger/index.ts'
 import { findPollById } from '../../polls/repositories/poll.repository.ts'
 import { enqueuePollStatsComputation } from '../../polls/stats/services/enqueue-poll-stats-computation.ts'
-import { UnsupportedModelError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { findUserById } from '../../users/repositories/users.repository.ts'
@@ -40,7 +41,6 @@ import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 interface CompleteSimulationDependencies {
   logger: Logger
-  captureException: CaptureException
   addOrUpdateContact: AddOrUpdateContact
   sendEmail: SendEmail
   /** Public origin the emails link back to */
@@ -51,7 +51,6 @@ interface CompleteSimulationDependencies {
 
 export function createCompleteSimulation({
   logger,
-  captureException,
   addOrUpdateContact,
   sendEmail,
   origin,
@@ -80,6 +79,10 @@ export function createCompleteSimulation({
   }): Promise<
     Result<Pick<Simulation, 'groups' | 'polls'>, CompleteSimulationError>
   > {
+    const simulationLogger = logger.child({
+      component: 'core.service.completeSimulation',
+      simulationId,
+    })
     const userId = userSession.id
 
     if (progression !== 1) return failure(new SimulationIncompleteError())
@@ -95,9 +98,11 @@ export function createCompleteSimulation({
     const isModelSupportedForComputation = isModelSupported(simulation.model)
 
     if (!isModelSupportedForComputation) {
-      const exception = new UnsupportedModelError(simulation.model)
-      logger.error(exception.message, { model: exception.model })
-      captureException(exception)
+      // The computation is skipped: the simulation is still completed and stored.
+      simulationLogger.warn('Unsupported model', {
+        code: 'unsupported_model',
+        model: simulation.model,
+      })
     }
 
     const updated = await transaction(async (tx) => {
@@ -132,16 +137,38 @@ export function createCompleteSimulation({
 
     backgroundTaskRunner(async () => {
       if (!userSession.isAuth) return
-      const promises = await Promise.allSettled([
-        addOrUpdateContact({
-          email: userSession.email,
-          attributes: {
-            [Attributes.USER_ID]: userId,
-            [Attributes.LAST_SIMULATION_DATE]: simulation.date.toISOString(),
-            ...mapComputedResultsToContactAttributes(computedResults, locale),
-          },
-        }),
-        (async () => {
+
+      /**
+       * A side effect failure does not undo the completion: it is reported
+       * under the name of the call it comes from, and the next one still runs.
+       */
+      const runSideEffect = async (
+        sideEffect: string,
+        run: () => Promise<Result<void, EmailRequestError>>
+      ) => {
+        try {
+          const result = await run()
+
+          if (!result.success) {
+            simulationLogger.error(result.error, { sideEffect })
+          }
+        } catch (error) {
+          simulationLogger.error(toError(error), { sideEffect })
+        }
+      }
+
+      await Promise.all([
+        runSideEffect('addOrUpdateContact', () =>
+          addOrUpdateContact({
+            email: userSession.email,
+            attributes: {
+              [Attributes.USER_ID]: userId,
+              [Attributes.LAST_SIMULATION_DATE]: simulation.date.toISOString(),
+              ...mapComputedResultsToContactAttributes(computedResults, locale),
+            },
+          })
+        ),
+        runSideEffect('joinedEmail', async () => {
           // The most recent membership is the one the user just completed.
           const lastPoll = simulation.polls?.at(-1)
           if (lastPoll) {
@@ -177,21 +204,8 @@ export function createCompleteSimulation({
           }
 
           return success()
-        })(),
+        }),
       ])
-
-      for (const [index, promise] of promises.entries()) {
-        let error: unknown
-        if (promise.status === 'rejected') error = promise.reason
-        else if (!promise.value.success) error = promise.value.error
-        if (error) {
-          captureException(error)
-          logger.error('Failed to run side effect', {
-            index,
-            error,
-          })
-        }
-      }
     })
 
     return success({

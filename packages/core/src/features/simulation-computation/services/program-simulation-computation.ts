@@ -1,5 +1,4 @@
-import type { CaptureException, Logger } from '../../logger/index.ts'
-import { UnsupportedModelError } from '../errors/simulation-computation.error.ts'
+import type { Logger } from '../../logger/index.ts'
 import { SimulationNotFinishedException } from '../exceptions/simulation-computation.exception.ts'
 import { isModelSupported } from '../model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../repositories/simulation-computations.repository.ts'
@@ -7,7 +6,6 @@ import { getSimulationById } from '../repositories/simulation.repository.ts'
 
 interface ProgramSimulationComputationDeps {
   logger: Logger
-  captureException: CaptureException
 }
 
 export function createProgramSimulationComputation(
@@ -16,7 +14,10 @@ export function createProgramSimulationComputation(
   return async function programSimulationComputation(
     simulationId: string
   ): Promise<void> {
-    const { logger, captureException } = deps
+    const logger = deps.logger.child({
+      component: 'core.service.programSimulationComputation',
+      simulationId,
+    })
     const simulation = await getSimulationById(simulationId)
 
     if (simulation.progression !== 1) {
@@ -27,17 +28,17 @@ export function createProgramSimulationComputation(
     }
 
     if (!isModelSupported(simulation.model)) {
-      const exception = new UnsupportedModelError(simulation.model)
-      logger.error(`[program-simulation-computation] ${exception.message}`, {
-        model: exception.model,
+      // The computation is skipped: the simulation stays pending, nothing is lost.
+      logger.warn('Unsupported model', {
+        code: 'unsupported_model',
+        model: simulation.model,
       })
-      captureException(exception)
       return
     }
 
     const result = await createSimulationComputation(simulationId)
     if (!result.success) {
-      logger.warn(result.error.name, { simulationId })
+      logger.warn(result.error)
     }
   }
 }

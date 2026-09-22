@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { TemplateIds } from '../../../emails/email.constant.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
@@ -310,13 +311,7 @@ describe('participateToPoll', () => {
     })
 
     it('logs and reports an email that could not be sent', async () => {
-      const {
-        participateToPoll,
-        sendEmail,
-        logger,
-        captureException,
-        settleBackground,
-      } = setup()
+      const { participateToPoll, sendEmail, logger, settleBackground } = setup()
       const error = new Error('brevo is down')
       sendEmail.mockResolvedValue({ success: false, error })
       const user = await userFactory.verified().create()
@@ -337,11 +332,12 @@ describe('participateToPoll', () => {
         success: true,
         data: { simulationId: simulation.id },
       })
-      expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith(
-        'Failed to send poll joined email',
-        expect.objectContaining({ error, pollId: poll.id })
-      )
+      expect(logger.error).toHaveBeenCalledWith(error, {
+        component: 'core.service.participateToPoll',
+        sideEffect: 'pollJoinedEmail',
+        pollId: poll.id,
+        simulationId: simulation.id,
+      })
     })
   })
 })
@@ -349,13 +345,7 @@ describe('participateToPoll', () => {
 const origin = 'https://nosgestesclimat.fr'
 
 const setup = () => {
-  const logger = {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  }
-  const captureException = vi.fn()
+  const logger = createTestLogger()
   const sendEmail = vi.fn().mockResolvedValue(success())
   const backgroundTasks: Promise<void>[] = []
   const backgroundTaskRunner = vi.fn((task: () => Promise<void>) => {
@@ -364,12 +354,10 @@ const setup = () => {
 
   return {
     logger,
-    captureException,
     sendEmail,
     backgroundTaskRunner,
     participateToPoll: createParticipateToPoll({
       logger,
-      captureException,
       sendEmail,
       origin,
       backgroundTaskRunner,

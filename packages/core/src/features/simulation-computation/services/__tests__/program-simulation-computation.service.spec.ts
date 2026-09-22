@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import type { ModelRegion } from '../../../simulations/types/model.ts'
 import { SimulationNotFinishedException } from '../../exceptions/simulation-computation.exception.ts'
@@ -11,11 +12,9 @@ vi.mock('@incubateur-ademe/nosgestesclimat/package.json', () => ({
   default: { version: '1.0.0' },
 }))
 
-const logger = { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() }
-const captureException = vi.fn()
+const logger = createTestLogger()
 const programSimulationComputation = createProgramSimulationComputation({
   logger,
-  captureException,
 })
 
 describe('programSimulationComputation', () => {
@@ -33,7 +32,7 @@ describe('programSimulationComputation', () => {
     )
   })
 
-  describe('logs UnsupportedModel and does not create a computation', () => {
+  describe('warns about UnsupportedModel and does not create a computation', () => {
     it.each([
       [
         'when model version is outdated',
@@ -55,10 +54,10 @@ describe('programSimulationComputation', () => {
     ])('%s', async (_, setup) => {
       const { id } = await setup().create()
       await programSimulationComputation(id)
-      expect(logger.error).toHaveBeenCalledWith(
-        '[program-simulation-computation] Unsupported model',
-        expect.objectContaining({ model: expect.anything() })
-      )
+      expect(logger.warn).toHaveBeenCalledWith('Unsupported model', {
+        code: 'unsupported_model',
+        model: expect.anything(),
+      })
       const computation = await findSimulationComputation(id)
       expect(computation).toBeNull()
     })

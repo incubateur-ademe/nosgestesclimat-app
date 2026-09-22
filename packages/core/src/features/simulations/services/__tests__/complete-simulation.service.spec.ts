@@ -2,6 +2,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
@@ -98,7 +99,7 @@ describe('completeSimulation', () => {
   })
 
   it('programs the computation when the model is supported', async () => {
-    const { completeSimulation, logger, captureException } = setup()
+    const { completeSimulation, logger } = setup()
     const user = await userFactory.verified().create()
     const simulation = await startedSimulation(user.id)
 
@@ -117,11 +118,10 @@ describe('completeSimulation', () => {
       updatedAt: expect.any(Date),
     })
     expect(logger.error).not.toHaveBeenCalled()
-    expect(captureException).not.toHaveBeenCalled()
   })
 
-  it('reports an unsupported model and completes the simulation without programming a computation', async () => {
-    const { completeSimulation, logger, captureException } = setup()
+  it('warns about an unsupported model and completes the simulation without programming a computation', async () => {
+    const { completeSimulation, logger } = setup()
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
@@ -137,12 +137,10 @@ describe('completeSimulation', () => {
     })
 
     expect(result).toEqual(expect.objectContaining({ success: true }))
-    expect(logger.error).toHaveBeenCalledWith('Unsupported model', {
+    expect(logger.warn).toHaveBeenCalledWith('Unsupported model', {
+      code: 'unsupported_model',
       model: simulation.model,
     })
-    expect(captureException).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'unsupported_model' })
-    )
     expect(await findSimulationComputation(simulation.id)).toBeNull()
   })
 
@@ -531,7 +529,6 @@ describe('completeSimulation', () => {
         completeSimulation,
         addOrUpdateContact,
         logger,
-        captureException,
         settleBackground,
       } = setup()
       const error = new Error('brevo is down')
@@ -547,21 +544,14 @@ describe('completeSimulation', () => {
       await settleBackground()
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
-      expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 0,
-        error,
+      expect(logger.error).toHaveBeenCalledWith(error, {
+        sideEffect: 'addOrUpdateContact',
       })
     })
 
     it('reports a failed email without failing the completion', async () => {
-      const {
-        completeSimulation,
-        sendEmail,
-        logger,
-        captureException,
-        settleBackground,
-      } = setup()
+      const { completeSimulation, sendEmail, logger, settleBackground } =
+        setup()
       const error = new EmailRequestError()
       sendEmail.mockResolvedValue({ success: false, error })
       const user = await userFactory.verified().create()
@@ -576,10 +566,8 @@ describe('completeSimulation', () => {
       await settleBackground()
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
-      expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 1,
-        error,
+      expect(logger.error).toHaveBeenCalledWith(error, {
+        sideEffect: 'joinedEmail',
       })
     })
   })
@@ -593,13 +581,7 @@ const origin = 'https://nosgestesclimat.fr'
  * real runtime runs outside of the request lifecycle.
  */
 const setup = () => {
-  const logger = {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  }
-  const captureException = vi.fn()
+  const logger = createTestLogger()
   const addOrUpdateContact = vi.fn().mockResolvedValue(success())
   const sendEmail = vi.fn().mockResolvedValue(success())
   const backgroundTasks: Promise<void>[] = []
@@ -609,13 +591,11 @@ const setup = () => {
 
   return {
     logger,
-    captureException,
     addOrUpdateContact,
     sendEmail,
     backgroundTaskRunner,
     completeSimulation: createCompleteSimulation({
       logger,
-      captureException,
       addOrUpdateContact,
       sendEmail,
       origin,

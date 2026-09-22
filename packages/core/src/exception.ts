@@ -4,7 +4,7 @@ export abstract class Exception<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   Payload extends Record<string, unknown> = {},
 > extends Error {
-  public readonly level: 'warning' | 'error' | 'info' | 'fatal' = 'error'
+  public readonly level: 'warn' | 'error' | 'info' | 'fatal' = 'error'
   public readonly payload: Payload
 
   constructor(

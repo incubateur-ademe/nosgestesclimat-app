@@ -4,25 +4,23 @@ const toMB = (bytes: number): number =>
   Math.round((bytes / (1024 * 1024)) * 100) / 100
 
 /**
- * Memory snapshot of the current process, in MB.
+ * The process memory, under the names and the unit (`By`) the semantic
+ * conventions define for it: a standard name in a log line survives the move
+ * to a real metric, a house one does not.
  *
- * `rss` is what the container OOM killer reads, but V8 rarely returns freed
- * pages to the OS, so it plateaus rather than drops when memory is released.
- * `heapUsed` reflects a release sooner, but it also counts garbage not yet
- * collected, so a single before/after delta is noisy - compare across jobs.
+ * `process.memory.usage` is what the container OOM killer reads, but V8 rarely
+ * returns freed pages to the OS, so it plateaus rather than drops when memory
+ * is released. `v8js.memory.heap.used` reflects a release sooner, but it also
+ * counts garbage not yet collected: compare across jobs, not around a single
+ * one. The committed heap size and the external memory have no standard name,
+ * and nothing reads them.
  */
-export function currentMemoryMB(): {
-  rssMB: number
-  heapUsedMB: number
-  heapTotalMB: number
-  externalMB: number
-} {
-  const { rss, heapUsed, heapTotal, external } = process.memoryUsage()
+export function memoryAttributes(): Record<string, number> {
+  const { rss, heapUsed } = process.memoryUsage()
+
   return {
-    rssMB: toMB(rss),
-    heapUsedMB: toMB(heapUsed),
-    heapTotalMB: toMB(heapTotal),
-    externalMB: toMB(external),
+    'process.memory.usage': rss,
+    'v8js.memory.heap.used': heapUsed,
   }
 }
 

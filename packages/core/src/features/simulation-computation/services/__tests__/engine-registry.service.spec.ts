@@ -1,13 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import type { Model, ModelRegion } from '../../../simulations/types/model.ts'
 import { CURRENT_MODEL_VERSION } from '../../model-support/model-versions.ts'
 
-const noopLogger = {
-  error: () => {},
-  warn: () => {},
-  info: () => {},
-  debug: () => {},
-}
+const noopLogger = createTestLogger()
 
 // Every test resets the module registry to get fresh hot/lru maps, so each one
 // parses the real model JSON into a new Engine - the eviction test does it four
@@ -88,21 +84,16 @@ describe('engine-registry.service', () => {
     process.env.ENGINE_HOT_KEYS = 'FR:current'
     const { createWarmUpHotEngines } =
       await import('../engine-registry.service.ts')
-    const logger = {
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-      debug: vi.fn(),
-    }
+    const logger = createTestLogger()
 
     await createWarmUpHotEngines({ logger })()
 
-    expect(logger.info).toHaveBeenCalledWith(
-      '[engine-registry] warming hot engine',
+    expect(logger.debug).toHaveBeenCalledWith(
+      'warming hot engine',
       expect.objectContaining({ key: 'FR:current' })
     )
     expect(logger.info).toHaveBeenCalledWith(
-      '[engine-registry] hot engines warmed',
+      'hot engines warmed',
       expect.objectContaining({ count: 1 })
     )
   })
@@ -112,39 +103,34 @@ describe('engine-registry.service', () => {
     process.env.ENGINE_CACHE_MAX_SIZE = '5'
     const { createWarmUpHotEngines, createGetEngineForModel } =
       await import('../engine-registry.service.ts')
-    const logger = {
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn(),
-      debug: vi.fn(),
-    }
+    const logger = createTestLogger()
 
     await createWarmUpHotEngines({ logger })()
     const getEngine = createGetEngineForModel({ logger })
 
     await getEngine(model('FR'))
     expect(logger.debug).toHaveBeenCalledWith(
-      '[engine-registry] hot engine hit',
+      'hot engine hit',
       expect.objectContaining({ key: 'FR:current' })
     )
 
     await getEngine(model('UK'))
     expect(logger.debug).toHaveBeenCalledWith(
-      '[engine-registry] cache miss, building engine',
+      'cache miss, building engine',
       expect.objectContaining({ key: 'UK:current' })
     )
     expect(logger.debug).toHaveBeenCalledWith(
-      '[engine-registry] engine built',
+      'engine built',
       expect.objectContaining({ key: 'UK:current' })
     )
     expect(logger.debug).toHaveBeenCalledWith(
-      '[engine-registry] lru cache size',
+      'lru cache size',
       expect.objectContaining({ lruSize: 1 })
     )
 
     await getEngine(model('UK'))
     expect(logger.debug).toHaveBeenCalledWith(
-      '[engine-registry] lru cache hit',
+      'lru cache hit',
       expect.objectContaining({ key: 'UK:current', lruSize: 1 })
     )
   })

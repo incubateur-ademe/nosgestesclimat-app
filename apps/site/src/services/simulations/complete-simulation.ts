@@ -8,7 +8,7 @@ import {
 } from '@/constants/urls/paths'
 import { env } from '@/env.server'
 import { getLocaleFromHeaders } from '@/helpers/server/getLocaleForNotFoundOrUnautorizedPage'
-import logger from '@/logger'
+import logger from '@/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import {
@@ -18,7 +18,6 @@ import {
 import { createCompleteSimulation } from '@nosgestesclimat/core/features/simulations/services/complete-simulation.service'
 import { failure, type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
-import { captureException } from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
 import { redirect, unauthorized } from 'next/navigation'
 import { after } from 'next/server'
@@ -30,7 +29,6 @@ import {
 
 const completeSimulationService = createCompleteSimulation({
   logger,
-  captureException,
   sendEmail,
   addOrUpdateContact,
   origin: env.NEXT_PUBLIC_SITE_URL,

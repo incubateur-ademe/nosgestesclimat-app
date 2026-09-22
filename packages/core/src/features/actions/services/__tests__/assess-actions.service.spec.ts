@@ -1,22 +1,15 @@
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { ActionAssessmentPublicodesException } from '../../exceptions/action-assessment.exception.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { createAssessActions } from '../assess-actions.service.ts'
 
-const noopLogger = {
-  error: () => {},
-  warn: () => {},
-  info: () => {},
-  debug: () => {},
-}
-const assessActions = createAssessActions({
-  logger: noopLogger,
-  captureException: () => {},
-})
+const logger = createTestLogger()
+const assessActions = createAssessActions({ logger })
 
 const APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000001'
 const NOT_APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000002'

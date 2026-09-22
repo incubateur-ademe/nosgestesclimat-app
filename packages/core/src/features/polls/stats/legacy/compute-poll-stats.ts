@@ -11,6 +11,7 @@ import type {
 import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import * as v from 'valibot'
+import { toError } from '../../../../lib/to-error.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import type { Logger } from '../../../logger/index.ts'
 import {
@@ -122,6 +123,10 @@ async function* batchPollSimulations(pollId: string) {
 }
 
 export function createComputePollStats({ logger }: { logger: Logger }) {
+  const computeLogger = logger.child({
+    component: 'core.service.computePollStats',
+  })
+
   return async function computePollStats(pollId: string): Promise<{
     computedResults: ComputedResults
     funFacts: FunFacts
@@ -157,7 +162,7 @@ export function createComputePollStats({ logger }: { logger: Logger }) {
               rules: frRules,
             })
           } catch (error) {
-            logger.error('Cannot evaluate dottedName', { dottedName, error })
+            computeLogger.error(toError(error), { dottedName })
           }
           funFactValues[dottedName] = (funFactValues[dottedName] || 0) + value
         }

@@ -179,15 +179,16 @@ Le contrat vit dans core (`features/logger/index.ts`) ; les implémentations viv
 ```ts
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
-/** Attributs structurés. Jamais de PII ni de payload métier (§7.6). */
+/**
+ * Attributs de la ligne : jamais de PII ni de payload métier (§7.6), et des
+ * scalaires de préférence — un objet finit en JSON texte, donc peu requêtable.
+ */
 export type LogMeta = Record<string, unknown>
 
 /** Contexte statique fusionné dans chaque ligne du logger enfant. */
 export type LogBindings = Record<string, unknown>
 
 export interface LogOptions {
-  /** Attributs de la ligne. `capture` reste une clé réservée : jamais d'attribut métier de ce nom. */
-  meta?: LogMeta
   /**
    * Envoi vers Sentry. Défaut : true pour error/fatal, false sinon.
    * S'écarter du défaut exige un commentaire de justification (§1.1).
@@ -197,32 +198,32 @@ export interface LogOptions {
 
 export interface Logger {
   child(bindings: LogBindings): Logger
-  debug(message: string, options?: LogOptions): void
-  info(message: string, options?: LogOptions): void
-  warn(message: string | Error, options?: LogOptions): void
-  error(error: Error, options?: LogOptions): void
-  fatal(error: Error, options?: LogOptions): void
+  debug(message: string, meta?: LogMeta): void
+  info(message: string, meta?: LogMeta): void
+  warn(message: string | Error, meta?: LogMeta, options?: LogOptions): void
+  error(error: Error, meta?: LogMeta, options?: LogOptions): void
+  fatal(error: Error, meta?: LogMeta, options?: LogOptions): void
 }
 ```
 
 Appels types :
 
 ```ts
-logger.info('job processed', { meta: memoryMB() })
-logger.error(err, { meta: { pollId, simulationId } })            // capture par défaut
-logger.warn(err, { meta: { attempt: 2, maxAttempts: 5 } })       // retry : stack logguée, rien de capturé
-logger.warn(err, { meta: { route }, capture: true })             // justifié par commentaire (§1.1)
+logger.info('job processed', { currentMemory: currentMemoryMB() })
+logger.error(err, { pollId, simulationId })               // capture par défaut
+logger.warn(err, { attempt: 2, maxAttempts: 5 })         // retry : stack logguée, rien de capturé
+logger.warn(err, { route }, { capture: true })           // justifié par commentaire (§1.1)
 ```
 
 Règles de conception, chacune conséquence d'un chapitre précédent :
 
-- **Un seul objet optionnel en dernière position** (`LogOptions`) : pas d'arité variable par niveau, les wrappers forwardent l'objet tel quel, et `capture` ne peut pas être écrasé par un attribut métier puisque `meta` est une clé dédiée.
+- **`meta` en deuxième position, les options en troisième** : le cas courant — `logger.error(err, { pollId })` — s'écrit sans objet imbriqué, et `capture` reste hors du sac d'attributs, donc impossible à écraser par un attribut métier.
 - **`error`/`fatal` exigent un `Error`** (§3.1). Pas de surcharge `string` : un message seul n'est jamais une erreur. `Exception` et `DomainError` étendent `Error` — le type les couvre sans coupler l'interface à la taxonomie du domaine.
-- **`warn` accepte `string | Error`** (§3.2) : le cas retry passe l'`Error` elle-même — la stack reste dans le log, sans capture. Jamais de message reconstitué à partir d'une erreur.
-- **`child(bindings)` retourne un `Logger`** — l'interface, pas le type pino. Les bindings sont le contexte statique (service, route, job, ids) ; les valeurs ponctuelles vont dans `meta`. Le `trace_id` ne passe **jamais** par `child` : c'est OTel qui l'injecte (§7.3).
+- **`warn` accepte `string | Error`** (§3.2) : le cas retry passe l'`Error` elle-même — la stack reste dans le log, sans capture. Jamais de message reconstitué à partir d'une erreur, et **jamais d'erreur fabriquée pour la logger** : à l'endroit où l'anomalie est constatée, un message et ses attributs suffisent — l'`Error` n'a de valeur que rattrapée, parce que sa stack dit d'où elle vient.
+- **`child(bindings)` retourne un `Logger`** — l'interface, pas le type pino. Les bindings sont le contexte statique partagé par plusieurs lignes d'une même portée (service, route, job, ids de la requête ou de la boucle) ; **pour une ligne isolée, la `meta` suffit** : un `child` créé pour un seul appel ne fait que déplacer le contexte. Le `trace_id` ne passe **jamais** par `child` : c'est OTel qui l'injecte (§7.3).
 - **La capture est portée par l'implémentation**, pas par les services : `captureException` disparaît des dépendances de core. Un service core ne reçoit que `logger`.
-- **Sérialisation** (côté implémentation) : les **attributs exportés** sont **aplatis** — les objets d'une `meta` deviennent des clés pointées, `currentMemory.rssMB` — au moment de l'export, pas dans la fabrique : le JSON qui part sur stdout garde sa forme imbriquée, qu'un aplatissement abîmerait (`a.b` et `a: { b }` fusionneraient en une seule clé). L'`Error` passée à `error()`/`fatal()` prend les noms qu'OTel définit pour une exception de log : `exception.type`, `exception.message`, `exception.stacktrace` (chaîne des `cause` ajoutée). Appliquée à toute valeur `Error` trouvée dans la `meta`, sous n'importe
-quelle clé. Ses propriétés propres suivent : `code` pour un `DomainError`, `payload.*` pour une `Exception`, `level.domain` pour son niveau déclaré (qui heurterait le `level` de pino). Ne jamais s'appuyer sur `toJSON()` (qui ne garde que `code` pour `ErrorWithCode`).
+- **Sérialisation** (côté implémentation) : les **attributs exportés** sont **aplatis** — les objets d'une `meta` deviennent des clés pointées, `currentMemory.rssMB` — au moment de l'export, pas dans la fabrique : le JSON qui part sur stdout garde sa forme imbriquée, qu'un aplatissement abîmerait (`a.b` et `a: { b }` fusionneraient en une seule clé). L'`Error` passée à `error()`/`fatal()` prend les noms qu'OTel définit pour une exception de log : `exception.type`, `exception.message`, `exception.stacktrace` (chaîne des `cause` ajoutée). Appliquée à toute valeur `Error` trouvée dans la `meta`, sous
+  n'importe quelle clé. Ses propriétés propres suivent : `code` pour un `DomainError`, `payload.*` pour une `Exception`, `level.domain` pour son niveau déclaré (qui heurterait le `level` de pino). Ne jamais s'appuyer sur `toJSON()` (qui ne garde que `code` pour `ErrorWithCode`).
 - **Le message d'une `error()` est celui de l'`Error`** : il n'y a pas de libellé libre à côté. Ce qu'un message portait autrefois (« Failed to send poll joined email ») est du contexte statique : il va dans un binding de `child` (`{ sideEffect: 'pollJoinedEmail' }`), donc en attribut filtrable.
 - **Normalisation** : `toError()` s'applique à un `catch (unknown)` ou à une promesse rejetée, pas à une valeur déjà typée `Error` — un `Result<_, EmailRequestError>` en porte déjà une.
 
