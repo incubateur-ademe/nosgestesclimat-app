@@ -22,6 +22,7 @@ const PRIORITY_QUESTIONS_BASE_MODE = new Set<DottedName>([
   'alimentation . plats',
   'logement . type',
   'logement . propriétaire',
+  'logement . lieu de vie',
   'logement . chauffage . bois . système',
   'logement . électricité . réseau . consommation',
   'transport . voiture . km',
@@ -48,7 +49,9 @@ export const NON_PRIORITY_QUESTIONS = new Set<DottedName>([
 ])
 
 // This constant allow to display questions even if it's not missing variable. We keep the logic for now even if it's empty.
-export const MUST_ASK_QUESTIONS = new Set<DottedName>([])
+export const MUST_ASK_QUESTIONS = new Set<DottedName>([
+  'logement . lieu de vie',
+])
 
 export const MUST_SHOW_DESCRIPTION = new Set<DottedName>([
   'transport . voiture . utilisateur',
