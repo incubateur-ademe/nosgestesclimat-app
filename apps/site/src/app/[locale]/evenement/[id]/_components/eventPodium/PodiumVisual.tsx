@@ -86,7 +86,6 @@ export default function PodiumVisual({
                   'w-full md:flex-1',
                   orderClasses[getRank(index)]
                 )}>
-                @
                 <PodiumBlock
                   hasStarted={hasStarted}
                   locale={locale}
