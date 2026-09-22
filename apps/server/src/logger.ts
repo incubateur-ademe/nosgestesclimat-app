@@ -1,3 +1,4 @@
+import type { Logger as CoreLogger } from '@nosgestesclimat/core/features/logger/index'
 import winston from 'winston'
 import SentryTransport from 'winston-transport-sentry-node'
 import { config } from './config.ts'
@@ -72,5 +73,32 @@ const logger = winston.createLogger({
   format: combine(timestamp(), json(), errors({ stack: true })),
   transports,
 })
+
+/**
+ * The core services take the `Logger` interface of the app: this adapts the
+ * winston instance to it, so the legacy server keeps compiling — and keeps its
+ * own log shape — until it is migrated.
+ */
+const toCoreLogger = (winstonLogger: winston.Logger): CoreLogger => ({
+  child: (bindings) => toCoreLogger(winstonLogger.child(bindings)),
+  debug: (message, meta) => winstonLogger.debug(message, meta),
+  info: (message, meta) => winstonLogger.info(message, meta),
+  warn: (message, meta) =>
+    winstonLogger.warn(message instanceof Error ? message.message : message, {
+      ...meta,
+      ...(message instanceof Error ? errorMeta(message) : {}),
+    }),
+  error: (error, meta) =>
+    winstonLogger.error(error.message, { ...meta, ...errorMeta(error) }),
+  // winston has no `fatal` level: the flag keeps the distinction readable.
+  fatal: (error, meta) =>
+    winstonLogger.error(error.message, {
+      ...meta,
+      ...errorMeta(error),
+      fatal: true,
+    }),
+})
+
+export const coreLogger = toCoreLogger(logger)
 
 export default logger

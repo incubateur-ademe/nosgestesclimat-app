@@ -43,11 +43,18 @@ vi.mock('winston', async () => ({
     transports: {
       Console: vi.fn(),
     },
-    createLogger: vi.fn(() => ({
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-    })),
+    createLogger: vi.fn(() => {
+      const logger = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        child: vi.fn(),
+      }
+
+      logger.child.mockReturnValue(logger)
+
+      return logger
+    }),
   },
 }))
 vi.mock('@nosgestesclimat/core/prisma/client', () => ({
