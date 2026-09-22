@@ -1141,7 +1141,7 @@ entries:
   results.saveResults.buttonLabel.authenticated.noPreviousResults: Accéder à mon espace
   results.saveResults.buttonLabel.authenticated.withPreviousResults: Voir l’évolution de mon résultat
   simulator.navigation.nextButton.loading: <0></0> Terminer
-  results.groupThankYou.description: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
+  results.groupThankYou.description: Découvrez les résultats du test collectif
   results.objective.collectiveEffort.collectivities: Les collectivités
   results.objective.collectiveEffort.collectivitiesDescription: Par leurs choix d’aménagements du territoire, elles participent à <2>l'adoption de nouvelles pratiques plus durables</2> à l’échelle locale.
   results.objective.collectiveEffort.companies: Les entreprises
@@ -1326,7 +1326,7 @@ entries:
   event.detail.dates: Du {{startDate}} au {{endDate}}
   event.detail.title: Semaine Européenne du<1></1>Développement<3></3>Durable
   event.dynamicCounter.primaryCta: Je mobilise mon organisation
-  event.dynamicCounter.promise: Résultats en 10 minutes — 100% gratuit
+  event.dynamicCounter.promise: Résultats en 10 minutes — sans inscription
   event.dynamicCounter.secondaryCta: Je participe individuellement
   event.dynamicCounter.target.text: calculs d'empreinte carbone
   event.dynamicCounter.text: EN DIRECT
@@ -1468,9 +1468,19 @@ entries:
   poll.creation.mode.select: Sélectionner
   poll.creation.mode.tempDisabled: Fonctionnalité désactivée temporairement, en cours d'amélioration
   poll.creation.mode.title: Choisissez le mode du test
-  appCrash.metadata.description: L'application rencontre quelques difficultés en ce moment, nos équipes sont sur le coup.
+  appCrash.metadata.description: Le site connaît une forte affluence, nos équipes travaillent à rétablir l’accès.
   appCrash.metadata.title: Erreur - Nos Gestes Climat
   common.errors.reload: Recharger la page
   common.errors.description: L'application rencontre quelques difficultés en ce moment. Nos équipes sont prévenues et mettent tout en œuvre pour rétablir la situation au plus vite.
   common.errors.retryLater: Merci de réessayer dans quelques minutes.
   common.errors.title: Oups, une erreur est survenue
+  Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.
+  Cette section est générée via Posthog.: Cette section est générée via Posthog.
+  Face à une affluence très élevée, notre site connaît quelques ralentissements.: Face à une affluence très élevée, notre site connaît quelques ralentissements.
+  footer.ademe.ariaLabel: ADEME (ouvrir dans une nouvelle fenêtre)
+  Nous mettons tout en œuvre pour rétablir l'accès rapidement, n'hésitez pas à réessayer dans quelques minutes. Merci de votre patience et de votre mobilisation pour le climat !: Nous mettons tout en œuvre pour rétablir l'accès rapidement, n'hésitez pas à réessayer dans quelques minutes. Merci de votre patience et de votre mobilisation pour le climat !
+  Pour patienter, testez vos connaissances avec le Quiz Carbone de l'ADEME: Pour patienter, testez vos connaissances avec le Quiz Carbone de l'ADEME
+  shared.english: anglais
+  shared.french: français
+  Statistiques publiques du site Nos Gestes Climat.: Statistiques publiques du site Nos Gestes Climat.
+  switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
