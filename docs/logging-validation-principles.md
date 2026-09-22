@@ -288,7 +288,13 @@ Deux attributs OTel, noms exacts imposés par PostHog :
 - **`posthogDistinctId`** — relie la ligne au profil personne (onglet Logs). Pour un utilisateur authentifié, c'est le **userId applicatif** : le client fait `posthog.identify(userId)` et le projet est en `person_profiles: 'identified_only'`. Le serveur le connaît (session décryptée) — source de vérité serveur, aucune confiance dans le client.
 - **`sessionId`** — relie au **replay** (bouton « View recording » + onglet « Related errors », ±6 h). La session PostHog ne vit que dans le navigateur : c'est posthog-js qui l'envoie, via l'option `tracing_headers` (≥ 1.380 ; headers `X-POSTHOG-DISTINCT-ID` / `X-POSTHOG-SESSION-ID` ajoutés aux `fetch` same-origin — y compris les POST de server actions).
 
-Injection côté serveur : le **proxy** lit les headers entrants + la session, pose un **baggage OTel** ; le `mixin()` pino et un `BaggageSpanProcessor` recopient le baggage dans chaque log et chaque span. Le consentement suit naturellement : `posthog.init` n'a lieu qu'après acceptation → pas de headers, pas d'attributs, pour les utilisateurs en refus/DNT.
+Injection côté serveur : `identifyRequest()`, appelé par `getUserSession` (qui lit déjà la session et les headers), attache l'identité à la **span de la requête**. Ses attributs couvrent la trace, et les lignes émises tant qu'elle est active la réutilisent (`log-bridge`), y compris celles des spans enfants (`IdentitySpanProcessor`).
+
+*Pourquoi pas un baggage OTel.* Un baggage ne se pose qu'autour du travail (`context.with`) : il faudrait envelopper chaque corps d'action pour un attribut décoratif. La span de requête **est** la portée de la requête — c'est elle qui porte l'identité.
+
+Le `posthogDistinctId` n'est posé que lorsque l'identité est établie côté serveur (session authentifiée). Pour un visiteur anonyme, on prend celui que posthog-js envoie : le nôtre n'est pas un `distinct_id` PostHog et créerait un profil fantôme.
+
+Le consentement suit naturellement : `posthog.init` n'a lieu qu'après acceptation → pas de headers, pas d'attributs, pour les utilisateurs en refus/DNT.
 
 Le worker n'a pas de session live : pas de `sessionId` ; `posthogDistinctId` éventuel en binding de `child` pour les jobs liés à un utilisateur.
 
