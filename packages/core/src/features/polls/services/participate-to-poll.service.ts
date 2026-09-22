@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
+import { runSideEffect } from '../../../lib/run-side-effect.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import type { SendEmail } from '../../emails/types.ts'
@@ -14,6 +15,7 @@ import { isSimulationCompleted } from '../../simulations/helpers/simulation-guar
 import { findSimulationProgressById } from '../../simulations/repository/simulation-progress.repository.ts'
 import { createSimulation } from '../../simulations/repository/simulation.repository.ts'
 import type { Model } from '../../simulations/types/model.ts'
+import type { WithSpan } from '../../tracing/index.ts'
 import {
   type ParticipateToPollError,
   PollNotFoundError,
@@ -27,6 +29,7 @@ import { enqueuePollStatsComputation } from '../stats/services/enqueue-poll-stat
 
 interface ParticipateToPollDependencies {
   logger: Logger
+  withSpan: WithSpan
   sendEmail: SendEmail
   /** Public origin the emails link back to */
   origin: string
@@ -45,6 +48,7 @@ type ParticipateToPollParams = {
 
 export function createParticipateToPoll({
   logger,
+  withSpan,
   sendEmail,
   origin,
   backgroundTaskRunner,
@@ -124,25 +128,20 @@ export function createParticipateToPoll({
       reusedSimulation &&
       isSimulationCompleted(reusedSimulation)
     ) {
-      backgroundTaskRunner(async () => {
-        const sent = await sendPollJoinedEmail({
-          email: userSession.email,
-          organisation: poll.organisation,
-          poll,
-          simulationId,
-          locale,
-          origin,
-        })
-
-        if (!sent.success) {
-          logger.error(sent.error, {
-            component: 'core.service.participateToPoll',
-            sideEffect: 'pollJoinedEmail',
-            pollId,
+      runSideEffect(
+        { logger, withSpan, backgroundTaskRunner },
+        'pollJoinedEmail',
+        () =>
+          sendPollJoinedEmail({
+            email: userSession.email,
+            organisation: poll.organisation,
+            poll,
             simulationId,
-          })
-        }
-      })
+            locale,
+            origin,
+          }),
+        { pollId, simulationId }
+      )
     }
 
     return success({ simulationId })

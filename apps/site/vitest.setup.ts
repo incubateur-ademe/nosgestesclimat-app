@@ -81,6 +81,9 @@ vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
   }),
+  // No-op, like `redirect` above: the real one rethrows Next's control-flow
+  // errors, the test decides who throws.
+  unstable_rethrow: vi.fn(),
 }))
 
 // Mock uuid

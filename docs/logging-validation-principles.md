@@ -272,7 +272,10 @@ Next.js 16 exécute le proxy (`proxy.ts`, ex-middleware) sur le runtime Node —
 ### 7.3 Traces : provider OTel à nous, PostHog comme backend
 
 - **Un `NodeTracerProvider` à nous**, enregistré dans `instrumentation.ts` — pas celui de Sentry. Raison : les traces vont dans PostHog ; ne garder Sentry comme instrumenteur serait payer le couplage vendor pour un produit qu'on ne consomme plus.
-- Sources de spans : **Next.js natif** (`BaseServer.handleRequest`, `render`, `fetch` — Next émet ses spans via `@opentelemetry/api` dès qu'un provider est enregistré), **nos frontières** (span nommée par server action dans le wrapper, span par itération worker), **`PrismaInstrumentation`** (requêtes DB, contexte propagé via l'adapter pg).
+- Sources de spans : **Next.js natif** (`BaseServer.handleRequest`, `render`, `fetch` — Next émet ses spans via `@opentelemetry/api` dès qu'un provider est enregistré), **nos opérations** (`withSpan` ouvre une span nommée par le composant, y lie le logger et la ferme : deux opérations imbriquées donnent deux spans, chacune sa durée ; span par itération worker), **nos side effects** (`runSideEffect` instrumente la tâche différée sous `core.sideEffect.<nom>`, ouverte au démarrage du travail et non à sa mise en file), **`PrismaInstrumentation`** (requêtes DB, contexte propagé via l'adapter pg).
+- **`withSpan` est un contrat core**, comme `Logger` : core déclare ce qui mérite une span — un side effect, un service qui fait de l'I/O ou du calcul — et reçoit le tracer du runtime. Core ne connaît toujours pas OpenTelemetry.
+- **Le logger arrive en paramètre nommé**, pas en position : `withSpan(component, async ({ logger, payload }) => …)` rend une fonction de même signature, donc un service ou une action se déclare une fois. Les actions du site passent par lui (`site.action.*`), et les services du site qui font un appel ou une attente aussi (`site.service.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
+- **On instrumente une opération, pas chaque helper.** Ce qui mérite une span : une frontière (action, itération de worker), un service qui fait un appel externe, du calcul ou de l'attente — et un side effect, qui vit de toute façon hors de la requête. Le reste déclare un composant et s'arrête là. Le nombre de spans dans une cascade est le prix de la lisibilité : mieux vaut dix spans qui se lisent que cinquante qui se comptent.
 - Export OTLP : `https://eu.i.posthog.com/i/v1/traces`. Échantillonnage paramétrable par env ; les logs portent le `trace_id` même quand la trace n'est pas exportée.
 - **`X-Request-ID` est notre racine de trace.** nginx génère déjà un `request_id` 32-hex, le propage à l'app via `X-Request-ID`, et le mappe en `trace_id` de ses propres logs PostHog (`infra/nginx/README.md`). L'app honore ce contrat : un propagateur OTel adopte `X-Request-ID` comme parent distant quand aucun `traceparent` W3C n'est présent. Un seul `trace_id` relie alors **nginx → app → DB** dans PostHog. Absent (dev local, worker) : racine OTel standard.
 - Sentry : **erreurs seulement**. `skipOpenTelemetrySetup: true`, `tracesSampleRate: 0` — plus aucune span Sentry (ni bruit `sentry.*`, ni doublons). Les événements erreur portent `trace_id`/`span_id` lus du contexte OTel actif ; le bouton « View Trace » de Sentry est abandonné volontairement — le `trace_id` se recopie dans PostHog.
@@ -328,7 +331,8 @@ attributs maison quand il n'y en a pas.
   le même mot n'a pas le même sens des deux côtés d'une frontière. La forme est
   **vérifiée par le compilateur** — `ComponentName` dans le contrat core : un
   nom nu ne compile pas —, la liste des couches (`action`, `service`,
-  `middleware`, `instrumentation`, `page`, `layout`) restant fermée et son
+  `middleware`, `instrumentation`, `page`, `layout`, `sideEffect`) restant
+  fermée et son
   élargissement délibéré. Aucune valeur en double dans un même paquet et une
   même couche ; si deux features
   se télescopent, le nom gagne le segment de feature

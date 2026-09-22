@@ -9,6 +9,7 @@ export type ComponentLayer =
   | 'instrumentation'
   | 'page'
   | 'layout'
+  | 'sideEffect'
 
 /** Workspaces that emit telemetry. */
 export type ComponentPackage = 'core' | 'site'

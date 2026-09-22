@@ -24,6 +24,8 @@ vi.mock(
 )
 
 vi.mock('next/navigation', () => ({
+  // No-op, comme `redirect` : le test décide qui lance quoi.
+  unstable_rethrow: vi.fn(),
   notFound: notFoundMock,
 }))
 

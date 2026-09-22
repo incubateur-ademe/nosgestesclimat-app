@@ -10,21 +10,25 @@ import {
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 import logger from '@/logger.server'
+import { withSpan } from '@/observability/span'
 
-export async function getGeolocation(): Promise<Region> {
-  try {
-    const geo = await fetchServer<{ code: string; region: string }>(
-      `${MODELE_URL}/geolocation`
-    )
-    if (geo.code in supportedRegions) {
-      return geo.code as Region
+export const getGeolocation = withSpan(
+  'site.service.getGeolocation',
+  async (): Promise<Region> => {
+    try {
+      const geo = await fetchServer<{ code: string; region: string }>(
+        `${MODELE_URL}/geolocation`
+      )
+      if (geo.code in supportedRegions) {
+        return geo.code as Region
+      }
+      if (geo.region === 'Europe') {
+        return 'EU'
+      }
+      return DEFAULT_REGION
+    } catch (e) {
+      logger.warn(toError(e))
+      return DEFAULT_REGION
     }
-    if (geo.region === 'Europe') {
-      return 'EU'
-    }
-    return DEFAULT_REGION
-  } catch (e) {
-    logger.warn(toError(e), { component: 'site.service.getGeolocation' })
-    return DEFAULT_REGION
   }
-}
+)

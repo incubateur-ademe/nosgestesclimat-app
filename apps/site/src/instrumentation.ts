@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/nextjs'
 import type { Instrumentation } from 'next'
 
 import logger from '@/logger.server'
+import { initObservability, shutdownObservability } from '@/observability/setup'
 
 export async function register() {
   if (process.env.NODE_ENV === 'development') {
@@ -10,11 +11,15 @@ export async function register() {
   }
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Before anything instrumented is imported: this provider is the one
+    // Sentry and pino read their trace context from.
+    initObservability()
     await import('../sentry.server.config')
     const { posthogClient } = await import('@/services/tracking/posthogServer')
 
     async function shutdown() {
       try {
+        await shutdownObservability()
         await posthogClient.shutdown()
         process.exit(0)
       } catch (error) {
@@ -30,7 +35,7 @@ export async function register() {
      */
     async function crash(error: Error) {
       logger.fatal(error)
-      await Sentry.flush(2_000)
+      await Promise.allSettled([Sentry.flush(2_000), shutdownObservability()])
       process.exit(1)
     }
 

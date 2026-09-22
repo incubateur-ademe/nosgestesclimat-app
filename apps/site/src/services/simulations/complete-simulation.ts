@@ -9,6 +9,7 @@ import {
 import { env } from '@/env.server'
 import { getLocaleFromHeaders } from '@/helpers/server/getLocaleForNotFoundOrUnautorizedPage'
 import logger from '@/logger.server'
+import { withSpan } from '@/observability/span'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import {
@@ -29,6 +30,7 @@ import {
 
 const completeSimulationService = createCompleteSimulation({
   logger,
+  withSpan,
   sendEmail,
   addOrUpdateContact,
   origin: env.NEXT_PUBLIC_SITE_URL,
@@ -36,69 +38,67 @@ const completeSimulationService = createCompleteSimulation({
   backgroundTaskRunner: after,
 })
 
-export const completeSimulation = async (
-  payload: CompleteSimulationPayload
-): Promise<Result<never, CompleteSimulationError> | void> => {
-  nameActionSpan('completeSimulation')
+export const completeSimulation = withSpan<
+  { payload: CompleteSimulationPayload },
+  Result<never, CompleteSimulationError> | void
+>(
+  'site.action.completeSimulation',
+  async ({ logger: actionLogger, payload }) => {
+    const session = await getUserSession()
+    if (!session) unauthorized()
 
-  const actionLogger = logger.child({
-    component: 'site.action.completeSimulation',
-  })
+    // Checked before the payload validation, and again by the core service, so
+    // that an unfinished simulation answers with the specific
+    // `simulation_incomplete` failure the caller reports to Sentry rather than
+    // collapsing into a generic `invalid_payload`.
+    if (payload.progression !== 1)
+      return failure(new SimulationIncompleteError())
 
+    const parsed = validatePayload(CompleteSimulationPayloadSchema, payload)
+    if (!parsed.success) {
+      // Un client correct n'envoie pas ça : dérive ou bug front, suivi au taux.
+      actionLogger.warn(parsed.error)
+      return parsed
+    }
 
-  const session = await getUserSession()
-  if (!session) unauthorized()
+    const { id, progression, situation, foldedSteps, computedResults } =
+      parsed.data
 
-  // Checked before the payload validation, and again by the core service, so
-  // that an unfinished simulation answers with the specific
-  // `simulation_incomplete` failure the caller reports to Sentry rather than
-  // collapsing into a generic `invalid_payload`.
-  if (payload.progression !== 1) return failure(new SimulationIncompleteError())
+    const result = await completeSimulationService({
+      userSession: session,
+      simulationId: id,
+      progression,
+      situation: situation as Situation<DottedName>,
+      foldedSteps: foldedSteps as DottedName[],
+      computedResults,
+      locale: await getLocaleFromHeaders(),
+    })
 
-  const parsed = validatePayload(CompleteSimulationPayloadSchema, payload)
-  if (!parsed.success) {
-    // Un client correct n'envoie pas ça : dérive ou bug front, suivi au taux.
-    actionLogger.warn(parsed.error)
-    return parsed
-  }
+    if (!result.success) {
+      // Une simulation absente vient d'un lien périmé : rien à signaler.
+      if (result.error.code === 'simulation_not_found') return result
 
-  const { id, progression, situation, foldedSteps, computedResults } =
-    parsed.data
+      if (result.error.code === 'zero_footprint') {
+        // Le calcul front a produit un bilan nul : la sauvegarde est refusée,
+        // c'est le client qu'il faut réparer.
+        actionLogger.error(result.error)
+        return result
+      }
 
-  const result = await completeSimulationService({
-    userSession: session,
-    simulationId: id,
-    progression,
-    situation: situation as Situation<DottedName>,
-    foldedSteps: foldedSteps as DottedName[],
-    computedResults,
-    locale: await getLocaleFromHeaders(),
-  })
-
-  if (!result.success) {
-    // Une simulation absente vient d'un lien périmé : rien à signaler.
-    if (result.error.code === 'simulation_not_found') return result
-
-    if (result.error.code === 'zero_footprint') {
-      // Le calcul front a produit un bilan nul : la sauvegarde est refusée,
-      // c'est le client qu'il faut réparer.
-      actionLogger.error(result.error)
+      // Client périmé (onglet rouvert) ou double soumission : anomalie, au taux.
+      actionLogger.warn(result.error)
       return result
     }
 
-    // Client périmé (onglet rouvert) ou double soumission : anomalie, au taux.
-    actionLogger.warn(result.error)
-    return result
+    revalidatePath(END_PAGE_PATH, 'layout')
+
+    const { groups, polls } = result.data
+
+    if (groups?.length) revalidatePath(GROUP_RESULTS_ROUTE_PATTERN, 'page')
+
+    if (!session.isAuth && (polls?.length || groups?.length))
+      redirect(EMAIL_PAGE_PATH)
+
+    redirect(END_PAGE_PATH)
   }
-
-  revalidatePath(END_PAGE_PATH, 'layout')
-
-  const { groups, polls } = result.data
-
-  if (groups?.length) revalidatePath(GROUP_RESULTS_ROUTE_PATTERN, 'page')
-
-  if (!session.isAuth && (polls?.length || groups?.length))
-    redirect(EMAIL_PAGE_PATH)
-
-  redirect(END_PAGE_PATH)
-}
+)

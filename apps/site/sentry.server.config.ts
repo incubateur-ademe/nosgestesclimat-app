@@ -9,5 +9,9 @@ Sentry.init({
   dsn: 'https://75dcf9dfe74c4439977a517be2805122@sentry.incubateur.net/118',
   environment: APP_ENV,
   sampleRate: 1,
-  tracesSampleRate: 0.005,
+  // Traces live in PostHog (`src/observability/setup.ts`, NGC-3817): Sentry
+  // reports errors only, and reads the trace context off that provider instead
+  // of owning one — an error event and its trace then share a `trace_id`.
+  skipOpenTelemetrySetup: true,
+  tracesSampleRate: 0,
 })

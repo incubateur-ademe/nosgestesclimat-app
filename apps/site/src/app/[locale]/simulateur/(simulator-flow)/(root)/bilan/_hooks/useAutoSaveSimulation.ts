@@ -6,7 +6,6 @@ import { EngineContext } from '@/publicodes-state/providers/engineProvider/conte
 import { updateSimulationSituation } from '@/services/simulations/update-simulation-situation'
 import type { UpdateSimulationSituationPayload } from '@/services/simulations/update-simulation-situation-payload.schema'
 import { useDebounce } from '@/utils/debounce'
-import { captureException, setExtra } from '@sentry/nextjs'
 import { useContext, useEffect } from 'react'
 
 /**
@@ -19,13 +18,8 @@ export function useAutoSaveSimulation() {
 
   const debouncedSave = useDebounce(
     async (payload: UpdateSimulationSituationPayload) => {
-      const result = await updateSimulationSituation(payload)
-
-      if (!result.success) {
-        setExtra('simulationId', payload.id)
-        setExtra('situation', JSON.stringify(payload.situation))
-        captureException(result.error)
-      }
+      // The server logs the failure: the caller only needs the answer.
+      await updateSimulationSituation({ payload })
     },
     3000
   )

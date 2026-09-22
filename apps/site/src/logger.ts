@@ -4,7 +4,11 @@ import type {
   LogOptions,
   Logger,
 } from '@nosgestesclimat/core/features/logger/index'
+import { context, trace } from '@opentelemetry/api'
 import pino, { type Logger as PinoLogger } from 'pino'
+
+import { exceptionAttributes } from './observability/log-attributes.ts'
+import { emitLogRecord } from './observability/log-bridge.ts'
 
 /** Keys redacted before export, as a backstop: callers must not log them at all. */
 const REDACTED_PATHS = [
@@ -18,105 +22,16 @@ const REDACTED_PATHS = [
   '*.cookie',
 ]
 
-/** OTel names for the exception a log record carries. */
-const EXCEPTION_TYPE = 'exception.type'
-const EXCEPTION_MESSAGE = 'exception.message'
-const EXCEPTION_STACKTRACE = 'exception.stacktrace'
-
-/** Beyond this, a nested object is kept as is: the line stays readable. */
-const MAX_META_DEPTH = 4
-
 /**
- * OTel attributes are flat: `engine.key` reads, filters and charts, while
- * `engine: { key }` becomes a blob PostHog cannot query. Dots are the separator
- * the semantic conventions themselves use (`http.request.method`).
+ * Attaches the active span's ids: that is what makes a line findable from its
+ * trace, and the trace from its lines. Empty outside a span (startup, tests).
  */
-function flattenMeta(meta: LogMeta, prefix = '', depth = 0): LogMeta {
-  const flat: LogMeta = {}
+function traceContext(): LogMeta {
+  const spanContext = trace.getSpan(context.active())?.spanContext()
 
-  for (const [key, value] of Object.entries(meta)) {
-    const name = `${prefix}${key}`
-
-    if (value instanceof Error) {
-      Object.assign(
-        flat,
-        flattenMeta(exceptionAttributes(value), `${name}.`, depth)
-      )
-      continue
-    }
-
-    if (isPlainObject(value) && depth < MAX_META_DEPTH) {
-      Object.assign(flat, flattenMeta(value, `${name}.`, depth + 1))
-      continue
-    }
-
-    flat[name] = value
-  }
-
-  return flat
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false
-  }
-
-  const prototype = Object.getPrototypeOf(value)
-
-  return prototype === Object.prototype || prototype === null
-}
-
-/**
- * The exception as its own attributes: the three names OTel defines for a log
- * record (`exception.type`, `exception.message`, `exception.stacktrace`, the
- * cause chain appended), plus whatever the error class carries — `code` for a
- * `DomainError`, the business `payload` for an `Exception`. `toJSON()` is not
- * used: it only keeps `code` for `ErrorWithCode`.
- */
-function exceptionAttributes(error: Error): LogMeta {
-  const attributes: LogMeta = {
-    [EXCEPTION_TYPE]: error.name,
-    [EXCEPTION_MESSAGE]: error.message,
-    [EXCEPTION_STACKTRACE]: stackTrace(error),
-  }
-
-  for (const [key, value] of Object.entries(error)) {
-    // `name` is `exception.type`; `level` would collide with pino's own level.
-    if (key === 'name' || key === 'message') {
-      continue
-    }
-
-    attributes[key === 'level' ? 'level.domain' : key] = value
-  }
-
-  return attributes
-}
-
-/** V8 keeps the stack out of the enumerable properties: it is read here. */
-function stackTrace(error: Error): string {
-  const frames: string[] = []
-  let current: unknown = error
-
-  for (let depth = 0; current instanceof Error && depth < 5; depth++) {
-    const label = depth === 0 ? '' : 'Caused by: '
-    frames.push(
-      `${label}${current.stack ?? `${current.name}: ${current.message}`}`
-    )
-    current = current.cause
-  }
-
-  return frames.join('\n')
-}
-
-const writers: Record<
-  LogLevel,
-  (logger: PinoLogger, meta: LogMeta, message: string) => void
-> = {
-  debug: (logger, meta, message) => logger.debug(meta, message),
-  info: (logger, meta, message) => logger.info(meta, message),
-  warn: (logger, meta, message) => logger.warn(meta, message),
-  error: (logger, meta, message) => logger.error(meta, message),
-  fatal: (logger, meta, message) => logger.fatal(meta, message),
+  return spanContext
+    ? { trace_id: spanContext.traceId, span_id: spanContext.spanId }
+    : {}
 }
 
 export function createLogger({
@@ -147,6 +62,7 @@ export function createLogger({
     timestamp: pino.stdTimeFunctions.isoTime,
     messageKey: 'message',
     redact: { paths: REDACTED_PATHS, censor: '[redacted]' },
+    mixin: traceContext,
     transport: pretty
       ? {
           target: 'pino-pretty',
@@ -162,23 +78,37 @@ export function createLogger({
 
   const build = (instance: PinoLogger): Logger => {
     const write = (
-      pinoLevel: LogLevel,
+      level: LogLevel,
       message: string,
-      meta: LogMeta | undefined,
-      options: LogOptions | undefined,
+      meta?: LogMeta,
+      options?: LogOptions,
       error?: Error
     ) => {
-      // The meta is a flat bag of attributes: an `Error` belongs in the
-      // message of `warn`/`error`, not inside it.
-      const line: LogMeta = flattenMeta({
+      // The level filters both outputs: a line pino drops from stdout must not
+      // reach PostHog either, or `LOG_LEVEL` stops being the volume lever.
+      if (!instance.isLevelEnabled(level)) {
+        return
+      }
+
+      // The meta is a bag of attributes: an `Error` belongs in the message of
+      // `warn`/`error`, not inside it.
+      const line: LogMeta = {
         ...meta,
         ...(error && exceptionAttributes(error)),
+      }
+
+      instance[level](line, message)
+      // The same line goes to PostHog, with the bindings pino keeps apart from
+      // the meta — its own `bindings()` walks the `child` chain.
+      emitLogRecord({
+        service,
+        level,
+        message,
+        meta: { ...instance.bindings(), ...line },
       })
 
-      writers[pinoLevel](instance, line, message)
-
       const capture =
-        options?.capture ?? (pinoLevel === 'error' || pinoLevel === 'fatal')
+        options?.capture ?? (level === 'error' || level === 'fatal')
 
       // Only an `Error` is worth reporting: a message alone carries no stack.
       if (capture && error) {
@@ -188,8 +118,8 @@ export function createLogger({
 
     return {
       child: (bindings) => build(instance.child(bindings)),
-      debug: (message, meta) => write('debug', message, meta, undefined),
-      info: (message, meta) => write('info', message, meta, undefined),
+      debug: (message, meta) => write('debug', message, meta),
+      info: (message, meta) => write('info', message, meta),
       warn: (message, meta, options) =>
         message instanceof Error
           ? write('warn', message.message, meta, options, message)

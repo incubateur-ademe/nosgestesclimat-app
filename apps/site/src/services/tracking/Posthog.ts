@@ -9,6 +9,22 @@ import { reapplySessionProperties } from './posthogSessionProperties'
 
 export type PostHogCookieState = 'accepted' | 'refused' | 'do_not_track'
 
+/**
+ * Hosts whose requests carry the PostHog identity headers. Sending them on our
+ * own backend's requests is what lets the server logs link back to the person
+ * and the session recording.
+ */
+function tracingHeaders(): string[] | undefined {
+  try {
+    const hostname = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? '').hostname
+
+    return hostname ? [hostname] : undefined
+  } catch {
+    // A malformed or missing site URL only costs the correlation.
+    return undefined
+  }
+}
+
 export class PostHog {
   private _iframeInformation: IframeInformation | null = null
 
@@ -101,6 +117,7 @@ export class PostHog {
       defaults: '2026-01-30',
       debug: APP_ENV !== 'production',
       person_profiles: 'identified_only',
+      tracing_headers: tracingHeaders(),
       /** Unfortunatly, NextJS router.replace does not trigger `history.pushState` systematically, so we need to capture pageview with React */
       capture_pageview: false,
       capture_pageleave: true,
@@ -109,6 +126,15 @@ export class PostHog {
         url_ignorelist: ['/simulateur/bilan'],
       },
       rageclick: false,
+      logs: {
+        // `browser` completes `site` and `worker`: the third runtime, named
+        // for where it runs. Same namespace as the back end, so the whole
+        // product stays retrievable as one.
+        serviceName: 'browser',
+        environment: APP_ENV,
+        serviceVersion: process.env.NEXT_PUBLIC_APP_VERSION,
+        resourceAttributes: { 'service.namespace': 'nosgestesclimat' },
+      },
 
       custom_campaign_params: ['mtm_campaign', 'mtm_kwd', 'mtm_keyword'], // Enable to set query parameters as properties on the events
 

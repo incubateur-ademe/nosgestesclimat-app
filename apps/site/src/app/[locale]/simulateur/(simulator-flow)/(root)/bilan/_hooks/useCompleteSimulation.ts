@@ -3,7 +3,6 @@ import { getComputedResults } from '@/publicodes-state/helpers/getComputedResult
 import { EngineContext } from '@/publicodes-state/providers/engineProvider/context'
 import { completeSimulation as completeSimulationAction } from '@/services/simulations/complete-simulation'
 import type { CompleteSimulationPayload } from '@/services/simulations/complete-simulation-payload.schema'
-import { captureException, setExtra } from '@sentry/nextjs'
 import { useContext, useTransition } from 'react'
 
 export function useCompleteSimulation() {
@@ -16,24 +15,15 @@ export function useCompleteSimulation() {
     completeSimulation() {
       startTransition(async () => {
         const { id, progression, situation, foldedSteps } = currentSimulation
-        // An incomplete simulation is not filtered out here on purpose: the
-        // server answers with a `simulation_incomplete` failure, which lands in
-        // Sentry below instead of being silently dropped.
-        const result = await completeSimulationAction({
-          id,
-          progression,
-          situation: situation as CompleteSimulationPayload['situation'],
-          foldedSteps,
-          computedResults: getComputedResults(engineContext),
+        await completeSimulationAction({
+          payload: {
+            id,
+            progression,
+            situation: situation as CompleteSimulationPayload['situation'],
+            foldedSteps,
+            computedResults: getComputedResults(engineContext),
+          },
         })
-        if (
-          result &&
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          !result.success
-        ) {
-          setExtra('simulationId', id)
-          captureException(result.error)
-        }
       })
     },
   }

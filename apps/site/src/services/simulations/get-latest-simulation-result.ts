@@ -5,25 +5,30 @@ import { getLatestSimulationResult as getLatestSimulationResultService } from '@
 import type { SimulationResult } from '@/helpers/server/model/simulationResult'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { notFound } from 'next/navigation'
+
+import { withSpan } from '@/observability/span'
 import { toSimulationDto } from './simulation.dto'
 
-export const getLatestSimulationResult = async ({
-  withTendency,
-}: {
-  withTendency: boolean
-}): Promise<SimulationResult> => {
-  const session = await getUserSession()
-  if (!session) notFound()
-
-  const result = await getLatestSimulationResultService({
+export const getLatestSimulationResult = withSpan(
+  'site.service.getLatestSimulationResult',
+  async ({
     withTendency,
-    userId: session.id,
-  })
+  }: {
+    withTendency: boolean
+  }): Promise<SimulationResult> => {
+    const session = await getUserSession()
+    if (!session) notFound()
 
-  if (!result) notFound()
+    const result = await getLatestSimulationResultService({
+      withTendency,
+      userId: session.id,
+    })
 
-  return {
-    ...result,
-    simulation: toSimulationDto(result.simulation),
+    if (!result) notFound()
+
+    return {
+      ...result,
+      simulation: toSimulationDto(result.simulation),
+    }
   }
-}
+)

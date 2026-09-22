@@ -95,7 +95,9 @@ const nextConfig = withMDX({
   },
 } satisfies NextConfig)
 
-const releaseName = `${process.env.SOURCE_VERSION ?? version}-${process.env.APP ?? APP_ENV}`
+// One release everywhere: the deployed commit SHA, the same string as
+// `service.version` — the deploy env already records the environment.
+const releaseName = process.env.SOURCE_VERSION ?? version
 const sentryConfig: SentryBuildOptions = {
   // Suppresses source map uploading logs during dev build
   silent: APP_ENV !== 'production',
