@@ -8,7 +8,7 @@ import type { Locale } from '@/i18nConfig'
 import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
 import type {
   EventOrganisation,
-  ExtendedPodiumOrganisationType,
+  PodiumCategory,
 } from '@nosgestesclimat/core/features/events/types/event-info'
 import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
@@ -54,10 +54,7 @@ export interface EventPageData {
     actions: number
     organisations: number
   }
-  organisationsPodiumByType: Record<
-    ExtendedPodiumOrganisationType,
-    EventOrganisation[]
-  >
+  organisationsPodiumByType: Record<PodiumCategory, EventOrganisation[]>
   testimonies: Testimony[]
   tutorialStepsByMode: Record<string, TutorialStep[]>
   ctaImageSrc: string

@@ -1,19 +1,19 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { OrganisationType } from '../../../prisma/generated/enums.ts'
 import {
   ADEME_SLUG,
   MOBILISED_ORGANISATION_MIN_SIMULATIONS,
-  ORGANISATION_FILTER_ALL,
+  PODIUM_ALL_CATEGORY,
   PODIUM_LIMIT_PER_TYPE,
   PODIUM_ORGANISATION_TYPES,
 } from '../constants/podium.ts'
 import type {
   EventOrganisation,
   ExtendedPodiumOrganisationType,
+  PodiumCategory,
 } from '../types/event-info.ts'
 import {
   mapEventComputationToOrganisation,
-  type EventComputationRow,
+  ORGANISATION_TYPE_TO_CATEGORY,
 } from './event.mapper.ts'
 
 export const findEvent = async (eventIdOrSlug: string) =>
@@ -24,8 +24,8 @@ export const findEvent = async (eventIdOrSlug: string) =>
 
 export const findPodiumOrganisations = async (
   eventId: string
-): Promise<Record<ExtendedPodiumOrganisationType, EventOrganisation[]>> => {
-  const buildEventComputationRequest = (type: OrganisationType | null) =>
+): Promise<Record<PodiumCategory, EventOrganisation[]>> => {
+  const buildEventComputationRequest = (type: ExtendedPodiumOrganisationType) =>
     prisma.eventComputation.findMany({
       where: {
         eventId,
@@ -36,7 +36,7 @@ export const findPodiumOrganisations = async (
               equals: ADEME_SLUG,
             },
           },
-          ...(type ? { type } : {}),
+          ...(type === PODIUM_ALL_CATEGORY ? {} : { type }),
         },
       },
       include: {
@@ -48,46 +48,25 @@ export const findPodiumOrganisations = async (
       take: PODIUM_LIMIT_PER_TYPE,
     })
 
-  // Null value allows us to get the "all" filtered organisations
-  const EXTENDED_PODIUM_ORGANISATION_TYPES = [
-    null,
+  const PODIUM_TYPES: ExtendedPodiumOrganisationType[] = [
+    PODIUM_ALL_CATEGORY,
     ...PODIUM_ORGANISATION_TYPES,
   ]
 
-  const eventComputations = await Promise.all(
-    EXTENDED_PODIUM_ORGANISATION_TYPES.map((type) =>
-      buildEventComputationRequest(type)
-    )
-  )
-  return EXTENDED_PODIUM_ORGANISATION_TYPES.reduce(
-    (acc, type, index) => {
-      // Is "all" filter row (not filtered by type)
-      if (!type)
-        return {
-          ...acc,
-          [ORGANISATION_FILTER_ALL]: eventComputations[index]
-            .filter((row) => row.organisation !== null)
-            .map((row) =>
-              mapEventComputationToOrganisation({
-                row: row as EventComputationRow,
-                type: ORGANISATION_FILTER_ALL,
-              })
-            ),
-        }
-
-      return {
-        ...acc,
-        [type]: eventComputations[index]
-          .filter((row) => row.organisation !== null)
+  return Object.fromEntries(
+    await Promise.all(
+      PODIUM_TYPES.map(async (type) => [
+        ORGANISATION_TYPE_TO_CATEGORY[type],
+        (await buildEventComputationRequest(type))
           .map((row) =>
             mapEventComputationToOrganisation({
-              row: row as EventComputationRow,
+              row,
               type,
             })
-          ),
-      }
-    },
-    {} as Record<ExtendedPodiumOrganisationType, EventOrganisation[]>
+          )
+          .filter((row) => row !== null),
+      ])
+    )
   )
 }
 

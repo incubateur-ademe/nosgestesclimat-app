@@ -23,11 +23,11 @@ interface Props {
   activeFilter: FilterValue
 }
 
-const orderClasses = {
+const orderClasses: Record<number, string> = {
   1: 'order-1 md:order-2',
   2: 'order-2 md:order-1',
   3: 'order-3',
-} as const
+}
 
 const ZERO_BASED_INDEX_COMPENSATION_FACTOR = 1
 const getRank = (index: number) => index + ZERO_BASED_INDEX_COMPENSATION_FACTOR
@@ -84,8 +84,9 @@ export default function PodiumVisual({
                 key={index}
                 className={twMerge(
                   'w-full md:flex-1',
-                  orderClasses[index as 1 | 2 | 3]
+                  orderClasses[getRank(index)]
                 )}>
+                @
                 <PodiumBlock
                   hasStarted={hasStarted}
                   locale={locale}

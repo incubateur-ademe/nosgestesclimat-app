@@ -12,10 +12,10 @@ import { getEventInfo } from '../get-event-info.service.ts'
 
 const EMPTY_ORGANISATIONS_PODIUM_BY_TYPE = {
   all: [],
-  association: [],
-  company: [],
-  publicOrRegionalAuthority: [],
-  universityOrSchool: [],
+  associations: [],
+  companies: [],
+  ['public-services']: [],
+  education: [],
 }
 
 const seedPoll = async (
@@ -135,7 +135,7 @@ describe('getEventInfo', () => {
     await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
-
+    console.log(result)
     expect(result.organisationsPodiumByType['all'][0]).toEqual({
       id: org.id,
       name: 'Org Alpha',
@@ -143,11 +143,11 @@ describe('getEventInfo', () => {
       type: 'all',
       simulationsCount: 3,
     })
-    expect(result.organisationsPodiumByType['company'][0]).toEqual({
+    expect(result.organisationsPodiumByType['companies'][0]).toEqual({
       id: org.id,
       name: 'Org Alpha',
       slug: 'org-alpha',
-      type: 'company',
+      type: 'companies',
       simulationsCount: 3,
     })
     expect(result.totalSimulations).toBe(3)
@@ -185,7 +185,7 @@ describe('getEventInfo', () => {
     const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(
-      result.organisationsPodiumByType['company'].map((o) => o.name)
+      result.organisationsPodiumByType['companies'].map((o) => o.name)
     ).toEqual([orgaNameInResults1, orgaNameInResults2])
     expect(result.organisationCount).toBe(2)
   })
@@ -216,7 +216,7 @@ describe('getEventInfo', () => {
     // ... and such an organisation does not make the podium either, so the
     // podium always matches the mobilised counter.
     expect(
-      result.organisationsPodiumByType['company'].map((o) => o.slug)
+      result.organisationsPodiumByType['companies'].map((o) => o.slug)
     ).toEqual(['three-sims'])
   })
 
@@ -245,9 +245,11 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisationsPodiumByType['company'][0].slug).toBe('old-org')
+    expect(result.organisationsPodiumByType['companies'][0].slug).toBe(
+      'old-org'
+    )
     expect(
-      result.organisationsPodiumByType['company'][0].simulationsCount
+      result.organisationsPodiumByType['companies'][0].simulationsCount
     ).toBe(3)
     expect(result.totalSimulations).toBe(3)
     expect(result.organisationCount).toBe(1)
@@ -286,9 +288,11 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisationsPodiumByType['company'][0].slug).toBe('old-org')
+    expect(result.organisationsPodiumByType['companies'][0].slug).toBe(
+      'old-org'
+    )
     expect(
-      result.organisationsPodiumByType['company'][0].simulationsCount
+      result.organisationsPodiumByType['companies'][0].simulationsCount
     ).toBe(3)
     expect(result.totalSimulations).toBe(3)
     expect(result.organisationCount).toBe(1)
@@ -311,7 +315,7 @@ describe('getEventInfo', () => {
     const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(
-      result.organisationsPodiumByType['company'][0].simulationsCount
+      result.organisationsPodiumByType['companies'][0].simulationsCount
     ).toBe(3)
     expect(result.totalSimulations).toBe(3)
   })
@@ -339,7 +343,7 @@ describe('getEventInfo', () => {
 
     // The ademe-sedd org has 5 simulations but must not appear in the list
     expect(
-      result.organisationsPodiumByType['company'].map((o) => o.slug)
+      result.organisationsPodiumByType['companies'].map((o) => o.slug)
     ).toEqual(['other'])
     // ADEME still counts as a mobilised organisation
     // (rule 3: >= MOBILISED_ORGANISATION_MIN_SIMULATIONS simulations)
@@ -451,8 +455,8 @@ describe('getEventInfo', () => {
     const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result.organisationsPodiumByType['all']).toHaveLength(15)
-    expect(result.organisationsPodiumByType['company']).toHaveLength(15)
-    expect(result.organisationsPodiumByType['association']).toHaveLength(15)
+    expect(result.organisationsPodiumByType['companies']).toHaveLength(15)
+    expect(result.organisationsPodiumByType['associations']).toHaveLength(15)
     // organisationCount counts every mobilised organisation
     // (>= MOBILISED_ORGANISATION_MIN_SIMULATIONS simulations)
     expect(result.organisationCount).toBe(40)

@@ -3,9 +3,8 @@ import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
 import type {
   EventOrganisation,
-  ExtendedPodiumOrganisationType,
+  PodiumCategory,
 } from '@nosgestesclimat/core/features/events/types/event-info'
-import type { PodiumCategory } from '@nosgestesclimat/core/features/events/types/podium'
 import EventTabs from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
 import { getActiveFilter } from './eventPodium/helpers/getActiveFilter'
@@ -14,22 +13,8 @@ import { getNavigationParameters } from './eventPodium/helpers/getNavigationLink
 interface Props {
   locale: Locale
   searchParams: Promise<Record<string, string | string[] | undefined>>
-  organisationsPodiumByType: Record<
-    ExtendedPodiumOrganisationType,
-    EventOrganisation[]
-  >
+  organisationsPodiumByType: Record<PodiumCategory, EventOrganisation[]>
   hasStarted: boolean
-}
-
-const ORGANISATION_CATEGORY_TO_TYPE: Record<
-  PodiumCategory,
-  ExtendedPodiumOrganisationType
-> = {
-  all: 'all',
-  companies: 'company',
-  associations: 'association',
-  education: 'universityOrSchool',
-  ['public-services']: 'publicOrRegionalAuthority',
 }
 
 export default async function EventPodium({
@@ -46,11 +31,6 @@ export default async function EventPodium({
     params,
     activeFilter,
   })
-
-  const shownOrganisationList =
-    organisationsPodiumByType[
-      hasStarted ? ORGANISATION_CATEGORY_TO_TYPE[activeFilter] : 'all'
-    ]
 
   return (
     <div className="mb-16">
@@ -72,7 +52,7 @@ export default async function EventPodium({
         // Trigger animation on each change
         key={`podium-visual-${activeFilter}`}
         locale={locale}
-        items={shownOrganisationList}
+        items={organisationsPodiumByType[hasStarted ? activeFilter : 'all']}
         prevHref={prevHref}
         nextHref={nextHref}
         hasStarted={hasStarted}
