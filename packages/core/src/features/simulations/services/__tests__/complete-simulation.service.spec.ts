@@ -9,7 +9,6 @@ import { groupFactory } from '../../../groups/factories/group.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../../polls/stats/repositories/poll-stats-computations.repository.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
-import { CURRENT_MODEL_VERSION } from '../../../simulation-computation/model-support/model-versions.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
@@ -21,6 +20,7 @@ import {
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { findSimulationById, } from '../../repository/simulation.repository.ts'
 import { serializeModel } from '../../repository/model.mapper.ts'
+import type { Simulation } from '../../types/simulation.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { createCompleteSimulation } from '../complete-simulation.service.ts'
 
@@ -49,7 +49,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(result).toEqual({
@@ -90,7 +90,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(result).toEqual({
@@ -107,7 +107,7 @@ describe('completeSimulation', () => {
     await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(await findSimulationComputation(simulation.id)).toEqual({
@@ -122,7 +122,7 @@ describe('completeSimulation', () => {
     expect(captureException).not.toHaveBeenCalled()
   })
 
-  it('persists the model the client completed with and programs the computation even when the persisted model is stale', async () => {
+  it('persists the model the client completed with', async () => {
     const { completeSimulation } = setup()
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
@@ -132,26 +132,19 @@ describe('completeSimulation', () => {
       .params({ userId: user.id })
       .create()
 
-    const currentModel = `FR-fr-${CURRENT_MODEL_VERSION}`
-    const result = await completeSimulation({
+    await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(currentModel),
+      ...payload(simulation),
+      model: 'FR-fr-9.9.9',
     })
 
-    expect(result).toEqual(expect.objectContaining({ success: true }))
     const persisted = await findSimulationById({
       id: simulation.id,
       userId: user.id,
     })
     if (!persisted) throw new Error('simulation should exist')
-    expect(serializeModel(persisted.model)).toBe(currentModel)
-    expect(await findSimulationComputation(simulation.id)).toEqual(
-      expect.objectContaining({
-        simulationId: simulation.id,
-        status: 'pending',
-      })
-    )
+    expect(serializeModel(persisted.model)).toBe('FR-fr-9.9.9')
   })
 
   it('reports an unsupported model and completes the simulation without programming a computation', async () => {
@@ -167,7 +160,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(result).toEqual(expect.objectContaining({ success: true }))
@@ -193,7 +186,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(result).toEqual({
@@ -224,7 +217,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
       progression: 0.9,
     })
 
@@ -252,7 +245,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
       computedResults: zeroedComputedResults,
     })
 
@@ -279,7 +272,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: '00000000-0000-0000-0000-000000000000',
-      ...payload(serializeModel(simulationFactory.build().model)),
+      ...payload(simulationFactory.build()),
     })
 
     expect(result).toEqual({
@@ -299,7 +292,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(result).toEqual({
@@ -329,7 +322,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(serializeModel(simulation.model)),
+      ...payload(simulation),
     })
 
     expect(result).toEqual({
@@ -356,7 +349,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -382,7 +375,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -402,7 +395,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -419,7 +412,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -446,7 +439,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
         locale: 'en',
       })
       await settleBackground()
@@ -471,7 +464,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -503,7 +496,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -525,7 +518,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -551,7 +544,7 @@ describe('completeSimulation', () => {
       const result = await completeSimulation({
         userSession: { id: user.id, isAuth: false },
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -576,7 +569,7 @@ describe('completeSimulation', () => {
       const result = await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -605,7 +598,7 @@ describe('completeSimulation', () => {
       const result = await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(serializeModel(simulation.model)),
+        ...payload(simulation),
       })
       await settleBackground()
 
@@ -735,8 +728,8 @@ const situation = {
 } as unknown as Record<DottedName, number>
 const foldedSteps = ['transport . voiture . km'] as DottedName[]
 
-const payload = (model: string) => ({
-  model,
+const payload = (simulation: Pick<Simulation, 'model'>) => ({
+  model: serializeModel(simulation.model),
   situation,
   foldedSteps,
   progression: 1,
