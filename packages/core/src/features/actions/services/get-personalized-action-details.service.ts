@@ -1,5 +1,5 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import { findLastFinishedSimulationComputationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
+import { findLastFinishedSimulationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import {
   findAllVisiblePersonalizedActions,
   findVisiblePersonalizedActionBySlug,
@@ -24,7 +24,7 @@ export const getPersonalizedActionDetails = async (
   locale: ISOSupportedLanguage,
   userId: string | undefined
 ): Promise<PersonalizedActionDetails | null> => {
-  const lastFinished = await findLastFinishedSimulationComputationByUserId(
+  const lastFinished = await findLastFinishedSimulationByUserId(
     userId
   )
   const action = await findVisiblePersonalizedActionBySlug(

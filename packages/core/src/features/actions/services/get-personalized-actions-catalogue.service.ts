@@ -1,5 +1,5 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import { findLastFinishedSimulationComputationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
+import { findLastFinishedSimulationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import type { SimulationComputationStatus } from '../../simulation-computation/types/computation.ts'
 import { findAllVisiblePersonalizedActions } from '../repositories/actions.repository.ts'
 import type { PersonalizedAction } from '../types/action.ts'
@@ -26,7 +26,7 @@ export const getPersonalizedActionsCatalogue = async (
   // Status and assessments must come from the same simulation, otherwise a
   // completed computation from an older simulation filters actions assessed
   // for another one, emptying the catalogue.
-  const lastFinished = await findLastFinishedSimulationComputationByUserId(
+  const lastFinished = await findLastFinishedSimulationByUserId(
     userId
   )
   const personalizedActions = await findAllVisiblePersonalizedActions(
@@ -42,7 +42,7 @@ export const getPersonalizedActionsCatalogue = async (
   // Simulation with assessment in progress -> all actions without assessments
   // Simulation with completed assessment -> only applicable actions, sorted by impact
   const actions =
-    lastFinished?.status === 'completed'
+    lastFinished?.computationStatus === 'completed'
       ? personalizedActions
           .filter((action) => action.assessment?.applicable)
           .sort(
@@ -56,7 +56,7 @@ export const getPersonalizedActionsCatalogue = async (
     assessmentStatus:
       lastFinished === undefined
         ? null
-        : (lastFinished.status ?? 'not-programmed'),
+        : (lastFinished.computationStatus ?? 'not-programmed'),
     actions,
     topActions: actions
       .filter((action) => typeof action.assessment?.impact === 'number')

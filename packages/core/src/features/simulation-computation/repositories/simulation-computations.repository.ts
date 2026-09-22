@@ -50,14 +50,14 @@ export const findSimulationComputation = async (simulationId: string) =>
  * unsupported at completion, or predating the computation feature),
  * `undefined` when the user has no finished simulation.
  */
-export interface LastFinishedSimulationComputation {
+export interface LastFinishedSimulation {
   simulationId: string
-  status: SimulationComputationStatus | null
+  computationStatus: SimulationComputationStatus | null
 }
 
-export const findLastFinishedSimulationComputationByUserId = async (
+export const findLastFinishedSimulationByUserId = async (
   userId: string | undefined
-): Promise<LastFinishedSimulationComputation | undefined> => {
+): Promise<LastFinishedSimulation | undefined> => {
   if (!userId) return undefined
   // A computation is only created for finished simulations, but a finished
   // simulation can have none: model unsupported at completion, or simulation
@@ -70,7 +70,7 @@ export const findLastFinishedSimulationComputationByUserId = async (
   if (!simulation) return undefined
   return {
     simulationId: simulation.id,
-    status: simulation.computations[0]?.status ?? null,
+    computationStatus: simulation.computations[0]?.status ?? null,
   }
 }
 
