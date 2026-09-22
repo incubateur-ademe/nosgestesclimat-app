@@ -2,15 +2,15 @@ import { buildFilterHref, FILTER_VALUES, type FilterValue } from '../EventTabs'
 
 export function getNavigationParameters({
   params,
-  activeFilter,
+  activeCategoryFilter,
 }: {
   params: Record<string, string | string[] | undefined>
-  activeFilter: FilterValue
+  activeCategoryFilter: FilterValue
 }): {
   prevHref: string | null
   nextHref: string | null
 } {
-  const activeIndex = FILTER_VALUES.indexOf(activeFilter)
+  const activeIndex = FILTER_VALUES.indexOf(activeCategoryFilter)
   const prevFilter =
     activeIndex > 0 ? FILTER_VALUES[activeIndex - 1] : undefined
   const nextFilter =

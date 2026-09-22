@@ -13,7 +13,7 @@ export const getEventInfo = async (
 
   if (!event) return null
 
-  const [organisationsPodiumByType, totalSimulations, organisationCount] =
+  const [podiumItemsByCategory, totalSimulations, organisationCount] =
     await Promise.all([
       findPodiumOrganisations(event.id),
       countEventSimulations(event.id),
@@ -21,7 +21,7 @@ export const getEventInfo = async (
     ])
 
   return {
-    organisationsPodiumByType,
+    podiumItemsByCategory,
     totalSimulations,
     organisationCount,
     startDate: event.startDate,

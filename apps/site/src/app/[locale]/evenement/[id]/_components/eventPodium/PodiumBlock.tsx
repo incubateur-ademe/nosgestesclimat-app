@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
 import { twMerge } from 'tailwind-merge'
 import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 import RankBadge from './RankBadge'
@@ -11,7 +11,7 @@ const heightClasses = {
   3: 'md:h-52',
 } as const
 
-interface Props extends EventOrganisation {
+interface Props extends PodiumItem {
   locale: Locale
   hasStarted: boolean
   rank: number

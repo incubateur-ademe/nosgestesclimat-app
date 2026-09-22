@@ -17,7 +17,7 @@ export type PodiumCategory =
   | 'education'
   | 'public-services'
 
-export interface EventOrganisation {
+export interface PodiumItem {
   id: string
   name: string
   slug: string
@@ -26,7 +26,7 @@ export interface EventOrganisation {
 }
 
 export interface EventInfo {
-  organisationsPodiumByType: Record<PodiumCategory, EventOrganisation[]>
+  podiumItemsByCategory: Record<PodiumCategory, PodiumItem[]>
   totalSimulations: number
   organisationCount: number
   startDate: Date

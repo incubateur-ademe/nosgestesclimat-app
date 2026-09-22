@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
 import { twMerge } from 'tailwind-merge'
 import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
@@ -14,13 +14,13 @@ const GENERAL_RANKING_URL =
   'https://eu.posthog.com/shared/usl5nIC6qMxcL94bJI689dnZEGPidQ'
 
 interface Props {
-  items: EventOrganisation[]
+  items: PodiumItem[]
   className?: string
   locale: Locale
   prevHref: string | null
   nextHref: string | null
   hasStarted: boolean
-  activeFilter: FilterValue
+  activeCategoryFilter: FilterValue
 }
 
 const orderClasses: Record<number, string> = {
@@ -39,7 +39,7 @@ export default function PodiumVisual({
   prevHref,
   nextHref,
   hasStarted,
-  activeFilter,
+  activeCategoryFilter,
 }: Props) {
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 15)
@@ -55,7 +55,7 @@ export default function PodiumVisual({
       'event.podium.empty.type.public-services',
       'collectivité'
     ),
-  }[activeFilter]
+  }[activeCategoryFilter]
 
   return (
     <>

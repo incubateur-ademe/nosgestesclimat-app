@@ -1,8 +1,8 @@
 import type { Organisation } from '../../../prisma/generated/client.ts'
 import type {
-  EventOrganisation,
   ExtendedPodiumOrganisationType,
   PodiumCategory,
+  PodiumItem,
 } from '../types/event-info.ts'
 
 export interface EventComputationRow {
@@ -21,13 +21,13 @@ export const ORGANISATION_TYPE_TO_CATEGORY: Record<
   publicOrRegionalAuthority: 'public-services',
 }
 
-export function mapEventComputationToOrganisation({
+export function mapEventComputationToPodiumItem({
   row,
   type,
 }: {
   row: EventComputationRow
   type: ExtendedPodiumOrganisationType
-}): EventOrganisation | null {
+}): PodiumItem | null {
   if (!row.organisation) return null
   return {
     id: row.organisation.id,

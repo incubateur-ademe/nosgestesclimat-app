@@ -2,34 +2,34 @@ import Trans from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import type { Locale } from '@/i18nConfig'
 import type {
-  EventOrganisation,
   PodiumCategory,
+  PodiumItem,
 } from '@nosgestesclimat/core/features/events/types/event-info'
 import EventTabs from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
-import { getActiveFilter } from './eventPodium/helpers/getActiveFilter'
+import { getActiveCategoryFilter } from './eventPodium/helpers/getActiveCategoryFilter'
 import { getNavigationParameters } from './eventPodium/helpers/getNavigationLinks'
 
 interface Props {
   locale: Locale
   searchParams: Promise<Record<string, string | string[] | undefined>>
-  organisationsPodiumByType: Record<PodiumCategory, EventOrganisation[]>
+  podiumItemsByCategory: Record<PodiumCategory, PodiumItem[]>
   hasStarted: boolean
 }
 
 export default async function EventPodium({
   locale,
   searchParams,
-  organisationsPodiumByType,
+  podiumItemsByCategory,
   hasStarted,
 }: Props) {
   const params = await searchParams
 
-  const activeFilter = getActiveFilter(params)
+  const activeCategoryFilter = getActiveCategoryFilter(params)
 
   const { prevHref, nextHref } = getNavigationParameters({
     params,
-    activeFilter,
+    activeCategoryFilter,
   })
 
   return (
@@ -46,17 +46,21 @@ export default async function EventPodium({
         </Trans>
       </Title>
 
-      <EventTabs filter={activeFilter} locale={locale} params={params} />
+      <EventTabs
+        filter={activeCategoryFilter}
+        locale={locale}
+        params={params}
+      />
 
       <PodiumVisual
         // Trigger animation on each change
-        key={`podium-visual-${activeFilter}`}
+        key={`podium-visual-${activeCategoryFilter}`}
         locale={locale}
-        items={organisationsPodiumByType[hasStarted ? activeFilter : 'all']}
+        items={podiumItemsByCategory[hasStarted ? activeCategoryFilter : 'all']}
         prevHref={prevHref}
         nextHref={nextHref}
         hasStarted={hasStarted}
-        activeFilter={activeFilter}
+        activeCategoryFilter={activeCategoryFilter}
       />
     </div>
   )

@@ -7,8 +7,8 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
 import type {
-  EventOrganisation,
   PodiumCategory,
+  PodiumItem,
 } from '@nosgestesclimat/core/features/events/types/event-info'
 import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
@@ -54,7 +54,7 @@ export interface EventPageData {
     actions: number
     organisations: number
   }
-  organisationsPodiumByType: Record<PodiumCategory, EventOrganisation[]>
+  podiumItemsByCategory: Record<PodiumCategory, PodiumItem[]>
   testimonies: Testimony[]
   tutorialStepsByMode: Record<string, TutorialStep[]>
   ctaImageSrc: string
@@ -102,7 +102,7 @@ export async function getEventPageData({
       actions: ACTIONS_COUNT,
       organisations: eventInfo.organisationCount,
     },
-    organisationsPodiumByType: eventInfo.organisationsPodiumByType,
+    podiumItemsByCategory: eventInfo.podiumItemsByCategory,
     testimonies: [
       {
         text: t(

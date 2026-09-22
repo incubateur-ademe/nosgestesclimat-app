@@ -6,7 +6,7 @@ const filterParamSchema = v.fallback(
   'all' as const
 )
 
-export function getActiveFilter(
+export function getActiveCategoryFilter(
   params: Record<string, string | string[] | undefined>
 ): FilterValue {
   return v.parse(filterParamSchema, params[FILTER_KEY])
