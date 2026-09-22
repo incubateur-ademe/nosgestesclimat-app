@@ -8,7 +8,7 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 export function shouldDisplayComputationInProgressText(status: AssessmentStatus) {
   switch (status) {
     case 'completed':
-    case 'not-programmed':
+    case 'never-assessed':
       return false
     case 'pending':
     case 'processing':

@@ -44,7 +44,7 @@ describe('getPersonalizedActionsCatalogue', () => {
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
-        assessmentStatus: 'not-programmed',
+        assessmentStatus: 'never-assessed',
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
         topActions: [],
       })
@@ -74,7 +74,7 @@ describe('getPersonalizedActionsCatalogue', () => {
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
 
       expect(result).toEqual({
-        assessmentStatus: 'not-programmed',
+        assessmentStatus: 'never-assessed',
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
         topActions: [],
       })

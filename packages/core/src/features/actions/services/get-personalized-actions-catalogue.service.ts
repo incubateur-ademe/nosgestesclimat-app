@@ -7,13 +7,13 @@ import type { PersonalizedAction } from '../types/action.ts'
 /**
  * Assessment state of the user's latest finished simulation:
  * - a `SimulationComputationStatus` when that simulation has a computation row
- * - `'not-programmed'` when it has none (model unsupported at completion, or
+ * - `'never-assessed'` when it has none (model unsupported at completion, or
  *   predating the computation feature) — it will never be computed
  * - `null` when the user has no finished simulation
  */
 export type AssessmentStatus =
   | SimulationComputationStatus
-  | 'not-programmed'
+  | 'never-assessed'
 
 export const getPersonalizedActionsCatalogue = async (
   userId: string | undefined,
@@ -56,7 +56,7 @@ export const getPersonalizedActionsCatalogue = async (
     assessmentStatus:
       lastFinished === undefined
         ? null
-        : (lastFinished.computationStatus ?? 'not-programmed'),
+        : (lastFinished.computationStatus ?? 'never-assessed'),
     actions,
     topActions: actions
       .filter((action) => typeof action.assessment?.impact === 'number')
