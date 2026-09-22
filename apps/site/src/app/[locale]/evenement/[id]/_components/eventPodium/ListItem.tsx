@@ -1,8 +1,8 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
 
-interface Props extends EventOrganisation {
+interface Props extends PodiumItem {
   locale: Locale
   rank: number
 }
