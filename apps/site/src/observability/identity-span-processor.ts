@@ -1,10 +1,7 @@
 import type { Context, Span } from '@opentelemetry/api'
-import type {
-  ReadableSpan,
-  SpanProcessor,
-} from '@opentelemetry/sdk-trace-base'
+import type { ReadableSpan, SpanProcessor } from '@opentelemetry/sdk-trace-base'
 
-import { inheritedIdentity } from './request-identity'
+import { inheritedIdentity } from './request-identity.ts'
 
 /**
  * Stamps the request's identity on the spans started inside it: the database

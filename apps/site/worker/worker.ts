@@ -10,14 +10,12 @@ import type { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
 import type { Result } from '@nosgestesclimat/core/lib/result'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
+import { SpanStatusCode } from '@opentelemetry/api'
 import { createLogger } from '../src/logger.ts'
+import { appTracer } from '../src/observability/setup.ts'
+import { captureException, flushObservability } from './observability.ts'
 
-const logger = createLogger({
-  service: 'worker',
-  // This process has no Sentry client: captures are dropped here.
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onCapture: () => {},
-})
+const logger = createLogger({ service: 'worker', onCapture: captureException })
 
 const POLL_INTERVAL_MS = 2000
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -43,6 +41,19 @@ process.on('SIGINT', () => {
   running = false
 })
 
+/**
+ * A process that survived an unknown failure keeps running from an unknown
+ * state: it dies instead, and the orchestrator restarts a sane one.
+ */
+async function crash(error: Error) {
+  logger.fatal(error)
+  await flushObservability()
+  process.exit(1)
+}
+
+process.on('uncaughtException', (error) => void crash(error))
+process.on('unhandledRejection', (reason) => void crash(toError(reason)))
+
 async function loop(
   name: string,
   processNext: () => Promise<Result<boolean, DomainError>>
@@ -50,18 +61,30 @@ async function loop(
   const jobLogger = logger.child({ job: name })
 
   while (running) {
-    try {
-      const result = await processNext()
-      if (result.success && result.data) {
-        jobLogger.info('job processed', { ...memoryAttributes() })
-        continue
+    // The span covers the whole iteration: its logs share the trace ids, and a
+    // failure marks the iteration as failed.
+    await appTracer().startActiveSpan(`worker:${name}`, async (span) => {
+      try {
+        const result = await processNext()
+
+        if (!result.success) {
+          // A job that cannot be processed is not retried: it needs a human.
+          jobLogger.error(result.error)
+          return
+        }
+
+        if (result.data) {
+          jobLogger.info('job processed', { ...memoryAttributes() })
+        }
+      } catch (error) {
+        span.recordException(toError(error))
+        span.setStatus({ code: SpanStatusCode.ERROR })
+        jobLogger.error(toError(error))
+      } finally {
+        span.end()
       }
-      if (!result.success) {
-        jobLogger.error(result.error)
-      }
-    } catch (error) {
-      jobLogger.error(toError(error))
-    }
+    })
+
     await sleep(POLL_INTERVAL_MS)
   }
 }
@@ -69,7 +92,11 @@ async function loop(
 async function main() {
   logger.info('worker starting', { ...memoryAttributes() })
 
-  await warmUpHotEngines()
+  try {
+    await warmUpHotEngines()
+  } catch (error) {
+    await crash(toError(error))
+  }
 
   await Promise.all([
     loop('Simulation computation', () =>
@@ -79,6 +106,7 @@ async function main() {
   ])
 
   logger.info('worker exiting')
+  await flushObservability()
 }
 
-main()
+void main()

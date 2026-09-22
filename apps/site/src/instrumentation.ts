@@ -13,7 +13,7 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     // Before anything instrumented is imported: this provider is the one
     // Sentry and pino read their trace context from.
-    initObservability()
+    initObservability('site')
     await import('../sentry.server.config')
     const { posthogClient } = await import('@/services/tracking/posthogServer')
 

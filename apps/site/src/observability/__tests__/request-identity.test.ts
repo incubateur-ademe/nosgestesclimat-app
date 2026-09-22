@@ -8,10 +8,7 @@ import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { IdentitySpanProcessor } from '../identity-span-processor'
-import {
-  currentRequestIdentity,
-  identifyRequest,
-} from '../request-identity'
+import { currentRequestIdentity, identifyRequest } from '../request-identity'
 
 describe('request identity', () => {
   const exporter = new InMemorySpanExporter()

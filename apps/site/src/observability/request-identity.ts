@@ -50,7 +50,9 @@ export function currentRequestIdentity(): RequestIdentity | undefined {
 }
 
 /** Reads the identity off a parent span, for the spans started inside it. */
-export function inheritedIdentity(parentContext: Context): RequestIdentity | undefined {
+export function inheritedIdentity(
+  parentContext: Context
+): RequestIdentity | undefined {
   const parent = trace.getSpan(parentContext)
 
   return parent ? identities.get(parent) : undefined

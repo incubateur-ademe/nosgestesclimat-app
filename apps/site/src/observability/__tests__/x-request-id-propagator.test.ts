@@ -5,7 +5,10 @@ import {
   TraceFlags,
   type TextMapGetter,
 } from '@opentelemetry/api'
-import { CompositePropagator, W3CTraceContextPropagator } from '@opentelemetry/core'
+import {
+  CompositePropagator,
+  W3CTraceContextPropagator,
+} from '@opentelemetry/core'
 import { describe, expect, it } from 'vitest'
 
 import { XRequestIdPropagator } from '../x-request-id-propagator'

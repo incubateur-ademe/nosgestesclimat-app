@@ -8,8 +8,8 @@ import {
   type Logger as ApiLogger,
 } from '@opentelemetry/api-logs'
 
-import { toLogAttributes } from './log-attributes'
-import { currentRequestIdentity } from './request-identity'
+import { toLogAttributes } from './log-attributes.ts'
+import { currentRequestIdentity } from './request-identity.ts'
 
 const SEVERITY_NUMBER: Record<LogLevel, SeverityNumber> = {
   debug: SeverityNumber.DEBUG,

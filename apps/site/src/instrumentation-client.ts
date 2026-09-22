@@ -1,10 +1,14 @@
 import * as Sentry from '@sentry/nextjs'
 import { APP_ENV } from '../config/app-env'
+import { SENTRY_DSN } from '../config/sentry'
 import { PostHog } from './services/tracking/Posthog'
 
 Sentry.init({
-  dsn: 'https://75dcf9dfe74c4439977a517be2805122@sentry.incubateur.net/118',
+  dsn: SENTRY_DSN,
   environment: APP_ENV,
+  // Same release as `service.version`: one string to join spans, lines and
+  // issues. Inlined at build time — the browser cannot read `SOURCE_VERSION`.
+  release: process.env.NEXT_PUBLIC_APP_VERSION,
   sampleRate: 1,
   beforeSend(event, hint) {
     // Always send Server Component errors — they carry a digest

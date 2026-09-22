@@ -4,9 +4,10 @@
 
 import * as Sentry from '@sentry/nextjs'
 import { APP_ENV } from './config/app-env'
+import { SENTRY_DSN } from './config/sentry'
 
 Sentry.init({
-  dsn: 'https://75dcf9dfe74c4439977a517be2805122@sentry.incubateur.net/118',
+  dsn: SENTRY_DSN,
   environment: APP_ENV,
   sampleRate: 1,
   // Traces live in PostHog (`src/observability/setup.ts`, NGC-3817): Sentry
