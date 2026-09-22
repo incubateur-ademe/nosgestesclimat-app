@@ -5,10 +5,11 @@ import Trans from '@/components/translation/trans/TransServer'
 import { ORGANISATION_HOME_PAGE } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { organisationTypeToCategory } from '@nosgestesclimat/core/features/events/helpers/podium'
 import { getEventInfo } from '@nosgestesclimat/core/features/events/services/get-event-info.service'
-import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
-import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import type {
+  EventOrganisation,
+  ExtendedPodiumOrganisationType,
+} from '@nosgestesclimat/core/features/events/types/event-info'
 import { cacheLife } from 'next/cache'
 import type { ReactNode } from 'react'
 
@@ -53,7 +54,10 @@ export interface EventPageData {
     actions: number
     organisations: number
   }
-  podiumItems: PodiumItem[]
+  organisationsPodiumByType: Record<
+    ExtendedPodiumOrganisationType,
+    EventOrganisation[]
+  >
   testimonies: Testimony[]
   tutorialStepsByMode: Record<string, TutorialStep[]>
   ctaImageSrc: string
@@ -66,20 +70,8 @@ const TARGET_VALUE = 50000
 
 const ACTIONS_COUNT = 46
 
-// Build the podium items from the organisations returned by the service, which
-// already caps them at PODIUM_LIMIT_PER_TYPE per type server-side.
-function buildPodiumItems(organisations: EventOrganisation[]): PodiumItem[] {
-  return organisations.map((org, index) => ({
-    rank: index + 1,
-    label: org.name,
-    score: org.simulationsCount,
-    category: organisationTypeToCategory(org.type),
-  }))
-}
-
 export async function getEventPageData({
   eventId,
-
   locale,
 }: {
   eventId: string
@@ -95,8 +87,6 @@ export async function getEventPageData({
   if (!eventInfo) return null
 
   const currentValue = eventInfo.totalSimulations
-
-  const podiumItems = buildPodiumItems(eventInfo.organisations)
 
   return {
     detailImageSrc: '/_static/cms/VIGNETTE_SEDD_f711b1d37b.svg',
@@ -115,7 +105,7 @@ export async function getEventPageData({
       actions: ACTIONS_COUNT,
       organisations: eventInfo.organisationCount,
     },
-    podiumItems,
+    organisationsPodiumByType: eventInfo.organisationsPodiumByType,
     testimonies: [
       {
         text: t(

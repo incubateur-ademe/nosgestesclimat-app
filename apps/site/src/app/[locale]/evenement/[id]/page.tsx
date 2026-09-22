@@ -61,7 +61,7 @@ export default async function EvenementPage({
     endDate,
     dynamicCounter,
     statisticsValues,
-    podiumItems,
+    organisationsPodiumByType,
     testimonies,
     tutorialStepsByMode,
     ctaImageSrc,
@@ -106,7 +106,7 @@ export default async function EvenementPage({
           <EventPodium
             locale={locale}
             searchParams={searchParams}
-            items={podiumItems}
+            organisationsPodiumByType={organisationsPodiumByType}
             hasStarted={hasStarted}
           />
         </div>

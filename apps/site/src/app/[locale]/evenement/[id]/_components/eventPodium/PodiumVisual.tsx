@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
 import { twMerge } from 'tailwind-merge'
 import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
@@ -14,11 +14,11 @@ const GENERAL_RANKING_URL =
   'https://eu.posthog.com/shared/usl5nIC6qMxcL94bJI689dnZEGPidQ'
 
 interface Props {
-  items: PodiumItem[]
+  items: EventOrganisation[]
   className?: string
   locale: Locale
-  prevHref?: string
-  nextHref?: string
+  prevHref: string | null
+  nextHref: string | null
   hasStarted: boolean
   activeFilter: FilterValue
 }
@@ -76,17 +76,18 @@ export default function PodiumVisual({
               'mt-8 mb-12 flex w-full max-w-80 list-none flex-col items-stretch gap-3 md:mx-14 md:min-h-80 md:max-w-none md:flex-1 md:flex-row md:items-end md:justify-center md:gap-0 lg:mx-20',
               className
             )}>
-            {podiumItems.map((item) => (
+            {podiumItems.map((item, index) => (
               <li
-                key={item.rank}
+                key={index}
                 className={twMerge(
                   'w-full md:flex-1',
-                  orderClasses[item.rank as 1 | 2 | 3]
+                  orderClasses[index as 1 | 2 | 3]
                 )}>
                 <PodiumBlock
                   hasStarted={hasStarted}
                   locale={locale}
                   {...item}
+                  rank={index}
                 />
               </li>
             ))}
@@ -130,8 +131,8 @@ export default function PodiumVisual({
             'border-primary-600 mt-6 list-none overflow-hidden rounded-xl border',
             className
           )}>
-          {remainingItems.map((item) => (
-            <ListItem locale={locale} key={item.rank} {...item} />
+          {remainingItems.map((item, index) => (
+            <ListItem locale={locale} key={index} rank={index} {...item} />
           ))}
         </ol>
       )}

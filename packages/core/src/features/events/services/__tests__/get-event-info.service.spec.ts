@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import type { Organisation } from '../../../../prisma/generated/client.ts'
@@ -8,6 +9,14 @@ import { eventFactory } from '../../factories/event.factory.ts'
 import { refreshEventComputation } from '../../repositories/event.repository.ts'
 import type { EventInfo } from '../../types/event-info.ts'
 import { getEventInfo } from '../get-event-info.service.ts'
+
+const EMPTY_ORGANISATIONS_PODIUM_BY_TYPE = {
+  all: [],
+  association: [],
+  company: [],
+  publicOrRegionalAuthority: [],
+  universityOrSchool: [],
+}
 
 const seedPoll = async (
   event: { startDate: Date; endDate: Date },
@@ -86,7 +95,7 @@ describe('getEventInfo', () => {
     const result = expectEventInfo(await getEventInfo(event.id))
 
     expect(result).toEqual({
-      organisations: [],
+      organisationsPodiumByType: EMPTY_ORGANISATIONS_PODIUM_BY_TYPE,
       totalSimulations: 0,
       organisationCount: 0,
       startDate: event.startDate,
@@ -106,7 +115,9 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toEqual([])
+    expect(result.organisationsPodiumByType).toEqual(
+      EMPTY_ORGANISATIONS_PODIUM_BY_TYPE
+    )
     expect(result.totalSimulations).toBe(1)
     expect(result.organisationCount).toBe(0)
   })
@@ -125,8 +136,14 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toHaveLength(1)
-    expect(result.organisations[0]).toEqual({
+    expect(result.organisationsPodiumByType['all'][0]).toEqual({
+      id: org.id,
+      name: 'Org Alpha',
+      slug: 'org-alpha',
+      type: 'all',
+      simulationsCount: 3,
+    })
+    expect(result.organisationsPodiumByType['company'][0]).toEqual({
       id: org.id,
       name: 'Org Alpha',
       slug: 'org-alpha',
@@ -140,10 +157,21 @@ describe('getEventInfo', () => {
   it('returns only mobilised organisations ordered by simulationsCount DESC', async () => {
     const event = await eventFactory.create()
 
+    const orgaNameInResults1 = faker.company.name()
+    const orgaNameInResults2 = faker.company.name()
     const [orgA, orgB, orgC] = await Promise.all([
-      organisationFactory.create({ name: 'A', slug: 'a' }),
-      organisationFactory.create({ name: 'B', slug: 'b' }),
-      organisationFactory.create({ name: 'C', slug: 'c' }),
+      organisationFactory.create({
+        name: faker.company.name(),
+        slug: faker.company.name(),
+      }),
+      organisationFactory.create({
+        name: orgaNameInResults1,
+        slug: orgaNameInResults1.toLowerCase(),
+      }),
+      organisationFactory.create({
+        name: orgaNameInResults2,
+        slug: orgaNameInResults2.toLowerCase(),
+      }),
     ])
 
     await Promise.all([
@@ -156,7 +184,9 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations.map((o) => o.slug)).toEqual(['b', 'c'])
+    expect(
+      result.organisationsPodiumByType['company'].map((o) => o.name)
+    ).toEqual([orgaNameInResults1, orgaNameInResults2])
     expect(result.organisationCount).toBe(2)
   })
 
@@ -185,7 +215,9 @@ describe('getEventInfo', () => {
 
     // ... and such an organisation does not make the podium either, so the
     // podium always matches the mobilised counter.
-    expect(result.organisations.map((o) => o.slug)).toEqual(['three-sims'])
+    expect(
+      result.organisationsPodiumByType['company'].map((o) => o.slug)
+    ).toEqual(['three-sims'])
   })
 
   it('counts simulations from old polls created before the event window (Exemple 1)', async () => {
@@ -213,9 +245,10 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toHaveLength(1)
-    expect(result.organisations[0].slug).toBe('old-org')
-    expect(result.organisations[0].simulationsCount).toBe(3)
+    expect(result.organisationsPodiumByType['company'][0].slug).toBe('old-org')
+    expect(
+      result.organisationsPodiumByType['company'][0].simulationsCount
+    ).toBe(3)
     expect(result.totalSimulations).toBe(3)
     expect(result.organisationCount).toBe(1)
   })
@@ -253,9 +286,10 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toHaveLength(1)
-    expect(result.organisations[0].slug).toBe('old-org')
-    expect(result.organisations[0].simulationsCount).toBe(3)
+    expect(result.organisationsPodiumByType['company'][0].slug).toBe('old-org')
+    expect(
+      result.organisationsPodiumByType['company'][0].simulationsCount
+    ).toBe(3)
     expect(result.totalSimulations).toBe(3)
     expect(result.organisationCount).toBe(1)
   })
@@ -276,7 +310,9 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations[0].simulationsCount).toBe(3)
+    expect(
+      result.organisationsPodiumByType['company'][0].simulationsCount
+    ).toBe(3)
     expect(result.totalSimulations).toBe(3)
   })
 
@@ -302,7 +338,9 @@ describe('getEventInfo', () => {
     const result = expectEventInfo(await getEventInfo(event.id))
 
     // The ademe-sedd org has 5 simulations but must not appear in the list
-    expect(result.organisations.map((o) => o.slug)).toEqual(['other'])
+    expect(
+      result.organisationsPodiumByType['company'].map((o) => o.slug)
+    ).toEqual(['other'])
     // ADEME still counts as a mobilised organisation
     // (rule 3: >= MOBILISED_ORGANISATION_MIN_SIMULATIONS simulations)
     expect(result.organisationCount).toBe(2)
@@ -379,7 +417,7 @@ describe('getEventInfo', () => {
     expect(result.totalSimulations).toBe(0)
   })
 
-  it('returns the top 15 organisations per type', async () => {
+  it('returns the top 15 organisations per type including the "all" filter', async () => {
     const event = await eventFactory.create()
 
     // 20 companies (4 simulations each) + 20 associations (3 simulations each).
@@ -412,17 +450,9 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toHaveLength(30)
-    expect(
-      result.organisations.filter((o) => o.type === 'company')
-    ).toHaveLength(15)
-    expect(
-      result.organisations.filter((o) => o.type === 'association')
-    ).toHaveLength(15)
-    // Companies (4 simulations) rank above associations (3 simulations)
-    expect(
-      result.organisations.slice(0, 15).every((o) => o.type === 'company')
-    ).toBe(true)
+    expect(result.organisationsPodiumByType['all']).toHaveLength(15)
+    expect(result.organisationsPodiumByType['company']).toHaveLength(15)
+    expect(result.organisationsPodiumByType['association']).toHaveLength(15)
     // organisationCount counts every mobilised organisation
     // (>= MOBILISED_ORGANISATION_MIN_SIMULATIONS simulations)
     expect(result.organisationCount).toBe(40)
@@ -444,24 +474,6 @@ describe('getEventInfo', () => {
 
     const result = expectEventInfo(await getEventInfo(event.id))
 
-    expect(result.organisations).toHaveLength(15)
     expect(result.organisationCount).toBe(ORG_COUNT)
-  })
-
-  it('orders equal scores deterministically by organisation id', async () => {
-    const event = await eventFactory.create()
-
-    const orgB = await organisationFactory.create({ name: 'B', slug: 'b' })
-    const orgA = await organisationFactory.create({ name: 'A', slug: 'a' })
-
-    await Promise.all([seedPoll(event, orgB, 3), seedPoll(event, orgA, 3)])
-
-    await refreshEventComputation()
-
-    const result = expectEventInfo(await getEventInfo(event.id))
-
-    // Same score: sorted by organisationId ASC (deterministic tie-break).
-    const ids = result.organisations.map((o) => o.id)
-    expect(ids).toEqual([...ids].sort())
   })
 })

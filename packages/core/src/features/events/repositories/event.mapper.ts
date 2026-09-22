@@ -1,18 +1,26 @@
-import type { EventOrganisation } from '../types/event-info.ts'
+import type { Organisation } from '../../../prisma/generated/client.ts'
+import type {
+  EventOrganisation,
+  ExtendedPodiumOrganisationType,
+} from '../types/event-info.ts'
 
-interface EventComputationRow {
+export interface EventComputationRow {
   simulationsCount: number
-  organisation: Pick<EventOrganisation, 'id' | 'name' | 'slug' | 'type'>
+  organisation: Pick<Organisation, 'id' | 'name' | 'slug' | 'type'>
 }
 
-export function mapEventComputationToOrganisation(
+export function mapEventComputationToOrganisation({
+  row,
+  type,
+}: {
   row: EventComputationRow
-): EventOrganisation {
+  type: ExtendedPodiumOrganisationType
+}): EventOrganisation {
   return {
     id: row.organisation.id,
     name: row.organisation.name,
     slug: row.organisation.slug,
-    type: row.organisation.type,
+    type: type,
     simulationsCount: row.simulationsCount,
   }
 }

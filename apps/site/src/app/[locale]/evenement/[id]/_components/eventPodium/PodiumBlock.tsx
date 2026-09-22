@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import type { EventOrganisation } from '@nosgestesclimat/core/features/events/types/event-info'
 import { twMerge } from 'tailwind-merge'
 import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 import RankBadge from './RankBadge'
@@ -11,15 +11,16 @@ const heightClasses = {
   3: 'md:h-52',
 } as const
 
-interface Props extends PodiumItem {
+interface Props extends EventOrganisation {
   locale: Locale
   hasStarted: boolean
+  rank: number
 }
 
 export default function PodiumBlock({
   rank,
-  label,
-  score,
+  name,
+  simulationsCount,
   locale,
   hasStarted,
 }: Props) {
@@ -42,14 +43,14 @@ export default function PodiumBlock({
             'mb-6 text-center text-base leading-tight font-bold',
             isFirst && 'text-xl'
           )}>
-          {label}
+          {name}
         </span>
         <span
           className={twMerge(
             'mt-auto text-center text-lg font-bold',
             !isFirst && 'text-primary-600 text-base'
           )}>
-          {score}{' '}
+          {simulationsCount}{' '}
           <Trans
             locale={locale}
             i18nKey="event.podium.list.item.participations">
