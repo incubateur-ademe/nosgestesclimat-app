@@ -29,6 +29,9 @@ const orderClasses = {
   3: 'order-3',
 } as const
 
+const ZERO_BASED_INDEX_COMPENSATION_FACTOR = 1
+const getRank = (index: number) => index + ZERO_BASED_INDEX_COMPENSATION_FACTOR
+
 export default function PodiumVisual({
   items,
   className,
@@ -87,7 +90,7 @@ export default function PodiumVisual({
                   hasStarted={hasStarted}
                   locale={locale}
                   {...item}
-                  rank={index}
+                  rank={getRank(index)}
                 />
               </li>
             ))}
@@ -132,7 +135,12 @@ export default function PodiumVisual({
             className
           )}>
           {remainingItems.map((item, index) => (
-            <ListItem locale={locale} key={index} rank={index} {...item} />
+            <ListItem
+              locale={locale}
+              key={index}
+              rank={getRank(index)}
+              {...item}
+            />
           ))}
         </ol>
       )}

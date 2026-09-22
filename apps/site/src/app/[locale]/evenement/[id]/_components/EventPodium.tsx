@@ -42,7 +42,7 @@ export default async function EventPodium({
 
   const activeFilter = getActiveFilter(params)
 
-  const { prevHref, nextHref } = await getNavigationParameters({
+  const { prevHref, nextHref } = getNavigationParameters({
     params,
     activeFilter,
   })
