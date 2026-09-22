@@ -39,6 +39,13 @@ const completeSimulationService = createCompleteSimulation({
 export const completeSimulation = async (
   payload: CompleteSimulationPayload
 ): Promise<Result<never, CompleteSimulationError> | void> => {
+  nameActionSpan('completeSimulation')
+
+  const actionLogger = logger.child({
+    component: 'site.action.completeSimulation',
+  })
+
+
   const session = await getUserSession()
   if (!session) unauthorized()
 
@@ -49,7 +56,11 @@ export const completeSimulation = async (
   if (payload.progression !== 1) return failure(new SimulationIncompleteError())
 
   const parsed = validatePayload(CompleteSimulationPayloadSchema, payload)
-  if (!parsed.success) return parsed
+  if (!parsed.success) {
+    // Un client correct n'envoie pas ça : dérive ou bug front, suivi au taux.
+    actionLogger.warn(parsed.error)
+    return parsed
+  }
 
   const { id, progression, situation, foldedSteps, computedResults } =
     parsed.data
@@ -64,7 +75,21 @@ export const completeSimulation = async (
     locale: await getLocaleFromHeaders(),
   })
 
-  if (!result.success) return result
+  if (!result.success) {
+    // Une simulation absente vient d'un lien périmé : rien à signaler.
+    if (result.error.code === 'simulation_not_found') return result
+
+    if (result.error.code === 'zero_footprint') {
+      // Le calcul front a produit un bilan nul : la sauvegarde est refusée,
+      // c'est le client qu'il faut réparer.
+      actionLogger.error(result.error)
+      return result
+    }
+
+    // Client périmé (onglet rouvert) ou double soumission : anomalie, au taux.
+    actionLogger.warn(result.error)
+    return result
+  }
 
   revalidatePath(END_PAGE_PATH, 'layout')
 

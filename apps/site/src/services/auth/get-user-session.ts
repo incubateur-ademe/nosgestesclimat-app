@@ -7,6 +7,7 @@ import type {
 } from '@nosgestesclimat/core/features/auth/types/user-session'
 import * as Sentry from '@sentry/nextjs'
 
+import logger from '@/logger.server'
 import { headers } from 'next/headers'
 import { cache } from 'react'
 
@@ -25,7 +26,9 @@ export const getUserSession = cache(async function (): Promise<UserSession> {
     userId = parsed.userId
     email = parsed.email
   } catch {
-    Sentry.captureException(new Error('Malformed x-session header'))
+    logger.warn('Malformed x-session header', {
+      component: 'site.service.getUserSession',
+    })
     return null
   }
 

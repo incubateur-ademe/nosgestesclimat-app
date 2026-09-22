@@ -1,5 +1,6 @@
 'use server'
 
+import logger from '@/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { type UpdateSimulationSituationError } from '@nosgestesclimat/core/features/simulations/errors/simulations.error'
@@ -20,6 +21,13 @@ import {
 export const updateSimulationSituation = async (
   payload: UpdateSimulationSituationPayload
 ): Promise<Result<void, UpdateSimulationSituationError>> => {
+  nameActionSpan('updateSimulationSituation')
+
+  const actionLogger = logger.child({
+    component: 'site.action.updateSimulationSituation',
+  })
+
+
   const session = await getUserSession()
   if (!session) unauthorized()
 
@@ -28,13 +36,15 @@ export const updateSimulationSituation = async (
     payload
   )
   if (!parsed.success) {
+    // Un client correct n'envoie pas ça : dérive ou bug front, suivi au taux.
+    actionLogger.warn(parsed.error)
     return parsed
   }
 
   const { id, model, situation, foldedSteps, progression, computedResults } =
     await ensureSimulationModel(parsed.data)
 
-  return await updateSimulationSituationService({
+  const result = await updateSimulationSituationService({
     userId: session.id,
     simulationId: id,
     situation,
@@ -43,4 +53,21 @@ export const updateSimulationSituation = async (
     computedResults,
     model,
   })
+
+  if (!result.success) {
+    // Une simulation absente vient d'un lien périmé : rien à signaler.
+    if (result.error.code === 'simulation_not_found') return result
+
+    if (result.error.code === 'zero_footprint') {
+      // Le calcul front a produit un bilan nul : la sauvegarde est refusée,
+      // c'est le client qu'il faut réparer.
+      actionLogger.error(result.error)
+      return result
+    }
+
+    // Client périmé (onglet rouvert) ou double soumission : anomalie, au taux.
+    actionLogger.warn(result.error)
+  }
+
+  return result
 }

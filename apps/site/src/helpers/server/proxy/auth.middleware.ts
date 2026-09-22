@@ -9,11 +9,13 @@ import { TokenExpiredException } from '@nosgestesclimat/core/features/auth/excep
 import { isSessionExpired } from '@nosgestesclimat/core/features/auth/helpers/is-session-expired'
 import { decryptSession } from '@nosgestesclimat/core/features/auth/services/decrypt-session.service'
 import { rotateSession } from '@nosgestesclimat/core/features/auth/services/rotate-session.service'
+
+import logger from '@/logger.server'
 import type {
   Session,
   SessionTokens,
 } from '@nosgestesclimat/core/features/auth/types/session'
-import { captureException } from '@sentry/nextjs'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { MiddlewareResult } from './types'
 
@@ -27,6 +29,7 @@ import type { MiddlewareResult } from './types'
 export async function middlewareAuth(
   request: NextRequest
 ): Promise<MiddlewareResult> {
+  const middlewareLogger = logger.child({ component: 'site.middleware.auth' })
   const sessionCookie = request.cookies.get(SESSION_COOKIE)
 
   // (A) No session cookie: anonymous user.
@@ -39,7 +42,7 @@ export async function middlewareAuth(
     payload = await decryptSession(sessionCookie.value)
   } catch (err) {
     // (B) Corrupted or tampered session cookie: log and treat as anonymous.
-    captureException(err)
+    middlewareLogger.warn(toError(err))
     return { redirect: null, cookies: deleteSessionCookies() }
   }
 
@@ -58,10 +61,7 @@ export async function middlewareAuth(
   if (!refreshCookie) {
     // (D) Expired session without a refresh cookie.
     // The user must log in again; log the event and continue anonymously.
-    captureException(
-      new Error('Session expired but no refresh cookie present'),
-      { level: 'error' }
-    )
+    middlewareLogger.warn('Session expired but no refresh cookie present')
     return { redirect: null, cookies: deleteSessionCookies() }
   }
 
@@ -94,11 +94,8 @@ export async function middlewareAuth(
 
       // Replay limit exceeded.  The rotation never completed;
       // log and continue anonymously.
-      captureException(
-        new Error(
-          `Session rotation replay limit exceeded after ${rtCount} attempts`
-        ),
-        { level: 'error' }
+      middlewareLogger.warn(
+        `Session rotation replay limit exceeded after ${rtCount} attempts`
       )
       return {
         redirect: null,
@@ -107,7 +104,7 @@ export async function middlewareAuth(
     }
 
     // (G) Unknown error during rotation — log and continue anonymously.
-    captureException(err, { level: 'error' })
+    middlewareLogger.error(toError(err))
     return { redirect: null, cookies: deleteSessionCookies() }
   }
 

@@ -8,13 +8,12 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { NoSessionFoundError } from '@/helpers/server/error'
 import { getGroupDisplayInfo } from '@/helpers/server/model/utils/getGroupDisplayInfo'
 import type { Locale } from '@/i18nConfig'
+import logger from '@/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { getLatestSimulationResult } from '@/services/simulations/get-latest-simulation-result'
 import type { DefaultPageProps } from '@/types'
-import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
 export async function generateMetadata({ params }: DefaultPageProps) {
@@ -53,7 +52,10 @@ export default async function FinPage({
 
   const user = await getUserSession()
   if (!user) {
-    captureException(new NoSessionFoundError(), { level: 'warning' })
+    // A warn carries no stack: the component names where it happened.
+    logger
+      .child({ component: 'site.page.endPage' })
+      .warn('No session found in cookies, redirecting to the home page')
     redirect('/')
   }
 

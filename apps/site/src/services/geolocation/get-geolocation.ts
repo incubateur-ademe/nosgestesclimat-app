@@ -7,7 +7,9 @@ import {
   supportedRegions,
   type Region,
 } from '@/helpers/server/model/models'
-import { captureException } from '@sentry/nextjs'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
+
+import logger from '@/logger.server'
 
 export async function getGeolocation(): Promise<Region> {
   try {
@@ -22,7 +24,7 @@ export async function getGeolocation(): Promise<Region> {
     }
     return DEFAULT_REGION
   } catch (e) {
-    captureException(e, { level: 'warning' })
+    logger.warn(toError(e), { component: 'site.service.getGeolocation' })
     return DEFAULT_REGION
   }
 }

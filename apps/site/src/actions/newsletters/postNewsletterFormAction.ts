@@ -5,9 +5,10 @@ import {
   NEWSLETTER_IDS,
   updateNewsletterSubscription,
 } from '@/helpers/server/model/newsletter'
+import logger from '@/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { isEmailValid } from '@/utils/isEmailValid'
-import { captureException } from '@sentry/nextjs'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export interface NewsletterFormState {
   email: string
@@ -55,7 +56,10 @@ export async function postNewsletterFormAction(
       success: true,
     }
   } catch (e) {
-    captureException(e)
+    logger.error(toError(e), {
+      component: 'site.action.postNewsletterForm',
+      listIds,
+    })
     return {
       email,
       listIds,

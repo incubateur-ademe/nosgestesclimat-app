@@ -1,6 +1,6 @@
 import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import { captureException } from '@sentry/nextjs'
+import logger from '@/logger.server'
 import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
 
 /**
@@ -21,11 +21,15 @@ export async function ensureSimulationModel<
     return simulation
   }
 
-  captureException(
+  // Repaired here, but the simulation would never have been computed: the
+  // caller reached persistence with a broken model string, which no scenario
+  // tolerates.
+  logger.error(
     new Error('Simulation reached persistence without a valid model'),
     {
-      level: 'warning',
-      extra: { simulationId: simulation.id, model: simulation.model },
+      component: 'site.service.ensureSimulationModel',
+      simulationId: simulation.id,
+      model: simulation.model,
     }
   )
 
