@@ -9,6 +9,7 @@ import { groupFactory } from '../../../groups/factories/group.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../../polls/stats/repositories/poll-stats-computations.repository.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
+import { CURRENT_MODEL_VERSION } from '../../../simulation-computation/model-support/model-versions.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
@@ -18,9 +19,8 @@ import {
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { findSimulationById, } from '../../repository/simulation.repository.ts'
+import { findSimulationById } from '../../repository/simulation.repository.ts'
 import { serializeModel } from '../../repository/model.mapper.ts'
-import type { Simulation } from '../../types/simulation.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { createCompleteSimulation } from '../complete-simulation.service.ts'
 
@@ -49,7 +49,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
     })
 
     expect(result).toEqual({
@@ -90,7 +90,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
     })
 
     expect(result).toEqual({
@@ -107,7 +107,7 @@ describe('completeSimulation', () => {
     await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
     })
 
     expect(await findSimulationComputation(simulation.id)).toEqual({
@@ -135,7 +135,7 @@ describe('completeSimulation', () => {
     await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
       model: 'FR-fr-9.9.9',
     })
 
@@ -160,7 +160,9 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
+      // The client ran the same unsupported model the simulation persists.
+      model: 'FR-fr-0.0.0',
     })
 
     expect(result).toEqual(expect.objectContaining({ success: true }))
@@ -186,7 +188,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
     })
 
     expect(result).toEqual({
@@ -217,7 +219,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
       progression: 0.9,
     })
 
@@ -245,7 +247,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
       computedResults: zeroedComputedResults,
     })
 
@@ -272,7 +274,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: '00000000-0000-0000-0000-000000000000',
-      ...payload(simulationFactory.build()),
+      ...payload,
     })
 
     expect(result).toEqual({
@@ -292,7 +294,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
     })
 
     expect(result).toEqual({
@@ -322,7 +324,7 @@ describe('completeSimulation', () => {
     const result = await completeSimulation({
       userSession: authenticated(user),
       simulationId: simulation.id,
-      ...payload(simulation),
+      ...payload,
     })
 
     expect(result).toEqual({
@@ -349,7 +351,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -375,7 +377,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -395,7 +397,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -412,7 +414,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -439,7 +441,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
         locale: 'en',
       })
       await settleBackground()
@@ -464,7 +466,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -496,7 +498,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -518,7 +520,7 @@ describe('completeSimulation', () => {
       await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -544,7 +546,7 @@ describe('completeSimulation', () => {
       const result = await completeSimulation({
         userSession: { id: user.id, isAuth: false },
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -569,7 +571,7 @@ describe('completeSimulation', () => {
       const result = await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -598,7 +600,7 @@ describe('completeSimulation', () => {
       const result = await completeSimulation({
         userSession: authenticated(user),
         simulationId: simulation.id,
-        ...payload(simulation),
+        ...payload,
       })
       await settleBackground()
 
@@ -728,8 +730,8 @@ const situation = {
 } as unknown as Record<DottedName, number>
 const foldedSteps = ['transport . voiture . km'] as DottedName[]
 
-const payload = (simulation: Pick<Simulation, 'model'>) => ({
-  model: serializeModel(simulation.model),
+const payload = {
+  model: `FR-fr-${CURRENT_MODEL_VERSION}`,
   situation,
   foldedSteps,
   progression: 1,
@@ -738,4 +740,4 @@ const payload = (simulation: Pick<Simulation, 'model'>) => ({
 } satisfies Omit<
   Parameters<ReturnType<typeof createCompleteSimulation>>[0],
   'simulationId' | 'userSession'
->)
+>
