@@ -31,6 +31,7 @@ import {
   ZeroFootprintError,
 } from '../errors/simulations.error.ts'
 import { isSimulationCompleted } from '../helpers/simulation-guards.ts'
+import { parseModelString, serializeModel } from '../repository/model.mapper.ts'
 import {
   findSimulationById,
   updateSimulation,
@@ -65,6 +66,7 @@ export function createCompleteSimulation({
     userSession,
     simulationId,
     progression,
+    model,
     situation,
     foldedSteps,
     computedResults,
@@ -73,6 +75,8 @@ export function createCompleteSimulation({
     userSession: AppUser
     simulationId: string
     progression: number
+    /** The model the client ran the test with; persisted with the completion. */
+    model: string
     situation: Situation<DottedName>
     foldedSteps: DottedName[]
     computedResults: ComputedResults
@@ -92,10 +96,13 @@ export function createCompleteSimulation({
     if (isSimulationCompleted(simulation))
       return failure(new SimulationCompletedError())
 
-    const isModelSupportedForComputation = isModelSupported(simulation.model)
+    // The client's model reflects the rules its answers were given against;
+    // the persisted one can lag behind (no save since a model release).
+    const effectiveModel = parseModelString(model) ?? simulation.model
+    const isModelSupportedForComputation = isModelSupported(effectiveModel)
 
     if (!isModelSupportedForComputation) {
-      const exception = new UnsupportedModelError(simulation.model)
+      const exception = new UnsupportedModelError(effectiveModel)
       logger.error(exception.message, { model: exception.model })
       captureException(exception)
     }
@@ -109,6 +116,7 @@ export function createCompleteSimulation({
           foldedSteps,
           progression,
           computedResults,
+          model: serializeModel(effectiveModel),
         },
         tx
       )
