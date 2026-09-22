@@ -27,6 +27,7 @@ import {
   type CompleteSimulationError,
   SimulationCompletedError,
   SimulationIncompleteError,
+  SimulationInvalidModelError,
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../errors/simulations.error.ts'
@@ -91,18 +92,20 @@ export function createCompleteSimulation({
       return failure(new ZeroFootprintError())
     }
 
+    // The client's model is the one its answers were given against — never
+    // substituted by the persisted one, which can be stale.
+    const clientModel = parseModelString(model)
+    if (!clientModel) return failure(new SimulationInvalidModelError(model))
+
     const simulation = await findSimulationById({ id: simulationId, userId })
     if (!simulation) return failure(new SimulationNotFoundError())
     if (isSimulationCompleted(simulation))
       return failure(new SimulationCompletedError())
 
-    // The client's model reflects the rules its answers were given against;
-    // the persisted one can lag behind (no save since a model release).
-    const effectiveModel = parseModelString(model) ?? simulation.model
-    const isModelSupportedForComputation = isModelSupported(effectiveModel)
+    const isModelSupportedForComputation = isModelSupported(clientModel)
 
     if (!isModelSupportedForComputation) {
-      const exception = new UnsupportedModelError(effectiveModel)
+      const exception = new UnsupportedModelError(clientModel)
       logger.error(exception.message, { model: exception.model })
       captureException(exception)
     }
@@ -116,7 +119,7 @@ export function createCompleteSimulation({
           foldedSteps,
           progression,
           computedResults,
-          model: serializeModel(effectiveModel),
+          model: serializeModel(clientModel),
         },
         tx
       )

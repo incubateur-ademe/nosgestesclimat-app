@@ -15,6 +15,7 @@ import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
   SimulationCompletedError,
   SimulationIncompleteError,
+  SimulationInvalidModelError,
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
@@ -281,6 +282,31 @@ describe('completeSimulation', () => {
       success: false,
       error: new SimulationNotFoundError(),
     })
+  })
+
+  it('fails with simulation_invalid_model for a model string that cannot be parsed', async () => {
+    const { completeSimulation } = setup()
+    const user = await userFactory.verified().create()
+    const simulation = await startedSimulation(user.id)
+
+    const result = await completeSimulation({
+      userSession: authenticated(user),
+      simulationId: simulation.id,
+      ...payload,
+      model: 'not-a-model',
+    })
+
+    expect(result).toEqual({
+      success: false,
+      error: new SimulationInvalidModelError('not-a-model'),
+    })
+    // The completion refused to write: the persisted model is untouched.
+    const persisted = await findSimulationById({
+      id: simulation.id,
+      userId: user.id,
+    })
+    if (!persisted) throw new Error('simulation should exist')
+    expect(serializeModel(persisted.model)).toBe(serializeModel(simulation.model))
   })
 
   it('fails with simulation_not_found for a simulation owned by another user', async () => {
