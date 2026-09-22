@@ -1,14 +1,14 @@
-import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
+import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 
 /**
  * Whether an action's impact should read as "still being computed" rather than
- * as a value. Anything but a completed computation has no usable impact yet.
+ * as a value. Only a not-yet-completed computation can still produce one — a
+ * computation that was never programmed never will.
  */
-export function shouldDisplayComputationInProgressText(
-  status: SimulationComputationStatus
-) {
+export function shouldDisplayComputationInProgressText(status: AssessmentStatus) {
   switch (status) {
     case 'completed':
+    case 'not-programmed':
       return false
     case 'pending':
     case 'processing':

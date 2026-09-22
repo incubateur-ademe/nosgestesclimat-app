@@ -34,8 +34,7 @@ export default async function ResultatsActionsPage({
     getCurrentSimulation(),
   ])
 
-  // No computation for the latest simulation: no simulation at all, or one the
-  // model no longer supports. Nothing can be personalized, so invite a retest.
+  // No finished simulation: nothing to personalize from.
   if (actionsCatalogue.assessmentStatus === null) {
     return <NoResultsBlock locale={locale} />
   }

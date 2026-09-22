@@ -4,6 +4,7 @@ import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorUniqueConstraintFailed } from '../../../prisma/utils.ts'
 import { ComputationAlreadyExistsError } from '../errors/simulation-computation.error.ts'
+import type { SimulationComputationStatus } from '../types/computation.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
 const STALE_PROCESSING_TIMEOUT_SECONDS = 30
@@ -43,19 +44,34 @@ export const findSimulationComputation = async (simulationId: string) =>
     where: { simulationId },
   })
 
-export const findLastSimulationComputationByUserId = async (
+/**
+ * The user's latest finished simulation and its computation status, whatever
+ * the status — `null` when the simulation has no computation row (model
+ * unsupported at completion, or predating the computation feature),
+ * `undefined` when the user has no finished simulation.
+ */
+export interface LastFinishedSimulationComputation {
+  simulationId: string
+  status: SimulationComputationStatus | null
+}
+
+export const findLastFinishedSimulationComputationByUserId = async (
   userId: string | undefined
-) => {
+): Promise<LastFinishedSimulationComputation | undefined> => {
   if (!userId) return undefined
-  // A computation is only created for finished simulations, so requiring at
-  // least one computation skips in-progress (unfinished) simulations and
-  // falls back to the latest finished one instead.
+  // A computation is only created for finished simulations, but a finished
+  // simulation can have none: model unsupported at completion, or simulation
+  // predating the computation feature.
   const simulation = await prisma.simulation.findFirst({
-    where: { userId, computations: { some: {} } },
+    where: { userId, progression: 1 },
     orderBy: { createdAt: 'desc' },
-    include: { computations: true },
+    include: { computations: { select: { status: true } } },
   })
-  return simulation?.computations[0]
+  if (!simulation) return undefined
+  return {
+    simulationId: simulation.id,
+    status: simulation.computations[0]?.status ?? null,
+  }
 }
 
 export const claimNextPendingSimulationComputation = async () =>

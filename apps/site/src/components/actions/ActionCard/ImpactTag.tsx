@@ -1,13 +1,13 @@
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
-import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
+import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
 
 export interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
   impact?: number
-  assessmentStatus?: SimulationComputationStatus | null
+  assessmentStatus?: AssessmentStatus | null
   locale: Locale
 }
 
