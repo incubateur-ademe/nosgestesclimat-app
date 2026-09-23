@@ -5,7 +5,7 @@ import {
   SimpleSpanProcessor,
 } from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { IdentitySpanProcessor } from '../identity-span-processor'
 import { currentRequestIdentity, identifyRequest } from '../request-identity'
@@ -27,16 +27,16 @@ describe('request identity', () => {
     await provider.shutdown()
   })
 
-  it('stamps the identity on the request span and the spans started inside it', () => {
+  beforeEach(() => {
+    exporter.reset()
+  })
+
+  it('stamps the identity on the spans started once it is known', () => {
     const tracer = trace.getTracer('test')
 
     tracer.startActiveSpan('POST /fr/simulateur/bilan', (request) => {
       try {
         identifyRequest({ distinctId: 'user-1', sessionId: 'replay-1' })
-        expect(currentRequestIdentity()).toEqual({
-          distinctId: 'user-1',
-          sessionId: 'replay-1',
-        })
 
         tracer.startActiveSpan('prisma:client:operation', (query) => {
           query.end()
@@ -46,11 +46,7 @@ describe('request identity', () => {
       }
     })
 
-    const [query, request] = exporter.getFinishedSpans()
-    expect(request.attributes).toMatchObject({
-      posthogDistinctId: 'user-1',
-      sessionId: 'replay-1',
-    })
+    const [query] = exporter.getFinishedSpans()
     // The child span inherits it: a slow query is attributed to its user.
     expect(query.attributes).toMatchObject({
       posthogDistinctId: 'user-1',
@@ -58,17 +54,50 @@ describe('request identity', () => {
     })
   })
 
-  it('ignores an identity without any value and outside a request', () => {
-    identifyRequest({})
-    expect(currentRequestIdentity()).toBeUndefined()
+  it('survives a span opened around the read, and reaches later siblings', () => {
+    const tracer = trace.getTracer('test')
 
-    trace.getTracer('test').startActiveSpan('POST /', (span) => {
+    tracer.startActiveSpan('POST /fr/simulateur/bilan', (request) => {
       try {
-        identifyRequest({ sessionId: 'replay-2' })
-        expect(currentRequestIdentity()).toEqual({ sessionId: 'replay-2' })
+        // `getUserSession` reads the session inside its own span: the identity
+        // has to be readable outside it, and by the calls that follow.
+        tracer.startActiveSpan('site.service.getUserSession', (session) => {
+          identifyRequest({ distinctId: 'user-2', sessionId: 'replay-2' })
+          session.end()
+        })
+
+        expect(currentRequestIdentity()).toEqual({
+          distinctId: 'user-2',
+          sessionId: 'replay-2',
+        })
+
+        tracer.startActiveSpan(
+          'site.service.ensureSimulationModel',
+          (sibling) => {
+            sibling.end()
+          }
+        )
       } finally {
-        span.end()
+        request.end()
       }
     })
+
+    const spans = exporter.getFinishedSpans()
+    const session = spans.find(
+      (span) => span.name === 'site.service.getUserSession'
+    )!
+    const sibling = spans.find(
+      (span) => span.name === 'site.service.ensureSimulationModel'
+    )!
+    expect(session.attributes).toMatchObject({ sessionId: 'replay-2' })
+    expect(sibling.attributes).toMatchObject({
+      posthogDistinctId: 'user-2',
+      sessionId: 'replay-2',
+    })
+  })
+
+  it('ignores an identity without any value', () => {
+    identifyRequest({})
+    expect(currentRequestIdentity()).toBeUndefined()
   })
 })

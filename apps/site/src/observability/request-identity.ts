@@ -1,4 +1,5 @@
-import { trace, type Context, type Span } from '@opentelemetry/api'
+import { trace, type Span } from '@opentelemetry/api'
+import { AsyncLocalStorage } from 'node:async_hooks'
 
 export interface RequestIdentity {
   /** PostHog `distinct_id`: an authenticated user's id, or the one posthog-js sent. */
@@ -8,52 +9,54 @@ export interface RequestIdentity {
 }
 
 /**
- * The identity of a request, held against the span that carries it.
+ * The identity of the request being served, held outside the span tree.
  *
- * OTel baggage is the usual carrier, but it can only be set around the work
- * (`context.with`), which would mean wrapping every action body to attribute
- * it. The request span *is* the per-request scope, and it is already active by
- * the time the session is read, so it carries the identity instead.
+ * A span carries its own attributes, so keying the identity on one span means
+ * losing it as soon as another becomes active — and every service now opens
+ * one. An async-local store follows the request wherever it goes: the log
+ * bridge reads it whatever span is active, and the span processor stamps every
+ * span started after the session was read.
+ *
+ * OTel baggage would be the by-the-book carrier, but it can only be set around
+ * the work (`context.with`), which means wrapping every action body.
  */
-const identities = new WeakMap<Span, RequestIdentity>()
+const identities = new AsyncLocalStorage<RequestIdentity>()
 
 /**
- * Attributes the current request to its user and PostHog session: the span
- * carries the attributes (PostHog links the trace to the person and to the
- * recording) and the lines emitted while it is active reuse them.
+ * Attributes the request to its user and PostHog session. The lines emitted
+ * from here on reuse it, and so do the spans that start afterwards.
  */
 export function identifyRequest(identity: RequestIdentity): void {
-  const span = trace.getActiveSpan()
-
-  // No span means no request scope (a unit test, an uninstrumented runtime):
-  // there is nothing to attribute.
-  if (!span || (!identity.distinctId && !identity.sessionId)) {
+  if (!identity.distinctId && !identity.sessionId) {
     return
   }
 
-  identities.set(span, identity)
+  identities.enterWith(identity)
 
-  // Same attribute names as the log records: PostHog reads them both ways.
+  // Best effort on the span that is active right now — its own span when the
+  // session is read inside one. The framework's request span is already open
+  // and keeps Next's attributes; nothing can reach back into it.
+  setIdentityAttributes(trace.getActiveSpan(), identity)
+}
+
+/** The identity of the request being served, if it has been read yet. */
+export function currentRequestIdentity(): RequestIdentity | undefined {
+  return identities.getStore()
+}
+
+/** The two names PostHog matches, on a span as on a log record. */
+export function setIdentityAttributes(
+  span: Span | undefined,
+  identity: RequestIdentity
+): void {
+  if (!span) {
+    return
+  }
+
   if (identity.distinctId) {
     span.setAttribute('posthogDistinctId', identity.distinctId)
   }
   if (identity.sessionId) {
     span.setAttribute('sessionId', identity.sessionId)
   }
-}
-
-/** The identity of the span being logged for, if any. */
-export function currentRequestIdentity(): RequestIdentity | undefined {
-  const span = trace.getActiveSpan()
-
-  return span ? identities.get(span) : undefined
-}
-
-/** Reads the identity off a parent span, for the spans started inside it. */
-export function inheritedIdentity(
-  parentContext: Context
-): RequestIdentity | undefined {
-  const parent = trace.getSpan(parentContext)
-
-  return parent ? identities.get(parent) : undefined
 }

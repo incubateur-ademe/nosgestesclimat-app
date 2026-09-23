@@ -1,26 +1,27 @@
-import type { Context, Span } from '@opentelemetry/api'
+import type { Span } from '@opentelemetry/api'
 import type { ReadableSpan, SpanProcessor } from '@opentelemetry/sdk-trace-base'
 
-import { inheritedIdentity } from './request-identity.ts'
+import {
+  currentRequestIdentity,
+  setIdentityAttributes,
+} from './request-identity.ts'
 
 /**
- * Stamps the request's identity on the spans started inside it: the database
- * queries and outgoing calls of a request are then attributed like the request
- * itself, which is what makes "the slow queries of this user" answerable.
+ * Stamps the request's identity on every span started once the session is
+ * known: the database queries and outgoing calls of a request are then
+ * attributed like the request itself, which is what makes "the slow queries of
+ * this user" answerable.
+ *
+ * The identity is read from the request's async store, not from the parent
+ * span: a span opened between the session read and the query would break the
+ * parent chain.
  */
 export class IdentitySpanProcessor implements SpanProcessor {
-  onStart(span: Span, parentContext: Context): void {
-    const identity = inheritedIdentity(parentContext)
+  onStart(span: Span): void {
+    const identity = currentRequestIdentity()
 
-    if (!identity) {
-      return
-    }
-
-    if (identity.distinctId) {
-      span.setAttribute('posthogDistinctId', identity.distinctId)
-    }
-    if (identity.sessionId) {
-      span.setAttribute('sessionId', identity.sessionId)
+    if (identity) {
+      setIdentityAttributes(span, identity)
     }
   }
 
