@@ -6,6 +6,7 @@ import { createActionAssessments } from '../../actions/repositories/action-asses
 import { createManySimulations } from '../repository/simulation.repository.ts'
 import type { Model } from '../types/model.ts'
 import {
+  getPersonaActionAssessments,
   getPersonaComputations,
   pickPersonaName,
 } from './persona-computations.ts'
@@ -81,7 +82,7 @@ export const seedSimulations = async (
     await seedActionAssessments({
       simulationIds,
       personaNames,
-      computations,
+      assessmentsByPersona: getPersonaActionAssessments(personaNames),
     })
   }
 
@@ -128,32 +129,28 @@ const readActionIdsByRuleId = async (): Promise<Map<string, string>> => {
 const seedActionAssessments = async ({
   simulationIds,
   personaNames,
-  computations,
+  assessmentsByPersona,
 }: {
   simulationIds: string[]
   personaNames: string[]
-  computations: ReturnType<typeof getPersonaComputations>
+  assessmentsByPersona: ReturnType<typeof getPersonaActionAssessments>
 }): Promise<void> => {
   const actionIdByRuleId = await readActionIdsByRuleId()
 
   const assessments = personaNames.flatMap((personaName, index) => {
-    const computation = computations.get(personaName)
+    const personaAssessments = assessmentsByPersona.get(personaName)
 
-    if (!computation) return []
+    if (!personaAssessments) return []
 
     const simulationId = simulationIds[index]
 
-    return computation.actionAssessments.flatMap(
-      ({ ruleId, applicability }) => {
-        const actionId = actionIdByRuleId.get(ruleId)
+    return personaAssessments.flatMap(({ ruleId, applicability }) => {
+      const actionId = actionIdByRuleId.get(ruleId)
 
-        if (!actionId) return []
+      if (!actionId) return []
 
-        return [
-          toNewActionAssessment({ simulationId, actionId }, applicability),
-        ]
-      }
-    )
+      return [toNewActionAssessment({ simulationId, actionId }, applicability)]
+    })
   })
 
   if (assessments.length === 0) return
