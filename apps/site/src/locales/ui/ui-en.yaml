@@ -1,6 +1,4 @@
 entries:
-  404.action: Return to a safe place
-  404.action.lock: Revenir en lieu sûr
   'Accessibilité : partiellement conforme': 'Accessibility: partially compliant'
   Choisir une autre région: Choose another region
   Choisissez une région parmi celles disponibles !: Choose a region among those available!
@@ -82,7 +80,6 @@ entries:
   Avant de commencer: Before you start
   international.comment.2: The list below shows the countries that have already been integrated.
   international.comment.2.lock: La liste ci-dessous présente les pays déjà intégrés.
-  Sélectionner: Select
   Vous: You
   Supprimer: Delete
   publicodes.Tutoriel.slide6: <0>Driving a car, eating a steak, heating your home, getting medical treatment, buying a TV...</0><1>Our individual consumption footprint is the sum total of all the activities that make up our modern lives.</1>
@@ -175,7 +172,6 @@ entries:
   Organisez des temps d’animation et d’échanges physiques autour de Nos Gestes Climat pour fédérer et renforcer la compréhension des participants.: Organise events and physical exchanges around Nos Gestes Climat to bring people together and reinforce their understanding.
   Voir les {String(group.participants.length - 5)} autre{withS} participant{withS}: See {String(group.participants.length - 5)} other{withS} participant{withS}
   Voir les {String(group.participants.length - 5)} autre{withS} participant{withS}.lock: Voir les {String(group.participants.length - 5)} autre{withS} participant{withS}
-  Oups ! Une erreur est survenue: Oops! An error has occurred
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.: Nosgestesclimat.fr is not affiliated to the {{ parent }} website.
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}..lock: Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.
   Partage de vos résultats à {{ parent }} ?: 'Share your results with {{ parent }} '
@@ -234,10 +230,8 @@ entries:
   Reprendre mon test: Resume my test
   Votre empreinte: Your footprint
   'Logo, affiches et présentations : retrouvez tous les outils pour partager Nos Gestes Climat dans ce kit.': 'Logo, posters and presentations: find all the tools you need to share Nos Gestes Climat in this kit.'
-  Simulation terminée: Completed simulation
   International: International
   Diffusion: Distribution
-  Simulations terminées: Completed simulations
   Ce champ est requis.: This field is required.
   Votre nom: Your name
   Entreprise: Company
@@ -307,9 +301,6 @@ entries:
   Pour faire joli et le reconnaitre !: To make it look pretty and recognisable!
   Un bonhomme se demandant où il est: A man wondering where he is
   Rien à l'horizon ! <1></1>La page recherchée n'existe pas.: Nothing on the horizon! <1></1>The page you are looking for does not exist.
-  Visites et simulations: Visits and simulations
-  Modes "Groupes": Group modes
-  Données qualitatives: Qualitative data
   Vos informations ont bien été mises à jour.: Your information has been updated.
   Les 3 réflexes à adopter pour une garde-robe économe en eau: 3 tips for a water-efficient wardrobe
   L’eau est une ressource planétaire précieuse. Comme le climat, <2>le cycle de l’eau est fortement impacté par les activités humaines.</2> Nous avons fait le choix d’ajouter l'empreinte eau à notre modèle de calcul afin de vous apporter des éléments de compréhension de cet impact.: Water is a precious global resource. Like the climate, <2>the water cycle is heavily impacted by human activities.</2> We have decided to add the water footprint to our calculation model to help you understand this impact.
@@ -493,7 +484,6 @@ entries:
   Lien copié: Copied link
   Nos derniers articles: Our latest articles
   En participant vous acceptez que vos résultats soient partagés anonymement avec cette organisation.: By taking part, you agree to your results being shared anonymously with this organisation.
-  Il est question ici des modes "Organisations" et "Challenge tes amis". Cette section est générée via Metabase.: We are talking here about the "Organisations" and "Challenge your friends" modes. This section is generated via Metabase.
   Ressources: Resources
   Qui sommes-nous: Who we are
   Relais et partenaires: Relays and partners
@@ -772,15 +762,7 @@ entries:
   Chargement du tableau de bord...: Loading the dashboard...
   documentation.search.results.label: Search results
   documentation.search.results.label.lock: Résultats de recherche
-  Ce graphique présente la distribution des résultats de simulation des utilisateurs, permettant d'analyser les tendances et les comportements.: This graph shows the distribution of users' simulation results, enabling trends and behaviour to be analysed.
-  Graphique de distribution des résultats de simulation pour le mois dernier: Graph showing the distribution of simulation results for last month
-  Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, et les tendances d'utilisation.: This dashboard displays site traffic statistics, including the number of visits, simulations completed and usage trends.
-  Statistiques d'usage du mode "Challenge tes amis": Usage statistics for the "Challenge your friends" mode
-  Graphiques du nombre de visites et de simulations sur le site: Graphs showing the number of visits and simulations on the site
   Impossible de charger le tableau de bord. Veuillez réessayer plus tard.: Unable to load the dashboard. Please try again later.
-  Statistiques d'usage du mode "Organisations": Statistics on the use of the "Organisations" mode
-  Statistiques détaillées sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants, et d'actions réalisées.: Detailed statistics on the use of Organisations mode, including the number of organisations created, participants and actions completed.
-  Statistiques sur l'utilisation du mode Challenge, incluant le nombre de défis créés, de participants, et de résultats partagés.: Statistics on the use of Challenge mode, including the number of challenges created, participants and results shared.
   common.interactiveIllustration.item.car: Car
   common.interactiveIllustration.item.car.lock: Voiture
   common.interactiveIllustration.item.computer: Computer
@@ -954,8 +936,6 @@ entries:
   simulator.mosaicNumberInput.add.lock: 'Ajouter un élément : {{title}}'
   simulator.mosaicNumberInput.remove: 'Remove an item : {{title}}'
   simulator.mosaicNumberInput.remove.lock: 'Retirer un élément : {{title}}'
-  simulator.inputs.choice.questionButton.title: For more information, click here {{label}}
-  simulator.inputs.choice.questionButton.title.lock: Plus d'informations - {{label}}
   simulator.car.addTravel: Add a journey
   simulator.car.addTravel.lock: Ajouter un trajet
   Sélectionné: Selected
@@ -1550,8 +1530,8 @@ entries:
   results.saveResults.buttonLabel.authenticated.noPreviousResults.lock: Accéder à mon espace
   common.navigation.nextQuestion.loading.label: End the test and go to the results page, loading in progress
   common.navigation.nextQuestion.loading.label.lock: Terminer le test et accéder à la page de résultats, chargement en cours
-  results.groupThankYou.description: Find out the results of the group test
-  results.groupThankYou.description.lock: Découvrez les résultats du test collectif
+  results.groupThankYou.description: Find out the results of the group test <2> “{{groupName}} ”</2>
+  results.groupThankYou.description.lock: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
   results.objective.collectiveEffort.companies: The companies
   results.objective.collectiveEffort.companies.lock: Les entreprises
   results.objective.collectiveEffort.collectivities: Local authorities
@@ -1593,13 +1573,11 @@ entries:
   Test collectif personnalisé: Personalised collective test
   collectiveTest.mode.title: Choose the test mode
   collectiveTest.mode.title.lock: Choisissez le mode du test
-  Choisissez le mode du test: Choose the test mode
   Créer mon premier test collectif: Creating my first collective test
   Créer mon lien de test: Create my test link
   Communiquez sur le test collectif: Communicate about the collective test
   Mes tests collectifs: My collective tests
   Créer un test collectif: Start a group test
-  Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.: An error has occurred while creating your collective test. Please try again.
   collectiveTest.title: Choose a name for your collective test
   collectiveTest.title.lock: Choisissez un nom pour votre test collectif
   Nom du test collectif: Group test name
@@ -1642,7 +1620,6 @@ entries:
   organisations.inscription.subtitle: To share a collective test with your pupils, students, colleagues or customers, simply create your personal space.
   organisations.inscription.subtitle.lock: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de créer votre espace personnel.
   Nous récupérons les données du test collectif...: We are retrieving the data from the collective test...
-  Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oops! An error has occurred while retrieving the collective test information. Please try again later.
   organisations.connexion.subtitle: To share a collective test with your pupils, students, colleagues or customers, simply log in to your personal area.
   organisations.connexion.subtitle.lock: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de vous connecter à votre espace personnel.
   Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oops, we couldn't find the results of this collective test
@@ -1788,8 +1765,6 @@ entries:
   common.skip.lock: Passer
   tutorial.email.title.youth: Your email address
   tutorial.email.title.youth.lock: Ton adresse e-mail
-  tutorial.email.seeMore: Find out more
-  tutorial.email.seeMore.lock: En savoir plus
   common.optional: optional
   common.optional.lock: facultatif
   tutorial.email.title.default: Your email address
@@ -1852,10 +1827,6 @@ entries:
   actions.components.actionCard.impactAssessmentInProgress.lock: En cours de calcul
   actions.components.actionCard.link: See the<1> "{{actionTitle}}"</1> action
   actions.components.actionCard.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
-  actions.components.highestImpactActionsSection.title: The winning trio
-  actions.components.highestImpactActionsSection.title.lock: Le trio gagnant
-  actions.components.highestImpactActionsSection.description: Actions that would have the greatest impact on your footprint
-  actions.components.highestImpactActionsSection.description.lock: Les actions qui auraient le plus d'impact sur votre empreinte
   actions.components.highestImpactActionsSection.testWhiteBackground.title: Here are your 3 actions with the greatest impact
   actions.components.highestImpactActionsSection.testWhiteBackground.title.lock: Voici vos 3 actions qui auront le plus d'impact
   actions.components.highestImpactActionsSection.testWhiteBackground.description: This is where most of your footprint is decided.
@@ -2183,12 +2154,8 @@ entries:
   La valeur minimum pour ce champ est de: The minimum value for this field is
   La valeur pour ce champ est comprise entre: The value for this field is between
   La valeur maximum pour ce champ est de: The maximum value for this field is
-  actions.components.highestImpactActionsSection.publicDescription: The top 3 actions you can take to limit or reduce your CO<1>2</1> emissions
-  actions.components.highestImpactActionsSection.publicDescription.lock: Le top 3 des actions qui permettent de limiter ou réduire ses émissions de CO<1>2</1>
   actions.detailPage.sections.otherThemeActions.title: Find out about other ways to reduce your carbon footprint
   actions.detailPage.sections.otherThemeActions.title.lock: Découvrez d’autres actions pour réduire votre empreinte
-  actions.components.actionCard.ctaVariant.link: See the<1> "{{actionTitle}}"</1> campaign
-  actions.components.actionCard.ctaVariant.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
   event.dynamicCounter.target.title.default: Objective
   event.dynamicCounter.target.title.default.lock: Objectif
   event.dynamicCounter.target.title.topped: Target achieved
@@ -2234,3 +2201,21 @@ entries:
   footer.ademe.ariaLabel: ADEME (opens in a new window)
   footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
   Cette section est générée via Posthog.: This section is generated via Posthog.
+  actions.components.actionCard.highlighted.addButton.short: Add
+  actions.components.actionCard.highlighted.addButton.short.lock: Ajouter
+  actions.commitToActionButton.success: Action selected successfully.
+  actions.commitToActionButton.success.lock: Action sélectionnée avec succès.
+  actions.components.actionCard.highlighted.addedButton.short: Added
+  actions.components.actionCard.highlighted.addedButton.short.lock: Ajouté
+  actions.mySuggestions.otherActionsTitle: All your actions, organised by category
+  actions.mySuggestions.otherActionsTitle.lock: Toutes vos actions, classées par catégorie
+  actions.components.actionCard.highlighted.addButton.full: Add to my plan
+  actions.components.actionCard.highlighted.addButton.full.lock: Ajouter à mon plan
+  actions.commitToActionButton.error: An error has occurred. Please try again.
+  actions.commitToActionButton.error.lock: Une erreur s'est produite, veuillez réessayer.
+  actions.actionPlanPage.metaTitle: My suggestions – Nos Gestes Climat
+  actions.actionPlanPage.metaTitle.lock: Mes suggestions - Nos Gestes Climat
+  actions.mySuggestions.otherActionsDescription: These actions are tailored to your answers in the test. Choose the ones that seem achievable to you and add them to your action plan!
+  actions.mySuggestions.otherActionsDescription.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
+  actions.actionPlanPage.metaDescription: My personalised suggestions for actions I can take to reduce my carbon footprint with Nos Gestes Climat
+  actions.actionPlanPage.metaDescription.lock: Mes suggestions personnalisées d'actions à mettre en place pour réduire mon empreinte carbone avec Nos Gestes Climat

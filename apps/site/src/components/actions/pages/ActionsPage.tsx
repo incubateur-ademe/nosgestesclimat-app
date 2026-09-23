@@ -31,7 +31,7 @@ interface ActionsPageProps extends Omit<
    * Total carbon footprint in kg of the user's latest simulation.
    */
   totalFootprint?: number
-  personalized?: boolean
+  shouldHideActionCommitFeature?: boolean
 }
 
 export default function ActionsPage({
@@ -48,6 +48,7 @@ export default function ActionsPage({
   assessmentStatus,
   from,
   totalFootprint,
+  shouldHideActionCommitFeature,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -92,6 +93,7 @@ export default function ActionsPage({
         totalFootprint,
         from,
         locale,
+        shouldHideActionCommitFeature,
       }}>
       <BetaBanner locale={locale} />
 

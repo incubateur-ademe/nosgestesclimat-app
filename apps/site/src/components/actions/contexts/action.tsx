@@ -10,6 +10,7 @@ interface ActionValuesShared {
   totalFootprint: number | undefined
   from?: ActionFrom
   locale: Locale
+  shouldHideActionCommitFeature?: boolean
 }
 
 interface ProviderProps {
@@ -22,6 +23,7 @@ export const actionContext = createContext<ActionValuesShared>({
   totalFootprint: undefined,
   from: undefined,
   locale: LOCALE_FR_KEY,
+  shouldHideActionCommitFeature: false,
 })
 
 export const ActionProvider = ({ children, values }: ProviderProps) => (

@@ -12,8 +12,8 @@ import HousingIcon from '../icons/HousingIcon'
 import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
-import ActionCard from './ActionCard'
 import ActionCardSwitchServer from './ActionCardsomething/ActionCardSwitchServer'
+import ActionCardWithContextData from './ActionCardWithContextDate'
 
 const classesByTheme: Record<
   Theme['key'],
@@ -51,7 +51,6 @@ export default function ThemeSection({
   actions,
   locale,
   assessmentStatus,
-  from,
   trackingSource,
   title,
   description,
@@ -106,14 +105,11 @@ export default function ThemeSection({
         innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) =>
           assessmentStatus ? (
-            <ActionCard
+            <ActionCardWithContextData
               key={action.id}
               action={action}
-              locale={locale}
               withThemeBadge={false}
-              assessmentStatus={assessmentStatus}
               className="h-full"
-              from={from}
               source={trackingSource}
               withDescription
             />
@@ -121,11 +117,8 @@ export default function ThemeSection({
             <ActionCardSwitchServer
               key={action.id}
               action={action}
-              locale={locale}
               withThemeBadge={false}
-              assessmentStatus={assessmentStatus}
               className="h-full"
-              from={from}
               source={trackingSource}
             />
           )

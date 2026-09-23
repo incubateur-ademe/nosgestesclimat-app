@@ -5,6 +5,7 @@ import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { commitToAction } from '@/services/actions/commit-to-action' // Server Action
 import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/client'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
@@ -26,16 +27,16 @@ export default function CommitToActionButton({
 
   const handleCommitToAction = () => {
     startTransition(async () => {
-      // const result = await commitToAction(actionId)
+      const result = await commitToAction(actionId)
 
-      // if (!result.success) {
-      //   toast.error(
-      //     t(
-      //       'actions.commitToActionButton.error',
-      //       "Une erreur s'est produite, veuillez réessayer."
-      //     )
-      //   )
-      // }
+      if (!result.success) {
+        toast.error(
+          t(
+            'actions.commitToActionButton.error',
+            "Une erreur s'est produite, veuillez réessayer."
+          )
+        )
+      }
 
       toast.success(
         t(

@@ -59,6 +59,7 @@ export default async function ResultatsActionsPage({
       locale={locale}
       from="fin"
       totalFootprint={currentSimulation?.computedResults.carbone.bilan}
+      shouldHideActionCommitFeature
     />
   )
 }

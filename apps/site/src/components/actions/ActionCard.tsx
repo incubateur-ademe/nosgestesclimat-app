@@ -37,6 +37,12 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   source?: ActionEventSource
 }
 
+export interface ActionCardWithTempProps extends ActionCardProps {
+  withCta?: boolean
+  withDescription?: boolean
+  shouldHideActionCommitFeature?: boolean
+}
+
 export default function ActionCard({
   action,
   className,
@@ -48,8 +54,9 @@ export default function ActionCard({
   source,
   withCta,
   withDescription,
+  shouldHideActionCommitFeature,
   ...props
-}: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
+}: ActionCardWithTempProps) {
   const rankEmoji = rankToEmoji(rank)
 
   const href = getActionHref({
@@ -145,7 +152,7 @@ export default function ActionCard({
         </>
       )}
 
-      {action.assessment && (
+      {action.assessment && !shouldHideActionCommitFeature && (
         <div className="border-t border-slate-100 p-2">
           <CommitToActionButton
             className="w-full"
