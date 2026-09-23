@@ -9,10 +9,14 @@ import { emptyComputedResults } from './empty-computed-results.ts'
  * The full set of fields needed to persist a brand-new simulation. This is the
  * shape `createSimulation` persists and the shape every fresh simulation is
  * born with.
+ *
+ * `userId` is nullable: the schema detaches a simulation from its owner when
+ * the account is deleted, and a poll participation can be recorded without an
+ * account. Simulations created for a user always carry their id.
  */
 export type NewSimulation = {
   id: string
-  userId: string
+  userId: string | null
   model: Model
   date: Date
   progression: number

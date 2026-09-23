@@ -30,14 +30,30 @@ echo "── Ensuring SEDD event ───────────────�
 node --experimental-strip-types ./src/jobs/ensure-sedd-event.ts
 
 # 2. Sync Notion actions to the review app database
+actions_synced=false
 if [[ -n "${NOTION_API_KEY:-}" && -n "${NOTION_ACTION_DATABASE_ID:-}" ]]; then
   echo "── Syncing Notion actions ───────────────────────────────"
   node --experimental-strip-types ./src/jobs/sync-notion-actions.ts
+  actions_synced=true
 else
   echo "Notion credentials not configured. Skipping actions sync."
 fi
 
-# 3. Push DATABASE_URL to the corresponding site review app
+# 3. Seed the demo data (accounts, organisations, campaigns and their stats).
+#
+# Only when the catalogue was synced: the simulations' action assessments are
+# built from it, and where a review app starts from an empty database there is
+# nothing else to build them from. The seed refuses to run without actions
+# rather than seed half-answered simulations, so this guard is what keeps a
+# missing Notion key from failing the whole deployment.
+if [[ "$actions_synced" == true ]]; then
+  echo "── Seeding demo data ─────────────────────────────────────"
+  node --experimental-strip-types ./src/jobs/seed.ts
+else
+  echo "Skipping demo data seed: no action catalogue to assess against."
+fi
+
+# 4. Push DATABASE_URL to the corresponding site review app
 : "${FGP_PUSH_DB_URL_TO_SITE_TOKEN:?FGP_PUSH_DB_URL_TO_SITE_TOKEN is required}"
 : "${FGP_PUSH_DB_URL_TO_SITE_URL:?FGP_PUSH_DB_URL_TO_SITE_URL is required}"
 : "${DATABASE_URL:?DATABASE_URL is required}"
