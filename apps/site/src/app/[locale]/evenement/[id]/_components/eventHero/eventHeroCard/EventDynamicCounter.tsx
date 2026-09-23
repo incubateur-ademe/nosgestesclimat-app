@@ -129,7 +129,7 @@ export default function EventDynamicCounter({
 
       <p className="text-center text-sm text-slate-600">
         <Trans i18nKey="event.dynamicCounter.promise" locale={locale}>
-          Résultats en 10 minutes — 100% gratuit
+          Résultats en 10 minutes — sans inscription
         </Trans>
       </p>
     </div>
