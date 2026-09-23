@@ -29,5 +29,6 @@ export async function commitToAction(payload: CommitToActionPayload) {
   if (!result.success) return result
 
   revalidatePath(ACTIONS_SUGGESTED_PATH)
+
   return result
 }

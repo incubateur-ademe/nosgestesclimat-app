@@ -33,9 +33,11 @@ const colorClassNames: Record<
 export const BannerContent = ({
   banner,
   color = 'primary',
+  className,
 }: {
   banner: Pick<BannerType, 'link' | 'text' | 'id'> | null
   color?: BannerColor
+  className?: string
 }) => {
   const [shouldHideBanner, setShouldHideBanner] = useState(true)
 
@@ -62,7 +64,8 @@ export const BannerContent = ({
     <div
       className={twMerge(
         colorClassNames[color].container,
-        'xs:gap-2 relative inline-flex w-full flex-row items-start justify-center gap-1 px-4 py-2 text-sm sm:items-center md:h-12'
+        'xs:gap-2 relative inline-flex w-full flex-row items-start justify-center gap-1 px-4 py-2 text-sm sm:items-center md:h-12',
+        className
       )}>
       <p className="mb-0 block sm:inline!">{banner.text}</p>
       {banner.link && (

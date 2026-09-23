@@ -3,5 +3,5 @@
 import { Toaster as _Toaster } from '../shadcn/sonner'
 
 export default function Toaster() {
-  return <_Toaster className="font-" />
+  return <_Toaster richColors />
 }

@@ -35,7 +35,6 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   rank?: number
   from?: 'fin' | 'mon-espace' | 'index'
   source?: ActionEventSource
-  cta?: React.ReactNode
 }
 
 export default function ActionCard({
@@ -49,7 +48,6 @@ export default function ActionCard({
   source,
   withCta,
   withDescription,
-  cta,
   ...props
 }: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
   const rankEmoji = rankToEmoji(rank)
@@ -81,6 +79,7 @@ export default function ActionCard({
       {source !== 'cross-sell' ? (
         <ActionTracker eventName="displayed" action={action} />
       ) : null}
+
       <div
         className={twMerge(
           'flex grow flex-col gap-2 p-2',
@@ -110,22 +109,42 @@ export default function ActionCard({
           ) : null}
         </div>
       </div>
-      {withCta && (
-        <div className="border-t border-slate-100 p-4">
-          <span
-            aria-hidden="true"
-            className="text-primary-700 flex items-center text-sm/normal font-bold">
-            <Trans
-              locale={locale}
-              i18nKey="actions.components.actionCard.link"
-              values={{ actionTitle: action.title }}>
-              Voir l'action
-              <span className="sr-only"> "{'{{actionTitle}}'}"</span>
-            </Trans>
-            <ArrowNarrowRightIcon className="ml-1 h-2.5" />
-          </span>
-        </div>
+
+      {withCta && !action.assessment && (
+        <>
+          <div className="border-t border-slate-100 p-4">
+            <span
+              aria-hidden="true"
+              className="text-primary-700 flex items-center text-sm/normal font-bold">
+              <Trans
+                locale={locale}
+                i18nKey="actions.components.actionCard.link"
+                values={{ actionTitle: action.title }}>
+                Voir l'action
+                <span className="sr-only"> "{'{{actionTitle}}'}"</span>
+              </Trans>
+              <ArrowNarrowRightIcon className="ml-1 h-2.5" />
+            </span>
+          </div>
+          <Link
+            href={href}
+            className={twMerge(
+              'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
+              styles.actionLink
+            )}>
+            <span className="sr-only">
+              <Trans
+                locale={locale}
+                i18nKey="actions.components.actionCard.link"
+                values={{ actionTitle: action.title }}>
+                Voir l'action
+                <span className="sr-only"> "{'{{actionTitle}}'}"</span>
+              </Trans>
+            </span>
+          </Link>
+        </>
       )}
+
       {action.assessment && (
         <div className="border-t border-slate-100 p-2">
           <CommitToActionButton
@@ -134,24 +153,6 @@ export default function ActionCard({
             actionChoiceType={action.choice?.type}
           />
         </div>
-      )}
-      {cta ?? (
-        <Link
-          href={href}
-          className={twMerge(
-            'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
-            styles.actionLink
-          )}>
-          <span className="sr-only">
-            <Trans
-              locale={locale}
-              i18nKey="actions.components.actionCard.link"
-              values={{ actionTitle: action.title }}>
-              Voir l'action
-              <span className="sr-only"> "{'{{actionTitle}}'}"</span>
-            </Trans>
-          </span>
-        </Link>
       )}
     </article>
   )
