@@ -14,7 +14,18 @@ import {
   vi,
 } from 'vitest'
 
+import { DomainError } from '@nosgestesclimat/core/lib/errors'
+
 import { createLogger } from '../logger'
+
+class TestDomainError extends DomainError<'test_domain_error'> {
+  public readonly actionId: string
+
+  constructor(actionId = 'a1') {
+    super('test_domain_error', 'Domain failure')
+    this.actionId = actionId
+  }
+}
 
 const createTestLogger = (rethrowControlFlow?: (error: unknown) => void) =>
   createLogger({
@@ -27,7 +38,7 @@ const createTestLogger = (rethrowControlFlow?: (error: unknown) => void) =>
 
 const noResult = () => Promise.resolve()
 
-describe('withChildSpan', () => {
+describe('withSpan', () => {
   const exporter = new InMemorySpanExporter()
   const provider = new NodeTracerProvider({
     spanProcessors: [new SimpleSpanProcessor(exporter)],
@@ -56,7 +67,7 @@ describe('withChildSpan', () => {
   })
 
   it('runs the body in a span named after the scope', async () => {
-    const value = await createTestLogger().withChildSpan(
+    const value = await createTestLogger().withSpan(
       'site.service.getGeolocation',
       () => Promise.resolve('EU')
     )
@@ -67,7 +78,7 @@ describe('withChildSpan', () => {
   })
 
   it('binds the scope to the logger of the body', async () => {
-    await createTestLogger().withChildSpan(
+    await createTestLogger().withSpan(
       'site.service.getUserSession',
       (logger) => {
         logger.info('read')
@@ -83,8 +94,8 @@ describe('withChildSpan', () => {
   it('gives an operation called from another its own nested span', async () => {
     const logger = createTestLogger()
 
-    await logger.withChildSpan('site.service.completeSimulation', () =>
-      logger.withChildSpan('core.sideEffect.joinedEmail', noResult)
+    await logger.withSpan('site.service.completeSimulation', () =>
+      logger.withSpan('core.sideEffect.joinedEmail', noResult)
     )
 
     const spans = exporter.getFinishedSpans()
@@ -101,14 +112,35 @@ describe('withChildSpan', () => {
     const failure = new Error('brevo is down')
 
     await expect(
-      createTestLogger().withChildSpan('site.service.completeSimulation', () =>
+      createTestLogger().withSpan('site.service.completeSimulation', () =>
         Promise.reject(failure)
       )
     ).rejects.toThrow(failure)
 
     const [span] = exporter.getFinishedSpans()
     expect(span.status.code).toBe(2)
+    // What the semantic conventions ask: the message as the status description,
+    // the exception as an event.
+    expect(span.status.message).toBe('brevo is down')
     expect(span.events.map((event) => event.name)).toContain('exception')
+  })
+
+  it('carries on the span what the error class carries, like the line does', async () => {
+    const failure = new TestDomainError('action-1')
+
+    await expect(
+      createTestLogger().withSpan('site.service.assessActions', () =>
+        Promise.reject(failure)
+      )
+    ).rejects.toThrow(failure)
+
+    const [span] = exporter.getFinishedSpans()
+    // The same names as the log line: one filter reads a failed span and the
+    // line that reports it.
+    expect(span.attributes).toMatchObject({
+      'error.type': 'test_domain_error',
+      'ngc.actionId': 'action-1',
+    })
   })
 
   it('lets a control-flow error through without failing the span', async () => {
@@ -119,7 +151,7 @@ describe('withChildSpan', () => {
     })
 
     await expect(
-      createTestLogger(rethrowControlFlow).withChildSpan(
+      createTestLogger(rethrowControlFlow).withSpan(
         'site.service.getLatestSimulationResult',
         () => Promise.reject(new Error('NEXT_REDIRECT'))
       )

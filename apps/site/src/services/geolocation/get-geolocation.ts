@@ -12,7 +12,7 @@ import { toError } from '@nosgestesclimat/core/lib/to-error'
 import logger from '@/logger.server'
 
 export const getGeolocation = async (): Promise<Region> =>
-  await logger.withChildSpan('site.service.getGeolocation', async () => {
+  await logger.withSpan('site.service.getGeolocation', async () => {
     try {
       const geo = await fetchServer<{ code: string; region: string }>(
         `${MODELE_URL}/geolocation`

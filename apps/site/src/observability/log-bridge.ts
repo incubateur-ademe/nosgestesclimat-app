@@ -9,7 +9,7 @@ import {
   type Logger as ApiLogger,
 } from '@opentelemetry/api-logs'
 
-import { toLogAttributes } from './log-attributes.ts'
+import { toLogAttributes } from './log-shape.ts'
 import { currentRequestIdentity } from './request-identity.ts'
 
 const SEVERITY_NUMBER: Record<LogLevel, SeverityNumber> = {

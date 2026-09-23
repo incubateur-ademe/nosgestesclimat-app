@@ -15,21 +15,21 @@ Trois natures, dans l'ordre où il faut se les poser :
 
 Le critère de la troisième question n'est pas « est-ce notre code ? » mais « faut-il une intervention humaine ? » — un correctif, un quota épuisé, une base injoignable après épuisement des retries. Si personne n'agit, ce n'est pas un échec cassé, c'est un log. C'est ce qui garde Sentry actionnable.
 
-| Nature | Ce que ça veut dire | Comment ça circule | Niveau par défaut | Capture |
-|---|---|---|---|---|
-| **Nominal** | cas prévu par le métier, qui se produit normalement | retourné dans le `Result` | `info`, ou rien | non |
-| **Anomalie** | ne devrait pas se produire : défaut en amont, ou échec rattrapé (retry, fallback) | retourné dans le `Result`, ou reprise après rattrapage | `warn` | non — alerte sur taux |
-| **Cassé** | le monde n'est plus celui que le code suppose | `throw` | `error` / `fatal` | oui |
+| Nature       | Ce que ça veut dire                                                               | Comment ça circule                                     | Niveau par défaut | Capture               |
+| ------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------ | ----------------- | --------------------- |
+| **Nominal**  | cas prévu par le métier, qui se produit normalement                               | retourné dans le `Result`                              | `info`, ou rien   | non                   |
+| **Anomalie** | ne devrait pas se produire : défaut en amont, ou échec rattrapé (retry, fallback) | retourné dans le `Result`, ou reprise après rattrapage | `warn`            | non — alerte sur taux |
+| **Cassé**    | le monde n'est plus celui que le code suppose                                     | `throw`                                                | `error` / `fatal` | oui                   |
 
 Ces niveaux sont des **défauts**. Qui peut s'en écarter, et comment, est défini au chapitre 2.
 
-*Exemples.* `poll_not_found` atteint via un lien de partage périmé : usage normal, nominal — rien, ou un `info` d'audit.
+_Exemples._ `poll_not_found` atteint via un lien de partage périmé : usage normal, nominal — rien, ou un `info` d'audit.
 `simulation_incomplete` à la complétion : un client correct ne produit jamais ça. C'est une anomalie — `warn` avec le contexte, et une alerte sur taux. La traiter comme nominale reviendrait à rendre invisible un défaut du client ; la capturer à chaque occurrence noierait Sentry.
 `zero_footprint`, le calcul côté client ayant produit 0 : même raisonnement, anomalie.
 
 ### 1.1 La capture est une conséquence du niveau, pas un canal concurrent
 
-`error` et `fatal` logguent **et** capturent. Une erreur cassée produit donc une ligne de log *et* un événement Sentry, reliés par le même `trace_id`.
+`error` et `fatal` logguent **et** capturent. Une erreur cassée produit donc une ligne de log _et_ un événement Sentry, reliés par le même `trace_id`.
 
 C'est le but : on ouvre le ticket, on cherche le `trace_id` dans les logs, on lit le contexte. **Les logs contiennent toutes les erreurs, capturées ou non.**
 
@@ -41,21 +41,21 @@ L'option `capture` est une **soupape**, pas un knob : s'écarter du défaut (`fa
 
 **Vocabulaire.** Les termes employés ici, ancrés sur le dépôt :
 
-| Terme | Où |
-|---|---|
-| **client** | `apps/site/src/**` marqué `'use client'` — composants, hooks, état publicodes. Il reçoit les `Result` désérialisés. |
+| Terme                                  | Où                                                                                                                                                                                       |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **client**                             | `apps/site/src/**` marqué `'use client'` — composants, hooks, état publicodes. Il reçoit les `Result` désérialisés.                                                                      |
 | **server action**, ou **service site** | `apps/site/src/**`, fichier marqué `'use server'`. Le point d'entrée appelé par le navigateur — et, dans ce dépôt, le service site lui-même : le même fichier instancie le service core. |
-| **service core** | `packages/core/src/features/**`. La logique métier ; retourne des `Result<_, DomainError>`. |
-| **worker** | `apps/site/worker/worker.ts`. La boucle qui consomme les jobs. |
-| **frontière** (*boundary*) | le seul terme sans dossier, parce qu'il couvre deux réalités : la **server action** et la **boucle du worker**. C'est l'endroit le plus externe qui traite une demande ou un job. |
+| **service core**                       | `packages/core/src/features/**`. La logique métier ; retourne des `Result<_, DomainError>`.                                                                                              |
+| **worker**                             | `apps/site/worker/worker.ts`. La boucle qui consomme les jobs.                                                                                                                           |
+| **frontière** (_boundary_)             | le seul terme sans dossier, parce qu'il couvre deux réalités : la **server action** et la **boucle du worker**. C'est l'endroit le plus externe qui traite une demande ou un job.        |
 
 ### 2.1 Chaque couche ne décide que de ce qu'elle est seule à savoir
 
-| Où | Ce qu'on y décide |
-|---|---|
+| Où               | Ce qu'on y décide                                                                                                                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **service core** | son lifecycle (`info`), ses échecs rattrapés (`warn` + `Error`), ses échecs cassés (`throw`). Core ne loggue pas les `DomainError` qu'il retourne : c'est la frontière qui le fait, si la politique le prévoit. |
-| **frontière** | le log du `DomainError` qu'elle traite (§6), et le rattrapage des `throw`. |
-| **client** | l'affichage. Ni log serveur, ni capture. |
+| **frontière**    | le log du `DomainError` qu'elle traite (§6), et le rattrapage des `throw`.                                                                                                                                      |
+| **client**       | l'affichage. Ni log serveur, ni capture.                                                                                                                                                                        |
 
 ### 2.2 L'escalade au-dessus du défaut appartient à la frontière
 
@@ -79,7 +79,7 @@ C'est un texte affiché, pas un diagnostic. Aucun détail interne — SQL, stack
 
 **Pourquoi.** Seules des données traversent la frontière. Le `code` survit ; le prototype, les méthodes et généralement la stack, non. Le client reçoit un objet amputé : le capturer reviendrait à capturer sans stack, donc sans intérêt.
 
-Retourner l'erreur à la vue *et* la logger côté serveur n'est pas un double traitement : la frontière décide une fois du niveau, puis diffuse vers deux destinations.
+Retourner l'erreur à la vue _et_ la logger côté serveur n'est pas un double traitement : la frontière décide une fois du niveau, puis diffuse vers deux destinations.
 
 ### 2.6 On loggue là où l'échec est traité
 
@@ -95,19 +95,19 @@ Trois filets, jamais des try/catch dispersés :
 
 Un wrapper ne sert pas à logger les `throw` — le filet 2 le fait déjà. Il sert à contrôler la réponse, et à appliquer la politique des `DomainError` (§6).
 
-*Note.* En Server Components, React peut substituer à l'erreur d'origine une erreur portant un `digest`, sans stack. C'est attendu : le `digest` sert précisément à retrouver l'erreur côté serveur.
+_Note._ En Server Components, React peut substituer à l'erreur d'origine une erreur portant un `digest`, sans stack. C'est attendu : le `digest` sert précisément à retrouver l'erreur côté serveur.
 
 ---
 
 ## 3. Les niveaux
 
-| Niveau | Quand | Porte un `Error` ? | Capture |
-|---|---|---|---|
-| `debug` | diagnostic de développement, jamais en production | non | non |
-| `info` | événement large : une ligne riche par requête ou par job (ce qui est arrivé, avec son contexte), pas une étape de code | non | non |
-| `warn` | anomalie : défaut en amont, ou échec rattrapé. « À surveiller, pas à réparer » | oui, quand on l'a | non |
-| `error` | échec qui compte : inattendu, ou mitigation épuisée | **toujours** | oui |
-| `fatal` | le service ne peut plus continuer ; suivi d'un arrêt du process | **toujours** | oui + alerte |
+| Niveau  | Quand                                                                                                                  | Porte un `Error` ? | Capture      |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------ |
+| `debug` | diagnostic de développement, jamais en production                                                                      | non                | non          |
+| `info`  | événement large : une ligne riche par requête ou par job (ce qui est arrivé, avec son contexte), pas une étape de code | non                | non          |
+| `warn`  | anomalie : défaut en amont, ou échec rattrapé. « À surveiller, pas à réparer »                                         | oui, quand on l'a  | non          |
+| `error` | échec qui compte : inattendu, ou mitigation épuisée                                                                    | **toujours**       | oui          |
+| `fatal` | le service ne peut plus continuer ; suivi d'un arrêt du process                                                        | **toujours**       | oui + alerte |
 
 Les **étapes** d'un traitement vivent en `debug`, activé à la demande : c'est ce
 qui garde le volume exploitable — les logs sont facturés au volume, et une boucle
@@ -120,7 +120,7 @@ le détail de chaque étape en `debug`.
 
 Un message seul n'est jamais une erreur — c'est un `info` ou un `warn`.
 
-**Pourquoi.** Sans stacktrace, on ne peut ni localiser ni dédupliquer. Le typage doit rendre l'usage impossible, pas seulement déconseillé.
+**Pourquoi.** Sans `Error`, il n'y a ni stacktrace à envoyer à Sentry, ni déduplication possible — et c'est `captureException` qui porte la stack, pas la ligne. Le typage doit rendre l'usage impossible, pas seulement déconseillé.
 
 ### 3.2 Une erreur rattrapée sans conséquence est un `warn`, pas un `error`
 
@@ -149,11 +149,11 @@ L'identité et la session sont établies côté serveur, jamais lues dans le pay
 **Ce que la validation ne fait pas.** Elle protège de la **dérive**, pas de l'**attaque**.
 
 - La dérive est sans malveillance : notre propre client d'il y a une semaine, un onglet ouvert depuis trois jours, une page en cache, un bug qui envoie `null`. Le contrat est rompu, et c'est constant.
-- L'attaque — requête forgée, contournement volontaire — relève d'autre chose : autorisation, limitation de débit, WAF. Un payload forgé mais bien formé passe la validation *par construction*.
+- L'attaque — requête forgée, contournement volontaire — relève d'autre chose : autorisation, limitation de débit, WAF. Un payload forgé mais bien formé passe la validation _par construction_.
 
 Lui demander de faire de la sécurité, c'est la sous-dimensionner comme contrat et se croire protégé à tort.
 
-*Note.* Les identifiants d'actions Next.js sont recalculés à chaque build : un onglet périmé est rejeté proprement (`Failed to find Server Action`), il ne bascule pas silencieusement sur une nouvelle signature. La dérive réelle passe par les **valeurs** — état persisté ayant survécu au déploiement, identifiant tiré d'une ancienne URL — et par les requêtes POST directes.
+_Note._ Les identifiants d'actions Next.js sont recalculés à chaque build : un onglet périmé est rejeté proprement (`Failed to find Server Action`), il ne bascule pas silencieusement sur une nouvelle signature. La dérive réelle passe par les **valeurs** — état persisté ayant survécu au déploiement, identifiant tiré d'une ancienne URL — et par les requêtes POST directes.
 
 ### 4.3 La server action valide le message ; le service core valide l'opération
 
@@ -210,9 +210,9 @@ Appels types :
 
 ```ts
 logger.info('job processed', { currentMemory: currentMemoryMB() })
-logger.error(err, { pollId, simulationId })               // capture par défaut
-logger.warn(err, { attempt: 2, maxAttempts: 5 })         // retry : stack logguée, rien de capturé
-logger.warn(err, { route }, { capture: true })           // justifié par commentaire (§1.1)
+logger.error(err, { pollId, simulationId }) // capture par défaut
+logger.warn(err, { attempt: 2, maxAttempts: 5 }) // retry : stack logguée, rien de capturé
+logger.warn(err, { route }, { capture: true }) // justifié par commentaire (§1.1)
 ```
 
 Règles de conception, chacune conséquence d'un chapitre précédent :
@@ -222,7 +222,7 @@ Règles de conception, chacune conséquence d'un chapitre précédent :
 - **`warn` accepte `string | Error`** (§3.2) : le cas retry passe l'`Error` elle-même — la stack reste dans le log, sans capture. Jamais de message reconstitué à partir d'une erreur, et **jamais d'erreur fabriquée pour la logger** : à l'endroit où l'anomalie est constatée, un message et ses attributs suffisent — l'`Error` n'a de valeur que rattrapée, parce que sa stack dit d'où elle vient.
 - **`child(bindings)` retourne un `Logger`** — l'interface, pas le type pino. Les bindings sont le contexte statique partagé par plusieurs lignes d'une même portée (service, route, job, ids de la requête ou de la boucle) ; **pour une ligne isolée, la `meta` suffit** : un `child` créé pour un seul appel ne fait que déplacer le contexte. Le `trace_id` ne passe **jamais** par `child` : c'est OTel qui l'injecte (§7.3).
 - **La capture est portée par l'implémentation**, pas par les services : `captureException` disparaît des dépendances de core. Un service core ne reçoit que `logger`.
-- **Sérialisation** (côté implémentation) : les **attributs exportés** sont **aplatis** — les objets d'une `meta` deviennent des clés pointées, `currentMemory.rssMB` — au moment de l'export, pas dans la fabrique : le JSON qui part sur stdout garde sa forme imbriquée, qu'un aplatissement abîmerait (`a.b` et `a: { b }` fusionneraient en une seule clé). L'`Error` passée à `error()`/`fatal()` prend les noms qu'OTel définit pour une exception de log : `exception.type`, `exception.message`, `exception.stacktrace` (chaîne des `cause` ajoutée).
+- **Sérialisation** (côté implémentation) : la fabrique **aplatit** la `meta` — les objets deviennent des clés pointées, `currentMemory.rssMB` — et c'est cette forme unique que voient stdout _et_ l'export. Auparavant l'aplatissement vivait à l'export et stdout gardait l'imbriqué, ce qui obligeait toute règle transverse à s'écrire deux fois (c'est ainsi que le masquage a divergé) et faisait écrire `{}` à pino pour une `Error` de la `meta`. Conséquence assumée : la ligne stdout est plate, et `{ 'a.b': 1, a: { b: 2 } }` fusionne — fenêtre étroite, le préfixe occupant le premier niveau. L'`Error` passée à `error()`/`fatal()` prend les noms qu'OTel définit pour une exception de log : `exception.type` et `exception.message` — **sans `exception.stacktrace`**, écart délibéré au `SHOULD` de la semconv : la stack est dans Sentry (`captureException`), elle ne sert pas à lire une ligne, et une stack par ligne se paie deux fois (drain et PostHog).
   Ses propriétés propres suivent : `code` devient
   `error.type` (le nom semconv pour la classe d'erreur), et les champs que la
   classe déclare passent sous `ngc.`. Aucune erreur ne porte son niveau : c'est
@@ -278,11 +278,13 @@ Next.js 16 exécute le proxy (`proxy.ts`, ex-middleware) sur le runtime Node —
 ### 7.3 Traces : provider OTel à nous, PostHog comme backend
 
 - **Un `NodeTracerProvider` à nous**, enregistré dans `instrumentation.ts` — pas celui de Sentry. Raison : les traces vont dans PostHog ; ne garder Sentry comme instrumenteur serait payer le couplage vendor pour un produit qu'on ne consomme plus.
-- Sources de spans : **Next.js natif** (`BaseServer.handleRequest`, `render`, `fetch` — Next émet ses spans via `@opentelemetry/api` dès qu'un provider est enregistré), **nos opérations** (`logger.withChildSpan` ouvre une span nommée par le composant, y lie le logger et la ferme : deux opérations imbriquées donnent deux spans, chacune sa durée ; span par itération worker), **nos side effects** (`runSideEffect` instrumente la tâche différée sous `core.sideEffect.<nom>`, ouverte au démarrage du travail et non à sa mise en file), **`PrismaInstrumentation`** (requêtes DB, contexte propagé via l'adapter pg).
-- **Le span appartient au contrat `Logger`** : `logger.withChildSpan(scope, run)` ouvre la span, y lie le logger de portée et la ferme sur le corps — une span n'existe ici que pour nommer l'opération et donner un `scope` à ses lignes, et le couplage évite une dépendance d'observabilité de plus à injecter dans les services. L'implémentation apporte le tracer comme elle apporte pino : le site le tracer OTel, les tests et `apps/server` un passthrough sans span. Next injecte `unstable_rethrow` pour qu'un `redirect` ou un `notFound()` ne marque pas la span en échec ; le worker n'injecte rien, il n'a pas de contrôle de flux de ce genre.
+- Sources de spans : **Next.js natif** (`BaseServer.handleRequest`, `render`, `fetch` — Next émet ses spans via `@opentelemetry/api` dès qu'un provider est enregistré), **nos opérations** (`logger.withSpan` ouvre une span nommée par le composant, y lie le logger et la ferme : deux opérations imbriquées donnent deux spans, chacune sa durée ; span par itération worker), **nos side effects** (`runSideEffect` instrumente la tâche différée sous `core.sideEffect.<nom>`, ouverte au démarrage du travail et non à sa mise en file), **`PrismaInstrumentation`** (requêtes DB, contexte propagé via l'adapter pg).
+- **Le span appartient au contrat `Logger`** : `logger.withSpan(scope, run)` ouvre la span, y lie le logger de portée et la ferme sur le corps — une span n'existe ici que pour nommer l'opération et donner un `scope` à ses lignes, et le couplage évite une dépendance d'observabilité de plus à injecter dans les services. L'implémentation apporte le tracer comme elle apporte pino : le site le tracer OTel, les tests et `apps/server` un passthrough sans span. Next injecte `unstable_rethrow` pour qu'un `redirect` ou un `notFound()` ne marque pas la span en échec ; le worker n'injecte rien, il n'a pas de contrôle de flux de ce genre.
 - **Le worker ne déclare pas de composant** : son unité de travail est le job, porté par l'attribut `job` (`ngc.job`), et ses lignes propres — démarrage, mémoire, arrêt — ont la portée du service (`worker`).
-- **`withChildSpan` est un contrat core**, comme le reste de `Logger` : core déclare ce qui mérite une span — un side effect, un service qui fait de l'I/O ou du calcul — et reçoit le tracer du runtime. Core ne connaît toujours pas OpenTelemetry, et un service ne reçoit que `logger`, jamais un second objet d'observabilité.
-- **Le logger du corps arrive en paramètre**, pas en position : `logger.withChildSpan('site.service.x', async (logger) => …)` laisse la signature publique de la fonction appelée intacte, et le logger chargé du `scope` est celui du corps. Les services du site qui font un appel, une attente ou un geste produit passent par lui (`site.service.*`), les actions de formulaire aussi (`site.action.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
+- **Une span qui échoue porte ce que la spec demande** : l'exception en événement (`exception.*`), sa classe en `error.type` — plus les champs que porte la classe d'erreur, sous les mêmes noms que la ligne — et le message de l'erreur en description de statut. L'échec appartient à l'opération, pas à l'exception : une erreur qui échappe au corps est « unhandled when the span ends », donc marquée ; une erreur rattrapée dans le corps laisse la span intacte (au besoin une ligne `debug`/`warn`, comme le recommande OTel pour le cas traité).
+- **Une seule ligne par échec, à la frontière qui le possède.** La spec est explicite : l'exception doit être enregistrée _comme log record_, et il n'est « NOT RECOMMENDED to record the same exception more than once ». Autrement dit : la span porte le statut, la ligne porte le rapport — les deux sont complémentaires, pas dupliquées — mais aucune couche intermédiaire n'ajoute sa ligne avant de relancer. Qui possède l'échec : le worker pour un job (sa boucle loggue), l'action pour un geste produit (`onRequestError` pour le reste).
+- **`withSpan` est un contrat core**, comme le reste de `Logger` : core déclare ce qui mérite une span — un side effect, un service qui fait de l'I/O ou du calcul — et reçoit le tracer du runtime. Core ne connaît toujours pas OpenTelemetry, et un service ne reçoit que `logger`, jamais un second objet d'observabilité.
+- **Le logger du corps arrive en paramètre**, pas en position : `logger.withSpan('site.service.x', async (logger) => …)` laisse la signature publique de la fonction appelée intacte, et le logger chargé du `scope` est celui du corps. Les services du site qui font un appel, une attente ou un geste produit passent par lui (`site.service.*`), les actions de formulaire aussi (`site.action.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
 - **On instrumente une opération, pas chaque helper.** Ce qui mérite une span : une frontière (action, itération de worker), un service qui fait un appel externe, du calcul ou de l'attente — et un side effect, qui vit de toute façon hors de la requête. Le reste déclare un composant et s'arrête là. Le nombre de spans dans une cascade est le prix de la lisibilité : mieux vaut dix spans qui se lisent que cinquante qui se comptent.
 - Export OTLP : `https://eu.i.posthog.com/i/v1/traces`. Échantillonnage paramétrable par env ; les logs portent le `trace_id` même quand la trace n'est pas exportée.
 - **`X-Request-ID` est notre racine de trace.** nginx génère déjà un `request_id` 32-hex, le propage à l'app via `X-Request-ID`, et le mappe en `trace_id` de ses propres logs PostHog (`infra/nginx/README.md`). L'app honore ce contrat : un propagateur OTel adopte `X-Request-ID` comme parent distant quand aucun `traceparent` W3C n'est présent. Un seul `trace_id` relie alors **nginx → app → DB** dans PostHog. Absent (dev local, worker) : racine OTel standard.
@@ -296,9 +298,9 @@ Deux attributs OTel, noms exacts imposés par PostHog :
 - **`posthogDistinctId`** — relie la ligne au profil personne (onglet Logs). Pour un utilisateur authentifié, c'est le **userId applicatif** : le client fait `posthog.identify(userId)` et le projet est en `person_profiles: 'identified_only'`. Le serveur le connaît (session décryptée) — source de vérité serveur, aucune confiance dans le client.
 - **`sessionId`** — relie au **replay** (bouton « View recording » + onglet « Related errors », ±6 h). La session PostHog ne vit que dans le navigateur : c'est posthog-js qui l'envoie, via l'option `tracing_headers` (≥ 1.380 ; headers `X-POSTHOG-DISTINCT-ID` / `X-POSTHOG-SESSION-ID` ajoutés aux `fetch` same-origin — y compris les POST de server actions).
 
-Injection côté serveur : `identifyRequest()`, appelé par `getUserSession` (qui lit déjà la session et les headers), range l'identité **sous le `trace_id` de la requête** — pas dans un store asynchrone : la session est dans les entêtes, donc l'appel a forcément lieu après un `await`, et un store posé après un `await` reste dans cette continuation (mesuré : il ne survit pas au `await` de l'appelant, donc il n'atteint aucune autre frame de la requête). La trace *est* la requête — le `request_id` nginx en est la racine — donc chaque consommateur retrouve l'identité depuis la span qu'il manipule déjà : le pont depuis la span active, `IdentitySpanProcessor` depuis la span qu'il décore, au moment de sa fin (`onEnding`, seul moment où ses attributs restent modifiables — un `setAttribute` après `end()` est ignoré par le SDK) : y compris la span de requête du framework, déjà ouverte quand la session est lue, celle que PostHog affiche comme la requête. Le baggage OTel aurait le même défaut (il ne se pose qu'autour du travail, `context.with`) et voyagerait en plus vers les services appelés.
+Injection côté serveur : `identifyRequest()`, appelé par `getUserSession` (qui lit déjà la session et les headers), range l'identité **sous le `trace_id` de la requête** — pas dans un store asynchrone : la session est dans les entêtes, donc l'appel a forcément lieu après un `await`, et un store posé après un `await` reste dans cette continuation (mesuré : il ne survit pas au `await` de l'appelant, donc il n'atteint aucune autre frame de la requête). La trace _est_ la requête — le `request_id` nginx en est la racine — donc chaque consommateur retrouve l'identité depuis la span qu'il manipule déjà : le pont depuis la span active, `IdentitySpanProcessor` depuis la span qu'il décore, au moment de sa fin (`onEnding`, seul moment où ses attributs restent modifiables — un `setAttribute` après `end()` est ignoré par le SDK) : y compris la span de requête du framework, déjà ouverte quand la session est lue, celle que PostHog affiche comme la requête. Le baggage OTel aurait le même défaut (il ne se pose qu'autour du travail, `context.with`) et voyagerait en plus vers les services appelés.
 
-*Pourquoi pas un baggage OTel.* Un baggage ne se pose qu'autour du travail (`context.with`) : il faudrait envelopper chaque corps d'action pour un attribut décoratif. Un store asynchrone rend le même service sans rien envelopper, et sans se rompre quand une span s'ouvre.
+_Pourquoi pas un baggage OTel._ Un baggage ne se pose qu'autour du travail (`context.with`) : il faudrait envelopper chaque corps d'action pour un attribut décoratif. Un store asynchrone rend le même service sans rien envelopper, et sans se rompre quand une span s'ouvre.
 
 Le `posthogDistinctId` n'est posé que lorsque l'identité est établie côté serveur (session authentifiée). Pour un visiteur anonyme, on prend celui que posthog-js envoie : le nôtre n'est pas un `distinct_id` PostHog et créerait un profil fantôme.
 
@@ -377,7 +379,7 @@ attributs maison quand il n'y en a pas.
   bundlé et minifié, le chemin runtime est celui du chunk (`/ROOT/node_modules/…`
   pour une dépendance externalisée, un id de chunk sinon) — ni les dossiers,
   qui bougent et mentent. Ni `otel.scope.name` : namespace réservé à la spec,
-  et défini comme le miroir de la portée pour les exports *non* OTLP, alors que
+  et défini comme le miroir de la portée pour les exports _non_ OTLP, alors que
   la nôtre arrive en OTLP et que PostHog la garde. Ni `code.function.name`,
   censé porter la représentation du runtime recoupable avec une pile —
   intenable quand le code est minifié, et l'unité est souvent un module, pas
@@ -393,14 +395,4 @@ attributs maison quand il n'y en a pas.
   portent déjà dans PostHog, donc un filtre couvre les deux. Ce qui est propre à
   Next reste dans son namespace `next.*`, comme Next le fait sur ses spans
   (`next.route`, `next.span_type`).
-- **Les attributs exportés sont plats** : un objet de `meta` — ou d'un binding
-  de `child` — est aplati en clés pointées (`engine.key`), séparateur que
-  les noms semconv emploient eux-mêmes (`http.request.method`). C'est **le pont
-  qui aplatit, à l'export**, pas la fabrique : l'aplatissement est une
-  contrainte du backend, pas de la journalisation — PostHog ne le fait pas
-  (vérifié par sonde : un `kvlistValue` y arrive en JSON texte et sa colonne
-  pointée est nulle), donc un objet imbriqué envoyé tel quel ne serait pas
-  requêtable. Si un `flatten` d'ingestion prenait le relais un jour (comme le
-  collecteur des logs nginx), c'est cette étape-là qu'on supprimerait — pas
-  celle de la fabrique. Au-delà de quatre niveaux, la valeur reste du JSON,
-  faute de mieux. L'exception d'une ligne prend les trois noms `exception.*`.
+- **Les attributs sont plats, et c'est la fabrique qui les aplatit** : un objet de `meta` — ou d'un binding de `child` — devient des clés pointées (`engine.key`), séparateur que les noms semconv emploient eux-mêmes (`http.request.method`), et la même forme part sur stdout et vers PostHog. L'aplatissement est une contrainte du backend — PostHog ne le fait pas (vérifié par sonde : un `kvlistValue` y arrive en JSON texte et sa colonne pointée est nulle) — mais il est fait une fois, en amont, pour que les deux sorties ne divergent jamais ; si un `flatten` d'ingestion prenait le relais un jour (comme le collecteur des logs nginx), c'est cette étape qu'on supprimerait. Au-delà de quatre niveaux, la valeur reste du JSON, faute de mieux ; la troncature, elle, reste à l'export — c'est une limite de PostHog, la ligne garde sa valeur entière. L'`Error` trouvée dans la `meta` devient ses messages, chaîne des `cause` comprise, sous une seule clé. L'exception d'une ligne prend `exception.type` et `exception.message` — pas la stack, qui est celle de Sentry.

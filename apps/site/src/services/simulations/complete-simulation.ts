@@ -39,7 +39,7 @@ const completeSimulationService = createCompleteSimulation({
 export const completeSimulation = async (
   payload: CompleteSimulationPayload
 ): Promise<Result<never, CompleteSimulationError> | void> =>
-  await logger.withChildSpan(
+  await logger.withSpan(
     'site.service.completeSimulation',
     async (actionLogger) => {
       const session = await getUserSession()

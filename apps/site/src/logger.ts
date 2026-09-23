@@ -10,8 +10,12 @@ import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { context, SpanStatusCode, trace } from '@opentelemetry/api'
 import pino, { type Logger as PinoLogger } from 'pino'
 
-import { exceptionAttributes } from './observability/log-attributes.ts'
 import { emitLogRecord } from './observability/log-bridge.ts'
+import {
+  errorAttributes,
+  exceptionAttributes,
+  flattenMeta,
+} from './observability/log-shape.ts'
 import { appTracer } from './observability/setup.ts'
 
 /**
@@ -114,15 +118,14 @@ export function createLogger({
         ...(error && exceptionAttributes(error)),
       })
 
-      instance[level](line, message)
-      // The same line goes to PostHog, with the bindings pino keeps apart from
-      // the meta — its own `bindings()` walks the `child` chain.
-      emitLogRecord({
-        service,
-        level,
-        message,
-        meta: { ...instance.bindings(), ...line },
-      })
+      // The shape both outputs see: the bindings pino would merge anyway, the
+      // meta, and the fields an error class carries — flattened here, once.
+      const shaped = flattenMeta({ ...instance.bindings(), ...line })
+
+      instance[level](shaped, message)
+      // The same line goes to PostHog: the bridge maps its values to OTLP
+      // attributes, which is all that is left to do.
+      emitLogRecord({ service, level, message, meta: shaped })
 
       const capture =
         options?.capture ?? (level === 'error' || level === 'fatal')
@@ -135,7 +138,7 @@ export function createLogger({
 
     return {
       child: (bindings) => build(instance.child(prefixKeys(bindings))),
-      withChildSpan: async <Result>(
+      withSpan: async <Result>(
         scope: ScopeName,
         run: (logger: Logger) => Promise<Result>
       ): Promise<Result> =>
@@ -147,8 +150,18 @@ export function createLogger({
             // untouched, or every redirect reads as a failure.
             rethrowControlFlow(error)
 
-            span.recordException(toError(error))
-            span.setStatus({ code: SpanStatusCode.ERROR })
+            const failure = toError(error)
+
+            // What the semantic conventions ask of a span whose operation
+            // failed: the exception as an event, its class as `error.type`
+            // (plus what our error classes carry), the message as the status
+            // description. The report itself stays the caller's decision.
+            span.recordException(failure)
+            span.setAttributes(errorAttributes(failure))
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: failure.message,
+            })
             throw error
           } finally {
             span.end()

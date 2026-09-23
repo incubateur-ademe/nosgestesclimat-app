@@ -63,7 +63,7 @@ async function loop(
       // The span covers the whole iteration: its logs share the trace ids, and a
       // failure marks the iteration as failed. The loop keeps running on either
       // outcome — a job that cannot be processed is not retried in place.
-      await jobLogger.withChildSpan(`site.worker.${name}`, async (logger) => {
+      await jobLogger.withSpan(`site.worker.${name}`, async (logger) => {
         const result = await processNext()
 
         if (!result.success) {
@@ -77,7 +77,7 @@ async function loop(
         }
       })
     } catch (error) {
-      // The span is already marked as failed by `withChildSpan`.
+      // The span is already marked as failed by `withSpan`.
       jobLogger.error(toError(error))
     }
 

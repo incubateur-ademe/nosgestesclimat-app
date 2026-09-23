@@ -26,7 +26,7 @@ export function runSideEffect<Failure extends ErrorWithCode>(
   meta: LogMeta = {}
 ): void {
   deps.backgroundTaskRunner(() =>
-    deps.logger.withChildSpan(`core.sideEffect.${name}`, async (logger) => {
+    deps.logger.withSpan(`core.sideEffect.${name}`, async (logger) => {
       try {
         const result = await run()
 

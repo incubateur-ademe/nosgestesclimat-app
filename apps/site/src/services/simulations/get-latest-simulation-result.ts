@@ -14,22 +14,19 @@ export const getLatestSimulationResult = async ({
 }: {
   withTendency: boolean
 }): Promise<SimulationResult> =>
-  await logger.withChildSpan(
-    'site.service.getLatestSimulationResult',
-    async () => {
-      const session = await getUserSession()
-      if (!session) notFound()
+  await logger.withSpan('site.service.getLatestSimulationResult', async () => {
+    const session = await getUserSession()
+    if (!session) notFound()
 
-      const result = await getLatestSimulationResultService({
-        withTendency,
-        userId: session.id,
-      })
+    const result = await getLatestSimulationResultService({
+      withTendency,
+      userId: session.id,
+    })
 
-      if (!result) notFound()
+    if (!result) notFound()
 
-      return {
-        ...result,
-        simulation: toSimulationDto(result.simulation),
-      }
+    return {
+      ...result,
+      simulation: toSimulationDto(result.simulation),
     }
-  )
+  })

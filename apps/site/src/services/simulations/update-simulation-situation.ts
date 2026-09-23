@@ -21,7 +21,7 @@ import {
 export const updateSimulationSituation = async (
   payload: UpdateSimulationSituationPayload
 ): Promise<Result<void, UpdateSimulationSituationError>> =>
-  await logger.withChildSpan(
+  await logger.withSpan(
     'site.service.updateSimulationSituation',
     async (actionLogger) => {
       const session = await getUserSession()

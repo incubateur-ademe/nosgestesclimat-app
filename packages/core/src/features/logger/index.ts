@@ -34,7 +34,6 @@ export type OtelAttributes = Partial<{
   'error.type': string
   'exception.type': string
   'exception.message': string
-  'exception.stacktrace': string
   'process.memory.usage': number
   'v8js.memory.heap.used': number
   'http.request.method': string
@@ -85,7 +84,7 @@ export interface Logger {
    * neither. A failure marks the span and goes out unchanged — what to report
    * stays the caller's decision.
    */
-  withChildSpan<Result>(
+  withSpan<Result>(
     scope: ScopeName,
     run: (logger: Logger) => Promise<Result>
   ): Promise<Result>

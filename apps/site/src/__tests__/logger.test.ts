@@ -56,10 +56,20 @@ describe('createLogger', () => {
     expect(onCapture).toHaveBeenCalledWith(error)
   })
 
-  it('keeps a nested meta nested in the line', () => {
+  it('flattens a nested meta into dotted keys, the shape of the export', () => {
     logger.info('engine built', { payload: { key: 'FR:current' } })
 
-    expect(lastLine()['ngc.payload']).toEqual({ key: 'FR:current' })
+    // One shape for both outputs: what stdout prints is what PostHog stores.
+    expect(lastLine()['ngc.payload.key']).toBe('FR:current')
+    expect(lastLine()['ngc.payload']).toBeUndefined()
+  })
+
+  it('writes an Error found in the meta as its messages, not as an empty object', () => {
+    logger.info('email rejected', { cause: new Error('425 too many attempts') })
+
+    expect(lastLine()['ngc.cause']).toEqual(
+      expect.stringContaining('Error: 425 too many attempts')
+    )
   })
 
   it('logs a warned Error without capturing it', () => {
@@ -97,6 +107,6 @@ describe('createLogger', () => {
   it('leaves a business payload alone', () => {
     logger.info('answers', { 'ngc.payload': { car: 1 } })
 
-    expect(lastLine()['ngc.payload']).toEqual({ car: 1 })
+    expect(lastLine()['ngc.payload.car']).toBe(1)
   })
 })

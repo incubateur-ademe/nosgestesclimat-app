@@ -136,11 +136,9 @@ describe('log export', () => {
       'exception.type': 'Error',
       'exception.message': 'brevo is down',
     })
-    const stacktrace = record.attributes['exception.stacktrace']
-    expect(stacktrace).toEqual(expect.stringContaining('Error: brevo is down'))
-    expect(stacktrace).toEqual(
-      expect.stringContaining('Caused by: Error: socket closed')
-    )
+    // Deliberate deviation from the semconv `SHOULD`: the stack (the cause
+    // chain included) is Sentry's, and a stack per line is volume paid twice.
+    expect(record.attributes['exception.stacktrace']).toBeUndefined()
   })
 
   it('writes the fields the error class carries, flattened', () => {
@@ -165,15 +163,16 @@ describe('log export', () => {
     expect(record.spanContext).toBeUndefined()
   })
 
-  it('writes a nested Error under one attribute, its stack', () => {
+  it('writes a nested Error under one attribute, what happened then why', () => {
     logger().info('email rejected', {
-      cause: new Error('425 too many attempts'),
+      cause: new Error('425 too many attempts', {
+        cause: new Error('rate limited'),
+      }),
     })
 
     const [record] = exporter.getFinishedLogRecords()
-    const stacktrace = record.attributes['ngc.cause']
-    expect(stacktrace).toEqual(
-      expect.stringContaining('Error: 425 too many attempts')
+    expect(record.attributes['ngc.cause']).toBe(
+      'Error: 425 too many attempts\nCaused by: Error: rate limited'
     )
     // The semconv exception names stay reserved for the record's top-level
     // exception — the error passed to `error()`, not one inside the meta.

@@ -20,7 +20,7 @@ import { identifyRequest } from '@/observability/request-identity'
  */
 export const getUserSession = cache(
   async (): Promise<UserSession> =>
-    await logger.withChildSpan('site.service.getUserSession', async () => {
+    await logger.withSpan('site.service.getUserSession', async () => {
       const reqHeaders = await headers()
       const sessionHeader = reqHeaders.get('x-session')
 

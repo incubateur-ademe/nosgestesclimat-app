@@ -82,10 +82,9 @@ const logger = winston.createLogger({
 const toCoreLogger = (winstonLogger: winston.Logger): CoreLogger => ({
   child: (bindings) => toCoreLogger(winstonLogger.child(bindings)),
   // The legacy server has no tracer: the span is a no-op and the callback gets
-  // the scope-bound logger, which is what a `withChildSpan` call site uses it
+  // the scope-bound logger, which is what a `withSpan` call site uses it
   // for.
-  withChildSpan: (scope, run) =>
-    run(toCoreLogger(winstonLogger.child({ scope }))),
+  withSpan: (scope, run) => run(toCoreLogger(winstonLogger.child({ scope }))),
   debug: (message, meta) => winstonLogger.debug(message, meta),
   info: (message, meta) => winstonLogger.info(message, meta),
   warn: (message, meta) =>
