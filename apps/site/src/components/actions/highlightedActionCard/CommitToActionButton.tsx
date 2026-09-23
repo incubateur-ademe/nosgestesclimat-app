@@ -7,6 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { commitToAction } from '@/services/actions/commit-to-action' // Server Action
 import { useTransition } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 export default function CommitToActionButton({
   actionId,
@@ -47,8 +48,8 @@ export default function CommitToActionButton({
       color="secondary"
       onClick={handleCommitToAction}
       disabled={isPending}
-      className={className}>
-      <PlusIcon className="stroke-primary-700 mr-2 inline-block" />
+      className={twMerge('text-sm!', className)}>
+      <PlusIcon className="stroke-primary-700 mr-2 inline-block size-3" />
       {shortLabelDisplayed ? (
         <Trans i18nKey="actions.components.actionCard.highlighted.addButton.short">
           Ajouter

@@ -102,11 +102,13 @@ export default function ActionCard({
         ) : null}
         <div className="grow">
           <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
+
           {description ? (
             <p className="mb-2 line-clamp-2 text-sm/normal text-slate-600 md:line-clamp-3 md:text-base/normal">
               {description}
             </p>
           ) : null}
+
           {action.assessment ? (
             <ImpactTag
               impact={action.assessment.impact}
@@ -134,10 +136,7 @@ export default function ActionCard({
       )}
       {personalized && (
         <div className="border-t border-slate-100 p-2">
-          <CommitToActionButton
-            className="w-full text-sm!"
-            actionId={action.id}
-          />
+          <CommitToActionButton className="w-full" actionId={action.id} />
         </div>
       )}
       {cta ?? (
