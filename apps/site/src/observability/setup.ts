@@ -22,7 +22,7 @@ import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
 import { PrismaInstrumentation } from '@prisma/instrumentation'
 
 import { APP_ENV } from '../../config/app-env.ts'
-import { IdentitySpanProcessor } from './identity-span-processor.ts'
+import { IdentitySpanProcessor } from './request-identity.ts'
 import { XRequestIdPropagator } from './x-request-id-propagator.ts'
 
 /** PostHog ingests OTLP under `/i`, per project region. */

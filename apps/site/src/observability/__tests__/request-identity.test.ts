@@ -7,8 +7,11 @@ import {
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { IdentitySpanProcessor } from '../identity-span-processor'
-import { currentRequestIdentity, identifyRequest } from '../request-identity'
+import {
+  IdentitySpanProcessor,
+  currentRequestIdentity,
+  identifyRequest,
+} from '../request-identity'
 
 describe('request identity', () => {
   const exporter = new InMemorySpanExporter()
@@ -83,6 +86,15 @@ describe('request identity', () => {
     })
 
     const spans = exporter.getFinishedSpans()
+    const request = spans.find(
+      (span) => span.name === 'POST /fr/simulateur/bilan'
+    )!
+    // The request span was already open when the identity landed: `onEnd`
+    // covers it, and it is the one PostHog shows as the request.
+    expect(request.attributes).toMatchObject({
+      posthogDistinctId: 'user-2',
+      sessionId: 'replay-2',
+    })
     const session = spans.find(
       (span) => span.name === 'site.service.getUserSession'
     )!

@@ -23,12 +23,25 @@ const FOREIGN_PREFIXES = [
 /** Exact names another party owns, or a library put on the line. */
 const FOREIGN_NAMES = [
   'error.type',
-  // PostHog matches on these two: its names, its business.
-  'posthogDistinctId',
-  'sessionId',
   // Pino's own base field.
   'service',
 ]
+
+/**
+ * The two names PostHog matches to link telemetry to a person and to a session
+ * recording — on a log record as on a span. Its names, its business: they are
+ * exported with them, so they are listed here rather than guessed at call
+ * sites.
+ */
+export const POSTHOG_IDENTITY_ATTRIBUTES = {
+  distinctId: 'posthogDistinctId',
+  sessionId: 'sessionId',
+} as const
+
+FOREIGN_NAMES.push(
+  POSTHOG_IDENTITY_ATTRIBUTES.distinctId,
+  POSTHOG_IDENTITY_ATTRIBUTES.sessionId
+)
 
 /**
  * The name an attribute takes on the wire, from the short key a caller writes:
