@@ -27,6 +27,7 @@ import {
   type CompleteSimulationPayload,
   CompleteSimulationPayloadSchema,
 } from './complete-simulation-payload.schema'
+import { ensureSimulationModel } from './ensure-simulation-model'
 
 const completeSimulationService = createCompleteSimulation({
   logger,
@@ -56,10 +57,13 @@ export const completeSimulation = async (
   const { id, progression, situation, foldedSteps, computedResults } =
     parsed.data
 
+  const { model } = await ensureSimulationModel(parsed.data)
+
   const result = await completeSimulationService({
     userSession: session,
     simulationId: id,
     progression,
+    model,
     situation: situation as Situation<DottedName>,
     foldedSteps: foldedSteps as DottedName[],
     computedResults,

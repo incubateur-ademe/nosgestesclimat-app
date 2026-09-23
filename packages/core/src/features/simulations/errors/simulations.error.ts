@@ -26,6 +26,15 @@ export class ZeroFootprintError extends DomainError<'zero_footprint'> {
   }
 }
 
+export class SimulationInvalidModelError extends DomainError<'simulation_invalid_model'> {
+  public readonly model: string
+
+  constructor(model: string) {
+    super('simulation_invalid_model', 'Modèle de simulation invalide')
+    this.model = model
+  }
+}
+
 export type UpdateSimulationSituationError =
   | SimulationNotFoundError
   | SimulationCompletedError
@@ -36,6 +45,7 @@ export type CompleteSimulationError =
   | SimulationIncompleteError
   | SimulationNotFoundError
   | SimulationCompletedError
+  | SimulationInvalidModelError
   | ZeroFootprintError
   | ComputationAlreadyExistsError
   | InvalidPayloadError

@@ -15,12 +15,14 @@ export function useCompleteSimulation() {
     isPending,
     completeSimulation() {
       startTransition(async () => {
-        const { id, progression, situation, foldedSteps } = currentSimulation
+        const { id, model, progression, situation, foldedSteps } =
+          currentSimulation
         // An incomplete simulation is not filtered out here on purpose: the
         // server answers with a `simulation_incomplete` failure, which lands in
         // Sentry below instead of being silently dropped.
         const result = await completeSimulationAction({
           id,
+          model,
           progression,
           situation: situation as CompleteSimulationPayload['situation'],
           foldedSteps,

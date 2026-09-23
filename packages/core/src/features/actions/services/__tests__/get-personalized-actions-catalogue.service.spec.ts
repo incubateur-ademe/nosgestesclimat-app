@@ -36,15 +36,45 @@ describe('getPersonalizedActionsCatalogue', () => {
     })
   })
 
-  describe('when the latest completed simulation has no computation (old simulation)', () => {
-    it('returns null status, all visible actions without assessments, and no top actions', async () => {
+  describe('when the latest finished simulation has no computation', () => {
+    it('returns "not-programmed" status, all visible actions without assessments, and no top actions', async () => {
       const action = await actionFactory.published().create()
       const user = await userFactory.create()
       await simulationFactory.completed().params({ userId: user.id }).create()
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
       expect(result).toEqual({
-        assessmentStatus: null,
+        assessmentStatus: 'never-assessed',
+        actions: [expect.objectContaining({ id: action.id, assessment: null })],
+        topActions: [],
+      })
+    })
+
+    it('does not fall back to the assessments of an older computed simulation', async () => {
+      // Regression: a completed computation from an older simulation used to
+      // filter actions assessed for the latest one, emptying the catalogue.
+      const action = await actionFactory.published().create()
+      const user = await userFactory.create()
+      const older = await simulationFactory
+        .completed()
+        .params({ userId: user.id, createdAt: new Date('2024-01-01') })
+        .withCompletedComputation()
+        .create()
+      // Model unsupported at completion: finished but never computed.
+      await simulationFactory
+        .completed()
+        .params({ userId: user.id, createdAt: new Date('2024-06-01') })
+        .withModelVersion({ publishedTag: '1.0.0' })
+        .create()
+      await actionAssessmentFactory
+        .params({ simulationId: older.id, actionId: action.id })
+        .applicable({ impact: 1000 })
+        .create()
+
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
+
+      expect(result).toEqual({
+        assessmentStatus: 'never-assessed',
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
         topActions: [],
       })
