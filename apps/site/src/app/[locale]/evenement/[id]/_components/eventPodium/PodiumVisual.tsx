@@ -81,7 +81,7 @@ export default function PodiumVisual({
             )}>
             {podiumItems.map((item, index) => (
               <li
-                key={index}
+                key={item.name}
                 className={twMerge(
                   'w-full md:flex-1',
                   orderClasses[getRank(index)]
@@ -137,7 +137,7 @@ export default function PodiumVisual({
           {remainingItems.map((item, index) => (
             <ListItem
               locale={locale}
-              key={index}
+              key={item.name}
               rank={getRank(index)}
               {...item}
             />

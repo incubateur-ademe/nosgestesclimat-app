@@ -56,7 +56,7 @@ export default async function EventPodium({
         // Trigger animation on each change
         key={`podium-visual-${activeCategoryFilter}`}
         locale={locale}
-        items={podiumItemsByCategory[hasStarted ? activeCategoryFilter : 'all']}
+        items={podiumItemsByCategory[activeCategoryFilter]}
         prevHref={prevHref}
         nextHref={nextHref}
         hasStarted={hasStarted}
