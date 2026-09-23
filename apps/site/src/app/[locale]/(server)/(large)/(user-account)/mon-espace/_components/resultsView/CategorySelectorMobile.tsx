@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { testOrderedCategories } from '@/constants/model/orderedCategories'
+import { testOrderedCategories } from '@/constants/model/categories'
 import Alert from '@/design-system/alerts/alert/Alert'
 import SelectInput from '@/design-system/inputs/SelectInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'

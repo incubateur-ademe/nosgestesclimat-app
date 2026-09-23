@@ -7,6 +7,11 @@ export const testOrderedCategories: DottedName[] = [
   'divers',
 ]
 
+export const expendedTestOrderedCategories: DottedName[] = [
+  ...testOrderedCategories,
+  'âge',
+]
+
 export const orderedCategories: DottedName[] = [
   ...testOrderedCategories,
   'services sociétaux',

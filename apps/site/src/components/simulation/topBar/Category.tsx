@@ -14,7 +14,7 @@ export default function Category({ category }: { category: DottedName }) {
           'mb-0 text-base font-bold lg:text-lg',
           getTextDarkColor(category)
         )}>
-        <Emoji>{icons}</Emoji> {title}
+        <Emoji>{icons ?? ''}</Emoji> {title}
       </h1>
     </div>
   )
