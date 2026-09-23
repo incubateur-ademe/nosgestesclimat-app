@@ -50,8 +50,9 @@ export function toLogAttributes(meta: LogMeta): LogAttributes {
  * cause chain appended), plus what the error class carries: `code` becomes
  * `error.type` — the semconv name for the class of error — and the other fields
  * take our `ngc.` prefix. `toJSON()` is not used: it only keeps `code` for
- * `ErrorWithCode`. Used for the stdout line;
- * `toLogAttributes` calls it back for an `Error` found inside the meta.
+ * `ErrorWithCode`. Used for the top-level error of `warn`/`error`/`fatal`;
+ * an `Error` found *inside* the meta follows the simpler rule of
+ * `flattenAttributes`: one attribute, its stack.
  */
 export function exceptionAttributes(error: Error): LogMeta {
   const attributes: LogMeta = {
@@ -85,14 +86,6 @@ function flattenAttributes(meta: LogMeta, prefix = '', depth = 0): LogMeta {
 
   for (const [key, value] of Object.entries(meta)) {
     const name = `${prefix}${key}`
-
-    if (value instanceof Error) {
-      Object.assign(
-        flat,
-        flattenAttributes(exceptionAttributes(value), `${name}.`, depth)
-      )
-      continue
-    }
 
     if (isPlainObject(value) && depth < MAX_ATTRIBUTE_DEPTH) {
       Object.assign(flat, flattenAttributes(value, `${name}.`, depth + 1))
@@ -140,6 +133,13 @@ function toAttributeValue(value: unknown): AnyValue {
 
   if (value === null || value === undefined) {
     return undefined
+  }
+
+  // An `Error` slipped into the meta — errors belong to `error(error, meta)`,
+  // a second one is linked through its `cause`. Its stack is the only part
+  // worth keeping: `JSON.stringify` would produce `{}`.
+  if (value instanceof Error) {
+    return truncate(stackTrace(value))
   }
 
   return truncate(serialize(value))

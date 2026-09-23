@@ -198,4 +198,19 @@ describe('log export', () => {
     expect(attributes['ngc.email']).toBe('[redacted]')
     expect(attributes['ngc.payload.cookie']).toBe('[redacted]')
   })
+
+  it('writes a nested Error under one attribute, its stack', () => {
+    logger().info('email rejected', {
+      cause: new Error('425 too many attempts'),
+    })
+
+    const [record] = exporter.getFinishedLogRecords()
+    const stacktrace = record.attributes['ngc.cause']
+    expect(stacktrace).toEqual(
+      expect.stringContaining('Error: 425 too many attempts')
+    )
+    // The semconv exception names stay reserved for the record's top-level
+    // exception — the error passed to `error()`, not one inside the meta.
+    expect(record.attributes['ngc.cause.exception.type']).toBeUndefined()
+  })
 })
