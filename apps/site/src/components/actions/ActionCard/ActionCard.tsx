@@ -136,7 +136,11 @@ export default function ActionCard({
       )}
       {personalized && (
         <div className="border-t border-slate-100 p-2">
-          <CommitToActionButton className="w-full" actionId={action.id} />
+          <CommitToActionButton
+            className="w-full"
+            actionId={action.id}
+            actionChoiceType={action.choice?.type}
+          />
         </div>
       )}
       {cta ?? (

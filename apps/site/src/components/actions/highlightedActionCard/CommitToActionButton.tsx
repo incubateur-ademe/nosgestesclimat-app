@@ -1,20 +1,24 @@
 'use client'
 
 import PlusIcon from '@/components/icons/PlusIcon'
+import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { commitToAction } from '@/services/actions/commit-to-action' // Server Action
+import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/client'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 export default function CommitToActionButton({
   actionId,
+  actionChoiceType,
   className,
   shortLabelDisplayed,
 }: {
   actionId: string
+  actionChoiceType?: ActionChoiceType
   className?: string
   shortLabelDisplayed?: boolean
 }) {
@@ -41,6 +45,21 @@ export default function CommitToActionButton({
         )
       )
     })
+  }
+
+  if (actionChoiceType === 'committed') {
+    return (
+      <Button
+        color="secondary"
+        onClick={() => {}}
+        disabled
+        className={twMerge('text-sm!', className)}>
+        <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
+        <Trans i18nKey="actions.components.actionCard.highlighted.addedButton.short">
+          Ajouté
+        </Trans>
+      </Button>
+    )
   }
 
   return (

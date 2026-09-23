@@ -130,7 +130,11 @@ export default function HighlightedActionCard({
           </ButtonLinkServer>
 
           {personalized && (
-            <CommitToActionButton shortLabelDisplayed actionId={action.id} />
+            <CommitToActionButton
+              shortLabelDisplayed
+              actionId={action.id}
+              actionChoiceType={action.choice?.type}
+            />
           )}
         </div>
       </div>
