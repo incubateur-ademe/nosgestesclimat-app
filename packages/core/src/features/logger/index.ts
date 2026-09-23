@@ -22,15 +22,47 @@ export type ComponentPackage = 'core' | 'site'
 export type ComponentName = `${ComponentPackage}.${ComponentLayer}.${string}`
 
 /**
+ * Attributes another party named, kept as they are on the wire: a query engine
+ * looks for `process.memory.usage`, not for our version of it. This is the
+ * list `toAttributeKey` leaves alone.
+ *
+ * Ours carry the `ngc.` prefix: semantic conventions reserve the unprefixed
+ * names, and a generic word (`code`, `job`, `count`) is what they explicitly
+ * tell application developers to avoid.
+ */
+export type OtelAttributes = Partial<{
+  'error.type': string
+  'exception.type': string
+  'exception.message': string
+  'exception.stacktrace': string
+  'process.memory.usage': number
+  'v8js.memory.heap.used': number
+  'http.request.method': string
+  'http.route': string
+  'url.path': string
+  posthogDistinctId: string
+  sessionId: string
+  // Next owns this namespace: its spans carry the same names.
+  [key: `next.${string}`]: string
+}>
+
+/**
  * Attributes of a line. Never PII nor business payloads: they are exported to
  * PostHog, outside the nginx collector that scrubs its own logs. Scalars
  * query best; anything structured ends up as JSON text.
+ *
+ * Our own keys are open on purpose: the transport prefixes them, so there is no
+ * list to maintain. Typing pays where a value carries a contract — the
+ * `component` shape here, and `OtelAttributes` on the producers that emit
+ * standard names (`memoryAttributes`, the request identity).
  */
-export type LogMeta = { component?: ComponentName } & Record<string, unknown>
+export type LogMeta = Record<string, unknown> & {
+  /** Qualified name, enforced: a bare `engineRegistry` would not compile. */
+  component?: ComponentName
+}
 
 /** Static context merged into every line of a child logger. */
-export type LogBindings = { component?: ComponentName } &
-  Record<string, unknown>
+export type LogBindings = LogMeta
 
 export interface LogOptions {
   /**

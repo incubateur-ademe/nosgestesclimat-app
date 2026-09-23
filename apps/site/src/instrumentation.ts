@@ -1,3 +1,4 @@
+import type { OtelAttributes } from '@nosgestesclimat/core/features/logger/index'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import * as Sentry from '@sentry/nextjs'
 import type { Instrumentation } from 'next'
@@ -68,10 +69,15 @@ export const onRequestError: Instrumentation.onRequestError = (
     toError(error),
     {
       component: 'site.instrumentation.onRequestError',
-      'http.request.method': request.method,
-      'url.path': request.path,
-      'http.route': context.routePath,
-      'next.route_type': context.routeType,
+      ...({
+        'http.request.method': request.method,
+        'url.path': request.path,
+        'http.route': context.routePath,
+        'next.route_type': context.routeType,
+      } satisfies Pick<
+        OtelAttributes,
+        'http.request.method' | 'url.path' | 'http.route' | `next.${string}`
+      >),
     },
     { capture: false }
   )

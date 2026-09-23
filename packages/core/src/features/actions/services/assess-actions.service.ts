@@ -30,7 +30,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
   ): Promise<void> {
     const logger = deps.logger.child({
       component: 'core.service.assessActions',
-      simulationId,
+      simulationId: simulationId,
     })
     const actions = await findActionRuleIds()
 
@@ -54,7 +54,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
       .map(({ id, ruleId }) => {
         const dottedName = ruleIdToDottedName.get(ruleId)
         if (!dottedName) {
-          logger.warn('No rule found with this id', { actionId: id, ruleId })
+          logger.warn('No rule found with this id', { actionId: id, ruleId: ruleId })
           return undefined
         }
 
@@ -80,15 +80,15 @@ export function createAssessActions(deps: AssessActionsDeps) {
           } else {
             logger.warn(`Unexpected nodeValue type: ${typeof nodeValue}`, {
               actionId: id,
-              ruleId,
-              dottedName,
+              ruleId: ruleId,
+              dottedName: dottedName,
             })
             return undefined
           }
         } catch (error) {
           // The stack of the failure stays in the line: the action is skipped
           // and the iteration goes on, nothing more is needed.
-          logger.warn(toError(error), { actionId: id, ruleId, dottedName })
+          logger.warn(toError(error), { actionId: id, ruleId: ruleId, dottedName: dottedName })
           return undefined
         }
       })

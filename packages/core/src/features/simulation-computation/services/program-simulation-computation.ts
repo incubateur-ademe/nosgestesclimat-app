@@ -16,7 +16,7 @@ export function createProgramSimulationComputation(
   ): Promise<void> {
     const logger = deps.logger.child({
       component: 'core.service.programSimulationComputation',
-      simulationId,
+      simulationId: simulationId,
     })
     const simulation = await getSimulationById(simulationId)
 
@@ -30,7 +30,7 @@ export function createProgramSimulationComputation(
     if (!isModelSupported(simulation.model)) {
       // The computation is skipped: the simulation stays pending, nothing is lost.
       logger.warn('Unsupported model', {
-        code: 'unsupported_model',
+        'error.type': 'unsupported_model',
         model: simulation.model,
       })
       return

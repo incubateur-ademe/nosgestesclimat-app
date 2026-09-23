@@ -1,3 +1,4 @@
+import { toAttributeKey } from '@nosgestesclimat/core/features/logger/attribute-key'
 import type {
   LogLevel,
   LogMeta,
@@ -11,16 +12,38 @@ import { exceptionAttributes } from './observability/log-attributes.ts'
 import { emitLogRecord } from './observability/log-bridge.ts'
 
 /** Keys redacted before export, as a backstop: callers must not log them at all. */
+/**
+ * Keys redacted before export, as a backstop: callers must not log them at
+ * all. The bracketed ones are the names on the line, prefixed by the factory —
+ * pino reads a dot as a path separator, so `'ngc.email'` would look for
+ * `email` inside a `ngc` object and match nothing. The wildcards cover a
+ * payload object handed over as is.
+ */
 const REDACTED_PATHS = [
-  'email',
+  '["ngc.email"]',
+  '["ngc.password"]',
+  '["ngc.token"]',
+  '["ngc.cookie"]',
   '*.email',
-  'password',
   '*.password',
-  'token',
   '*.token',
-  'cookie',
   '*.cookie',
 ]
+
+/**
+ * Puts our attributes under the `ngc.` prefix, and leaves the ones another
+ * party named as they are — see `toAttributeKey`. Applied where the line is
+ * built, so the drain and the export carry the same names.
+ */
+function prefixKeys(meta: LogMeta): LogMeta {
+  const prefixed: LogMeta = {}
+
+  for (const [key, value] of Object.entries(meta)) {
+    prefixed[toAttributeKey(key)] = value
+  }
+
+  return prefixed
+}
 
 /**
  * Attaches the active span's ids: that is what makes a line findable from its
@@ -92,10 +115,10 @@ export function createLogger({
 
       // The meta is a bag of attributes: an `Error` belongs in the message of
       // `warn`/`error`, not inside it.
-      const line: LogMeta = {
+      const line: LogMeta = prefixKeys({
         ...meta,
         ...(error && exceptionAttributes(error)),
-      }
+      })
 
       instance[level](line, message)
       // The same line goes to PostHog, with the bindings pino keeps apart from
@@ -117,7 +140,7 @@ export function createLogger({
     }
 
     return {
-      child: (bindings) => build(instance.child(bindings)),
+      child: (bindings) => build(instance.child(prefixKeys(bindings))),
       debug: (message, meta) => write('debug', message, meta),
       info: (message, meta) => write('info', message, meta),
       warn: (message, meta, options) =>

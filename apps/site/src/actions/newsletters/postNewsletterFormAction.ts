@@ -58,7 +58,7 @@ export async function postNewsletterFormAction(
   } catch (e) {
     logger.error(toError(e), {
       component: 'site.action.postNewsletterForm',
-      listIds,
+      listIds: listIds,
     })
     return {
       email,

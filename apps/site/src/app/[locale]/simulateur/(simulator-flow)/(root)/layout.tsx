@@ -26,9 +26,9 @@ export default async function SimulationLayout({
   const currentSimulation = await getCurrentSimulation()
   if (!currentSimulation) {
     // A warn carries no stack: the component names where it happened.
-    logger
-      .child({ component: 'site.layout.simulationLayout' })
-      .warn('No current simulation, redirecting to the start page')
+    logger.warn('No current simulation, redirecting to the start page', {
+      component: 'site.layout.simulationLayout',
+    })
     redirect(START_SIMULATION_PATH)
   }
   if (currentSimulation.progression === 1) {

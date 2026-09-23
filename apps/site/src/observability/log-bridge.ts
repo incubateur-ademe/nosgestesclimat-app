@@ -1,6 +1,7 @@
 import type {
   LogLevel,
   LogMeta,
+  OtelAttributes,
 } from '@nosgestesclimat/core/features/logger/index'
 import {
   logs,
@@ -44,7 +45,8 @@ export function emitLogRecord({
   // (`core.service.engineRegistry`) and the service is on the resource, so the
   // scope takes it as is. PostHog renders a scope as `name@version`, which is
   // why the `component` attribute stays the handle for exact filters.
-  const scope = typeof meta.component === 'string' ? meta.component : service
+  const component = meta['ngc.component']
+  const scope = typeof component === 'string' ? component : service
 
   getLogger(scope).emit({
     body: message,
@@ -68,9 +70,13 @@ function getLogger(scope: string): ApiLogger {
 
 /**
  * `posthogDistinctId` and `sessionId` are the attribute names PostHog matches
- * to link a line to a person and to a session recording.
+ * to link a line to a person and to a session recording, and its types check
+ * the values we hand it.
  */
-function identityAttributes(): LogMeta {
+function identityAttributes(): Pick<
+  OtelAttributes,
+  'posthogDistinctId' | 'sessionId'
+> {
   const identity = currentRequestIdentity()
 
   if (!identity) {

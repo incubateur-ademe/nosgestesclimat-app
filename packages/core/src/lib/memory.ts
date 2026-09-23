@@ -1,4 +1,5 @@
 import v8 from 'node:v8'
+import type { OtelAttributes } from '../features/logger/index.ts'
 
 const toMB = (bytes: number): number =>
   Math.round((bytes / (1024 * 1024)) * 100) / 100
@@ -15,7 +16,10 @@ const toMB = (bytes: number): number =>
  * one. The committed heap size and the external memory have no standard name,
  * and nothing reads them.
  */
-export function memoryAttributes(): Record<string, number> {
+export function memoryAttributes(): Pick<
+  OtelAttributes,
+  'process.memory.usage' | 'v8js.memory.heap.used'
+> {
   const { rss, heapUsed } = process.memoryUsage()
 
   return {

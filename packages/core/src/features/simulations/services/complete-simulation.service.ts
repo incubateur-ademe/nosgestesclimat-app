@@ -83,7 +83,7 @@ export function createCompleteSimulation({
   > {
     const simulationLogger = logger.child({
       component: 'core.service.completeSimulation',
-      simulationId,
+      simulationId: simulationId,
     })
     const userId = userSession.id
 
@@ -102,7 +102,7 @@ export function createCompleteSimulation({
     if (!isModelSupportedForComputation) {
       // The computation is skipped: the simulation is still completed and stored.
       simulationLogger.warn('Unsupported model', {
-        code: 'unsupported_model',
+        'error.type': 'unsupported_model',
         model: simulation.model,
       })
     }

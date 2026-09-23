@@ -91,9 +91,9 @@ describe('log export', () => {
     expect(record.severityText).toBe('warn')
     // Bindings, meta and identity all land flat: that is what PostHog queries.
     expect(record.attributes).toMatchObject({
-      component: 'core.service.engineRegistry',
-      job: 'simulation-computation',
-      attempt: 2,
+      'ngc.component': 'core.service.engineRegistry',
+      'ngc.job': 'simulation-computation',
+      'ngc.attempt': 2,
       posthogDistinctId: 'user-1',
       sessionId: 'replay-1',
     })
@@ -104,11 +104,11 @@ describe('log export', () => {
   })
 
   it('flattens a nested meta into dotted attributes, which PostHog can query', () => {
-    logger().info('engine built', { engine: { key: 'FR:current' } })
+    logger().info('engine built', { payload: { key: 'FR:current' } })
 
     const [record] = exporter.getFinishedLogRecords()
-    expect(record.attributes['engine.key']).toBe('FR:current')
-    expect(record.attributes.engine).toBeUndefined()
+    expect(record.attributes['ngc.payload.key']).toBe('FR:current')
+    expect(record.attributes['ngc.payload']).toBeUndefined()
   })
 
   it('drops from the export what the level drops from stdout', () => {
@@ -145,12 +145,12 @@ describe('log export', () => {
     logger().error(new TestException('a1'))
 
     const [domainError, exception] = exporter.getFinishedLogRecords()
-    expect(domainError.attributes.code).toBe('test_domain_error')
+    expect(domainError.attributes['error.type']).toBe('test_domain_error')
     expect(exception.attributes).toMatchObject({
       'exception.type': 'TestException',
       'exception.message': 'No rule',
-      code: 'test_exception',
-      actionId: 'a1',
+      'error.type': 'test_exception',
+      'ngc.actionId': 'a1',
     })
   })
 

@@ -223,7 +223,11 @@ Règles de conception, chacune conséquence d'un chapitre précédent :
 - **`child(bindings)` retourne un `Logger`** — l'interface, pas le type pino. Les bindings sont le contexte statique partagé par plusieurs lignes d'une même portée (service, route, job, ids de la requête ou de la boucle) ; **pour une ligne isolée, la `meta` suffit** : un `child` créé pour un seul appel ne fait que déplacer le contexte. Le `trace_id` ne passe **jamais** par `child` : c'est OTel qui l'injecte (§7.3).
 - **La capture est portée par l'implémentation**, pas par les services : `captureException` disparaît des dépendances de core. Un service core ne reçoit que `logger`.
 - **Sérialisation** (côté implémentation) : les **attributs exportés** sont **aplatis** — les objets d'une `meta` deviennent des clés pointées, `currentMemory.rssMB` — au moment de l'export, pas dans la fabrique : le JSON qui part sur stdout garde sa forme imbriquée, qu'un aplatissement abîmerait (`a.b` et `a: { b }` fusionneraient en une seule clé). L'`Error` passée à `error()`/`fatal()` prend les noms qu'OTel définit pour une exception de log : `exception.type`, `exception.message`, `exception.stacktrace` (chaîne des `cause` ajoutée). Appliquée à toute valeur `Error` trouvée dans la `meta`, sous
-  n'importe quelle clé. Ses propriétés propres suivent : `code`, puis les champs que la classe déclare (`simulationId`, `progression`…). Aucune erreur ne porte son niveau : c'est la frontière qui le décide (§6). Ne jamais s'appuyer sur `toJSON()` (qui ne garde que `code` pour `ErrorWithCode`).
+  n'importe quelle clé. Ses propriétés propres suivent : `code` devient
+  `error.type` (le nom semconv pour la classe d'erreur), et les champs que la
+  classe déclare passent sous `ngc.`. Aucune erreur ne porte son niveau : c'est
+  la frontière qui le décide (§6). Ne jamais s'appuyer sur `toJSON()` (qui ne
+  garde que `code` pour `ErrorWithCode`).
 - **Le message d'une `error()` est celui de l'`Error`** : il n'y a pas de libellé libre à côté. Ce qu'un message portait autrefois (« Failed to send poll joined email ») est du contexte statique : il va dans un binding de `child` (`{ sideEffect: 'pollJoinedEmail' }`), donc en attribut filtrable.
 - **Normalisation** : `toError()` s'applique à un `catch (unknown)` ou à une promesse rejetée, pas à une valeur déjà typée `Error` — un `Result<_, EmailRequestError>` en porte déjà une.
 
@@ -306,7 +310,7 @@ Le worker n'a pas de session live : pas de `sessionId` ; `posthogDistinctId` év
 
 ### 7.6 PII — les logs applicatifs n'ont pas de filet
 
-Les logs nginx passent par le collecteur OTel qui les scrubbe (emails, IP, query du referrer). **Les logs applicatifs vont directement à PostHog et contournent ce pipeline** — le masquage est à la charge du logger : redaction pino par clés (emails, tokens, cookies, mots de passe). `userId` et `sessionId` PostHog sont les seules données identifiantes admises — exposition déjà couverte par le consentement analytics/replay. Les payloads métier (`situation`, `computedResults`, `foldedSteps`) n'ont rien à faire dans une ligne non plus, mais par volume : ce ne sont pas des PII, le logger ne les masque donc pas — c'est à l'appelant de ne pas les passer.
+Les logs nginx passent par le collecteur OTel qui les scrubbe (emails, IP, query du referrer). **Les logs applicatifs vont directement à PostHog et contournent ce pipeline** — le masquage est à la charge du logger : redaction pino par clés (emails, tokens, cookies, mots de passe) — les clés préfixées se déclarent entre crochets (`'["ngc.email"]'`), parce que pino lit un point comme un séparateur de chemin, pas comme une clé. `userId` et `sessionId` PostHog sont les seules données identifiantes admises — exposition déjà couverte par le consentement analytics/replay. Les payloads métier (`situation`, `computedResults`, `foldedSteps`) n'ont rien à faire dans une ligne non plus, mais par volume : ce ne sont pas des PII, le logger ne les masque donc pas — c'est à l'appelant de ne pas les passer.
 
 ### 7.7 Nommer les choses
 
@@ -326,9 +330,16 @@ attributs maison quand il n'y en a pas.
   c'est un attribut maison — plat, stable, de forte dimensionnalité, ce que
   recommande PostHog. Le message, lui, dit ce qui est arrivé, sans préfixe
   `[composant]`.
-- **Les clés imposées par l'outil gardent son orthographe** (`posthogDistinctId`,
-  `sessionId`) ; les nôtres sont en camelCase. Ce schéma est un contrat : un
-  renommage casse les recherches et les alertes en silence.
+- **Nos attributs portent le préfixe `ngc.`**, posé par la fabrique : un
+  appelant écrit `{ simulationId }`, la ligne et l'export portent
+  `ngc.simulationId`. La spec réserve les noms nus et déconseille explicitement
+  les mots génériques (`code`, `job`, `count`) : quelqu'un d'autre les
+  revendiquera un jour. Les noms **standards** gardent leur orthographe et
+  sortent de producteurs typés (`memoryAttributes` pour la mémoire, l'identité
+  de requête pour `posthogDistinctId`/`sessionId`, `instrumentation` pour
+  `http.*`), pas d'une liste tenue à la main. Les clés d'un autre outil
+  (`posthogDistinctId`, `sessionId`) sont son contrat. Ce schéma est un
+  contrat : un renommage casse les recherches et les alertes en silence.
 - **`component` nomme l'unité qui émet**, sous la forme `paquet.couche.unité` :
   `core.service.engineRegistry`, `site.action.completeSimulation`,
   `site.middleware.auth`. La **couche** est sémantique — `action`, `service`,

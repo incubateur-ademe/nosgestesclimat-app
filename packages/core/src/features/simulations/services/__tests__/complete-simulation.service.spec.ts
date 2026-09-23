@@ -139,7 +139,7 @@ describe('completeSimulation', () => {
 
     expect(result).toEqual(expect.objectContaining({ success: true }))
     expect(logger.warn).toHaveBeenCalledWith('Unsupported model', {
-      code: 'unsupported_model',
+      'error.type': 'unsupported_model',
       model: simulation.model,
     })
     expect(await findSimulationComputation(simulation.id)).toBeNull()

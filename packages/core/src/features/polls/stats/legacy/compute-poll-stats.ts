@@ -162,7 +162,7 @@ export function createComputePollStats({ logger }: { logger: Logger }) {
               rules: frRules,
             })
           } catch (error) {
-            computeLogger.error(toError(error), { dottedName })
+            computeLogger.error(toError(error), { dottedName: dottedName })
           }
           funFactValues[dottedName] = (funFactValues[dottedName] || 0) + value
         }

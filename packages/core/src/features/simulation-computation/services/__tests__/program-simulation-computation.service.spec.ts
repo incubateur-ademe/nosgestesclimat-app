@@ -55,7 +55,7 @@ describe('programSimulationComputation', () => {
       const { id } = await setup().create()
       await programSimulationComputation(id)
       expect(logger.warn).toHaveBeenCalledWith('Unsupported model', {
-        code: 'unsupported_model',
+        'error.type': 'unsupported_model',
         model: expect.anything(),
       })
       const computation = await findSimulationComputation(id)

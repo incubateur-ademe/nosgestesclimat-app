@@ -53,12 +53,20 @@ export function exceptionAttributes(error: Error): LogMeta {
   }
 
   for (const [key, value] of Object.entries(error)) {
-    // `name` is `exception.type` and `message` is `exception.message`.
-    if (key === 'name' || key === 'message') {
+    // `name` is `exception.type` and `message` is `exception.message`; the
+    // stacktrace already carries the cause chain.
+    if (key === 'name' || key === 'message' || key === 'cause') {
       continue
     }
 
-    attributes[key] = value
+    // The domain code is what semconv calls the class of error.
+    if (key === 'code') {
+      attributes['error.type'] = value
+      continue
+    }
+
+    // The rest is our domain's data, and follows the same rule as the meta.
+    attributes[`ngc.${key}`] = value
   }
 
   return attributes

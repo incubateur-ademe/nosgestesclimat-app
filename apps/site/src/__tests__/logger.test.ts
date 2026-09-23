@@ -57,9 +57,9 @@ describe('createLogger', () => {
   })
 
   it('keeps a nested meta nested in the line', () => {
-    logger.info('engine built', { engine: { key: 'FR:current' } })
+    logger.info('engine built', { payload: { key: 'FR:current' } })
 
-    expect(lastLine().engine).toEqual({ key: 'FR:current' })
+    expect(lastLine()['ngc.payload']).toEqual({ key: 'FR:current' })
   })
 
   it('logs a warned Error without capturing it', () => {
@@ -67,7 +67,7 @@ describe('createLogger', () => {
 
     const line = lastLine()
     expect(line.level).toBe(40)
-    expect(line.attempt).toBe(2)
+    expect(line['ngc.attempt']).toBe(2)
     expect(onCapture).not.toHaveBeenCalled()
   })
 
@@ -87,23 +87,27 @@ describe('createLogger', () => {
   })
 
   it('merges child bindings into every following line', () => {
-    logger.child({ job: 'simulation-computation' }).info('processing')
+    const jobLogger = logger.child({ job: 'simulation-computation' })
 
-    expect(lastLine().job).toBe('simulation-computation')
+    jobLogger.info('processing')
+    jobLogger.info('done')
+
+    expect(JSON.parse(lines[0])['ngc.job']).toBe('simulation-computation')
+    expect(lastLine()['ngc.job']).toBe('simulation-computation')
   })
 
   it('redacts the personal data a caller should not have logged', () => {
     logger.info('contact', { email: 'a@b.com', token: 'secret' })
 
     const line = lastLine()
-    expect(line.email).toBe('[redacted]')
-    expect(line.token).toBe('[redacted]')
+    expect(line['ngc.email']).toBe('[redacted]')
+    expect(line['ngc.token']).toBe('[redacted]')
   })
 
   it('leaves a business payload alone', () => {
     // The answers are not PII: masking them would hide what the line is about.
-    logger.info('answers', { answers: { car: 1 } })
+    logger.info('answers', { 'ngc.payload': { car: 1 } })
 
-    expect(lastLine().answers).toEqual({ car: 1 })
+    expect(lastLine()['ngc.payload']).toEqual({ car: 1 })
   })
 })
