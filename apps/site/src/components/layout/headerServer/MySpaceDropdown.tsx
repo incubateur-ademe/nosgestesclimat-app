@@ -30,7 +30,7 @@ interface Props {
 }
 
 const commonItemClassNames =
-  'hover:bg-primary-50! active:bg-primary-100! text-sm px-4 py-2'
+  'hover:bg-primary-50! transitions-colors active:bg-primary-200! text-sm px-4 py-2 focus-visible:ring-primary-700! focus-visible:ring-2! focus-visible:ring-offset-2!'
 
 export default function MySpaceDropdown({ email, onLogout }: Props) {
   const { t } = useClientTranslation()
@@ -87,7 +87,8 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
           <ChevronRight
             className={twMerge(
               'max-tiny:ml-1.5 ml-3 inline-block w-2 transition-transform',
-              isPopoverOpen ? '-rotate-90deg' : 'rotate-90'
+              // Using -rotate-90 causes the rotation to freeze mid-course
+              isPopoverOpen ? 'rotate-[-90deg]' : 'rotate-90'
             )}
           />
         </Button>
@@ -95,18 +96,18 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
 
       <DropdownMenuContent className="relative z-400! w-80 bg-white">
         <DropdownMenuGroup>
-          <DropdownMenuItem className={commonItemClassNames}>
+          <DropdownMenuItem asChild className={commonItemClassNames}>
             <Link
               href={MON_ESPACE_PATH}
               data-testid="my-space-link"
-              className="text-default">
+              className="text-default size-full">
               <Trans i18nKey="header.monEspace.access">
                 Accéder à mon espace
               </Trans>
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem className={commonItemClassNames}>
+          <DropdownMenuItem asChild className={commonItemClassNames}>
             <button
               type="button"
               data-testid="my-space-logout-button"
