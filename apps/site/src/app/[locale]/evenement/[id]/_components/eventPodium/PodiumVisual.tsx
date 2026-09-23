@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/podium'
+import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
 import { twMerge } from 'tailwind-merge'
 import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
@@ -17,17 +17,21 @@ interface Props {
   items: PodiumItem[]
   className?: string
   locale: Locale
-  prevHref?: string
-  nextHref?: string
+  prevHref: string | null
+  nextHref: string | null
   hasStarted: boolean
-  activeFilter: FilterValue
+  activeCategoryFilter: FilterValue
 }
 
-const orderClasses = {
+const orderClasses: Record<number, string> = {
   1: 'order-1 md:order-2',
   2: 'order-2 md:order-1',
   3: 'order-3',
-} as const
+}
+
+const ZERO_BASED_INDEX_COMPENSATION_FACTOR = 1
+const RANK_COMPENSATION_FOR_AFTER_PODIUM_ITEMS = 3
+const getRank = (index: number) => index + ZERO_BASED_INDEX_COMPENSATION_FACTOR
 
 export default function PodiumVisual({
   items,
@@ -36,7 +40,7 @@ export default function PodiumVisual({
   prevHref,
   nextHref,
   hasStarted,
-  activeFilter,
+  activeCategoryFilter,
 }: Props) {
   const podiumItems = items.slice(0, 3)
   const remainingItems = items.slice(3, 15)
@@ -52,7 +56,7 @@ export default function PodiumVisual({
       'event.podium.empty.type.public-services',
       'collectivité'
     ),
-  }[activeFilter]
+  }[activeCategoryFilter]
 
   return (
     <>
@@ -76,17 +80,18 @@ export default function PodiumVisual({
               'mt-8 mb-12 flex w-full max-w-80 list-none flex-col items-stretch gap-3 md:mx-14 md:min-h-80 md:max-w-none md:flex-1 md:flex-row md:items-end md:justify-center md:gap-0 lg:mx-20',
               className
             )}>
-            {podiumItems.map((item) => (
+            {podiumItems.map((item, index) => (
               <li
-                key={item.rank}
+                key={item.name}
                 className={twMerge(
                   'w-full md:flex-1',
-                  orderClasses[item.rank as 1 | 2 | 3]
+                  orderClasses[getRank(index)]
                 )}>
                 <PodiumBlock
                   hasStarted={hasStarted}
                   locale={locale}
                   {...item}
+                  rank={getRank(index)}
                 />
               </li>
             ))}
@@ -130,8 +135,13 @@ export default function PodiumVisual({
             'border-primary-600 mt-6 list-none overflow-hidden rounded-xl border',
             className
           )}>
-          {remainingItems.map((item) => (
-            <ListItem locale={locale} key={item.rank} {...item} />
+          {remainingItems.map((item, index) => (
+            <ListItem
+              locale={locale}
+              key={item.name}
+              rank={getRank(index + RANK_COMPENSATION_FOR_AFTER_PODIUM_ITEMS)}
+              {...item}
+            />
           ))}
         </ol>
       )}

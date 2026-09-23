@@ -1550,8 +1550,8 @@ entries:
   results.saveResults.buttonLabel.authenticated.noPreviousResults.lock: Accéder à mon espace
   common.navigation.nextQuestion.loading.label: End the test and go to the results page, loading in progress
   common.navigation.nextQuestion.loading.label.lock: Terminer le test et accéder à la page de résultats, chargement en cours
-  results.groupThankYou.description: Find out the results of the group test <2> at{{groupName}}</2>
-  results.groupThankYou.description.lock: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
+  results.groupThankYou.description: Find out the results of the group test
+  results.groupThankYou.description.lock: Découvrez les résultats du test collectif
   results.objective.collectiveEffort.companies: The companies
   results.objective.collectiveEffort.companies.lock: Les entreprises
   results.objective.collectiveEffort.collectivities: Local authorities
@@ -1963,8 +1963,8 @@ entries:
   event.ctas.card1.buttonLabel.lock: Je participe
   event.tutorial.individual.2.description: Find out your personal carbon footprint, broken down by category.
   event.tutorial.individual.2.description.lock: Découvrez votre empreinte carbone personnelle détaillée par catégorie.
-  event.dynamicCounter.promise: Results in 10 minutes — 100% free
-  event.dynamicCounter.promise.lock: Résultats en 10 minutes — 100% gratuit
+  event.dynamicCounter.promise: Results in 10 minutes — no registration required
+  event.dynamicCounter.promise.lock: Résultats en 10 minutes — sans inscription
   event.dynamicCounter.primaryCta: Mobilise my organisation
   event.dynamicCounter.primaryCta.lock: Je mobilise mon organisation
   event.detail.dates: From {{startDate}} to {{endDate}}
@@ -2208,8 +2208,8 @@ entries:
   poll.creation.mode.title: Select the test mode
   poll.creation.mode.title.lock: Choisissez le mode du test
   pollResults.funFacts.refreshNote.lock: Les chiffres se mettent à jour toutes les {{duration}} environ
-  appCrash.metadata.description: The application is experiencing some difficulties at the moment, our teams are on it.
-  appCrash.metadata.description.lock: L'application rencontre quelques difficultés en ce moment, nos équipes sont sur le coup.
+  appCrash.metadata.description: The website is experiencing high traffic; our teams are working to restore access.
+  appCrash.metadata.description.lock: Le site connaît une forte affluence, nos équipes travaillent à rétablir l’accès.
   appCrash.metadata.title: Error - Nos Gestes Climat
   appCrash.metadata.title.lock: Erreur - Nos Gestes Climat
   common.errors.reload: Reload the page
@@ -2220,3 +2220,17 @@ entries:
   common.errors.retryLater.lock: Merci de réessayer dans quelques minutes.
   common.errors.title: Oops, an error has occurred
   common.errors.title.lock: Oups, une erreur est survenue
+  shared.french: French
+  shared.french.lock: français
+  switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} as the site’s language'
+  switchLang.linkTitle.lock: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
+  shared.english: English
+  shared.english.lock: anglais
+  Pour patienter, testez vos connaissances avec le Quiz Carbone de l'ADEME: Whilst you wait, why not test your knowledge with the ADEME’s Carbon Quiz?
+  Face à une affluence très élevée, notre site connaît quelques ralentissements.: Due to very high traffic, our website is experiencing some slowdowns.
+  Nous mettons tout en œuvre pour rétablir l'accès rapidement, n'hésitez pas à réessayer dans quelques minutes. Merci de votre patience et de votre mobilisation pour le climat !: We are doing everything we can to restore access as quickly as possible; please do try again in a few minutes. Thank you for your patience and for taking action on climate change!
+  Statistiques publiques du site Nos Gestes Climat.: Public statistics from the Nos Gestes Climat website.
+  Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.: This dashboard displays website traffic statistics, including the number of visits, completed simulations and actions viewed. It also includes statistics on the use of the Organisations mode, such as the number of organisations created and participants.
+  footer.ademe.ariaLabel: ADEME (opens in a new window)
+  footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
+  Cette section est générée via Posthog.: This section is generated via Posthog.
