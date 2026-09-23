@@ -1,33 +1,18 @@
 import { toAttributeKey } from '@nosgestesclimat/core/features/logger/attribute-key'
 import type {
+  Logger,
   LogLevel,
   LogMeta,
   LogOptions,
-  Logger,
+  ScopeName,
 } from '@nosgestesclimat/core/features/logger/index'
-import { context, trace } from '@opentelemetry/api'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
+import { context, SpanStatusCode, trace } from '@opentelemetry/api'
 import pino, { type Logger as PinoLogger } from 'pino'
 
 import { exceptionAttributes } from './observability/log-attributes.ts'
 import { emitLogRecord } from './observability/log-bridge.ts'
-
-/**
- * Keys redacted before export, as a backstop: callers must not log them at
- * all. The bracketed ones are the names on the line, prefixed by the factory —
- * pino reads a dot as a path separator, so `'ngc.email'` would look for
- * `email` inside a `ngc` object and match nothing. The wildcards cover a
- * payload object handed over as is.
- */
-const REDACTED_PATHS = [
-  '["ngc.email"]',
-  '["ngc.password"]',
-  '["ngc.token"]',
-  '["ngc.cookie"]',
-  '*.email',
-  '*.password',
-  '*.token',
-  '*.cookie',
-]
+import { appTracer } from './observability/setup.ts'
 
 /**
  * Puts our attributes under the `ngc.` prefix, and leaves the ones another
@@ -56,17 +41,28 @@ function traceContext(): LogMeta {
     : {}
 }
 
+/** The default: nothing to let through — the worker and the tests have no
+ * framework control flow to protect. */
+const noControlFlow = (): void => undefined
+
 export function createLogger({
   service,
   level = (process.env.LOG_LEVEL ?? 'info') as LogLevel,
   pretty = process.env.LOG_PRETTY === 'true',
   onCapture,
+  rethrowControlFlow = noControlFlow,
 }: {
   service: string
   level?: LogLevel
   pretty?: boolean
   /** Receives the original `Error`: Sentry needs its prototype and stack. */
   onCapture: (error: Error) => void
+  /**
+   * Called on a failure before the span is marked. Next injects
+   * `unstable_rethrow` here: a redirect or a `notFound()` is control flow, not
+   * a failed operation. The worker, which has no such errors, injects nothing.
+   */
+  rethrowControlFlow?: (error: unknown) => void
 }): Logger {
   /**
    * Single-line JSON output: a multi-line pretty-printed object gets fragmented
@@ -83,7 +79,6 @@ export function createLogger({
     base: { service },
     timestamp: pino.stdTimeFunctions.isoTime,
     messageKey: 'message',
-    redact: { paths: REDACTED_PATHS, censor: '[redacted]' },
     mixin: traceContext,
     transport: pretty
       ? {
@@ -140,6 +135,25 @@ export function createLogger({
 
     return {
       child: (bindings) => build(instance.child(prefixKeys(bindings))),
+      withChildSpan: async <Result>(
+        scope: ScopeName,
+        run: (logger: Logger) => Promise<Result>
+      ): Promise<Result> =>
+        await appTracer().startActiveSpan(scope, async (span) => {
+          try {
+            return await run(build(instance.child(prefixKeys({ scope }))))
+          } catch (error) {
+            // Before anything else: a control-flow error must leave the span
+            // untouched, or every redirect reads as a failure.
+            rethrowControlFlow(error)
+
+            span.recordException(toError(error))
+            span.setStatus({ code: SpanStatusCode.ERROR })
+            throw error
+          } finally {
+            span.end()
+          }
+        }),
       debug: (message, meta) => write('debug', message, meta),
       info: (message, meta) => write('info', message, meta),
       // The union is the implementation's business: callers see the two

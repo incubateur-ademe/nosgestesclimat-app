@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
-import { createTestWithSpan } from '../../../../test-utils/span.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { TemplateIds } from '../../../emails/email.constant.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
@@ -357,7 +356,7 @@ const setup = () => {
     sendEmail,
     backgroundTaskRunner,
     participateToPoll: createParticipateToPoll({
-      withSpan: createTestWithSpan(logger),
+      logger,
       sendEmail,
       origin,
       backgroundTaskRunner,

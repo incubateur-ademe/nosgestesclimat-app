@@ -96,6 +96,7 @@ vi.mock('@sentry/nextjs', () => ({
   captureException: vi.fn(),
   captureMessage: vi.fn(),
   setExtra: vi.fn(),
+  setUser: vi.fn(),
 }))
 
 // Mock next/font/local to avoid file-system reads in jsdom

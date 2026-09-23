@@ -1,5 +1,4 @@
-import type { LogMeta } from '../features/logger/index.ts'
-import type { WithSpan } from '../features/tracing/index.ts'
+import type { Logger, LogMeta } from '../features/logger/index.ts'
 import type { BackgroundTaskRunner } from './background-task-runner.ts'
 import type { ErrorWithCode } from './errors.ts'
 import type { Result } from './result.ts'
@@ -7,7 +6,7 @@ import { toError } from './to-error.ts'
 
 /** What a service needs to run a side effect outside the request. */
 export type SideEffectDeps = {
-  withSpan: WithSpan
+  logger: Logger
   backgroundTaskRunner: BackgroundTaskRunner
 }
 
@@ -26,17 +25,17 @@ export function runSideEffect<Failure extends ErrorWithCode>(
   /** What the caller knows about this call (the ids it was made with). */
   meta: LogMeta = {}
 ): void {
-  const task = deps.withSpan(`core.sideEffect.${name}`, async ({ logger }) => {
-    try {
-      const result = await run()
+  deps.backgroundTaskRunner(() =>
+    deps.logger.withChildSpan(`core.sideEffect.${name}`, async (logger) => {
+      try {
+        const result = await run()
 
-      if (!result.success) {
-        logger.error(result.error, { sideEffect: name, ...meta })
+        if (!result.success) {
+          logger.error(result.error, { sideEffect: name, ...meta })
+        }
+      } catch (error) {
+        logger.error(toError(error), { sideEffect: name, ...meta })
       }
-    } catch (error) {
-      logger.error(toError(error), { sideEffect: name, ...meta })
-    }
-  })
-
-  deps.backgroundTaskRunner(task)
+    })
+  )
 }

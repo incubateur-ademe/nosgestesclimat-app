@@ -9,6 +9,7 @@ export type ScopeLayer =
   | 'instrumentation'
   | 'view'
   | 'sideEffect'
+  | 'worker'
 
 /** Workspaces that emit telemetry. */
 export type ScopePackage = 'core' | 'site'
@@ -74,6 +75,20 @@ export interface LogOptions {
 export interface Logger {
   /** New logger with `bindings` merged into every line. Does not mutate the parent. */
   child(bindings: LogBindings): Logger
+  /**
+   * Runs an operation in its own span, with a logger bound to the scope: the
+   * span covers the whole body, so opening and closing cannot drift apart, and
+   * an operation called by another gets its own nested span — its duration is
+   * its own.
+   *
+   * The implementation brings the tracer, the way it brings pino: core knows
+   * neither. A failure marks the span and goes out unchanged — what to report
+   * stays the caller's decision.
+   */
+  withChildSpan<Result>(
+    scope: ScopeName,
+    run: (logger: Logger) => Promise<Result>
+  ): Promise<Result>
   debug(message: string, meta?: LogMeta): void
   info(message: string, meta?: LogMeta): void
   /** An anomaly without an `Error`: no stack, so nothing to capture. */

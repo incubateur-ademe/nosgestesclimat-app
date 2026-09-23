@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
-import { createTestWithSpan } from '../../../../test-utils/span.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
@@ -595,7 +594,6 @@ const setup = () => {
     backgroundTaskRunner,
     completeSimulation: createCompleteSimulation({
       logger,
-      withSpan: createTestWithSpan(logger),
       addOrUpdateContact,
       sendEmail,
       origin,

@@ -10,9 +10,7 @@ import type { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
 import type { Result } from '@nosgestesclimat/core/lib/result'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import { SpanStatusCode } from '@opentelemetry/api'
 import { createLogger } from '../src/logger.ts'
-import { appTracer } from '../src/observability/setup.ts'
 import { captureException, flushObservability } from './observability.ts'
 
 const logger = createLogger({ service: 'worker', onCapture: captureException })
@@ -61,29 +59,27 @@ async function loop(
   const jobLogger = logger.child({ job: name })
 
   while (running) {
-    // The span covers the whole iteration: its logs share the trace ids, and a
-    // failure marks the iteration as failed.
-    await appTracer().startActiveSpan(`worker:${name}`, async (span) => {
-      try {
+    try {
+      // The span covers the whole iteration: its logs share the trace ids, and a
+      // failure marks the iteration as failed. The loop keeps running on either
+      // outcome — a job that cannot be processed is not retried in place.
+      await jobLogger.withChildSpan(`site.worker.${name}`, async (logger) => {
         const result = await processNext()
 
         if (!result.success) {
           // A job that cannot be processed is not retried: it needs a human.
-          jobLogger.error(result.error)
+          logger.error(result.error)
           return
         }
 
         if (result.data) {
-          jobLogger.info('job processed', { ...memoryAttributes() })
+          logger.info('job processed', { ...memoryAttributes() })
         }
-      } catch (error) {
-        span.recordException(toError(error))
-        span.setStatus({ code: SpanStatusCode.ERROR })
-        jobLogger.error(toError(error))
-      } finally {
-        span.end()
-      }
-    })
+      })
+    } catch (error) {
+      // The span is already marked as failed by `withChildSpan`.
+      jobLogger.error(toError(error))
+    }
 
     await sleep(POLL_INTERVAL_MS)
   }
@@ -99,10 +95,10 @@ async function main() {
   }
 
   await Promise.all([
-    loop('Simulation computation', () =>
+    loop('simulationComputation', () =>
       processNextPendingComputation(getEngineForModel)
     ),
-    loop('Poll stats computation', processNextPendingPollStats),
+    loop('pollStatsComputation', processNextPendingPollStats),
   ])
 
   logger.info('worker exiting')

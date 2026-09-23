@@ -7,6 +7,7 @@ import { transaction } from '../../../lib/transaction.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import type { Logger } from '../../logger/index.ts'
 import { createSendPollJoinedEmail } from '../../simulations/emails/simulation-emails.ts'
 import { SimulationNotFoundError } from '../../simulations/errors/simulations.error.ts'
 import { newSimulation } from '../../simulations/helpers/new-simulation.ts'
@@ -14,7 +15,6 @@ import { isSimulationCompleted } from '../../simulations/helpers/simulation-guar
 import { findSimulationProgressById } from '../../simulations/repository/simulation-progress.repository.ts'
 import { createSimulation } from '../../simulations/repository/simulation.repository.ts'
 import type { Model } from '../../simulations/types/model.ts'
-import type { WithSpan } from '../../tracing/index.ts'
 import {
   type ParticipateToPollError,
   PollNotFoundError,
@@ -27,7 +27,7 @@ import { findPollById } from '../repositories/poll.repository.ts'
 import { enqueuePollStatsComputation } from '../stats/services/enqueue-poll-stats-computation.ts'
 
 interface ParticipateToPollDependencies {
-  withSpan: WithSpan
+  logger: Logger
   sendEmail: SendEmail
   /** Public origin the emails link back to */
   origin: string
@@ -45,7 +45,7 @@ type ParticipateToPollParams = {
 )
 
 export function createParticipateToPoll({
-  withSpan,
+  logger,
   sendEmail,
   origin,
   backgroundTaskRunner,
@@ -126,7 +126,7 @@ export function createParticipateToPoll({
       isSimulationCompleted(reusedSimulation)
     ) {
       runSideEffect(
-        { withSpan, backgroundTaskRunner },
+        { logger, backgroundTaskRunner },
         'pollJoinedEmail',
         () =>
           sendPollJoinedEmail({

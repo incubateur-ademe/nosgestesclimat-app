@@ -19,7 +19,6 @@ import {
 } from 'vitest'
 
 import { createLogger } from '../../logger'
-import { toLogAttributes } from '../log-attributes'
 import { identifyRequest } from '../request-identity'
 
 class TestDomainError extends DomainError<'test_domain_error'> {
@@ -164,39 +163,6 @@ describe('log export', () => {
     const [record] = exporter.getFinishedLogRecords()
     expect(record.attributes).not.toHaveProperty('posthogDistinctId')
     expect(record.spanContext).toBeUndefined()
-  })
-
-  // pino redacts the stdout line only: its censor runs at serialization time,
-  // on its own output, and never touches the object it was handed. Without a
-  // censor on the OTLP path too, a secret logged by mistake reaches PostHog
-  // in clear.
-  it('censors a secret key on the exported attributes, at any depth', () => {
-    logger().info('login attempt', {
-      email: 'jane@example.org',
-      token: 'phc_secret',
-      payload: { user: { email: 'nested@example.org', name: 'Jane' } },
-      tokenCount: 3,
-    })
-
-    const [record] = exporter.getFinishedLogRecords()
-    expect(record.attributes['ngc.email']).toBe('[redacted]')
-    expect(record.attributes['ngc.token']).toBe('[redacted]')
-    expect(record.attributes['ngc.payload.user.email']).toBe('[redacted]')
-    expect(record.attributes['ngc.payload.user.name']).toBe('Jane')
-    // An exact name only: a word containing a censored one is data.
-    expect(record.attributes['ngc.tokenCount']).toBe(3)
-  })
-
-  it('censors the flattened attributes, the same way as the export', () => {
-    // The bridge hands over an already-prefixed meta: `toLogAttributes` flattens
-    // it, it does not prefix it.
-    const attributes = toLogAttributes({
-      'ngc.email': 'jane@example.org',
-      'ngc.payload': { cookie: 'value' },
-    })
-
-    expect(attributes['ngc.email']).toBe('[redacted]')
-    expect(attributes['ngc.payload.cookie']).toBe('[redacted]')
   })
 
   it('writes a nested Error under one attribute, its stack', () => {

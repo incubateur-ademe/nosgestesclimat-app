@@ -108,6 +108,52 @@ describe('request identity', () => {
     })
   })
 
+  it('reaches the request when the read awaited before identifying', async () => {
+    const tracer = trace.getTracer('test')
+
+    await tracer.startActiveSpan(
+      'POST /fr/simulateur/bilan',
+      async (request) => {
+        try {
+          // `getUserSession` cannot do otherwise: the session is in the headers,
+          // so it awaits before it knows who the request is. An identity written
+          // in that continuation has to reach the request's other frames — a
+          // store set after an `await` does not, which is why the trace id keys
+          // it.
+          await tracer.startActiveSpan(
+            'site.service.getUserSession',
+            async (session) => {
+              try {
+                await Promise.resolve()
+                identifyRequest({ distinctId: 'user-3', sessionId: 'replay-3' })
+              } finally {
+                session.end()
+              }
+            }
+          )
+
+          expect(currentRequestIdentity()).toEqual({
+            distinctId: 'user-3',
+            sessionId: 'replay-3',
+          })
+
+          tracer.startActiveSpan('prisma:client:operation', (query) => {
+            query.end()
+          })
+        } finally {
+          request.end()
+        }
+      }
+    )
+
+    const spans = exporter.getFinishedSpans()
+    const query = spans.find((span) => span.name === 'prisma:client:operation')!
+    expect(query.attributes).toMatchObject({
+      posthogDistinctId: 'user-3',
+      sessionId: 'replay-3',
+    })
+  })
+
   it('ignores an identity without any value', () => {
     identifyRequest({})
     expect(currentRequestIdentity()).toBeUndefined()

@@ -16,7 +16,6 @@ import { findPollById } from '../../polls/repositories/poll.repository.ts'
 import { enqueuePollStatsComputation } from '../../polls/stats/services/enqueue-poll-stats-computation.ts'
 import { isModelSupported } from '../../simulation-computation/model-support/is-model-supported.ts'
 import { createSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
-import type { WithSpan } from '../../tracing/index.ts'
 import { findUserById } from '../../users/repositories/users.repository.ts'
 import { mapComputedResultsToContactAttributes } from '../emails/map-computed-results-to-contact-attributes.ts'
 import {
@@ -41,7 +40,6 @@ import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
 interface CompleteSimulationDependencies {
   logger: Logger
-  withSpan: WithSpan
   addOrUpdateContact: AddOrUpdateContact
   sendEmail: SendEmail
   /** Public origin the emails link back to */
@@ -52,7 +50,6 @@ interface CompleteSimulationDependencies {
 
 export function createCompleteSimulation({
   logger,
-  withSpan,
   addOrUpdateContact,
   sendEmail,
   origin,
@@ -141,22 +138,19 @@ export function createCompleteSimulation({
       return success({ groups: simulation.groups, polls: simulation.polls })
     }
 
-    runSideEffect(
-      { withSpan, backgroundTaskRunner },
-      'addOrUpdateContact',
-      () =>
-        addOrUpdateContact({
-          email: userSession.email,
-          attributes: {
-            [Attributes.USER_ID]: userId,
-            [Attributes.LAST_SIMULATION_DATE]: simulation.date.toISOString(),
-            ...mapComputedResultsToContactAttributes(computedResults, locale),
-          },
-        })
+    runSideEffect({ logger, backgroundTaskRunner }, 'addOrUpdateContact', () =>
+      addOrUpdateContact({
+        email: userSession.email,
+        attributes: {
+          [Attributes.USER_ID]: userId,
+          [Attributes.LAST_SIMULATION_DATE]: simulation.date.toISOString(),
+          ...mapComputedResultsToContactAttributes(computedResults, locale),
+        },
+      })
     )
 
     runSideEffect(
-      { withSpan, backgroundTaskRunner },
+      { logger, backgroundTaskRunner },
       'joinedEmail',
       async () => {
         // The most recent membership is the one the user just completed.

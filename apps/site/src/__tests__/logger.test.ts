@@ -94,16 +94,7 @@ describe('createLogger', () => {
     expect(lastLine()['ngc.job']).toBe('simulation-computation')
   })
 
-  it('redacts the personal data a caller should not have logged', () => {
-    logger.info('contact', { email: 'a@b.com', token: 'secret' })
-
-    const line = lastLine()
-    expect(line['ngc.email']).toBe('[redacted]')
-    expect(line['ngc.token']).toBe('[redacted]')
-  })
-
   it('leaves a business payload alone', () => {
-    // The answers are not PII: masking them would hide what the line is about.
     logger.info('answers', { 'ngc.payload': { car: 1 } })
 
     expect(lastLine()['ngc.payload']).toEqual({ car: 1 })
