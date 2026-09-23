@@ -8,7 +8,7 @@ import {
 import type {
   PodiumCategory,
   PodiumItem,
-  PodiumOrganisationTypeWithAllFakeType,
+  PodiumOrganisationType,
 } from '../types/event-info.ts'
 import {
   mapEventComputationToPodiumItem,
@@ -24,9 +24,7 @@ export const findEvent = async (eventIdOrSlug: string) =>
 export const findPodiumOrganisations = async (
   eventId: string
 ): Promise<Record<PodiumCategory, PodiumItem[]>> => {
-  const buildEventComputationRequest = (
-    type: PodiumOrganisationTypeWithAllFakeType
-  ) =>
+  const buildEventComputationRequest = (type: PodiumOrganisationType) =>
     prisma.eventComputation.findMany({
       where: {
         eventId,
@@ -49,7 +47,7 @@ export const findPodiumOrganisations = async (
       take: PODIUM_LIMIT_PER_TYPE,
     })
 
-  const PODIUM_TYPES: PodiumOrganisationTypeWithAllFakeType[] = [
+  const PODIUM_TYPES: PodiumOrganisationType[] = [
     'all',
     ...PODIUM_ORGANISATION_TYPES,
   ]
