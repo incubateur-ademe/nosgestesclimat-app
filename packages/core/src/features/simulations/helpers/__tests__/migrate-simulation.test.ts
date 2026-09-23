@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { CURRENT_MODEL_VERSION } from '../../../simulation-computation/model-support/model-versions.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { migrateSimulationIfNeeded } from '../migrate-simulation.ts'
 
@@ -65,5 +66,34 @@ describe('migrateSimulationIfNeeded', () => {
 
     expect(result).toBe(simulation)
     expect(simulation.situation).not.toBe(originalSituation)
+  })
+
+  it('bumps the model version to the current one so the migrated situation is read with matching rules', () => {
+    const simulation = simulationFactory
+      .withModelRegion('FR')
+      .withModelVersion({ publishedTag: '1.0.0' })
+      .build()
+
+    const result = migrateSimulationIfNeeded(simulation)
+
+    expect(result.model).toEqual({
+      region: 'FR',
+      locale: 'fr',
+      version: { publishedTag: CURRENT_MODEL_VERSION },
+    })
+  })
+
+  it('is idempotent: a migrated simulation is left untouched on the next call', () => {
+    const simulation = simulationFactory
+      .withModelRegion('FR')
+      .withModelVersion({ publishedTag: '1.0.0' })
+      .build()
+
+    const migrated = migrateSimulationIfNeeded(simulation)
+    const migratedSituation = migrated.situation
+    migrateSimulationIfNeeded(migrated)
+
+    expect(migrateSituation).toHaveBeenCalledTimes(1)
+    expect(migrated.situation).toBe(migratedSituation)
   })
 })

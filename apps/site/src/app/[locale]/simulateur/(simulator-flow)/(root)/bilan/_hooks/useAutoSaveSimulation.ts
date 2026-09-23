@@ -10,8 +10,8 @@ import { captureException, setExtra } from '@sentry/nextjs'
 import { useContext, useEffect } from 'react'
 
 /**
- * Saves the answers of the simulation being taken, at most once every 3
- * seconds.
+ * Saves the answers of the simulation being taken, trailing the last change by
+ * 5 seconds: the delay is what turns a burst of answers into a single write.
  */
 export function useAutoSaveSimulation() {
   const currentSimulation = useCurrentSimulation()
@@ -27,7 +27,7 @@ export function useAutoSaveSimulation() {
         captureException(result.error)
       }
     },
-    3000
+    5000
   )
 
   useEffect(() => {

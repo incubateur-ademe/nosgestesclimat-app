@@ -11,15 +11,25 @@ interface PoolOptions {
   connectionString: string
   max: number
   connectionTimeoutMillis: number
+  statement_timeout: number
   application_name: string
 }
 
 /**
- * Keeps the autoscaled fleet (10 web and 10 worker containers at most) under
- * the database plan's `max_connections`. Processes whose concurrency is
- * bounded below that — the workers — override it from their start script.
+ * Ceiling per process, chosen to keep the autoscaled fleet (10 web and 10
+ * worker containers at most) under the database plan's `max_connections`.
+ * Processes sized differently override it from their start script.
  */
 const DEFAULT_POOL_MAX = 5
+
+/**
+ * Ceiling on a single statement, in milliseconds; 0 leaves it unbounded, as
+ * `pg` does by default. Without it a slow query holds its pool client for its
+ * whole duration, which is how a slow database ends up exhausting the pools.
+ * Opt-in per process rather than global: a web request has no business running
+ * for minutes, while the recomputations and the materialized view refresh do.
+ */
+const DEFAULT_STATEMENT_TIMEOUT_MS = 0
 
 /**
  * Time a query may spend waiting for a free connection. `pg` waits forever by
@@ -35,6 +45,11 @@ const ACQUIRE_TIMEOUT_MS = 5_000
 const PoolMaxSchema = v.fallback(
   v.pipe(v.unknown(), v.toNumber(), v.integer(), v.minValue(1)),
   DEFAULT_POOL_MAX
+)
+
+const StatementTimeoutSchema = v.fallback(
+  v.pipe(v.unknown(), v.toNumber(), v.integer(), v.minValue(0)),
+  DEFAULT_STATEMENT_TIMEOUT_MS
 )
 
 /**
@@ -54,5 +69,9 @@ export const resolvePoolOptions = ({
   connectionString,
   max: v.parse(PoolMaxSchema, env.DATABASE_POOL_MAX),
   connectionTimeoutMillis: ACQUIRE_TIMEOUT_MS,
+  statement_timeout: v.parse(
+    StatementTimeoutSchema,
+    env.DATABASE_STATEMENT_TIMEOUT_MS
+  ),
   application_name: resolveApplicationName(env),
 })

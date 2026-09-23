@@ -9,7 +9,7 @@ interface Props {
   size?: 'sm' | 'md'
   unoptimized?: boolean
 }
-export default function LogoLinkServer({
+export default function LogoLink({
   className,
   size = 'md',
   unoptimized,

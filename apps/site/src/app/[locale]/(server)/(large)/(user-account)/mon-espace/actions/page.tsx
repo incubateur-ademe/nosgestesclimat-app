@@ -41,8 +41,7 @@ export default async function MonEspaceActionsPage({
 
       <ProfileTab locale={locale} activePath={MON_ESPACE_ACTIONS_PATH} />
 
-      {/* No computation for the latest simulation: no simulation at all, or one
-          the model no longer supports. Nothing can be personalized. */}
+      {/* No finished simulation: nothing to personalize from. */}
       {personalizedActionsCatalogue.assessmentStatus === null ? (
         <NoResultsBlock locale={locale} />
       ) : (
