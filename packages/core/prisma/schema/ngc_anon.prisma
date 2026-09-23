@@ -37,8 +37,8 @@ view AnonVerifiedUser {
   id                       String   @unique
   user_id                  String   @db.Uuid
   user                     AnonUser @relation(fields: [user_id], references: [id])
-  name                     String?
-  telephone                String?
+  // name and telephone are left out: the view is exported to the PostHog
+  // warehouse, see 20260923123000.
   position                 String?
   optedInForCommunications Boolean
   createdAt                DateTime
