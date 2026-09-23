@@ -67,7 +67,7 @@ Ce qui reste interdit, c'est de logguer là où l'échec se constate : la décis
 
 ### 2.3 Les anomalies se pilotent au taux, pas à l'unité
 
-`warn` structuré, avec `component` et `code` en attributs → PostHog → alerte sur taux ou sur nouveau motif, **avec un responsable nommé, configurée dès le premier jour**.
+`warn` structuré, avec `ngc.scope` et `error.type` en attributs → PostHog → alerte sur taux ou sur nouveau motif, **avec un responsable nommé, configurée dès le premier jour**.
 
 **Pourquoi.** Le besoin n'est pas d'être réveillé pour une requête, c'est de savoir que ça arrive et à quelle fréquence — par exemple détecter que le client fausse le calcul depuis telle release. Une capture par occurrence noie les vrais bugs ; un tableau de bord sans alerte ne sert à rien.
 
@@ -279,7 +279,7 @@ Next.js 16 exécute le proxy (`proxy.ts`, ex-middleware) sur le runtime Node —
 - Sources de spans : **Next.js natif** (`BaseServer.handleRequest`, `render`, `fetch` — Next émet ses spans via `@opentelemetry/api` dès qu'un provider est enregistré), **nos opérations** (`withSpan` ouvre une span nommée par le composant, y lie le logger et la ferme : deux opérations imbriquées donnent deux spans, chacune sa durée ; span par itération worker), **nos side effects** (`runSideEffect` instrumente la tâche différée sous `core.sideEffect.<nom>`, ouverte au démarrage du travail et non à sa mise en file), **`PrismaInstrumentation`** (requêtes DB, contexte propagé via l'adapter pg).
 - **Le worker ne déclare pas de composant** : son unité de travail est le job, porté par l'attribut `job` (`ngc.job`), et ses lignes propres — démarrage, mémoire, arrêt — ont la portée du service (`worker`).
 - **`withSpan` est un contrat core**, comme `Logger` : core déclare ce qui mérite une span — un side effect, un service qui fait de l'I/O ou du calcul — et reçoit le tracer du runtime. Core ne connaît toujours pas OpenTelemetry.
-- **Le logger arrive en paramètre nommé**, pas en position : `withSpan(component, async ({ logger, payload }) => …)` rend une fonction de même signature, donc un service ou une action se déclare une fois. Les actions du site passent par lui (`site.action.*`), et les services du site qui font un appel ou une attente aussi (`site.service.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
+- **Le logger arrive en paramètre nommé**, pas en position : `withSpan('site.action.x', async ({ logger, payload }) => …)` rend une fonction de même signature, donc un service ou une action se déclare une fois. Les actions du site passent par lui (`site.action.*`), et les services du site qui font un appel ou une attente aussi (`site.service.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
 - **On instrumente une opération, pas chaque helper.** Ce qui mérite une span : une frontière (action, itération de worker), un service qui fait un appel externe, du calcul ou de l'attente — et un side effect, qui vit de toute façon hors de la requête. Le reste déclare un composant et s'arrête là. Le nombre de spans dans une cascade est le prix de la lisibilité : mieux vaut dix spans qui se lisent que cinquante qui se comptent.
 - Export OTLP : `https://eu.i.posthog.com/i/v1/traces`. Échantillonnage paramétrable par env ; les logs portent le `trace_id` même quand la trace n'est pas exportée.
 - **`X-Request-ID` est notre racine de trace.** nginx génère déjà un `request_id` 32-hex, le propage à l'app via `X-Request-ID`, et le mappe en `trace_id` de ses propres logs PostHog (`infra/nginx/README.md`). L'app honore ce contrat : un propagateur OTel adopte `X-Request-ID` comme parent distant quand aucun `traceparent` W3C n'est présent. Un seul `trace_id` relie alors **nginx → app → DB** dans PostHog. Absent (dev local, worker) : racine OTel standard.
@@ -326,9 +326,9 @@ attributs maison quand il n'y en a pas.
   triplet namespace / nom / instance identifie une instance unique.
 - **`service.version` est le SHA du commit déployé**, sans suffixe d'environnement : la même chaîne que la release Sentry et que le `serviceVersion` du navigateur — un span, une ligne et une issue se rejoignent dessus. Les tags semver ne sont plus maintenus : tant que le pipeline ne pose pas `SOURCE_VERSION`, la clé est omise plutôt que remplie d'un faux numéro. Le format est libre côté semconv (`2.0.0` comme `a01dbef8a` y figurent en exemples).
 - **Ce qui est interne à un service est un attribut, pas un service.** Un
-  service core (`engine-registry`) porte `component` en binding de `child` :
+  service core (`engine-registry`) porte `scope` en binding de `child` :
   OTel n'a pas de nom standard pour ça (comme pour `pollId` ou `simulationId`),
-  c'est un attribut maison — plat, stable, de forte dimensionnalité, ce que
+  c'est un attribut maison — préfixé, plat, stable, de forte dimensionnalité, ce que
   recommande PostHog. Le message, lui, dit ce qui est arrivé, sans préfixe
   `[composant]`.
 - **Nos attributs portent le préfixe `ngc.`**, posé par la fabrique : un
@@ -341,13 +341,13 @@ attributs maison quand il n'y en a pas.
   `http.*`), pas d'une liste tenue à la main. Les clés d'un autre outil
   (`posthogDistinctId`, `sessionId`) sont son contrat. Ce schéma est un
   contrat : un renommage casse les recherches et les alertes en silence.
-- **`component` nomme l'unité qui émet**, sous la forme `paquet.couche.unité` :
+- **`scope` nomme l'unité qui émet**, sous la forme `paquet.couche.unité` — le mot de la spec pour ça (`InstrumentationScope`) :
   `core.service.engineRegistry`, `site.action.completeSimulation`,
   `site.middleware.auth`. La **couche** est sémantique — `action`, `service`,
   `middleware`, `instrumentation` — et se déclare par le rôle, pas par
   l'emplacement : une action vit dans `services/` si `'use server'` le dit, et
   le même mot n'a pas le même sens des deux côtés d'une frontière. La forme est
-  **vérifiée par le compilateur** — `ComponentName` dans le contrat core : un
+  **vérifiée par le compilateur** — `ScopeName` dans le contrat core : un
   nom nu ne compile pas —, la liste des couches (`action`, `service`,
   `middleware`, `instrumentation`, `page`, `layout`, `sideEffect`) restant
   fermée et son
@@ -357,14 +357,14 @@ attributs maison quand il n'y en a pas.
   (`core.service.polls.computeStats`) — au moment de la collision, jamais par
   anticipation.
 - **Le pont en fait aussi le nom de la portée OTel** (`InstrumentationScope`,
-  le standard « qui a émis ») : la portée vaut exactement le `component`, le
+  le standard « qui a émis ») : la portée vaut exactement le `scope`, le
   service restant sur la ressource. Dans l'OTLP, la portée n'est pas un
   attribut du record : elle est sur l'enveloppe qui groupe les records
   (`scopeLogs`). PostHog ne le documente pas, mais l'expose bel et bien —
   `instrumentation_scope` revient dans la réponse, se filtre (`type: "log"`,
   valeur exacte `core.service.engineRegistry@` ou préfixe) et s'utilise en
   colonne calculée (vérifié par une sonde) ; ses attributs de portée, eux,
-  n'apparaissent nulle part. L'attribut `component`, lui, porte la valeur nue :
+  n'apparaissent nulle part. L'attribut `scope`, lui, porte la valeur nue :
   c'est le filtre exact, celui que l'interface liste, et celui qui survit au
   changement de backend. Chaque émetteur se nomme une fois : un `child` au
   niveau du module, la `meta` pour une ligne isolée. Les autres clés disent

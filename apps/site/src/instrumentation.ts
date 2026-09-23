@@ -68,7 +68,7 @@ export const onRequestError: Instrumentation.onRequestError = (
   logger.error(
     toError(error),
     {
-      component: 'site.instrumentation.onRequestError',
+      scope: 'site.instrumentation.onRequestError',
       ...({
         'http.request.method': request.method,
         'url.path': request.path,

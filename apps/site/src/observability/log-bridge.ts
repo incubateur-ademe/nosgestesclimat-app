@@ -41,12 +41,12 @@ export function emitLogRecord({
   message: string
   meta: LogMeta
 }): void {
-  // The component already carries its qualified name
-  // (`core.service.engineRegistry`) and the service is on the resource, so the
-  // scope takes it as is. PostHog renders a scope as `name@version`, which is
-  // why the `ngc.component` attribute stays the handle for exact filters.
-  const component = meta['ngc.component']
-  const scope = typeof component === 'string' ? component : service
+  // The scope attribute already carries the qualified name of the emitting unit
+  // (`core.service.engineRegistry`), and the service is on the resource: the OTel
+  // scope takes it as is. PostHog renders a scope as `name@version`, which is why
+  // `ngc.scope` stays the handle for exact filters.
+  const declared = meta['ngc.scope']
+  const scope = typeof declared === 'string' ? declared : service
 
   // `service` is on the line — it mirrors the winston setup — but not in the
   // attributes: the resource already carries it, and a bare `service` next to

@@ -15,7 +15,7 @@ export function createProgramSimulationComputation(
     simulationId: string
   ): Promise<void> {
     const logger = deps.logger.child({
-      component: 'core.service.programSimulationComputation',
+      scope: 'core.service.programSimulationComputation',
       simulationId: simulationId,
     })
     const simulation = await getSimulationById(simulationId)

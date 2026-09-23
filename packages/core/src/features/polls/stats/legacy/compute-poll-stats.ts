@@ -124,7 +124,7 @@ async function* batchPollSimulations(pollId: string) {
 
 export function createComputePollStats({ logger }: { logger: Logger }) {
   const computeLogger = logger.child({
-    component: 'core.service.computePollStats',
+    scope: 'core.service.computePollStats',
   })
 
   return async function computePollStats(pollId: string): Promise<{

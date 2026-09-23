@@ -1,6 +1,6 @@
 import type {
-  ComponentName,
   Logger,
+  ScopeName,
 } from '@nosgestesclimat/core/features/logger/index'
 import type { WithSpan } from '@nosgestesclimat/core/features/tracing/index'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
@@ -22,15 +22,15 @@ import { appTracer } from './setup'
  * not a failure, and the span must not carry an error status for it.
  */
 export const withSpan = function withSpan<Params extends object, Result>(
-  component: ComponentName,
+  scope: ScopeName,
   run: (params: Params & { logger: Logger }) => Promise<Result>
 ) {
   return async (params?: Params) =>
-    await appTracer().startActiveSpan(component, async (span) => {
+    await appTracer().startActiveSpan(scope, async (span) => {
       try {
         return await run({
           ...(params ?? ({} as Params)),
-          logger: logger.child({ component }),
+          logger: logger.child({ scope }),
         })
       } catch (error) {
         unstable_rethrow(error)

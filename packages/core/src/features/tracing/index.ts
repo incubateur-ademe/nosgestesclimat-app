@@ -1,4 +1,4 @@
-import type { ComponentName, Logger } from '../logger/index.ts'
+import type { Logger, ScopeName } from '../logger/index.ts'
 
 /**
  * Runs an operation in its own span, with a logger bound to the component.
@@ -11,7 +11,7 @@ import type { ComponentName, Logger } from '../logger/index.ts'
  * signature and the span covers its whole body.
  */
 export type WithSpan = <Params extends object, Result>(
-  component: ComponentName,
+  scope: ScopeName,
   run: (params: Params & { logger: Logger }) => Promise<Result>
 ) => [keyof Params] extends [never]
   ? () => Promise<Result>

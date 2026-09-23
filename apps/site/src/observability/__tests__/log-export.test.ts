@@ -76,7 +76,7 @@ describe('log export', () => {
           identifyRequest({ distinctId: 'user-1', sessionId: 'replay-1' })
           logger()
             .child({
-              component: 'core.service.engineRegistry',
+              scope: 'core.service.engineRegistry',
               job: 'simulation-computation',
             })
             .warn('job failed', { attempt: 2 })
@@ -94,7 +94,7 @@ describe('log export', () => {
     expect(record.attributes.service).toBeUndefined()
     // Bindings, meta and identity all land flat: that is what PostHog queries.
     expect(record.attributes).toMatchObject({
-      'ngc.component': 'core.service.engineRegistry',
+      'ngc.scope': 'core.service.engineRegistry',
       'ngc.job': 'simulation-computation',
       'ngc.attempt': 2,
       posthogDistinctId: 'user-1',

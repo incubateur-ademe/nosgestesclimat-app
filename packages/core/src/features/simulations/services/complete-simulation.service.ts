@@ -82,7 +82,7 @@ export function createCompleteSimulation({
     Result<Pick<Simulation, 'groups' | 'polls'>, CompleteSimulationError>
   > {
     const simulationLogger = logger.child({
-      component: 'core.service.completeSimulation',
+      scope: 'core.service.completeSimulation',
       simulationId: simulationId,
     })
     const userId = userSession.id

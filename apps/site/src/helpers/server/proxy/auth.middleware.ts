@@ -29,7 +29,7 @@ import type { MiddlewareResult } from './types'
 export async function middlewareAuth(
   request: NextRequest
 ): Promise<MiddlewareResult> {
-  const middlewareLogger = logger.child({ component: 'site.middleware.auth' })
+  const middlewareLogger = logger.child({ scope: 'site.middleware.auth' })
   const sessionCookie = request.cookies.get(SESSION_COOKIE)
 
   // (A) No session cookie: anonymous user.

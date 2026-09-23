@@ -6,8 +6,8 @@ import type { WithSpan } from '../features/tracing/index.ts'
  * test asserts what a service hands to the logger, not the trace it sits in.
  */
 export const createTestWithSpan = (logger: Logger): WithSpan =>
-  ((component, run) => (params?: object) =>
+  ((scope, run) => (params?: object) =>
     run({
       ...(params ?? {}),
-      logger: logger.child({ component }),
+      logger: logger.child({ scope }),
     } as never)) as WithSpan

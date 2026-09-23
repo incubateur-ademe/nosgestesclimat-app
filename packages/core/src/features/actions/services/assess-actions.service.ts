@@ -29,7 +29,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
     simulationId: string
   ): Promise<void> {
     const logger = deps.logger.child({
-      component: 'core.service.assessActions',
+      scope: 'core.service.assessActions',
       simulationId: simulationId,
     })
     const actions = await findActionRuleIds()

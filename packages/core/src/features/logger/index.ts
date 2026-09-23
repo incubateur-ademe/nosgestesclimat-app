@@ -2,7 +2,7 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
 /** Layers a unit can belong to. Widening this list is deliberate: the values
  * end up in searches and alerts. */
-export type ComponentLayer =
+export type ScopeLayer =
   | 'action'
   | 'service'
   | 'middleware'
@@ -12,14 +12,14 @@ export type ComponentLayer =
   | 'sideEffect'
 
 /** Workspaces that emit telemetry. */
-export type ComponentPackage = 'core' | 'site'
+export type ScopePackage = 'core' | 'site'
 
 /**
  * Qualified name of the unit that emits — `<package>.<layer>.<unit>`, e.g.
  * `core.service.engineRegistry`. The shape is enforced by the compiler; the
  * uniqueness across units stays a review rule (§7.7 of the logging manual).
  */
-export type ComponentName = `${ComponentPackage}.${ComponentLayer}.${string}`
+export type ScopeName = `${ScopePackage}.${ScopeLayer}.${string}`
 
 /**
  * Attributes another party named, kept as they are on the wire: a query engine
@@ -57,8 +57,8 @@ export type OtelAttributes = Partial<{
  * standard names (`memoryAttributes`, the request identity).
  */
 export type LogMeta = Record<string, unknown> & {
-  /** Qualified name, enforced: a bare `engineRegistry` would not compile. */
-  component?: ComponentName
+  /** Qualified name of the emitting unit, enforced: a bare name would not compile. */
+  scope?: ScopeName
 }
 
 /** Static context merged into every line of a child logger. */

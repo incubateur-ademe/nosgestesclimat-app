@@ -115,7 +115,7 @@ const buildEngine = async (
 export function createWarmUpHotEngines(deps: EngineRegistryDeps) {
   return async function warmUpHotEngines(): Promise<void> {
     const logger = deps.logger.child({
-      component: 'core.service.engineRegistry',
+      scope: 'core.service.engineRegistry',
     })
     logger.debug('warming all hot engines', { ...memoryAttributes() })
     for (const [key, { region, versionKind }] of HOT_KEYS) {
@@ -142,7 +142,7 @@ export function createWarmUpHotEngines(deps: EngineRegistryDeps) {
 export function createGetEngineForModel(deps: EngineRegistryDeps) {
   return async function getEngineForModel(model: Model): Promise<Engine> {
     const logger = deps.logger.child({
-      component: 'core.service.engineRegistry',
+      scope: 'core.service.engineRegistry',
     })
     const versionKind = resolveVersionKind(model)
     if (versionKind === null) {

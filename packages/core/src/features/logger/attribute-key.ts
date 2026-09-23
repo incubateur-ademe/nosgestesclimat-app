@@ -32,7 +32,7 @@ const FOREIGN_NAMES = [
 
 /**
  * The name an attribute takes on the wire, from the short key a caller writes:
- * `component` → `ngc.component`. Keys already prefixed, and the ones another
+ * `job` → `ngc.job`. Keys already prefixed, and the ones another
  * party owns, are left alone.
  */
 export function toAttributeKey(key: string): string {

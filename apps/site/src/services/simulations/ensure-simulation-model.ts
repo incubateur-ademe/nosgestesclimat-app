@@ -27,7 +27,7 @@ export async function ensureSimulationModel<
   logger.error(
     new Error('Simulation reached persistence without a valid model'),
     {
-      component: 'site.service.ensureSimulationModel',
+      scope: 'site.service.ensureSimulationModel',
       simulationId: simulation.id,
       model: simulation.model,
     }
