@@ -13,6 +13,13 @@ const MAX_ATTRIBUTE_DEPTH = 4
 /** PostHog truncates long values anyway, and a whole stack is not needed there. */
 const MAX_ATTRIBUTE_LENGTH = 4_000
 
+/** Key names censored on export. The stdout line is redacted by pino, but the
+ * OTLP path bypasses it — pino redacts its serialized output, not the object it
+ * is handed — so the censor runs here, at the one place every exported
+ * attribute goes through. A key name matches at any depth, which is wider than
+ * the stdout paths: an export to a third party errs on the strict side. */
+const REDACTED_KEY_NAMES = new Set(['email', 'password', 'token', 'cookie'])
+
 /**
  * The meta of a line, as OTLP attributes: flat, in the dotted-key shape
  * PostHog can query (`engine.key`), the rest as JSON text so a record never
@@ -27,7 +34,7 @@ export function toLogAttributes(meta: LogMeta): LogAttributes {
   const attributes: LogAttributes = {}
 
   for (const [key, value] of Object.entries(flattenAttributes(meta))) {
-    const attribute = toAttributeValue(value)
+    const attribute = isRedacted(key) ? '[redacted]' : toAttributeValue(value)
 
     if (attribute !== undefined) {
       attributes[key] = attribute
@@ -96,6 +103,12 @@ function flattenAttributes(meta: LogMeta, prefix = '', depth = 0): LogMeta {
   }
 
   return flat
+}
+
+/** The last segment decides: `ngc.session.token` is censored like `ngc.token`.
+ * An exact name only — `tokenCount` is data, not a secret. */
+function isRedacted(key: string): boolean {
+  return REDACTED_KEY_NAMES.has(key.split('.').at(-1) ?? '')
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
