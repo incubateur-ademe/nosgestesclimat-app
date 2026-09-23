@@ -10,8 +10,12 @@ import { toast } from 'sonner'
 
 export default function CommitToActionButton({
   actionId,
+  className,
+  shortLabelDisplayed,
 }: {
   actionId: string
+  className?: string
+  shortLabelDisplayed?: boolean
 }) {
   const { t } = useClientTranslation()
   const [isPending, startTransition] = useTransition()
@@ -42,10 +46,18 @@ export default function CommitToActionButton({
     <Button
       color="secondary"
       onClick={handleCommitToAction}
-      disabled={isPending}>
-      <Trans i18nKey="actions.components.actionCard.highlighted.addButton">
-        <PlusIcon className="stroke-primary-700 mr-2 inline-block" /> Ajouter
-      </Trans>
+      disabled={isPending}
+      className={className}>
+      <PlusIcon className="stroke-primary-700 mr-2 inline-block" />
+      {shortLabelDisplayed ? (
+        <Trans i18nKey="actions.components.actionCard.highlighted.addButton.short">
+          Ajouter
+        </Trans>
+      ) : (
+        <Trans i18nKey="actions.components.actionCard.highlighted.addButton.full">
+          Ajouter à mon plan
+        </Trans>
+      )}
     </Button>
   )
 }

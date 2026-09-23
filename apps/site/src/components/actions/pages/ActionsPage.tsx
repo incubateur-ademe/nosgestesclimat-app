@@ -28,7 +28,7 @@ interface ActionsPageProps extends Omit<
    * Total carbon footprint in kg of the user's latest simulation.
    */
   totalFootprint?: number
-  tempPersonalizedFlag: boolean
+  personalized?: boolean
 }
 
 export default function ActionsPage({
@@ -45,7 +45,7 @@ export default function ActionsPage({
   assessmentStatus,
   from,
   totalFootprint,
-  tempPersonalizedFlag,
+  personalized,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -105,7 +105,7 @@ export default function ActionsPage({
             assessmentStatus={assessmentStatus}
             from={from}
             totalFootprint={totalFootprint}
-            tempPersonalizedFlag={tempPersonalizedFlag}
+            personalized={personalized}
           />
         )}
 
@@ -126,7 +126,7 @@ export default function ActionsPage({
                   assessmentStatus={assessmentStatus}
                   actions={actionsByTheme[theme.key] ?? []}
                   from={from}
-                  tempPersonalizedFlag={tempPersonalizedFlag}
+                  personalized={personalized}
                 />
               )
             })}

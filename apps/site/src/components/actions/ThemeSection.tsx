@@ -12,6 +12,7 @@ import HousingIcon from '../icons/HousingIcon'
 import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
+import ActionCard from './ActionCard/ActionCard'
 import ActionCardSwitchServer from './ActionCard/ActionCardSwitchServer'
 
 const classesByTheme: Record<
@@ -55,7 +56,7 @@ export default function ThemeSection({
   title,
   description,
   className,
-  tempPersonalizedFlag,
+  personalized,
 }: {
   theme: Pick<Theme, 'key' | 'title'>
   actions: MaybePersonalizedAction[]
@@ -68,7 +69,7 @@ export default function ThemeSection({
   /** Defaults to the number of actions in the section */
   description?: React.ReactNode
   className?: string
-  tempPersonalizedFlag: boolean
+  personalized?: boolean
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -105,19 +106,34 @@ export default function ThemeSection({
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
-        {actions.map((action) => (
-          <ActionCardSwitchServer
-            key={action.id}
-            action={action}
-            locale={locale}
-            withThemeBadge={false}
-            assessmentStatus={assessmentStatus}
-            className="h-full"
-            from={from}
-            source={trackingSource}
-            tempPersonalizedFlag={tempPersonalizedFlag}
-          />
-        ))}
+        {actions.map((action) =>
+          personalized ? (
+            <ActionCard
+              key={action.id}
+              action={action}
+              locale={locale}
+              withThemeBadge={false}
+              assessmentStatus={assessmentStatus}
+              className="h-full"
+              from={from}
+              source={trackingSource}
+              personalized={personalized}
+              withDescription
+            />
+          ) : (
+            <ActionCardSwitchServer
+              key={action.id}
+              action={action}
+              locale={locale}
+              withThemeBadge={false}
+              assessmentStatus={assessmentStatus}
+              className="h-full"
+              from={from}
+              source={trackingSource}
+              personalized={personalized}
+            />
+          )
+        )}
       </Carousel>
     </section>
   )

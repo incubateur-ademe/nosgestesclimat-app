@@ -61,6 +61,7 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
       locale={locale}
       from="index"
       assessmentStatus={personnalizedActionsCatalogue.assessmentStatus}
+      personalized={true}
     />
   )
 }

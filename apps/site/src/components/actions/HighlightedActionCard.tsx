@@ -54,7 +54,7 @@ interface HighlightedActionCardProps extends React.ComponentPropsWithoutRef<'art
   from?: 'fin' | 'mon-espace' | 'index'
   /** Total carbon footprint in kg, used to express the impact as a share of it */
   totalFootprint?: number
-  tempPersonalizedFlag: boolean
+  personalized?: boolean
 }
 
 export default function HighlightedActionCard({
@@ -65,7 +65,7 @@ export default function HighlightedActionCard({
   rank,
   from,
   totalFootprint,
-  tempPersonalizedFlag,
+  personalized,
   ...props
 }: HighlightedActionCardProps) {
   const classes = classesByTheme[action.theme.key]
@@ -128,8 +128,9 @@ export default function HighlightedActionCard({
             <span className="sr-only">{` "${action.title}"`}</span>
             <ArrowNarrowRightIcon />
           </ButtonLinkServer>
-          {tempPersonalizedFlag && (
-            <CommitToActionButton actionId={action.id} />
+
+          {personalized && (
+            <CommitToActionButton shortLabelDisplayed actionId={action.id} />
           )}
         </div>
       </div>

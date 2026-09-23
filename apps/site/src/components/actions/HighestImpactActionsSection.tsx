@@ -13,7 +13,7 @@ interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRe
   from?: 'fin' | 'mon-espace' | 'index'
   /** Total carbon footprint in kg, used to express each impact as a share of it */
   totalFootprint?: number
-  tempPersonalizedFlag: boolean
+  personalized?: boolean
 }
 
 export default function HighestImpactActionsSection({
@@ -23,7 +23,7 @@ export default function HighestImpactActionsSection({
   assessmentStatus,
   from,
   totalFootprint,
-  tempPersonalizedFlag,
+  personalized,
   ...props
 }: HighestImpactActionsSectionProps) {
   const headingId = useId()
@@ -61,7 +61,7 @@ export default function HighestImpactActionsSection({
               rank={index + 1}
               from={from}
               totalFootprint={totalFootprint}
-              tempPersonalizedFlag={tempPersonalizedFlag}
+              personalized={personalized}
             />
           </li>
         ))}

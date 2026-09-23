@@ -39,7 +39,7 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   from?: 'fin' | 'mon-espace' | 'index'
   source?: ActionEventSource
   cta?: React.ReactNode
-  tempPersonalizedFlag: boolean
+  personalized?: boolean
 }
 
 export default function ActionCard({
@@ -54,7 +54,7 @@ export default function ActionCard({
   withCta,
   withDescription,
   cta,
-  tempPersonalizedFlag,
+  personalized,
   ...props
 }: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
   const rankEmoji = rankToEmoji(rank)
@@ -132,7 +132,14 @@ export default function ActionCard({
           </span>
         </div>
       )}
-      {tempPersonalizedFlag && <CommitToActionButton actionId={action.id} />}
+      {personalized && (
+        <div className="border-t border-slate-100 p-2">
+          <CommitToActionButton
+            className="w-full text-sm!"
+            actionId={action.id}
+          />
+        </div>
+      )}
       {cta ?? (
         <Link
           href={href}
