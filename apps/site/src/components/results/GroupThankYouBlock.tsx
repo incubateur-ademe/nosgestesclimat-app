@@ -20,10 +20,13 @@ export default function GroupThankYouBlock({ locale, group }: Props) {
       </p>
 
       <p className="mb-6 text-gray-700">
-        <Trans locale={locale} i18nKey="results.groupThankYou.description">
-          Découvrez les résultats du test collectif
-        </Trans>{' '}
-        <strong>"{groupName}"</strong>
+        <Trans
+          locale={locale}
+          i18nKey="results.groupThankYou.description"
+          values={{ groupName }}>
+          Découvrez les résultats du test collectif{' '}
+          <strong>"{{ groupName } as unknown as React.ReactElement}"</strong>
+        </Trans>
       </p>
 
       <ButtonLink
