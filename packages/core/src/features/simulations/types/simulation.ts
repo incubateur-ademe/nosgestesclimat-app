@@ -3,6 +3,8 @@ import type { Situation } from 'publicodes'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import type { Model } from './model.ts'
 
+export type { Model }
+
 export interface Simulation {
   id: string
   date: Date

@@ -1,4 +1,5 @@
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
+import { ModelSchema } from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
 import {
   FoldedStepsSchema,
   SituationSchema,
@@ -7,6 +8,10 @@ import * as v from 'valibot'
 
 export const CompleteSimulationPayloadSchema = v.strictObject({
   id: v.pipe(v.string(), v.uuid()),
+  // The model the client ran the test with — migrated to the current version
+  // when the client resumed an older simulation. Without it the completion
+  // would judge computability from the persisted, possibly outdated model.
+  model: ModelSchema,
   progression: v.literal(1),
   situation: SituationSchema,
   foldedSteps: FoldedStepsSchema,

@@ -1,9 +1,6 @@
-import Markdown from '@/design-system/utils/Markdown'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { HTMLAttributes, JSX, PropsWithChildren } from 'react'
-import { useState } from 'react'
-import QuestionButton from './QuestionButton'
 
 interface Props {
   label?: string | JSX.Element
@@ -40,8 +37,6 @@ export default function ChoiceInput({
   children,
   ...props
 }: HTMLAttributes<HTMLInputElement> & PropsWithChildren<Props>) {
-  const [isOpen, setIsOpen] = useState(false)
-
   const { t } = useClientTranslation()
 
   const status = active ? 'checked' : 'unchecked'
@@ -65,29 +60,19 @@ export default function ChoiceInput({
           <span
             className={`${checkClassNames[status]} relative flex h-5 w-5 items-center justify-center rounded-full border-2 text-sm before:absolute before:top-0.5 before:left-0.5 before:h-3 before:w-3 before:rounded-full before:p-1 md:h-5 md:w-5 md:text-base md:before:h-3 md:before:w-3`}
           />
-          <span
-            className={`text-default inline flex-1 align-middle text-sm md:text-base ${labelClassNames[status]}`}>
-            {label ?? children}
+          <span className="flex flex-1 flex-col">
+            <span
+              className={`text-default inline align-middle text-sm md:text-base ${labelClassNames[status]}`}>
+              {label ?? children}
+            </span>
+            {description ? (
+              <span className="text-default mb-0 text-xs italic md:text-xs">
+                {description.split('\n')[0]}
+              </span>
+            ) : null}
           </span>
         </label>
-        {description ? (
-          <QuestionButton
-            title={t(
-              'simulator.inputs.choice.questionButton.title',
-              "Plus d'informations - {{label}}",
-              {
-                label: labelText,
-              }
-            )}
-            onClick={() => setIsOpen((previsOpen) => !previsOpen)}
-          />
-        ) : null}
       </div>
-      {description && isOpen ? (
-        <div className="border-primary-50 mb-4 w-auto rounded-xl border-2 bg-white p-3 text-sm sm:max-w-[30rem]">
-          <Markdown className="mb-0! inline!">{description}</Markdown>
-        </div>
-      ) : null}
     </>
   )
 }

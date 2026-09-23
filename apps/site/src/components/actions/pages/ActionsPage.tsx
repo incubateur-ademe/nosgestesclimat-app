@@ -2,7 +2,7 @@ import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
+import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import BetaBanner from '../BetaBanner'
@@ -23,7 +23,7 @@ interface ActionsPageProps extends Omit<
   themes: Theme[]
   actions: MaybePersonalizedAction[]
   locale: Locale
-  assessmentStatus?: SimulationComputationStatus | null
+  assessmentStatus?: AssessmentStatus | null
   from?: 'fin' | 'mon-espace' | 'index'
   /**
    * Total carbon footprint in kg of the user's latest simulation.
