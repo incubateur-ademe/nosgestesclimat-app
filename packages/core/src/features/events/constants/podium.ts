@@ -6,8 +6,6 @@ export const MOBILISED_ORGANISATION_MIN_SIMULATIONS = 3
 
 export const PODIUM_LIMIT_PER_TYPE = 15
 
-export const PODIUM_ALL_CATEGORY = 'all'
-
 export const PODIUM_ORGANISATION_TYPES: PodiumOrganisationType[] = [
   'company',
   'association',

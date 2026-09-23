@@ -5,7 +5,9 @@ export type PodiumOrganisationType = Extract<
   'company' | 'association' | 'universityOrSchool' | 'publicOrRegionalAuthority'
 >
 
-export type PodiumOrganisationTypeWithAll = PodiumOrganisationType | 'all'
+export type PodiumOrganisationTypeWithAllFakeType =
+  | PodiumOrganisationType
+  | 'all'
 
 export type PodiumCategory =
   | 'all'
