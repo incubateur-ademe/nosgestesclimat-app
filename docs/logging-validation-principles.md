@@ -218,12 +218,12 @@ logger.warn(err, { route }, { capture: true })           // justifié par commen
 Règles de conception, chacune conséquence d'un chapitre précédent :
 
 - **`meta` en deuxième position, les options en troisième** : le cas courant — `logger.error(err, { pollId })` — s'écrit sans objet imbriqué, et `capture` reste hors du sac d'attributs, donc impossible à écraser par un attribut métier.
-- **`error`/`fatal` exigent un `Error`** (§3.1). Pas de surcharge `string` : un message seul n'est jamais une erreur. `Exception` et `DomainError` étendent `Error` — le type les couvre sans coupler l'interface à la taxonomie du domaine.
+- **`error`/`fatal` exigent un `Error`** (§3.1). Pas de surcharge `string` : un message seul n'est jamais une erreur. `DomainError` étend `Error` — le type le couvre sans coupler l'interface à la taxonomie du domaine. Une seule famille d'erreurs métier : `code`, ses champs, et rien d'autre.
 - **`warn` accepte `string | Error`** (§3.2) : le cas retry passe l'`Error` elle-même — la stack reste dans le log, sans capture. Jamais de message reconstitué à partir d'une erreur, et **jamais d'erreur fabriquée pour la logger** : à l'endroit où l'anomalie est constatée, un message et ses attributs suffisent — l'`Error` n'a de valeur que rattrapée, parce que sa stack dit d'où elle vient.
 - **`child(bindings)` retourne un `Logger`** — l'interface, pas le type pino. Les bindings sont le contexte statique partagé par plusieurs lignes d'une même portée (service, route, job, ids de la requête ou de la boucle) ; **pour une ligne isolée, la `meta` suffit** : un `child` créé pour un seul appel ne fait que déplacer le contexte. Le `trace_id` ne passe **jamais** par `child` : c'est OTel qui l'injecte (§7.3).
 - **La capture est portée par l'implémentation**, pas par les services : `captureException` disparaît des dépendances de core. Un service core ne reçoit que `logger`.
 - **Sérialisation** (côté implémentation) : les **attributs exportés** sont **aplatis** — les objets d'une `meta` deviennent des clés pointées, `currentMemory.rssMB` — au moment de l'export, pas dans la fabrique : le JSON qui part sur stdout garde sa forme imbriquée, qu'un aplatissement abîmerait (`a.b` et `a: { b }` fusionneraient en une seule clé). L'`Error` passée à `error()`/`fatal()` prend les noms qu'OTel définit pour une exception de log : `exception.type`, `exception.message`, `exception.stacktrace` (chaîne des `cause` ajoutée). Appliquée à toute valeur `Error` trouvée dans la `meta`, sous
-  n'importe quelle clé. Ses propriétés propres suivent : `code` pour un `DomainError`, `payload.*` pour une `Exception`, `level.domain` pour son niveau déclaré (qui heurterait le `level` de pino). Ne jamais s'appuyer sur `toJSON()` (qui ne garde que `code` pour `ErrorWithCode`).
+  n'importe quelle clé. Ses propriétés propres suivent : `code`, puis les champs que la classe déclare (`simulationId`, `progression`…). Aucune erreur ne porte son niveau : c'est la frontière qui le décide (§6). Ne jamais s'appuyer sur `toJSON()` (qui ne garde que `code` pour `ErrorWithCode`).
 - **Le message d'une `error()` est celui de l'`Error`** : il n'y a pas de libellé libre à côté. Ce qu'un message portait autrefois (« Failed to send poll joined email ») est du contexte statique : il va dans un binding de `child` (`{ sideEffect: 'pollJoinedEmail' }`), donc en attribut filtrable.
 - **Normalisation** : `toError()` s'applique à un `catch (unknown)` ou à une promesse rejetée, pas à une valeur déjà typée `Error` — un `Result<_, EmailRequestError>` en porte déjà une.
 
@@ -379,7 +379,7 @@ attributs maison quand il n'y en a pas.
   Next reste dans son namespace `next.*`, comme Next le fait sur ses spans
   (`next.route`, `next.span_type`).
 - **Les attributs exportés sont plats** : un objet de `meta` — ou d'un binding
-  de `child` — est aplati en clés pointées (`payload.actionId`), séparateur que
+  de `child` — est aplati en clés pointées (`engine.key`), séparateur que
   les noms semconv emploient eux-mêmes (`http.request.method`). C'est **le pont
   qui aplatit, à l'export**, pas la fabrique : l'aplatissement est une
   contrainte du backend, pas de la journalisation — PostHog ne le fait pas

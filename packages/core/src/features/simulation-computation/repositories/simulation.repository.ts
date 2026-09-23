@@ -1,5 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
-import { SimulationNotFound } from '../../simulations/exceptions/simulations.exception.ts'
+import { SimulationNotFoundError } from '../../simulations/errors/simulations.error.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
 import { mapSimulation } from './simulation.mapper.ts'
 
@@ -7,7 +7,7 @@ export const getSimulationById = async (id: string): Promise<Simulation> => {
   const simulation = await prisma.simulation.findUnique({ where: { id } })
 
   if (!simulation) {
-    throw new SimulationNotFound({ simulationId: id })
+    throw new SimulationNotFoundError(id)
   }
 
   return mapSimulation(simulation)

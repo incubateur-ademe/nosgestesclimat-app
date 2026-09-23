@@ -41,8 +41,8 @@ export function toLogAttributes(meta: LogMeta): LogAttributes {
  * The exception as its own attributes: the three names OTel defines for a log
  * record (`exception.type`, `exception.message`, `exception.stacktrace`, the
  * cause chain appended), plus whatever the error class carries — `code` for a
- * `DomainError`, the business `payload` for an `Exception`. `toJSON()` is not
- * used: it only keeps `code` for `ErrorWithCode`. Used for the stdout line;
+ * `DomainError`, its own fields next to it. `toJSON()` is not used: it only
+ * keeps `code` for `ErrorWithCode`. Used for the stdout line;
  * `toLogAttributes` calls it back for an `Error` found inside the meta.
  */
 export function exceptionAttributes(error: Error): LogMeta {
@@ -53,12 +53,12 @@ export function exceptionAttributes(error: Error): LogMeta {
   }
 
   for (const [key, value] of Object.entries(error)) {
-    // `name` is `exception.type`; `level` would collide with pino's own level.
+    // `name` is `exception.type` and `message` is `exception.message`.
     if (key === 'name' || key === 'message') {
       continue
     }
 
-    attributes[key === 'level' ? 'level.domain' : key] = value
+    attributes[key] = value
   }
 
   return attributes

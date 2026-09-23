@@ -1,5 +1,4 @@
 // @vitest-environment node
-import { Exception } from '@nosgestesclimat/core/exception'
 import { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { trace } from '@opentelemetry/api'
 import { logs } from '@opentelemetry/api-logs'
@@ -28,7 +27,14 @@ class TestDomainError extends DomainError<'test_domain_error'> {
   }
 }
 
-class TestException extends Exception<{ actionId: string }> {}
+class TestException extends DomainError<'test_exception'> {
+  public readonly actionId: string
+
+  constructor(actionId: string) {
+    super('test_exception', 'No rule')
+    this.actionId = actionId
+  }
+}
 
 describe('log export', () => {
   const exporter = new InMemoryLogRecordExporter()
@@ -136,15 +142,15 @@ describe('log export', () => {
 
   it('writes the fields the error class carries, flattened', () => {
     logger().error(new TestDomainError())
-    logger().error(new TestException({ message: 'No rule', actionId: 'a1' }))
+    logger().error(new TestException('a1'))
 
     const [domainError, exception] = exporter.getFinishedLogRecords()
     expect(domainError.attributes.code).toBe('test_domain_error')
     expect(exception.attributes).toMatchObject({
       'exception.type': 'TestException',
       'exception.message': 'No rule',
-      'level.domain': 'error',
-      'payload.actionId': 'a1',
+      code: 'test_exception',
+      actionId: 'a1',
     })
   })
 

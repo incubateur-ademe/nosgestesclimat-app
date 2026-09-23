@@ -11,7 +11,7 @@ export async function decryptSession(token: string): Promise<Session> {
       currentDate: EXPIRATION_BYPASS_DATE,
     })
     .catch(() => {
-      throw new SessionCryptoException({ message: 'Invalid session token' })
+      throw new SessionCryptoException()
     })
 
   return {

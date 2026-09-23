@@ -1,14 +1,18 @@
-import { Exception } from '../../../exception.ts'
+import { DomainError } from '../../../lib/errors.ts'
 
-export class SimulationNotFound extends Exception<{
-  simulationId: string
-}> {
-  level = 'error' as const
-}
+export class InvalidModelString extends DomainError<'invalid_model_string'> {
+  public readonly simulationId: string
+  public readonly modelString: string
 
-export class InvalidModelString extends Exception<{
-  simulationId: string
-  modelString: string
-}> {
-  level = 'error' as const
+  constructor({
+    simulationId,
+    modelString,
+  }: {
+    simulationId: string
+    modelString: string
+  }) {
+    super('invalid_model_string', 'Unparsable model string')
+    this.simulationId = simulationId
+    this.modelString = modelString
+  }
 }

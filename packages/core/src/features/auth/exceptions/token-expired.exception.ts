@@ -1,5 +1,7 @@
-import { Exception } from '../../../exception.ts'
+import { DomainError } from '../../../lib/errors.ts'
 
-export class TokenExpiredException extends Exception {
-  level = 'error' as const
+export class TokenExpiredException extends DomainError<'token_expired'> {
+  constructor(message = 'Token expired') {
+    super('token_expired', message)
+  }
 }

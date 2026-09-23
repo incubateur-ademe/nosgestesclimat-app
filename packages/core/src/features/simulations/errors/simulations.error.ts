@@ -3,8 +3,11 @@ import { DomainError } from '../../../lib/errors.ts'
 import type { ComputationAlreadyExistsError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
-  constructor() {
+  public readonly simulationId?: string
+
+  constructor(simulationId?: string) {
     super('simulation_not_found', 'Simulation introuvable')
+    this.simulationId = simulationId
   }
 }
 
