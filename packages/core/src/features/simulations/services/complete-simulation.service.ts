@@ -27,10 +27,12 @@ import {
   type CompleteSimulationError,
   SimulationCompletedError,
   SimulationIncompleteError,
+  SimulationInvalidModelError,
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../errors/simulations.error.ts'
 import { isSimulationCompleted } from '../helpers/simulation-guards.ts'
+import { parseModelString, serializeModel } from '../repository/model.mapper.ts'
 import {
   findSimulationById,
   updateSimulation,
@@ -65,6 +67,7 @@ export function createCompleteSimulation({
     userSession,
     simulationId,
     progression,
+    model,
     situation,
     foldedSteps,
     computedResults,
@@ -73,6 +76,8 @@ export function createCompleteSimulation({
     userSession: AppUser
     simulationId: string
     progression: number
+    /** The model the client ran the test with; persisted with the completion. */
+    model: string
     situation: Situation<DottedName>
     foldedSteps: DottedName[]
     computedResults: ComputedResults
@@ -87,15 +92,20 @@ export function createCompleteSimulation({
       return failure(new ZeroFootprintError())
     }
 
+    // The client's model is the one its answers were given against — never
+    // substituted by the persisted one, which can be stale.
+    const clientModel = parseModelString(model)
+    if (!clientModel) return failure(new SimulationInvalidModelError(model))
+
     const simulation = await findSimulationById({ id: simulationId, userId })
     if (!simulation) return failure(new SimulationNotFoundError())
     if (isSimulationCompleted(simulation))
       return failure(new SimulationCompletedError())
 
-    const isModelSupportedForComputation = isModelSupported(simulation.model)
+    const isModelSupportedForComputation = isModelSupported(clientModel)
 
     if (!isModelSupportedForComputation) {
-      const exception = new UnsupportedModelError(simulation.model)
+      const exception = new UnsupportedModelError(clientModel)
       logger.error(exception.message, { model: exception.model })
       captureException(exception)
     }
@@ -109,6 +119,7 @@ export function createCompleteSimulation({
           foldedSteps,
           progression,
           computedResults,
+          model: serializeModel(clientModel),
         },
         tx
       )

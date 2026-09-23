@@ -6,7 +6,7 @@ import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
+import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import { twMerge } from 'tailwind-merge'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
 import Trans from '../translation/trans/TransServer'
@@ -48,7 +48,7 @@ const classesByTheme: Record<
 interface HighlightedActionCardProps extends React.ComponentPropsWithoutRef<'article'> {
   action: MaybePersonalizedAction
   locale: Locale
-  assessmentStatus?: SimulationComputationStatus | null
+  assessmentStatus?: AssessmentStatus | null
   rank?: number
   from?: 'fin' | 'mon-espace' | 'index'
   /** Total carbon footprint in kg, used to express the impact as a share of it */
@@ -160,7 +160,7 @@ export default function HighlightedActionCard({
 
 interface ImpactValueProps {
   impact?: number
-  assessmentStatus: SimulationComputationStatus
+  assessmentStatus: AssessmentStatus
   locale: Locale
   valueClassName: string
 }
