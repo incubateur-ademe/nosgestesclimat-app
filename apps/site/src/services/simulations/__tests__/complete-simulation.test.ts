@@ -81,7 +81,7 @@ describe('completeSimulation', () => {
   it('calls unauthorized when there is no session', async () => {
     vi.mocked(getUserSession).mockResolvedValue(null)
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow('UNAUTHORIZED')
+    await expect(completeSimulation(aPayload())).rejects.toThrow('UNAUTHORIZED')
     expect(serviceMock.completeSimulation).not.toHaveBeenCalled()
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
   })
@@ -89,7 +89,7 @@ describe('completeSimulation', () => {
   it('rejects a malformed payload without reaching the core service', async () => {
     vi.mocked(getUserSession).mockResolvedValue(aSession())
 
-    const result = await completeSimulation({ payload: aPayload({ id: 'not-a-uuid' }) })
+    const result = await completeSimulation(aPayload({ id: 'not-a-uuid' }))
 
     expect(result).toMatchObject({
       success: false,
@@ -102,7 +102,7 @@ describe('completeSimulation', () => {
   it('rejects an unfinished simulation without reaching the core service', async () => {
     vi.mocked(getUserSession).mockResolvedValue(aSession())
 
-    const result = await completeSimulation({ payload: aPayload({ progression: 0.5 }) })
+    const result = await completeSimulation(aPayload({ progression: 0.5 }))
 
     expect(result).toMatchObject({
       success: false,
@@ -120,7 +120,7 @@ describe('completeSimulation', () => {
     }
     serviceMock.completeSimulation.mockResolvedValue(failure)
 
-    const result = await completeSimulation({ payload: aPayload() })
+    const result = await completeSimulation(aPayload())
 
     expect(result).toEqual(failure)
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
@@ -131,7 +131,7 @@ describe('completeSimulation', () => {
     vi.mocked(getUserSession).mockResolvedValue(session)
     const payload = aPayload()
 
-    await expect(completeSimulation({ payload })).rejects.toThrow(
+    await expect(completeSimulation(payload)).rejects.toThrow(
       `REDIRECT:${END_PAGE_PATH}`
     )
 
@@ -158,7 +158,7 @@ describe('completeSimulation', () => {
     }
     serviceMock.completeSimulation.mockResolvedValue(failure)
 
-    const result = await completeSimulation({ payload: aPayload() })
+    const result = await completeSimulation(aPayload())
 
     expect(result).toEqual(failure)
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
@@ -171,7 +171,7 @@ describe('completeSimulation', () => {
       data: { groups: [{ id: randomUUID() }], polls: [] },
     })
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow(
+    await expect(completeSimulation(aPayload())).rejects.toThrow(
       `REDIRECT:${END_PAGE_PATH}`
     )
 
@@ -188,7 +188,7 @@ describe('completeSimulation', () => {
       data: { groups: [], polls: [{ id: randomUUID() }] },
     })
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow(
+    await expect(completeSimulation(aPayload())).rejects.toThrow(
       `REDIRECT:${END_PAGE_PATH}`
     )
 
@@ -205,7 +205,7 @@ describe('completeSimulation', () => {
       data: { groups: [], polls: [{ id: randomUUID() }] },
     })
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow(
+    await expect(completeSimulation(aPayload())).rejects.toThrow(
       `REDIRECT:${EMAIL_PAGE_PATH}`
     )
   })
@@ -217,7 +217,7 @@ describe('completeSimulation', () => {
       data: { groups: [{ id: randomUUID() }], polls: [] },
     })
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow(
+    await expect(completeSimulation(aPayload())).rejects.toThrow(
       `REDIRECT:${EMAIL_PAGE_PATH}`
     )
   })
@@ -229,7 +229,7 @@ describe('completeSimulation', () => {
       data: { groups: [], polls: [] },
     })
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow(
+    await expect(completeSimulation(aPayload())).rejects.toThrow(
       `REDIRECT:${END_PAGE_PATH}`
     )
   })
@@ -241,7 +241,7 @@ describe('completeSimulation', () => {
       data: { groups: [{ id: randomUUID() }], polls: [{ id: randomUUID() }] },
     })
 
-    await expect(completeSimulation({ payload: aPayload() })).rejects.toThrow(
+    await expect(completeSimulation(aPayload())).rejects.toThrow(
       `REDIRECT:${END_PAGE_PATH}`
     )
   })

@@ -54,7 +54,7 @@ export default async function FinPage({
   if (!user) {
     // A warn carries no stack: the component names where it happened.
     logger.warn('No session found in cookies, redirecting to the home page', {
-      component: 'site.page.endPage',
+      scope: 'site.view.endPage',
     })
     redirect('/')
   }

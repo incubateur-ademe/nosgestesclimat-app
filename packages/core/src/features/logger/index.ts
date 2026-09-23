@@ -7,8 +7,7 @@ export type ScopeLayer =
   | 'service'
   | 'middleware'
   | 'instrumentation'
-  | 'page'
-  | 'layout'
+  | 'view'
   | 'sideEffect'
 
 /** Workspaces that emit telemetry. */

@@ -16,13 +16,11 @@ export function useCompleteSimulation() {
       startTransition(async () => {
         const { id, progression, situation, foldedSteps } = currentSimulation
         await completeSimulationAction({
-          payload: {
-            id,
-            progression,
-            situation: situation as CompleteSimulationPayload['situation'],
-            foldedSteps,
-            computedResults: getComputedResults(engineContext),
-          },
+          id,
+          progression,
+          situation: situation as CompleteSimulationPayload['situation'],
+          foldedSteps,
+          computedResults: getComputedResults(engineContext),
         })
       })
     },

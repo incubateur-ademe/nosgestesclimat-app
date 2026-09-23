@@ -19,11 +19,11 @@ import {
  * changes.
  */
 export const updateSimulationSituation = withSpan<
-  { payload: UpdateSimulationSituationPayload },
+  UpdateSimulationSituationPayload,
   Result<void, UpdateSimulationSituationError>
 >(
-  'site.action.updateSimulationSituation',
-  async ({ logger: actionLogger, payload }) => {
+  'site.service.updateSimulationSituation',
+  async ({ logger: actionLogger, ...payload }) => {
     const session = await getUserSession()
     if (!session) unauthorized()
 

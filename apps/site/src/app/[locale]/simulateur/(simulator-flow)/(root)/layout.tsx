@@ -27,7 +27,7 @@ export default async function SimulationLayout({
   if (!currentSimulation) {
     // A warn carries no stack: the component names where it happened.
     logger.warn('No current simulation, redirecting to the start page', {
-      component: 'site.layout.simulationLayout',
+      scope: 'site.view.simulationLayout',
     })
     redirect(START_SIMULATION_PATH)
   }

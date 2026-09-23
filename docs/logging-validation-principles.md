@@ -279,7 +279,7 @@ Next.js 16 exécute le proxy (`proxy.ts`, ex-middleware) sur le runtime Node —
 - Sources de spans : **Next.js natif** (`BaseServer.handleRequest`, `render`, `fetch` — Next émet ses spans via `@opentelemetry/api` dès qu'un provider est enregistré), **nos opérations** (`withSpan` ouvre une span nommée par le composant, y lie le logger et la ferme : deux opérations imbriquées donnent deux spans, chacune sa durée ; span par itération worker), **nos side effects** (`runSideEffect` instrumente la tâche différée sous `core.sideEffect.<nom>`, ouverte au démarrage du travail et non à sa mise en file), **`PrismaInstrumentation`** (requêtes DB, contexte propagé via l'adapter pg).
 - **Le worker ne déclare pas de composant** : son unité de travail est le job, porté par l'attribut `job` (`ngc.job`), et ses lignes propres — démarrage, mémoire, arrêt — ont la portée du service (`worker`).
 - **`withSpan` est un contrat core**, comme `Logger` : core déclare ce qui mérite une span — un side effect, un service qui fait de l'I/O ou du calcul — et reçoit le tracer du runtime. Core ne connaît toujours pas OpenTelemetry.
-- **Le logger arrive en paramètre nommé**, pas en position : `withSpan('site.action.x', async ({ logger, payload }) => …)` rend une fonction de même signature, donc un service ou une action se déclare une fois. Les actions du site passent par lui (`site.action.*`), et les services du site qui font un appel ou une attente aussi (`site.service.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
+- **Le logger arrive en paramètre nommé**, pas en position : `withSpan('site.service.x', async ({ logger, ...payload }) => …)` rend une fonction de même signature : les champs de l'appel restent au premier niveau, et le logger s'ajoute à côté d'eux. Les services du site qui font un appel, une attente ou un geste produit passent par lui (`site.service.*`), les actions de formulaire aussi (`site.action.*`) ; `ensureSimulationModel` reste volontairement dehors — c'est une garde qui retourne presque toujours immédiatement, son rare appel réseau est déjà tracé.
 - **On instrumente une opération, pas chaque helper.** Ce qui mérite une span : une frontière (action, itération de worker), un service qui fait un appel externe, du calcul ou de l'attente — et un side effect, qui vit de toute façon hors de la requête. Le reste déclare un composant et s'arrête là. Le nombre de spans dans une cascade est le prix de la lisibilité : mieux vaut dix spans qui se lisent que cinquante qui se comptent.
 - Export OTLP : `https://eu.i.posthog.com/i/v1/traces`. Échantillonnage paramétrable par env ; les logs portent le `trace_id` même quand la trace n'est pas exportée.
 - **`X-Request-ID` est notre racine de trace.** nginx génère déjà un `request_id` 32-hex, le propage à l'app via `X-Request-ID`, et le mappe en `trace_id` de ses propres logs PostHog (`infra/nginx/README.md`). L'app honore ce contrat : un propagateur OTel adopte `X-Request-ID` comme parent distant quand aucun `traceparent` W3C n'est présent. Un seul `trace_id` relie alors **nginx → app → DB** dans PostHog. Absent (dev local, worker) : racine OTel standard.
@@ -343,14 +343,13 @@ attributs maison quand il n'y en a pas.
   contrat : un renommage casse les recherches et les alertes en silence.
 - **`scope` nomme l'unité qui émet**, sous la forme `paquet.couche.unité` — le mot de la spec pour ça (`InstrumentationScope`) :
   `core.service.engineRegistry`, `site.action.completeSimulation`,
-  `site.middleware.auth`. La **couche** est sémantique — `action`, `service`,
-  `middleware`, `instrumentation` — et se déclare par le rôle, pas par
-  l'emplacement : une action vit dans `services/` si `'use server'` le dit, et
-  le même mot n'a pas le même sens des deux côtés d'une frontière. La forme est
-  **vérifiée par le compilateur** — `ScopeName` dans le contrat core : un
-  nom nu ne compile pas —, la liste des couches (`action`, `service`,
-  `middleware`, `instrumentation`, `page`, `layout`, `sideEffect`) restant
-  fermée et son
+  `site.middleware.auth`. La **couche** dit le rôle, et le nom de l'unité dit le
+  reste : une **action** est un geste du produit (un formulaire, un bouton), un
+  **service** sert ces gestes — y compris quand il est exposé au client depuis
+  `services/` — `view` couvre les frontières de rendu (pages et layouts),
+  `middleware`, `instrumentation` et `sideEffect` complètent la liste. La forme
+  est **vérifiée par le compilateur** — `ScopeName` dans le contrat core : un
+  nom nu ne compile pas —, la liste des couches restant fermée et son
   élargissement délibéré. Aucune valeur en double dans un même paquet et une
   même couche ; si deux features
   se télescopent, le nom gagne le segment de feature

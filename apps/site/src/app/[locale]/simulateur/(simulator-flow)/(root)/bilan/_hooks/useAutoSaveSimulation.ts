@@ -19,7 +19,7 @@ export function useAutoSaveSimulation() {
   const debouncedSave = useDebounce(
     async (payload: UpdateSimulationSituationPayload) => {
       // The server logs the failure: the caller only needs the answer.
-      await updateSimulationSituation({ payload })
+      await updateSimulationSituation(payload)
     },
     3000
   )

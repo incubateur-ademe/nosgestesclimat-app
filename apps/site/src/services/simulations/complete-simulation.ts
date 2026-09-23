@@ -39,11 +39,11 @@ const completeSimulationService = createCompleteSimulation({
 })
 
 export const completeSimulation = withSpan<
-  { payload: CompleteSimulationPayload },
+  CompleteSimulationPayload,
   Result<never, CompleteSimulationError> | void
 >(
-  'site.action.completeSimulation',
-  async ({ logger: actionLogger, payload }) => {
+  'site.service.completeSimulation',
+  async ({ logger: actionLogger, ...payload }) => {
     const session = await getUserSession()
     if (!session) unauthorized()
 

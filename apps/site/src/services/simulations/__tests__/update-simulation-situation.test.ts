@@ -77,7 +77,7 @@ describe('updateSimulationSituation', () => {
   it('calls unauthorized when there is no session', async () => {
     vi.mocked(getUserSession).mockResolvedValue(null)
 
-    await expect(updateSimulationSituation({ payload: aPayload() })).rejects.toThrow(
+    await expect(updateSimulationSituation(aPayload())).rejects.toThrow(
       'UNAUTHORIZED'
     )
     expect(serviceMock.updateSimulationSituation).not.toHaveBeenCalled()
@@ -87,7 +87,7 @@ describe('updateSimulationSituation', () => {
     const userId = mockAuthenticatedSession()
     const payload = aPayload()
 
-    const result = await updateSimulationSituation({ payload })
+    const result = await updateSimulationSituation(payload)
 
     expect(serviceMock.updateSimulationSituation).toHaveBeenCalledWith({
       userId,
@@ -109,7 +109,7 @@ describe('updateSimulationSituation', () => {
     }
     serviceMock.updateSimulationSituation.mockResolvedValue(failure)
 
-    const result = await updateSimulationSituation({ payload: aPayload() })
+    const result = await updateSimulationSituation(aPayload())
 
     expect(result).toEqual(failure)
   })
@@ -119,7 +119,7 @@ describe('updateSimulationSituation', () => {
     const payload = aPayload()
     delete payload.model
 
-    await updateSimulationSituation({ payload })
+    await updateSimulationSituation(payload)
 
     const [[written]] = serviceMock.updateSimulationSituation.mock.calls as [
       { model?: string },
@@ -132,7 +132,7 @@ describe('updateSimulationSituation', () => {
     mockAuthenticatedSession()
     const payload = aPayload({ id: 'not-a-uuid' })
 
-    const result = await updateSimulationSituation({ payload })
+    const result = await updateSimulationSituation(payload)
 
     expect(result).toMatchObject({
       success: false,
