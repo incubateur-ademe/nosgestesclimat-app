@@ -11,9 +11,7 @@ import type { PersonalizedAction } from '../types/action.ts'
  *   predating the computation feature) — it will never be computed
  * - `null` when the user has no finished simulation
  */
-export type AssessmentStatus =
-  | SimulationComputationStatus
-  | 'never-assessed'
+export type AssessmentStatus = SimulationComputationStatus | 'never-assessed'
 
 export const getPersonalizedActionsCatalogue = async (
   userId: string | undefined,
@@ -26,16 +24,15 @@ export const getPersonalizedActionsCatalogue = async (
   // Status and assessments must come from the same simulation, otherwise a
   // completed computation from an older simulation filters actions assessed
   // for another one, emptying the catalogue.
-  const lastFinished = await findLastFinishedSimulationByUserId(
-    userId
-  )
-  const personalizedActions = await findAllVisiblePersonalizedActions(
-    lastFinished?.simulationId,
+  const lastFinished = await findLastFinishedSimulationByUserId(userId)
+  const personalizedActions = await findAllVisiblePersonalizedActions({
+    simulationId: lastFinished?.simulationId,
+    userId,
     locale,
-    {
+    options: {
       fallbackToDefaultLocale: true,
-    }
-  )
+    },
+  })
 
   // No finished simulation -> all actions without assessments
   // Simulation whose model was never computed -> all actions without assessments

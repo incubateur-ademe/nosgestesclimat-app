@@ -24,25 +24,26 @@ export const getPersonalizedActionDetails = async (
   locale: ISOSupportedLanguage,
   userId: string | undefined
 ): Promise<PersonalizedActionDetails | null> => {
-  const lastFinished = await findLastFinishedSimulationByUserId(
-    userId
-  )
-  const action = await findVisiblePersonalizedActionBySlug(
+  const lastFinished = await findLastFinishedSimulationByUserId(userId)
+
+  const action = await findVisiblePersonalizedActionBySlug({
     slug,
     locale,
-    lastFinished?.simulationId
-  )
+    simulationId: lastFinished?.simulationId,
+    userId,
+  })
 
   if (!action) return null
 
-  const themeActions = await findAllVisiblePersonalizedActions(
-    lastFinished?.simulationId,
+  const themeActions = await findAllVisiblePersonalizedActions({
+    simulationId: lastFinished?.simulationId,
+    userId,
     locale,
-    {
+    options: {
       themeId: action.theme.id,
       fallbackToDefaultLocale: true,
-    }
-  )
+    },
+  })
 
   const otherThemeActions = themeActions
     .filter(({ id }) => id !== action.id)
