@@ -1,12 +1,12 @@
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import BetaBanner from '../BetaBanner'
-import HighestImpactActionsSectionWhiteBackground from '../HighestImpactActionsSectionWhiteBackground'
+import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
 
 interface ActionsPageProps extends Omit<
@@ -28,6 +28,7 @@ interface ActionsPageProps extends Omit<
    * Total carbon footprint in kg of the user's latest simulation.
    */
   totalFootprint?: number
+  tempPersonalizedFlag: boolean
 }
 
 export default function ActionsPage({
@@ -44,6 +45,7 @@ export default function ActionsPage({
   assessmentStatus,
   from,
   totalFootprint,
+  tempPersonalizedFlag,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -96,13 +98,14 @@ export default function ActionsPage({
         )}
 
         {topActions && topActions.length > 0 && (
-          <HighestImpactActionsSectionWhiteBackground
+          <HighestImpactActionsSection
             actions={topActions}
             className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
             locale={locale}
             assessmentStatus={assessmentStatus}
             from={from}
             totalFootprint={totalFootprint}
+            tempPersonalizedFlag={tempPersonalizedFlag}
           />
         )}
 
@@ -123,6 +126,7 @@ export default function ActionsPage({
                   assessmentStatus={assessmentStatus}
                   actions={actionsByTheme[theme.key] ?? []}
                   from={from}
+                  tempPersonalizedFlag={tempPersonalizedFlag}
                 />
               )
             })}

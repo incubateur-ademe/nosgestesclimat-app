@@ -2,8 +2,8 @@ import Carousel from '@/design-system/carousel/Carousel'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import CarIcon from '../icons/CarIcon'
@@ -55,6 +55,7 @@ export default function ThemeSection({
   title,
   description,
   className,
+  tempPersonalizedFlag,
 }: {
   theme: Pick<Theme, 'key' | 'title'>
   actions: MaybePersonalizedAction[]
@@ -67,6 +68,7 @@ export default function ThemeSection({
   /** Defaults to the number of actions in the section */
   description?: React.ReactNode
   className?: string
+  tempPersonalizedFlag: boolean
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -113,6 +115,7 @@ export default function ThemeSection({
             className="h-full"
             from={from}
             source={trackingSource}
+            tempPersonalizedFlag={tempPersonalizedFlag}
           />
         ))}
       </Carousel>

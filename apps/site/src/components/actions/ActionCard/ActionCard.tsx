@@ -6,14 +6,15 @@ import type { Locale } from '@/i18nConfig'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import removeMarkdown from 'remove-markdown'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import { ThemeBadge } from '../ThemeBadge'
 
 import ActionTracker from '../ActionTracker'
+import CommitToActionButton from '../highlightedActionCard/CommitToActionButton'
 import styles from './ActionCard.module.css'
 import { ImpactTag } from './ImpactTag'
 import { rankToEmoji } from './rankToEmoji'
@@ -38,6 +39,7 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   from?: 'fin' | 'mon-espace' | 'index'
   source?: ActionEventSource
   cta?: React.ReactNode
+  tempPersonalizedFlag: boolean
 }
 
 export default function ActionCard({
@@ -52,6 +54,7 @@ export default function ActionCard({
   withCta,
   withDescription,
   cta,
+  tempPersonalizedFlag,
   ...props
 }: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
   const rankEmoji = rankToEmoji(rank)
@@ -113,7 +116,7 @@ export default function ActionCard({
           ) : null}
         </div>
       </div>
-      {withCta ? (
+      {withCta && (
         <div className="border-t border-slate-100 p-4">
           <span
             aria-hidden="true"
@@ -128,7 +131,8 @@ export default function ActionCard({
             <ArrowNarrowRightIcon className="ml-1 h-2.5" />
           </span>
         </div>
-      ) : null}
+      )}
+      {tempPersonalizedFlag && <CommitToActionButton actionId={action.id} />}
       {cta ?? (
         <Link
           href={href}

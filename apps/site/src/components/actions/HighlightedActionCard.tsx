@@ -5,8 +5,8 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'tailwind-merge'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
 import Trans from '../translation/trans/TransServer'
@@ -54,6 +54,7 @@ interface HighlightedActionCardProps extends React.ComponentPropsWithoutRef<'art
   from?: 'fin' | 'mon-espace' | 'index'
   /** Total carbon footprint in kg, used to express the impact as a share of it */
   totalFootprint?: number
+  tempPersonalizedFlag: boolean
 }
 
 export default function HighlightedActionCard({
@@ -64,9 +65,9 @@ export default function HighlightedActionCard({
   rank,
   from,
   totalFootprint,
+  tempPersonalizedFlag,
   ...props
 }: HighlightedActionCardProps) {
-  console.log(assessmentStatus)
   const classes = classesByTheme[action.theme.key]
   const actionDetailPath = ACTION_DETAIL_PATH(action.theme.slug, action.slug)
   // On an /en page, an unprefixed (fr) path would be redirected to /en by the
@@ -127,8 +128,9 @@ export default function HighlightedActionCard({
             <span className="sr-only">{` "${action.title}"`}</span>
             <ArrowNarrowRightIcon />
           </ButtonLinkServer>
-
-          <CommitToActionButton actionId={action.id} />
+          {tempPersonalizedFlag && (
+            <CommitToActionButton actionId={action.id} />
+          )}
         </div>
       </div>
 
