@@ -1,14 +1,11 @@
 import type { OrganisationType } from '../../../prisma/generated/enums.ts'
-import type { PODIUM_ALL_CATEGORY } from '../constants/podium.ts'
 
 export type PodiumOrganisationType = Extract<
   OrganisationType,
   'company' | 'association' | 'universityOrSchool' | 'publicOrRegionalAuthority'
 >
 
-export type ExtendedPodiumOrganisationType =
-  | PodiumOrganisationType
-  | typeof PODIUM_ALL_CATEGORY
+export type PodiumOrganisationTypeWithAll = PodiumOrganisationType | 'all'
 
 export type PodiumCategory =
   | 'all'

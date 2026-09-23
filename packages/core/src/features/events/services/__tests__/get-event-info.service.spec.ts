@@ -133,7 +133,7 @@ describe('getEventInfo', () => {
     await refreshEventComputation()
 
     const result = expectEventInfo(await getEventInfo(event.id))
-    console.log(result)
+
     expect(result.podiumItemsByCategory['all'][0]).toEqual({
       id: org.id,
       name: 'Org Alpha',
