@@ -357,7 +357,6 @@ const setup = () => {
     sendEmail,
     backgroundTaskRunner,
     participateToPoll: createParticipateToPoll({
-      logger,
       withSpan: createTestWithSpan(logger),
       sendEmail,
       origin,

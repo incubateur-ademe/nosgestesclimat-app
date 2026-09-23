@@ -4,7 +4,7 @@ import {
   CompositePropagator,
   W3CTraceContextPropagator,
 } from '@opentelemetry/core'
-import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-proto'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto'
 import { registerInstrumentations } from '@opentelemetry/instrumentation'
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
@@ -30,7 +30,6 @@ const DEFAULT_OTLP_ENDPOINT = 'https://eu.i.posthog.com/i'
 
 let tracerProvider: NodeTracerProvider | undefined
 let loggerProvider: LoggerProvider | undefined
-let serviceName = 'site'
 let initialized = false
 
 /**
@@ -47,10 +46,11 @@ export function initObservability(service: string): void {
     return
   }
   initialized = true
-  serviceName = service
 
   const endpoint = process.env.POSTHOG_OTLP_ENDPOINT ?? DEFAULT_OTLP_ENDPOINT
   const projectToken = process.env.POSTHOG_PROJECT_TOKEN
+  // Our own variable, not the spec's `OTEL_TRACES_SAMPLER_ARG`: the SDK does
+  // not read it — we do, and hand-wire the sampler from it.
   const ratio = Number(process.env.OTEL_TRACES_SAMPLER_RATIO ?? 1)
   const authorization = projectToken
     ? { Authorization: `Bearer ${projectToken}` }
@@ -128,9 +128,10 @@ export function initObservability(service: string): void {
   })
 }
 
-/** The tracer of this process, named after its service. */
+/** The tracer of this process. The service is on the resource (`service.name`),
+ * the scope name is the application's — same process graph, one name. */
 export function appTracer(): Tracer {
-  return trace.getTracer(serviceName)
+  return trace.getTracer('ngc')
 }
 
 /** Exports what is buffered. Called on shutdown and before a fatal exit. */
