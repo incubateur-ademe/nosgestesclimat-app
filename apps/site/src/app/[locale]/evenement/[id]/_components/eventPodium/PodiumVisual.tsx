@@ -30,6 +30,7 @@ const orderClasses: Record<number, string> = {
 }
 
 const ZERO_BASED_INDEX_COMPENSATION_FACTOR = 1
+const RANK_COMPENSATION_FOR_AFTER_PODIUM_ITEMS = 3
 const getRank = (index: number) => index + ZERO_BASED_INDEX_COMPENSATION_FACTOR
 
 export default function PodiumVisual({
@@ -138,7 +139,7 @@ export default function PodiumVisual({
             <ListItem
               locale={locale}
               key={item.name}
-              rank={getRank(index)}
+              rank={getRank(index + RANK_COMPENSATION_FOR_AFTER_PODIUM_ITEMS)}
               {...item}
             />
           ))}
