@@ -64,14 +64,6 @@ describe('createLogger', () => {
     expect(lastLine()['ngc.payload']).toBeUndefined()
   })
 
-  it('writes an Error found in the meta as its messages, not as an empty object', () => {
-    logger.info('email rejected', { cause: new Error('425 too many attempts') })
-
-    expect(lastLine()['ngc.cause']).toEqual(
-      expect.stringContaining('Error: 425 too many attempts')
-    )
-  })
-
   it('logs a warned Error without capturing it', () => {
     logger.warn(new Error('brevo is down'), { attempt: 2 })
 

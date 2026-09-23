@@ -162,20 +162,4 @@ describe('log export', () => {
     expect(record.attributes).not.toHaveProperty('posthogDistinctId')
     expect(record.spanContext).toBeUndefined()
   })
-
-  it('writes a nested Error under one attribute, what happened then why', () => {
-    logger().info('email rejected', {
-      cause: new Error('425 too many attempts', {
-        cause: new Error('rate limited'),
-      }),
-    })
-
-    const [record] = exporter.getFinishedLogRecords()
-    expect(record.attributes['ngc.cause']).toBe(
-      'Error: 425 too many attempts\nCaused by: Error: rate limited'
-    )
-    // The semconv exception names stay reserved for the record's top-level
-    // exception — the error passed to `error()`, not one inside the meta.
-    expect(record.attributes['ngc.cause.exception.type']).toBeUndefined()
-  })
 })

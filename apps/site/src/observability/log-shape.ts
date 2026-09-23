@@ -37,15 +37,6 @@ export function flattenMeta(meta: LogMeta, prefix = '', depth = 0): LogMeta {
   for (const [key, value] of Object.entries(meta)) {
     const name = `${prefix}${key}`
 
-    // An `Error` slipped into the meta — errors belong to `error(error, meta)`,
-    // a second one is linked through its `cause`. What and why, in one
-    // attribute: no stack (the line is not where a stack is read) and no `{}`
-    // either (`JSON.stringify` writes nothing else for an `Error`).
-    if (value instanceof Error) {
-      flat[name] = errorMessages(value)
-      continue
-    }
-
     if (isPlainObject(value) && depth < MAX_ATTRIBUTE_DEPTH) {
       Object.assign(flat, flattenMeta(value, `${name}.`, depth + 1))
       continue
@@ -108,9 +99,9 @@ function carriedAttributes(error: Error): LogMeta {
  * twice for — in the drain and in PostHog. Deliberate deviation from the
  * semconv `SHOULD`, so a reviewer does not "fix" it back.
  *
- * `toJSON()` is not used: it only keeps `code` for `ErrorWithCode`. This is for
- * the top-level error of `warn`/`error`/`fatal`; an `Error` found *inside* the
- * meta follows the simpler rule of `flattenMeta`: one attribute, its messages.
+ * `toJSON()` is not used: it only keeps `code` for `ErrorWithCode`. This is the
+ * top-level error of `warn`/`error`/`fatal`; an `Error` inside the `meta` is
+ * not a case this code knows about — a second error is linked through `cause`.
  */
 export function exceptionAttributes(error: Error): LogMeta {
   return {
@@ -173,12 +164,6 @@ function toAttributeValue(value: unknown): AnyValue {
     return undefined
   }
 
-  // A value that never went through `flattenMeta`: the span attributes come
-  // straight from the error class. Same rule — the messages beat `{}`.
-  if (value instanceof Error) {
-    return truncate(errorMessages(value))
-  }
-
   return truncate(serialize(value))
 }
 
@@ -205,22 +190,4 @@ function truncate(value: string): string {
   return value.length > MAX_ATTRIBUTE_LENGTH
     ? `${value.slice(0, MAX_ATTRIBUTE_LENGTH)}…`
     : value
-}
-
-/**
- * What happened, then why, as text: the error and its `cause` chain, each
- * level as `name: message` — the diagnosable part, without the frames Sentry
- * already holds.
- */
-function errorMessages(error: Error): string {
-  const messages: string[] = []
-  let current: unknown = error
-
-  for (let depth = 0; current instanceof Error && depth < 5; depth++) {
-    const label = depth === 0 ? '' : 'Caused by: '
-    messages.push(`${label}${current.name}: ${current.message}`)
-    current = current.cause
-  }
-
-  return messages.join('\n')
 }
