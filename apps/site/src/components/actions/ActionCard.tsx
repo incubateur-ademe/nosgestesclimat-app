@@ -1,23 +1,20 @@
 import ArrowNarrowRightIcon from '@/components/icons/ArrowNarrowRightIcon'
 import Link from '@/components/Link'
-import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
-import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
+import { getActionHref } from '@/helpers/actions/getActionHref'
 import type { Locale } from '@/i18nConfig'
-import { LOCALE_EN_KEY, LOCALE_FR_KEY } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import removeMarkdown from 'remove-markdown'
 import { twMerge } from 'tailwind-merge'
-import Trans from '../../translation/trans/TransServer'
-import { ThemeBadge } from '../ThemeBadge'
-
-import ActionTracker from '../ActionTracker'
-import CommitToActionButton from '../highlightedActionCard/CommitToActionButton'
-import styles from './ActionCard.module.css'
-import { ImpactTag } from './ImpactTag'
-import { rankToEmoji } from './rankToEmoji'
+import Trans from '../translation/trans/TransServer'
+import styles from './ActionCardsomething/ActionCard.module.css'
+import { ImpactTag } from './ActionCardsomething/ImpactTag'
+import { rankToEmoji } from './ActionCardsomething/rankToEmoji'
+import ActionTracker from './ActionTracker'
+import CommitToActionButton from './highlightedActionCard/CommitToActionButton'
+import { ThemeBadge } from './ThemeBadge'
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport:
@@ -39,7 +36,6 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   from?: 'fin' | 'mon-espace' | 'index'
   source?: ActionEventSource
   cta?: React.ReactNode
-  personalized?: boolean
 }
 
 export default function ActionCard({
@@ -54,19 +50,15 @@ export default function ActionCard({
   withCta,
   withDescription,
   cta,
-  personalized,
   ...props
 }: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
   const rankEmoji = rankToEmoji(rank)
-  const actionDetailPath = ACTION_DETAIL_PATH(action.theme.slug, action.slug)
-  // On an /en page, an unprefixed (fr) path would be redirected to /en by the
-  // locale middleware, so force the /fr prefix instead of relying on
-  // getLocalizedPath's "no prefix for the default locale" behavior.
-  const actionPath =
-    locale === LOCALE_EN_KEY && action.language === LOCALE_FR_KEY
-      ? `/${LOCALE_FR_KEY}${actionDetailPath}`
-      : getLocalizedPath(action.language, actionDetailPath)
-  const href = from ? `${actionPath}?from=${from}` : actionPath
+
+  const href = getActionHref({
+    from,
+    action,
+    locale,
+  })
 
   const description = withDescription
     ? // slice to avoid sending more data than we display in the excerpt
@@ -134,7 +126,7 @@ export default function ActionCard({
           </span>
         </div>
       )}
-      {personalized && (
+      {action.assessment && (
         <div className="border-t border-slate-100 p-2">
           <CommitToActionButton
             className="w-full"

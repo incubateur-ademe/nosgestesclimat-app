@@ -1,4 +1,4 @@
-import ActionCard, { type ActionCardProps } from './ActionCard'
+import ActionCard, { type ActionCardProps } from '../ActionCard'
 import ActionCardSwitch from './ActionCardSwitch'
 
 /**

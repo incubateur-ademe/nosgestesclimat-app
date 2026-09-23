@@ -1,4 +1,5 @@
 import ActionsPage from '@/components/actions/pages/ActionsPage'
+import NoResultsBlock from '@/components/dashboard/NoResultsBlock'
 import Trans from '@/components/translation/trans/TransServer'
 import { ACTIONS_PATH } from '@/constants/urls/paths'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -37,6 +38,11 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
     getThemes(locale),
   ])
 
+  // No finished simulation: nothing to personalize from.
+  if (personnalizedActionsCatalogue.assessmentStatus === null) {
+    return <NoResultsBlock locale={locale} />
+  }
+
   return (
     <ActionsPage
       otherActionsTitle={
@@ -61,7 +67,6 @@ export default async function MySuggestionsPage({ params }: DefaultPageProps) {
       locale={locale}
       from="index"
       assessmentStatus={personnalizedActionsCatalogue.assessmentStatus}
-      personalized={true}
     />
   )
 }

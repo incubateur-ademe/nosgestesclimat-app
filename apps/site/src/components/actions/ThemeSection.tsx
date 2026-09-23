@@ -12,8 +12,8 @@ import HousingIcon from '../icons/HousingIcon'
 import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
-import ActionCard from './ActionCard/ActionCard'
-import ActionCardSwitchServer from './ActionCard/ActionCardSwitchServer'
+import ActionCard from './ActionCard'
+import ActionCardSwitchServer from './ActionCardsomething/ActionCardSwitchServer'
 
 const classesByTheme: Record<
   Theme['key'],
@@ -56,7 +56,6 @@ export default function ThemeSection({
   title,
   description,
   className,
-  personalized,
 }: {
   theme: Pick<Theme, 'key' | 'title'>
   actions: MaybePersonalizedAction[]
@@ -69,7 +68,6 @@ export default function ThemeSection({
   /** Defaults to the number of actions in the section */
   description?: React.ReactNode
   className?: string
-  personalized?: boolean
 }) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -107,7 +105,7 @@ export default function ThemeSection({
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) =>
-          personalized ? (
+          assessmentStatus ? (
             <ActionCard
               key={action.id}
               action={action}
@@ -117,7 +115,6 @@ export default function ThemeSection({
               className="h-full"
               from={from}
               source={trackingSource}
-              personalized={personalized}
               withDescription
             />
           ) : (
@@ -130,7 +127,6 @@ export default function ThemeSection({
               className="h-full"
               from={from}
               source={trackingSource}
-              personalized={personalized}
             />
           )
         )}

@@ -9,6 +9,8 @@ import ActionsPageHeaderSwitch from '../ActionsPageHeaderSwitch'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
+import { ActionProvider } from '../contexts/action'
+import type { ActionFrom } from '../types/actions'
 
 interface ActionsPageProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -24,7 +26,7 @@ interface ActionsPageProps extends Omit<
   actions: MaybePersonalizedAction[]
   locale: Locale
   assessmentStatus?: AssessmentStatus | null
-  from?: 'fin' | 'mon-espace' | 'index'
+  from?: ActionFrom
   /**
    * Total carbon footprint in kg of the user's latest simulation.
    */
@@ -46,7 +48,6 @@ export default function ActionsPage({
   assessmentStatus,
   from,
   totalFootprint,
-  personalized,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -85,7 +86,13 @@ export default function ActionsPage({
   )
 
   return (
-    <>
+    <ActionProvider
+      values={{
+        assessmentStatus,
+        totalFootprint,
+        from,
+        locale,
+      }}>
       <BetaBanner locale={locale} />
 
       <div {...props} className={twMerge('pb-24', className)}>
@@ -110,10 +117,6 @@ export default function ActionsPage({
             actions={topActions}
             className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
             locale={locale}
-            assessmentStatus={assessmentStatus}
-            from={from}
-            totalFootprint={totalFootprint}
-            personalized={personalized}
           />
         )}
 
@@ -131,15 +134,12 @@ export default function ActionsPage({
                   key={theme.id}
                   theme={theme}
                   locale={locale}
-                  assessmentStatus={assessmentStatus}
                   actions={actionsByTheme[theme.key] ?? []}
-                  from={from}
-                  personalized={personalized}
                 />
               )
             })}
         </div>
       </div>
-    </>
+    </ActionProvider>
   )
 }

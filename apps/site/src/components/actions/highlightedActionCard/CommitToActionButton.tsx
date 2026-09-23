@@ -29,7 +29,7 @@ export default function CommitToActionButton({
     startTransition(async () => {
       const result = await commitToAction(actionId)
 
-      if (!result?.success) {
+      if (!result.success) {
         toast.error(
           t(
             'actions.commitToActionButton.error',
