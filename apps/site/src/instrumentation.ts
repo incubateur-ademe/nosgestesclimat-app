@@ -20,12 +20,15 @@ export async function register() {
 
     async function shutdown() {
       try {
+        // Ships what the batch processors hold, then returns: Next's own SIGTERM
+        // handler drains the server and terminates the process, and exiting here
+        // would cut it off mid-drain. The flush runs alongside the drain — it
+        // does not need to have finished for the shutdown to be safe, only the
+        // exporters need to be done enqueueing, which `shutdown` guarantees.
         await shutdownObservability()
         await posthogClient.shutdown()
-        process.exit(0)
       } catch (error) {
         logger.error(toError(error))
-        process.exit(1)
       }
     }
 
@@ -44,6 +47,9 @@ export async function register() {
     process.on('SIGINT', shutdown)
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     process.on('SIGTERM', shutdown)
+    // Next holds its own SIGINT/SIGTERM handlers (start-server): they drain the
+    // server and exit, so the process still terminates — we only flush on the
+    // side.
 
     process.on('uncaughtException', (error) => void crash(error))
     process.on('unhandledRejection', (reason) => void crash(toError(reason)))
