@@ -1,24 +1,23 @@
-import type { Organisation } from '../../../prisma/generated/client.js'
 import type {
-  PodiumCategory,
-  PodiumItem,
-  PodiumOrganisationType,
-} from '../types/event-info.ts'
+  Organisation,
+  OrganisationType,
+} from '../../../prisma/generated/client.js'
+import type { PodiumCategory, PodiumItem } from '../types/event-info.ts'
 
 export interface EventComputationRow {
   simulationsCount: number
   organisation: Pick<Organisation, 'id' | 'name' | 'slug' | 'type'> | null
 }
 
-export const ORGANISATION_TYPE_TO_CATEGORY: Record<
-  PodiumOrganisationType,
-  PodiumCategory
+export const ORGANISATION_CATEGORY_TO_TYPE: Record<
+  PodiumCategory,
+  OrganisationType | null
 > = {
-  all: 'all',
-  company: 'companies',
-  association: 'associations',
-  universityOrSchool: 'education',
-  publicOrRegionalAuthority: 'public-services',
+  all: null,
+  companies: 'company',
+  associations: 'association',
+  education: 'universityOrSchool',
+  'public-services': 'publicOrRegionalAuthority',
 }
 
 export function mapEventComputationToPodiumItem({
@@ -26,14 +25,14 @@ export function mapEventComputationToPodiumItem({
   type,
 }: {
   row: EventComputationRow
-  type: PodiumOrganisationType
+  type: PodiumCategory
 }): PodiumItem | null {
   if (!row.organisation) return null
   return {
     id: row.organisation.id,
     name: row.organisation.name,
     slug: row.organisation.slug,
-    type: ORGANISATION_TYPE_TO_CATEGORY[type],
+    type,
     simulationsCount: row.simulationsCount,
   }
 }

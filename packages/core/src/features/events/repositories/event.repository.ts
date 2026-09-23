@@ -2,17 +2,13 @@ import { prisma } from '../../../prisma/client.ts'
 import {
   ADEME_SLUG,
   MOBILISED_ORGANISATION_MIN_SIMULATIONS,
+  PODIUM_CATEGORIES,
   PODIUM_LIMIT_PER_TYPE,
-  PODIUM_ORGANISATION_TYPES,
 } from '../constants/podium.ts'
-import type {
-  PodiumCategory,
-  PodiumItem,
-  PodiumOrganisationType,
-} from '../types/event-info.ts'
+import type { PodiumCategory, PodiumItem } from '../types/event-info.ts'
 import {
   mapEventComputationToPodiumItem,
-  ORGANISATION_TYPE_TO_CATEGORY,
+  ORGANISATION_CATEGORY_TO_TYPE,
 } from './event.mapper.ts'
 
 export const findEvent = async (eventIdOrSlug: string) =>
@@ -24,8 +20,9 @@ export const findEvent = async (eventIdOrSlug: string) =>
 export const findPodiumOrganisations = async (
   eventId: string
 ): Promise<Record<PodiumCategory, PodiumItem[]>> => {
-  const buildEventComputationRequest = (type: PodiumOrganisationType) =>
-    prisma.eventComputation.findMany({
+  const buildEventComputationRequest = (type: PodiumCategory) => {
+    const organisationType = ORGANISATION_CATEGORY_TO_TYPE[type]
+    return prisma.eventComputation.findMany({
       where: {
         eventId,
         simulationsCount: { gte: MOBILISED_ORGANISATION_MIN_SIMULATIONS },
@@ -35,7 +32,7 @@ export const findPodiumOrganisations = async (
               equals: ADEME_SLUG,
             },
           },
-          ...(type === 'all' ? {} : { type }),
+          ...(organisationType ? { type: organisationType } : {}),
         },
       },
       include: {
@@ -46,16 +43,12 @@ export const findPodiumOrganisations = async (
       orderBy: [{ simulationsCount: 'desc' }, { organisationId: 'asc' }],
       take: PODIUM_LIMIT_PER_TYPE,
     })
-
-  const PODIUM_TYPES: PodiumOrganisationType[] = [
-    'all',
-    ...PODIUM_ORGANISATION_TYPES,
-  ]
+  }
 
   return Object.fromEntries(
     await Promise.all(
-      PODIUM_TYPES.map(async (type) => [
-        ORGANISATION_TYPE_TO_CATEGORY[type],
+      PODIUM_CATEGORIES.map(async (type) => [
+        type,
         (await buildEventComputationRequest(type))
           .map((row) =>
             mapEventComputationToPodiumItem({
