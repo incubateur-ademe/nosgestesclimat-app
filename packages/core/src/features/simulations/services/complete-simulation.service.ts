@@ -142,7 +142,7 @@ export function createCompleteSimulation({
     }
 
     runSideEffect(
-      { logger: simulationLogger, withSpan, backgroundTaskRunner },
+      { withSpan, backgroundTaskRunner },
       'addOrUpdateContact',
       () =>
         addOrUpdateContact({
@@ -156,7 +156,7 @@ export function createCompleteSimulation({
     )
 
     runSideEffect(
-      { logger: simulationLogger, withSpan, backgroundTaskRunner },
+      { withSpan, backgroundTaskRunner },
       'joinedEmail',
       async () => {
         // The most recent membership is the one the user just completed.

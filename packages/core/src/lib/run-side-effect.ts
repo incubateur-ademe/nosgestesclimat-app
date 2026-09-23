@@ -1,4 +1,4 @@
-import type { Logger, LogMeta } from '../features/logger/index.ts'
+import type { LogMeta } from '../features/logger/index.ts'
 import type { WithSpan } from '../features/tracing/index.ts'
 import type { BackgroundTaskRunner } from './background-task-runner.ts'
 import type { ErrorWithCode } from './errors.ts'
@@ -7,7 +7,6 @@ import { toError } from './to-error.ts'
 
 /** What a service needs to run a side effect outside the request. */
 export type SideEffectDeps = {
-  logger: Logger
   withSpan: WithSpan
   backgroundTaskRunner: BackgroundTaskRunner
 }

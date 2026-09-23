@@ -3,7 +3,6 @@
 import { sendEmail } from '@/adapters/brevoClient'
 import type { Model } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
-import logger from '@/logger.server'
 import { withSpan } from '@/observability/span'
 import type { ParticipateToPollError } from '@nosgestesclimat/core/features/polls/errors/polls.error'
 import { createParticipateToPoll } from '@nosgestesclimat/core/features/polls/services/participate-to-poll.service'
@@ -12,7 +11,6 @@ import { after } from 'next/server'
 import { ensureUserSession } from '../auth/ensure-user-session'
 
 const participateToPollService = createParticipateToPoll({
-  logger,
   withSpan,
   sendEmail,
   origin: process.env.NEXT_PUBLIC_SITE_URL!,

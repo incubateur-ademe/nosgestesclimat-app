@@ -21,13 +21,10 @@ import { appTracer } from './setup'
  * `unstable_rethrow` lets a redirect or a `notFound()` through: control flow is
  * not a failure, and the span must not carry an error status for it.
  */
-export const withSpan: WithSpan = function withSpan<
-  Params extends object,
-  Result,
->(
+export const withSpan = function withSpan<Params extends object, Result>(
   component: ComponentName,
   run: (params: Params & { logger: Logger }) => Promise<Result>
-): (params?: Params) => Promise<Result> {
+) {
   return async (params?: Params) =>
     await appTracer().startActiveSpan(component, async (span) => {
       try {
@@ -45,4 +42,6 @@ export const withSpan: WithSpan = function withSpan<
         span.end()
       }
     })
-}
+  // The implementation accepts an absent parameter; the contract decides whether
+  // a caller may omit it.
+} as WithSpan

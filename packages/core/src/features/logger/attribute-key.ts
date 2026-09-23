@@ -10,19 +10,23 @@ const PREFIX = 'ngc.'
  * engine looks for `process.memory.usage`, not for our version of it — which
  * is why they are listed here instead of being guessed at call sites.
  */
-const FOREIGN_KEYS = [
-  // Semantic conventions.
-  'error.type',
+/** Namespaces another party owns: everything under them keeps its spelling. */
+const FOREIGN_PREFIXES = [
   'exception.',
   'http.',
   'next.',
   'process.',
   'url.',
   'v8js.',
+]
+
+/** Exact names another party owns, or a library put on the line. */
+const FOREIGN_NAMES = [
+  'error.type',
   // PostHog matches on these two: its names, its business.
   'posthogDistinctId',
   'sessionId',
-  // Pino's own base field, kept on the line; the resource carries the service.
+  // Pino's own base field.
   'service',
 ]
 
@@ -32,7 +36,11 @@ const FOREIGN_KEYS = [
  * party owns, are left alone.
  */
 export function toAttributeKey(key: string): string {
-  if (key.startsWith(PREFIX) || FOREIGN_KEYS.some((k) => key.startsWith(k))) {
+  if (
+    key.startsWith(PREFIX) ||
+    FOREIGN_NAMES.includes(key) ||
+    FOREIGN_PREFIXES.some((prefix) => key.startsWith(prefix))
+  ) {
     return key
   }
 

@@ -13,4 +13,6 @@ import type { ComponentName, Logger } from '../logger/index.ts'
 export type WithSpan = <Params extends object, Result>(
   component: ComponentName,
   run: (params: Params & { logger: Logger }) => Promise<Result>
-) => (params?: Params) => Promise<Result>
+) => [keyof Params] extends [never]
+  ? () => Promise<Result>
+  : (params: Params) => Promise<Result>

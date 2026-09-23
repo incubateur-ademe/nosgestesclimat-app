@@ -89,6 +89,9 @@ describe('log export', () => {
     const [record] = exporter.getFinishedLogRecords()
     expect(record.body).toBe('job failed')
     expect(record.severityText).toBe('warn')
+    // The service stays on the line but not in the attributes: the resource
+    // already carries it.
+    expect(record.attributes.service).toBeUndefined()
     // Bindings, meta and identity all land flat: that is what PostHog queries.
     expect(record.attributes).toMatchObject({
       'ngc.component': 'core.service.engineRegistry',

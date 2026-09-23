@@ -40,9 +40,10 @@ export function toLogAttributes(meta: LogMeta): LogAttributes {
 /**
  * The exception as its own attributes: the three names OTel defines for a log
  * record (`exception.type`, `exception.message`, `exception.stacktrace`, the
- * cause chain appended), plus whatever the error class carries — `code` for a
- * `DomainError`, its own fields next to it. `toJSON()` is not used: it only
- * keeps `code` for `ErrorWithCode`. Used for the stdout line;
+ * cause chain appended), plus what the error class carries: `code` becomes
+ * `error.type` — the semconv name for the class of error — and the other fields
+ * take our `ngc.` prefix. `toJSON()` is not used: it only keeps `code` for
+ * `ErrorWithCode`. Used for the stdout line;
  * `toLogAttributes` calls it back for an `Error` found inside the meta.
  */
 export function exceptionAttributes(error: Error): LogMeta {

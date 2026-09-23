@@ -11,7 +11,6 @@ import pino, { type Logger as PinoLogger } from 'pino'
 import { exceptionAttributes } from './observability/log-attributes.ts'
 import { emitLogRecord } from './observability/log-bridge.ts'
 
-/** Keys redacted before export, as a backstop: callers must not log them at all. */
 /**
  * Keys redacted before export, as a backstop: callers must not log them at
  * all. The bracketed ones are the names on the line, prefixed by the factory —
@@ -143,7 +142,9 @@ export function createLogger({
       child: (bindings) => build(instance.child(prefixKeys(bindings))),
       debug: (message, meta) => write('debug', message, meta),
       info: (message, meta) => write('info', message, meta),
-      warn: (message, meta, options) =>
+      // The union is the implementation's business: callers see the two
+      // overloads, and only the `Error` one accepts options.
+      warn: (message: string | Error, meta?: LogMeta, options?: LogOptions) =>
         message instanceof Error
           ? write('warn', message.message, meta, options, message)
           : write('warn', message, meta, options),

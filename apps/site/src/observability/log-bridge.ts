@@ -44,15 +44,20 @@ export function emitLogRecord({
   // The component already carries its qualified name
   // (`core.service.engineRegistry`) and the service is on the resource, so the
   // scope takes it as is. PostHog renders a scope as `name@version`, which is
-  // why the `component` attribute stays the handle for exact filters.
+  // why the `ngc.component` attribute stays the handle for exact filters.
   const component = meta['ngc.component']
   const scope = typeof component === 'string' ? component : service
+
+  // `service` is on the line — it mirrors the winston setup — but not in the
+  // attributes: the resource already carries it, and a bare `service` next to
+  // `service.name` only invites a filter that misses half the lines.
+  const { service: _onTheLineOnly, ...attributes } = meta
 
   getLogger(scope).emit({
     body: message,
     severityNumber: SEVERITY_NUMBER[level],
     severityText: level,
-    attributes: toLogAttributes({ ...meta, ...identityAttributes() }),
+    attributes: toLogAttributes({ ...attributes, ...identityAttributes() }),
   })
 }
 

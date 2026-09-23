@@ -77,8 +77,10 @@ export interface Logger {
   child(bindings: LogBindings): Logger
   debug(message: string, meta?: LogMeta): void
   info(message: string, meta?: LogMeta): void
-  /** An `Error` when one was caught: it keeps its stack in the log, without a capture. */
-  warn(message: string | Error, meta?: LogMeta, options?: LogOptions): void
+  /** An anomaly without an `Error`: no stack, so nothing to capture. */
+  warn(message: string, meta?: LogMeta): void
+  /** An `Error` when one was caught: it keeps its stack in the log, and is the only thing worth capturing. */
+  warn(error: Error, meta?: LogMeta, options?: LogOptions): void
   /** Requires an `Error`: a message alone can be neither located nor deduplicated. */
   error(error: Error, meta?: LogMeta, options?: LogOptions): void
   /** Like `error`, for failures the process cannot continue after. */

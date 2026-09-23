@@ -71,13 +71,11 @@ describe('createLogger', () => {
     expect(onCapture).not.toHaveBeenCalled()
   })
 
-  it('does not capture below error, even when asked to', () => {
-    // A message alone carries no stack: there is nothing worth reporting.
-    logger.warn('degraded', undefined, { capture: true })
-    logger.info('hello')
-    logger.debug('hello')
+  it('leaves the ids out when no span is active', () => {
+    logger.info('worker bootstrap')
 
-    expect(onCapture).not.toHaveBeenCalled()
+    expect(lastLine().trace_id).toBeUndefined()
+    expect(lastLine().span_id).toBeUndefined()
   })
 
   it('skips the capture when explicitly disabled on an error', () => {
