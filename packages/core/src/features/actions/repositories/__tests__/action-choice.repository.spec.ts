@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
+import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
@@ -45,11 +46,11 @@ describe('createActionChoice()', () => {
     })
 
     // Second attempt => success, the error is ignored in the repository
-    await expect(
-      createActionChoice({
-        userId: user.id,
-        actionId: action.id,
-      })
-    ).resolves.toBeUndefined()
+    const result = await createActionChoice({
+      userId: user.id,
+      actionId: action.id,
+    })
+
+    expect(result).toStrictEqual(success())
   })
 })

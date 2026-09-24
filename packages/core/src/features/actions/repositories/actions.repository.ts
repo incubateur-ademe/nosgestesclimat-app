@@ -246,8 +246,6 @@ export const findVisiblePersonalizedActionBySlug = async ({
   simulationId: string | undefined
   userId: string | undefined
 }): Promise<PersonalizedAction | null> => {
-  if (!userId) return null
-
   const action = await findVisibleActionBySlug(slug, locale)
 
   if (!action) return null
@@ -267,14 +265,17 @@ export const findVisiblePersonalizedActionBySlug = async ({
     },
   })
 
-  const actionChoice = await prisma.actionChoice.findUnique({
-    where: {
-      userId_actionId: {
-        actionId: action.id,
-        userId,
+  let actionChoice = null
+  if (userId) {
+    actionChoice = await prisma.actionChoice.findUnique({
+      where: {
+        userId_actionId: {
+          actionId: action.id,
+          userId,
+        },
       },
-    },
-  })
+    })
+  }
 
   return mapPersonalizedAction({ action, assessment, actionChoice })
 }
@@ -291,8 +292,6 @@ export const findAllVisiblePersonalizedActions = async ({
   locale: ISOSupportedLanguage
   options: { fallbackToDefaultLocale?: boolean; themeId?: string }
 }): Promise<PersonalizedAction[]> => {
-  if (!userId) return []
-
   const actions = await findVisibleActions(locale, {
     fallbackToDefaultLocale: options.fallbackToDefaultLocale,
     themeId: options.themeId,
@@ -315,24 +314,27 @@ export const findAllVisiblePersonalizedActions = async ({
 
   const assessmentsByActionId = new Map(assessments.map((a) => [a.actionId, a]))
 
-  const actionChoices = await prisma.actionChoice.findMany({
-    where: {
-      actionId: {
-        in: actionsIds,
+  let actionChoices = null
+  let actionChoicesByActionId = null
+  if (userId) {
+    actionChoices = await prisma.actionChoice.findMany({
+      where: {
+        actionId: {
+          in: actionsIds,
+        },
+        userId,
       },
-      userId,
-    },
-  })
-
-  const actionChoicesByActionId = new Map(
-    actionChoices.map((actionChoice) => [actionChoice.actionId, actionChoice])
-  )
+    })
+    actionChoicesByActionId = new Map(
+      actionChoices.map((actionChoice) => [actionChoice.actionId, actionChoice])
+    )
+  }
 
   return actions.map((action) =>
     mapPersonalizedAction({
       action,
       assessment: assessmentsByActionId.get(action.id) ?? null,
-      actionChoice: actionChoicesByActionId.get(action.id) ?? null,
+      actionChoice: actionChoicesByActionId?.get(action.id) ?? null,
     })
   )
 }

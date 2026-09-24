@@ -6,8 +6,8 @@ import { createContext, useContext } from 'react'
 import type { ActionFrom } from '../types/actions'
 
 interface ActionValuesShared {
-  assessmentStatus: AssessmentStatus | null | undefined
-  totalFootprint: number | undefined
+  assessmentStatus?: AssessmentStatus | null
+  totalFootprint?: number
   from?: ActionFrom
   locale: Locale
   shouldHideActionCommitFeature?: boolean

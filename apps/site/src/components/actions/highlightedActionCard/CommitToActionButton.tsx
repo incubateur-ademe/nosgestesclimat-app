@@ -66,7 +66,7 @@ export default function CommitToActionButton({
     <Button
       color="secondary"
       onClick={handleCommitToAction}
-      disabled={isPending}
+      loading={isPending}
       className={twMerge('text-sm!', className)}>
       <PlusIcon className="stroke-primary-700 mr-2 inline-block size-3" />
       {shortLabelDisplayed ? (

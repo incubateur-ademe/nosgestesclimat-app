@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
+import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
@@ -17,12 +18,12 @@ describe('commitToAction()', () => {
 
     const user = await userFactory.create()
 
-    await expect(
-      commitToAction({
-        actionId: action.id,
-        userId: user.id,
-      })
-    ).resolves.toBeUndefined()
+    const result = await commitToAction({
+      actionId: action.id,
+      userId: user.id,
+    })
+
+    expect(result).toStrictEqual(success())
   })
 
   it('throws when an invalid userId is pass as an argument', async () => {
