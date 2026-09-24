@@ -140,4 +140,4 @@ method = "POST"
 route  = "/v1/apps/nosgestesclimat-site-preprod-pr*/variables"
 [env.postdeploy.scope.body]
 "variable.name"  = { eq = "DATABASE_URL" }
-"variable.value" = { glob = "postgresql://*" }
+"variable.value" = { glob = "*" }

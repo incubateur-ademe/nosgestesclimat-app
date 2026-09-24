@@ -1462,6 +1462,7 @@ entries:
   event.dynamicCounter.target.title.default: Objectif
   event.dynamicCounter.target.title.over: Objectif dépassé
   event.dynamicCounter.target.title.topped: Objectif atteint
+  footer.ademe.ariaLabel: ADEME (ouvrir dans une nouvelle fenêtre)
   tutorial.email.title.defaultContest: Votre adresse e-mail pour le tirage au sort
   tutorial.email.title.youthContest: Ton adresse e-mail pour le tirage au sort
   poll.creation.mode.error: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.

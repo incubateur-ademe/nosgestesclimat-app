@@ -4,6 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 // Matches NEXT_PUBLIC_SITE_URL set in vitest.config.ts
 const BASE_URL = 'http://localhost:3000'
 
+// cacheLife() throws under vitest (cacheComponents config isn't enabled there),
+// so mock it to a no-op — same convention as the other 'use cache' module tests.
+vi.mock('next/cache', () => ({ cacheLife: vi.fn() }))
+
 vi.mock('@/helpers/markdown/getPosts', () => ({
   getPosts: vi.fn((locale: Locale) =>
     Promise.resolve([
