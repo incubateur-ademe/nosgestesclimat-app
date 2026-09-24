@@ -23,11 +23,7 @@ const ServerEnvSchema = v.strictObject({
   ),
 })
 
-const parsed = v.safeParse(ServerEnvSchema, {
-  BREVO_API_KEY: process.env.BREVO_API_KEY,
-  BREVO_URL: process.env.BREVO_URL,
-  POLL_STATS_COOLDOWN_TIERS: process.env.POLL_STATS_COOLDOWN_TIERS ?? '',
-})
+const parsed = v.safeParse(ServerEnvSchema, process.env)
 
 if (!parsed.success) {
   const issues = parsed.issues

@@ -14,9 +14,7 @@ const PublicEnvSchema = v.strictObject({
   NEXT_PUBLIC_SITE_URL: v.pipe(NonEmptyStringSchema, v.url()),
 })
 
-const parsed = v.safeParse(PublicEnvSchema, {
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-})
+const parsed = v.safeParse(PublicEnvSchema, process.env)
 
 if (!parsed.success) {
   const issues = parsed.issues
