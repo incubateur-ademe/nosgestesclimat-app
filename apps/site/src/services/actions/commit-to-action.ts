@@ -1,15 +1,15 @@
 'use server'
 
-import { ACTIONS_SUGGESTED_PATH } from '@/constants/urls/paths'
 import { commitToAction as _commitToAction } from '@nosgestesclimat/core/features/actions/services/commit-to-action.service'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
-import { revalidatePath } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { unauthorized } from 'next/navigation'
 import { getUserSession } from '../auth/get-user-session'
 import {
   CommitToActionPayloadSchema,
   type CommitToActionPayload,
 } from './commit-to-action-payload.schema'
+import { GET_PERSONALIZED_ACTIONS_CACHE_TAG } from './get-personalized-actions-catalogue'
 
 export async function commitToAction(payload: CommitToActionPayload) {
   const session = await getUserSession()
@@ -28,7 +28,7 @@ export async function commitToAction(payload: CommitToActionPayload) {
 
   if (!result.success) return result
 
-  revalidatePath(ACTIONS_SUGGESTED_PATH)
+  updateTag(GET_PERSONALIZED_ACTIONS_CACHE_TAG)
 
   return result
 }

@@ -53,7 +53,7 @@ export default function CommitToActionButton({
         color="secondary"
         onClick={() => {}}
         disabled
-        className={twMerge('animate-scale text-sm!', className)}>
+        className={twMerge('focus-within:animate-scale text-sm!', className)}>
         <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
         <Trans i18nKey="actions.components.actionCard.highlighted.addedButton.short">
           Ajouté
