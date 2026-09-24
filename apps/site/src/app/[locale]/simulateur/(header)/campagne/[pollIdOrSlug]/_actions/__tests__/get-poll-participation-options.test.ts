@@ -5,7 +5,7 @@ import { v4 as randomUUID } from 'uuid'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getPoll } from '@/services/polls/get-poll'
+import { getPollSummary } from '@/services/polls/get-poll-summary'
 import { getPollParticipationOptions } from '../get-poll-participation-options'
 
 const serviceMock = vi.hoisted(() => ({
@@ -20,8 +20,8 @@ vi.mock('@/services/auth/get-user-session', () => ({
   getUserSession: vi.fn(),
 }))
 
-vi.mock('@/services/polls/get-poll', () => ({
-  getPoll: vi.fn(),
+vi.mock('@/services/polls/get-poll-summary', () => ({
+  getPollSummary: vi.fn(),
 }))
 
 vi.mock(
@@ -55,11 +55,11 @@ describe('getPollParticipationOptions', () => {
       ...simulation,
       _dto: true,
     }))
-    vi.mocked(getPoll).mockResolvedValue(poll)
+    vi.mocked(getPollSummary).mockResolvedValue(poll)
   })
 
   it('calls notFound when the poll does not exist', async () => {
-    vi.mocked(getPoll).mockResolvedValue(null)
+    vi.mocked(getPollSummary).mockResolvedValue(null)
 
     await expect(getPollParticipationOptions('unknown')).rejects.toThrow(
       'NEXT_NOT_FOUND'

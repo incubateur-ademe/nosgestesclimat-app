@@ -24,7 +24,7 @@ export const getPollParticipationOptions = async ({
   poll,
   userId,
 }: {
-  poll: Poll
+  poll: Pick<Poll, 'id' | 'mode'>
   userId: string
 }): Promise<PollParticipationOptions> => {
   const [currentPollSimulation, maybeReusableSimulation] = await Promise.all([
