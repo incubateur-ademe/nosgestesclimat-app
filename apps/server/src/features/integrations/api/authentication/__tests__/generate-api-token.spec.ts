@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
@@ -9,7 +10,6 @@ import app from '../../../../../app.ts'
 import { mswServer } from '../../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../../core/event-bus/event-bus.ts'
 import logger from '../../../../../logger.ts'
-import * as authenticationService from '../../../../authentication/authentication.service.ts'
 import * as emailWhitelistRepository from '../../email-whitelist/email-whitelist.repository.ts'
 import {
   createIntegrationEmailWhitelist,
@@ -62,9 +62,7 @@ describe('Given a NGC integrations API user', () => {
           prisma,
         }))
         code = faker.number.int({ min: 100000, max: 999999 }).toString()
-        vi.mocked(
-          authenticationService
-        ).generateRandomVerificationCode.mockReturnValueOnce(code)
+        vi.mocked(generateRandomVerificationCode).mockReturnValueOnce(code)
       })
 
       test(`Then it returns a ${StatusCodes.CREATED} response`, async () => {
@@ -197,9 +195,7 @@ describe('Given a NGC integrations API user', () => {
           prisma,
         })
         code = faker.number.int({ min: 100000, max: 999999 }).toString()
-        vi.mocked(
-          authenticationService
-        ).generateRandomVerificationCode.mockReturnValueOnce(code)
+        vi.mocked(generateRandomVerificationCode).mockReturnValueOnce(code)
       })
 
       test(`Then it returns a ${StatusCodes.CREATED} response`, async () => {
