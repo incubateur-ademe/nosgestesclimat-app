@@ -7,6 +7,7 @@ import { participateToPoll } from '@/services/organisations/participate-to-poll'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
 import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { redirect } from 'next/navigation'
+import { match } from 'ts-pattern'
 import { PollTracker } from '../../../../../../components/tracking/PollTracker'
 import PollTutorialButton from '../../_components/PollTutorialButton'
 import ReuseSimulationForPoll from '../../_components/ReuseSimulationForPoll'
@@ -101,23 +102,18 @@ export default async function CampagnePage({
     <>
       <PollTracker poll={poll} />
 
-      {(() => {
-        switch (poll.mode) {
-          case 'scolaire':
-            return <YouthTutorial locale={locale} buttonNext={buttonNext} />
-          case 'standard':
-            return (
-              <Tutorial
-                locale={locale}
-                disclaimer={disclaimer}
-                buttonNext={buttonNext}
-              />
-            )
-          default:
-            poll.mode satisfies never
-            return null
-        }
-      })()}
+      {match(poll.mode)
+        .with('scolaire', () => (
+          <YouthTutorial locale={locale} buttonNext={buttonNext} />
+        ))
+        .with('standard', () => (
+          <Tutorial
+            locale={locale}
+            disclaimer={disclaimer}
+            buttonNext={buttonNext}
+          />
+        ))
+        .exhaustive()}
     </>
   )
 }
