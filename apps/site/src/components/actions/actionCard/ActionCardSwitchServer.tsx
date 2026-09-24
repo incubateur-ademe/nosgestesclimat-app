@@ -1,5 +1,5 @@
-import type { ActionCardWithContextDataProps } from '../ActionCardWithContextDate'
-import ActionCardWithContextData from '../ActionCardWithContextDate'
+import type { ActionCardWithContextDataProps } from '../ActionCardWithContextData'
+import ActionCardWithContextData from '../ActionCardWithContextData'
 import ActionCardSwitch from './ActionCardSwitch'
 
 /**

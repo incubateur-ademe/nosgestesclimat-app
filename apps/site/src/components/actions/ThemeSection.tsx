@@ -12,8 +12,8 @@ import HousingIcon from '../icons/HousingIcon'
 import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
-import ActionCardSwitchServer from './ActionCardsomething/ActionCardSwitchServer'
-import ActionCardWithContextData from './ActionCardWithContextDate'
+import ActionCardSwitchServer from './actionCard/ActionCardSwitchServer'
+import ActionCardWithContextData from './ActionCardWithContextData'
 
 const classesByTheme: Record<
   Theme['key'],
