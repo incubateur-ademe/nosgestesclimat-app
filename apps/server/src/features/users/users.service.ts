@@ -1,3 +1,7 @@
+import {
+  invalidateVerificationCode,
+  verifyCode,
+} from '@nosgestesclimat/core/features/auth/services/login.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
@@ -16,8 +20,6 @@ import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser } from '../../core/types/user.ts'
-import { verifyCode } from '../authentication/authentication.service.ts'
-import { invalidateVerificationCode } from '../authentication/verification-codes.repository.ts'
 import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
 import {
   createOrUpdateUser,
@@ -165,25 +167,20 @@ export const updateUserAndContact = async ({
           )
         }
 
-        try {
-          const verificationCode = await verifyCode(
-            {
-              ...userToUpdate,
-              code,
-              email: nextEmail,
-            },
-            { session }
-          )
+        const verificationCode = await verifyCode(
+          {
+            ...userToUpdate,
+            code,
+            email: nextEmail,
+          },
+          { session }
+        )
 
-          await invalidateVerificationCode(verificationCode, { session })
-        } catch (e) {
-          if (e instanceof EntityNotFoundException) {
-            throw new ForbiddenException(
-              'Forbidden ! Invalid verification code.'
-            )
-          }
-          throw e
+        if (!verificationCode.success) {
+          throw new ForbiddenException('Forbidden ! Invalid verification code.')
         }
+
+        await invalidateVerificationCode(verificationCode.data, { session })
       }
 
       const verified = verifiedUser || !nextEmail
