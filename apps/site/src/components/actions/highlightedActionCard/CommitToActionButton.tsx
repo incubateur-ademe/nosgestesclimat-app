@@ -3,22 +3,21 @@
 import PlusIcon from '@/components/icons/PlusIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
+import { captureActionAddedToPlan } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { commitToAction } from '@/services/actions/commit-to-action' // Server Action
-import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/client'
+import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 export default function CommitToActionButton({
-  actionId,
-  actionChoiceType,
+  action,
   className,
   shortLabelDisplayed,
 }: {
-  actionId: string
-  actionChoiceType?: ActionChoiceType
+  action: PersonalizedAction
   className?: string
   shortLabelDisplayed?: boolean
 }) {
@@ -27,7 +26,7 @@ export default function CommitToActionButton({
 
   const handleCommitToAction = () => {
     startTransition(async () => {
-      const result = await commitToAction(actionId)
+      const result = await commitToAction(action.id)
 
       if (!result.success) {
         toast.error(
@@ -38,6 +37,12 @@ export default function CommitToActionButton({
         )
       }
 
+      captureActionAddedToPlan({
+        actionTitle: action.title,
+        actionTheme: action.theme,
+        impactInKg: action.assessment?.impact,
+      })
+
       toast.success(
         t(
           'actions.commitToActionButton.success',
@@ -47,13 +52,16 @@ export default function CommitToActionButton({
     })
   }
 
-  if (actionChoiceType === 'committed') {
+  if (action.choice?.type === 'committed') {
     return (
       <Button
         color="secondary"
         onClick={() => {}}
         disabled
-        className={twMerge('focus-within:animate-scale text-sm!', className)}>
+        className={twMerge(
+          'focus-within:animate-scale text-sm! focus-within:duration-100',
+          className
+        )}>
         <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
         <Trans i18nKey="actions.components.actionCard.highlighted.addedButton.short">
           Ajouté
@@ -68,7 +76,9 @@ export default function CommitToActionButton({
       onClick={handleCommitToAction}
       loading={isPending}
       className={twMerge('text-sm!', className)}>
-      <PlusIcon className="stroke-primary-700 mr-2 inline-block size-3" />
+      {!isPending && (
+        <PlusIcon className="stroke-primary-700 mr-2 inline-block size-3" />
+      )}
       {shortLabelDisplayed ? (
         <Trans i18nKey="actions.components.actionCard.highlighted.addButton.short">
           Ajouter

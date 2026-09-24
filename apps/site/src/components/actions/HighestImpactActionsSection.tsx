@@ -3,7 +3,6 @@ import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/act
 import { useId } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
-import ActionContextWrapper from './ActionContextWrapper'
 import HighlightedActionCard from './HighlightedActionCard'
 import type { ActionFrom } from './types/actions'
 
@@ -50,15 +49,13 @@ export default function HighestImpactActionsSection({
       <ol className="flex list-none flex-col gap-4 p-0 md:gap-8">
         {actions.map((action, index) => (
           <li key={action.id}>
-            <ActionContextWrapper propsToInject={['totalFootprint']}>
-              <HighlightedActionCard
-                locale={locale}
-                action={action}
-                rank={index + 1}
-                from={from}
-                shouldHideActionCommitFeature={shouldHideActionCommitFeature}
-              />
-            </ActionContextWrapper>
+            <HighlightedActionCard
+              locale={locale}
+              action={action}
+              rank={index + 1}
+              from={from}
+              shouldHideActionCommitFeature={shouldHideActionCommitFeature}
+            />
           </li>
         ))}
       </ol>

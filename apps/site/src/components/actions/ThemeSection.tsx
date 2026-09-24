@@ -14,7 +14,6 @@ import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
 import ActionCardSwitchServer from './actionCard/ActionCardSwitchServer'
-import ActionContextWrapper from './ActionContextWrapper'
 
 interface Props {
   theme: Pick<Theme, 'key' | 'title'>
@@ -109,36 +108,32 @@ export default function ThemeSection({
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
-        {actions.map((action) => (
-          <ActionContextWrapper
-            key={action.id}
-            propsToInject={['assessmentStatus']}>
-            {assessmentStatus && !shouldHideActionCommitFeature ? (
-              <ActionCard
-                key={action.id}
-                action={action}
-                locale={locale}
-                withThemeBadge={false}
-                className="h-full"
-                source={trackingSource}
-                withDescription
-                from={from}
-                shouldHideActionCommitFeature={shouldHideActionCommitFeature}
-              />
-            ) : (
-              <ActionCardSwitchServer
-                key={action.id}
-                action={action}
-                withThemeBadge={false}
-                className="h-full"
-                source={trackingSource}
-                locale={locale}
-                from={from}
-                shouldHideActionCommitFeature={shouldHideActionCommitFeature}
-              />
-            )}
-          </ActionContextWrapper>
-        ))}
+        {actions.map((action) =>
+          assessmentStatus && !shouldHideActionCommitFeature ? (
+            <ActionCard
+              key={action.id}
+              action={action}
+              locale={locale}
+              withThemeBadge={false}
+              className="h-full"
+              source={trackingSource}
+              withDescription
+              from={from}
+              shouldHideActionCommitFeature={shouldHideActionCommitFeature}
+            />
+          ) : (
+            <ActionCardSwitchServer
+              key={action.id}
+              action={action}
+              withThemeBadge={false}
+              className="h-full"
+              source={trackingSource}
+              locale={locale}
+              from={from}
+              shouldHideActionCommitFeature={shouldHideActionCommitFeature}
+            />
+          )
+        )}
       </Carousel>
     </section>
   )

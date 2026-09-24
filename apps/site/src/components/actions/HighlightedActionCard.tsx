@@ -123,11 +123,7 @@ export default function HighlightedActionCard({
           </ButtonLinkServer>
 
           {action.assessment && !shouldHideActionCommitFeature && (
-            <CommitToActionButton
-              shortLabelDisplayed
-              actionId={action.id}
-              actionChoiceType={action.choice?.type}
-            />
+            <CommitToActionButton shortLabelDisplayed action={action} />
           )}
         </div>
       </div>
