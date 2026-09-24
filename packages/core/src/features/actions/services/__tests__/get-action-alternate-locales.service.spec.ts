@@ -1,12 +1,13 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { themesById } from '../../data/themes/index.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { getActionAlternateLocales } from '../get-action-alternate-locales.service.ts'
 
 describe('getActionAlternateLocales', () => {
   afterEach(async () => {
-    await prisma.action.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns only the locales the action has a translation for', async () => {
