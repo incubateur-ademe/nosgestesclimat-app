@@ -11,9 +11,9 @@ export function useCommitToAction(action: PersonalizedAction) {
   const { t } = useClientTranslation()
 
   const [isPending, startTransition] = useTransition()
-  const [hasJustCommitted, setHasJustCommitted] = useState(false)
+  const [shouldDisplayAnimation, setShouldDisplayAnimation] = useState(false)
   const handleCommitToAction = () => {
-    setHasJustCommitted(true)
+    setShouldDisplayAnimation(true)
 
     startTransition(async () => {
       const result = await commitToAction(action.id)
@@ -44,18 +44,18 @@ export function useCommitToAction(action: PersonalizedAction) {
 
   useEffect(() => {
     let timeoutBeforeDisablingAnimation = undefined
-    if (hasJustCommitted) {
+    if (shouldDisplayAnimation) {
       timeoutBeforeDisablingAnimation = setTimeout(() => {
-        setHasJustCommitted(false)
+        setShouldDisplayAnimation(false)
       }, ANIMATION_DURATION)
     }
 
     return () => clearTimeout(timeoutBeforeDisablingAnimation)
-  }, [hasJustCommitted])
+  }, [shouldDisplayAnimation])
 
   return {
     commitToAction: handleCommitToAction,
     isPending,
-    hasJustCommitted,
+    shouldDisplayAnimation,
   }
 }
