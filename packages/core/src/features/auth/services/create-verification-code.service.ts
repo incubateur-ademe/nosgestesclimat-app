@@ -1,0 +1,80 @@
+import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
+import { prisma } from '../../../prisma/client.ts'
+import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import type { CaptureException, Logger } from '../../logger/index.ts'
+import { createUserVerificationCode } from '../repositories/verification-codes.repository.ts'
+import type { VerificationCodeCreateDto } from '../schemas/verification-codes.schema.ts'
+
+type SendVerificationCodeEmail = (params: {
+  locale: ISOSupportedLanguage
+  email: string
+  code: string
+}) => Promise<void>
+
+interface CreateVerificationCodeDependencies {
+  logger: Logger
+  captureException: CaptureException
+  sendVerificationCodeEmail: SendVerificationCodeEmail
+  /** Runs the email outside of the request lifecycle */
+  backgroundTaskRunner: BackgroundTaskRunner
+}
+
+const VERIFICATION_CODE_TTL_MS = 60 * 60 * 1000 // 1 hour
+
+export const generateRandomVerificationCode = () =>
+  Math.floor(
+    Math.pow(10, 5) + Math.random() * (Math.pow(10, 6) - Math.pow(10, 5) - 1)
+  ).toString()
+
+export function createVerificationCodeService({
+  logger,
+  captureException,
+  sendVerificationCodeEmail,
+  backgroundTaskRunner,
+}: CreateVerificationCodeDependencies) {
+  return async function createVerificationCode({
+    email,
+    locale,
+  }: {
+    /** Email validated through `VerificationCodeCreateDto` by the caller */
+    email: VerificationCodeCreateDto['email']
+    locale: ISOSupportedLanguage
+  }): Promise<{ email: string; expirationDate: Date }> {
+    const code = generateRandomVerificationCode()
+    const expirationDate = new Date(Date.now() + VERIFICATION_CODE_TTL_MS)
+
+    // The code must be committed *before* the email is handed to Brevo. Sending
+    // inside the transaction means any later failure (a Brevo timeout, or the
+    // call simply outliving the interactive transaction budget) rolls the row
+    // back after Brevo has already accepted — and delivered — the message. The
+    // user then holds a legitimate-looking code that does not exist in database,
+    // and every attempt to use it comes back as "invalid".
+    const verificationCode = await createUserVerificationCode(
+      {
+        email,
+        code,
+        expirationDate,
+      },
+      { session: prisma }
+    )
+
+    backgroundTaskRunner(async () => {
+      try {
+        await sendVerificationCodeEmail({ locale, email, code })
+      } catch (error) {
+        captureException(error)
+        logger.error('Failed to send verification code email', {
+          error,
+          email,
+        })
+      }
+    })
+
+    // The code itself must not leave the service: only the caller-facing
+    // fields of the stored row are returned.
+    return {
+      email: verificationCode.email,
+      expirationDate: verificationCode.expirationDate,
+    }
+  }
+}
