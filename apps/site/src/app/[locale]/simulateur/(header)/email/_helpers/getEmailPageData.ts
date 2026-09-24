@@ -1,9 +1,9 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
+import { getSimulationMode } from '@nosgestesclimat/core/features/simulations/helpers/get-simulation-mode'
+import { getLatestSimulationResult } from '@nosgestesclimat/core/features/simulations/services/get-latest-simulation-result.service'
+
 import { getUserSession } from '@/services/auth/get-user-session'
 import { toSimulationDto } from '@/services/simulations/simulation.dto'
-import { findManyPollSummariesBySimulationId } from '@nosgestesclimat/core/features/polls/repositories/poll.repository'
-import { getSimulationMode } from '@nosgestesclimat/core/features/simulations/helpers/get-simulation-mode'
-import { findLatestSimulation } from '@nosgestesclimat/core/features/simulations/repository/simulation.repository'
 import { notFound } from 'next/navigation'
 
 interface EmailPageData {
@@ -13,33 +13,30 @@ interface EmailPageData {
   organisationName?: string
 }
 
-// TODO: create a service instead of calling repositories directly in action
 export async function getEmailPageData(): Promise<EmailPageData> {
   const user = await getUserSession()
   if (!user) notFound()
-  const currentSimulation = await findLatestSimulation({ userId: user.id })
-  if (!currentSimulation) notFound()
 
-  const [poll] = await findManyPollSummariesBySimulationId({
-    simulationId: currentSimulation.id,
+  const result = await getLatestSimulationResult({
+    userId: user.id,
+    withTendency: false,
   })
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const pollSlug = poll?.slug
+  if (!result) notFound()
 
-  const simulationMode = getSimulationMode(currentSimulation)
-  const isSchoolMode = simulationMode === 'scolaire'
+  const poll = result.group?.type === 'poll' ? result.group.value : undefined
+
+  const isSchoolMode = getSimulationMode(result.simulation) === 'scolaire'
   const hasContest =
-    !!pollSlug &&
+    poll !== undefined &&
     (process.env.NEXT_PUBLIC_POLL_CONTEST_SLUGS ?? '')
       .split(',')
-      .includes(pollSlug)
+      .includes(poll.slug)
 
   const organisationName =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     poll && hasContest ? poll.organisation.name : undefined
 
   return {
-    currentSimulation: toSimulationDto(currentSimulation),
+    currentSimulation: toSimulationDto(result.simulation),
     isSchoolMode,
     hasContest,
     organisationName,
