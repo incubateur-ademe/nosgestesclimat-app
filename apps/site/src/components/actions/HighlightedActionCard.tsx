@@ -128,7 +128,7 @@ export default function HighlightedActionCard({
         </div>
       </div>
 
-      <ImpactSection totalFootprint={totalFootprint} classes={classes} />
+      <ImpactSection classes={classes} />
     </article>
   )
 }

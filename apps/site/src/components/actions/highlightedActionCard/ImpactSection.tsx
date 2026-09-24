@@ -11,17 +11,12 @@ import { useActionContext } from '../contexts/action'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
 
 interface Props {
-  totalFootprint?: number
   classes: Record<'card' | 'panel' | 'value', string>
   assessment?: ActionAssessment
 }
 
-export default function ImpactSection({
-  totalFootprint,
-  classes,
-  assessment,
-}: Props) {
-  const { assessmentStatus } = useActionContext()
+export default function ImpactSection({ classes, assessment }: Props) {
+  const { assessmentStatus, totalFootprint } = useActionContext()
   const locale = useLocale()
 
   if (!assessmentStatus || !assessment) return null

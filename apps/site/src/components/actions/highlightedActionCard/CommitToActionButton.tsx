@@ -25,13 +25,13 @@ export default function CommitToActionButton({
       <Button
         color="secondary"
         onClick={() => {}}
-        // disabled
+        disabled
         className={twMerge(
           'relative',
           'text-sm! opacity-100! hover:bg-white',
           'before:absolute before:inset-0 before:rounded-[inherit]',
           'before:bg-[linear-gradient(45deg,transparent_25%,rgba(115,125,225,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease]',
-          shouldDisplayAnimation && 'focus-within:before:animate-button-shine',
+          shouldDisplayAnimation && 'before:animate-button-shine',
           className
         )}>
         <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
