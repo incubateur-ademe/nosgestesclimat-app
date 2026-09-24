@@ -272,6 +272,7 @@ export default {
         'bg-pulse': 'bg-pulse 5s ease-in-out infinite',
         'flash-scale': 'flash-scale 5s ease-in-out forwards',
         scale: 'scale 0.5s ease-out forwards',
+        'mini-zoom-in-out-fast': 'scale 0.2s ease-out forwards',
         'rainbow-shadow-move': 'rainbow-shadow-move 8s linear infinite',
       },
       screens: {

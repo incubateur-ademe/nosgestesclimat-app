@@ -59,7 +59,7 @@ export default function CommitToActionButton({
         onClick={() => {}}
         disabled
         className={twMerge(
-          'focus-within:animate-scale text-sm! focus-within:duration-100',
+          'focus-within:animate-mini-zoom-in-out-fast text-sm!',
           className
         )}>
         <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
