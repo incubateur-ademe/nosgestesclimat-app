@@ -14,15 +14,18 @@ import { publicEnv } from './env.public'
 
 const NonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty())
 
-const ServerEnvSchema = v.strictObject({
+const ServerEnvSchema = v.object({
   BREVO_API_KEY: NonEmptyStringSchema,
   BREVO_URL: v.pipe(NonEmptyStringSchema, v.url()),
   POLL_STATS_COOLDOWN_TIERS: v.pipe(
-    v.string(),
+    v.optional(v.string(), ''),
     v.transform((tiers: string) => parseCooldownTiers(tiers))
   ),
 })
 
+// The whole `process.env` is passed to the schema and the plain `v.object`
+// drops every key it does not know from its output, so unrelated host
+// variables (NVM_INC, CI, ...) neither fail validation nor leak into `env`.
 const parsed = v.safeParse(ServerEnvSchema, process.env)
 
 if (!parsed.success) {

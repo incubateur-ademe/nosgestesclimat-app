@@ -1,24 +1,21 @@
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { getUserSession } from '@/services/auth/get-user-session'
-import { getPoll } from '@/services/polls/get-poll'
+import { getPollSummary } from '@/services/polls/get-poll-summary'
 import { toSimulationDto } from '@/services/simulations/simulation.dto'
 import { getPollParticipationOptions as getPollParticipationOptionsService } from '@nosgestesclimat/core/features/polls/services/get-poll-participation-options.service'
-import type {
-  Poll,
-  PollSummary,
-} from '@nosgestesclimat/core/features/polls/types/poll'
+import type { PollSummary } from '@nosgestesclimat/core/features/polls/types/poll'
 import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { notFound, redirect } from 'next/navigation'
 
 export type PollParticipationOptions =
   | {
-      poll: Poll
+      poll: PollSummary
       currentPollSimulation: Simulation | null
       canReuseExistingSimulation: false
     }
   | {
-      poll: Poll
+      poll: PollSummary
       currentPollSimulation: Simulation | null
       canReuseExistingSimulation: true
       reusableSimulation: Simulation
@@ -30,7 +27,7 @@ export async function getPollParticipationOptions(
 ): Promise<PollParticipationOptions> {
   const [session, poll] = await Promise.all([
     getUserSession(),
-    getPoll(pollIdOrSlug),
+    getPollSummary(pollIdOrSlug),
   ])
 
   if (!poll) notFound()

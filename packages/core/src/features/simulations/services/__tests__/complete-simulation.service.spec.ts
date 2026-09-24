@@ -21,8 +21,8 @@ import {
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { findSimulationById } from '../../repository/simulation.repository.ts'
 import { serializeModel } from '../../repository/model.mapper.ts'
+import { findSimulationById } from '../../repository/simulation.repository.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { createCompleteSimulation } from '../complete-simulation.service.ts'
 
@@ -53,6 +53,7 @@ describe('completeSimulation', () => {
             id: poll.id,
             slug: poll.slug,
             name: poll.name,
+            mode: poll.mode,
             organisation: {
               name: poll.organisation.name,
               slug: poll.organisation.slug,
@@ -305,7 +306,9 @@ describe('completeSimulation', () => {
       userId: user.id,
     })
     if (!persisted) throw new Error('simulation should exist')
-    expect(serializeModel(persisted.model)).toBe(serializeModel(simulation.model))
+    expect(serializeModel(persisted.model)).toBe(
+      serializeModel(simulation.model)
+    )
   })
 
   it('fails with simulation_not_found for a simulation owned by another user', async () => {

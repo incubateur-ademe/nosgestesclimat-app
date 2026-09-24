@@ -16,8 +16,8 @@ import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
  */
 export async function ensureSimulationModel<
   Payload extends { id: Simulation['id']; model?: Simulation['model'] },
->(simulation: Payload): Promise<Payload> {
-  if (simulation.model && parseModelString(simulation.model)) {
+>(simulation: Payload): Promise<Payload & { model: Simulation['model'] }> {
+  if (hasValidModel(simulation)) {
     return simulation
   }
 
@@ -30,4 +30,10 @@ export async function ensureSimulationModel<
   )
 
   return { ...simulation, model: await resolveNewSimulationModelString() }
+}
+
+function hasValidModel<Payload extends { model?: Simulation['model'] }>(
+  simulation: Payload
+): simulation is Payload & { model: Simulation['model'] } {
+  return !!simulation.model && !!parseModelString(simulation.model)
 }

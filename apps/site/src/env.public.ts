@@ -4,17 +4,21 @@ import * as v from 'valibot'
  * Public environment configuration, validated once at import time.
  *
  * Safe to import from client components: it only contains `NEXT_PUBLIC_*`
- * variables, which Next inlines at build time. The full `process.env.NEXT_PUBLIC_X`
- * literals below are required - a dynamic lookup would not be substituted.
+ * variables, which the bundler inlines — but only when they are referenced as
+ * the static `process.env.X` expressions below. A dynamic lookup, or the whole
+ * `process.env`, is not substituted: in the browser `process.env` is an empty
+ * shim.
  */
 
 const NonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty())
 
-const PublicEnvSchema = v.strictObject({
+const PublicEnvSchema = v.object({
   NEXT_PUBLIC_SITE_URL: v.pipe(NonEmptyStringSchema, v.url()),
 })
 
-const parsed = v.safeParse(PublicEnvSchema, process.env)
+const parsed = v.safeParse(PublicEnvSchema, {
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+})
 
 if (!parsed.success) {
   const issues = parsed.issues
