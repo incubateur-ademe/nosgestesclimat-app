@@ -2,15 +2,11 @@ import { SERVER_URL } from '../../../config/urls'
 
 export { SERVER_URL }
 
-export const AUTHENTICATION_URL = `${SERVER_URL}/authentication/v1`
-
 export const GROUP_URL = `${SERVER_URL}/groups/v1`
 
 export const ORGANISATION_URL = `${SERVER_URL}/organisations/v1`
 
 export const SIMULATION_URL = `${SERVER_URL}/simulations/v1`
-
-export const VERIFICATION_CODE_URL = `${SERVER_URL}/verification-codes/v1`
 
 export const MODELE_URL = `${SERVER_URL}/modele/v1`
 
