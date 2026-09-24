@@ -13,7 +13,6 @@ import { GET_PERSONALIZED_ACTIONS_CACHE_TAG } from './get-personalized-actions-c
 
 export async function commitToAction(payload: CommitToActionPayload) {
   const session = await getUserSession()
-
   if (!session) unauthorized()
 
   const parsed = validatePayload(CommitToActionPayloadSchema, payload)
