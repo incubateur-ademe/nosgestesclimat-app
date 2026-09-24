@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
@@ -15,11 +16,7 @@ describe('getPollParticipation', () => {
   })
 
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns null when the user has no simulation attached to the poll', async () => {

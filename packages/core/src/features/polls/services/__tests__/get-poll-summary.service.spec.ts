@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
 import { getPollSummary } from '../get-poll-summary.service.ts'
 
 describe('getPollSummary', () => {
   afterEach(async () => {
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns null when no poll matches', async () => {
