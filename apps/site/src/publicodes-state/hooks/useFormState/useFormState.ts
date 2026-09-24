@@ -1,6 +1,6 @@
 'use client'
 
-import { testOrderedCategories } from '@/constants/model/orderedCategories'
+import { expendedTestOrderedCategories } from '@/constants/model/categories'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useContext, useMemo } from 'react'
 import formContext from '../../providers/formProvider/context'
@@ -39,8 +39,8 @@ export default function useFormState() {
 
   const remainingCategories = useMemo(() => {
     return (
-      testOrderedCategories.length -
-      testOrderedCategories.indexOf(currentCategory as Categories) -
+      expendedTestOrderedCategories.length -
+      expendedTestOrderedCategories.indexOf(currentCategory as Categories) -
       1
     )
   }, [currentCategory])
@@ -98,7 +98,6 @@ export default function useFormState() {
      * Every missing questions needed to complete the form
      */
     remainingQuestions,
-
     /**
      * Every answered questions that are still relevant and should be displayed in the form (foldedsteps minus questions that are disabled by parents and can't enable themselves)
      */

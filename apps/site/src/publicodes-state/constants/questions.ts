@@ -51,6 +51,7 @@ export const NON_PRIORITY_QUESTIONS = new Set<DottedName>([
 // This constant allow to display questions even if it's not missing variable. We keep the logic for now even if it's empty.
 export const MUST_ASK_QUESTIONS = new Set<DottedName>([
   'logement . lieu de vie',
+  'âge',
 ])
 
 export const MUST_SHOW_DESCRIPTION = new Set<DottedName>([
@@ -63,6 +64,7 @@ export const MUST_SHOW_DESCRIPTION = new Set<DottedName>([
   'alimentation . local . consommation',
   'transport . avion . vols annuels',
   'transport . avion . vols amortis',
+  'âge',
 ])
 
 export const NUMBER_MOSAIC_WITHOUT_BUTTONS = new Set<DottedName>([

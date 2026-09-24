@@ -8,6 +8,7 @@ import {
   useUser,
 } from '@/publicodes-state'
 
+import { expendedTestOrderedCategories } from '@/constants/model/categories'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { notFound } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
@@ -23,7 +24,6 @@ interface Props {
 
 function FormProvider({ root, children }: PropsWithChildren<Props>) {
   const {
-    categories,
     subcategories,
     safeEvaluate,
     everyQuestions,
@@ -43,10 +43,11 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     relevantQuestions,
     questionsByCategories,
     missingVariables,
+    remainingQuestionsByCategories,
   } = useQuestions({
     root,
     safeEvaluate,
-    categories,
+    categories: expendedTestOrderedCategories,
     subcategories,
     foldedSteps,
     situation,
@@ -59,8 +60,8 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     remainingQuestions
   )
 
-  const { remainingQuestionsByCategories } = useProgression({
-    categories,
+  useProgression({
+    categories: expendedTestOrderedCategories,
     remainingQuestions,
     relevantQuestions,
     updateCurrentSimulation,
@@ -74,11 +75,11 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
         relevantQuestions,
         remainingQuestions,
         relevantAnsweredQuestions,
-        remainingQuestionsByCategories,
         currentQuestion,
         currentCategory,
         setCurrentQuestion,
         missingVariables,
+        remainingQuestionsByCategories,
       }}>
       {children}
     </FormContext.Provider>
