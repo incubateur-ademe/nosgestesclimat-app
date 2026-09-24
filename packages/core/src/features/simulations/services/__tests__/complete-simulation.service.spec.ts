@@ -2,6 +2,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
@@ -9,32 +10,25 @@ import { groupFactory } from '../../../groups/factories/group.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../../polls/stats/repositories/poll-stats-computations.repository.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
+import { CURRENT_MODEL_VERSION } from '../../../simulation-computation/model-support/model-versions.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
   SimulationCompletedError,
   SimulationIncompleteError,
+  SimulationInvalidModelError,
   SimulationNotFoundError,
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
+import { serializeModel } from '../../repository/model.mapper.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { createCompleteSimulation } from '../complete-simulation.service.ts'
 
 describe('completeSimulation', () => {
   afterEach(async () => {
-    await prisma.simulationComputation.deleteMany()
-    await prisma.simulationPoll.deleteMany()
-    await prisma.pollStatsComputation.deleteMany()
-    await prisma.groupParticipant.deleteMany()
-    await prisma.groupAdministrator.deleteMany()
-    await prisma.group.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.verifiedUser.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('persists the answers and returns the groups and polls the simulation belongs to', async () => {
@@ -120,6 +114,31 @@ describe('completeSimulation', () => {
     expect(captureException).not.toHaveBeenCalled()
   })
 
+  it('persists the model the client completed with', async () => {
+    const { completeSimulation } = setup()
+    const user = await userFactory.verified().create()
+    const simulation = await simulationFactory
+      .withModelRegion('FR')
+      .withModelVersion({ publishedTag: '0.0.0' })
+      .withProgression(0.2)
+      .params({ userId: user.id })
+      .create()
+
+    await completeSimulation({
+      userSession: authenticated(user),
+      simulationId: simulation.id,
+      ...payload,
+      model: 'FR-fr-9.9.9',
+    })
+
+    const persisted = await findSimulationById({
+      id: simulation.id,
+      userId: user.id,
+    })
+    if (!persisted) throw new Error('simulation should exist')
+    expect(serializeModel(persisted.model)).toBe('FR-fr-9.9.9')
+  })
+
   it('reports an unsupported model and completes the simulation without programming a computation', async () => {
     const { completeSimulation, logger, captureException } = setup()
     const user = await userFactory.verified().create()
@@ -134,6 +153,8 @@ describe('completeSimulation', () => {
       userSession: authenticated(user),
       simulationId: simulation.id,
       ...payload,
+      // The client ran the same unsupported model the simulation persists.
+      model: 'FR-fr-0.0.0',
     })
 
     expect(result).toEqual(expect.objectContaining({ success: true }))
@@ -252,6 +273,31 @@ describe('completeSimulation', () => {
       success: false,
       error: new SimulationNotFoundError(),
     })
+  })
+
+  it('fails with simulation_invalid_model for a model string that cannot be parsed', async () => {
+    const { completeSimulation } = setup()
+    const user = await userFactory.verified().create()
+    const simulation = await startedSimulation(user.id)
+
+    const result = await completeSimulation({
+      userSession: authenticated(user),
+      simulationId: simulation.id,
+      ...payload,
+      model: 'not-a-model',
+    })
+
+    expect(result).toEqual({
+      success: false,
+      error: new SimulationInvalidModelError('not-a-model'),
+    })
+    // The completion refused to write: the persisted model is untouched.
+    const persisted = await findSimulationById({
+      id: simulation.id,
+      userId: user.id,
+    })
+    if (!persisted) throw new Error('simulation should exist')
+    expect(serializeModel(persisted.model)).toBe(serializeModel(simulation.model))
   })
 
   it('fails with simulation_not_found for a simulation owned by another user', async () => {
@@ -702,6 +748,7 @@ const situation = {
 const foldedSteps = ['transport . voiture . km'] as DottedName[]
 
 const payload = {
+  model: `FR-fr-${CURRENT_MODEL_VERSION}`,
   situation,
   foldedSteps,
   progression: 1,

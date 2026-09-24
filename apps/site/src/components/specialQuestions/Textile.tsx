@@ -1,15 +1,11 @@
 'use client'
 
 import Question from '@/components/form/Question'
-import { captureSubQuestion } from '@/constants/tracking/posthogTrackers'
-import { openSubQuestion } from '@/constants/tracking/question'
+import { captureSubQuestion } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useRule, useUser } from '@/publicodes-state'
-import {
-  trackMatomoEvent__deprecated,
-  trackPosthogEvent,
-} from '@/utils/analytics/trackEvent'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
 import { useEffect } from 'react'
@@ -88,8 +84,7 @@ export default function Textile({ question, ...props }: Props) {
             color="link"
             size="xs"
             onClick={() => {
-              trackMatomoEvent__deprecated(openSubQuestion({ question }))
-              trackPosthogEvent(
+              trackEvent(
                 captureSubQuestion({
                   question,
                   state: preciseChoice ? 'closed' : 'opened',

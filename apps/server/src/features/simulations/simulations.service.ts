@@ -6,7 +6,6 @@ import type { Session } from '../../adapters/prisma/transaction.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import type { PartialUser } from '../../core/types/user.ts'
-import type { OrganisationPollCustomAdditionalQuestion } from '../organisations/organisations.validator.ts'
 import { carbonMetric, waterMetric } from './simulation.constant.ts'
 import {
   batchPollSimulations,
@@ -38,13 +37,7 @@ export const softDeleteSimulation = async ({
 const EXCEL_ERROR = '#####'
 
 export const getPollSimulationsExcelData = async (
-  {
-    id,
-    customAdditionalQuestions,
-  }: {
-    id: string
-    customAdditionalQuestions: OrganisationPollCustomAdditionalQuestion[]
-  },
+  { id }: { id: string },
   session: { session: Session }
 ) => {
   const data = []
@@ -57,12 +50,6 @@ export const getPollSimulationsExcelData = async (
         date: true,
         computedResults: true,
         progression: true,
-        additionalQuestionsAnswers: {
-          select: {
-            key: true,
-            answer: true,
-          },
-        },
       },
     },
     session
@@ -116,15 +103,6 @@ export const getPollSimulationsExcelData = async (
         ),
       })
     }
-
-    customAdditionalQuestions.forEach(({ question }) =>
-      Object.assign(line, {
-        [question]:
-          simulation.additionalQuestionsAnswers.find(
-            ({ key }) => key === question
-          )?.answer ?? '',
-      })
-    )
 
     data.push(line)
   }

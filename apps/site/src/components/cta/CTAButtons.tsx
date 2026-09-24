@@ -71,6 +71,7 @@ async function ServerCTAButtons({
             className
           )}
           href={mainButton.href}
+          prefetch={mainButton.prefetch}
           data-testid="main-cta">
           <>
             <span

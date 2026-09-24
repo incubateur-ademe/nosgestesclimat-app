@@ -1,17 +1,44 @@
 import { faker } from '@faker-js/faker'
+import type { FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import { Prisma } from '../../../prisma/generated/client.ts'
+import { organisationFactory } from '../../organisations/factories/organisation.factory.ts'
+import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
 import type { Poll } from '../types/poll.ts'
-import { organisationFactory } from './organisation.factory.ts'
 
 interface PollTransientParams {
   organisationId: string
 }
 
-class PollFactory extends Factory<Poll, PollTransientParams, Poll> {
+/**
+ * `Partial<Poll>` covers the entity; the aggregates are added on top because
+ * `Poll` deliberately does not carry them, and a spec has to be able to seed
+ * them all the same.
+ */
+type PollFactoryParams = Partial<Poll> & {
+  computedResults?: ComputedResults | null
+  funFacts?: FunFacts | null
+}
+
+class PollFactory extends Factory<
+  Poll,
+  PollTransientParams,
+  Poll,
+  PollFactoryParams
+> {
   scolaire() {
     return this.params({ mode: 'scolaire' })
+  }
+
+  /**
+   * Points the poll at an organisation that already exists, instead of letting
+   * the factory create one, and names it in the poll it returns as the row does.
+   */
+  withOrganisation(organisation: Poll['organisation']) {
+    return this.transient({ organisationId: organisation.id }).params({
+      organisation,
+    })
   }
 
   withStatsComputationStatus(
@@ -38,6 +65,10 @@ class PollFactory extends Factory<Poll, PollTransientParams, Poll> {
     return this.withStatsComputationStatus('failed')
   }
 
+  withParticipantsCount(participantsCount: number) {
+    return this.params({ participantsCount })
+  }
+
   withProcessingComputation(startedAt: Date = new Date()) {
     return this.withStatsComputationStatus('processing', { startedAt })
   }
@@ -48,7 +79,7 @@ class PollFactory extends Factory<Poll, PollTransientParams, Poll> {
 }
 
 export const pollFactory = PollFactory.define(
-  ({ onCreate, transientParams: { organisationId } }) => {
+  ({ onCreate, params, transientParams: { organisationId } }) => {
     onCreate(async (data) => {
       // a poll cannot exist without an organisation: create one unless the
       // caller pointed the poll at an existing organisation
@@ -64,11 +95,14 @@ export const pollFactory = PollFactory.define(
           mode: data.mode,
           organisationId: organisation.id,
           expectedNumberOfParticipants: data.expectedNumberOfParticipants,
+          participantsCount: params.participantsCount ?? 0,
           funFacts:
-            (data.funFacts as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
+            (params.funFacts as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
           computedResults:
-            (data.computedResults as unknown as Prisma.InputJsonValue | null) ??
-            Prisma.DbNull,
+            (params.computedResults as
+              | Prisma.InputJsonValue
+              | null
+              | undefined) ?? Prisma.DbNull,
           // no longer exposed on the Poll model but the column is required
           customAdditionalQuestions: {},
           createdAt: data.createdAt,
@@ -78,6 +112,7 @@ export const pollFactory = PollFactory.define(
 
       return {
         ...data,
+        participantsCount: params.participantsCount ?? 0,
         organisation: {
           id: organisation.id,
           name: organisation.name,
@@ -95,9 +130,8 @@ export const pollFactory = PollFactory.define(
       name,
       slug: `${faker.helpers.slugify(name).toLocaleLowerCase()}-${faker.string.alphanumeric(6)}`,
       mode: 'standard' as const,
+      participantsCount: params.participantsCount ?? 0,
       expectedNumberOfParticipants: null,
-      funFacts: null,
-      computedResults: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       organisation: {

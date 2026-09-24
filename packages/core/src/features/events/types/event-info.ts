@@ -1,15 +1,20 @@
-import type { OrganisationType } from '../../../prisma/generated/enums.ts'
+export type PodiumCategory =
+  | 'all'
+  | 'companies'
+  | 'associations'
+  | 'education'
+  | 'public-services'
 
-export interface EventOrganisation {
+export interface PodiumItem {
   id: string
   name: string
   slug: string
-  type: OrganisationType
+  type: PodiumCategory
   simulationsCount: number
 }
 
 export interface EventInfo {
-  organisations: EventOrganisation[]
+  podiumItemsByCategory: Record<PodiumCategory, PodiumItem[]>
   totalSimulations: number
   organisationCount: number
   startDate: Date

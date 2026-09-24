@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import supertest from 'supertest'
 import { afterEach, describe, expect, test } from 'vitest'
 import { brevoUpdateContact } from '../../adapters/brevo/__tests__/fixtures/server.fixture.js'
@@ -18,14 +19,7 @@ const agent = supertest(app)
 
 afterEach(async () => {
   await EventBus.flush()
-  await prisma.simulationPoll.deleteMany()
-  await prisma.simulation.deleteMany()
-  await prisma.poll.deleteMany()
-  await prisma.organisationAdministrator.deleteMany()
-  await prisma.organisation.deleteMany()
-  await prisma.verifiedUser.deleteMany()
-  await prisma.user.deleteMany()
-  await prisma.verificationCode.deleteMany()
+  await emptyDatabase(prisma)
 })
 
 describe('runSync', () => {

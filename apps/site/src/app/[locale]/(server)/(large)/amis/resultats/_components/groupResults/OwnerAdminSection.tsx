@@ -1,15 +1,10 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  amisDashboardOpenDeleteGroup,
-  amisDashboardValidateDeleteGroup,
-} from '@/constants/tracking/pages/amisDashboard'
 import Button from '@/design-system/buttons/Button'
 import Card from '@/design-system/layout/Card'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Group } from '@/types/groups'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import { useActionState, useState } from 'react'
 import { deleteGroupAction } from '../../_actions/delete-group.action'
 
@@ -44,11 +39,7 @@ export default function OwnerAdminSection({ group }: Props) {
             </Trans>
           </p>
 
-          <form
-            action={action}
-            onSubmit={() =>
-              trackMatomoEvent__deprecated(amisDashboardValidateDeleteGroup)
-            }>
+          <form action={action} onSubmit={() => undefined}>
             <input type="hidden" name="groupId" value={group?.id} />
 
             <div className="flex gap-4">
@@ -81,7 +72,6 @@ export default function OwnerAdminSection({ group }: Props) {
           type="button"
           color="link"
           onClick={() => {
-            trackMatomoEvent__deprecated(amisDashboardOpenDeleteGroup)
             setIsConfirming(true)
           }}
           data-testid="button-delete-group">

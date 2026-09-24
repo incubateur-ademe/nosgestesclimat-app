@@ -2,9 +2,10 @@ import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import type { SimulationComputationStatus } from '@nosgestesclimat/core/features/simulation-computation/types/computation'
+import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
+import ActionsPageHeaderSwitch from '../ActionsPageHeaderSwitch'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import HighestImpactActionsSectionDarkBackground from '../HighestImpactActionsSectionDarkBackground'
@@ -23,7 +24,7 @@ interface ActionsPageProps extends Omit<
   themes: Theme[]
   actions: MaybePersonalizedAction[]
   locale: Locale
-  assessmentStatus?: SimulationComputationStatus | null
+  assessmentStatus?: AssessmentStatus | null
   from?: 'fin' | 'mon-espace' | 'index'
   /**
    * Total carbon footprint in kg of the user's latest simulation.
@@ -83,12 +84,19 @@ export default function ActionsPage({
       <BetaBanner locale={locale} />
 
       <div {...props} className={twMerge('pb-24', className)}>
-        <div className="mb-10">
-          <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">{title}</h1>
-          <p className="text-base/normal text-slate-500 md:text-lg/normal">
-            {description}
-          </p>
-        </div>
+        <ActionsPageHeaderSwitch
+          title={title}
+          control={
+            <div className="mb-10">
+              <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
+                {title}
+              </h1>
+              <p className="text-base/normal text-slate-500 md:text-lg/normal">
+                {description}
+              </p>
+            </div>
+          }
+        />
 
         {topActions && topActions.length > 0 && (
           <HighestImpactActionsSectionSwitch

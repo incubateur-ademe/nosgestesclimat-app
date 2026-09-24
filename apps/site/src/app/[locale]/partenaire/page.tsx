@@ -1,4 +1,4 @@
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 import { PARTNER_KEY } from '@/constants/partners'
 import Main from '@/design-system/layout/Main'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -20,9 +20,7 @@ export const generateMetadata = getCommonMetadata({
 
 export default async function PartenairePage({
   searchParams,
-  params,
 }: PageProps<'/[locale]/partenaire'>) {
-  const { locale } = await params
   const searchParamsObject = (await searchParams) ?? { partner: '' }
 
   const partner = (searchParamsObject[PARTNER_KEY] as string) ?? ''
@@ -41,7 +39,7 @@ export default async function PartenairePage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <Header />
 
       <Main>
         <div className="min-h-screen">

@@ -2,7 +2,6 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { linkToGroupCreation } from '@/constants/group'
-import { classementCreateGroup } from '@/constants/tracking/pages/classements'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 
 export default function CreateFirstGroupSection() {
@@ -19,7 +18,6 @@ export default function CreateFirstGroupSection() {
       </p>
       <ButtonLink
         href={linkToGroupCreation}
-        trackingEvent={classementCreateGroup}
         data-testid="button-create-first-group">
         <Trans>Commencer</Trans>
       </ButtonLink>

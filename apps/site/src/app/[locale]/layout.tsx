@@ -1,5 +1,4 @@
 import Trackers from '@/components/tracking/Trackers'
-import MatomoScript__deprecated from '@/hooks/tracking/MatomoServerTracker'
 import '@/locales/initClient'
 import '@/locales/initServer'
 import type { DefaultPageProps } from '@/types'
@@ -9,8 +8,8 @@ import { Suspense } from 'react'
 
 import i18nConfig from '@/i18nConfig'
 import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
+import '../../styles/globals.css'
 import { BODY_ID } from './_components/mainLayoutProviders/IframeOptionsContext'
-import './globals.css'
 import { marianne } from './marianne'
 
 export function generateStaticParams() {
@@ -43,7 +42,6 @@ export default async function RootLayout({
 
         <meta name="theme-color" content="#4949ba" />
 
-        <MatomoScript__deprecated />
         <Suspense fallback={null}>
           <Trackers locale={locale} />
         </Suspense>

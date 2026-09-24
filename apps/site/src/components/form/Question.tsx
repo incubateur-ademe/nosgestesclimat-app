@@ -11,14 +11,12 @@ import {
   DEFAULT_FOCUS_ELEMENT_ID,
   QUESTION_DESCRIPTION_BUTTON_ID,
 } from '@/constants/accessibility'
-import { questionChooseAnswer } from '@/constants/tracking/question'
 import Button from '@/design-system/buttons/Button'
 import { getWarningId } from '@/helpers/question/getWarningId'
 import { useUpdatePageTitle } from '@/hooks/simulation/useUpdatePageTitle'
 import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { AnimatePresence } from 'framer-motion'
 import type { Evaluation } from 'publicodes'
@@ -83,9 +81,8 @@ export default function Question({
     question,
     unit,
     value: situationValue as Evaluation<number>,
-    setValue: (value: number | string | undefined) => {
-      setValue(value, { questionDottedName: question })
-    },
+    setValue: (value: number | string | undefined) =>
+      setValue(value, { questionDottedName: question }),
     placeholder:
       isMissing && typeof value === 'number'
         ? value.toLocaleString(locale, {
@@ -111,9 +108,9 @@ export default function Question({
 
         <Suggestions
           question={question}
-          setValue={(value) => {
+          setValue={(value) =>
             setValue(value, { questionDottedName: question })
-          }}
+          }
         />
         {showInputsLabel ? (
           <Button
@@ -141,14 +138,9 @@ export default function Question({
             {type === 'boolean' && (
               <BooleanInput
                 value={situationValue as Evaluation<boolean>}
-                setValue={(value: string | undefined) => {
-                  {
-                    setValue(value, { questionDottedName: question })
-                    trackMatomoEvent__deprecated(
-                      questionChooseAnswer({ question, answer: value })
-                    )
-                  }
-                }}
+                setValue={(value: string | undefined) =>
+                  setValue(value, { questionDottedName: question })
+                }
                 data-testid={question}
                 label={label || ''}
                 firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
@@ -162,14 +154,9 @@ export default function Question({
                 question={question}
                 choices={choices}
                 value={situationValue as Evaluation<string>}
-                setValue={(value) => {
-                  {
-                    setValue(value, { questionDottedName: question })
-                    trackMatomoEvent__deprecated(
-                      questionChooseAnswer({ question, answer: value })
-                    )
-                  }
-                }}
+                setValue={(value) =>
+                  setValue(value, { questionDottedName: question })
+                }
                 data-testid={question}
                 label={label || ''}
                 firstInputId={DEFAULT_FOCUS_ELEMENT_ID}

@@ -1,26 +1,23 @@
 import Trans from '@/components/translation/trans/TransClient'
-import type { ComputedResults } from '@/publicodes-state/types'
+import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import MeanFootprintDistribution from './_components/MeanFootprintDistribution'
 
 interface Props {
   computedResults?: ComputedResults | null
   userComputedResults?: ComputedResults | null
-  simulationsCount?: number
+  participantsCount: number
   organisationName?: string
+  isAdmin: boolean
 }
 
 export default function FootprintDistribution({
   computedResults,
   userComputedResults,
-  simulationsCount,
+  participantsCount,
   organisationName,
+  isAdmin,
 }: Props) {
-  if (
-    !computedResults ||
-    typeof simulationsCount === 'undefined' ||
-    simulationsCount < 3
-  )
-    return null
+  if (!computedResults) return null
 
   return (
     <section className="mb-8">
@@ -34,7 +31,8 @@ export default function FootprintDistribution({
         organisationName={organisationName}
         groupComputedResults={computedResults}
         userComputedResults={userComputedResults}
-        simulationsCount={simulationsCount}
+        participantsCount={participantsCount}
+        isAdmin={isAdmin}
       />
     </section>
   )

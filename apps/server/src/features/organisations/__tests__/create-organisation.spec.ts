@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import slugify from 'slugify'
 import supertest from 'supertest'
@@ -30,13 +31,7 @@ describe('Given a NGC user', () => {
   const url = CREATE_ORGANISATION_ROUTE
 
   afterEach(async () => {
-    await prisma.organisationAdministrator.deleteMany()
-    await Promise.all([
-      prisma.organisation.deleteMany(),
-      prisma.user.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.verificationCode.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('And no authentication', () => {
@@ -300,7 +295,7 @@ describe('Given a NGC user', () => {
               params: {
                 ADMINISTRATOR_NAME: administratorPayload.name,
                 ORGANISATION_NAME: payload.name,
-                DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-admin-creation`,
               },
             },
           }),
@@ -342,7 +337,7 @@ describe('Given a NGC user', () => {
                 params: {
                   ADMINISTRATOR_NAME: administratorPayload.name,
                   ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-admin-creation`,
                 },
               },
             }),
@@ -386,7 +381,7 @@ describe('Given a NGC user', () => {
                 params: {
                   ADMINISTRATOR_NAME: administratorPayload.name,
                   ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-admin-creation`,
                 },
               },
             }),
@@ -434,7 +429,7 @@ describe('Given a NGC user', () => {
                     .split('\n_\n')
                     .join(' '),
                   ORGANISATION_NAME: payload.name,
-                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?mtm_campaign=email-automatise&mtm_kwd=orga-admin-creation`,
+                  DASHBOARD_URL: `https://nosgestesclimat.test/organisations/${slugify.default(payload.name.toLowerCase(), { strict: true })}?utm_source=NGC&utm_medium=email-automatise&utm_campaign=orga-admin-creation`,
                 },
               },
             }),

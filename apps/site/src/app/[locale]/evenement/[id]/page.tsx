@@ -1,5 +1,5 @@
 import Footer from '@/components/layout/Footer'
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 import { noIndexObject } from '@/constants/metadata'
 import Main from '@/design-system/layout/Main'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -61,7 +61,7 @@ export default async function EvenementPage({
     endDate,
     dynamicCounter,
     statisticsValues,
-    podiumItems,
+    podiumItemsByCategory,
     testimonies,
     tutorialStepsByMode,
     ctaImageSrc,
@@ -74,7 +74,7 @@ export default async function EvenementPage({
 
   return (
     <>
-      <HeaderServer locale={locale} />
+      <Header />
 
       <Main>
         <div className="mx-auto w-5xl max-w-full px-4 lg:p-0">
@@ -106,7 +106,7 @@ export default async function EvenementPage({
           <EventPodium
             locale={locale}
             searchParams={searchParams}
-            items={podiumItems}
+            podiumItemsByCategory={podiumItemsByCategory}
             hasStarted={hasStarted}
           />
         </div>

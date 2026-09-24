@@ -1,10 +1,9 @@
 import Ademe from '@/components/images/partners/Ademe'
 import Marianne from '@/components/images/partners/Marianne'
 import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
-import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import Trans from '@/components/translation/trans/TransServer'
 
-import LogoLinkServer from '@/components/misc/LogoLinkServer'
+import LogoLink from '@/components/misc/LogoLink'
 import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -46,7 +45,7 @@ export default async function FooterServer({
       )}>
       <div className="md:mx-auto md:max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
-          <LogoLinkServer />
+          <LogoLink />
         </div>
         {locale === 'fr' ? (
           <div className="my-4 block md:hidden">
@@ -202,7 +201,6 @@ export default async function FooterServer({
             </div>
           )}
         </div>
-        <LanguageSwitchButton />
 
         <div className="flex flex-wrap justify-between gap-8 md:flex-row md:flex-nowrap">
           <div>
@@ -245,11 +243,11 @@ export default async function FooterServer({
             <Marianne className="h-auto w-12 md:w-auto" />
 
             <Link
-              href="https://ademe.fr"
               aria-label={t(
                 'footer.ademe.ariaLabel',
                 'ADEME (ouvrir dans une nouvelle fenêtre)'
               )}
+              href="https://ademe.fr"
               target="_blank">
               <Ademe className="h-auto w-10 md:w-auto" />
             </Link>

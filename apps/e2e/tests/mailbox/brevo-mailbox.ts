@@ -23,9 +23,15 @@ interface BrevoResponse {
 // process stays around 0.75 req/s.
 const MIN_INTERVAL_MS = 8_000
 
-// Brevo indexes sends with a variable delay (up to ~1 min): keep reading until
-// this deadline.
-const LOOKUP_DEADLINE_MS = 45_000
+// Brevo indexes sends with a variable delay, up to about a minute: the deadline
+// sits above it, so a slow index is waited out instead of read as "no email".
+const LOOKUP_DEADLINE_MS = 90_000
+
+// A lookup may consume its whole deadline, and the rest of a test (simulation,
+// email round-trip, clicks) runs around it: the per-test budget covers both.
+// The Playwright timeout and `setup.setTimeout` both derive from this value, so
+// no test can end while a mailbox read is still in flight.
+export const BREVO_TEST_TIMEOUT_MS = 240_000
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

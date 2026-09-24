@@ -1,4 +1,5 @@
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
+import { findLastFinishedSimulationByUserId } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import {
   findAllVisiblePersonalizedActions,
   findVisiblePersonalizedActionBySlug,
@@ -23,14 +24,25 @@ export const getPersonalizedActionDetails = async (
   locale: ISOSupportedLanguage,
   userId: string | undefined
 ): Promise<PersonalizedActionDetails | null> => {
-  const action = await findVisiblePersonalizedActionBySlug(slug, locale, userId)
+  const lastFinished = await findLastFinishedSimulationByUserId(
+    userId
+  )
+  const action = await findVisiblePersonalizedActionBySlug(
+    slug,
+    locale,
+    lastFinished?.simulationId
+  )
 
   if (!action) return null
 
-  const themeActions = await findAllVisiblePersonalizedActions(userId, locale, {
-    themeId: action.theme.id,
-    fallbackToDefaultLocale: true,
-  })
+  const themeActions = await findAllVisiblePersonalizedActions(
+    lastFinished?.simulationId,
+    locale,
+    {
+      themeId: action.theme.id,
+      fallbackToDefaultLocale: true,
+    }
+  )
 
   const otherThemeActions = themeActions
     .filter(({ id }) => id !== action.id)

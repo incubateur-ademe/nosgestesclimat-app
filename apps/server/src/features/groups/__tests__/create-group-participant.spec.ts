@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -26,11 +27,7 @@ describe('Given a NGC user', () => {
 
   afterEach(async () => {
     mswServer.resetHandlers()
-    await Promise.all([
-      prisma.groupAdministrator.deleteMany(),
-      prisma.groupParticipant.deleteMany(),
-    ])
-    await Promise.all([prisma.user.deleteMany(), prisma.group.deleteMany()])
+    await emptyDatabase(prisma)
   })
 
   describe('When not authenticated', () => {
@@ -682,8 +679,8 @@ describe('Given a NGC user', () => {
             ],
             templateId: 57,
             params: {
-              GROUP_URL: `https://nosgestesclimat.test/amis/resultats?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-voir-classement`,
-              SHARE_URL: `https://nosgestesclimat.test/amis/invitation?groupId=${groupId}&mtm_campaign=email-automatise&mtm_kwd=groupe-admin-url-partage`,
+              GROUP_URL: `https://nosgestesclimat.test/amis/resultats?groupId=${groupId}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-voir-classement`,
+              SHARE_URL: `https://nosgestesclimat.test/amis/invitation?groupId=${groupId}&utm_source=NGC&utm_medium=email-automatise&utm_campaign=groupe-admin-url-partage`,
               GROUP_NAME: groupName,
               NAME: administratorName,
             },

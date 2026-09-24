@@ -5,7 +5,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getSimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { participateToPoll } from '@/services/organisations/participate-to-poll'
-import { getPoll } from '@/services/polls/get-poll'
+import { getPollSummary } from '@/services/polls/get-poll-summary'
 import { getLastCompletedSimulation } from '@/services/simulations/get-last-completed-simulation'
 import { getPollParticipation } from '@/services/simulations/get-poll-participation'
 import { resolveNewSimulationModel } from '@/services/simulations/resolve-new-simulation-model'
@@ -28,7 +28,7 @@ export default async function CampagnePage({
 
   const [poll, lastCompletedSimulation, currentPollSimulation] =
     await Promise.all([
-      getPoll(pollIdOrSlug),
+      getPollSummary(pollIdOrSlug),
       getLastCompletedSimulation(),
       getPollParticipation(pollIdOrSlug),
     ])
@@ -89,19 +89,6 @@ export default async function CampagnePage({
     </div>
   )
 
-  if (allowToReuseExistingSimulation) {
-    return (
-      <ReuseSimulationForPoll
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        createNewSimulation={createNewSimulation}
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        reuseSimulation={reuseSimulation}
-        locale={locale}
-        disclaimer={disclaimer}
-        simulation={lastCompletedSimulation}
-      />
-    )
-  }
   const buttonNext = (
     <PollTutorialButton
       poll={poll}
@@ -113,11 +100,22 @@ export default async function CampagnePage({
       createSimulation={createNewSimulation}
     />
   )
+
   return (
     <>
       <PollTracker poll={poll} />
 
-      {poll.mode === 'scolaire' ? (
+      {allowToReuseExistingSimulation ? (
+        <ReuseSimulationForPoll
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          createNewSimulation={createNewSimulation}
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          reuseSimulation={reuseSimulation}
+          locale={locale}
+          disclaimer={disclaimer}
+          simulation={lastCompletedSimulation}
+        />
+      ) : poll.mode === 'scolaire' ? (
         <YouthTutorial locale={locale} buttonNext={buttonNext} />
       ) : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       poll.mode === 'standard' ? (

@@ -1,15 +1,10 @@
 import ContentLarge from '@/components/layout/ContentLarge'
-import HeaderServer from '@/components/layout/HeaderServer'
+import Header from '@/components/layout/Header'
 
-export default async function Layout({
-  children,
-  params,
-}: LayoutProps<'/[locale]'>) {
-  const { locale } = await params
-
+export default function Layout({ children }: LayoutProps<'/[locale]'>) {
   return (
     <>
-      <HeaderServer locale={locale} />
+      <Header />
       <ContentLarge className="px-4 lg:px-0">{children}</ContentLarge>
     </>
   )

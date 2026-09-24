@@ -4,6 +4,7 @@ import { findAllActions } from '@nosgestesclimat/core/features/actions/repositor
 import { findThemes } from '@nosgestesclimat/core/features/actions/repositories/themes.repository'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import logger from '../../logger.ts'
 import { syncNotionActions, type NotionRawRow } from '../sync-notion-actions.ts'
@@ -21,7 +22,7 @@ beforeAll(async () => {
 
 describe('syncNotionActions', () => {
   afterEach(async () => {
-    await prisma.action.deleteMany({})
+    await emptyDatabase(prisma)
   })
 
   it('creates new actions from valid Notion rows', async () => {

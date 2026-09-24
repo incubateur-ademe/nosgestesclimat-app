@@ -136,6 +136,7 @@ describe('completeSimulation', () => {
     expect(serviceMock.completeSimulation).toHaveBeenCalledWith({
       userSession: session,
       simulationId: payload.id,
+      model: payload.model,
       progression: 1,
       situation: payload.situation,
       foldedSteps: payload.foldedSteps,
@@ -256,9 +257,10 @@ const aPayload = (
   )
   simulation.computedResults.carbone.bilan = 1000
 
-  const { id, situation, foldedSteps, computedResults } = simulation
+  const { id, model, situation, foldedSteps, computedResults } = simulation
   return {
     id,
+    model,
     progression: 1,
     situation: situation as CompleteSimulationPayload['situation'],
     foldedSteps,

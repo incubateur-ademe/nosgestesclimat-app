@@ -29,7 +29,7 @@ export function getMainCTA({
     return {
       children: t('Commencer le test'),
       href: START_SIMULATION_PATH,
-      prefetch: false,
+      prefetch: true,
     }
   }
 
@@ -37,12 +37,17 @@ export function getMainCTA({
     return {
       children: t('Commencer le test'),
       href: hasCompletedSimulation(journey) ? SIMULATOR_PATH : TUTORIAL_PATH,
+      prefetch: true,
     }
   }
   if (hasCompletedCurrentSimulation(journey)) {
     return {
       children: t('Voir mes résultats'),
       href: user?.isAuth ? MON_ESPACE_PATH : END_PAGE_PATH,
+      // L'espace personnel reste au prefetch à l'intention : sa coquille est
+      // propre à la session et une coquille préchargée peut être rejouée après
+      // déconnexion (cf. MySpaceDropdown).
+      prefetch: user?.isAuth ? undefined : true,
     }
   }
 
@@ -50,5 +55,6 @@ export function getMainCTA({
   return {
     children: t('Reprendre mon test'),
     href: SIMULATOR_PATH,
+    prefetch: true,
   }
 }

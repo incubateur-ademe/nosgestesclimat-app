@@ -281,10 +281,47 @@ server {
 
 
     proxy_cache ngc_cache;
-    # Sert le cache même si l'upstream est en panne (500-504)
-    # ou en revalidation par un autre worker (updating).
+    # Sert le cache même si l'upstream est en panne (502-504) ou en
+    # revalidation par un autre worker (updating).
+    # Pas de `http_500` : une erreur applicative doit laisser s'afficher la
+    # page 500 de Next.
     proxy_cache_use_stale error timeout updating
-                          http_500 http_502 http_503 http_504;
+                          http_502 http_503 http_504;
+
+    # ── Statut nginx (supervision locale) ────────────────────────
+    # Défaut : module compilé mais non exposé. Sans lui, aucune lecture des
+    # connexions actives — or la saturation se manifeste d'abord par des
+    # connexions jetées par le noyau, invisibles dans les logs.
+    # → http://nginx.org/en/docs/http/ngx_http_stub_status_module.html
+    location = /nginx-status {
+        allow 127.0.0.1;
+        deny all;
+        stub_status;
+    }
+
+    # ── Page d'erreur applicative (indispo / timeout upstream) ───
+    # `error_page` interroge l'upstream en sous-requête : la page ne peut être
+    # servie pendant une panne que si son entrée de cache existe déjà, d'où le
+    # pré-chauffage par `pull-config.sh`.
+
+    proxy_intercept_errors on;
+
+    # `=code` conserve le statut : sans lui nginx renvoie celui de /app-crash
+    # (200), et plus aucun monitor ne voit la panne.
+    error_page 502 =502 /app-crash;
+    error_page 503 =503 /app-crash;
+    error_page 504 =504 /app-crash;
+
+    location = /app-crash {
+        proxy_pass https://scalingo;
+        # Évite la boucle error_page → /app-crash → error_page.
+        proxy_intercept_errors off;
+
+        proxy_cache_use_stale error timeout updating
+                              http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
+        proxy_cache_lock on;
+    }
 
 
     # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
@@ -301,6 +338,7 @@ server {
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
         proxy_cache_background_update on;
+        proxy_intercept_errors off;
     }
 
     # Proxy vers le bucket S3 des assets CMS (images, PDF) avec cache 30 jours.
@@ -319,6 +357,7 @@ server {
                               http_404 http_500 http_502 http_503 http_504;
         proxy_hide_header Cache-Control;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
+        proxy_intercept_errors off;
     }
 
     # Images Next.js (optimiseur `/_next/image?url=…`), fonts et assets divers
@@ -331,6 +370,7 @@ server {
         # cache.
         proxy_cache_use_stale error timeout updating
                               http_404 http_500 http_502 http_503 http_504;
+        proxy_intercept_errors off;
     }
 
     # Fichiers statiques racine servis par l'app : favicon, icônes Apple,
@@ -402,39 +442,58 @@ server {
     # niveau `server` (X-Forwarded-*, X-Request-ID, Upgrade) ne sont PAS hérités
     # ici, tout ajout doit être répété dans les trois.
 
+    # Un hostname littéral dans `proxy_pass` est résolu une seule fois, au
+    # chargement : l'IP de l'ingestion PostHog change (load balancers AWS) et le
+    # proxy continuerait de servir l'ancienne, sans rien pour le détecter.
+    # nginx ne re-résout que les noms passés par variable, via le `resolver` du
+    # niveau `http` (30 s).
+    # → https://posthog.com/docs/advanced/proxy/nginx
+    set $ph_assets eu-assets.i.posthog.com;
+    set $ph_api eu.i.posthog.com;
+
+    # Avec une variable, l'URI de `proxy_pass` est prise littéralement : chaque
+    # `location` porte donc le chemin à transmettre, capture le suffixe pour le
+    # conserver, et recolle `$is_args$args`. Sans ce dernier, nginx n'ajoute plus
+    # la query d'origine — or `/revp/api/surveys/` y transporte le token de
+    # projet, que PostHog rejette alors en 401.
+    # Ce sont des regex : c'est leur ordre qui départage `/revp/static/` de
+    # `/revp/`, la première qui matche l'emporte.
+
     # Sert du JS exécuté par les navigateurs : un certificat non vérifié y laisse
     # passer du code tiers.
-    location /revp/static/ {
-        proxy_pass https://eu-assets.i.posthog.com/static/;
-        proxy_set_header Host eu-assets.i.posthog.com;
+    location ~ ^/revp/static/(.*)$ {
+        proxy_pass https://$ph_assets/static/$1$is_args$args;
+        proxy_set_header Host $ph_assets;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
         proxy_ssl_server_name on;
-        proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_name $ph_assets;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
-    location /revp/array/ {
-        proxy_pass https://eu-assets.i.posthog.com/array/;
-        proxy_set_header Host eu-assets.i.posthog.com;
+    location ~ ^/revp/array/(.*)$ {
+        proxy_pass https://$ph_assets/array/$1$is_args$args;
+        proxy_set_header Host $ph_assets;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
         proxy_ssl_server_name on;
-        proxy_ssl_name eu-assets.i.posthog.com;
+        proxy_ssl_name $ph_assets;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
-    location /revp/ {
-        proxy_pass https://eu.i.posthog.com/;
-        proxy_set_header Host eu.i.posthog.com;
+    location ~ ^/revp/(.*)$ {
+        proxy_pass https://$ph_api/$1$is_args$args;
+        proxy_set_header Host $ph_api;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
         proxy_ssl_server_name on;
-        proxy_ssl_name eu.i.posthog.com;
+        proxy_ssl_name $ph_api;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
@@ -446,14 +505,17 @@ server {
         # → https://posthog.com/docs/advanced/proxy/proxy-reference
         client_max_body_size 64M;
         proxy_cache off;
+        proxy_intercept_errors off;
     }
 
     # Catch-all : rate-limit + cache générique, bypass sur websocket.
     location / {
         proxy_pass https://scalingo;
-        # 20 requêtes supplémentaires peuvent déborder immédiatement (burst),
-        # au-delà → 429 sans délai.
-        limit_req zone=web burst=20 nodelay;
+        # The burst absorbs the batch of prefetch requests a listing page
+        # produces — Next.js asks for every visible link at once — which is not
+        # sustained traffic. The rate is what bounds a client that keeps
+        # hammering. Past both → 429 without delay.
+        limit_req zone=web burst=100 nodelay;
 
         proxy_cache_lock on;
         proxy_cache_background_update on;

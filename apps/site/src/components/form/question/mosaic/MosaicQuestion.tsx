@@ -1,8 +1,6 @@
 'use client'
 
-import { questionChooseAnswer } from '@/constants/tracking/question'
 import { useRule } from '@/publicodes-state'
-import { trackMatomoEvent__deprecated } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import MosaicBooleanInput from './mosaicQuestion/MosaicBooleanInput'
 import MosaicNumberInput from './mosaicQuestion/MosaicNumberInput'
@@ -60,12 +58,6 @@ export default function MosaicQuestion({
           value={value}
           setValue={(value) => {
             setValue(question, value)
-            trackMatomoEvent__deprecated(
-              questionChooseAnswer({
-                question: parent,
-                answer: value,
-              })
-            )
           }}
           index={index}
           isInactive={isInactive}
