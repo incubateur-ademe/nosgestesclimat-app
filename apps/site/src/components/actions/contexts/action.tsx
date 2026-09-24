@@ -13,13 +13,13 @@ interface ProviderProps {
   values: ActionContext
 }
 
-export const actionContext = createContext<ActionContext>({
+export const ActionContext = createContext<ActionContext>({
   assessmentStatus: undefined,
   totalFootprint: undefined,
 })
 
 export const ActionProvider = ({ children, values }: ProviderProps) => (
-  <actionContext.Provider value={values}>{children}</actionContext.Provider>
+  <ActionContext.Provider value={values}>{children}</ActionContext.Provider>
 )
 
-export const useActionContext = () => useContext(actionContext)
+export const useActionContext = () => useContext(ActionContext)
