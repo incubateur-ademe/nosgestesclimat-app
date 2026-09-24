@@ -57,12 +57,15 @@ vi.mock('./src/adapters/redis/client', () => ({
   redis,
   redisClientFactory: () => redis,
 }))
-vi.mock('./src/features/authentication/authentication.service', async () => ({
-  ...(await vi.importActual(
-    './src/features/authentication/authentication.service'
-  )),
-  generateRandomVerificationCode: vi.fn(),
-}))
+vi.mock(
+  '@nosgestesclimat/core/features/auth/services/create-verification-code.service',
+  async () => ({
+    ...(await vi.importActual(
+      '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+    )),
+    generateRandomVerificationCode: vi.fn(),
+  })
+)
 
 const models = Object.values(Prisma.ModelName).map((modelName) => ({
   name: modelName,
