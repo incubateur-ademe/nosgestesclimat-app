@@ -1,5 +1,10 @@
 import type { AgeRange } from './age-range.ts'
 
+export interface PartialVerifiedUser {
+  id: string
+  email: string
+}
+
 export interface UserProfile {
   ageRange: AgeRange | null
 }

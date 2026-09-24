@@ -6,6 +6,16 @@ import { failure, success } from './result.ts'
 
 export type Transaction = Prisma.TransactionClient
 
+export type RequestOptionsOrThrow = { session: Transaction; orThrow: true }
+export type RequestOptionsOrNull = { session: Transaction; orThrow?: false }
+
+export type RequestOptions = RequestOptionsOrNull | RequestOptionsOrThrow
+
+export type FetchEntityResponse<
+  T,
+  Options extends RequestOptions,
+> = Options extends RequestOptionsOrThrow ? Promise<T> : Promise<T | null>
+
 /** Any result shape, whatever data a successful callback carries */
 type AnyResult = Result<void, ErrorWithCode>
 
