@@ -12,7 +12,7 @@
     "format": "prettier --write \"**/*.{js,ts,mjs,md,json}\""
   },
   "dependencies": {
-    "@incubateur-ademe/nosgestesclimat": "4.15.1",
+    "@incubateur-ademe/nosgestesclimat": "4.17.0",
     "@mswjs/http-middleware": "^0.10.3",
     "@nosgestesclimat/core": "workspace:*",
     "msw": "^2.12.14"

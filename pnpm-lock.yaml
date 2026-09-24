@@ -75,8 +75,8 @@ importers:
   apps/e2e:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.15.1
-        version: 4.15.1(publicodes@1.10.1)
+        specifier: 4.17.0
+        version: 4.17.0(publicodes@1.10.1)
       '@mswjs/http-middleware':
         specifier: ^0.10.3
         version: 0.10.3(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))
@@ -2127,12 +2127,6 @@ packages:
 
   '@incubateur-ademe/nosgestesclimat-scripts@0.8.0':
     resolution: {integrity: sha512-Jc3d3SAWDDBQNLG1d7+ao+5QPMpiEZg2tfY0EDmray0UBpP9lj0LvWG0uwWoA0waeYFroYNuK58yBrbqGRQMLg==}
-
-  '@incubateur-ademe/nosgestesclimat@4.15.1':
-    resolution: {integrity: sha512-WHCSRCwm292QkSXrhIc8jcEvYHZK4zO/gfak8D7OU36HAf+SXGqWe1BkhuILy7BauHguJ4JWtQHZ2Ns8o8jM1A==}
-    engines: {node: '>=24'}
-    peerDependencies:
-      publicodes: ^1.8.5
 
   '@incubateur-ademe/nosgestesclimat@4.16.1':
     resolution: {integrity: sha512-XKpaWKQlLzKmwT73JLGTQScablf6ANkpFIuwWHm4b9qAz1MQDQfMMqi5RtDl0Py9aUygTS03zAKpGJra+YguBg==}
@@ -13103,10 +13097,6 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - encoding
-
-  '@incubateur-ademe/nosgestesclimat@4.15.1(publicodes@1.10.1)':
-    dependencies:
-      publicodes: 1.10.1
 
   '@incubateur-ademe/nosgestesclimat@4.16.1(publicodes@1.10.1)':
     dependencies:
