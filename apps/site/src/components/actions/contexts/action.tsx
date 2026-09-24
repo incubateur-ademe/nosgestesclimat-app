@@ -1,29 +1,21 @@
 'use client'
 
-import { LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import { createContext, useContext } from 'react'
-import type { ActionFrom } from '../types/actions'
 
-interface ActionValuesShared {
+export interface ActionContext {
   assessmentStatus?: AssessmentStatus | null
   totalFootprint?: number
-  from?: ActionFrom
-  locale: Locale
-  shouldHideActionCommitFeature?: boolean
 }
 
 interface ProviderProps {
   children: React.ReactNode
-  values: ActionValuesShared
+  values: ActionContext
 }
 
-export const actionContext = createContext<ActionValuesShared>({
+export const actionContext = createContext<ActionContext>({
   assessmentStatus: undefined,
   totalFootprint: undefined,
-  from: undefined,
-  locale: LOCALE_FR_KEY,
-  shouldHideActionCommitFeature: false,
 })
 
 export const ActionProvider = ({ children, values }: ProviderProps) => (

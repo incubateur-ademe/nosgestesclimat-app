@@ -15,6 +15,7 @@ import { rankToEmoji } from './actionCard/rankToEmoji'
 import ActionTracker from './ActionTracker'
 import CommitToActionButton from './highlightedActionCard/CommitToActionButton'
 import { ThemeBadge } from './ThemeBadge'
+import type { ActionFrom } from './types/actions'
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport:
@@ -33,7 +34,7 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   withThemeBadge?: boolean
   assessmentStatus?: AssessmentStatus | null
   rank?: number
-  from?: 'fin' | 'mon-espace' | 'index'
+  from?: ActionFrom
   source?: ActionEventSource
 }
 
@@ -70,6 +71,9 @@ export default function ActionCard({
       (action.description ??
       removeMarkdown(action.longDescription).slice(0, 100))
     : null
+
+  const shouldDisplayCommitToActionButton =
+    action.assessment && !shouldHideActionCommitFeature
 
   return (
     <article
@@ -117,43 +121,42 @@ export default function ActionCard({
         </div>
       </div>
 
-      {withCta && !action.assessment && (
-        <>
-          <div className="border-t border-slate-100 p-4">
-            <span
-              aria-hidden="true"
-              className="text-primary-700 flex items-center text-sm/normal font-bold">
-              <Trans
-                locale={locale}
-                i18nKey="actions.components.actionCard.link"
-                values={{ actionTitle: action.title }}>
-                Voir l'action
-                <span className="sr-only"> "{'{{actionTitle}}'}"</span>
-              </Trans>
-              <ArrowNarrowRightIcon className="ml-1 h-2.5" />
-            </span>
-          </div>
-          <Link
-            href={href}
-            className={twMerge(
-              'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
-              styles.actionLink
-            )}>
-            <span className="sr-only">
-              <Trans
-                locale={locale}
-                i18nKey="actions.components.actionCard.link"
-                values={{ actionTitle: action.title }}>
-                Voir l'action
-                <span className="sr-only"> "{'{{actionTitle}}'}"</span>
-              </Trans>
-            </span>
-          </Link>
-        </>
+      {withCta && !shouldDisplayCommitToActionButton && (
+        <div className="border-t border-slate-100 p-4">
+          <span
+            aria-hidden="true"
+            className="text-primary-700 flex items-center text-sm/normal font-bold">
+            <Trans
+              locale={locale}
+              i18nKey="actions.components.actionCard.link"
+              values={{ actionTitle: action.title }}>
+              Voir l'action
+              <span className="sr-only"> "{'{{actionTitle}}'}"</span>
+            </Trans>
+            <ArrowNarrowRightIcon className="ml-1 h-2.5" />
+          </span>
+        </div>
       )}
 
-      {action.assessment && !shouldHideActionCommitFeature && (
-        <div className="border-t border-slate-100 p-2">
+      <Link
+        href={href}
+        className={twMerge(
+          'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
+          styles.actionLink
+        )}>
+        <span className="sr-only">
+          <Trans
+            locale={locale}
+            i18nKey="actions.components.actionCard.link"
+            values={{ actionTitle: action.title }}>
+            Voir l'action
+            <span className="sr-only"> "{'{{actionTitle}}'}"</span>
+          </Trans>
+        </span>
+      </Link>
+
+      {shouldDisplayCommitToActionButton && (
+        <div className="z-20 border-t border-slate-100 p-2">
           <CommitToActionButton
             className="w-full"
             actionId={action.id}

@@ -50,6 +50,7 @@ export interface HighlightedActionCardProps extends React.ComponentPropsWithoutR
   from?: 'fin' | 'mon-espace' | 'index'
   /** Total carbon footprint in kg, used to express the impact as a share of it */
   totalFootprint?: number
+  shouldHideActionCommitFeature?: boolean
 }
 
 export default function HighlightedActionCard({
@@ -59,6 +60,7 @@ export default function HighlightedActionCard({
   rank,
   from,
   totalFootprint,
+  shouldHideActionCommitFeature,
   ...props
 }: HighlightedActionCardProps) {
   const classes = classesByTheme[action.theme.key]
@@ -120,7 +122,7 @@ export default function HighlightedActionCard({
             <ArrowNarrowRightIcon />
           </ButtonLinkServer>
 
-          {action.assessment && (
+          {action.assessment && !shouldHideActionCommitFeature && (
             <CommitToActionButton
               shortLabelDisplayed
               actionId={action.id}

@@ -91,9 +91,6 @@ export default function ActionsPage({
       values={{
         assessmentStatus,
         totalFootprint,
-        from,
-        locale,
-        shouldHideActionCommitFeature,
       }}>
       <BetaBanner locale={locale} />
 
@@ -119,6 +116,8 @@ export default function ActionsPage({
             actions={topActions}
             className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
             locale={locale}
+            from={from}
+            shouldHideActionCommitFeature={shouldHideActionCommitFeature}
           />
         )}
 
@@ -137,6 +136,8 @@ export default function ActionsPage({
                   theme={theme}
                   locale={locale}
                   actions={actionsByTheme[theme.key] ?? []}
+                  from={from}
+                  shouldHideActionCommitFeature={shouldHideActionCommitFeature}
                 />
               )
             })}

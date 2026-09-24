@@ -1,5 +1,5 @@
-import type { ActionCardWithContextDataProps } from '../ActionCardWithContextData'
-import ActionCardWithContextData from '../ActionCardWithContextData'
+import type { ActionCardWithTempProps } from '../ActionCard'
+import ActionCard from '../ActionCard'
 import ActionCardSwitch from './ActionCardSwitch'
 
 /**
@@ -11,16 +11,12 @@ import ActionCardSwitch from './ActionCardSwitch'
  * three times. The flag is only readable in the browser, so the control card
  * is rendered until it resolves — variant users briefly see the control one.
  */
-export default function ActionCardSwitchServer(
-  props: ActionCardWithContextDataProps
-) {
+export default function ActionCardSwitchServer(props: ActionCardWithTempProps) {
   return (
     <ActionCardSwitch
-      control={<ActionCardWithContextData {...props} />}
-      cta={<ActionCardWithContextData {...props} withCta />}
-      teaserCta={
-        <ActionCardWithContextData {...props} withCta withDescription />
-      }
+      control={<ActionCard {...props} />}
+      cta={<ActionCard {...props} withCta />}
+      teaserCta={<ActionCard {...props} withCta withDescription />}
     />
   )
 }
