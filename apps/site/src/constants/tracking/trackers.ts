@@ -2,7 +2,7 @@ import type { Locale } from '@/i18nConfig'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
 import type { AuthenticationMode } from '@/types/authentication'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
-import type { ActionTheme } from '@nosgestesclimat/core/features/actions/types/action'
+import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 interface PosthogProps {
   question?: DottedName | null
   label?: string
@@ -206,7 +206,10 @@ export const captureActionAddedToPlan = ({
   impactInKg,
 }: {
   actionTitle: string
-  actionTheme: ActionTheme
+  actionTheme: Pick<
+    Theme,
+    'id' | 'key' | 'slug' | 'trackingId' | 'title' | 'emoji'
+  >
   impactInKg?: number
 }) => ({
   eventName: 'action added to plan',
