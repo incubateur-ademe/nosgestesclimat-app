@@ -177,7 +177,6 @@ export function createCompleteSimulation({
             })
           }
 
-          // Only try to find group if no poll was found (polls are more frequent than groups)
           const lastGroup = groups[0]
           if (lastGroup) {
             const user = await findUserById(userId)
