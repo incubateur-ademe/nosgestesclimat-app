@@ -20,6 +20,7 @@ const FILES = [
   'packages/core/package.json',
   'apps/server/package.json',
   'apps/site/package.json',
+  'apps/e2e/package.json',
 ]
 
 const newVersion = process.env.NEW_VERSION?.trim()
