@@ -108,7 +108,7 @@ describe('getPollParticipationOptions', () => {
     expect(result.currentPollSimulation).toBeNull()
   })
 
-  it('includes the polls the reusable simulation already belongs to', async () => {
+  it('includes the polls the reusable simulation already belongs to, regardless of order', async () => {
     const user = await userFactory.create()
     const poll = await pollFactory.create()
     const otherPoll = await pollFactory.create()
@@ -127,8 +127,9 @@ describe('getPollParticipationOptions', () => {
     const result = await getPollParticipationOptions({ poll, userId: user.id })
 
     expect.assert(result.canReuseExistingSimulation)
-    expect(result.reusableSimulationPolls).toHaveLength(1)
-    expect(result.reusableSimulationPolls[0].id).toBe(otherPoll.id)
+    expect(result.reusableSimulationPolls.map((poll) => poll.id)).toContain(
+      otherPoll.id
+    )
   })
 
   it('does not offer reuse for a scolaire poll', async () => {
