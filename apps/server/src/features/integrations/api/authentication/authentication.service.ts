@@ -1,17 +1,23 @@
+import {
+  createUserVerificationCode,
+  findVerificationCode,
+} from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
+import dayjs from 'dayjs'
 import type { Request, RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
+import { sendVerificationCodeEmail } from '../../../../adapters/brevo/client.ts'
 import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
 import { transaction } from '../../../../adapters/prisma/transaction.ts'
 import { config } from '../../../../config.ts'
 import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
 import { UnauthorizedException } from '../../../../core/errors/UnauthorizedException.ts'
 import { Locales } from '../../../../core/i18n/constant.ts'
-import { findVerificationCode } from '../../../authentication/verification-codes.repository.ts'
-import { createVerificationCode } from '../../../authentication/verification-codes.service.ts'
+import logger from '../../../../logger.ts'
 import { fetchWhitelists } from '../email-whitelist/email-whitelist.repository.ts'
 import type {
   GenerateAPITokenRequestDto,
@@ -123,12 +129,30 @@ export const generateApiToken = async ({
   )
 
   if (emailWhitelist.length) {
-    await createVerificationCode({
-      verificationCodeDto: {
+    const code = generateRandomVerificationCode()
+
+    // The code must be committed *before* the email is handed to Brevo, or the
+    // user can hold a code that does not exist in database.
+    await createUserVerificationCode(
+      {
         email,
+        code,
+        expirationDate: dayjs().add(1, 'hour').toDate(),
       },
-      locale: Locales.fr,
-    })
+      { session: prisma }
+    )
+
+    // A failing email must not fail the token generation request: the email
+    // is a best-effort side effect of the stored code.
+    try {
+      await sendVerificationCodeEmail({
+        locale: Locales.fr,
+        email,
+        code,
+      })
+    } catch (error) {
+      logger.error('Failed to send verification code email', error)
+    }
   }
 }
 

@@ -10,8 +10,6 @@ import requestIp from 'request-ip'
 import swaggerUi from 'swagger-ui-express'
 import { allowedOrigins } from './config.ts'
 import { isAllowedOrigin } from './core/allowed-urls.ts'
-import authenticationController from './features/authentication/authentication.controller.ts'
-import verificationCodeController from './features/authentication/verification-codes.controller.ts'
 import groupsController from './features/groups/groups.controller.ts'
 import integrationsApiContract from './features/integrations/api/api.contract.ts'
 import integrationsApiController from './features/integrations/api/api.controller.ts'
@@ -64,7 +62,6 @@ app.use(
   )
 )
 
-app.use('/authentication', authenticationController)
 app.use('/modele', modeleController)
 app.use('/groups', groupsController)
 app.use('/integrations', integrationsController)
@@ -73,7 +70,6 @@ app.use('/organisations', organisationController)
 app.use('/simulations', simulationController)
 app.use('/stats', statsController)
 app.use('/users', usersController)
-app.use('/verification-codes', verificationCodeController)
 
 // public routes
 app.get('/api/stats', (_, res) =>

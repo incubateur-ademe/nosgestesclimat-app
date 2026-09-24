@@ -1,3 +1,7 @@
+import { faker } from '@faker-js/faker'
+import { createOrUpdateVerifiedUser } from '@nosgestesclimat/core/features/users/repositories/verified-users.repository'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
+import dayjs from 'dayjs'
 import { config } from '../../../config.ts'
 
 /**
@@ -20,3 +24,43 @@ export const authHeaders = ({
   'x-user-id': userId,
   ...(email ? { 'x-user-email': email } : {}),
 })
+
+/**
+ * Seeds a verified user (the `user` + `verifiedUser` rows the login flow
+ * creates) and returns the identity the internal-proxy auth headers carry.
+ */
+export const login = async () => {
+  const userId = faker.string.uuid()
+  const email = faker.internet.email().toLocaleLowerCase()
+
+  await createOrUpdateVerifiedUser(
+    { id: { id: userId, email }, user: { email } },
+    { session: prisma }
+  )
+
+  return { email, userId }
+}
+
+/**
+ * Seeds a valid verification code row and returns it, as the code creation
+ * flow would.
+ */
+export const createVerificationCode = async ({
+  email,
+  code = faker.number.int({ min: 100000, max: 999999 }).toString(),
+  expirationDate = dayjs().add(1, 'hour').toDate(),
+}: {
+  email: string
+  code?: string
+  expirationDate?: Date
+}) => {
+  await prisma.verificationCode.create({
+    data: {
+      email,
+      code,
+      expirationDate,
+    },
+  })
+
+  return { email, code }
+}

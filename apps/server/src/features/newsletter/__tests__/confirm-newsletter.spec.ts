@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
 import { StatusCodes } from 'http-status-codes'
@@ -11,7 +12,6 @@ import {
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { ListIds } from '../../../adapters/brevo/constant.ts'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
 import {
   mswServer,
@@ -19,11 +19,6 @@ import {
 } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import * as authenticationService from '../../authentication/authentication.service.ts'
-
-vi.mock('../../../adapters/prisma/transaction', async () => ({
-  ...(await vi.importActual('../../../adapters/prisma/transaction')),
-}))
 
 const createNewsletterSubscriptionRequest = async ({
   agent,
@@ -42,9 +37,7 @@ const createNewsletterSubscriptionRequest = async ({
   email = email || faker.internet.email().toLocaleLowerCase()
   listIds = listIds || [ListIds.MAIN_NEWSLETTER]
 
-  vi.mocked(
-    authenticationService
-  ).generateRandomVerificationCode.mockReturnValueOnce(code)
+  vi.mocked(generateRandomVerificationCode).mockReturnValueOnce(code)
 
   mswServer.use(brevoSendEmail())
 
@@ -68,7 +61,7 @@ const createNewsletterSubscriptionRequest = async ({
 
   resetMswServer()
 
-  vi.mocked(authenticationService).generateRandomVerificationCode.mockRestore()
+  vi.mocked(generateRandomVerificationCode).mockRestore()
 
   return {
     email,
@@ -267,13 +260,14 @@ describe('Given a NGC user', () => {
       const databaseError = new Error('Something went wrong')
 
       beforeEach(() => {
-        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
-          databaseError
-        )
+        vi.spyOn(
+          prisma.verificationCode,
+          'findFirstOrThrow'
+        ).mockRejectedValueOnce(databaseError)
       })
 
       afterEach(() => {
-        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRestore()
+        vi.spyOn(prisma.verificationCode, 'findFirstOrThrow').mockRestore()
       })
 
       test('Then it redirects to an error page', async () => {

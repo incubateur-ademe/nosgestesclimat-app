@@ -1,4 +1,7 @@
-import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
+import { createUserVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { verifyCode } from '@nosgestesclimat/core/features/auth/services/login.service'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
 import dayjs from 'dayjs'
 import {
   addOrUpdateContact,
@@ -8,8 +11,6 @@ import {
 } from '../../adapters/brevo/client.ts'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
-import { verifyCode } from '../authentication/authentication.service.ts'
-import { generateVerificationCode } from '../authentication/verification-codes.service.ts'
 import {
   REACHABLE_NEWSLETTER_LIST_IDS,
   type NewsletterConfirmationQuery,
@@ -44,15 +45,13 @@ export const confirmNewsletterSubscriptions = async ({
 }: {
   query: NewsletterConfirmationQuery
 }) => {
-  try {
-    await verifyCode(query)
-    await updateNewslettersInscription(query)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Verification code not found')
-    }
-    throw e
+  const result = await verifyCode(query)
+
+  if (!result.success) {
+    throw new EntityNotFoundException('Verification code not found')
   }
+
+  await updateNewslettersInscription(query)
 }
 
 export const sendNewsletterConfirmationEmail = async ({
@@ -60,10 +59,16 @@ export const sendNewsletterConfirmationEmail = async ({
 }: {
   inscriptionDto: NewsletterInscriptionDto
 }) => {
-  const { code } = await generateVerificationCode({
-    verificationCodeDto: { email },
-    expirationDate: dayjs().add(1, 'day').toDate(),
-  })
+  const code = generateRandomVerificationCode()
+
+  await createUserVerificationCode(
+    {
+      email,
+      code,
+      expirationDate: dayjs().add(1, 'day').toDate(),
+    },
+    { session: prisma }
+  )
 
   return sendNewsLetterConfirmationEmail({
     newsLetterConfirmationBaseUrl: config.app.serverUrl,

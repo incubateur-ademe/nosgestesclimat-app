@@ -7,11 +7,13 @@ import * as v from 'valibot'
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { brevoGetContact } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import app from '../../../app.ts'
-import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
+import {
+  authHeaders,
+  login,
+} from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
 import { getBrevoContact } from './fixtures/users.fixture.ts'
 
 describe('Given a NGC user', () => {
@@ -38,9 +40,7 @@ describe('Given a NGC user', () => {
       let userId: string
 
       beforeEach(async () => {
-        ;({ email, userId } = await login({
-          agent,
-        }))
+        ;({ email, userId } = await login())
       })
 
       test(`Then it returns a ${StatusCodes.OK} response with the mapped user contact`, async () => {
