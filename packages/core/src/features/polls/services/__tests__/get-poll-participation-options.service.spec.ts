@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
@@ -19,11 +20,7 @@ describe('getPollParticipationOptions', () => {
   })
 
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('does not offer to reuse a simulation when the user has none', async () => {
