@@ -1,16 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { organisationFactory } from '../../factories/organisation.factory.ts'
 import { isOrganisationAdministrator } from '../is-organisation-administrator.service.ts'
 
 describe('isOrganisationAdministrator', () => {
   afterEach(async () => {
-    await prisma.organisationAdministrator.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.verifiedUser.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns true for the administrator of the organisation', async () => {

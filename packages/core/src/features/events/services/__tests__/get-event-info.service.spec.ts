@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import type { Organisation } from '../../../../prisma/generated/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
@@ -65,11 +66,7 @@ const expectEventInfo = (result: EventInfo | null): EventInfo => {
 
 describe('getEventInfo', () => {
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.event.deleteMany()
+    await emptyDatabase(prisma)
     await refreshEventComputation()
   })
 

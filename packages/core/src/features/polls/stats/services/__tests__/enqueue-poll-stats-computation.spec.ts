@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, test } from 'vitest'
 import { prisma } from '../../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../../test-utils/empty-database.ts'
 import { pollFactory } from '../../../factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../repositories/poll-stats-computations.repository.ts'
 import { createEnqueuePollStatsComputation } from '../enqueue-poll-stats-computation.ts'
@@ -21,10 +22,7 @@ const tieredEnqueue = createEnqueuePollStatsComputation({
 
 describe('enqueuePollStatsComputation', () => {
   afterEach(async () => {
-    await prisma.pollStatsComputation.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('creates an immediate pending computation when no row exists', async () => {

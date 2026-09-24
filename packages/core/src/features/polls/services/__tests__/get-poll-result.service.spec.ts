@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
@@ -9,11 +10,7 @@ import { getPollResult } from '../get-poll-result.service.ts'
 
 describe('getPollResult', () => {
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns null when no poll matches', async () => {
