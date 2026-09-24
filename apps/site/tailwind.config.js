@@ -249,6 +249,10 @@ export default {
             'background-position': '0% 50%',
           },
         },
+        'button-shine': {
+          '0%': { 'background-position': '200% 0, 0 0' },
+          '100%': { 'background-position': '-100% 0, 0 0' },
+        },
       },
       animation: {
         valuechange: 'valuechange 0.5s ease-out forwards',
@@ -272,7 +276,7 @@ export default {
         'bg-pulse': 'bg-pulse 5s ease-in-out infinite',
         'flash-scale': 'flash-scale 5s ease-in-out forwards',
         scale: 'scale 0.5s ease-out forwards',
-        'mini-zoom-in-out-fast': 'scale 0.2s ease-out forwards',
+        'button-shine': 'button-shine 1.3s ease-out forwards',
         'rainbow-shadow-move': 'rainbow-shadow-move 8s linear infinite',
       },
       screens: {

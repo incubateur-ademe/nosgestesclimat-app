@@ -3,14 +3,10 @@
 import PlusIcon from '@/components/icons/PlusIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import { captureActionAddedToPlan } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
-import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { commitToAction } from '@/services/actions/commit-to-action' // Server Action
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { useTransition } from 'react'
-import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
+import { useCommitToAction } from './commitToActionButton/useCommitToAction'
 
 export default function CommitToActionButton({
   action,
@@ -21,45 +17,21 @@ export default function CommitToActionButton({
   className?: string
   shortLabelDisplayed?: boolean
 }) {
-  const { t } = useClientTranslation()
-  const [isPending, startTransition] = useTransition()
-
-  const handleCommitToAction = () => {
-    startTransition(async () => {
-      const result = await commitToAction(action.id)
-
-      if (!result.success) {
-        toast.error(
-          t(
-            'actions.commitToActionButton.error',
-            "Une erreur s'est produite, veuillez réessayer."
-          )
-        )
-      }
-
-      captureActionAddedToPlan({
-        actionTitle: action.title,
-        actionTheme: action.theme,
-        impactInKg: action.assessment?.impact,
-      })
-
-      toast.success(
-        t(
-          'actions.commitToActionButton.success',
-          'Action sélectionnée avec succès.'
-        )
-      )
-    })
-  }
+  const { commitToAction, isPending, hasJustCommitted } =
+    useCommitToAction(action)
 
   if (action.choice?.type === 'committed') {
     return (
       <Button
         color="secondary"
         onClick={() => {}}
-        disabled
+        // disabled
         className={twMerge(
-          'focus-within:animate-mini-zoom-in-out-fast text-sm!',
+          'relative',
+          'text-sm! opacity-100! hover:bg-white',
+          'before:absolute before:inset-0 before:rounded-[inherit]',
+          'before:bg-[linear-gradient(45deg,transparent_25%,rgba(115,125,225,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease]',
+          hasJustCommitted && 'focus-within:before:animate-button-shine',
           className
         )}>
         <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
@@ -73,7 +45,7 @@ export default function CommitToActionButton({
   return (
     <Button
       color="secondary"
-      onClick={handleCommitToAction}
+      onClick={commitToAction}
       loading={isPending}
       className={twMerge('text-sm!', className)}>
       {!isPending && (
