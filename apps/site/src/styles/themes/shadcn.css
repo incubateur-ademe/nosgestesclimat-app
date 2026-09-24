@@ -82,3 +82,8 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
+
+/* Sonner/Toaster shadcn component */
+@utility cn-toast {
+  @apply text-base! md:p-6!;
+}

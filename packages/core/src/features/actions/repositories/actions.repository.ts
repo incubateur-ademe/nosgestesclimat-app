@@ -234,16 +234,27 @@ export const deleteManyActions = async (ids: string[]): Promise<number> => {
   return result.count
 }
 
-export const findVisiblePersonalizedActionBySlug = async (
-  slug: string,
-  locale: ISOSupportedLanguage,
+export const findVisiblePersonalizedActionBySlug = async ({
+  slug,
+  locale,
+  simulationId,
+  userId,
+}: {
+  slug: string
+  locale: ISOSupportedLanguage
   /** Assessments are read for this simulation, `undefined` for none. */
   simulationId: string | undefined
-): Promise<PersonalizedAction | null> => {
+  userId: string | undefined
+}): Promise<PersonalizedAction | null> => {
   const action = await findVisibleActionBySlug(slug, locale)
 
   if (!action) return null
-  if (!simulationId) return mapPersonalizedAction(action, null)
+  if (!simulationId)
+    return mapPersonalizedAction({
+      action,
+      assessment: null,
+      actionChoice: null,
+    })
 
   const assessment = await prisma.actionAssessment.findUnique({
     where: {
@@ -254,15 +265,33 @@ export const findVisiblePersonalizedActionBySlug = async (
     },
   })
 
-  return mapPersonalizedAction(action, assessment)
+  let actionChoice = null
+  if (userId) {
+    actionChoice = await prisma.actionChoice.findUnique({
+      where: {
+        userId_actionId: {
+          actionId: action.id,
+          userId,
+        },
+      },
+    })
+  }
+
+  return mapPersonalizedAction({ action, assessment, actionChoice })
 }
 
-export const findAllVisiblePersonalizedActions = async (
+export const findAllVisiblePersonalizedActions = async ({
+  simulationId,
+  userId,
+  locale,
+  options,
+}: {
   /** Assessments are read for this simulation, `undefined` for none. */
-  simulationId: string | undefined,
-  locale: ISOSupportedLanguage,
+  simulationId: string | undefined
+  userId: string | undefined
+  locale: ISOSupportedLanguage
   options: { fallbackToDefaultLocale?: boolean; themeId?: string }
-): Promise<PersonalizedAction[]> => {
+}): Promise<PersonalizedAction[]> => {
   const actions = await findVisibleActions(locale, {
     fallbackToDefaultLocale: options.fallbackToDefaultLocale,
     themeId: options.themeId,
@@ -270,18 +299,52 @@ export const findAllVisiblePersonalizedActions = async (
 
   if (actions.length === 0) return []
   if (!simulationId)
-    return actions.map((action) => mapPersonalizedAction(action, null))
+    return actions.map((action) =>
+      mapPersonalizedAction({ action, assessment: null, actionChoice: null })
+    )
+
+  const actionsIds = actions.map((a) => a.id)
 
   const assessments = await prisma.actionAssessment.findMany({
     where: {
-      actionId: { in: actions.map((a) => a.id) },
+      actionId: { in: actionsIds },
       simulationId,
     },
   })
 
-  const latestByActionId = new Map(assessments.map((a) => [a.actionId, a]))
+  const assessmentsByActionId = new Map(assessments.map((a) => [a.actionId, a]))
+
+  let actionChoices = null
+  let actionChoicesByActionId = null
+  if (userId) {
+    actionChoices = await prisma.actionChoice.findMany({
+      where: {
+        actionId: {
+          in: actionsIds,
+        },
+        userId,
+      },
+    })
+    actionChoicesByActionId = new Map(
+      actionChoices.map((actionChoice) => [actionChoice.actionId, actionChoice])
+    )
+  }
 
   return actions.map((action) =>
-    mapPersonalizedAction(action, latestByActionId.get(action.id) ?? null)
+    mapPersonalizedAction({
+      action,
+      assessment: assessmentsByActionId.get(action.id) ?? null,
+      actionChoice: actionChoicesByActionId?.get(action.id) ?? null,
+    })
   )
+}
+export const findActionById = async (actionId: string | undefined) => {
+  if (!actionId) return null
+
+  return prisma.action.findFirst({
+    select: { id: true },
+    where: {
+      id: actionId,
+    },
+  })
 }

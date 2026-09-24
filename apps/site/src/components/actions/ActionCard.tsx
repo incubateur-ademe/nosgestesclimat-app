@@ -1,22 +1,21 @@
 import ArrowNarrowRightIcon from '@/components/icons/ArrowNarrowRightIcon'
 import Link from '@/components/Link'
-import { ACTION_DETAIL_PATH } from '@/constants/urls/paths'
-import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
+import { getActionHref } from '@/helpers/actions/getActionHref'
 import type { Locale } from '@/i18nConfig'
-import { LOCALE_EN_KEY, LOCALE_FR_KEY } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import removeMarkdown from 'remove-markdown'
 import { twMerge } from 'tailwind-merge'
-import Trans from '../../translation/trans/TransServer'
-import { ThemeBadge } from '../ThemeBadge'
-
-import ActionTracker from '../ActionTracker'
-import styles from './ActionCard.module.css'
-import { ImpactTag } from './ImpactTag'
-import { rankToEmoji } from './rankToEmoji'
+import Trans from '../translation/trans/TransServer'
+import styles from './actionCard/ActionCard.module.css'
+import { ImpactTag } from './actionCard/ImpactTag'
+import { rankToEmoji } from './actionCard/rankToEmoji'
+import ActionTracker from './ActionTracker'
+import CommitToActionButton from './highlightedActionCard/CommitToActionButton'
+import { ThemeBadge } from './ThemeBadge'
+import type { ActionFrom } from './types/actions'
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport:
@@ -35,8 +34,14 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   withThemeBadge?: boolean
   assessmentStatus?: AssessmentStatus | null
   rank?: number
-  from?: 'fin' | 'mon-espace' | 'index'
+  from?: ActionFrom
   source?: ActionEventSource
+}
+
+export interface ActionCardWithTempProps extends ActionCardProps {
+  withCta?: boolean
+  withDescription?: boolean
+  shouldHideActionCommitFeature?: boolean
 }
 
 export default function ActionCard({
@@ -50,24 +55,25 @@ export default function ActionCard({
   source,
   withCta,
   withDescription,
+  shouldHideActionCommitFeature,
   ...props
-}: ActionCardProps & { withCta?: boolean; withDescription?: boolean }) {
+}: ActionCardWithTempProps) {
   const rankEmoji = rankToEmoji(rank)
-  const actionDetailPath = ACTION_DETAIL_PATH(action.theme.slug, action.slug)
-  // On an /en page, an unprefixed (fr) path would be redirected to /en by the
-  // locale middleware, so force the /fr prefix instead of relying on
-  // getLocalizedPath's "no prefix for the default locale" behavior.
-  const actionPath =
-    locale === LOCALE_EN_KEY && action.language === LOCALE_FR_KEY
-      ? `/${LOCALE_FR_KEY}${actionDetailPath}`
-      : getLocalizedPath(action.language, actionDetailPath)
-  const href = from ? `${actionPath}?from=${from}` : actionPath
+
+  const href = getActionHref({
+    from,
+    action,
+    locale,
+  })
 
   const description = withDescription
     ? // slice to avoid sending more data than we display in the excerpt
       (action.description ??
       removeMarkdown(action.longDescription).slice(0, 100))
     : null
+
+  const shouldDisplayCommitToActionButton =
+    action.assessment && !shouldHideActionCommitFeature
 
   return (
     <article
@@ -84,6 +90,7 @@ export default function ActionCard({
       {source !== 'cross-sell' ? (
         <ActionTracker eventName="displayed" action={action} />
       ) : null}
+
       <div
         className={twMerge(
           'flex grow flex-col gap-2 p-2',
@@ -97,11 +104,13 @@ export default function ActionCard({
         ) : null}
         <div className="grow">
           <h3 className="mb-2 text-base/normal font-bold">{action.title}</h3>
+
           {description ? (
             <p className="mb-2 line-clamp-2 text-sm/normal text-slate-600 md:line-clamp-3 md:text-base/normal">
               {description}
             </p>
           ) : null}
+
           {action.assessment ? (
             <ImpactTag
               impact={action.assessment.impact}
@@ -111,7 +120,8 @@ export default function ActionCard({
           ) : null}
         </div>
       </div>
-      {withCta ? (
+
+      {withCta && !shouldDisplayCommitToActionButton && (
         <div className="border-t border-slate-100 p-4">
           <span
             aria-hidden="true"
@@ -126,7 +136,8 @@ export default function ActionCard({
             <ArrowNarrowRightIcon className="ml-1 h-2.5" />
           </span>
         </div>
-      ) : null}
+      )}
+
       <Link
         href={href}
         className={twMerge(
@@ -138,10 +149,17 @@ export default function ActionCard({
             locale={locale}
             i18nKey="actions.components.actionCard.link"
             values={{ actionTitle: action.title }}>
-            Voir l'action<span className="sr-only"> "{'{{actionTitle}}'}"</span>
+            Voir l'action
+            <span className="sr-only"> "{'{{actionTitle}}'}"</span>
           </Trans>
         </span>
       </Link>
+
+      {shouldDisplayCommitToActionButton && (
+        <div className="z-20 border-t border-slate-100 p-2">
+          <CommitToActionButton className="w-full" action={action} />
+        </div>
+      )}
     </article>
   )
 }

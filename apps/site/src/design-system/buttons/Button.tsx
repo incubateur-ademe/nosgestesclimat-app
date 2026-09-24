@@ -83,7 +83,7 @@ export default function Button({
         baseClassNames,
         sizeClassNames[size],
         colorClassNames[color],
-        isDisabled && 'cursor-not-allowed opacity-50!',
+        isDisabled && 'cursor-not-allowed opacity-80!',
         className
       )}
       {...props}>

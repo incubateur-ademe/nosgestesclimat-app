@@ -1,5 +1,6 @@
 import ContentLarge from '@/components/layout/ContentLarge'
 import Footer from '@/components/layout/Footer'
+import Toaster from '@/design-system/layout/Toaster'
 import type { Locale } from '@/i18nConfig'
 
 export default async function LargeLayout({
@@ -14,6 +15,7 @@ export default async function LargeLayout({
       </ContentLarge>
 
       <Footer locale={locale as Locale} />
+      <Toaster />
     </>
   )
 }

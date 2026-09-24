@@ -2,6 +2,7 @@ import type { Locale } from '@/i18nConfig'
 import type { CookieState } from '@/services/tracking/cookieStateStore'
 import type { AuthenticationMode } from '@/types/authentication'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
+import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 interface PosthogProps {
   question?: DottedName | null
   label?: string
@@ -195,5 +196,26 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
   properties: {
     posthogCookie: cookieState?.posthog,
     googleTagCookie: cookieState?.googleTag,
+  },
+})
+
+// Actions
+export const captureActionAddedToPlan = ({
+  actionTitle,
+  actionTheme,
+  impactInKg,
+}: {
+  actionTitle: string
+  actionTheme: Pick<
+    Theme,
+    'id' | 'key' | 'slug' | 'trackingId' | 'title' | 'emoji'
+  >
+  impactInKg?: number
+}) => ({
+  eventName: 'action added to plan',
+  properties: {
+    action_title: actionTitle,
+    action_theme: actionTheme,
+    co2_potential_kg: impactInKg,
   },
 })
