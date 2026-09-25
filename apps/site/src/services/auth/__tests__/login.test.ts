@@ -109,6 +109,7 @@ describe('login', () => {
     expect(result).toEqual(failure(new RateLimitedError()))
     expect(mocks.rateLimitSameRequest).toHaveBeenCalledWith({
       key: 'login:user@example.com',
+      ttlMs: 30_000,
     })
     expect(mocks.loginService).not.toHaveBeenCalled()
   })
@@ -136,9 +137,11 @@ describe('login', () => {
     expect(second).toEqual(failure(new RateLimitedError()))
     expect(mocks.rateLimitSameRequest).toHaveBeenNthCalledWith(1, {
       key: 'login:case@example.com',
+      ttlMs: 30_000,
     })
     expect(mocks.rateLimitSameRequest).toHaveBeenNthCalledWith(2, {
       key: 'login:case@example.com',
+      ttlMs: 30_000,
     })
     expect(mocks.loginService).toHaveBeenCalledTimes(1)
   })
@@ -184,9 +187,7 @@ describe('login', () => {
     )
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/', 'layout')
 
-    expect(result).toEqual(
-      success({ ...verifiedUser, userId: verifiedUser.id })
-    )
+    expect(result).toEqual(success({ userId: verifiedUser.id }))
   })
 
   it('creates a session without revoking anything when there is no prior session', async () => {
@@ -213,9 +214,7 @@ describe('login', () => {
     )
     expect(mocks.revalidatePath).toHaveBeenCalledWith('/', 'layout')
 
-    expect(result).toEqual(
-      success({ ...verifiedUser, userId: verifiedUser.id })
-    )
+    expect(result).toEqual(success({ userId: verifiedUser.id }))
   })
 
   it('logs the login attempt and the success outcome', async () => {
@@ -239,7 +238,21 @@ describe('login', () => {
       email: 'us***@ex***',
       locale: 'en',
       mode: 'signIn',
-      durationMs: expect.any(Number),
+      durationMs: expect.any(Number) as number,
+    })
+  })
+
+  it('logs the validated email and the defaulted locale when none is passed', async () => {
+    mocks.loginService.mockResolvedValue(
+      success({ user: verifiedUser, mode: 'signIn' })
+    )
+
+    await login({ email: 'User@Example.com', code: '123456' })
+
+    expect(mocks.loggerInfo).toHaveBeenCalledWith('Login attempt', {
+      userId: sessionUserId,
+      email: 'us***@ex***',
+      locale: 'fr',
     })
   })
 
@@ -258,7 +271,7 @@ describe('login', () => {
         extra: expect.objectContaining({
           email: 'us***@ex***',
           userId: sessionUserId,
-        }),
+        }) as Record<string, unknown>,
       }
     )
     expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
@@ -272,7 +285,9 @@ describe('login', () => {
 
     expect(result).toEqual(failure(new UnknownCodeError()))
     expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
-      extra: expect.objectContaining({ email: 'us***@ex***' }),
+      extra: expect.objectContaining({
+        email: 'us***@ex***',
+      }) as Record<string, unknown>,
     })
     expect(mocks.createAppSession).not.toHaveBeenCalled()
   })
@@ -287,7 +302,9 @@ describe('login', () => {
     expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
     expect(mocks.createAppSession).not.toHaveBeenCalled()
     expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
-      extra: expect.objectContaining({ email: 'us***@ex***' }),
+      extra: expect.objectContaining({
+        email: 'us***@ex***',
+      }) as Record<string, unknown>,
     })
   })
 })
