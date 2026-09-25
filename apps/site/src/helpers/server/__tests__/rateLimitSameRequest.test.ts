@@ -66,4 +66,23 @@ describe('rateLimitSameRequest', () => {
       rateLimitSameRequest({ key: 'login:short-ttl@example.org', ttlMs: 1_000 })
     ).toBe(true)
   })
+
+  it('then it should sweep expired entries at most once per TTL window', async () => {
+    vi.resetModules()
+    const { rateLimitSameRequest: limiter } =
+      await import('../rateLimitSameRequest')
+
+    limiter({ key: 'login:swept@example.org', ttlMs: 1_000 })
+    vi.advanceTimersByTime(60_000)
+
+    const deleteSpy = vi.spyOn(Map.prototype, 'delete')
+
+    limiter({ key: 'login:after-sweep@example.org' })
+    expect(deleteSpy).toHaveBeenCalledTimes(1)
+
+    limiter({ key: 'login:within-window@example.org' })
+    expect(deleteSpy).toHaveBeenCalledTimes(1)
+
+    deleteSpy.mockRestore()
+  })
 })

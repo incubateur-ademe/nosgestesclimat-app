@@ -12,6 +12,9 @@ import { createHash } from 'node:crypto'
 /** hashed request key -> timestamp at which its rate limit expires */
 const rateLimitedRequests = new Map<string, number>()
 
+/** timestamp of the last expired-entry sweep */
+let lastSweepAt = 0
+
 const hashKey = (key: string) => createHash('sha256').update(key).digest('hex')
 
 export const rateLimitSameRequest = ({
@@ -25,11 +28,16 @@ export const rateLimitSameRequest = ({
   const now = Date.now()
   const requestKey = hashKey(key)
 
-  // Lazy TTL sweep: expired entries are removed on read, so the map only
-  // holds keys seen within their TTL window.
-  for (const [storedKey, expiresAt] of rateLimitedRequests) {
-    if (expiresAt <= now) {
-      rateLimitedRequests.delete(storedKey)
+  // Lazy TTL sweep, run at most once per TTL window (expiry is still checked
+  // on every read, so skipping the sweep never changes the verdict): each
+  // call stays amortised O(1) instead of paying an O(n) sweep, and the map
+  // only holds keys seen within their TTL window.
+  if (now - lastSweepAt >= ttlMs) {
+    lastSweepAt = now
+    for (const [storedKey, expiresAt] of rateLimitedRequests) {
+      if (expiresAt <= now) {
+        rateLimitedRequests.delete(storedKey)
+      }
     }
   }
 
