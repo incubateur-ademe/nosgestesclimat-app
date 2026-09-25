@@ -7,7 +7,7 @@ import {
   type EmailError,
 } from '@/components/authentication/errors'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
-import logger from '@/logger'
+import logger, { maskEmail } from '@/logger'
 import type { AuthenticationMode } from '@/types/authentication'
 import { createSendVerificationCodeEmail } from '@nosgestesclimat/core/features/auth/emails/auth-emails'
 import { VerificationCodeCreateDto } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
@@ -41,6 +41,8 @@ export const createVerificationCode = async ({
   mode?: AuthenticationMode
   locale?: string
 }): Promise<Result<{ expirationDate: string }, EmailError>> => {
+  const startedAt = Date.now()
+
   // The schema lowercases the email before the DB lookup; the throttle key
   // must normalize the same way, or case permutations split the bucket.
   if (
@@ -66,17 +68,34 @@ export const createVerificationCode = async ({
     return failure(new UnknownCodeError())
   }
 
+  const context = {
+    email: maskEmail(email),
+    locale,
+  }
+
   try {
     const { expirationDate } = await verificationCodeService({
       email: parsed.data.email,
       locale: locale ?? 'fr',
     })
 
+    // The old server controller logged the creation: this line is the anchor
+    // for "user never received a code" investigations.
+    logger.info('VerificationCode created', {
+      ...context,
+      expirationDate,
+      durationMs: Date.now() - startedAt,
+    })
+
     return success({ expirationDate: expirationDate.toISOString() })
   } catch (error) {
+    const outcome = { ...context, durationMs: Date.now() - startedAt }
+
+    logger.error('VerificationCode creation failed', { ...outcome, error })
+
     // Unexpected infrastructure failure (e.g. a Prisma error): keep the
     // Sentry signal the deleted server controller had.
-    captureException(error)
+    captureException(error, { extra: outcome })
 
     return failure(new UnknownCodeError())
   }
