@@ -1,4 +1,5 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
+
 type Color = 'green' | 'red' | 'yellow'
 interface Props extends React.PropsWithChildren {
   color: Color

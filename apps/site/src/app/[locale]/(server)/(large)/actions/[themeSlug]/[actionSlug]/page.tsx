@@ -25,9 +25,9 @@ import type { Theme } from '@/types/themes'
 import { toSearchParams } from '@/utils/nextjs/toSearchParams'
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
+import { twMerge } from "cn";
 
 const SECTION_ID_I_UNDERSTAND = 'je-comprends'
 const SECTION_ID_I_ACT = 'j-agis'

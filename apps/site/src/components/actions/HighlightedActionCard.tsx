@@ -7,12 +7,12 @@ import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import { twMerge } from 'tailwind-merge'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionTracker from './ActionTracker'
 import { ThemeBadge } from './ThemeBadge'
 import { shouldDisplayComputationInProgressText } from './utils/shouldDisplayComputationInProgressText'
+import { twMerge } from "cn";
 
 const classesByTheme: Record<
   Theme['key'],

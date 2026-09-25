@@ -5,10 +5,10 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
-import { twMerge } from 'tailwind-merge'
 import type { FilterValue } from './EventTabs'
 import ListItem from './ListItem'
 import PodiumBlock from './PodiumBlock'
+import { twMerge } from "cn";
 
 const GENERAL_RANKING_URL =
   'https://eu.posthog.com/shared/usl5nIC6qMxcL94bJI689dnZEGPidQ'

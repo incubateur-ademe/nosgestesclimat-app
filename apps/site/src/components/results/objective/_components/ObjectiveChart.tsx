@@ -5,8 +5,8 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { motion, useReducedMotion } from 'framer-motion'
-import { twMerge } from 'tailwind-merge'
 import { useObjectiveChart } from './_hooks/useObjectiveChart'
+import { twMerge } from "cn";
 
 interface Props {
   carbonFootprint: number

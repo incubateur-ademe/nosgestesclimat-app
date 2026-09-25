@@ -9,8 +9,8 @@ import {
 import Title from '@/design-system/layout/Title'
 import Link from '@/design-system/links/Link'
 import type { Group } from '@/types/groups'
-import { twMerge } from 'tailwind-merge'
 import GroupContent from './groups/GroupContent'
+import { twMerge } from "cn";
 
 interface Props {
   groups: Group[]

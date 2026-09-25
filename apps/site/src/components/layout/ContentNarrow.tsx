@@ -1,6 +1,6 @@
 import Main from '@/design-system/layout/Main'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function ContentNarrow({
   children,

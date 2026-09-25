@@ -17,7 +17,7 @@ import {
   useUser,
 } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function Question({
   question,

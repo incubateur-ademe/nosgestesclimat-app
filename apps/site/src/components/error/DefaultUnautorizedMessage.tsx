@@ -1,7 +1,7 @@
 'use client'
-import { twMerge } from 'tailwind-merge'
 import Link from '../Link'
 import Trans from '../translation/trans/TransClient'
+import { twMerge } from "cn";
 
 export default function DefaultUnautorizedMessage({
   className,

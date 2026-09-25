@@ -2,7 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useRule } from '@/publicodes-state'
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   funFactKey: string

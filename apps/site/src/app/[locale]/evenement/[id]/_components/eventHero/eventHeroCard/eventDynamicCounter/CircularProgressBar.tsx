@@ -1,6 +1,4 @@
 'use client'
-
-import { twMerge } from 'tailwind-merge'
 import {
   CENTER,
   CIRCUMFERENCE,
@@ -9,6 +7,7 @@ import {
   useAnimateCircularProgressBar,
   VIEWBOX,
 } from './circularProgressBar/useAnimateCircularProgressBar'
+import { twMerge } from "cn";
 
 interface Props {
   value: number

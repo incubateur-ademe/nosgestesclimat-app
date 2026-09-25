@@ -1,4 +1,4 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function PlusIcon({ className }: { className?: string }) {
   return (

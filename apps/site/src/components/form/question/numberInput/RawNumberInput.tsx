@@ -5,7 +5,7 @@ import type { Evaluation } from 'publicodes'
 import { type ComponentProps } from 'react'
 import type { NumberFormatValues, SourceInfo } from 'react-number-format'
 import { NumericFormat } from 'react-number-format'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   unit?: string

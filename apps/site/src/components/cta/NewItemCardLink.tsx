@@ -3,13 +3,13 @@
 import Link from '@/components/Link'
 import Image from 'next/image'
 import type { ElementType, PropsWithChildren, ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import {
   baseClassNames,
   colorClassNames,
   sizeClassNames,
 } from '../../design-system/buttons/Button'
 import Card from '../../design-system/layout/Card'
+import { twMerge } from "cn";
 
 interface Props {
   href: string

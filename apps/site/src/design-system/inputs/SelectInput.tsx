@@ -5,9 +5,9 @@ import type {
   ReactNode,
 } from 'react'
 import { forwardRef, useId } from 'react'
-import { twMerge } from 'tailwind-merge'
 import InputGroup from './InputGroup'
 import { defaultInputStyleClassNames } from './TextInput'
+import { twMerge } from "cn";
 
 export default forwardRef(function SelectInput(
   {

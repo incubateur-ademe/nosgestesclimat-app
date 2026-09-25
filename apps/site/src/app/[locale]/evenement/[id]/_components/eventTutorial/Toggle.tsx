@@ -2,7 +2,7 @@
 
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export type Mode = 'organisation' | 'individu'
 

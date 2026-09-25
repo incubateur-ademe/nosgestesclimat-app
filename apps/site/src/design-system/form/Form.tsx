@@ -1,9 +1,9 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { twMerge } from 'tailwind-merge'
 import type { ButtonColor } from '../buttons/Button'
 import Button from '../buttons/Button'
+import { twMerge } from "cn";
 
 interface Props {
   children: React.ReactNode

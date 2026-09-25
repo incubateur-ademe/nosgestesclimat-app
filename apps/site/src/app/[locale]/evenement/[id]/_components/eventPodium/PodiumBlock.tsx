@@ -1,9 +1,9 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
-import { twMerge } from 'tailwind-merge'
 import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 import RankBadge from './RankBadge'
+import { twMerge } from "cn";
 
 const heightClasses = {
   1: 'md:h-80',

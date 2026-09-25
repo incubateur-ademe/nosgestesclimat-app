@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import { usePathname } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function ValueChangeDisplay({
   className,

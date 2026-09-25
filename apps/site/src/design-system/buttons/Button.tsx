@@ -7,7 +7,6 @@ import {
   type PropsWithChildren,
   type RefObject,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Loader from '../layout/Loader'
 import {
   baseClassNames,
@@ -17,6 +16,7 @@ import {
   type ButtonColor,
 } from './buttonStyles'
 import { useButtonState } from './useButtonState'
+import { twMerge } from "cn";
 
 export type ButtonProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>

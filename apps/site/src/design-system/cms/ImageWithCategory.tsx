@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Badge from '../layout/Badge'
+import { twMerge } from "cn";
 
 export default function ImageWithCategory({
   imageSrc,

@@ -7,9 +7,9 @@ import type { Locale } from '@/i18nConfig'
 import type { Metric } from '@/publicodes-state/types'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
 import type { ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
 import TendencyIndicator from './TendencyIndicator'
+import { twMerge } from "cn";
 
 interface Props {
   className?: string

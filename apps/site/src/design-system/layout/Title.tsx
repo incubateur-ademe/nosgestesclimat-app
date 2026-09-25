@@ -1,7 +1,6 @@
 import type { HTMLAttributes, JSX, PropsWithChildren } from 'react'
-
-import { twMerge } from 'tailwind-merge'
 import Separator from './Separator'
+import { twMerge } from "cn";
 
 type Sizes = 'xl' | 'lg' | 'md'
 

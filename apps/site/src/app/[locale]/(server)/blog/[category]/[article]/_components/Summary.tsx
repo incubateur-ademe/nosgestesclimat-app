@@ -2,7 +2,7 @@
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransClient'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Heading {
   id: string

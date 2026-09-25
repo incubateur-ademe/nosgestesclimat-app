@@ -9,8 +9,8 @@ import {
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import Link from 'next/link'
-import { twMerge } from 'tailwind-merge'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
+import { twMerge } from "cn";
 
 interface Props {
   className?: string

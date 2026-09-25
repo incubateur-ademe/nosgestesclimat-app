@@ -7,9 +7,9 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Button from '../buttons/Button'
 import BannerLink from './banner/BannerLink'
+import { twMerge } from "cn";
 
 export type BannerColor = 'primary' | 'secondary'
 

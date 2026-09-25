@@ -1,10 +1,10 @@
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import PlusIcon from '../icons/PlusIcon'
 import Trans from '../translation/trans/TransServer'
 import Background from './Background'
+import { twMerge } from "cn";
 
 export default function FAQ({
   subTitle,

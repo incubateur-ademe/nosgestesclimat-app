@@ -9,7 +9,6 @@ import {
   type MouseEvent,
   type PropsWithChildren,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Loader from '../layout/Loader'
 import type { ButtonColor } from './Button'
 import {
@@ -19,6 +18,7 @@ import {
   sizeClassNames,
 } from './Button'
 import { useButtonState } from './useButtonState'
+import { twMerge } from "cn";
 
 interface Props {
   href: string

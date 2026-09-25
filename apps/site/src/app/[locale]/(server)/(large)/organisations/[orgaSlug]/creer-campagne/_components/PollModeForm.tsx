@@ -5,8 +5,8 @@ import Button from '@/design-system/buttons/Button'
 import Badge from '@/design-system/layout/Badge'
 import type { Organisation } from '@/types/organisations'
 import Image from 'next/image'
-import { twMerge } from 'tailwind-merge'
 import { useCreatePollStep2 } from '../_hooks/useCreatePollStep2'
+import { twMerge } from "cn";
 
 interface Props {
   organisation: Organisation

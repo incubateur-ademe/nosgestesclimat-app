@@ -12,10 +12,10 @@ import {
   hasCurrentSimulationInProgress,
 } from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
 import { Suspense } from 'react'
-import { twMerge } from 'tailwind-merge'
 import RotatingArrowIcon from '../icons/RotatingArrowIcon'
 import Trans from '../translation/trans/TransServer'
 import CTAButtonsPlaceholder from './CTAButtonsPlaceholder'
+import { twMerge } from "cn";
 
 interface Props {
   withCollectiveTest?: boolean

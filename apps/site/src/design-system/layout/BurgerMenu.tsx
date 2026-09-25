@@ -4,8 +4,8 @@ import CloseIcon from '@/components/icons/Close'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Button from '../buttons/Button'
+import { twMerge } from "cn";
 
 export default function BurgerMenu({
   children,

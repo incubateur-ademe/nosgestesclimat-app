@@ -2,7 +2,7 @@ import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
 import type { Locale } from '@/i18nConfig'
 import { type ActionMedia as ActionMediaType } from '@nosgestesclimat/core/features/actions/types/action-media'
 import Image from 'next/image'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface MediaProps extends React.ComponentPropsWithoutRef<'figure'> {
   media: ActionMediaType

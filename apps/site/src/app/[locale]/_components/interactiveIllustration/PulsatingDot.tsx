@@ -1,9 +1,9 @@
 'use client'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useContext, useEffect, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import { FloatingElementDisplayedContext } from './FloatingElementDisplayedProvider'
 import FloatingInfo from './pulsatingDot/FloatingInfo'
+import { twMerge } from "cn";
 
 export default function PulsatingDot({
   className,

@@ -4,7 +4,7 @@ import {
 } from '@/helpers/getCategoryColorClass'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function Progress() {
   const { testAdvancement, currentCategory } = useFormState()

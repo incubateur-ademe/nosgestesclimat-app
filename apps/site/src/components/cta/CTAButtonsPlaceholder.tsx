@@ -3,7 +3,7 @@ import {
   colorClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import Loader from '@/design-system/layout/Loader'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function CTAButtonsPlaceholder({
   className,

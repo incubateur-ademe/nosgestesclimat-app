@@ -1,6 +1,6 @@
 import type { Post } from '@/types/posts'
-import { twMerge } from 'tailwind-merge'
 import Item from './list/Item'
+import { twMerge } from "cn";
 
 interface Props {
   items: Post[]

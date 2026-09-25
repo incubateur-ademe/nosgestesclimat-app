@@ -9,8 +9,8 @@ import { getTopThreeAndRestMembers } from '@/helpers/groups/getTopThreeAndRestMe
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import { useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import RankingMember from './ranking/RankingMember'
+import { twMerge } from "cn";
 
 export default function Ranking({
   group,

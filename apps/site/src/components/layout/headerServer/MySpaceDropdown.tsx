@@ -18,7 +18,7 @@ import { useUser } from '@/publicodes-state'
 import { PostHog } from '@/services/tracking/Posthog'
 import Link from 'next/link'
 import { useState } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 const MAX_EMAIL_LENGTH = 20
 

@@ -6,7 +6,7 @@ import {
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import Link from '@/design-system/links/Link'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function SeeDetailLink({ className }: { className?: string }) {
   return (

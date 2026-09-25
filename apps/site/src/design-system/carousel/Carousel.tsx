@@ -1,7 +1,7 @@
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
 import CarouselClient from './CarouselClient'
+import { twMerge } from "cn";
 
 export interface CarouselProps extends React.ComponentPropsWithoutRef<'div'> {
   locale: Locale

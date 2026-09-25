@@ -1,7 +1,6 @@
-import { twMerge } from 'tailwind-merge'
-
 import Link from '@/design-system/links/Link'
 import Logo from './Logo'
+import { twMerge } from "cn";
 
 interface Props {
   onClick?: () => void

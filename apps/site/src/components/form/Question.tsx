@@ -21,11 +21,11 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { AnimatePresence } from 'framer-motion'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransClient'
 import DontKnowButton from './question/DontKnowButton'
 import NumberInputWithAssistance from './question/NumberInputWithAssistance'
 import Warning from './question/Warning'
+import { twMerge } from "cn";
 
 interface Props {
   question: DottedName

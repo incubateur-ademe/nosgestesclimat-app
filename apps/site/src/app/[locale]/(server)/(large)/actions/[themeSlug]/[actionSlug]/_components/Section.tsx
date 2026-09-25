@@ -1,6 +1,6 @@
 import type { BadgeColor } from '@/design-system/layout/Badge'
 import Badge from '@/design-system/layout/Badge'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 type SectionProps = React.ComponentPropsWithoutRef<'section'>
 

@@ -4,8 +4,8 @@ import Trans from '@/components/translation/trans/TransClient'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import type { ComponentPropsWithRef, ForwardedRef, ReactNode } from 'react'
 import { forwardRef, useId } from 'react'
-import { twMerge } from 'tailwind-merge'
 import InputGroup from './InputGroup'
+import { twMerge } from "cn";
 
 interface Props extends Omit<ComponentPropsWithRef<'input'>, 'size' | 'value'> {
   value?: boolean

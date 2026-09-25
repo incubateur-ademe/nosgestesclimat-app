@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { twMerge } from 'tailwind-merge'
 import CurvedArrowSvg from './transitionInfoCard/CurvedArrowSvg'
 import FunFactCard from './transitionInfoCard/FunFactCard'
+import { twMerge } from "cn";
 
 interface Props {
   className: string

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import type { JSX } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 const getGridColsClassname = (numberItems: number) => {
   switch (numberItems) {
