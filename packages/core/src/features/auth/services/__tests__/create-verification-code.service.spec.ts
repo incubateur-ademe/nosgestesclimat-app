@@ -186,7 +186,12 @@ describe('createVerificationCode', () => {
 
       expect(logger.error).toHaveBeenCalledWith(
         'Failed to send verification code email',
-        { error: emailError, email }
+        { error: emailError }
+      )
+      // The address must never reach the logs in clear.
+      expect(logger.error).not.toHaveBeenCalledWith(
+        'Failed to send verification code email',
+        expect.objectContaining({ email })
       )
       expect(captureException).toHaveBeenCalledWith(emailError)
     })
