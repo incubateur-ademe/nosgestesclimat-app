@@ -1,3 +1,5 @@
+import { randomInt } from 'node:crypto'
+
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
@@ -22,9 +24,7 @@ interface CreateVerificationCodeDependencies {
 const VERIFICATION_CODE_TTL_MS = 60 * 60 * 1000 // 1 hour
 
 export const generateRandomVerificationCode = () =>
-  Math.floor(
-    Math.pow(10, 5) + Math.random() * (Math.pow(10, 6) - Math.pow(10, 5) - 1)
-  ).toString()
+  randomInt(100_000, 1_000_000).toString()
 
 export function createVerificationCodeService({
   logger,
