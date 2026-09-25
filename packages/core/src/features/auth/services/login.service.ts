@@ -56,8 +56,8 @@ type LoginResult = {
 /**
  * Looks up a valid (non-expired) verification code issued for the given
  * usage. A lookup miss is the expected invalid-code signal: it is returned as
- * a domain failure, never thrown - no diagnosis (see the migration tickets,
- * decision 3).
+ * a domain failure, never thrown - deliberately without any diagnosis of why
+ * the code did not match (expired, already used, never requested, ...).
  */
 export const verifyCode = async (
   verificationCode: Pick<VerificationCode, 'email' | 'code' | 'usage'>,

@@ -66,4 +66,4 @@ export type Tracker = PosthogEvent
 export type VerifyStrategy = (
   email: string,
   code: string
-) => Promise<Result<{ userId: string; id: string }, CodeError>>
+) => Promise<Result<{ userId: string }, CodeError>>

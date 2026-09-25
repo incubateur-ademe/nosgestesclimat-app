@@ -49,13 +49,13 @@ export const createSendVerificationCodeEmail =
 export const createSendWelcomeEmail =
   (sendEmail: SendEmail) =>
   async ({ locale, email, origin }: WelcomeEmailParams): Promise<void> => {
-    const dashBoardUrl = new URL(`${origin}/mon-espace`)
+    const dashboardUrl = new URL(`${origin}/mon-espace`)
 
     const result = await sendEmail({
       email,
       templateId: TemplateIds[locale].SIGN_UP,
       params: {
-        DASHBOARD_URL: dashBoardUrl.toString(),
+        DASHBOARD_URL: dashboardUrl.toString(),
       },
     })
 
@@ -77,7 +77,5 @@ export const createAddOrUpdateContactAfterLogin =
       attributes,
     })
 
-    if (!result.success) {
-      throw result.error
-    }
+    assertEmailResult(result)
   }

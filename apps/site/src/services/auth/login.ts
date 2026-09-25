@@ -47,13 +47,26 @@ export const login = async ({
   email: string
   code: string
   locale?: string
-}): Promise<Result<{ userId: string; id: string }, CodeError>> => {
+}): Promise<Result<{ userId: string }, CodeError>> => {
   const startedAt = Date.now()
 
   // The schema lowercases the email before the DB lookup; the throttle key
   // must normalize the same way, or case permutations split the bucket.
-  if (!rateLimitSameRequest({ key: `login:${email.toLocaleLowerCase()}` })) {
+  if (
+    !rateLimitSameRequest({
+      key: `login:${email.toLocaleLowerCase()}`,
+      ttlMs: 30_000,
+    })
+  ) {
     return failure(new RateLimitedError())
+  }
+
+  // The old route validated the locale query the same way: an unsupported
+  // locale never reached the service, and a missing one defaulted to 'fr' -
+  // so every log below carries a concrete locale.
+  const loginLocale = resolveLocale(locale)
+  if (loginLocale === undefined) {
+    return failure(new UnknownCodeError())
   }
 
   // The old action wrapped its entire body in one try: any throw collapsed
@@ -61,6 +74,10 @@ export const login = async ({
   // try so its failures collapse the same way instead of surfacing to
   // useLogin as a rejected mutation.
   let sessionUserId: string | undefined
+
+  // The old route logged the validated (schema-normalized) email; before
+  // validation the raw argument is the only value available.
+  let maskedEmail = maskEmail(email)
 
   try {
     const session = await getUserSession()
@@ -78,17 +95,12 @@ export const login = async ({
       return failure(new UnknownCodeError())
     }
 
-    // The old route validated the locale query the same way: an unsupported
-    // locale never reached the service.
-    const loginLocale = resolveLocale(locale)
-    if (loginLocale === undefined) {
-      return failure(new UnknownCodeError())
-    }
+    maskedEmail = maskEmail(parsed.data.email)
 
     const context = {
       userId: sessionUserId,
-      email: maskEmail(email),
-      locale,
+      email: maskedEmail,
+      locale: loginLocale,
     }
 
     // Every branch below logs an outcome, so an attempt left without one is
@@ -128,12 +140,12 @@ export const login = async ({
 
     revalidatePath('/', 'layout')
 
-    return success({ ...user, userId: user.id })
+    return success({ userId: user.id })
   } catch (error) {
     const outcome = {
       userId: sessionUserId,
-      email: maskEmail(email),
-      locale,
+      email: maskedEmail,
+      locale: loginLocale,
       durationMs: Date.now() - startedAt,
     }
 
