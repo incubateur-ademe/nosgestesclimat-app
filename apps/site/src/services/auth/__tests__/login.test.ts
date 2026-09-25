@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   sendWelcomeEmail: vi.fn(),
   addOrUpdateContactAfterLogin: vi.fn(),
   loginService: vi.fn(),
+  loggerInfo: vi.fn(),
 }))
 
 vi.mock('../get-user-session', () => ({
@@ -70,7 +71,7 @@ vi.mock('@/logger', async (importOriginal) => {
 
   return {
     default: {
-      info: vi.fn(),
+      info: mocks.loggerInfo,
       warn: vi.fn(),
       error: vi.fn(),
       debug: vi.fn(),
@@ -188,6 +189,60 @@ describe('login', () => {
     expect(result).toEqual(
       success({ ...verifiedUser, userId: verifiedUser.id })
     )
+  })
+
+  it('creates a session without revoking anything when there is no prior session', async () => {
+    mocks.getUserSession.mockResolvedValue(null)
+    mocks.loginService.mockResolvedValue(
+      success({ user: verifiedUser, mode: 'signIn' })
+    )
+
+    const result = await login({
+      email: 'user@example.com',
+      code: '123456',
+      locale: 'en',
+    })
+
+    expect(mocks.loginService).toHaveBeenCalledWith({
+      loginDto: { email: 'user@example.com', code: '123456' },
+      locale: 'en',
+      sessionUserId: undefined,
+    })
+    expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
+    expect(mocks.createAppSession).toHaveBeenCalledWith(
+      verifiedUser.id,
+      'user@example.com'
+    )
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/', 'layout')
+
+    expect(result).toEqual(
+      success({ ...verifiedUser, userId: verifiedUser.id })
+    )
+  })
+
+  it('logs the login attempt and the success outcome', async () => {
+    mocks.loginService.mockResolvedValue(
+      success({ user: verifiedUser, mode: 'signIn' })
+    )
+
+    await login({
+      email: 'user@example.com',
+      code: '123456',
+      locale: 'en',
+    })
+
+    expect(mocks.loggerInfo).toHaveBeenCalledWith('Login attempt', {
+      userId: sessionUserId,
+      email: 'us***@ex***',
+      locale: 'en',
+    })
+    expect(mocks.loggerInfo).toHaveBeenCalledWith('Login succeeded', {
+      userId: sessionUserId,
+      email: 'us***@ex***',
+      locale: 'en',
+      mode: 'signIn',
+      durationMs: expect.any(Number),
+    })
   })
 
   it('maps the InvalidVerificationCodeError domain failure to InvalidCodeError', async () => {
