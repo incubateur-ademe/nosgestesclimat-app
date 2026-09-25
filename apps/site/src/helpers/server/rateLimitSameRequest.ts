@@ -1,14 +1,5 @@
 import { createHash } from 'node:crypto'
 
-/**
- * In-memory rate limiter for the server actions.
- *
- * Limitations (accepted by the auth migration, decision 5): the state is
- * held in the Node.js process only — it resets on every deploy and is not
- * shared across instances, so the limit is per-process and weaker than a
- * Redis-backed limiter.
- */
-
 /** hashed request key -> timestamp at which its rate limit expires */
 const rateLimitedRequests = new Map<string, number>()
 
@@ -17,6 +8,13 @@ let lastSweepAt = 0
 
 const hashKey = (key: string) => createHash('sha256').update(key).digest('hex')
 
+/**
+ * In-memory rate limiter for the server actions.
+ *
+ * Limitations: the state is held in the Node.js process only — it resets on
+ * every deploy and is not shared across instances, so the limit is
+ * per-process and weaker than a Redis-backed limiter.
+ */
 export const rateLimitSameRequest = ({
   key,
   ttlMs = 30_000,
