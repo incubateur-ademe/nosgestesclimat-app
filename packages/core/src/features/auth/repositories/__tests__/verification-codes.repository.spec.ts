@@ -4,6 +4,7 @@ import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
 import { verificationCodeFactory } from '../../factories/index.ts'
 import {
+  claimVerificationCode,
   createUserVerificationCode,
   findVerificationCode,
   invalidateVerificationCode,
@@ -117,6 +118,78 @@ describe('verification-codes repository', () => {
           { session: prisma }
         )
       ).rejects.toThrow()
+    })
+  })
+
+  describe('claimVerificationCode', () => {
+    it('claims a valid code once, expiring it', async () => {
+      const verificationCode = await verificationCodeFactory.create()
+
+      await expect(
+        claimVerificationCode(
+          { id: verificationCode.id, usage: VerificationCodeUsage.login },
+          { session: prisma }
+        )
+      ).resolves.toBe(true)
+
+      const [claimedCode] = await prisma.verificationCode.findMany({
+        where: { id: verificationCode.id },
+      })
+
+      expect(claimedCode.expirationDate.getTime()).toBeLessThanOrEqual(
+        Date.now()
+      )
+    })
+
+    it('does not claim the same code twice', async () => {
+      const verificationCode = await verificationCodeFactory.create()
+
+      await claimVerificationCode(
+        { id: verificationCode.id, usage: VerificationCodeUsage.login },
+        { session: prisma }
+      )
+
+      await expect(
+        claimVerificationCode(
+          { id: verificationCode.id, usage: VerificationCodeUsage.login },
+          { session: prisma }
+        )
+      ).resolves.toBe(false)
+    })
+
+    it('does not claim an expired code', async () => {
+      const verificationCode = await verificationCodeFactory.create({
+        expirationDate: new Date(Date.now() - 1000),
+      })
+
+      await expect(
+        claimVerificationCode(
+          { id: verificationCode.id, usage: VerificationCodeUsage.login },
+          { session: prisma }
+        )
+      ).resolves.toBe(false)
+    })
+
+    it('does not claim a code issued for another usage', async () => {
+      const verificationCode = await verificationCodeFactory.create({
+        usage: VerificationCodeUsage.newsletter,
+      })
+
+      await expect(
+        claimVerificationCode(
+          { id: verificationCode.id, usage: VerificationCodeUsage.login },
+          { session: prisma }
+        )
+      ).resolves.toBe(false)
+
+      // The row is left untouched: the other usage can still consume it.
+      await expect(
+        prisma.verificationCode.findFirst({
+          where: { id: verificationCode.id },
+        })
+      ).resolves.toMatchObject({
+        expirationDate: verificationCode.expirationDate,
+      })
     })
   })
 
