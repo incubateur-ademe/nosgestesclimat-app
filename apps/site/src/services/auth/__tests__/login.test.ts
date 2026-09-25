@@ -223,4 +223,18 @@ describe('login', () => {
     })
     expect(mocks.createAppSession).not.toHaveBeenCalled()
   })
+
+  it('collapses a getUserSession throw into a Result failure instead of rejecting the mutation', async () => {
+    mocks.getUserSession.mockRejectedValue(new Error('session store down'))
+
+    const result = await login({ email: 'user@example.com', code: '123456' })
+
+    expect(result).toEqual(failure(new UnknownCodeError()))
+    expect(mocks.loginService).not.toHaveBeenCalled()
+    expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
+    expect(mocks.createAppSession).not.toHaveBeenCalled()
+    expect(mocks.captureException).toHaveBeenCalledWith(expect.any(Error), {
+      extra: expect.objectContaining({ email: 'us***@ex***' }),
+    })
+  })
 })
