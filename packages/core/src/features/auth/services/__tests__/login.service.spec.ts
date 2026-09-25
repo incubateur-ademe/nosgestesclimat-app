@@ -237,6 +237,43 @@ describe('login', () => {
       })
     })
 
+    it('cannot be replayed: a second sign-in with the same code fails', async () => {
+      const verifiedUser = await userFactory.verified().create()
+      const verificationCode = await verificationCodeFactory.create({
+        email: verifiedUser.email,
+        mode: VerificationCodeMode.signIn,
+      })
+
+      const firstRunner = createAwaitingBackgroundTaskRunner()
+      const firstResult = await buildLogin(firstRunner.backgroundTaskRunner)({
+        loginDto: {
+          email: verifiedUser.email,
+          code: verificationCode.code,
+        },
+        locale: 'fr',
+      })
+      await firstRunner.flush()
+
+      expect(firstResult.success).toBe(true)
+
+      const { backgroundTaskRunner, flush } =
+        createAwaitingBackgroundTaskRunner()
+      const replayResult = await buildLogin(backgroundTaskRunner)({
+        loginDto: {
+          email: verifiedUser.email,
+          code: verificationCode.code,
+        },
+        locale: 'fr',
+      })
+      await flush()
+
+      expect(replayResult.success).toBe(false)
+      if (replayResult.success) {
+        throw new Error('Expected the replayed login to fail')
+      }
+      expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
+    })
+
     it('refreshes the Brevo contact without sending a welcome email', async () => {
       const verifiedUser = await userFactory.verified().create()
       const verificationCode = await verificationCodeFactory.create({
@@ -465,6 +502,44 @@ describe('login', () => {
             (Date.now() - invalidatedCode.expirationDate.getTime()) / 1000
           )
         ).toBe(0)
+      })
+
+      it('cannot be replayed: a second sign-up with the same code fails', async () => {
+        const verificationCode = await verificationCodeFactory.create({
+          mode: VerificationCodeMode.signUp,
+        })
+        const sessionUserId = faker.string.uuid()
+
+        const firstRunner = createAwaitingBackgroundTaskRunner()
+        const firstResult = await buildLogin(firstRunner.backgroundTaskRunner)({
+          loginDto: {
+            email: verificationCode.email,
+            code: verificationCode.code,
+          },
+          locale: 'fr',
+          sessionUserId,
+        })
+        await firstRunner.flush()
+
+        expect(firstResult.success).toBe(true)
+
+        const { backgroundTaskRunner, flush } =
+          createAwaitingBackgroundTaskRunner()
+        const replayResult = await buildLogin(backgroundTaskRunner)({
+          loginDto: {
+            email: verificationCode.email,
+            code: verificationCode.code,
+          },
+          locale: 'fr',
+          sessionUserId,
+        })
+        await flush()
+
+        expect(replayResult.success).toBe(false)
+        if (replayResult.success) {
+          throw new Error('Expected the replayed login to fail')
+        }
+        expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
       })
 
       it('schedules the welcome email and the Brevo contact update', async () => {

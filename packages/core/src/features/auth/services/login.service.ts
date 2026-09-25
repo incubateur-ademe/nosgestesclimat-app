@@ -31,6 +31,7 @@ import type {
 import type { LoginError } from '../errors/login.error.ts'
 import { InvalidVerificationCodeError } from '../errors/login.error.ts'
 import {
+  claimVerificationCode,
   findVerificationCode,
   invalidateVerificationCode,
   type UserVerificationCode,
@@ -117,77 +118,106 @@ const createAccountOrSignin = async ({
   loginDto: LoginDto
   sessionUserId?: string
   verificationCode: UserVerificationCode
-}): Promise<{
-  user: LoginUser
-  mode: VerificationCodeMode
-  previousUserId: string | undefined
-}> => {
+}): Promise<
+  Result<
+    {
+      user: LoginUser
+      mode: VerificationCodeMode
+      previousUserId: string | undefined
+    },
+    InvalidVerificationCodeError
+  >
+> => {
   let user!: LoginUser
   let mode!: VerificationCodeMode
   let previousUserId: string | undefined
 
-  await transaction(async (session) => {
-    // Try SignIn first
-    const existingUser = await fetchVerifiedUser(
-      {
-        email: loginDto.email,
-        select: defaultVerifiedUserSelection,
-      },
-      { session }
-    )
+  const result = await transaction(
+    async (
+      session
+    ): Promise<Result<void, InvalidVerificationCodeError> | void> => {
+      // Single-use by construction, on both branches: the code is claimed
+      // atomically, inside the transaction, before the sign-in/sign-up
+      // branch runs. A replayed code is already expired here, and a
+      // concurrent request racing on the same code loses the claim
+      // (count !== 1) however it interleaves with this one - there is no
+      // read-then-write gap to exploit. This is the authoritative check:
+      // the earlier verifyCode lookup outside the transaction is only a
+      // fast-fail.
+      const claimed = await claimVerificationCode(
+        { id: verificationCode.id, usage: VerificationCodeUsage.login },
+        { session }
+      )
+      if (!claimed) {
+        return failure(new InvalidVerificationCodeError())
+      }
 
-    if (existingUser) {
-      // SignIn: the existing account's own id wins - never generate a fresh
-      // one. Reconcile the session's data (previousUserId) into this account
-      // only when that id is still free: if it already belongs to another
-      // verified account, reconciling would move that other account's data
-      // over and delete its user row.
-      const sessionOwnedByOtherAccount =
-        sessionUserId &&
-        sessionUserId !== existingUser.id &&
-        (await findOtherVerifiedAccountWithUserId(
-          { userId: sessionUserId, email: loginDto.email },
-          { session }
-        ))
+      // Try SignIn first
+      const existingUser = await fetchVerifiedUser(
+        {
+          email: loginDto.email,
+          select: defaultVerifiedUserSelection,
+        },
+        { session }
+      )
 
-      user = existingUser
-      mode = VerificationCodeMode.signIn
-      previousUserId = sessionOwnedByOtherAccount ? undefined : sessionUserId
+      if (existingUser) {
+        // SignIn: the existing account's own id wins - never generate a fresh
+        // one. Reconcile the session's data (previousUserId) into this account
+        // only when that id is still free: if it already belongs to another
+        // verified account, reconciling would move that other account's data
+        // over and delete its user row.
+        const sessionOwnedByOtherAccount =
+          sessionUserId &&
+          sessionUserId !== existingUser.id &&
+          (await findOtherVerifiedAccountWithUserId(
+            { userId: sessionUserId, email: loginDto.email },
+            { session }
+          ))
 
-      return
+        user = existingUser
+        mode = VerificationCodeMode.signIn
+        previousUserId = sessionOwnedByOtherAccount ? undefined : sessionUserId
+
+        return
+      }
+
+      // SignUp: reuse the session userId as the account id only when it is
+      // still a free anonymous identity - the anonymous user row is then
+      // updated in place, keeping the user's data attached. When it already
+      // belongs to another verified account (typically signing up a new email
+      // while authenticated as another account), start a fresh identity so one
+      // id never maps to several accounts.
+      const conflict = sessionUserId
+        ? await findOtherVerifiedAccountWithUserId(
+            { userId: sessionUserId, email: loginDto.email },
+            { session }
+          )
+        : null
+
+      const newUserId =
+        conflict || !sessionUserId ? randomUUID() : sessionUserId
+
+      const { user: newUser } = await createOrUpdateVerifiedUser(
+        {
+          id: { id: newUserId, email: loginDto.email },
+          user: loginDto,
+          select: defaultVerifiedUserSelection,
+        },
+        { session }
+      )
+
+      user = newUser
+      mode = VerificationCodeMode.signUp
+      previousUserId = sessionUserId
     }
+  )
 
-    // SignUp: reuse the session userId as the account id only when it is
-    // still a free anonymous identity - the anonymous user row is then
-    // updated in place, keeping the user's data attached. When it already
-    // belongs to another verified account (typically signing up a new email
-    // while authenticated as another account), start a fresh identity so one
-    // id never maps to several accounts.
-    const conflict = sessionUserId
-      ? await findOtherVerifiedAccountWithUserId(
-          { userId: sessionUserId, email: loginDto.email },
-          { session }
-        )
-      : null
+  if (!result.success) {
+    return result
+  }
 
-    const newUserId = conflict || !sessionUserId ? randomUUID() : sessionUserId
-
-    const { user: newUser } = await createOrUpdateVerifiedUser(
-      {
-        id: { id: newUserId, email: loginDto.email },
-        user: loginDto,
-        select: defaultVerifiedUserSelection,
-      },
-      { session }
-    )
-
-    await invalidateVerificationCode({ id: verificationCode.id }, { session })
-    user = newUser
-    mode = VerificationCodeMode.signUp
-    previousUserId = sessionUserId
-  })
-
-  return { user, mode, previousUserId }
+  return success({ user, mode, previousUserId })
 }
 
 interface LoginDependencies {
@@ -233,11 +263,19 @@ export function createLogin({
       return failure(verificationCode.error)
     }
 
-    const { user, mode, previousUserId } = await createAccountOrSignin({
+    const account = await createAccountOrSignin({
       loginDto,
       sessionUserId,
       verificationCode: verificationCode.data,
     })
+    // The atomic claim inside the transaction is the authoritative check: a
+    // code that expired between the lookup and the claim - replayed or
+    // raced - fails here with the same domain error as an invalid code.
+    if (!account.success) {
+      return failure(account.error)
+    }
+
+    const { user, mode, previousUserId } = account.data
 
     if (mode === VerificationCodeMode.signUp) {
       // sync-user-data-after-account-created handler: the legacy
