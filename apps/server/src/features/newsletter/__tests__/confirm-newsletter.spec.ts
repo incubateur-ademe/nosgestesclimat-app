@@ -13,6 +13,7 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { ListIds } from '../../../adapters/brevo/constant.ts'
 import app from '../../../app.ts'
+import { createVerificationCode } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
@@ -115,6 +116,29 @@ describe('Given a NGC user', () => {
 
         expect(response.get('location')).toBe(
           'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=400'
+        )
+      })
+    })
+
+    describe('And the code was issued for the login flow', () => {
+      test('Then it redirects to an error page with 404 status', async () => {
+        const email = faker.internet.email().toLocaleLowerCase()
+        const code = faker.number.int({ min: 100000, max: 999999 }).toString()
+
+        await createVerificationCode({ email, code })
+
+        const response = await agent
+          .get(url)
+          .query({
+            code,
+            email,
+            origin: 'https://nosgestesclimat.test',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
         )
       })
     })

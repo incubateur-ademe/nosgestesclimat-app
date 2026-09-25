@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
 import { verificationCodeFactory } from '../../factories/index.ts'
 import {
   createUserVerificationCode,
@@ -19,6 +20,7 @@ describe('verification-codes repository', () => {
         email: faker.internet.email().toLocaleLowerCase(),
         code: faker.number.int({ min: 100000, max: 999999 }).toString(),
         expirationDate: new Date(Date.now() + 1000 * 60 * 60),
+        usage: VerificationCodeUsage.login,
       }
 
       const createdVerificationCode = await createUserVerificationCode(
@@ -57,6 +59,7 @@ describe('verification-codes repository', () => {
           {
             email: verificationCode.email,
             code: verificationCode.code,
+            usage: VerificationCodeUsage.login,
           },
           { session: prisma }
         )
@@ -77,6 +80,7 @@ describe('verification-codes repository', () => {
           {
             email: verificationCode.email,
             code: verificationCode.code,
+            usage: VerificationCodeUsage.login,
           },
           { session: prisma }
         )
@@ -91,6 +95,24 @@ describe('verification-codes repository', () => {
           {
             email: faker.internet.email().toLocaleLowerCase(),
             code: verificationCode.code,
+            usage: VerificationCodeUsage.login,
+          },
+          { session: prisma }
+        )
+      ).rejects.toThrow()
+    })
+
+    it('does not return a code issued for another usage', async () => {
+      const verificationCode = await verificationCodeFactory.create({
+        usage: VerificationCodeUsage.newsletter,
+      })
+
+      await expect(
+        findVerificationCode(
+          {
+            email: verificationCode.email,
+            code: verificationCode.code,
+            usage: VerificationCodeUsage.login,
           },
           { session: prisma }
         )
@@ -112,6 +134,7 @@ describe('verification-codes repository', () => {
           {
             email: verificationCode.email,
             code: verificationCode.code,
+            usage: VerificationCodeUsage.login,
           },
           { session: prisma }
         )

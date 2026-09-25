@@ -481,14 +481,23 @@ enum VerificationCodeMode {
   @@schema("ngc")
 }
 
+enum VerificationCodeUsage {
+  login
+  newsletter
+  apiToken
+
+  @@schema("ngc")
+}
+
 model VerificationCode {
-  id             String                @id @default(uuid()) @db.Uuid
+  id             String                  @id @default(uuid()) @db.Uuid
   email          String
   mode           VerificationCodeMode?
-  code           String                @db.VarChar(6)
+  usage          VerificationCodeUsage  @default(login)
+  code           String                  @db.VarChar(6)
   expirationDate DateTime
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
 
   @@schema("ngc")
 }

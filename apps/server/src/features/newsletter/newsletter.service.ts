@@ -2,6 +2,7 @@ import { createUserVerificationCode } from '@nosgestesclimat/core/features/auth/
 import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { verifyCode } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import dayjs from 'dayjs'
 import {
   addOrUpdateContact,
@@ -45,7 +46,10 @@ export const confirmNewsletterSubscriptions = async ({
 }: {
   query: NewsletterConfirmationQuery
 }) => {
-  const result = await verifyCode(query)
+  const result = await verifyCode({
+    ...query,
+    usage: VerificationCodeUsage.newsletter,
+  })
 
   if (!result.success) {
     throw new EntityNotFoundException('Verification code not found')
@@ -66,6 +70,7 @@ export const sendNewsletterConfirmationEmail = async ({
       email,
       code,
       expirationDate: dayjs().add(1, 'day').toDate(),
+      usage: VerificationCodeUsage.newsletter,
     },
     { session: prisma }
   )

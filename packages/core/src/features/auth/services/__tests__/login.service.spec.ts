@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BackgroundTaskRunner } from '../../../../lib/background-task-runner.ts'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
-import { VerificationCodeMode } from '../../../../prisma/generated/client.ts'
+import {
+  VerificationCodeMode,
+  VerificationCodeUsage,
+} from '../../../../prisma/generated/client.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
@@ -62,6 +65,7 @@ describe('verifyCode', () => {
     const result = await verifyCode({
       email: verificationCode.email,
       code: verificationCode.code,
+      usage: VerificationCodeUsage.login,
     })
 
     expect(result.success).toBe(true)
@@ -79,6 +83,7 @@ describe('verifyCode', () => {
     const result = await verifyCode({
       email: faker.internet.email().toLocaleLowerCase(),
       code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+      usage: VerificationCodeUsage.login,
     })
 
     expect(result.success).toBe(false)
@@ -96,6 +101,7 @@ describe('verifyCode', () => {
     const result = await verifyCode({
       email: verificationCode.email,
       code: '654321',
+      usage: VerificationCodeUsage.login,
     })
 
     expect(result.success).toBe(false)
@@ -113,6 +119,25 @@ describe('verifyCode', () => {
     const result = await verifyCode({
       email: verificationCode.email,
       code: verificationCode.code,
+      usage: VerificationCodeUsage.login,
+    })
+
+    expect(result.success).toBe(false)
+    if (result.success) {
+      throw new Error('Expected verifyCode to fail')
+    }
+    expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
+  })
+
+  it('fails when the code was issued for another usage', async () => {
+    const verificationCode = await verificationCodeFactory.create({
+      usage: VerificationCodeUsage.newsletter,
+    })
+
+    const result = await verifyCode({
+      email: verificationCode.email,
+      code: verificationCode.code,
+      usage: VerificationCodeUsage.login,
     })
 
     expect(result.success).toBe(false)
@@ -128,7 +153,11 @@ describe('verifyCode', () => {
     let result: Awaited<ReturnType<typeof verifyCode>> | undefined
     await transaction(async (session) => {
       result = await verifyCode(
-        { email: verificationCode.email, code: verificationCode.code },
+        {
+          email: verificationCode.email,
+          code: verificationCode.code,
+          usage: VerificationCodeUsage.login,
+        },
         { session }
       )
     })

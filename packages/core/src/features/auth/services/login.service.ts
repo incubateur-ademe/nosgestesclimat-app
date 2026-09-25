@@ -10,7 +10,10 @@ import type {
   Prisma,
   VerificationCode,
 } from '../../../prisma/generated/client.ts'
-import { VerificationCodeMode } from '../../../prisma/generated/client.ts'
+import {
+  VerificationCodeMode,
+  VerificationCodeUsage,
+} from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
@@ -59,12 +62,13 @@ type LoginResult = {
 }
 
 /**
- * Looks up a valid (non-expired) verification code. A lookup miss is the
- * expected invalid-code signal: it is returned as a domain failure, never
- * thrown - no diagnosis (see the migration tickets, decision 3).
+ * Looks up a valid (non-expired) verification code issued for the given
+ * usage. A lookup miss is the expected invalid-code signal: it is returned as
+ * a domain failure, never thrown - no diagnosis (see the migration tickets,
+ * decision 3).
  */
 export const verifyCode = async (
-  verificationCode: Pick<VerificationCode, 'email' | 'code'>,
+  verificationCode: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
   { session }: { session?: Transaction } = {}
 ): Promise<Result<UserVerificationCode, InvalidVerificationCodeError>> => {
   try {
@@ -221,7 +225,10 @@ export function createLogin({
      */
     sessionUserId?: string
   }): Promise<Result<LoginResult, LoginError>> {
-    const verificationCode = await verifyCode(loginDto)
+    const verificationCode = await verifyCode({
+      ...loginDto,
+      usage: VerificationCodeUsage.login,
+    })
     if (!verificationCode.success) {
       return failure(verificationCode.error)
     }

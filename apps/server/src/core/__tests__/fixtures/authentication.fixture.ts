@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { createOrUpdateVerifiedUser } from '@nosgestesclimat/core/features/users/repositories/verified-users.repository'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import dayjs from 'dayjs'
 import { config } from '../../../config.ts'
 
@@ -49,16 +50,19 @@ export const createVerificationCode = async ({
   email,
   code = faker.number.int({ min: 100000, max: 999999 }).toString(),
   expirationDate = dayjs().add(1, 'hour').toDate(),
+  usage = VerificationCodeUsage.login,
 }: {
   email: string
   code?: string
   expirationDate?: Date
+  usage?: VerificationCodeUsage
 }) => {
   await prisma.verificationCode.create({
     data: {
       email,
       code,
       expirationDate,
+      usage,
     },
   })
 

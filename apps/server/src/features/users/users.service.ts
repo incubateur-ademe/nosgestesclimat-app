@@ -4,6 +4,7 @@ import {
 } from '@nosgestesclimat/core/features/auth/services/login.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
@@ -138,11 +139,14 @@ export const updateUserAndContact = async ({
           )
         }
 
+        // The email-change code is created by the site's code-creation flow,
+        // the same one that issues login codes.
         const verificationCode = await verifyCode(
           {
             ...userToUpdate,
             code,
             email: nextEmail,
+            usage: VerificationCodeUsage.login,
           },
           { session }
         )

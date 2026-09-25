@@ -2,6 +2,7 @@ import { randomInt } from 'node:crypto'
 
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
 import { prisma } from '../../../prisma/client.ts'
+import { VerificationCodeUsage } from '../../../prisma/generated/client.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import { createUserVerificationCode } from '../repositories/verification-codes.repository.ts'
@@ -54,6 +55,7 @@ export function createVerificationCodeService({
         email,
         code,
         expirationDate,
+        usage: VerificationCodeUsage.login,
       },
       { session: prisma }
     )
