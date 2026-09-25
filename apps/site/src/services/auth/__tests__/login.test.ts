@@ -114,6 +114,36 @@ describe('login', () => {
     expect(mocks.loginService).not.toHaveBeenCalled()
   })
 
+  it('throttles a repeat of the same email with different casing', async () => {
+    const throttledKeys = new Set<string>()
+    mocks.rateLimitSameRequest.mockImplementation(
+      ({ key }: { key: string }) => {
+        if (throttledKeys.has(key)) {
+          return false
+        }
+        throttledKeys.add(key)
+
+        return true
+      }
+    )
+    mocks.loginService.mockResolvedValue(
+      failure(new InvalidVerificationCodeError())
+    )
+
+    const first = await login({ email: 'Case@Example.com', code: '123456' })
+    const second = await login({ email: 'case@example.com', code: '123456' })
+
+    expect(first).toEqual(failure(new InvalidCodeError()))
+    expect(second).toEqual(failure(new RateLimitedError()))
+    expect(mocks.rateLimitSameRequest).toHaveBeenNthCalledWith(1, {
+      key: 'login:case@example.com',
+    })
+    expect(mocks.rateLimitSameRequest).toHaveBeenNthCalledWith(2, {
+      key: 'login:case@example.com',
+    })
+    expect(mocks.loginService).toHaveBeenCalledTimes(1)
+  })
+
   it('returns UnknownCodeError on a malformed code', async () => {
     const result = await login({ email: 'user@example.com', code: '12ab' })
 
