@@ -17,7 +17,6 @@ import {
 import { LoginDto } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
 import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
-import type { ISOSupportedLanguage } from '@nosgestesclimat/core/features/geo/types/language'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { captureException } from '@sentry/nextjs'
@@ -25,6 +24,7 @@ import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
 import { createAppSession } from './create-app-session'
 import { getUserSession } from './get-user-session'
+import { resolveLocale } from './resolve-locale'
 
 // Error handling for the background email side effects lives inside the core
 // service (a failing email must never fail the login), so the site injects
@@ -80,10 +80,10 @@ export const login = async ({
 
     // The old route validated the locale query the same way: an unsupported
     // locale never reached the service.
-    if (locale !== undefined && locale !== 'fr' && locale !== 'en') {
+    const loginLocale = resolveLocale(locale)
+    if (loginLocale === undefined) {
       return failure(new UnknownCodeError())
     }
-    const loginLocale: ISOSupportedLanguage = locale ?? 'fr'
 
     const context = {
       userId: sessionUserId,
