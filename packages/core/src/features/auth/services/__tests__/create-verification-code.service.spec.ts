@@ -86,26 +86,24 @@ describe('createVerificationCode', () => {
     ).toBe(0)
   })
 
-  describe('And a custom usage', () => {
-    it('Then it stores the code with the injected usage', async () => {
-      const createApiTokenVerificationCode = createVerificationCodeService({
-        logger,
-        captureException,
-        sendVerificationCodeEmail,
-        backgroundTaskRunner,
-        usage: VerificationCodeUsage.apiToken,
-      })
+  it('stores the code with the injected custom usage', async () => {
+    const createApiTokenVerificationCode = createVerificationCodeService({
+      logger,
+      captureException,
+      sendVerificationCodeEmail,
+      backgroundTaskRunner,
+      usage: VerificationCodeUsage.apiToken,
+    })
 
-      const email = faker.internet.email().toLocaleLowerCase()
+    const email = faker.internet.email().toLocaleLowerCase()
 
-      await createApiTokenVerificationCode({ email, locale: 'fr' })
+    await createApiTokenVerificationCode({ email, locale: 'fr' })
 
-      await expect(
-        prisma.verificationCode.findFirst({ where: { email } })
-      ).resolves.toMatchObject({
-        email,
-        usage: VerificationCodeUsage.apiToken,
-      })
+    await expect(
+      prisma.verificationCode.findFirst({ where: { email } })
+    ).resolves.toMatchObject({
+      email,
+      usage: VerificationCodeUsage.apiToken,
     })
   })
 
@@ -153,49 +151,47 @@ describe('createVerificationCode', () => {
     })
   })
 
-  describe('And the email delivery fails', () => {
-    it('Then it still persists the verification code and does not fail the creation', async () => {
-      const email = faker.internet.email().toLocaleLowerCase()
-      const emailError = new Error('Brevo timeout')
-      sendVerificationCodeEmail.mockRejectedValueOnce(emailError)
+  it('still persists the verification code and does not fail the creation when the email delivery fails', async () => {
+    const email = faker.internet.email().toLocaleLowerCase()
+    const emailError = new Error('Brevo timeout')
+    sendVerificationCodeEmail.mockRejectedValueOnce(emailError)
 
-      await expect(
-        createVerificationCode({ email, locale: 'fr' })
-      ).resolves.toEqual({
-        email,
-        expirationDate: expect.any(Date),
-      })
-
-      await flushBackgroundTasks()
-
-      // Brevo may well have delivered the message before failing us: the
-      // email failure happens after the committed create, and the code must
-      // stay in database, otherwise the user holds a code that can never work.
-      await expect(
-        prisma.verificationCode.findFirst({ where: { email } })
-      ).resolves.toMatchObject({ email })
+    await expect(
+      createVerificationCode({ email, locale: 'fr' })
+    ).resolves.toEqual({
+      email,
+      expirationDate: expect.any(Date),
     })
 
-    it('Then it logs and captures the exception', async () => {
-      const email = faker.internet.email().toLocaleLowerCase()
-      const emailError = new Error('Brevo timeout')
-      sendVerificationCodeEmail.mockRejectedValueOnce(emailError)
+    await flushBackgroundTasks()
 
-      await createVerificationCode({ email, locale: 'fr' })
+    // Brevo may well have delivered the message before failing us: the
+    // email failure happens after the committed create, and the code must
+    // stay in database, otherwise the user holds a code that can never work.
+    await expect(
+      prisma.verificationCode.findFirst({ where: { email } })
+    ).resolves.toMatchObject({ email })
+  })
 
-      await flushBackgroundTasks()
+  it('logs and captures the exception when the email delivery fails', async () => {
+    const email = faker.internet.email().toLocaleLowerCase()
+    const emailError = new Error('Brevo timeout')
+    sendVerificationCodeEmail.mockRejectedValueOnce(emailError)
 
-      expect(logger.error).toHaveBeenCalledWith(
-        'Failed to send verification code email',
-        { error: emailError }
-      )
-      // The address must never reach the logs in clear.
-      expect(logger.error).not.toHaveBeenCalledWith(
-        'Failed to send verification code email',
-        expect.objectContaining({ email })
-      )
-      expect(captureException).toHaveBeenCalledWith(emailError)
-    })
+    await createVerificationCode({ email, locale: 'fr' })
+
+    await flushBackgroundTasks()
+
+    expect(logger.error).toHaveBeenCalledWith(
+      'Failed to send verification code email',
+      { error: emailError }
+    )
+    // The address must never reach the logs in clear.
+    expect(logger.error).not.toHaveBeenCalledWith(
+      'Failed to send verification code email',
+      expect.objectContaining({ email })
+    )
+    expect(captureException).toHaveBeenCalledWith(emailError)
   })
 })
 

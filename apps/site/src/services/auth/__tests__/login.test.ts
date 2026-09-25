@@ -6,6 +6,7 @@ import {
 import type * as loggerModule from '@/logger'
 import { InvalidVerificationCodeError } from '@nosgestesclimat/core/features/auth/errors/login.error'
 import { failure, success } from '@nosgestesclimat/core/lib/result'
+import { captureException } from '@sentry/nextjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { login } from '../login'
 
@@ -16,7 +17,6 @@ const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
   after: vi.fn(),
   rateLimitSameRequest: vi.fn(),
-  captureException: vi.fn(),
   sendEmail: vi.fn(),
   addOrUpdateContact: vi.fn(),
   sendWelcomeEmail: vi.fn(),
@@ -59,8 +59,6 @@ vi.mock('@/helpers/server/rateLimitSameRequest', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidatePath }))
 
 vi.mock('next/server', () => ({ after: mocks.after }))
-
-vi.mock('@sentry/nextjs', () => ({ captureException: mocks.captureException }))
 
 vi.mock('@/env.server', () => ({
   env: { NEXT_PUBLIC_SITE_URL: 'http://localhost:3000' },
@@ -253,7 +251,7 @@ describe('login', () => {
     const result = await login({ email: 'user@example.com', code: '000000' })
 
     expect(result).toEqual(failure(new InvalidCodeError()))
-    expect(mocks.captureException).toHaveBeenCalledWith(
+    expect(captureException).toHaveBeenCalledWith(
       expect.any(InvalidVerificationCodeError),
       {
         level: 'warning',
@@ -273,7 +271,7 @@ describe('login', () => {
     const result = await login({ email: 'user@example.com', code: '123456' })
 
     expect(result).toEqual(failure(new UnknownCodeError()))
-    expect(mocks.captureException).toHaveBeenCalledWith(expect.any(Error), {
+    expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
       extra: expect.objectContaining({ email: 'us***@ex***' }),
     })
     expect(mocks.createAppSession).not.toHaveBeenCalled()
@@ -288,7 +286,7 @@ describe('login', () => {
     expect(mocks.loginService).not.toHaveBeenCalled()
     expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
     expect(mocks.createAppSession).not.toHaveBeenCalled()
-    expect(mocks.captureException).toHaveBeenCalledWith(expect.any(Error), {
+    expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
       extra: expect.objectContaining({ email: 'us***@ex***' }),
     })
   })

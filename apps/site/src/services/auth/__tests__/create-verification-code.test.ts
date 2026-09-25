@@ -1,20 +1,23 @@
-import { captureException } from '@sentry/nextjs'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
 import {
   RateLimitedError,
   UnknownCodeError,
 } from '@/components/authentication/errors'
 import type * as loggerModule from '@/logger'
-import logger, { maskEmail } from '@/logger'
+import { maskEmail } from '@/logger'
+import { captureException } from '@sentry/nextjs'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVerificationCode } from '../create-verification-code'
 
-const serviceMock = vi.hoisted(() => ({
+const mocks = vi.hoisted(() => ({
   createVerificationCode: vi.fn(),
+  sendEmail: vi.fn(),
+  after: vi.fn(),
+  loggerInfo: vi.fn(),
+  loggerError: vi.fn(),
 }))
 
 vi.mock('@/adapters/brevoClient', () => ({
-  sendEmail: vi.fn(),
+  sendEmail: mocks.sendEmail,
 }))
 
 vi.mock('@/logger', async (importOriginal) => {
@@ -22,9 +25,9 @@ vi.mock('@/logger', async (importOriginal) => {
 
   return {
     default: {
-      info: vi.fn(),
+      info: mocks.loggerInfo,
       warn: vi.fn(),
-      error: vi.fn(),
+      error: mocks.loggerError,
       debug: vi.fn(),
     },
     maskEmail: actual.maskEmail,
@@ -34,14 +37,12 @@ vi.mock('@/logger', async (importOriginal) => {
 vi.mock(
   '@nosgestesclimat/core/features/auth/services/create-verification-code.service',
   () => ({
-    createVerificationCodeService: vi.fn(
-      () => serviceMock.createVerificationCode
-    ),
+    createVerificationCodeService: vi.fn(() => mocks.createVerificationCode),
   })
 )
 
 vi.mock('next/server', () => ({
-  after: vi.fn(),
+  after: mocks.after,
 }))
 
 // The real in-memory rate limiter is used on purpose: its map persists across
@@ -49,7 +50,7 @@ vi.mock('next/server', () => ({
 describe('createVerificationCode', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    serviceMock.createVerificationCode.mockResolvedValue({
+    mocks.createVerificationCode.mockResolvedValue({
       email: 'rate-limit@example.com',
       expirationDate: new Date('2026-01-02T03:04:05.678Z'),
     })
@@ -65,11 +66,11 @@ describe('createVerificationCode', () => {
       success: true,
       data: { expirationDate: '2026-01-02T03:04:05.678Z' },
     })
-    expect(serviceMock.createVerificationCode).toHaveBeenCalledWith({
+    expect(mocks.createVerificationCode).toHaveBeenCalledWith({
       email: 'success@example.com',
       locale: 'fr',
     })
-    expect(logger.info).toHaveBeenCalledWith(
+    expect(mocks.loggerInfo).toHaveBeenCalledWith(
       'VerificationCode created',
       expect.objectContaining({
         email: maskEmail('Success@Example.com'),
@@ -95,7 +96,7 @@ describe('createVerificationCode', () => {
       success: false,
       error: new RateLimitedError(),
     })
-    expect(serviceMock.createVerificationCode).toHaveBeenCalledTimes(1)
+    expect(mocks.createVerificationCode).toHaveBeenCalledTimes(1)
   })
 
   it('throttles a repeat of the same email with different casing', async () => {
@@ -113,8 +114,8 @@ describe('createVerificationCode', () => {
       success: false,
       error: new RateLimitedError(),
     })
-    expect(serviceMock.createVerificationCode).toHaveBeenCalledTimes(1)
-    expect(serviceMock.createVerificationCode).toHaveBeenCalledWith({
+    expect(mocks.createVerificationCode).toHaveBeenCalledTimes(1)
+    expect(mocks.createVerificationCode).toHaveBeenCalledWith({
       email: 'case@example.com',
       locale: 'fr',
     })
@@ -123,7 +124,7 @@ describe('createVerificationCode', () => {
   it('defaults a missing locale to fr', async () => {
     await createVerificationCode({ email: 'default-locale@example.com' })
 
-    expect(serviceMock.createVerificationCode).toHaveBeenCalledWith({
+    expect(mocks.createVerificationCode).toHaveBeenCalledWith({
       email: 'default-locale@example.com',
       locale: 'fr',
     })
@@ -139,7 +140,7 @@ describe('createVerificationCode', () => {
       success: false,
       error: new UnknownCodeError(),
     })
-    expect(serviceMock.createVerificationCode).not.toHaveBeenCalled()
+    expect(mocks.createVerificationCode).not.toHaveBeenCalled()
   })
 
   it('rejects an invalid email with the unknown error', async () => {
@@ -152,12 +153,12 @@ describe('createVerificationCode', () => {
       success: false,
       error: new UnknownCodeError(),
     })
-    expect(serviceMock.createVerificationCode).not.toHaveBeenCalled()
+    expect(mocks.createVerificationCode).not.toHaveBeenCalled()
   })
 
   it('maps a service failure to the unknown error and captures it', async () => {
     const failure = new Error('boom')
-    serviceMock.createVerificationCode.mockRejectedValue(failure)
+    mocks.createVerificationCode.mockRejectedValue(failure)
 
     const result = await createVerificationCode({
       email: 'throwing@example.com',
@@ -168,7 +169,7 @@ describe('createVerificationCode', () => {
       success: false,
       error: new UnknownCodeError(),
     })
-    expect(logger.error).toHaveBeenCalledWith(
+    expect(mocks.loggerError).toHaveBeenCalledWith(
       'VerificationCode creation failed',
       expect.objectContaining({
         email: maskEmail('throwing@example.com'),
@@ -191,7 +192,7 @@ describe('createVerificationCode', () => {
     })
 
     expect(result.success).toBe(true)
-    expect(serviceMock.createVerificationCode).toHaveBeenCalledWith({
+    expect(mocks.createVerificationCode).toHaveBeenCalledWith({
       email: 'with-mode@example.com',
       locale: 'fr',
     })
