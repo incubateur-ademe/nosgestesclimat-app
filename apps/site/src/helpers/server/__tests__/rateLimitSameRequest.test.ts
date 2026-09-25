@@ -12,11 +12,11 @@ describe('rateLimitSameRequest', () => {
     vi.useRealTimers()
   })
 
-  it('then it should allow the first request for a key', () => {
+  it('allows the first request for a key', () => {
     expect(rateLimitSameRequest({ key: 'login:first@example.org' })).toBe(true)
   })
 
-  it('then it should throttle an immediate repeat of the same key', () => {
+  it('throttles an immediate repeat of the same key', () => {
     expect(rateLimitSameRequest({ key: 'login:repeat@example.org' })).toBe(true)
 
     expect(rateLimitSameRequest({ key: 'login:repeat@example.org' })).toBe(
@@ -24,7 +24,7 @@ describe('rateLimitSameRequest', () => {
     )
   })
 
-  it('then it should release the key once the TTL has expired', () => {
+  it('releases the key once the TTL has expired', () => {
     expect(
       rateLimitSameRequest({ key: 'login:expiry@example.org', ttlMs: 30_000 })
     ).toBe(true)
@@ -40,7 +40,7 @@ describe('rateLimitSameRequest', () => {
     ).toBe(true)
   })
 
-  it('then it should throttle a repeated key but not a different one', () => {
+  it('throttles a repeated key but not a different one', () => {
     expect(rateLimitSameRequest({ key: 'login:user-a@example.org' })).toBe(true)
 
     expect(rateLimitSameRequest({ key: 'login:user-a@example.org' })).toBe(
@@ -49,7 +49,7 @@ describe('rateLimitSameRequest', () => {
     expect(rateLimitSameRequest({ key: 'login:user-b@example.org' })).toBe(true)
   })
 
-  it('then it should not throttle anymore when the same key is used past a shorter TTL', () => {
+  it('does not throttle anymore when the same key is used past a shorter TTL', () => {
     expect(
       rateLimitSameRequest({ key: 'login:short-ttl@example.org', ttlMs: 1_000 })
     ).toBe(true)
@@ -67,7 +67,7 @@ describe('rateLimitSameRequest', () => {
     ).toBe(true)
   })
 
-  it('then it should sweep expired entries at most once per TTL window', async () => {
+  it('sweeps expired entries at most once per TTL window', async () => {
     vi.resetModules()
     const { rateLimitSameRequest: limiter } =
       await import('../rateLimitSameRequest')
