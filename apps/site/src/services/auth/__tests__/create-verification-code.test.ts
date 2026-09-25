@@ -5,6 +5,8 @@ import {
   RateLimitedError,
   UnknownCodeError,
 } from '@/components/authentication/errors'
+import type * as loggerModule from '@/logger'
+import logger, { maskEmail } from '@/logger'
 import { createVerificationCode } from '../create-verification-code'
 
 const serviceMock = vi.hoisted(() => ({
@@ -15,14 +17,19 @@ vi.mock('@/adapters/brevoClient', () => ({
   sendEmail: vi.fn(),
 }))
 
-vi.mock('@/logger', () => ({
-  default: {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  },
-}))
+vi.mock('@/logger', async (importOriginal) => {
+  const actual = await importOriginal<typeof loggerModule>()
+
+  return {
+    default: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    },
+    maskEmail: actual.maskEmail,
+  }
+})
 
 vi.mock(
   '@nosgestesclimat/core/features/auth/services/create-verification-code.service',
@@ -62,6 +69,15 @@ describe('createVerificationCode', () => {
       email: 'success@example.com',
       locale: 'fr',
     })
+    expect(logger.info).toHaveBeenCalledWith(
+      'VerificationCode created',
+      expect.objectContaining({
+        email: maskEmail('Success@Example.com'),
+        locale: 'fr',
+        expirationDate: new Date('2026-01-02T03:04:05.678Z'),
+        durationMs: expect.any(Number),
+      })
+    )
   })
 
   it('throttles an immediate repeat for the same email', async () => {
@@ -140,7 +156,8 @@ describe('createVerificationCode', () => {
   })
 
   it('maps a service failure to the unknown error and captures it', async () => {
-    serviceMock.createVerificationCode.mockRejectedValue(new Error('boom'))
+    const failure = new Error('boom')
+    serviceMock.createVerificationCode.mockRejectedValue(failure)
 
     const result = await createVerificationCode({
       email: 'throwing@example.com',
@@ -151,7 +168,19 @@ describe('createVerificationCode', () => {
       success: false,
       error: new UnknownCodeError(),
     })
-    expect(captureException).toHaveBeenCalledWith(expect.any(Error))
+    expect(logger.error).toHaveBeenCalledWith(
+      'VerificationCode creation failed',
+      expect.objectContaining({
+        email: maskEmail('throwing@example.com'),
+        durationMs: expect.any(Number),
+        error: failure,
+      })
+    )
+    expect(captureException).toHaveBeenCalledWith(failure, {
+      extra: expect.objectContaining({
+        email: maskEmail('throwing@example.com'),
+      }),
+    })
   })
 
   it('ignores the deprecated mode parameter', async () => {

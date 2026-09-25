@@ -75,10 +75,10 @@ export function createVerificationCodeService({
         await sendVerificationCodeEmail({ locale, email, code })
       } catch (error) {
         captureException(error)
-        logger.error('Failed to send verification code email', {
-          error,
-          email,
-        })
+        // The email is deliberately absent: core has no masking helper, and
+        // the address must not reach the logs in clear (captureException
+        // already carries the full context to Sentry).
+        logger.error('Failed to send verification code email', { error })
       }
     })
 
