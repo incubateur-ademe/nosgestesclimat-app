@@ -41,8 +41,13 @@ export const createVerificationCode = async ({
   mode?: AuthenticationMode
   locale?: string
 }): Promise<Result<{ expirationDate: string }, EmailError>> => {
+  // The schema lowercases the email before the DB lookup; the throttle key
+  // must normalize the same way, or case permutations split the bucket.
   if (
-    !rateLimitSameRequest({ key: `verification-code:${email}`, ttlMs: 30_000 })
+    !rateLimitSameRequest({
+      key: `verification-code:${email.toLocaleLowerCase()}`,
+      ttlMs: 30_000,
+    })
   ) {
     return failure(new RateLimitedError())
   }
