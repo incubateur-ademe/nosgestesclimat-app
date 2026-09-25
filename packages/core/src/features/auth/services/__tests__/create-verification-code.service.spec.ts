@@ -168,8 +168,9 @@ describe('createVerificationCode', () => {
 
       await flushBackgroundTasks()
 
-      // Brevo may well have delivered the message before failing us: rolling
-      // the code back here is what hands users a code that can never work.
+      // Brevo may well have delivered the message before failing us: the
+      // email failure happens after the committed create, and the code must
+      // stay in database, otherwise the user holds a code that can never work.
       await expect(
         prisma.verificationCode.findFirst({ where: { email } })
       ).resolves.toMatchObject({ email })

@@ -53,12 +53,11 @@ export function createVerificationCodeService({
     const code = generateCode()
     const expirationDate = new Date(Date.now() + VERIFICATION_CODE_TTL_MS)
 
-    // The code must be committed *before* the email is handed to Brevo. Sending
-    // inside the transaction means any later failure (a Brevo timeout, or the
-    // call simply outliving the interactive transaction budget) rolls the row
-    // back after Brevo has already accepted — and delivered — the message. The
-    // user then holds a legitimate-looking code that does not exist in database,
-    // and every attempt to use it comes back as "invalid".
+    // The code must be committed *before* the email is handed to Brevo.
+    // Otherwise Brevo may accept — and deliver — a code that does not exist
+    // in database, and every attempt to use it comes back as "invalid". The
+    // row is created with a plain committed create, and only then is the
+    // email scheduled through the backgroundTaskRunner.
     const verificationCode = await createUserVerificationCode(
       {
         email,
