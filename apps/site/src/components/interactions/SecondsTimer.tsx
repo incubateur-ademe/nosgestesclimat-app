@@ -2,7 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { useEffect, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface SecondsTimerProps {
   duration: number // duration in seconds

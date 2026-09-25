@@ -5,10 +5,10 @@ import {
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
 import LockIcon from '../icons/LockIcon'
 import Link from '../Link'
 import Trans from '../translation/trans/TransServer'
+import { twMerge } from "cn";
 
 export default function NoResultsBlock({ locale }: { locale: Locale }) {
   return (

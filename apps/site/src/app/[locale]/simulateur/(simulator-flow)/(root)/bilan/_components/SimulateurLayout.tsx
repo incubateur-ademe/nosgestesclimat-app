@@ -6,9 +6,9 @@ import { useIframe } from '@/hooks/useIframe'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
 import { useCallback, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Summary from './Summary'
 import SimulateurSkeleton from './skeleton'
+import { twMerge } from "cn";
 
 export default function SimulateurLayout({
   children,

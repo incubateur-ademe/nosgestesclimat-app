@@ -9,7 +9,7 @@ import type { Locale } from '@/i18nConfig'
 import { getPublicActionsCatalogue } from '@/services/actions/get-public-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
 import type { DefaultPageProps } from '@/types'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export const generateMetadata = getCommonMetadata({
   title: t('actions.publicListPage.metaTitle'),

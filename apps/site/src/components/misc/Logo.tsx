@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 const imageClassSize = {
   xs: 'w-6',

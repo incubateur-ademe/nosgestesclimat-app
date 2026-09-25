@@ -1,8 +1,8 @@
 'use client'
 
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
 import FunFactsItem from './funFacts/FunFactsItem'
+import { twMerge } from "cn";
 
 const defaultFunFactsRules: { [k in keyof Partial<FunFacts>]: DottedName } = {
   percentageOfBicycleUsers: 'ui . organisations . transport . roule en vélo',

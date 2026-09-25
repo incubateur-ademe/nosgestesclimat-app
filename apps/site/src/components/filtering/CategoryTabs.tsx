@@ -5,8 +5,8 @@ import { encodeDottedNameAsURI } from '@/utils/format/encodeDottedNameAsURI'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import CategoryFilter from './categoryFilters/CategoryFilter'
+import { twMerge } from "cn";
 
 interface Props {
   categories: {

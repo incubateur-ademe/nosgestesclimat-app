@@ -9,7 +9,6 @@ import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import removeMarkdown from 'remove-markdown'
-import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import { ThemeBadge } from '../ThemeBadge'
 
@@ -17,6 +16,7 @@ import ActionTracker from '../ActionTracker'
 import styles from './ActionCard.module.css'
 import { ImpactTag } from './ImpactTag'
 import { rankToEmoji } from './rankToEmoji'
+import { twMerge } from "cn";
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport:

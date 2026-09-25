@@ -10,8 +10,8 @@ import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import importedFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json'
 import { utils } from 'publicodes'
 import { useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import DetailedFunFacts from './funFacts/DetailedFunFacts'
+import { twMerge } from "cn";
 
 const funFactsRules = importedFunFacts as { [k in keyof FunFacts]: DottedName }
 

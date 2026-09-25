@@ -2,8 +2,8 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import type { ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import ImageWithCategory from './ImageWithCategory'
+import { twMerge } from "cn";
 
 export default function PostThumbnail({
   title,

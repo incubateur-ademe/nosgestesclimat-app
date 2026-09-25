@@ -7,9 +7,9 @@ import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorF
 import isMobile from 'is-mobile'
 import type { PropsWithChildren, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Alert from '../alerts/alert/Alert'
 import Button, { type ButtonProps } from './Button'
+import { twMerge } from "cn";
 
 interface Props {
   color?: ButtonProps['color']

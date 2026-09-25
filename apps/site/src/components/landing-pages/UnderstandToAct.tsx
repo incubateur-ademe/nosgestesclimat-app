@@ -2,8 +2,8 @@ import PostThumbnail from '@/design-system/cms/PostThumbnail'
 import ColorLine from '@/design-system/layout/ColorLine'
 import type { LandingPagePostType } from '@/types/landing-page'
 import type { JSX, ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
+import { twMerge } from "cn";
 
 export default function UnderstandToAct({
   title,

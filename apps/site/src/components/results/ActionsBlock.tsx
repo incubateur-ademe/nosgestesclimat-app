@@ -9,12 +9,12 @@ import Title from '@/design-system/layout/Title'
 import Link from '@/design-system/links/Link'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
 import CarIcon from '../icons/CarIcon'
 import DownArrow from '../icons/DownArrow'
 import FoodIcon from '../icons/FoodIcon'
 import HousingIcon from '../icons/HousingIcon'
 import Trans from '../translation/trans/TransServer'
+import { twMerge } from "cn";
 
 const ACTIONS_HREF = `${END_PAGE_PATH}/actions` as const
 

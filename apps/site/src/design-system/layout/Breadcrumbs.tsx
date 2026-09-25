@@ -4,7 +4,7 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { Fragment, type ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function Breadcrumbs({
   items,

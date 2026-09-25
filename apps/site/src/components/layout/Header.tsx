@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
-import { twMerge } from 'tailwind-merge'
 import LanguageSwitchButton from '../translation/LanguageSwitchButton'
 import HideInIframe from './HideInIframe'
 import LogoHeader from './headerServer/LogoHeader'
 import MySpaceButton from './headerServer/MySpaceButton'
+import { twMerge } from "cn";
 
 interface Props {
   isSticky?: boolean

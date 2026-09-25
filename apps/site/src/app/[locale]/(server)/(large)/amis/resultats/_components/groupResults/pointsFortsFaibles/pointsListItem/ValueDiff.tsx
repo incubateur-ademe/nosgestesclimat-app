@@ -2,7 +2,7 @@
 
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { formatValue } from 'publicodes'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function ValueDiff({ value }: { value: number }) {
   const { t } = useClientTranslation()

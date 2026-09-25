@@ -1,7 +1,7 @@
 'use client'
 
 import Link from '@/components/Link'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Option {
   label: React.ReactNode | string

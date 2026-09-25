@@ -10,10 +10,10 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { cacheLife } from 'next/cache'
 import Link from 'next/link'
-import { twMerge } from 'tailwind-merge'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
+import { twMerge } from "cn";
 
 interface Props {
   backgroundColor?: 'default' | 'white'

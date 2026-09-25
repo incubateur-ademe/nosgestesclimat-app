@@ -1,9 +1,9 @@
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import { twMerge } from 'tailwind-merge'
 import Trans from '../../translation/trans/TransServer'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
+import { twMerge } from "cn";
 
 export interface ImpactTagProps extends React.ComponentPropsWithoutRef<'span'> {
   impact?: number

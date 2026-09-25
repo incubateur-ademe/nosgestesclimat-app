@@ -1,5 +1,5 @@
 import ColorLine from '@/design-system/layout/ColorLine'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   direction?: 'left' | 'right'

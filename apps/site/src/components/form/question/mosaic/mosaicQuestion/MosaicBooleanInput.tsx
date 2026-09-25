@@ -7,8 +7,8 @@ import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { motion } from 'framer-motion'
-import { twMerge } from 'tailwind-merge'
 import { useIsNotApplicableHack } from '../useIsNotApplicableHack'
+import { twMerge } from "cn";
 
 interface Props {
   question: DottedName

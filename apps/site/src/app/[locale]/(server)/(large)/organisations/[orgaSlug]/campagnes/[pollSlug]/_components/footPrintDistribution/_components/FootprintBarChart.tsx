@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   groupFootprint: number

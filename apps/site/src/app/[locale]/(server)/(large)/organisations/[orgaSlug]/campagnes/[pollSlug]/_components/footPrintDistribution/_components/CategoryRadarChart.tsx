@@ -14,7 +14,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   userValues: Record<Categories, number>

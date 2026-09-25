@@ -2,8 +2,8 @@
 
 import Alert from '@/design-system/alerts/alert/Alert'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
 import DefaultErrorMessage from './DefaultErrorMessage'
+import { twMerge } from "cn";
 
 export default function DefaultErrorAlert({
   children,

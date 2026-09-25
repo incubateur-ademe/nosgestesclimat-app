@@ -2,9 +2,9 @@ import type { Locale } from '@/i18nConfig'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import { useId } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Trans from '../translation/trans/TransServer'
 import HighlightedActionCard from './HighlightedActionCard'
+import { twMerge } from "cn";
 
 interface HighestImpactActionsSectionWhiteBackgroundProps extends React.ComponentPropsWithoutRef<'section'> {
   actions: MaybePersonalizedAction[]

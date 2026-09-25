@@ -1,5 +1,5 @@
 import React from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function SquareImageContainer({
   children,

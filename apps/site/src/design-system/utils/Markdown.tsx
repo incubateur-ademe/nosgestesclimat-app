@@ -5,8 +5,8 @@ import type { MarkdownToJSX } from 'markdown-to-jsx'
 import MarkdownToJsx from 'markdown-to-jsx'
 import Image from 'next/image'
 import type { ComponentProps } from 'react'
-import { twMerge } from 'tailwind-merge'
 import ButtonLink from '../buttons/ButtonLink'
+import { twMerge } from "cn";
 
 type MarkdownProps = ComponentProps<typeof MarkdownToJsx> & {
   className?: string

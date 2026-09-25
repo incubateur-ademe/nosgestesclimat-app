@@ -10,9 +10,9 @@ import '@splidejs/react-splide/css'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import PlaySignIcon from '../icons/PlaySignIcon'
 import Trans from '../translation/trans/TransClient'
+import { twMerge } from "cn";
 
 export default function DidYouKnowSlider({
   slides,

@@ -14,10 +14,10 @@ import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import isMobile from 'is-mobile'
 import { useState, useTransition } from 'react'
-import { twMerge } from 'tailwind-merge'
 import { getParticipantName } from '../../../../_helpers/getParticipantName'
 import { isGroupOwner } from '../../../../_helpers/isGroupOwner'
 import { removeParticipantAction } from '../../../_actions/remove-participant.action'
+import { twMerge } from "cn";
 
 const getRank = (index: number) => {
   switch (index) {

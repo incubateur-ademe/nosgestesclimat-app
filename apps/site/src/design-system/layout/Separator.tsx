@@ -1,4 +1,4 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 type SeparatorVariant = 'short' | 'full'
 

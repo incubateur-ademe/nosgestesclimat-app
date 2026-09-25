@@ -14,8 +14,8 @@ import {
   useId,
   useState,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
 import { match } from 'ts-pattern'
+import { twMerge } from "cn";
 
 export default function VerificationCodeForm() {
   const { state, submitCode, clearCodeError } = useAuth()

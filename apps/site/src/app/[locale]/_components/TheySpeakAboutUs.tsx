@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { fetchPartners } from '@/services/cms/fetchPartners'
 import Image from 'next/image'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default async function TheySpeakAboutUs({
   locale,

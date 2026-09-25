@@ -3,7 +3,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import Image from 'next/image'
 import { useMemo } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function CategoryIllustration({
   category,
