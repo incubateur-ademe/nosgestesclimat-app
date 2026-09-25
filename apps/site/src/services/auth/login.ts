@@ -50,7 +50,9 @@ export const login = async ({
 }): Promise<Result<{ userId: string; id: string }, CodeError>> => {
   const startedAt = Date.now()
 
-  if (!rateLimitSameRequest({ key: `login:${email}` })) {
+  // The schema lowercases the email before the DB lookup; the throttle key
+  // must normalize the same way, or case permutations split the bucket.
+  if (!rateLimitSameRequest({ key: `login:${email.toLocaleLowerCase()}` })) {
     return failure(new RateLimitedError())
   }
 

@@ -82,6 +82,28 @@ describe('createVerificationCode', () => {
     expect(serviceMock.createVerificationCode).toHaveBeenCalledTimes(1)
   })
 
+  it('throttles a repeat of the same email with different casing', async () => {
+    const first = await createVerificationCode({
+      email: 'Case@Example.com',
+      locale: 'fr',
+    })
+    const second = await createVerificationCode({
+      email: 'case@example.com',
+      locale: 'fr',
+    })
+
+    expect(first.success).toBe(true)
+    expect(second).toEqual({
+      success: false,
+      error: new RateLimitedError(),
+    })
+    expect(serviceMock.createVerificationCode).toHaveBeenCalledTimes(1)
+    expect(serviceMock.createVerificationCode).toHaveBeenCalledWith({
+      email: 'case@example.com',
+      locale: 'fr',
+    })
+  })
+
   it('defaults a missing locale to fr', async () => {
     await createVerificationCode({ email: 'default-locale@example.com' })
 
