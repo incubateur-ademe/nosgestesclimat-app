@@ -25,8 +25,6 @@ import {
   createOrUpdateUser,
   createOrUpdateVerifiedUser,
   fetchUser,
-  transferOwnershipToUser,
-  transferSimulationsFromUser,
 } from './users.repository.ts'
 import type { UserUpdateDto } from './users.validator.ts'
 
@@ -41,33 +39,6 @@ interface UserDto {
 }
 
 const userToDto = (user: UserDto) => user
-
-export const reconcileSimulationsAfterLogin = ({
-  user,
-  previousUserId,
-}: {
-  user: { id: string; email: string }
-  previousUserId: string
-}) => {
-  return transaction(
-    (session) =>
-      transferSimulationsFromUser({ user, previousUserId }, { session }),
-    prisma
-  )
-}
-
-export const syncUserData = ({
-  user,
-  verified,
-}: {
-  user: { id: string; email: string }
-  verified?: boolean
-}) => {
-  return transaction(
-    (session) => transferOwnershipToUser({ user, verified }, { session }),
-    prisma
-  )
-}
 
 export const fetchUserContact = async (user: PartialUser) => {
   try {
