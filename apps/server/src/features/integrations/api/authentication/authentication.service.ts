@@ -1,12 +1,10 @@
-import {
-  createUserVerificationCode,
-  findVerificationCode,
-} from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
-import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { findVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { createVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import type { BackgroundTaskRunner } from '@nosgestesclimat/core/lib/background-task-runner'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
-import dayjs from 'dayjs'
+import { captureException } from '@sentry/node'
 import type { Request, RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
@@ -119,6 +117,23 @@ const signTokens = async (email: string) => {
   }
 }
 
+// The token email is a best-effort side effect of the stored code: the
+// response is sent before the email is dispatched, and a Brevo failure is
+// logged and captured by the core service instead of failing the request.
+const fireAndForgetEmail: BackgroundTaskRunner = (task) => {
+  void task()
+}
+
+const createApiTokenVerificationCode = createVerificationCodeService({
+  logger,
+  captureException,
+  sendVerificationCodeEmail: async (params) => {
+    await sendVerificationCodeEmail(params)
+  },
+  backgroundTaskRunner: fireAndForgetEmail,
+  usage: VerificationCodeUsage.apiToken,
+})
+
 export const generateApiToken = async ({
   generateApiTokenDto: { email },
 }: {
@@ -130,31 +145,7 @@ export const generateApiToken = async ({
   )
 
   if (emailWhitelist.length) {
-    const code = generateRandomVerificationCode()
-
-    // The code must be committed *before* the email is handed to Brevo, or the
-    // user can hold a code that does not exist in database.
-    await createUserVerificationCode(
-      {
-        email,
-        code,
-        expirationDate: dayjs().add(1, 'hour').toDate(),
-        usage: VerificationCodeUsage.apiToken,
-      },
-      { session: prisma }
-    )
-
-    // A failing email must not fail the token generation request: the email
-    // is a best-effort side effect of the stored code.
-    try {
-      await sendVerificationCodeEmail({
-        locale: Locales.fr,
-        email,
-        code,
-      })
-    } catch (error) {
-      logger.error('Failed to send verification code email', error)
-    }
+    await createApiTokenVerificationCode({ email, locale: Locales.fr })
   }
 }
 

@@ -86,6 +86,29 @@ describe('createVerificationCode', () => {
     ).toBe(0)
   })
 
+  describe('And a custom usage', () => {
+    it('Then it stores the code with the injected usage', async () => {
+      const createApiTokenVerificationCode = createVerificationCodeService({
+        logger,
+        captureException,
+        sendVerificationCodeEmail,
+        backgroundTaskRunner,
+        usage: VerificationCodeUsage.apiToken,
+      })
+
+      const email = faker.internet.email().toLocaleLowerCase()
+
+      await createApiTokenVerificationCode({ email, locale: 'fr' })
+
+      await expect(
+        prisma.verificationCode.findFirst({ where: { email } })
+      ).resolves.toMatchObject({
+        email,
+        usage: VerificationCodeUsage.apiToken,
+      })
+    })
+  })
+
   it('schedules the email with the generated code and the requested locale', async () => {
     const email = faker.internet.email().toLocaleLowerCase()
 

@@ -1,6 +1,9 @@
 import { faker } from '@faker-js/faker'
 import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
+import type * as SentryNode from '@sentry/node'
+import { captureException } from '@sentry/node'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -14,6 +17,11 @@ import {
   createIntegrationEmailWhitelist,
   GENERATE_API_TOKEN_ROUTE,
 } from './fixtures/authentication.fixtures.ts'
+
+vi.mock('@sentry/node', async (importOriginal) => ({
+  ...(await importOriginal<typeof SentryNode>()),
+  captureException: vi.fn(),
+}))
 
 describe('Given a NGC integrations API user', () => {
   const agent = supertest(app)
@@ -77,6 +85,77 @@ describe('Given a NGC integrations API user', () => {
             email,
           })
           .expect(StatusCodes.CREATED)
+      })
+
+      test('Then it stores an apiToken usage verification code in database', async () => {
+        mswServer.use(brevoSendEmail())
+
+        await agent
+          .post(url)
+          .send({
+            email,
+          })
+          .expect(StatusCodes.CREATED)
+
+        const createdVerificationCode = await prisma.verificationCode.findFirst(
+          {
+            where: {
+              email,
+            },
+          }
+        )
+
+        expect(createdVerificationCode).toMatchObject({
+          email,
+          code,
+          usage: VerificationCodeUsage.apiToken,
+        })
+      })
+
+      describe('And the email delivery fails', () => {
+        beforeEach(() => {
+          vi.mocked(captureException).mockClear()
+        })
+
+        test(`Then it still returns a ${StatusCodes.CREATED} response`, async () => {
+          mswServer.use(brevoSendEmail({ networkError: true }))
+
+          await agent
+            .post(url)
+            .send({
+              email,
+            })
+            .expect(StatusCodes.CREATED)
+
+          // The failing email is fired after the response is sent: wait for
+          // its retries to settle so they do not leak into the next tests.
+          await vi.waitFor(
+            () => {
+              expect(captureException).toHaveBeenCalledWith(expect.any(Error))
+            },
+            { timeout: 4000 }
+          )
+        })
+
+        test('Then it captures the exception', async () => {
+          mswServer.use(brevoSendEmail({ networkError: true }))
+
+          await agent
+            .post(url)
+            .send({
+              email,
+            })
+            .expect(StatusCodes.CREATED)
+
+          // The email is fired after the response is sent: wait for the
+          // best-effort task to fail and report to Sentry.
+          await vi.waitFor(
+            () => {
+              expect(captureException).toHaveBeenCalledWith(expect.any(Error))
+            },
+            { timeout: 4000 }
+          )
+        })
       })
 
       // @TODO if we keep api portal

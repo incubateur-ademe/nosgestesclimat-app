@@ -20,6 +20,14 @@ interface CreateVerificationCodeDependencies {
   sendVerificationCodeEmail: SendVerificationCodeEmail
   /** Runs the email outside of the request lifecycle */
   backgroundTaskRunner: BackgroundTaskRunner
+  /**
+   * What the created code unlocks. Defaults to the site login usage; flows
+   * reusing the service for another purpose (the integrations API token)
+   * inject their own discriminator.
+   */
+  usage?: VerificationCodeUsage
+  /** Code generator, overridable by tests that need to know the code */
+  generateCode?: () => string
 }
 
 const VERIFICATION_CODE_TTL_MS = 60 * 60 * 1000 // 1 hour
@@ -32,6 +40,8 @@ export function createVerificationCodeService({
   captureException,
   sendVerificationCodeEmail,
   backgroundTaskRunner,
+  usage = VerificationCodeUsage.login,
+  generateCode = generateRandomVerificationCode,
 }: CreateVerificationCodeDependencies) {
   return async function createVerificationCode({
     email,
@@ -41,7 +51,7 @@ export function createVerificationCodeService({
     email: VerificationCodeCreateDto['email']
     locale: ISOSupportedLanguage
   }): Promise<{ email: string; expirationDate: Date }> {
-    const code = generateRandomVerificationCode()
+    const code = generateCode()
     const expirationDate = new Date(Date.now() + VERIFICATION_CODE_TTL_MS)
 
     // The code must be committed *before* the email is handed to Brevo. Sending
@@ -55,7 +65,7 @@ export function createVerificationCodeService({
         email,
         code,
         expirationDate,
-        usage: VerificationCodeUsage.login,
+        usage,
       },
       { session: prisma }
     )
