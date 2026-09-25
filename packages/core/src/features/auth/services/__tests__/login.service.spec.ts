@@ -10,7 +10,7 @@ import {
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
-import { verificationCodeFactory } from '../../factories/index.ts'
+import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
 import { createLogin, verifyCode } from '../login.service.ts'
 
 const logger = {
