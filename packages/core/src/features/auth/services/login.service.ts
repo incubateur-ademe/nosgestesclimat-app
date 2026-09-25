@@ -45,16 +45,7 @@ type AddOrUpdateContactAfterLogin = ReturnType<
 
 /** The verified user as the login flow selects and returns it. */
 type LoginUser = Prisma.VerifiedUserGetPayload<{
-  select: {
-    id: true
-    name: true
-    email: true
-    position: true
-    telephone: true
-    optedInForCommunications: true
-    createdAt: true
-    updatedAt: true
-  }
+  select: typeof defaultVerifiedUserSelection
 }>
 
 type LoginResult = {
