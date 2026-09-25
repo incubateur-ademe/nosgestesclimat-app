@@ -5,14 +5,13 @@ import { prisma } from '../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../prisma/generated/client.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
+import type { createSendVerificationCodeEmail } from '../emails/auth-emails.ts'
 import { createUserVerificationCode } from '../repositories/verification-codes.repository.ts'
 import type { VerificationCodeCreateDto } from '../schemas/verification-codes.schema.ts'
 
-type SendVerificationCodeEmail = (params: {
-  locale: ISOSupportedLanguage
-  email: string
-  code: string
-}) => Promise<void>
+type SendVerificationCodeEmail = ReturnType<
+  typeof createSendVerificationCodeEmail
+>
 
 interface CreateVerificationCodeDependencies {
   logger: Logger
