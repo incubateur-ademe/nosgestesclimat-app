@@ -1,37 +1,43 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
-import { getSimulationMode } from '@/helpers/server/model/simulations'
-import { getPollSummary } from '@/services/polls/get-poll-summary'
+import { getSimulationMode } from '@nosgestesclimat/core/features/simulations/helpers/get-simulation-mode'
+import { getLatestSimulationResult } from '@nosgestesclimat/core/features/simulations/services/get-latest-simulation-result.service'
+
+import { getUserSession } from '@/services/auth/get-user-session'
+import { toSimulationDto } from '@/services/simulations/simulation.dto'
+import { notFound } from 'next/navigation'
 
 interface EmailPageData {
   isSchoolMode: boolean
-  pollSlug: string | undefined
   hasContest: boolean
-  organisationName: string | undefined
+  currentSimulation: Simulation
+  organisationName?: string
 }
 
-export async function getEmailPageData(
-  currentSimulation: Simulation
-): Promise<EmailPageData> {
-  const simulationMode = getSimulationMode(currentSimulation)
-  const isSchoolMode = simulationMode === 'scolaire'
-  const pollSlug = currentSimulation.polls?.[0]?.slug
+export async function getEmailPageData(): Promise<EmailPageData> {
+  const user = await getUserSession()
+  if (!user) notFound()
+
+  const result = await getLatestSimulationResult({
+    userId: user.id,
+    withTendency: false,
+  })
+  if (!result) notFound()
+
+  const poll = result.group?.type === 'poll' ? result.group.value : undefined
+
+  const isSchoolMode = getSimulationMode(result.simulation) === 'scolaire'
   const hasContest =
-    !!pollSlug &&
+    poll !== undefined &&
     (process.env.NEXT_PUBLIC_POLL_CONTEST_SLUGS ?? '')
       .split(',')
-      .includes(pollSlug)
+      .includes(poll.slug)
 
-  let organisationName: string | undefined
-
-  if (hasContest && pollSlug) {
-    // Tolerates an unknown poll: organisationName simply stays undefined.
-    const poll = await getPollSummary(pollSlug)
-    organisationName = poll?.organisation.name
-  }
+  const organisationName =
+    poll && hasContest ? poll.organisation.name : undefined
 
   return {
+    currentSimulation: toSimulationDto(result.simulation),
     isSchoolMode,
-    pollSlug,
     hasContest,
     organisationName,
   }

@@ -84,8 +84,6 @@ describe('getLastCompletedSimulation', () => {
       createdAt: latest.createdAt,
       updatedAt: latest.updatedAt,
       userId: user.id,
-      polls: [],
-      groups: [],
     })
   })
 

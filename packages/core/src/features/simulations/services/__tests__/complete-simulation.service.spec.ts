@@ -21,8 +21,8 @@ import {
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { findSimulationById } from '../../repository/simulation.repository.ts'
 import { serializeModel } from '../../repository/model.mapper.ts'
+import { findSimulationById } from '../../repository/simulation.repository.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { createCompleteSimulation } from '../complete-simulation.service.ts'
 
@@ -47,8 +47,19 @@ describe('completeSimulation', () => {
     expect(result).toEqual({
       success: true,
       data: {
-        groups: [{ id: group.id }],
-        polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
+        groups: [group],
+        polls: [
+          {
+            id: poll.id,
+            slug: poll.slug,
+            name: poll.name,
+            mode: poll.mode,
+            organisation: {
+              name: poll.organisation.name,
+              slug: poll.organisation.slug,
+            },
+          },
+        ],
       },
     })
 
@@ -68,8 +79,6 @@ describe('completeSimulation', () => {
       createdAt: simulation.createdAt,
       updatedAt: expect.any(Date),
       userId: user.id,
-      polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
-      groups: [{ id: group.id }],
     })
     expect(await findSimulationComputation(simulation.id)).not.toBeNull()
   })
@@ -297,7 +306,9 @@ describe('completeSimulation', () => {
       userId: user.id,
     })
     if (!persisted) throw new Error('simulation should exist')
-    expect(serializeModel(persisted.model)).toBe(serializeModel(simulation.model))
+    expect(serializeModel(persisted.model)).toBe(
+      serializeModel(simulation.model)
+    )
   })
 
   it('fails with simulation_not_found for a simulation owned by another user', async () => {
@@ -594,10 +605,13 @@ describe('completeSimulation', () => {
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
       expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 0,
-        error,
-      })
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 0,
+          error,
+        }
+      )
     })
 
     it('reports a failed email without failing the completion', async () => {
@@ -623,10 +637,13 @@ describe('completeSimulation', () => {
 
       expect(result).toEqual(expect.objectContaining({ success: true }))
       expect(captureException).toHaveBeenCalledWith(error)
-      expect(logger.error).toHaveBeenCalledWith('Failed to run side effect', {
-        index: 1,
-        error,
-      })
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 1,
+          error,
+        }
+      )
     })
   })
 })

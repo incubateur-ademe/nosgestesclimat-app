@@ -90,6 +90,7 @@ describe('getSimulationResult', () => {
   it('returns group info with type "group" when simulation has a group', async () => {
     const userId = randomUUID()
     const groupId = randomUUID()
+    const administratorId = randomUUID()
     vi.mocked(getUserSession).mockResolvedValue({
       id: userId,
       email: 'alice@example.com',
@@ -99,7 +100,17 @@ describe('getSimulationResult', () => {
     const entity = simulationFactory.withModelRegion('FR').build()
     const coreResult: SimulationResult = {
       simulation: entity,
-      group: { type: 'group', value: { id: groupId, name: 'My Group' } },
+      group: {
+        type: 'group',
+        value: {
+          id: groupId,
+          name: 'My Group',
+          emoji: '🌍',
+          administratorId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      },
       tendency: null,
     }
     serviceMock.getSimulationResultService.mockResolvedValue(coreResult)
@@ -109,7 +120,14 @@ describe('getSimulationResult', () => {
     expect(result).not.toBeNull()
     expect(result.group).toEqual({
       type: 'group',
-      value: { id: groupId, name: 'My Group' },
+      value: {
+        id: groupId,
+        name: 'My Group',
+        emoji: '🌍',
+        administratorId,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      },
     })
   })
 
