@@ -4,6 +4,7 @@ import {
 } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
 import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import dayjs from 'dayjs'
 import type { Request, RequestHandler } from 'express'
@@ -138,6 +139,7 @@ export const generateApiToken = async ({
         email,
         code,
         expirationDate: dayjs().add(1, 'hour').toDate(),
+        usage: VerificationCodeUsage.apiToken,
       },
       { session: prisma }
     )
@@ -161,7 +163,11 @@ export const exchangeCredentialsForToken = async (
 ) => {
   try {
     const { email } = await transaction(
-      (session) => findVerificationCode(query, { session }),
+      (session) =>
+        findVerificationCode(
+          { ...query, usage: VerificationCodeUsage.apiToken },
+          { session }
+        ),
       prisma
     )
 

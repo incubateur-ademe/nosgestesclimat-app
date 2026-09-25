@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BackgroundTaskRunner } from '../../../../lib/background-task-runner.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
 import {
   createVerificationCodeService,
   generateRandomVerificationCode,
@@ -67,6 +68,7 @@ describe('createVerificationCode', () => {
       id: expect.any(String),
       email,
       mode: null,
+      usage: VerificationCodeUsage.login,
       expirationDate: expect.any(Date),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
