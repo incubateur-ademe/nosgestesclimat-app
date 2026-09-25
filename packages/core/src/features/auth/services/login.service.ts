@@ -127,15 +127,20 @@ const createAccountOrSignin = async ({
     },
     InvalidVerificationCodeError
   >
-> => {
-  let user!: LoginUser
-  let mode!: VerificationCodeMode
-  let previousUserId: string | undefined
-
-  const result = await transaction(
+> =>
+  transaction(
     async (
       session
-    ): Promise<Result<void, InvalidVerificationCodeError> | void> => {
+    ): Promise<
+      Result<
+        {
+          user: LoginUser
+          mode: VerificationCodeMode
+          previousUserId: string | undefined
+        },
+        InvalidVerificationCodeError
+      >
+    > => {
       // Single-use by construction, on both branches: the code is claimed
       // atomically, inside the transaction, before the sign-in/sign-up
       // branch runs. A replayed code is already expired here, and a
@@ -175,11 +180,13 @@ const createAccountOrSignin = async ({
             { session }
           ))
 
-        user = existingUser
-        mode = VerificationCodeMode.signIn
-        previousUserId = sessionOwnedByOtherAccount ? undefined : sessionUserId
-
-        return
+        return success({
+          user: existingUser,
+          mode: VerificationCodeMode.signIn,
+          previousUserId: sessionOwnedByOtherAccount
+            ? undefined
+            : sessionUserId,
+        })
       }
 
       // SignUp: reuse the session userId as the account id only when it is
@@ -207,18 +214,13 @@ const createAccountOrSignin = async ({
         { session }
       )
 
-      user = newUser
-      mode = VerificationCodeMode.signUp
-      previousUserId = sessionUserId
+      return success({
+        user: newUser,
+        mode: VerificationCodeMode.signUp,
+        previousUserId: sessionUserId,
+      })
     }
   )
-
-  if (!result.success) {
-    return result
-  }
-
-  return success({ user, mode, previousUserId })
-}
 
 interface LoginDependencies {
   logger: Logger
