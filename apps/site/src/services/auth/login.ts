@@ -56,39 +56,45 @@ export const login = async ({
     return failure(new RateLimitedError())
   }
 
-  const session = await getUserSession()
-  // session.id is the user id, derived server-side from the signed session
-  // payload. Passing it to the service directly preserves the "one session
-  // id = one account" invariant.
-  const sessionUserId = session?.id
-
-  const parsed = validatePayload(LoginDto, { email, code })
-  if (!parsed.success) {
-    // An invalid body used to answer 400 from the server, which the old
-    // catch collapsed into UnknownCodeError - the form guarantees a
-    // well-formed email and a 6-digit code client-side, so this is
-    // unreachable from the UI.
-    return failure(new UnknownCodeError())
-  }
-
-  // The old route validated the locale query the same way: an unsupported
-  // locale never reached the service.
-  if (locale !== undefined && locale !== 'fr' && locale !== 'en') {
-    return failure(new UnknownCodeError())
-  }
-  const loginLocale: ISOSupportedLanguage = locale ?? 'fr'
-
-  const context = {
-    userId: sessionUserId,
-    email: maskEmail(email),
-    locale,
-  }
-
-  // Every branch below logs an outcome, so an attempt left without one is
-  // how a request that hung - or killed the process - stays visible.
-  logger.info('Login attempt', context)
+  // The old action wrapped its entire body in one try: any throw collapsed
+  // to failure(new UnknownCodeError()). The session lookup runs inside the
+  // try so its failures collapse the same way instead of surfacing to
+  // useLogin as a rejected mutation.
+  let sessionUserId: string | undefined
 
   try {
+    const session = await getUserSession()
+    // session.id is the user id, derived server-side from the signed session
+    // payload. Passing it to the service directly preserves the "one session
+    // id = one account" invariant.
+    sessionUserId = session?.id
+
+    const parsed = validatePayload(LoginDto, { email, code })
+    if (!parsed.success) {
+      // An invalid body used to answer 400 from the server, which the old
+      // catch collapsed into UnknownCodeError - the form guarantees a
+      // well-formed email and a 6-digit code client-side, so this is
+      // unreachable from the UI.
+      return failure(new UnknownCodeError())
+    }
+
+    // The old route validated the locale query the same way: an unsupported
+    // locale never reached the service.
+    if (locale !== undefined && locale !== 'fr' && locale !== 'en') {
+      return failure(new UnknownCodeError())
+    }
+    const loginLocale: ISOSupportedLanguage = locale ?? 'fr'
+
+    const context = {
+      userId: sessionUserId,
+      email: maskEmail(email),
+      locale,
+    }
+
+    // Every branch below logs an outcome, so an attempt left without one is
+    // how a request that hung - or killed the process - stays visible.
+    logger.info('Login attempt', context)
+
     const result = await loginService({
       loginDto: parsed.data,
       locale: loginLocale,
@@ -124,7 +130,12 @@ export const login = async ({
 
     return success({ ...user, userId: user.id })
   } catch (error) {
-    const outcome = { ...context, durationMs: Date.now() - startedAt }
+    const outcome = {
+      userId: sessionUserId,
+      email: maskEmail(email),
+      locale,
+      durationMs: Date.now() - startedAt,
+    }
 
     logger.error('Login failed', { ...outcome, error })
 
