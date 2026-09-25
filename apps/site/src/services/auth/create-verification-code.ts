@@ -16,6 +16,7 @@ import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { captureException } from '@sentry/nextjs'
 import { after } from 'next/server'
+import { resolveLocale } from './resolve-locale'
 
 const verificationCodeService = createVerificationCodeService({
   logger,
@@ -64,7 +65,8 @@ export const createVerificationCode = async ({
   // The old HTTP query validator defaulted a missing locale to 'fr' and
   // rejected any other value with a 400, likewise collapsed to the generic
   // unknown error.
-  if (locale !== undefined && locale !== 'fr' && locale !== 'en') {
+  const resolvedLocale = resolveLocale(locale)
+  if (resolvedLocale === undefined) {
     return failure(new UnknownCodeError())
   }
 
@@ -76,7 +78,7 @@ export const createVerificationCode = async ({
   try {
     const { expirationDate } = await verificationCodeService({
       email: parsed.data.email,
-      locale: locale ?? 'fr',
+      locale: resolvedLocale,
     })
 
     // The old server controller logged the creation: this line is the anchor
