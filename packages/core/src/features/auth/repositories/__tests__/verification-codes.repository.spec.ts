@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
-import { verificationCodeFactory } from '../../factories/index.ts'
+import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
 import {
   claimVerificationCode,
   createUserVerificationCode,
