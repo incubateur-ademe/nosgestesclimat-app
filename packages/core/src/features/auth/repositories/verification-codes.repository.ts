@@ -3,6 +3,7 @@ import type {
   Prisma,
   VerificationCode,
   VerificationCodeMode,
+  VerificationCodeUsage,
 } from '../../../prisma/generated/client.ts'
 
 type SignVerificationCode = {
@@ -29,7 +30,10 @@ export type UserVerificationCode =
   | RegisterApiVerificationCode
 
 export const createUserVerificationCode = (
-  data: Prisma.VerificationCodeCreateInput,
+  data: Prisma.VerificationCodeCreateInput & {
+    /** Feature the code validates in: a code created for one usage never validates in another. */
+    usage: VerificationCodeUsage
+  },
   { session }: { session: Transaction }
 ) => {
   return session.verificationCode.create({
@@ -45,13 +49,14 @@ export const createUserVerificationCode = (
 }
 
 export const findVerificationCode = (
-  { email, code }: Pick<VerificationCode, 'email' | 'code'>,
+  { email, code, usage }: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
   { session }: { session: Transaction }
 ): Promise<UserVerificationCode> => {
   return session.verificationCode.findFirstOrThrow({
     where: {
       code,
       email,
+      usage,
       expirationDate: {
         gte: new Date(),
       },

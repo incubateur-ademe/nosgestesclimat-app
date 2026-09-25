@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import * as verificationCodesRepository from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
 import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -210,6 +211,7 @@ describe('Given a NGC user', () => {
           code,
           email,
           mode: null,
+          usage: VerificationCodeUsage.newsletter,
           expirationDate: expect.any(Date),
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
