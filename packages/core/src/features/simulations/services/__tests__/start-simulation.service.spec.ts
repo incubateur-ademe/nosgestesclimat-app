@@ -30,8 +30,6 @@ describe('startSimulation', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       userId: user.id,
-      polls: [],
-      groups: [],
     })
   })
 
