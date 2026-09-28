@@ -8,7 +8,7 @@ import {
   useUser,
 } from '@/publicodes-state'
 
-import { expandedTestOrderedCategories } from '@/constants/model/categories'
+import { orderedTestCategoriesWithProfile } from '@/constants/model/categories'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { notFound } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
@@ -47,7 +47,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
   } = useQuestions({
     root,
     safeEvaluate,
-    categories: expandedTestOrderedCategories,
+    categories: orderedTestCategoriesWithProfile,
     subcategories,
     foldedSteps,
     situation,
@@ -61,7 +61,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
   )
 
   useProgression({
-    categories: expandedTestOrderedCategories,
+    categories: orderedTestCategoriesWithProfile,
     remainingQuestions,
     relevantQuestions,
     updateCurrentSimulation,
