@@ -51,9 +51,9 @@ describe('commitToAction service', () => {
   it('should call unauthorized() if no user session is found', async () => {
     sessionMock.getUserSession.mockResolvedValue(null)
 
-    await expect(commitToAction(faker.string.uuid())).rejects.toThrow(
-      'NEXT_UNAUTHORIZED'
-    )
+    await expect(
+      commitToAction(faker.string.uuid(), 'fake-tag')
+    ).rejects.toThrow('NEXT_UNAUTHORIZED')
 
     expect(unauthorizedMock).toHaveBeenCalledTimes(1)
     expect(commitToActionCoreServiceMock).not.toHaveBeenCalled()
@@ -66,7 +66,7 @@ describe('commitToAction service', () => {
     }
     commitToActionCoreServiceMock.mockResolvedValue(errorResult)
 
-    const result = await commitToAction(faker.string.uuid())
+    const result = await commitToAction(faker.string.uuid(), 'fake-tag')
 
     expect(result).toEqual(errorResult)
     expect(updateTagMock).not.toHaveBeenCalled()
@@ -79,7 +79,7 @@ describe('commitToAction service', () => {
     }
     commitToActionCoreServiceMock.mockResolvedValue(successResult)
 
-    const result = await commitToAction(faker.string.uuid())
+    const result = await commitToAction(faker.string.uuid(), 'fake-tag')
 
     expect(result).toEqual(successResult)
     expect(updateTagMock).toHaveBeenCalledTimes(1)

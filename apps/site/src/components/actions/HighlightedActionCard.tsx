@@ -2,6 +2,7 @@ import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import Link from '@/design-system/links/Link'
 import { getActionHref } from '@/helpers/actions/getActionHref'
 import { type Locale } from '@/i18nConfig'
+import { GET_PERSONALIZED_ACTIONS_CACHE_TAG } from '@/services/actions/get-personalized-actions-catalogue'
 import type { Theme } from '@/types/themes'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
@@ -119,7 +120,11 @@ export default function HighlightedActionCard({
           </ButtonLinkServer>
 
           {action.assessment && (
-            <CommitToActionButton shortLabelDisplayed action={action} />
+            <CommitToActionButton
+              cacheTagToUpdate={GET_PERSONALIZED_ACTIONS_CACHE_TAG}
+              shortLabelDisplayed
+              action={action}
+            />
           )}
         </div>
       </div>
