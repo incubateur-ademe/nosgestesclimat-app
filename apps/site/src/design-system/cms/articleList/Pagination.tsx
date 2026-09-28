@@ -4,7 +4,7 @@ import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
 import Link from '@/components/Link'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function Pagination({
   currentPage,

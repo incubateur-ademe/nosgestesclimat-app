@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import type { ButtonColor } from '../buttons/Button'
 import Button from '../buttons/Button'
 

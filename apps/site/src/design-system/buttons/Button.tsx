@@ -1,13 +1,13 @@
 'use client'
 
 import type { ButtonSize } from '@/types/values'
+import { twMerge } from 'cn'
 import {
   type HtmlHTMLAttributes,
   type MouseEventHandler,
   type PropsWithChildren,
   type RefObject,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Loader from '../layout/Loader'
 import {
   baseClassNames,

@@ -1,6 +1,6 @@
 import type { HTMLAttributes, PropsWithChildren } from 'react'
 import emoji from 'react-easy-emoji'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export type EmojiProps = HTMLAttributes<HTMLSpanElement> &
   PropsWithChildren<{ className?: string; alt?: string }>

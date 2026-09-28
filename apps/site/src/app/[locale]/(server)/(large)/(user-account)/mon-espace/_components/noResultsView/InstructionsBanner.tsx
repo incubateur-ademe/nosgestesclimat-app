@@ -10,7 +10,7 @@ import Separator from '@/design-system/layout/Separator'
 import Link from '@/design-system/links/Link'
 import Emoji from '@/design-system/utils/Emoji'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function InstructionsBanner({ locale }: { locale: Locale }) {
   return (

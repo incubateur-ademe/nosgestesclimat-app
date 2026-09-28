@@ -1,6 +1,5 @@
 'use client'
-
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import {
   CENTER,
   CIRCUMFERENCE,

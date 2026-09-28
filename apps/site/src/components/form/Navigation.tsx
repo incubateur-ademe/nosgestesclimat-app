@@ -3,8 +3,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
-
 import Trans from '@/components/translation/trans/TransClient'
 import {
   DEFAULT_FOCUS_ELEMENT_ID,
@@ -21,6 +19,7 @@ import { useEngine, useFormState, useRule, useUser } from '@/publicodes-state'
 import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { useRouter } from 'next/navigation'
+import { twMerge } from "cn";
 
 type SubmitButtonKind = 'loading' | 'finish' | 'next'
 

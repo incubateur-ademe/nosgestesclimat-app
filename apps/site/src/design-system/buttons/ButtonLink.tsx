@@ -2,6 +2,7 @@
 
 import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
+import { twMerge } from 'cn'
 import type { LinkProps } from 'next/link'
 import {
   type HtmlHTMLAttributes,
@@ -9,7 +10,6 @@ import {
   type MouseEvent,
   type PropsWithChildren,
 } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Loader from '../layout/Loader'
 import type { ButtonColor } from './Button'
 import {

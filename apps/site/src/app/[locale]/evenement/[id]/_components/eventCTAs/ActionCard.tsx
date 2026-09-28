@@ -1,6 +1,6 @@
 import Link from '@/design-system/links/Link'
 import Emoji from '@/design-system/utils/Emoji'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import type { CtaCard } from '../../_helpers/eventPageData'
 
 interface Props extends CtaCard {
