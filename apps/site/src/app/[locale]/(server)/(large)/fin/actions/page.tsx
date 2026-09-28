@@ -42,13 +42,18 @@ export default async function ResultatsActionsPage({
 
   return (
     <ActionsPage
-      title={t(
-        'actions.plan.header.title',
-        "Voici vos 3 actions qui auront le plus d'impact"
-      )}
+      title={t('actions.plan.header.title', "Construisez votre plan d'action")}
       description={t(
         'actions.plan.header.description',
         "C'est ici que se joue l'essentiel de votre empreinte. Découvrez vos actions personnalisées et ajoutez celles que vous pouvez mettre en place dans votre plan d’action."
+      )}
+      otherActionsTitle={t(
+        'actions.plan.otherActions.title',
+        'Toutes vos actions, classées par catégorie'
+      )}
+      otherActionsDescription={t(
+        'actions.plan.otherActions.description',
+        'Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !'
       )}
       topActions={actionsCatalogue.topActions}
       actions={actionsCatalogue.actions}

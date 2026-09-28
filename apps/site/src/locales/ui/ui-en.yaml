@@ -2219,3 +2219,11 @@ entries:
   actions.mySuggestions.otherActionsDescription.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
   actions.actionPlanPage.metaDescription: My personalised suggestions for actions I can take to reduce my carbon footprint with Nos Gestes Climat
   actions.actionPlanPage.metaDescription.lock: Mes suggestions personnalisées d'actions à mettre en place pour réduire mon empreinte carbone avec Nos Gestes Climat
+  actions.plan.header.title: Draw up your action plan
+  actions.plan.header.title.lock: Construisez votre plan d'action
+  actions.plan.header.description: This is where the bulk of your impact is determined. Discover your personalised actions and add those you can implement to your action plan.
+  actions.plan.header.description.lock: C'est ici que se joue l'essentiel de votre empreinte. Découvrez vos actions personnalisées et ajoutez celles que vous pouvez mettre en place dans votre plan d’action.
+  actions.plan.otherActions.title: All your actions, organised by category
+  actions.plan.otherActions.title.lock: Toutes vos actions, classées par catégorie
+  actions.plan.otherActions.description: These actions are tailored to your answers in the test. Choose the ones that seem achievable to you and add them to your action plan!
+  actions.plan.otherActions.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !

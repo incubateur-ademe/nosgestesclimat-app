@@ -1468,3 +1468,7 @@ entries:
   actions.components.actionCard.highlighted.addedButton.short: Ajouté
   actions.mySuggestions.otherActionsDescription: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
   actions.mySuggestions.otherActionsTitle: Toutes vos actions, classées par catégorie
+  actions.plan.header.description: C'est ici que se joue l'essentiel de votre empreinte. Découvrez vos actions personnalisées et ajoutez celles que vous pouvez mettre en place dans votre plan d’action.
+  actions.plan.header.title: Construisez votre plan d'action
+  actions.plan.otherActions.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
+  actions.plan.otherActions.title: Toutes vos actions, classées par catégorie
