@@ -184,6 +184,8 @@ export default function useQuestions({
           ...accumulator,
           [currentValue]: relevantQuestions.filter(
             (question) =>
+              // We check that the question is in the current category or is directly the category.
+              // Ex: `âge` is in the category `âge` and we don't want `logement . âge` to be in the category `âge`.
               utils.ruleParent(question).includes(currentValue) ||
               question === currentValue
           ),

@@ -1,6 +1,6 @@
 'use client'
 
-import { expendedTestOrderedCategories } from '@/constants/model/categories'
+import { expandedTestOrderedCategories } from '@/constants/model/categories'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useContext, useMemo } from 'react'
 import formContext from '../../providers/formProvider/context'
@@ -39,8 +39,8 @@ export default function useFormState() {
 
   const remainingCategories = useMemo(() => {
     return (
-      expendedTestOrderedCategories.length -
-      expendedTestOrderedCategories.indexOf(currentCategory as Categories) -
+      expandedTestOrderedCategories.length -
+      expandedTestOrderedCategories.indexOf(currentCategory as Categories) -
       1
     )
   }, [currentCategory])

@@ -14,7 +14,12 @@ export default function Category({ category }: { category: DottedName }) {
           'mb-0 text-base font-bold lg:text-lg',
           getTextDarkColor(category)
         )}>
-        <Emoji>{icons ?? ''}</Emoji> {title}
+        {icons && (
+          <span className="mr-2">
+            <Emoji>{icons}</Emoji>
+          </span>
+        )}
+        {title}
       </h1>
     </div>
   )

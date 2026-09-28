@@ -1,18 +1,18 @@
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 
-export const testOrderedCategories: DottedName[] = [
+export const orderedTestCategories: Categories[] = [
   'logement',
   'alimentation',
   'transport',
   'divers',
 ]
 
-export const expendedTestOrderedCategories: DottedName[] = [
-  ...testOrderedCategories,
+export const expandedTestOrderedCategories: (Categories | 'âge')[] = [
+  ...orderedTestCategories,
   'âge',
 ]
 
-export const orderedCategories: DottedName[] = [
-  ...testOrderedCategories,
+export const orderedCategories: Categories[] = [
+  ...orderedTestCategories,
   'services sociétaux',
 ]
