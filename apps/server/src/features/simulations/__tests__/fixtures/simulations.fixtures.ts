@@ -38,7 +38,7 @@ const categories = [
   'logement',
   'divers',
   'services sociétaux',
-  'âge',
+  'profil',
 ] as const
 
 const getSubcategories = ({

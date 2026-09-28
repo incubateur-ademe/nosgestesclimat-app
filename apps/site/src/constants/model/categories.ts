@@ -7,9 +7,9 @@ export const orderedTestCategories: Categories[] = [
   'divers',
 ]
 
-export const expandedTestOrderedCategories: (Categories | 'âge')[] = [
+export const expandedTestOrderedCategories: (Categories | 'profil')[] = [
   ...orderedTestCategories,
-  'âge',
+  'profil',
 ]
 
 export const orderedCategories: Categories[] = [
