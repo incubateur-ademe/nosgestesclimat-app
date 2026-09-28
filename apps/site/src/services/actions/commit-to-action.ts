@@ -9,9 +9,11 @@ import {
   CommitToActionPayloadSchema,
   type CommitToActionPayload,
 } from './commit-to-action-payload.schema'
-import { GET_PERSONALIZED_ACTIONS_CACHE_TAG } from './get-personalized-actions-catalogue'
 
-export async function commitToAction(payload: CommitToActionPayload) {
+export async function commitToAction(
+  payload: CommitToActionPayload,
+  cacheTagToUpdate: string
+) {
   const session = await getUserSession()
   if (!session) unauthorized()
 
@@ -27,7 +29,7 @@ export async function commitToAction(payload: CommitToActionPayload) {
 
   if (!result.success) return result
 
-  updateTag(GET_PERSONALIZED_ACTIONS_CACHE_TAG)
+  updateTag(cacheTagToUpdate)
 
   return result
 }

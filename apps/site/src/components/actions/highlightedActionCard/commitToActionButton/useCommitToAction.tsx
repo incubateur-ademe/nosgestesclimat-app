@@ -7,7 +7,10 @@ import { toast } from 'sonner'
 
 const ANIMATION_DURATION = 1300
 
-export function useCommitToAction(action: PersonalizedAction) {
+export function useCommitToAction(
+  action: PersonalizedAction,
+  cacheTagToUpdate: string
+) {
   const { t } = useClientTranslation()
 
   const [isPending, startTransition] = useTransition()
@@ -16,7 +19,7 @@ export function useCommitToAction(action: PersonalizedAction) {
     setShouldDisplayAnimation(true)
 
     startTransition(async () => {
-      const result = await commitToAction(action.id)
+      const result = await commitToAction(action.id, cacheTagToUpdate)
 
       if (!result.success) {
         toast.error(

@@ -12,13 +12,15 @@ export default function CommitToActionButton({
   action,
   className,
   shortLabelDisplayed,
+  cacheTagToUpdate,
 }: {
   action: PersonalizedAction
   className?: string
   shortLabelDisplayed?: boolean
+  cacheTagToUpdate: string
 }) {
   const { commitToAction, isPending, shouldDisplayAnimation } =
-    useCommitToAction(action)
+    useCommitToAction(action, cacheTagToUpdate)
 
   if (action.choice?.type === 'committed') {
     return (

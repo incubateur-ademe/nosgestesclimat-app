@@ -26,6 +26,7 @@ import { toSearchParams } from '@/utils/nextjs/toSearchParams'
 import { twMerge } from 'cn'
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
+import { ActionCommitmentBanner } from './_components/ActionCommitmentBanner'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
 
@@ -183,6 +184,8 @@ export default async function ActionPage({ params, searchParams }: Props) {
           </div>
         ) : null}
       </header>
+
+      <ActionCommitmentBanner action={action} />
 
       <div className="mb-10 grid gap-10 md:grid-cols-2 [&>*:last-child:nth-child(even)]:col-span-full">
         <Section
