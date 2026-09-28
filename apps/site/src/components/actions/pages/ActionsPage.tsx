@@ -31,7 +31,6 @@ interface ActionsPageProps extends Omit<
    * Total carbon footprint in kg of the user's latest simulation.
    */
   totalFootprint?: number
-  shouldHideActionCommitFeature?: boolean
 }
 
 export default function ActionsPage({
@@ -48,7 +47,6 @@ export default function ActionsPage({
   assessmentStatus,
   from,
   totalFootprint,
-  shouldHideActionCommitFeature,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -99,11 +97,11 @@ export default function ActionsPage({
           <ActionsPageHeaderSwitch
             title={title}
             control={
-              <div className="mb-10">
-                <h1 className="mb-2 text-2xl/normal md:text-4xl/normal">
+              <div className="mb-8">
+                <h1 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
                   {title}
                 </h1>
-                <p className="text-base/normal text-slate-500 md:text-lg/normal">
+                <p className="text-base/normal md:text-lg/normal">
                   {description}
                 </p>
               </div>
@@ -117,7 +115,6 @@ export default function ActionsPage({
             className={cta ? 'mb-10' : 'mb-8 md:mb-12'}
             locale={locale}
             from={from}
-            shouldHideActionCommitFeature={shouldHideActionCommitFeature}
           />
         )}
 
@@ -137,7 +134,6 @@ export default function ActionsPage({
                   locale={locale}
                   actions={actionsByTheme[theme.key] ?? []}
                   from={from}
-                  shouldHideActionCommitFeature={shouldHideActionCommitFeature}
                 />
               )
             })}

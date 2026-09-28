@@ -41,7 +41,6 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
 export interface ActionCardWithTempProps extends ActionCardProps {
   withCta?: boolean
   withDescription?: boolean
-  shouldHideActionCommitFeature?: boolean
 }
 
 export default function ActionCard({
@@ -55,7 +54,6 @@ export default function ActionCard({
   source,
   withCta,
   withDescription,
-  shouldHideActionCommitFeature,
   ...props
 }: ActionCardWithTempProps) {
   const rankEmoji = rankToEmoji(rank)
@@ -71,9 +69,6 @@ export default function ActionCard({
       (action.description ??
       removeMarkdown(action.longDescription).slice(0, 100))
     : null
-
-  const shouldDisplayCommitToActionButton =
-    action.assessment && !shouldHideActionCommitFeature
 
   return (
     <article
@@ -121,7 +116,7 @@ export default function ActionCard({
         </div>
       </div>
 
-      {withCta && !shouldDisplayCommitToActionButton && (
+      {withCta && !action.assessment && (
         <div className="border-t border-slate-100 p-4">
           <span
             aria-hidden="true"
@@ -155,7 +150,7 @@ export default function ActionCard({
         </span>
       </Link>
 
-      {shouldDisplayCommitToActionButton && (
+      {action.assessment && (
         <div className="z-20 border-t border-slate-100 p-2">
           <CommitToActionButton className="w-full" action={action} />
         </div>

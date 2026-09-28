@@ -27,7 +27,6 @@ interface Props {
   /** Defaults to the number of actions in the section */
   description?: React.ReactNode
   className?: string
-  shouldHideActionCommitFeature?: boolean
 }
 
 const classesByTheme: Record<
@@ -71,7 +70,6 @@ export default function ThemeSection({
   description,
   className,
   from,
-  shouldHideActionCommitFeature,
 }: Props) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
@@ -109,7 +107,7 @@ export default function ThemeSection({
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
         {actions.map((action) =>
-          assessmentStatus && !shouldHideActionCommitFeature ? (
+          assessmentStatus ? (
             <ActionCard
               key={action.id}
               action={action}
@@ -119,7 +117,6 @@ export default function ThemeSection({
               source={trackingSource}
               withDescription
               from={from}
-              shouldHideActionCommitFeature={shouldHideActionCommitFeature}
             />
           ) : (
             <ActionCardSwitchServer
@@ -130,7 +127,6 @@ export default function ThemeSection({
               source={trackingSource}
               locale={locale}
               from={from}
-              shouldHideActionCommitFeature={shouldHideActionCommitFeature}
             />
           )
         )}

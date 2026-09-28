@@ -5,7 +5,7 @@ import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import { useCommitToAction } from './commitToActionButton/useCommitToAction'
 
 export default function CommitToActionButton({
