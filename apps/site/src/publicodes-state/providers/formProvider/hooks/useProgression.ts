@@ -13,11 +13,8 @@ interface Props {
 
 /**
  * Get progression and remaining questions sorted by category
- *
- * remainingQuestionsByCategories is not really usefull. It is not deleted for now because it is used in the actions page
  */
 export default function useProgression({
-  categories,
   remainingQuestions,
   relevantQuestions,
   updateCurrentSimulation,
@@ -32,20 +29,6 @@ export default function useProgression({
     [relevantQuestions, remainingQuestions]
   )
 
-  const remainingQuestionsByCategories = useMemo(
-    () =>
-      categories.reduce(
-        (accumulator, currentValue) => ({
-          ...accumulator,
-          [currentValue]: remainingQuestions.filter((question) =>
-            question.includes(currentValue)
-          ),
-        }),
-        {} as Record<DottedName, DottedName[]>
-      ),
-    [remainingQuestions, categories]
-  )
-
   // Updates the progression stored in the user object / hook
   useEffect(() => {
     // Never retrograde a simulation which is already completed
@@ -53,8 +36,4 @@ export default function useProgression({
 
     updateCurrentSimulation({ progression })
   }, [progression, updateCurrentSimulation, currentStoredProgression])
-
-  return {
-    remainingQuestionsByCategories,
-  }
 }
