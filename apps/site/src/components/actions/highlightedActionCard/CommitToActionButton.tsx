@@ -50,6 +50,7 @@ export default function CommitToActionButton({
 
   return (
     <Button
+      key={action.id}
       color={buttonColor}
       onClick={commitToAction}
       loading={isPending}
