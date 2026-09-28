@@ -1,6 +1,7 @@
 import { captureActionAddedToPlan } from '@/constants/tracking/trackers'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { commitToAction } from '@/services/actions/commit-to-action'
+import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -30,11 +31,13 @@ export function useCommitToAction(
         )
       }
 
-      captureActionAddedToPlan({
-        actionTitle: action.title,
-        actionTheme: action.theme,
-        impactInKg: action.assessment?.impact,
-      })
+      trackEvent(
+        captureActionAddedToPlan({
+          actionTitle: action.title,
+          actionTheme: action.theme.trackingId,
+          impactInKg: action.assessment?.impact,
+        })
+      )
 
       toast.success(
         t(
