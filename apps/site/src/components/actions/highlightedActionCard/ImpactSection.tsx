@@ -5,20 +5,19 @@ import { useLocale } from '@/hooks/useLocale'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { ActionAssessment } from '@nosgestesclimat/core/features/actions/types/action'
+import { twMerge } from 'cn'
 import { Trans } from 'react-i18next'
-import { twMerge } from 'tailwind-merge'
 import { useActionContext } from '../contexts/action'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
 
 interface Props {
   classes: Record<'card' | 'panel' | 'value', string>
-  assessment?: ActionAssessment
+  assessment?: ActionAssessment | null
 }
 
 export default function ImpactSection({ classes, assessment }: Props) {
   const { assessmentStatus, totalFootprint } = useActionContext()
   const locale = useLocale()
-
   if (!assessmentStatus || !assessment) return null
 
   return (

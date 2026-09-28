@@ -124,7 +124,7 @@ export default function HighlightedActionCard({
         </div>
       </div>
 
-      <ImpactSection classes={classes} />
+      <ImpactSection classes={classes} assessment={action.assessment} />
     </article>
   )
 }
