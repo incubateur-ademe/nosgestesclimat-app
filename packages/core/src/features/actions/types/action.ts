@@ -82,12 +82,9 @@ export interface ActionChoice {
   chosenAt: Date
 }
 
-export type NewActionAssessment = {
-  simulationId: string
-  actionId: string
-} & (
-  | // Case 1. The action is applicable and the impact is either a number or not evaluable
-  {
+export type ActionEvaluation =
+  // Case 1. The action is applicable and the impact is either a number or not evaluable
+  | {
       applicable: true
       impact: number | undefined
     }
@@ -101,7 +98,11 @@ export type NewActionAssessment = {
       applicable: undefined
       impact: undefined
     }
-)
+
+export type NewActionAssessment = {
+  simulationId: string
+  actionId: string
+} & ActionEvaluation
 
 export type ActionAssessment = NewActionAssessment & {
   id: string

@@ -1,6 +1,7 @@
 import { isCuid } from '../../../lib/cuid.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
+import type { PollMode } from '../../../prisma/generated/client.ts'
 import type { Poll, PollSummary } from '../types/poll.ts'
 import { toPoll } from './poll.mapper.ts'
 
@@ -33,6 +34,17 @@ export const findPollById = async (
 ): Promise<Poll | null> => {
   const row = await tx.poll.findUnique({
     where: { id },
+    select: pollSelect,
+  })
+  return row ? toPoll(row) : null
+}
+
+export const findPollBySlug = async (
+  slug: string,
+  tx: Transaction = prisma
+): Promise<Poll | null> => {
+  const row = await tx.poll.findUnique({
+    where: { slug },
     select: pollSelect,
   })
   return row ? toPoll(row) : null
@@ -84,4 +96,32 @@ export const findPollSummaryByIdOrSlug = async ({
     where: isCuid(pollIdOrSlug) ? { id: pollIdOrSlug } : { slug: pollIdOrSlug },
     select: pollSummarySelect,
   })
+}
+
+export const createPoll = async (
+  {
+    name,
+    slug,
+    organisationId,
+    mode = 'standard',
+  }: {
+    name: string
+    slug: string
+    organisationId: string
+    mode?: PollMode
+  },
+  tx: Transaction = prisma
+): Promise<Poll> => {
+  const row = await tx.poll.create({
+    data: {
+      name,
+      slug,
+      organisationId,
+      mode,
+      customAdditionalQuestions: {},
+    },
+    select: pollSelect,
+  })
+
+  return toPoll(row)
 }
