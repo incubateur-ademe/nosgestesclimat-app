@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { captureException } from '@sentry/node'
 import dayjs from 'dayjs'
 import { StatusCodes } from 'http-status-codes'
@@ -41,11 +42,7 @@ describe('Given a NGC user', () => {
   const url = LOGIN_ROUTE
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-      prisma.user.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When logging in', () => {

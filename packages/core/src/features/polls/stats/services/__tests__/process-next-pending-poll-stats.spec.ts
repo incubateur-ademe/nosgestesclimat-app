@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../../lib/result.ts'
 import { prisma } from '../../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../../test-utils/empty-database.ts'
 import { computedResultsFactory } from '../../../../simulations/factories/computed-results.factory.ts'
 import { pollFactory } from '../../../factories/poll.factory.ts'
 import { PollStatsComputationFailedError } from '../../exceptions/poll-stats-computation.exception.ts'
@@ -24,9 +25,7 @@ describe('processNextPendingPollStats', () => {
   })
 
   afterEach(async () => {
-    await prisma.pollStatsComputation.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns success(false) when no job is claimable', async () => {

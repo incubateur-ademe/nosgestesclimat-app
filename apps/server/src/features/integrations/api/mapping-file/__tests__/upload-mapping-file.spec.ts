@@ -1,6 +1,7 @@
 import { ObjectCannedACL, PutObjectCommand } from '@aws-sdk/client-s3'
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { readFile } from 'fs/promises'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
@@ -26,11 +27,7 @@ describe('Given a NGC integrations API user', () => {
   const url = CREATE_MAPPING_FILE_ROUTE
 
   afterEach(async () => {
-    await prisma.integrationWhitelist.deleteMany()
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.integrationApiScope.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When uploading a mapping file', () => {

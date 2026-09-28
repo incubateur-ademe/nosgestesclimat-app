@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { TokenConsumedException } from '../../exceptions/token-consumed.exception.ts'
 import { TokenExpiredException } from '../../exceptions/token-expired.exception.ts'
@@ -20,8 +21,7 @@ describe('rotateSession', () => {
   })
 
   afterEach(async () => {
-    await prisma.refreshToken.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns new tokens on rotation', async () => {

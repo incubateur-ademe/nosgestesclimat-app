@@ -1,6 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { computedResultsFactory } from '../../factories/computed-results.factory.ts'
 import { emptyComputedResults } from '../../helpers/empty-computed-results.ts'
@@ -11,8 +12,7 @@ import { importLegacyLocalSimulations } from '../import-legacy-local-simulations
 
 describe('importLegacyLocalSimulations', () => {
   afterEach(async () => {
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('persists simulations without a model using the database default', async () => {

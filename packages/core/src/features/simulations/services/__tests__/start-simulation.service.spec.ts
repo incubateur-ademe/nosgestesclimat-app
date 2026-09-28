@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { emptyComputedResults } from '../../helpers/empty-computed-results.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
@@ -8,8 +9,7 @@ import { startSimulation } from '../start-simulation.service.ts'
 
 describe('startSimulation', () => {
   afterEach(async () => {
-    await prisma.simulation.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('persists a pristine simulation owned by the user', async () => {
