@@ -1,6 +1,6 @@
 import Link from '@/design-system/links/Link'
 import type { ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export interface TabItem {
   id: string

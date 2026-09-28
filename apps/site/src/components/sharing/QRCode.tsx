@@ -8,7 +8,7 @@ import { trackEvent } from '@/utils/analytics/trackEvent'
 import JSZip from 'jszip'
 import { useRef } from 'react'
 import QRCodeLib from 'react-qr-code'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface QRCodeProps {
   value: string

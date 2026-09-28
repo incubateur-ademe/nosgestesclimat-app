@@ -2,8 +2,8 @@
 
 import Button from '@/design-system/buttons/Button'
 import type { AuthenticationMode } from '@/types/authentication'
+import { twMerge } from 'cn'
 import { type ReactNode, useCallback } from 'react'
-import { twMerge } from 'tailwind-merge'
 import type { ButtonColor } from '../../design-system/buttons/Button'
 import Trans from '../translation/trans/TransClient'
 import { useLogin } from './_hooks/useLogin'

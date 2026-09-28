@@ -1,6 +1,5 @@
 'use client'
-
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import Link from '../Link'
 import Trans from '../translation/trans/TransClient'
 

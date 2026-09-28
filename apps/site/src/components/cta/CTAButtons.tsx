@@ -11,8 +11,8 @@ import {
   hasCompletedCurrentSimulation,
   hasCurrentSimulationInProgress,
 } from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
+import { twMerge } from 'cn'
 import { Suspense } from 'react'
-import { twMerge } from 'tailwind-merge'
 import RotatingArrowIcon from '../icons/RotatingArrowIcon'
 import Trans from '../translation/trans/TransServer'
 import CTAButtonsPlaceholder from './CTAButtonsPlaceholder'

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import React, { useId } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface InputGroupProps {
   name: string

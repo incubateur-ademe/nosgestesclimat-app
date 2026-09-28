@@ -1,6 +1,6 @@
 import Main from '@/design-system/layout/Main'
 import type { HTMLAttributes, PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 type ContentLargeProps = HTMLAttributes<HTMLDivElement> &
   PropsWithChildren<{

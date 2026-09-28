@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import React from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   overLabel: string | React.ReactNode

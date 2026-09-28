@@ -16,7 +16,7 @@ import {
 } from '@nosgestesclimat/core/features/tracking/utm'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   poll: PollIdentifier

@@ -3,7 +3,7 @@ import {
   getTextDarkColor,
 } from '@/helpers/getCategoryColorClass'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 const colorClassNames = {
   primary: 'border-primary-300 text-primary-700 bg-primary-50',

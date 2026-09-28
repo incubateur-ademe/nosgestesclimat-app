@@ -4,8 +4,8 @@ import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Badge from '@/design-system/layout/Badge'
 import type { Organisation } from '@/types/organisations'
+import { twMerge } from 'cn'
 import Image from 'next/image'
-import { twMerge } from 'tailwind-merge'
 import { useCreatePollStep2 } from '../_hooks/useCreatePollStep2'
 
 interface Props {

@@ -1,6 +1,5 @@
-import { twMerge } from 'tailwind-merge'
-
 import Link from '@/design-system/links/Link'
+import { twMerge } from 'cn'
 import Logo from './Logo'
 
 interface Props {

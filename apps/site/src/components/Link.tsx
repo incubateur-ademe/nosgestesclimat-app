@@ -4,7 +4,7 @@ import BaseLink from '@/design-system/links/Link'
 import { getExternalLinkProps } from '@/helpers/navigation/externalLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { MouseEventHandler } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export interface LinkProps extends React.ComponentProps<typeof BaseLink> {
   href: string

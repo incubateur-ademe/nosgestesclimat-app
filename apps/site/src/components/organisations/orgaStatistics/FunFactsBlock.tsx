@@ -1,7 +1,7 @@
 'use client'
 
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import FunFactsItem from './funFacts/FunFactsItem'
 
 const defaultFunFactsRules: { [k in keyof Partial<FunFacts>]: DottedName } = {

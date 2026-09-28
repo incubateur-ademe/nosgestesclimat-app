@@ -13,7 +13,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { encodeDottedNameAsURI } from '@/utils/format/encodeDottedNameAsURI'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   title: string

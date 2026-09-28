@@ -1,8 +1,8 @@
 import Link from '@/design-system/links/Link'
 import type { ButtonSize } from '@/types/values'
+import { twMerge } from 'cn'
 import type { LinkProps } from 'next/link'
 import type { HtmlHTMLAttributes, PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
 import { baseClassNames, colorClassNames, sizeClassNames } from './buttonStyles'
 
 interface Props {

@@ -1,3 +1,4 @@
+import { twMerge } from 'cn'
 import type {
   ChangeEvent,
   ForwardedRef,
@@ -5,7 +6,6 @@ import type {
   ReactNode,
 } from 'react'
 import { forwardRef, useId } from 'react'
-import { twMerge } from 'tailwind-merge'
 import InputGroup from './InputGroup'
 import { defaultInputStyleClassNames } from './TextInput'
 

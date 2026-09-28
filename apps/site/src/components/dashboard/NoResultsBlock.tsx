@@ -5,7 +5,7 @@ import {
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import LockIcon from '../icons/LockIcon'
 import Link from '../Link'
 import Trans from '../translation/trans/TransServer'
