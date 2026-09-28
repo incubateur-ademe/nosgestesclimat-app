@@ -7,8 +7,8 @@ import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
+import { getEmailPageData } from './_actions/getEmailPageData'
 import EmailConfirmation from './_components/EmailConfirmation'
-import { getEmailPageData } from './_helpers/getEmailPageData'
 
 export default async function Email({
   params,
