@@ -23,18 +23,20 @@ export default function CommitToActionButton({
   if (action.choice?.type === 'committed') {
     return (
       <Button
-        color="secondary"
+        // @TODO: implement variant prop and color prop
+        color="borderless"
+        // @TODO: implement the commitment canceling feature
         onClick={() => {}}
         disabled
         className={twMerge(
           'relative',
-          'text-sm! opacity-100! hover:bg-white',
+          'bg-green-50 text-sm! text-green-600 opacity-100! hover:bg-green-100 hover:text-green-700',
           'before:absolute before:inset-0 before:rounded-[inherit]',
-          'before:bg-[linear-gradient(45deg,transparent_25%,rgba(115,125,225,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease]',
+          'before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,166,62,0.2)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease]',
           shouldDisplayAnimation && 'before:animate-button-shine',
           className
         )}>
-        <CheckIcon className="stroke-primary-700 mr-2 inline-block size-3" />
+        <CheckIcon className="mr-2 inline-block size-5 fill-green-600 stroke-1" />
         <Trans i18nKey="actions.components.actionCard.highlighted.addedButton.short">
           Ajouté
         </Trans>
