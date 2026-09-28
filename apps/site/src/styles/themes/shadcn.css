@@ -84,6 +84,20 @@
 }
 
 /* Sonner/Toaster shadcn component */
-@utility cn-toast {
-  @apply text-base! md:p-6!;
+.cn-toast {
+  @apply flex! w-full! items-center! rounded-full! bg-white p-4! text-base! font-medium! after:content-none! md:w-96!;
+}
+
+.cn-toast > button {
+  @apply relative! order-1! m-0! ml-4! h-6! w-auto! pl-4!;
+  @apply rounded-none! border-t-0! border-r-0! border-b-0! border-l!;
+  @apply transform-none! transition-transform! hover:bg-white! active:scale-90!;
+}
+
+.cn-toast > button > svg {
+  @apply size-6 min-w-6!;
+}
+
+.cn-toast > div {
+  @apply w-auto!;
 }
