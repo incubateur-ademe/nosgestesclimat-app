@@ -23,11 +23,11 @@ import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
 import { toSearchParams } from '@/utils/nextjs/toSearchParams'
+import { twMerge } from 'cn'
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
-import { twMerge } from "cn";
 
 const SECTION_ID_I_UNDERSTAND = 'je-comprends'
 const SECTION_ID_I_ACT = 'j-agis'

@@ -9,12 +9,12 @@ import { useIframe } from '@/hooks/useIframe'
 
 import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/(root)/bilan/_components/summary/CategoryIllustration'
 import { useFormState } from '@/publicodes-state'
+import { twMerge } from 'cn'
 import { useEffect } from 'react'
 import { useCompleteSimulation } from '../_hooks/useCompleteSimulation'
 import FunFact from './form/FunFact'
 import ResultsBlocksDesktop from './form/ResultsBlockDesktop'
 import ResultsBlockMobile from './form/ResultsBlockMobile'
-import { twMerge } from "cn";
 
 export default function Form() {
   const {

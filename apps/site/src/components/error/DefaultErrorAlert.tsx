@@ -1,9 +1,9 @@
 'use client'
 
 import Alert from '@/design-system/alerts/alert/Alert'
+import { twMerge } from 'cn'
 import type { PropsWithChildren } from 'react'
 import DefaultErrorMessage from './DefaultErrorMessage'
-import { twMerge } from "cn";
 
 export default function DefaultErrorAlert({
   children,

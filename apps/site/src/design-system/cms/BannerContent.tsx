@@ -5,11 +5,11 @@ import CloseIcon from '@/components/icons/Close'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
+import { twMerge } from 'cn'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Button from '../buttons/Button'
 import BannerLink from './banner/BannerLink'
-import { twMerge } from "cn";
 
 export type BannerColor = 'primary' | 'secondary'
 

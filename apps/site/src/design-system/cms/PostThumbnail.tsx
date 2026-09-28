@@ -1,9 +1,9 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
+import { twMerge } from 'cn'
 import type { ReactNode } from 'react'
 import ImageWithCategory from './ImageWithCategory'
-import { twMerge } from "cn";
 
 export default function PostThumbnail({
   title,

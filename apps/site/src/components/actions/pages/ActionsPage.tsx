@@ -1,8 +1,9 @@
 import Separator from '@/design-system/layout/Separator'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import { twMerge } from 'cn'
 import Trans from '../../translation/trans/TransServer'
 import ActionsPageHeaderSwitch from '../ActionsPageHeaderSwitch'
 import BetaBanner from '../BetaBanner'
@@ -11,7 +12,6 @@ import HighestImpactActionsSectionDarkBackground from '../HighestImpactActionsSe
 import HighestImpactActionsSectionSwitch from '../HighestImpactActionsSectionSwitch'
 import HighestImpactActionsSectionWhiteBackground from '../HighestImpactActionsSectionWhiteBackground'
 import ThemeSection from '../ThemeSection'
-import { twMerge } from "cn";
 
 interface ActionsPageProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,

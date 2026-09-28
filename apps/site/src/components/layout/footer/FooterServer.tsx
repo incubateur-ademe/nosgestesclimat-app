@@ -8,12 +8,12 @@ import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import { twMerge } from 'cn'
 import { cacheLife } from 'next/cache'
 import Link from 'next/link'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
-import { twMerge } from "cn";
 
 interface Props {
   backgroundColor?: 'default' | 'white'

@@ -8,9 +8,9 @@ import {
 } from '@/design-system/shadcn/popover'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import Link from 'next/link'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
-import { twMerge } from "cn";
 
 interface Props {
   className?: string

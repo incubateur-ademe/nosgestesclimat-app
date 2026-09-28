@@ -18,6 +18,7 @@ import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { twMerge } from 'cn'
 import { AnimatePresence } from 'framer-motion'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
@@ -25,7 +26,6 @@ import Trans from '../translation/trans/TransClient'
 import DontKnowButton from './question/DontKnowButton'
 import NumberInputWithAssistance from './question/NumberInputWithAssistance'
 import Warning from './question/Warning'
-import { twMerge } from "cn";
 
 interface Props {
   question: DottedName

@@ -1,6 +1,6 @@
 import Link from '@/design-system/links/Link'
+import { twMerge } from 'cn'
 import Logo from './Logo'
-import { twMerge } from "cn";
 
 interface Props {
   onClick?: () => void

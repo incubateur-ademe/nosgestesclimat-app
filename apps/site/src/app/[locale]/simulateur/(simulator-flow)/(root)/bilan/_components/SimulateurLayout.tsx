@@ -5,10 +5,10 @@ import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
+import { twMerge } from 'cn'
 import { useCallback, useState } from 'react'
 import Summary from './Summary'
 import SimulateurSkeleton from './skeleton'
-import { twMerge } from "cn";
 
 export default function SimulateurLayout({
   children,

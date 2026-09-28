@@ -8,10 +8,10 @@ import type { Entries } from '@/publicodes-state/types'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import importedFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json'
+import { twMerge } from 'cn'
 import { utils } from 'publicodes'
 import { useState } from 'react'
 import DetailedFunFacts from './funFacts/DetailedFunFacts'
-import { twMerge } from "cn";
 
 const funFactsRules = importedFunFacts as { [k in keyof FunFacts]: DottedName }
 

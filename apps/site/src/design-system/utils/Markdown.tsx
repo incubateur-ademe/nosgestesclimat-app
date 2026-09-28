@@ -1,12 +1,12 @@
 'use client'
 
 import Link from '@/components/Link'
+import { twMerge } from 'cn'
 import type { MarkdownToJSX } from 'markdown-to-jsx'
 import MarkdownToJsx from 'markdown-to-jsx'
 import Image from 'next/image'
 import type { ComponentProps } from 'react'
 import ButtonLink from '../buttons/ButtonLink'
-import { twMerge } from "cn";
 
 type MarkdownProps = ComponentProps<typeof MarkdownToJsx> & {
   className?: string

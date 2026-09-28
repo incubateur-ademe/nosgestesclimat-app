@@ -3,11 +3,11 @@
 import CloseIcon from '@/components/icons/Close'
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import ReactModal from 'react-modal'
 import Button from '../buttons/Button'
-import { twMerge } from "cn";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ModalComponent = ReactModal as any

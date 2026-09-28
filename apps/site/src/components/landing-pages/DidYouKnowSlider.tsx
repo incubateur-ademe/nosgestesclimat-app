@@ -7,12 +7,12 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 // @ts-expect-error package types are wrongly exported
 import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css'
+import { twMerge } from 'cn'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import PlaySignIcon from '../icons/PlaySignIcon'
 import Trans from '../translation/trans/TransClient'
-import { twMerge } from "cn";
 
 export default function DidYouKnowSlider({
   slides,

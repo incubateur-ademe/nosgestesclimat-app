@@ -2,6 +2,7 @@
 
 import Button from '@/design-system/buttons/Button'
 import type { AuthenticationMode } from '@/types/authentication'
+import { twMerge } from 'cn'
 import { type ReactNode, useCallback } from 'react'
 import type { ButtonColor } from '../../design-system/buttons/Button'
 import Trans from '../translation/trans/TransClient'
@@ -10,7 +11,6 @@ import SendVerificationCodeForm from './authenticateUserForm/SendVerificationCod
 import VerifyCodeForm from './authenticateUserForm/VerifyCodeForm'
 import { AuthProvider, useAuth } from './AuthProvider'
 import type { AuthenticatedUser, Tracker } from './types'
-import { twMerge } from "cn";
 
 interface Props {
   buttonLabel?: string | ReactNode

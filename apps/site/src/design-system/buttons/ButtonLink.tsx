@@ -2,6 +2,7 @@
 
 import Link from '@/components/Link'
 import type { ButtonSize } from '@/types/values'
+import { twMerge } from 'cn'
 import type { LinkProps } from 'next/link'
 import {
   type HtmlHTMLAttributes,
@@ -18,7 +19,6 @@ import {
   sizeClassNames,
 } from './Button'
 import { useButtonState } from './useButtonState'
-import { twMerge } from "cn";
 
 interface Props {
   href: string

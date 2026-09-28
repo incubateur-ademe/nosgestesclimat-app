@@ -1,10 +1,10 @@
 import CheckCircleIcon from '@/components/icons/status/CheckCircleIcon'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import type { ChangeEventHandler, HTMLAttributes, ReactNode } from 'react'
 import { Controller, type Control, type RegisterOptions } from 'react-hook-form'
 import { defaultInputStyleClassNames } from './TextInput'
-import { twMerge } from "cn";
 
 interface Props {
   name: string

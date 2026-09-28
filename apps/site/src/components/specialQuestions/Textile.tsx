@@ -7,10 +7,10 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useRule, useUser } from '@/publicodes-state'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { twMerge } from 'cn'
 import { utils } from 'publicodes'
 import { useEffect } from 'react'
 import PencilIcon from '../icons/PencilIcon'
-import { twMerge } from "cn";
 
 interface Props {
   question: DottedName

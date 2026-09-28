@@ -4,12 +4,12 @@ import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIsClient } from '@/hooks/useIsClient'
 import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { twMerge } from 'cn'
 import isMobile from 'is-mobile'
 import type { PropsWithChildren, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import Alert from '../alerts/alert/Alert'
 import Button, { type ButtonProps } from './Button'
-import { twMerge } from "cn";
 
 interface Props {
   color?: ButtonProps['color']

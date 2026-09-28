@@ -8,9 +8,9 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getTopThreeAndRestMembers } from '@/helpers/groups/getTopThreeAndRestMembers'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
+import { twMerge } from 'cn'
 import { useState } from 'react'
 import RankingMember from './ranking/RankingMember'
-import { twMerge } from "cn";
 
 export default function Ranking({
   group,

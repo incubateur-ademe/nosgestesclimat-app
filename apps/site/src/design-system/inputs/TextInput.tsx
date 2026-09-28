@@ -1,3 +1,4 @@
+import { twMerge } from 'cn'
 import type {
   ChangeEventHandler,
   ForwardedRef,
@@ -6,7 +7,6 @@ import type {
 } from 'react'
 import { forwardRef, useId } from 'react'
 import InputGroup from './InputGroup'
-import { twMerge } from "cn";
 
 export const defaultInputStyleClassNames = `rounded-md border border-solid border-slate-500 bg-white transition-colors placeholder:text-slate-500`
 

@@ -1,9 +1,9 @@
 import Link from '@/design-system/links/Link'
 import type { ButtonSize } from '@/types/values'
+import { twMerge } from 'cn'
 import type { LinkProps } from 'next/link'
 import type { HtmlHTMLAttributes, PropsWithChildren } from 'react'
 import { baseClassNames, colorClassNames, sizeClassNames } from './buttonStyles'
-import { twMerge } from "cn";
 
 interface Props {
   href: string

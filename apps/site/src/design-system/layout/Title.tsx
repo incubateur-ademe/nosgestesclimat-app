@@ -1,6 +1,6 @@
+import { twMerge } from 'cn'
 import type { HTMLAttributes, JSX, PropsWithChildren } from 'react'
 import Separator from './Separator'
-import { twMerge } from "cn";
 
 type Sizes = 'xl' | 'lg' | 'md'
 

@@ -2,10 +2,10 @@
 
 import CloseIcon from '@/components/icons/Close'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import Button from '../buttons/Button'
-import { twMerge } from "cn";
 
 export default function BurgerMenu({
   children,

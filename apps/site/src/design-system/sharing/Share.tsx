@@ -5,13 +5,13 @@ import ShareIcon from '@/components/icons/ShareIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import getIsMobile from 'is-mobile'
 import { type ReactNode, useState } from 'react'
 import Button from '../buttons/Button'
 import ButtonLink from '../buttons/ButtonLink'
 import CopyButton from '../buttons/CopyButton'
 import Modal from '../modals/Modal'
-import { twMerge } from "cn";
 
 interface ShareItem {
   label: ReactNode

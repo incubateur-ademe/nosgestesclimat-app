@@ -3,10 +3,10 @@
 import { FILTER_SEARCH_PARAM_KEY } from '@/constants/filtering'
 import { encodeDottedNameAsURI } from '@/utils/format/encodeDottedNameAsURI'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { twMerge } from 'cn'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import CategoryFilter from './categoryFilters/CategoryFilter'
-import { twMerge } from "cn";
 
 interface Props {
   categories: {

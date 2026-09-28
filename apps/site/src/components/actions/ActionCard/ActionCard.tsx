@@ -6,17 +6,16 @@ import type { Locale } from '@/i18nConfig'
 import { LOCALE_EN_KEY, LOCALE_FR_KEY } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import { twMerge } from 'cn'
 import removeMarkdown from 'remove-markdown'
 import Trans from '../../translation/trans/TransServer'
-import { ThemeBadge } from '../ThemeBadge'
-
 import ActionTracker from '../ActionTracker'
+import { ThemeBadge } from '../ThemeBadge'
 import styles from './ActionCard.module.css'
 import { ImpactTag } from './ImpactTag'
 import { rankToEmoji } from './rankToEmoji'
-import { twMerge } from "cn";
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport:

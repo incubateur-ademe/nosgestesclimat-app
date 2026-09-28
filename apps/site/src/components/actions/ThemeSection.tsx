@@ -2,8 +2,9 @@ import Carousel from '@/design-system/carousel/Carousel'
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import { twMerge } from 'cn'
 import { useId } from 'react'
 import CarIcon from '../icons/CarIcon'
 import FoodIcon from '../icons/FoodIcon'
@@ -12,7 +13,6 @@ import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCardSwitchServer from './ActionCard/ActionCardSwitchServer'
-import { twMerge } from "cn";
 
 const classesByTheme: Record<
   Theme['key'],

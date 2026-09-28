@@ -4,9 +4,9 @@ import Trans from '@/components/translation/trans/TransClient'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
+import { twMerge } from 'cn'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useObjectiveChart } from './_hooks/useObjectiveChart'
-import { twMerge } from "cn";
 
 interface Props {
   carbonFootprint: number

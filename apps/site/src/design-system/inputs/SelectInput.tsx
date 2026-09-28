@@ -1,3 +1,4 @@
+import { twMerge } from 'cn'
 import type {
   ChangeEvent,
   ForwardedRef,
@@ -7,7 +8,6 @@ import type {
 import { forwardRef, useId } from 'react'
 import InputGroup from './InputGroup'
 import { defaultInputStyleClassNames } from './TextInput'
-import { twMerge } from "cn";
 
 export default forwardRef(function SelectInput(
   {

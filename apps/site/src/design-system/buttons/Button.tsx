@@ -1,6 +1,7 @@
 'use client'
 
 import type { ButtonSize } from '@/types/values'
+import { twMerge } from 'cn'
 import {
   type HtmlHTMLAttributes,
   type MouseEventHandler,
@@ -16,7 +17,6 @@ import {
   type ButtonColor,
 } from './buttonStyles'
 import { useButtonState } from './useButtonState'
-import { twMerge } from "cn";
 
 export type ButtonProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>

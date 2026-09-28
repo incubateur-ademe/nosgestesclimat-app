@@ -1,6 +1,7 @@
 'use client'
 
 import Link from '@/components/Link'
+import { twMerge } from 'cn'
 import Image from 'next/image'
 import type { ElementType, PropsWithChildren, ReactNode } from 'react'
 import {
@@ -9,7 +10,6 @@ import {
   sizeClassNames,
 } from '../../design-system/buttons/Button'
 import Card from '../../design-system/layout/Card'
-import { twMerge } from "cn";
 
 interface Props {
   href: string
