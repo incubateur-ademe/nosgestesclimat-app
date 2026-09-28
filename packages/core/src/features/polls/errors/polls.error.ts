@@ -1,4 +1,4 @@
-import { DomainError, type InvalidPayloadError } from '../../../lib/errors.ts'
+import { DomainError } from '../../../lib/errors.ts'
 import type { SimulationNotFoundError } from '../../simulations/errors/simulations.error.ts'
 
 export class PollNotFoundError extends DomainError<'poll_not_found'> {
@@ -7,7 +7,4 @@ export class PollNotFoundError extends DomainError<'poll_not_found'> {
   }
 }
 
-export type ParticipateToPollError =
-  | PollNotFoundError
-  | SimulationNotFoundError
-  | InvalidPayloadError
+export type ParticipateToPollError = PollNotFoundError | SimulationNotFoundError

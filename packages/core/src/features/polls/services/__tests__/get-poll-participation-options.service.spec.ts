@@ -87,6 +87,37 @@ describe('getPollParticipationOptions', () => {
     ).toBeNull()
   })
 
+  it('does not offer to reuse when the user already completed one for this poll', async () => {
+    const user = await userFactory.create()
+    const poll = await pollFactory.create()
+    const pollSimulation = await simulationFactory
+      .withModelRegion('FR')
+      .completed()
+      .withValidComputedResults()
+      .params({ userId: user.id, date: new Date('2024-06-01') })
+      .create()
+    await participateToPoll({
+      userId: user.id,
+      pollId: poll.id,
+      simulationId: pollSimulation.id,
+    })
+    // Recent completed simulation, eligible for reuse on its own
+    await simulationFactory
+      .withModelRegion('FR')
+      .completed()
+      .withValidComputedResults()
+      .params({ userId: user.id, date: new Date() })
+      .create()
+
+    const result = await getPollParticipationOptions({ poll, userId: user.id })
+
+    expect(result.canReuseExistingSimulation).toBe(false)
+    expect(result.currentPollSimulation?.id).toBe(pollSimulation.id)
+    expect(
+      'reusableSimulation' in result ? result.reusableSimulation.id : null
+    ).toBeNull()
+  })
+
   it('offers to reuse the user latest completed simulation when eligible', async () => {
     const user = await userFactory.create()
     const poll = await pollFactory.create()

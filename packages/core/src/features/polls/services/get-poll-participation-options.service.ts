@@ -47,8 +47,7 @@ export const getPollParticipationOptions = async ({
     poll.mode === 'standard' &&
     getSimulationMode(migratedReusableSimulation) === 'standard' &&
     !migratedCurrentPollSimulation &&
-    Date.now() - migratedReusableSimulation.date.getTime() <
-      6 * 30 * 24 * 3600 * 1000
+    wasCreatedWithinSixMonths(migratedReusableSimulation)
 
   if (!canReuseExistingSimulation) {
     return {
@@ -68,3 +67,8 @@ export const getPollParticipationOptions = async ({
     reusableSimulationPolls,
   }
 }
+
+const SIX_MONTHS_IN_MS = 6 * 30 * 24 * 3600 * 1000 // months counted as 30 days (kept as-is after refactor)
+
+const wasCreatedWithinSixMonths = (simulation: Simulation) =>
+  Date.now() - simulation.date.getTime() < SIX_MONTHS_IN_MS

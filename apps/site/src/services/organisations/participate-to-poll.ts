@@ -7,6 +7,7 @@ import { ISOSupportedLanguageSchema } from '@nosgestesclimat/core/features/geo/t
 import type { ParticipateToPollError } from '@nosgestesclimat/core/features/polls/errors/polls.error'
 import { createParticipateToPoll } from '@nosgestesclimat/core/features/polls/services/participate-to-poll.service'
 import { ModelSchema } from '@nosgestesclimat/core/features/simulations/types/model'
+import type { InvalidPayloadError } from '@nosgestesclimat/core/lib/errors'
 import { type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { captureException } from '@sentry/nextjs'
@@ -46,7 +47,9 @@ type ParticipateToPollPayload = v.InferOutput<
  */
 export const participateToPoll = async (
   params: ParticipateToPollPayload
-): Promise<Result<{ simulationId: string }, ParticipateToPollError>> => {
+): Promise<
+  Result<{ simulationId: string }, ParticipateToPollError | InvalidPayloadError>
+> => {
   // A visitor can land straight on a campaign without ever having answered
   // anything: they need an identity before joining it.
   const session = await ensureUserSession()

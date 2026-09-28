@@ -17,9 +17,8 @@ export const UpdateSimulationSituationPayloadSchema = v.strictObject({
 })
 
 /**
- * Callers construct this from client state where `model` is a plain `string`.
- * The schema validates and brands it to `ModelString` internally; the branded
- * output type is what `validatePayload` returns, not what callers supply.
+ * Caller may pass a non branded `model` string in the payload.
+ * This `model` property is then correctly validated and cast to the branded type `ModelString` by the schema.
  */
 export type UpdateSimulationSituationPayload = Omit<
   v.InferOutput<typeof UpdateSimulationSituationPayloadSchema>,

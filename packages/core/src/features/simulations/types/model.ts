@@ -33,7 +33,8 @@ export type Model = v.InferOutput<typeof ModelSchema>
  */
 export const ModelStringSchema = v.pipe(
   v.string(),
-  v.custom<ModelString>((data) => !!parseModelString(String(data)))
+  v.custom((data) => !!parseModelString(String(data))),
+  v.brand('ModelString')
 )
 
-export type ModelString = string & { __brand: 'ModelString' }
+export type ModelString = v.InferOutput<typeof ModelStringSchema>
