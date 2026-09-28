@@ -3,7 +3,7 @@
 import CloseIcon from '@/components/icons/Close'
 import Trans from '@/components/translation/trans/TransClient'
 import { type ReactNode, createElement } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export type AlertType = 'default' | 'success' | 'warning' | 'error'
 

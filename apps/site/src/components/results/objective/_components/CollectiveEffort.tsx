@@ -2,7 +2,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import Badge from '@/design-system/layout/Badge'
 import Card from '@/design-system/layout/Card'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   locale: Locale

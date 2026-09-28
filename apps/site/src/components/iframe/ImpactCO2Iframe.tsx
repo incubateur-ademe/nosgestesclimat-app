@@ -2,7 +2,7 @@
 
 import type { ImpactCO2Language } from '@nosgestesclimat/core/features/actions/types/action-media'
 import { useEffect, useRef, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface ImpactCO2IframeProps extends React.ComponentPropsWithoutRef<'div'> {
   /**

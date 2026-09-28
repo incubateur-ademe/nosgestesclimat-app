@@ -12,7 +12,7 @@ import {
 import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function ProfileTab({
   activePath,

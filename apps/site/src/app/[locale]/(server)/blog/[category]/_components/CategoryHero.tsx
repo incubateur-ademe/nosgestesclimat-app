@@ -1,4 +1,4 @@
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import CategoryBreadcrumbs from './categoryHero/CategoryBreadcrumbs'
 
 export default function CategoryHero({

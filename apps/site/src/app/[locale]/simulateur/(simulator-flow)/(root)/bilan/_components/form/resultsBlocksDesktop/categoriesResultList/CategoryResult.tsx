@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import type { DottedName, Metrics } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function CategoryResult({
   category,

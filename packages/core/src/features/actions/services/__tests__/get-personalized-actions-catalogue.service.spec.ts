@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
@@ -8,10 +9,7 @@ import { getPersonalizedActionsCatalogue } from '../get-personalized-actions-cat
 
 describe('getPersonalizedActionsCatalogue', () => {
   afterEach(async () => {
-    await prisma.actionAssessment.deleteMany()
-    await prisma.simulation.deleteMany() // cascades to simulationComputation
-    await prisma.user.deleteMany()
-    await prisma.action.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns null status, no actions and no top actions when there are no actions', async () => {

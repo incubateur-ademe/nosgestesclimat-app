@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { SimulationComputationFailedError } from '../../exceptions/simulation-computation.exception.ts'
 import { createTestEngine } from '../../factories/engine.factory.ts'
@@ -22,8 +23,7 @@ describe('processNextPendingComputation', () => {
   })
 
   afterEach(async () => {
-    await prisma.simulationComputation.deleteMany()
-    await prisma.simulation.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('returns success(false) when no job is pending', async () => {

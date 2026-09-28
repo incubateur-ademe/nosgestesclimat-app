@@ -2,7 +2,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { orderedTestCategories } from '@/constants/model/categories'
 import Tabs, { type TabItem } from '@/design-system/layout/Tabs'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 type TabId = 'global' | DottedName
 

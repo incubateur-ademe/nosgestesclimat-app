@@ -1,9 +1,9 @@
 'use client'
 
 import Link from '@/components/Link'
+import { twMerge } from 'cn'
 import Image from 'next/image'
 import type { ElementType, PropsWithChildren, ReactNode } from 'react'
-import { twMerge } from 'tailwind-merge'
 import {
   baseClassNames,
   colorClassNames,

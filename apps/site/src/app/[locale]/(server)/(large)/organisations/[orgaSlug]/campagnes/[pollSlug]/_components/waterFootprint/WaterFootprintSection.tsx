@@ -5,7 +5,7 @@ import { eauMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useLocale } from '@/hooks/useLocale'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import WaterFootprintCard from './waterFootprintSection/WaterFootprintCard'
 
 const DEFAULT_LEARN_MORE_HREF =

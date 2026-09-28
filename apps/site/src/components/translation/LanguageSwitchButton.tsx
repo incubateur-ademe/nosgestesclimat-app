@@ -8,8 +8,8 @@ import {
 } from '@/design-system/shadcn/popover'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import Link from 'next/link'
-import { twMerge } from 'tailwind-merge'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
 
 interface Props {

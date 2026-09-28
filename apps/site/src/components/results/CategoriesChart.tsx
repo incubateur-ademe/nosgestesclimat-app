@@ -4,7 +4,7 @@ import VerticalBarChart from '@/components/charts/VerticalBarChart'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useSortedCategoriesByFootprint } from '@/hooks/useSortedCategoriesByFootprint'
 import { useRule } from '@/publicodes-state'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import CategoryChartItem from './categoriesChart/CategoryChartItem'
 
 interface Props {

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../../test-utils/empty-database.ts'
 import { organisationFactory } from '../../../../organisations/factories/organisation.factory.ts'
 import { simulationFactory } from '../../../../simulations/factories/simulation.factory.ts'
 import { pollFactory } from '../../../factories/poll.factory.ts'
@@ -16,10 +17,7 @@ const computePollStats = createComputePollStats({ logger })
 
 describe('computePollStats', () => {
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.organisation.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('sums computedResults across valid simulations and ignores invalid ones', async () => {
