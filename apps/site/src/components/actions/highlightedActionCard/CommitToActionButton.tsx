@@ -3,7 +3,7 @@
 import PlusIcon from '@/components/icons/PlusIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import Button from '@/design-system/buttons/Button'
+import Button, { type ButtonColor } from '@/design-system/buttons/Button'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import { useCommitToAction } from './commitToActionButton/useCommitToAction'
@@ -13,11 +13,13 @@ export default function CommitToActionButton({
   className,
   shortLabelDisplayed,
   cacheTagToUpdate,
+  buttonColor = 'secondary',
 }: {
   action: PersonalizedAction
   className?: string
   shortLabelDisplayed?: boolean
   cacheTagToUpdate: string
+  buttonColor?: Extract<ButtonColor, 'primary' | 'secondary'>
 }) {
   const { commitToAction, isPending, shouldDisplayAnimation } =
     useCommitToAction(action, cacheTagToUpdate)
@@ -48,12 +50,17 @@ export default function CommitToActionButton({
 
   return (
     <Button
-      color="secondary"
+      color={buttonColor}
       onClick={commitToAction}
       loading={isPending}
       className={twMerge('text-sm!', className)}>
       {!isPending && (
-        <PlusIcon className="stroke-primary-700 mr-2 inline-block size-3" />
+        <PlusIcon
+          className={twMerge(
+            'stroke-primary-700 mr-2 inline-block size-3',
+            buttonColor === 'primary' && 'stroke-white'
+          )}
+        />
       )}
       {shortLabelDisplayed ? (
         <Trans i18nKey="actions.components.actionCard.highlighted.addButton.short">

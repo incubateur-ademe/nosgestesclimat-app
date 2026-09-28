@@ -12,6 +12,8 @@ export function ActionCommitmentBanner({ action }: Props) {
   return (
     <div className="fixed right-0 bottom-0 left-0 z-10 flex h-20 w-full items-center justify-center bg-white px-6 shadow-[0_-4px_14px_0_rgba(0,0,0,0.10)]">
       <CommitToActionButton
+        buttonColor="primary"
+        className="w-full sm:w-56"
         action={action}
         cacheTagToUpdate={GET_PERSONALIZED_ACTION_DETAILS_CACHE_TAG}
       />
