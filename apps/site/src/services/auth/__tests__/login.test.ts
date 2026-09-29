@@ -178,7 +178,7 @@ describe('login', () => {
     })
 
     expect(mocks.loginService).toHaveBeenCalledWith({
-      loginDto: { email: 'user@example.com', code: '123456' },
+      loginDto: { email: 'user@example.com', code: '123456', locale: 'en' },
       locale: 'en',
       sessionUserId,
     })
@@ -205,7 +205,7 @@ describe('login', () => {
     })
 
     expect(mocks.loginService).toHaveBeenCalledWith({
-      loginDto: { email: 'user@example.com', code: '123456' },
+      loginDto: { email: 'user@example.com', code: '123456', locale: 'en' },
       locale: 'en',
       sessionUserId: undefined,
     })
