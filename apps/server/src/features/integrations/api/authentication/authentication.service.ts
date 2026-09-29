@@ -1,6 +1,8 @@
 import { findVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
 import { createVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { EmailRequestError } from '@nosgestesclimat/core/features/emails/errors'
 import type { BackgroundTaskRunner } from '@nosgestesclimat/core/lib/background-task-runner'
+import { failure, success } from '@nosgestesclimat/core/lib/result'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
@@ -9,7 +11,7 @@ import type { Request, RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
-import { sendVerificationCodeEmail } from '../../../../adapters/brevo/client.ts'
+import { sendEmail as brevoSendEmail } from '../../../../adapters/brevo/client.ts'
 import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
 import { transaction } from '../../../../adapters/prisma/transaction.ts'
 import { config } from '../../../../config.ts'
@@ -127,8 +129,16 @@ const fireAndForgetEmail: BackgroundTaskRunner = (task) => {
 const createApiTokenVerificationCode = createVerificationCodeService({
   logger,
   captureException,
-  sendVerificationCodeEmail: async (params) => {
-    await sendVerificationCodeEmail(params)
+  // The brevo adapter throws on failure: converted to the Result contract
+  // the core service expects, so the failure is logged and captured there
+  // instead of failing the request.
+  sendEmail: async (email) => {
+    try {
+      await brevoSendEmail(email)
+      return success()
+    } catch (error) {
+      return failure(new EmailRequestError(undefined, { cause: error }))
+    }
   },
   backgroundTaskRunner: fireAndForgetEmail,
   usage: VerificationCodeUsage.apiToken,

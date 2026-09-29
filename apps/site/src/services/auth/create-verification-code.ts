@@ -8,7 +8,6 @@ import {
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
 import logger from '@/logger'
 import type { AuthenticationMode } from '@/types/authentication'
-import { createSendVerificationCodeEmail } from '@nosgestesclimat/core/features/auth/emails/auth-emails'
 import { CreateVerificationCodePayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
 import { createVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { maskEmail } from '@nosgestesclimat/core/lib/pii'
@@ -20,7 +19,7 @@ import { after } from 'next/server'
 const verificationCodeService = createVerificationCodeService({
   logger,
   captureException,
-  sendVerificationCodeEmail: createSendVerificationCodeEmail(sendEmail),
+  sendEmail,
   // The action returns before the email is dispatched: the task must outlive
   // the request.
   backgroundTaskRunner: after,

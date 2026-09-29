@@ -1,12 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BackgroundTaskRunner } from '../../../../lib/background-task-runner.ts'
+import { failure, success } from '../../../../lib/result.ts'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import {
   VerificationCodeMode,
   VerificationCodeUsage,
 } from '../../../../prisma/generated/client.ts'
+import { EmailRequestError } from '../../../emails/errors.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
@@ -20,8 +22,8 @@ const logger = {
   debug: vi.fn(),
 }
 const captureException = vi.fn()
-const sendWelcomeEmail = vi.fn()
-const addOrUpdateContactAfterLogin = vi.fn()
+const sendEmail = vi.fn().mockResolvedValue(success())
+const addOrUpdateContact = vi.fn().mockResolvedValue(success())
 
 const origin = 'https://nosgestesclimat.test'
 
@@ -44,8 +46,8 @@ const buildLogin = (backgroundTaskRunner: BackgroundTaskRunner) =>
   createLogin({
     logger,
     captureException,
-    sendWelcomeEmail,
-    addOrUpdateContactAfterLogin,
+    sendEmail,
+    addOrUpdateContact,
     origin,
     backgroundTaskRunner,
   })
@@ -202,8 +204,8 @@ describe('login', () => {
         throw new Error('Expected login to fail')
       }
       expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
-      expect(addOrUpdateContactAfterLogin).not.toHaveBeenCalled()
-      expect(sendWelcomeEmail).not.toHaveBeenCalled()
+      expect(addOrUpdateContact).not.toHaveBeenCalled()
+      expect(sendEmail).not.toHaveBeenCalled()
     })
   })
 
@@ -298,11 +300,13 @@ describe('login', () => {
       await flush()
 
       expect(result.success).toBe(true)
-      expect(addOrUpdateContactAfterLogin).toHaveBeenCalledWith({
+      expect(addOrUpdateContact).toHaveBeenCalledWith({
         email: verifiedUser.email,
-        userId: verifiedUser.id,
+        attributes: {
+          USER_ID: verifiedUser.id,
+        },
       })
-      expect(sendWelcomeEmail).not.toHaveBeenCalled()
+      expect(sendEmail).not.toHaveBeenCalled()
     })
 
     describe('And the user has simulations on their anonymous session', () => {
@@ -574,14 +578,18 @@ describe('login', () => {
         await flush()
 
         expect(result.success).toBe(true)
-        expect(sendWelcomeEmail).toHaveBeenCalledWith({
-          locale: 'en',
+        expect(sendEmail).toHaveBeenCalledWith({
           email: verificationCode.email,
-          origin,
+          templateId: 139,
+          params: {
+            DASHBOARD_URL: `${origin}/mon-espace`,
+          },
         })
-        expect(addOrUpdateContactAfterLogin).toHaveBeenCalledWith({
+        expect(addOrUpdateContact).toHaveBeenCalledWith({
           email: verificationCode.email,
-          userId: sessionUserId,
+          attributes: {
+            USER_ID: sessionUserId,
+          },
         })
       })
 
@@ -676,9 +684,11 @@ describe('login', () => {
         mode: VerificationCodeMode.signUp,
       })
 
-      sendWelcomeEmail.mockRejectedValueOnce(new Error('Brevo unavailable'))
-      addOrUpdateContactAfterLogin.mockRejectedValueOnce(
-        new Error('Brevo unavailable')
+      sendEmail.mockResolvedValueOnce(
+        failure(new EmailRequestError('Brevo unavailable'))
+      )
+      addOrUpdateContact.mockResolvedValueOnce(
+        failure(new EmailRequestError('Brevo unavailable'))
       )
 
       const { backgroundTaskRunner, flush } =
