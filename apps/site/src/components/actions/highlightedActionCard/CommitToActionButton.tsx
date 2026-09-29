@@ -12,7 +12,6 @@ interface Props {
   action: PersonalizedAction
   className?: string
   label?: React.ReactNode
-  cacheTagToUpdate: string
   buttonColor?: Extract<ButtonColor, 'primary' | 'secondary'>
 }
 
@@ -20,11 +19,10 @@ export default function CommitToActionButton({
   action,
   className,
   label,
-  cacheTagToUpdate,
   buttonColor = 'secondary',
 }: Props) {
   const { commitToAction, isPending, shouldDisplayAnimation } =
-    useCommitToAction(action, cacheTagToUpdate)
+    useCommitToAction(action)
 
   if (action.choice?.type === 'committed') {
     return (
@@ -52,7 +50,6 @@ export default function CommitToActionButton({
 
   return (
     <Button
-      key={action.id}
       color={buttonColor}
       onClick={commitToAction}
       loading={isPending}

@@ -1,7 +1,6 @@
 import CommitToActionButton from '@/components/actions/highlightedActionCard/CommitToActionButton'
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
-import { GET_PERSONALIZED_ACTION_DETAILS_CACHE_TAG } from '@/services/actions/get-personalized-action-details'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 
 interface Props {
@@ -18,7 +17,6 @@ export function ActionCommitmentBanner({ action, locale }: Props) {
         buttonColor="primary"
         className="w-full sm:w-72"
         action={action}
-        cacheTagToUpdate={GET_PERSONALIZED_ACTION_DETAILS_CACHE_TAG}
         label={
           <Trans locale={locale} i18nKey="actions.plan.addToActionPlan">
             Ajouter à mon plan d'action

@@ -1,4 +1,4 @@
-import type { ActionCardWithTempProps } from '../ActionCard'
+import type { ActionCardWithABTestProps } from '../ActionCard'
 import ActionCard from '../ActionCard'
 import ActionCardSwitch from './ActionCardSwitch'
 
@@ -11,7 +11,9 @@ import ActionCardSwitch from './ActionCardSwitch'
  * three times. The flag is only readable in the browser, so the control card
  * is rendered until it resolves — variant users briefly see the control one.
  */
-export default function ActionCardSwitchServer(props: ActionCardWithTempProps) {
+export default function ActionCardSwitchServer(
+  props: ActionCardWithABTestProps
+) {
   return (
     <ActionCardSwitch
       control={<ActionCard {...props} />}

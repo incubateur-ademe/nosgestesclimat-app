@@ -8,17 +8,14 @@ import { toast } from 'sonner'
 
 const ANIMATION_DURATION = 1300
 
-export function useCommitToAction(
-  action: PersonalizedAction,
-  cacheTagToUpdate: string
-) {
+export function useCommitToAction(action: PersonalizedAction) {
   const { t } = useClientTranslation()
 
   const [isPending, startTransition] = useTransition()
   const handleCommitToAction = () => {
     startTransition(async () => {
       try {
-        await commitToAction(action.id, cacheTagToUpdate)
+        await commitToAction(action.id, action.slug)
 
         captureUniqueSessionActionEvent({
           actionThemeTrackingId: action.theme.trackingId,

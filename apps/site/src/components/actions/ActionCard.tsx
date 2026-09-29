@@ -2,7 +2,6 @@ import ArrowNarrowRightIcon from '@/components/icons/ArrowNarrowRightIcon'
 import Link from '@/components/Link'
 import { getActionHref } from '@/helpers/actions/getActionHref'
 import type { Locale } from '@/i18nConfig'
-import { GET_PERSONALIZED_ACTIONS_CACHE_TAG } from '@/services/actions/get-personalized-actions-catalogue'
 import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
@@ -154,7 +153,6 @@ export default function ActionCard({
       {action.assessment && (
         <div className="z-20 border-t border-slate-100 p-2">
           <CommitToActionButton
-            cacheTagToUpdate={GET_PERSONALIZED_ACTIONS_CACHE_TAG}
             className="w-full"
             action={action}
             label={

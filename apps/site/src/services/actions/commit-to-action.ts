@@ -4,11 +4,10 @@ import { commitToAction as _commitToAction } from '@nosgestesclimat/core/feature
 import { updateTag } from 'next/cache'
 import { unauthorized } from 'next/navigation'
 import { getUserSession } from '../auth/get-user-session'
+import { getPersonalizedActionDetailsCacheTagWithSlug } from './get-personalized-action-details'
+import { GET_PERSONALIZED_ACTIONS_CACHE_TAG } from './get-personalized-actions-catalogue'
 
-export async function commitToAction(
-  actionId: string,
-  cacheTagToUpdate: string
-) {
+export async function commitToAction(actionId: string, actionSlug: string) {
   const session = await getUserSession()
   if (!session) unauthorized()
 
@@ -17,7 +16,9 @@ export async function commitToAction(
     userId: session.id,
   })
 
-  updateTag(cacheTagToUpdate)
+  // Reset actions list AND specific action cache to avoid missmatch between pages
+  updateTag(GET_PERSONALIZED_ACTIONS_CACHE_TAG)
+  updateTag(getPersonalizedActionDetailsCacheTagWithSlug(actionSlug))
 
   return result
 }
