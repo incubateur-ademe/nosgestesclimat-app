@@ -13,7 +13,6 @@ import { Toaster as _Toaster } from '../shadcn/sonner'
 export default function Toaster() {
   return (
     <_Toaster
-      duration={60_000}
       icons={{
         success: (
           <CheckCircleIcon className="mr-6 block size-6 min-w-6 fill-green-600" />

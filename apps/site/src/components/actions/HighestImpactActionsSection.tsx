@@ -26,14 +26,16 @@ export default function HighestImpactActionsSection({
     <section
       {...props}
       aria-labelledby={headingId}
-      className={twMerge('flex flex-col gap-4 md:gap-8', className)}>
-      <h1 id={headingId} className="sr-only">
+      className={twMerge('flex flex-col gap-4', className)}>
+      <h2
+        id={headingId}
+        className="mb-0 text-xl/normal font-medium md:text-2xl/normal">
         <Trans
           locale={locale}
           i18nKey="actions.components.highestImpactActionsSection.testWhiteBackground.title">
           Voici vos 3 actions qui auront le plus d'impact
         </Trans>
-      </h1>
+      </h2>
 
       <ol className="flex list-none flex-col gap-4 p-0 md:gap-8">
         {actions.map((action, index) => (

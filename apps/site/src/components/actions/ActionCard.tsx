@@ -152,15 +152,7 @@ export default function ActionCard({
 
       {action.assessment && (
         <div className="z-20 border-t border-slate-100 p-2">
-          <CommitToActionButton
-            className="w-full"
-            action={action}
-            label={
-              <Trans locale={locale} i18nKey="actions.plan.addToPlan">
-                Ajouter à mon plan
-              </Trans>
-            }
-          />
+          <CommitToActionButton className="w-full" action={action} />
         </div>
       )}
     </article>

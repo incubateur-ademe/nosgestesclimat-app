@@ -13,8 +13,8 @@ interface ActionsPageProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
   'title'
 > {
-  title?: React.ReactNode
-  description?: React.ReactNode
+  title: React.ReactNode
+  description: React.ReactNode
   otherActionsTitle?: React.ReactNode
   otherActionsDescription?: React.ReactNode
   cta?: React.ReactNode
@@ -52,14 +52,12 @@ export default function ActionsPage({
       <BetaBanner locale={locale} />
 
       <div {...props} className={twMerge('pb-24', className)}>
-        {title && (
-          <div className="mb-8">
-            <h1 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
-              {title}
-            </h1>
-            <p className="text-base/normal md:text-lg/normal">{description}</p>
-          </div>
-        )}
+        <div className="mb-8">
+          <h1 className="mb-0 text-2xl/normal font-medium md:text-4xl/normal">
+            {title}
+          </h1>
+          <p className="text-base/normal md:text-lg/normal">{description}</p>
+        </div>
 
         {topActions && topActions.length > 0 && (
           <HighestImpactActionsSection

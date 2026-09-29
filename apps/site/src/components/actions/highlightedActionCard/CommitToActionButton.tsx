@@ -11,14 +11,12 @@ import { useCommitToAction } from './commitToActionButton/useCommitToAction'
 interface Props {
   action: PersonalizedAction
   className?: string
-  label?: React.ReactNode
   buttonColor?: Extract<ButtonColor, 'primary' | 'secondary'>
 }
 
 export default function CommitToActionButton({
   action,
   className,
-  label,
   buttonColor = 'secondary',
 }: Props) {
   const { commitToAction, isPending, shouldDisplayAnimation } =
@@ -62,11 +60,10 @@ export default function CommitToActionButton({
           )}
         />
       )}
-      {label ?? (
-        <Trans i18nKey="actions.components.actionCard.highlighted.addButton.add">
-          Ajouter
-        </Trans>
-      )}
+
+      <Trans i18nKey="actions.components.actionCard.highlighted.addButton.add">
+        Ajouter à mon plan
+      </Trans>
     </Button>
   )
 }
