@@ -1,4 +1,4 @@
-import { createUserVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { createVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
 import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { verifyCode } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
@@ -65,7 +65,7 @@ export const sendNewsletterConfirmationEmail = async ({
 }) => {
   const code = generateRandomVerificationCode()
 
-  await createUserVerificationCode(
+  await createVerificationCode(
     {
       email,
       code,

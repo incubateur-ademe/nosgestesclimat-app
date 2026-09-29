@@ -181,7 +181,6 @@ describe('Given a NGC integrations API user', () => {
           id: expect.any(String),
           code,
           email,
-          mode: null,
           expirationDate: expect.any(Date),
           userId: null,
           createdAt: expect.any(Date),

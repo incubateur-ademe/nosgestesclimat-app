@@ -73,9 +73,9 @@ vi.mock(
       // spread above cannot intercept: re-inject the mock so specs can keep
       // controlling the code through vi.mocked(generateRandomVerificationCode).
       createVerificationCodeService: (
-        dependencies: Parameters<typeof actual.createVerificationCodeService>[0]
+        dependencies: Parameters<typeof actual.createCreateVerificationCodeService>[0]
       ) =>
-        actual.createVerificationCodeService({
+        actual.createCreateVerificationCodeService({
           ...dependencies,
           generateCode: generateRandomVerificationCode,
         }),
