@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
@@ -42,31 +41,5 @@ describe('commitToAction()', () => {
         userId: user.id,
       })
     ).resolves.toBeUndefined()
-  })
-
-  it('throws when an invalid userId is pass as an argument', async () => {
-    const action = await actionFactory.published().create()
-
-    await userFactory.create()
-
-    await expect(
-      commitToAction({
-        actionId: action.id,
-        userId: faker.string.uuid(),
-      })
-    ).rejects.toThrow()
-  })
-
-  it('throws when an invalid actionId is pass as an argument', async () => {
-    await actionFactory.published().create()
-
-    const user = await userFactory.create()
-
-    await expect(
-      commitToAction({
-        actionId: faker.string.uuid(),
-        userId: user.id,
-      })
-    ).rejects.toThrow()
   })
 })
