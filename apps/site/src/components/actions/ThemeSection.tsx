@@ -63,7 +63,6 @@ export default function ThemeSection({
   theme,
   actions,
   locale,
-  assessmentStatus,
   trackingSource,
   title,
   description,
