@@ -1,7 +1,5 @@
-import { orderedCategories } from '@/constants/model/orderedCategories'
-import getSomme from '@/publicodes-state/helpers/getSomme'
+import { orderedCategories } from '@/constants/model/categories'
 import { getSubcategories } from '@/publicodes-state/helpers/getSubcategories'
-import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type {
   DottedName,
   NGCRuleNode,
@@ -12,44 +10,11 @@ import { useMemo } from 'react'
 interface Props {
   parsedRules?: NGCRulesNodes
   everyRules: DottedName[]
-  root: DottedName
   safeGetRule?: (rule: DottedName) => NGCRuleNode | undefined
 }
 
-export function useCategories({
-  parsedRules,
-  everyRules,
-  root,
-  safeGetRule,
-}: Props) {
-  const categories = useMemo<DottedName[]>(() => {
-    const rootRule = safeGetRule?.(root)
-    if (!rootRule) {
-      // eslint-disable-next-line no-console
-      console.error(`[useCategories] No rule found for ${root}`)
-
-      captureMessageForSentryAndPosthog(
-        `[useCategories:categories] No rule found for ${root}`
-      )
-      return []
-    }
-    const sum = getSomme(rootRule.rawNode)
-    if (!sum) {
-      // eslint-disable-next-line no-console
-      console.error(`[useCategories] No [somme] found for ${root}`)
-
-      captureMessageForSentryAndPosthog(
-        `[useCategories:categories] No [somme] found for ${root}`
-      )
-      return []
-    }
-
-    return sum.sort((a: DottedName, b: DottedName) =>
-      !orderedCategories
-        ? 0
-        : orderedCategories.indexOf(a) - orderedCategories.indexOf(b)
-    )
-  }, [root, safeGetRule, orderedCategories])
+export function useCategories({ parsedRules, everyRules, safeGetRule }: Props) {
+  const categories = orderedCategories
 
   const subcategories = useMemo<DottedName[]>(() => {
     return getSubcategories({

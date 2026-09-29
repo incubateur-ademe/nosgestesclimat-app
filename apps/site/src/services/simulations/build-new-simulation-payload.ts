@@ -41,8 +41,6 @@ export function buildNewSimulationPayload({
     return acc
   }, {} as ComputedResults),
   progression = 0,
-  polls,
-  groups,
   model,
 }: Partial<Omit<Simulation, 'model'>> & { model: string }): Simulation {
   const simulation: Simulation = {
@@ -53,8 +51,6 @@ export function buildNewSimulationPayload({
     persona,
     computedResults,
     progression,
-    polls,
-    groups,
     model,
   }
 

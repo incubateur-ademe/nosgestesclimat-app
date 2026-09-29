@@ -1,6 +1,3 @@
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useCallback, useMemo } from 'react'
-
 import {
   MUST_ASK_QUESTIONS,
   MUST_NOT_ASK_QUESTIONS,
@@ -8,6 +5,9 @@ import {
   PRIORITY_QUESTIONS,
 } from '@/publicodes-state/constants/questions'
 import getSortedQuestionsList from '@/publicodes-state/helpers/getSortedQuestionsList'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { utils } from 'publicodes'
+import { useCallback, useMemo } from 'react'
 import type {
   Entries,
   MissingVariables,
@@ -183,12 +183,27 @@ export default function useQuestions({
         (accumulator, currentValue) => ({
           ...accumulator,
           [currentValue]: relevantQuestions.filter((question) =>
-            question.includes(currentValue)
+            // We check that the question is in the current category
+            utils.ruleParent(question).includes(currentValue)
           ),
         }),
         {} as Record<DottedName, DottedName[]>
       ),
     [relevantQuestions, categories]
+  )
+
+  const remainingQuestionsByCategories = useMemo(
+    () =>
+      Object.entries(questionsByCategories).reduce(
+        (accumulator, [category, questions]) => ({
+          ...accumulator,
+          [category]: questions.filter((question) =>
+            remainingQuestions.includes(question)
+          ),
+        }),
+        {} as Record<DottedName, DottedName[]>
+      ),
+    [questionsByCategories, remainingQuestions]
   )
 
   return {
@@ -197,5 +212,6 @@ export default function useQuestions({
     relevantAnsweredQuestions,
     relevantQuestions,
     questionsByCategories,
+    remainingQuestionsByCategories,
   }
 }

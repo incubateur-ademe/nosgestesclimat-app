@@ -69,7 +69,6 @@ export interface UpdateCurrentSimulationProps {
   customAdditionalQuestionsAnswers?: Record<string, string>
   computedResults?: ComputedResults
   progression?: number
-  groupToDelete?: string | null
 }
 export interface LocalStorage {
   user: User

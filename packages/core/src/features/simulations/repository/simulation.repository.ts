@@ -26,16 +26,6 @@ const simulationSelect = {
   createdAt: true,
   updatedAt: true,
   userId: true,
-  polls: {
-    select: { pollId: true, poll: { select: { slug: true, name: true } } },
-    // Oldest first: the last entry is the poll the user most recently joined.
-    orderBy: { createdAt: 'asc' },
-  },
-  groups: {
-    select: { groupId: true },
-    // Oldest first: the last entry is the group the user most recently joined.
-    orderBy: { createdAt: 'asc' },
-  },
 } as const
 
 /**
