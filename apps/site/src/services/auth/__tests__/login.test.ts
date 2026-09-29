@@ -3,7 +3,6 @@ import {
   RateLimitedError,
   UnknownCodeError,
 } from '@/components/authentication/errors'
-import type * as loggerModule from '@/logger'
 import { InvalidVerificationCodeError } from '@nosgestesclimat/core/features/auth/errors/login.error'
 import { failure, success } from '@nosgestesclimat/core/lib/result'
 import { captureException } from '@sentry/nextjs'
@@ -64,19 +63,14 @@ vi.mock('@/env.server', () => ({
   env: { NEXT_PUBLIC_SITE_URL: 'http://localhost:3000' },
 }))
 
-vi.mock('@/logger', async (importOriginal) => {
-  const actual = await importOriginal<typeof loggerModule>()
-
-  return {
-    default: {
-      info: mocks.loggerInfo,
-      warn: vi.fn(),
-      error: vi.fn(),
-      debug: vi.fn(),
-    },
-    maskEmail: actual.maskEmail,
-  }
-})
+vi.mock('@/logger', () => ({
+  default: {
+    info: mocks.loggerInfo,
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  },
+}))
 
 const sessionUserId = crypto.randomUUID()
 

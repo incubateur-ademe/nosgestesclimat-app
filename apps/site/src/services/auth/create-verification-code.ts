@@ -6,11 +6,12 @@ import {
   type EmailError,
 } from '@/components/authentication/errors'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
-import logger, { maskEmail } from '@/logger'
+import logger from '@/logger'
 import type { AuthenticationMode } from '@/types/authentication'
 import { createSendVerificationCodeEmail } from '@nosgestesclimat/core/features/auth/emails/auth-emails'
 import { CreateVerificationCodePayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
 import { createVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { captureException } from '@sentry/nextjs'
