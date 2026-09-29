@@ -29,9 +29,7 @@ export const getPersonalizedActionsCatalogue = async (
     simulationId: lastFinished?.simulationId,
     userId,
     locale,
-    options: {
-      fallbackToDefaultLocale: true,
-    },
+    fallbackToDefaultLocale: true,
   })
 
   // No finished simulation -> all actions without assessments
