@@ -2,8 +2,7 @@ import {
   RateLimitedError,
   UnknownCodeError,
 } from '@/components/authentication/errors'
-import type * as loggerModule from '@/logger'
-import { maskEmail } from '@/logger'
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { captureException } from '@sentry/nextjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVerificationCode } from '../create-verification-code'
@@ -37,19 +36,14 @@ vi.mock('@/adapters/brevoClient', () => ({
   sendEmail: mocks.sendEmail,
 }))
 
-vi.mock('@/logger', async (importOriginal) => {
-  const actual = await importOriginal<typeof loggerModule>()
-
-  return {
-    default: {
-      info: mocks.loggerInfo,
-      warn: vi.fn(),
-      error: mocks.loggerError,
-      debug: vi.fn(),
-    },
-    maskEmail: actual.maskEmail,
-  }
-})
+vi.mock('@/logger', () => ({
+  default: {
+    info: mocks.loggerInfo,
+    warn: vi.fn(),
+    error: mocks.loggerError,
+    debug: vi.fn(),
+  },
+}))
 
 vi.mock(
   '@nosgestesclimat/core/features/auth/services/create-verification-code.service',
@@ -74,7 +68,7 @@ describe('createVerificationCode', () => {
     })
   })
 
-  it('returns the expiration date as an ISO string and lowercases the email', async () => {
+  it('returns the expiration date and lowercases the email', async () => {
     const result = await createVerificationCode({
       email: 'Success@Example.com',
       locale: 'fr',
@@ -82,7 +76,7 @@ describe('createVerificationCode', () => {
 
     expect(result).toEqual({
       success: true,
-      data: { expirationDate: '2026-01-02T03:04:05.678Z' },
+      data: { expirationDate: new Date('2026-01-02T03:04:05.678Z') },
     })
     expect(mocks.createVerificationCode).toHaveBeenCalledWith({
       email: 'success@example.com',
