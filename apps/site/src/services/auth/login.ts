@@ -3,7 +3,6 @@
 import { addOrUpdateContact, sendEmail } from '@/adapters/brevoClient'
 import {
   InvalidCodeError,
-  RateLimitedError,
   UnknownCodeError,
   type CodeError,
 } from '@/components/authentication/errors'
@@ -52,14 +51,11 @@ export const login = async ({
 
   // The schema lowercases the email before the DB lookup; the throttle key
   // must normalize the same way, or case permutations split the bucket.
-  if (
-    !rateLimitSameRequest({
-      key: `login:${email.toLocaleLowerCase()}`,
-      ttlMs: 30_000,
-    })
-  ) {
-    return failure(new RateLimitedError())
-  }
+  const rateLimit = await rateLimitSameRequest({
+    key: `login:${email.toLocaleLowerCase()}`,
+    ttlInSeconds: 30,
+  })
+  if (!rateLimit.success) return rateLimit
 
   // The old route validated the locale query the same way: an unsupported
   // locale never reached the service, and a missing one defaulted to 'fr' -
