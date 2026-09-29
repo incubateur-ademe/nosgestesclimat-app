@@ -2,7 +2,6 @@
 
 import { sendEmail } from '@/adapters/brevoClient'
 import {
-  RateLimitedError,
   UnknownCodeError,
   type EmailError,
 } from '@/components/authentication/errors'
@@ -46,14 +45,11 @@ export const createVerificationCode = async ({
 
   // The schema lowercases the email before the DB lookup; the throttle key
   // must normalize the same way, or case permutations split the bucket.
-  if (
-    !rateLimitSameRequest({
-      key: `verification-code:${email.toLocaleLowerCase()}`,
-      ttlMs: 30_000,
-    })
-  ) {
-    return failure(new RateLimitedError())
-  }
+  const rateLimit = await rateLimitSameRequest({
+    key: `verification-code:${email.toLocaleLowerCase()}`,
+    ttlInSeconds: 30,
+  })
+  if (!rateLimit.success) return rateLimit
 
   // An invalid email was a 400 from the HTTP validator that the previous
   // implementation collapsed into its generic unknown error.

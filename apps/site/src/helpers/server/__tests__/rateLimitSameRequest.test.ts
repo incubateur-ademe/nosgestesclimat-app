@@ -1,88 +1,101 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createHash } from 'node:crypto'
 
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { RateLimitedError } from '@/components/authentication/errors'
+import { failure, success } from '@nosgestesclimat/core/lib/result'
 import { rateLimitSameRequest } from '../rateLimitSameRequest'
+
+const mocks = vi.hoisted(() => ({
+  redisSet: vi.fn(),
+  loggerWarn: vi.fn(),
+}))
+
+vi.mock('@/adapters/redis/client', () => ({
+  redis: { set: mocks.redisSet },
+}))
+
+vi.mock('@/logger', () => ({
+  default: { warn: mocks.loggerWarn },
+}))
+
+const hashKey = (key: string) => createHash('sha256').update(key).digest('hex')
 
 describe('rateLimitSameRequest', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
+    vi.clearAllMocks()
   })
 
-  afterEach(() => {
-    vi.useRealTimers()
-  })
+  it('allows the first request for a key and writes it to Redis', async () => {
+    mocks.redisSet.mockResolvedValue('OK')
 
-  it('allows the first request for a key', () => {
-    expect(rateLimitSameRequest({ key: 'login:first@example.org' })).toBe(true)
-  })
+    const result = await rateLimitSameRequest({
+      key: 'login:first@example.org',
+    })
 
-  it('throttles an immediate repeat of the same key', () => {
-    expect(rateLimitSameRequest({ key: 'login:repeat@example.org' })).toBe(true)
-
-    expect(rateLimitSameRequest({ key: 'login:repeat@example.org' })).toBe(
-      false
+    expect(result).toEqual(success({ degraded: false }))
+    expect(mocks.redisSet).toHaveBeenCalledWith(
+      `rateLimitSameRequests_${hashKey('login:first@example.org')}`,
+      expect.any(String),
+      'EX',
+      30,
+      'NX'
     )
   })
 
-  it('releases the key once the TTL has expired', () => {
+  it('throttles an immediate repeat of the same key', async () => {
+    mocks.redisSet.mockResolvedValueOnce('OK').mockResolvedValueOnce(null)
+
     expect(
-      rateLimitSameRequest({ key: 'login:expiry@example.org', ttlMs: 30_000 })
+      await rateLimitSameRequest({ key: 'login:repeat@example.org' })
+    ).toEqual(success({ degraded: false }))
+    expect(
+      await rateLimitSameRequest({ key: 'login:repeat@example.org' })
+    ).toEqual(failure(new RateLimitedError()))
+  })
+
+  it('throttles a repeated key but not a different one', async () => {
+    mocks.redisSet.mockResolvedValueOnce('OK').mockResolvedValueOnce(null)
+
+    expect(
+      (await rateLimitSameRequest({ key: 'login:user-a@example.org' })).success
     ).toBe(true)
-
     expect(
-      rateLimitSameRequest({ key: 'login:expiry@example.org', ttlMs: 30_000 })
+      (await rateLimitSameRequest({ key: 'login:user-a@example.org' })).success
     ).toBe(false)
-
-    vi.advanceTimersByTime(30_000)
-
     expect(
-      rateLimitSameRequest({ key: 'login:expiry@example.org', ttlMs: 30_000 })
+      (await rateLimitSameRequest({ key: 'login:user-b@example.org' })).success
     ).toBe(true)
   })
 
-  it('throttles a repeated key but not a different one', () => {
-    expect(rateLimitSameRequest({ key: 'login:user-a@example.org' })).toBe(true)
+  it('passes the TTL to Redis, which owns the expiry', async () => {
+    mocks.redisSet.mockResolvedValue('OK')
 
-    expect(rateLimitSameRequest({ key: 'login:user-a@example.org' })).toBe(
-      false
+    await rateLimitSameRequest({
+      key: 'login:ttl@example.org',
+      ttlInSeconds: 5,
+    })
+
+    expect(mocks.redisSet).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      'EX',
+      5,
+      'NX'
     )
-    expect(rateLimitSameRequest({ key: 'login:user-b@example.org' })).toBe(true)
   })
 
-  it('does not throttle anymore when the same key is used past a shorter TTL', () => {
-    expect(
-      rateLimitSameRequest({ key: 'login:short-ttl@example.org', ttlMs: 1_000 })
-    ).toBe(true)
+  it('fails open and reports the degradation when Redis is down', async () => {
+    mocks.redisSet.mockRejectedValue(new Error('Redis is down'))
 
-    vi.advanceTimersByTime(999)
+    const result = await rateLimitSameRequest({
+      key: 'login:redis-down@example.org',
+    })
 
-    expect(
-      rateLimitSameRequest({ key: 'login:short-ttl@example.org', ttlMs: 1_000 })
-    ).toBe(false)
-
-    vi.advanceTimersByTime(1)
-
-    expect(
-      rateLimitSameRequest({ key: 'login:short-ttl@example.org', ttlMs: 1_000 })
-    ).toBe(true)
-  })
-
-  it('sweeps expired entries at most once per TTL window', async () => {
-    vi.resetModules()
-    const { rateLimitSameRequest: limiter } =
-      await import('../rateLimitSameRequest')
-
-    limiter({ key: 'login:swept@example.org', ttlMs: 1_000 })
-    vi.advanceTimersByTime(60_000)
-
-    const deleteSpy = vi.spyOn(Map.prototype, 'delete')
-
-    limiter({ key: 'login:after-sweep@example.org' })
-    expect(deleteSpy).toHaveBeenCalledTimes(1)
-
-    limiter({ key: 'login:within-window@example.org' })
-    expect(deleteSpy).toHaveBeenCalledTimes(1)
-
-    deleteSpy.mockRestore()
+    expect(result).toEqual(success({ degraded: true }))
+    expect(mocks.loggerWarn).toHaveBeenCalledWith(
+      'Could not rate limit same requests',
+      { error: expect.any(Error) }
+    )
   })
 })

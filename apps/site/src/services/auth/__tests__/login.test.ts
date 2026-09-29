@@ -94,7 +94,7 @@ const verifiedUser = {
 describe('login', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mocks.rateLimitSameRequest.mockReturnValue(true)
+    mocks.rateLimitSameRequest.mockResolvedValue(success({ degraded: false }))
     mocks.getUserSession.mockResolvedValue({
       id: sessionUserId,
       isAuth: false,
@@ -102,14 +102,16 @@ describe('login', () => {
   })
 
   it('returns RateLimitedError and never reaches the service when throttled', async () => {
-    mocks.rateLimitSameRequest.mockReturnValue(false)
+    mocks.rateLimitSameRequest.mockResolvedValue(
+      failure(new RateLimitedError())
+    )
 
     const result = await login({ email: 'user@example.com', code: '123456' })
 
     expect(result).toEqual(failure(new RateLimitedError()))
     expect(mocks.rateLimitSameRequest).toHaveBeenCalledWith({
       key: 'login:user@example.com',
-      ttlMs: 30_000,
+      ttlInSeconds: 30,
     })
     expect(mocks.loginService).not.toHaveBeenCalled()
   })
@@ -118,12 +120,12 @@ describe('login', () => {
     const throttledKeys = new Set<string>()
     mocks.rateLimitSameRequest.mockImplementation(
       ({ key }: { key: string }) => {
-        if (throttledKeys.has(key)) {
-          return false
-        }
+        const alreadyThrottled = throttledKeys.has(key)
         throttledKeys.add(key)
 
-        return true
+        return alreadyThrottled
+          ? failure(new RateLimitedError())
+          : success({ degraded: false })
       }
     )
     mocks.loginService.mockResolvedValue(
@@ -137,11 +139,11 @@ describe('login', () => {
     expect(second).toEqual(failure(new RateLimitedError()))
     expect(mocks.rateLimitSameRequest).toHaveBeenNthCalledWith(1, {
       key: 'login:case@example.com',
-      ttlMs: 30_000,
+      ttlInSeconds: 30,
     })
     expect(mocks.rateLimitSameRequest).toHaveBeenNthCalledWith(2, {
       key: 'login:case@example.com',
-      ttlMs: 30_000,
+      ttlInSeconds: 30,
     })
     expect(mocks.loginService).toHaveBeenCalledTimes(1)
   })

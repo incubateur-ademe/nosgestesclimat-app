@@ -8,12 +8,29 @@ import { captureException } from '@sentry/nextjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVerificationCode } from '../create-verification-code'
 
-const mocks = vi.hoisted(() => ({
-  createVerificationCode: vi.fn(),
-  sendEmail: vi.fn(),
-  after: vi.fn(),
-  loggerInfo: vi.fn(),
-  loggerError: vi.fn(),
+const mocks = vi.hoisted(() => {
+  // Persists across the tests of this file, like a real Redis would.
+  const storedKeys = new Set<string>()
+
+  return {
+    redisSet: vi.fn((key: string) => {
+      if (storedKeys.has(key)) {
+        return null
+      }
+      storedKeys.add(key)
+
+      return 'OK'
+    }),
+    createVerificationCode: vi.fn(),
+    sendEmail: vi.fn(),
+    after: vi.fn(),
+    loggerInfo: vi.fn(),
+    loggerError: vi.fn(),
+  }
+})
+
+vi.mock('@/adapters/redis/client', () => ({
+  redis: { set: mocks.redisSet },
 }))
 
 vi.mock('@/adapters/brevoClient', () => ({
@@ -45,8 +62,9 @@ vi.mock('next/server', () => ({
   after: mocks.after,
 }))
 
-// The real in-memory rate limiter is used on purpose: its map persists across
-// the tests of this file, so every test uses a distinct email.
+// The real rate limiter is used on purpose against the fake Redis above: its
+// keys persist across the tests of this file, so every test uses a distinct
+// email.
 describe('createVerificationCode', () => {
   beforeEach(() => {
     vi.clearAllMocks()
