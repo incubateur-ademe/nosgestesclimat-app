@@ -13,7 +13,7 @@ import {
   createAddOrUpdateContactAfterLogin,
   createSendWelcomeEmail,
 } from '@nosgestesclimat/core/features/auth/emails/auth-emails'
-import { LoginDto } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
+import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
 import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
@@ -23,7 +23,6 @@ import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
 import { createAppSession } from './create-app-session'
 import { getUserSession } from './get-user-session'
-import { resolveLocale } from './resolve-locale'
 
 // Error handling for the background email side effects lives inside the core
 // service (a failing email must never fail the login), so the site injects
@@ -57,23 +56,17 @@ export const login = async ({
   })
   if (!rateLimit.success) return rateLimit
 
-  // The old route validated the locale query the same way: an unsupported
-  // locale never reached the service, and a missing one defaulted to 'fr' -
-  // so every log below carries a concrete locale.
-  const loginLocale = resolveLocale(locale)
-  if (loginLocale === undefined) {
+  const parsed = validatePayload(LoginPayloadSchema, { email, code, locale })
+  if (!parsed.success) {
     return failure(new UnknownCodeError())
   }
+  const loginLocale = parsed.data.locale
 
   // The old action wrapped its entire body in one try: any throw collapsed
   // to failure(new UnknownCodeError()). The session lookup runs inside the
   // try so its failures collapse the same way instead of surfacing to
   // useLogin as a rejected mutation.
   let sessionUserId: string | undefined
-
-  // The old route logged the validated (schema-normalized) email; before
-  // validation the raw argument is the only value available.
-  let maskedEmail = maskEmail(email)
 
   try {
     const session = await getUserSession()
@@ -82,20 +75,9 @@ export const login = async ({
     // id = one account" invariant.
     sessionUserId = session?.id
 
-    const parsed = validatePayload(LoginDto, { email, code })
-    if (!parsed.success) {
-      // An invalid body used to answer 400 from the server, which the old
-      // catch collapsed into UnknownCodeError - the form guarantees a
-      // well-formed email and a 6-digit code client-side, so this is
-      // unreachable from the UI.
-      return failure(new UnknownCodeError())
-    }
-
-    maskedEmail = maskEmail(parsed.data.email)
-
     const context = {
       userId: sessionUserId,
-      email: maskedEmail,
+      email: maskEmail(parsed.data.email),
       locale: loginLocale,
     }
 
@@ -110,12 +92,9 @@ export const login = async ({
     })
 
     if (!result.success) {
-      // InvalidVerificationCodeError is the only domain failure; the Sentry
-      // signal replaces the diagnosis context that is gone.
       const outcome = { ...context, durationMs: Date.now() - startedAt }
 
       logger.warn('Login rejected: invalid verification code', outcome)
-
       captureException(result.error, { level: 'warning', extra: outcome })
 
       return failure(new InvalidCodeError())
@@ -140,13 +119,12 @@ export const login = async ({
   } catch (error) {
     const outcome = {
       userId: sessionUserId,
-      email: maskedEmail,
+      email: maskEmail(email),
       locale: loginLocale,
       durationMs: Date.now() - startedAt,
     }
 
     logger.error('Login failed', { ...outcome, error })
-
     captureException(error, { extra: outcome })
 
     return failure(new UnknownCodeError())
