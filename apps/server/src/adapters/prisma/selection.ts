@@ -1,6 +1,13 @@
-import { defaultVerifiedUserSelection } from '@nosgestesclimat/core/features/users/repositories/verified-users.repository'
-
-export { defaultVerifiedUserSelection }
+export const defaultVerifiedUserSelection = {
+  id: true,
+  name: true,
+  email: true,
+  position: true,
+  telephone: true,
+  optedInForCommunications: true,
+  createdAt: true,
+  updatedAt: true,
+}
 
 export const defaultUserSelection = {
   id: true,

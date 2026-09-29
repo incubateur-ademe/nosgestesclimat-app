@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { createOrUpdateVerifiedUser } from '@nosgestesclimat/core/features/users/repositories/verified-users.repository'
+import { createOrUpdateUser } from '@nosgestesclimat/core/features/users/repositories/users.repository'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import dayjs from 'dayjs'
@@ -34,8 +34,8 @@ export const login = async () => {
   const userId = faker.string.uuid()
   const email = faker.internet.email().toLocaleLowerCase()
 
-  await createOrUpdateVerifiedUser(
-    { id: { id: userId, email }, user: { email } },
+  await createOrUpdateUser(
+    { type: 'verified', id: userId, email },
     { session: prisma }
   )
 
