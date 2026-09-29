@@ -1,16 +1,16 @@
 import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/enums'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const ANIMATION_DURATION = 1300
 
 export function useTriggerShineAnimation(type?: ActionChoiceType) {
   const [shouldDisplayAnimation, setShouldDisplayAnimation] = useState(false)
-  const wasCommitted = useRef(type === 'committed')
-  useEffect(() => {
-    const isCommitted = type === 'committed'
-    if (isCommitted && !wasCommitted.current) setShouldDisplayAnimation(true)
-    wasCommitted.current = isCommitted
-  }, [type])
+  const [wasCommitted, setWasCommitted] = useState(type === 'committed')
+
+  if (type === 'committed' && !wasCommitted) {
+    setShouldDisplayAnimation(true)
+    setWasCommitted(true)
+  }
 
   useEffect(() => {
     let timeoutBeforeDisablingAnimation = undefined
