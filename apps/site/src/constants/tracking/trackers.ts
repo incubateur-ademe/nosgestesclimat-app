@@ -197,21 +197,3 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
     googleTagCookie: cookieState?.googleTag,
   },
 })
-
-// Actions
-export const captureActionAddedToPlan = ({
-  actionTitle,
-  actionTheme,
-  impactInKg,
-}: {
-  actionTitle: string
-  actionTheme: string
-  impactInKg?: number
-}) => ({
-  eventName: 'action added to plan',
-  properties: {
-    action_title: actionTitle,
-    action_theme: actionTheme,
-    co2_potential_kg: impactInKg,
-  },
-})

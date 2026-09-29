@@ -1,7 +1,6 @@
-import { captureActionAddedToPlan } from '@/constants/tracking/trackers'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { commitToAction } from '@/services/actions/commit-to-action'
-import { trackEvent } from '@/utils/analytics/trackEvent'
+import { captureUniqueSessionActionEvent } from '@/utils/analytics/trackUniqueEvent'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/enums'
 import { useEffect, useRef, useState, useTransition } from 'react'
@@ -29,13 +28,12 @@ export function useCommitToAction(
         )
       }
 
-      trackEvent(
-        captureActionAddedToPlan({
-          actionTitle: action.title,
-          actionTheme: action.theme.trackingId,
-          impactInKg: action.assessment?.impact,
-        })
-      )
+      captureUniqueSessionActionEvent({
+        actionThemeTrackingId: action.theme.trackingId,
+        actionTrackingId: action.trackingId,
+        co2PotentialInKg: action.assessment?.impact,
+        eventName: 'action committed',
+      })
 
       toast.success(
         t(
