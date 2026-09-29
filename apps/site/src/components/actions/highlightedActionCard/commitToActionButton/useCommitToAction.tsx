@@ -17,9 +17,23 @@ export function useCommitToAction(
   const [isPending, startTransition] = useTransition()
   const handleCommitToAction = () => {
     startTransition(async () => {
-      const result = await commitToAction(action.id, cacheTagToUpdate)
+      try {
+        await commitToAction(action.id, cacheTagToUpdate)
 
-      if (!result.success) {
+        captureUniqueSessionActionEvent({
+          actionThemeTrackingId: action.theme.trackingId,
+          actionTrackingId: action.trackingId,
+          co2PotentialInKg: action.assessment?.impact,
+          eventName: 'action committed',
+        })
+
+        toast.success(
+          t(
+            'actions.commitToActionButton.success',
+            'Action sélectionnée avec succès.'
+          )
+        )
+      } catch {
         toast.error(
           t(
             'actions.commitToActionButton.error',
@@ -27,20 +41,6 @@ export function useCommitToAction(
           )
         )
       }
-
-      captureUniqueSessionActionEvent({
-        actionThemeTrackingId: action.theme.trackingId,
-        actionTrackingId: action.trackingId,
-        co2PotentialInKg: action.assessment?.impact,
-        eventName: 'action committed',
-      })
-
-      toast.success(
-        t(
-          'actions.commitToActionButton.success',
-          'Action sélectionnée avec succès.'
-        )
-      )
     })
   }
 

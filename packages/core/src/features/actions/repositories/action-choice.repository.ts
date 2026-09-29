@@ -1,15 +1,20 @@
-import { success, type Result } from '../../../lib/result.ts'
 import { prisma } from '../../../prisma/client.ts'
+import type { ActionChoiceType } from '../../../prisma/generated/enums.ts'
+import type { ActionChoice } from '../types/action.ts'
 import { mapActionChoiceToPrisma } from './action-choice.mapper.ts'
+
+interface Props {
+  actionId: string
+  type: ActionChoiceType
+  userId: string
+}
 
 export const createActionChoice = async ({
   actionId,
+  type,
   userId,
-}: {
-  actionId: string
-  userId: string
-}): Promise<Result<void>> => {
-  await prisma.actionChoice.upsert({
+}: Props): Promise<ActionChoice> => {
+  return await prisma.actionChoice.upsert({
     where: {
       userId_actionId: {
         actionId,
@@ -19,13 +24,12 @@ export const createActionChoice = async ({
     create: mapActionChoiceToPrisma({
       userId,
       actionId,
-      type: 'committed',
+      type,
     }),
     update: mapActionChoiceToPrisma({
       userId,
       actionId,
-      type: 'committed',
+      type,
     }),
   })
-  return success()
 }
