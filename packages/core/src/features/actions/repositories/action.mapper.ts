@@ -120,9 +120,6 @@ const mapAssessment = (
 }
 
 const mapActionChoice = (dbActionChoice: Prisma.ActionChoiceModel) => ({
-  id: dbActionChoice.id,
-  userId: dbActionChoice.userId,
   type: dbActionChoice.type,
-  actionId: dbActionChoice.actionId,
   chosenAt: dbActionChoice.chosenAt,
 })

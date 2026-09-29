@@ -338,13 +338,3 @@ export const findAllVisiblePersonalizedActions = async ({
     })
   )
 }
-export const findActionById = async (actionId: string | undefined) => {
-  if (!actionId) return null
-
-  return prisma.action.findFirst({
-    select: { id: true },
-    where: {
-      id: actionId,
-    },
-  })
-}

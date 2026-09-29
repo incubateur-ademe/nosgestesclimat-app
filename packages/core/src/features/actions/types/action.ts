@@ -112,7 +112,7 @@ export type ActionAssessment = NewActionAssessment & {
 }
 
 export interface PersonalizedAction extends Action {
-  choice: ActionChoice | null
+  choice: Pick<ActionChoice, 'type' | 'chosenAt'> | null
   assessment: ActionAssessment | null
 }
 
