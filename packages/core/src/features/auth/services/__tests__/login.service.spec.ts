@@ -191,6 +191,7 @@ describe('login', () => {
         loginDto: {
           email: faker.internet.email().toLocaleLowerCase(),
           code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+          locale: 'fr',
         },
         locale: 'fr',
       })
@@ -220,6 +221,7 @@ describe('login', () => {
         loginDto: {
           email: verifiedUser.email,
           code: verificationCode.code,
+          locale: 'fr',
         },
         locale: 'fr',
         sessionUserId: faker.string.uuid(),
@@ -249,6 +251,7 @@ describe('login', () => {
         loginDto: {
           email: verifiedUser.email,
           code: verificationCode.code,
+          locale: 'fr',
         },
         locale: 'fr',
       })
@@ -262,6 +265,7 @@ describe('login', () => {
         loginDto: {
           email: verifiedUser.email,
           code: verificationCode.code,
+          locale: 'fr',
         },
         locale: 'fr',
       })
@@ -287,6 +291,7 @@ describe('login', () => {
         loginDto: {
           email: verifiedUser.email,
           code: verificationCode.code,
+          locale: 'fr',
         },
         locale: 'fr',
       })
@@ -318,6 +323,7 @@ describe('login', () => {
           loginDto: {
             email: verifiedUser.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId: anonymousUser.id,
@@ -360,6 +366,7 @@ describe('login', () => {
           loginDto: {
             email: verifiedUser.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
         })
@@ -395,6 +402,7 @@ describe('login', () => {
           loginDto: {
             email: userB.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId: userA.id,
@@ -438,6 +446,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId: anonymousUser.id,
@@ -487,6 +496,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId: faker.string.uuid(),
@@ -515,6 +525,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId,
@@ -529,6 +540,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId,
@@ -554,6 +566,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'en',
           sessionUserId,
@@ -598,6 +611,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId,
@@ -631,6 +645,7 @@ describe('login', () => {
           loginDto: {
             email: verificationCode.email,
             code: verificationCode.code,
+            locale: 'fr',
           },
           locale: 'fr',
           sessionUserId: userA.id,
@@ -672,6 +687,7 @@ describe('login', () => {
         loginDto: {
           email: verificationCode.email,
           code: verificationCode.code,
+          locale: 'fr',
         },
         locale: 'fr',
         sessionUserId: faker.string.uuid(),

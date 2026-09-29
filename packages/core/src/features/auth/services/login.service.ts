@@ -33,7 +33,7 @@ import {
   invalidateVerificationCode,
   type UserVerificationCode,
 } from '../repositories/verification-codes.repository.ts'
-import type { LoginDto } from '../schemas/verification-codes.schema.ts'
+import type { LoginPayload } from '../schemas/verification-codes.schema.ts'
 
 type SendWelcomeEmail = ReturnType<typeof createSendWelcomeEmail>
 type AddOrUpdateContactAfterLogin = ReturnType<
@@ -98,7 +98,7 @@ const createAccountOrSignin = async ({
   sessionUserId,
   verificationCode,
 }: {
-  loginDto: LoginDto
+  loginDto: LoginPayload
   sessionUserId?: string
   verificationCode: UserVerificationCode
 }): Promise<
@@ -228,7 +228,7 @@ export function createLogin({
     locale,
     sessionUserId,
   }: {
-    loginDto: LoginDto
+    loginDto: LoginPayload
     locale: ISOSupportedLanguage
     /**
      * The current session's userId, derived from the signed session payload.

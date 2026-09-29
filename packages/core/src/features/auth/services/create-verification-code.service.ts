@@ -7,7 +7,6 @@ import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import type { createSendVerificationCodeEmail } from '../emails/auth-emails.ts'
 import { createUserVerificationCode } from '../repositories/verification-codes.repository.ts'
-import type { VerificationCodeCreateDto } from '../schemas/verification-codes.schema.ts'
 
 type SendVerificationCodeEmail = ReturnType<
   typeof createSendVerificationCodeEmail
@@ -46,8 +45,7 @@ export function createVerificationCodeService({
     email,
     locale,
   }: {
-    /** Email validated through `VerificationCodeCreateDto` by the caller */
-    email: VerificationCodeCreateDto['email']
+    email: string
     locale: ISOSupportedLanguage
   }): Promise<{ email: string; expirationDate: Date }> {
     const code = generateCode()

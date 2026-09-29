@@ -37,7 +37,7 @@ export function useAuthCodeCreation({ dispatch }: UseAuthCodeCreationOptions) {
         safeSessionStorage.setItem(EMAIL_PENDING_AUTHENTICATION_KEY, email)
         dispatch({
           type: 'EMAIL_SENT',
-          pending: { email, expirationDate: new Date(expirationDate) },
+          pending: { email, expirationDate },
           cooldownUntil: cooldownDeadline(),
         })
       } else {
