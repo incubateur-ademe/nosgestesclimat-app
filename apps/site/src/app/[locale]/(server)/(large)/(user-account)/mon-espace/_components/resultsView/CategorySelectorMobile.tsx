@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { testOrderedCategories } from '@/constants/model/orderedCategories'
+import { orderedTestCategories } from '@/constants/model/categories'
 import Alert from '@/design-system/alerts/alert/Alert'
 import SelectInput from '@/design-system/inputs/SelectInput'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
@@ -28,7 +28,7 @@ export default function CategorySelectorMobile({
 
   const options: { value: TabId; label: string }[] = [
     { value: 'global', label: globalLabel },
-    ...testOrderedCategories.map((category) => ({
+    ...orderedTestCategories.map((category) => ({
       value: category,
       label: categoryLabels[category] ?? category,
     })),

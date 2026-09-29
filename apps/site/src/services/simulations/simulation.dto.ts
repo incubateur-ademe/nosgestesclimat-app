@@ -13,7 +13,5 @@ export function toSimulationDto(simulation: SimulationEntity): Simulation {
     progression: simulation.progression,
     model: serializeModel(simulation.model),
     updatedAt: simulation.updatedAt.toISOString(),
-    ...(simulation.polls ? { polls: simulation.polls } : {}),
-    ...(simulation.groups ? { groups: simulation.groups } : {}),
   }
 }

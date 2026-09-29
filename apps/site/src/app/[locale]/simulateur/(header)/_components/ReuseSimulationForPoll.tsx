@@ -5,6 +5,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import type { PollSummary } from '@nosgestesclimat/core/features/polls/types/poll'
 import dayjs from 'dayjs'
 import ReuseButtons from './reuseSimulationForPoll/ReuseButtons'
 
@@ -14,6 +15,7 @@ interface ReuseSimulationForPollProps {
   locale: string
   disclaimer: React.ReactNode
   simulation: Simulation
+  polls: PollSummary[]
 }
 export default function ReuseSimulationForPoll({
   reuseSimulation,
@@ -21,6 +23,7 @@ export default function ReuseSimulationForPoll({
   locale,
   disclaimer,
   simulation,
+  polls,
 }: ReuseSimulationForPollProps) {
   const { t } = getServerTranslation({ locale })
 
@@ -83,7 +86,7 @@ export default function ReuseSimulationForPoll({
           </span>
         </p>
 
-        {simulation.polls && simulation.polls.length > 0 && (
+        {polls.length > 0 && (
           <p className="mt-6 w-full text-sm">
             <span>
               <Emoji>📊</Emoji>{' '}
@@ -94,7 +97,7 @@ export default function ReuseSimulationForPoll({
               </Trans>
             </span>{' '}
             <span className="text-base font-medium">
-              {simulation.polls.map((p) => p.name ?? p.slug).join(', ')}
+              {polls.map((p) => p.name || p.slug).join(', ')}
             </span>
           </p>
         )}

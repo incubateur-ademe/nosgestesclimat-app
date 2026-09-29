@@ -1,5 +1,5 @@
+import { ModelStringSchema } from '@nosgestesclimat/core/features/simulations/types/model'
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import { ModelSchema } from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
 import {
   FoldedStepsSchema,
   SituationSchema,
@@ -11,14 +11,14 @@ export const CompleteSimulationPayloadSchema = v.strictObject({
   // The model the client ran the test with — migrated to the current version
   // when the client resumed an older simulation. Without it the completion
   // would judge computability from the persisted, possibly outdated model.
-  model: ModelSchema,
+  model: ModelStringSchema,
   progression: v.literal(1),
   situation: SituationSchema,
   foldedSteps: FoldedStepsSchema,
   computedResults: ComputedResultsSchema,
 })
 
-type _CompleteSimulationPayload = v.InferOutput<
+type _CompleteSimulationPayload = v.InferInput<
   typeof CompleteSimulationPayloadSchema
 >
 
