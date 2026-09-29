@@ -9,18 +9,21 @@ import { twMerge } from 'cn'
 import { Trans } from 'react-i18next'
 import type { ActionCatalogueContext } from '../types/actions'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
+import { classesByTheme } from './impactSection/classes-by-theme'
 
 interface Props {
-  classes: Record<'card' | 'panel' | 'value', string>
+  themeKey: string
   assessment?: ActionAssessment | null
   actionCatalogueContext: ActionCatalogueContext
 }
 
 export default function ImpactSection({
-  classes,
+  themeKey,
   assessment,
   actionCatalogueContext,
 }: Props) {
+  const classes = classesByTheme[themeKey]
+
   const locale = useLocale()
 
   if (
