@@ -45,14 +45,14 @@ const mockUser = {
 
 describe('commitToAction service', () => {
   afterEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it('should call unauthorized() if no user session is found', async () => {
     sessionMock.getUserSession.mockResolvedValue(null)
 
     await expect(
-      commitToAction(faker.string.uuid(), 'fake-tag')
+      commitToAction(faker.string.uuid(), faker.string.uuid())
     ).rejects.toThrow('NEXT_UNAUTHORIZED')
 
     expect(unauthorizedMock).toHaveBeenCalledTimes(1)
@@ -61,27 +61,23 @@ describe('commitToAction service', () => {
 
   it("should return before updating the cache if the service call result isn't a success", async () => {
     sessionMock.getUserSession.mockResolvedValue(mockUser)
-    const errorResult = {
-      success: false,
-    }
-    commitToActionCoreServiceMock.mockResolvedValue(errorResult)
 
-    const result = await commitToAction(faker.string.uuid(), 'fake-tag')
+    commitToActionCoreServiceMock.mockRejectedValue('db error')
 
-    expect(result).toEqual(errorResult)
+    await expect(
+      commitToAction(faker.string.uuid(), faker.string.uuid())
+    ).rejects.toThrow()
+
     expect(updateTagMock).not.toHaveBeenCalled()
   })
 
-  it('should update the cache if the service call result is a success', async () => {
+  it('should update the actions list and the action detail caches if the service call result is a success', async () => {
     sessionMock.getUserSession.mockResolvedValue(mockUser)
-    const successResult = {
-      success: true,
-    }
-    commitToActionCoreServiceMock.mockResolvedValue(successResult)
 
-    const result = await commitToAction(faker.string.uuid(), 'fake-tag')
+    await expect(
+      commitToAction(faker.string.uuid(), faker.string.uuid())
+    ).resolves.toBeUndefined()
 
-    expect(result).toEqual(successResult)
-    expect(updateTagMock).toHaveBeenCalledTimes(1)
+    expect(updateTagMock).toHaveBeenCalledTimes(2)
   })
 })
