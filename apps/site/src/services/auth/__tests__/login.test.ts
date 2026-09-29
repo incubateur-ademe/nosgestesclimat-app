@@ -18,8 +18,6 @@ const mocks = vi.hoisted(() => ({
   rateLimitSameRequest: vi.fn(),
   sendEmail: vi.fn(),
   addOrUpdateContact: vi.fn(),
-  sendWelcomeEmail: vi.fn(),
-  addOrUpdateContactAfterLogin: vi.fn(),
   loginService: vi.fn(),
   loggerInfo: vi.fn(),
 }))
@@ -39,11 +37,6 @@ vi.mock(
 
 vi.mock('@nosgestesclimat/core/features/auth/services/login.service', () => ({
   createLogin: () => mocks.loginService,
-}))
-
-vi.mock('@nosgestesclimat/core/features/auth/emails/auth-emails', () => ({
-  createSendWelcomeEmail: () => mocks.sendWelcomeEmail,
-  createAddOrUpdateContactAfterLogin: () => mocks.addOrUpdateContactAfterLogin,
 }))
 
 vi.mock('@/adapters/brevoClient', () => ({

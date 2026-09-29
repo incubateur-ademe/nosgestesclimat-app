@@ -1,14 +1,16 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { BackgroundTaskRunner } from '../../../../lib/background-task-runner.ts'
+import { failure, success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
+import { EmailRequestError } from '../../../emails/errors.ts'
 import {
   createVerificationCodeService,
   generateRandomVerificationCode,
 } from '../create-verification-code.service.ts'
 
-const sendVerificationCodeEmail = vi.fn()
+const sendEmail = vi.fn().mockResolvedValue(success())
 const logger = { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() }
 const captureException = vi.fn()
 
@@ -29,7 +31,7 @@ describe('createVerificationCode', () => {
   const createVerificationCode = createVerificationCodeService({
     logger,
     captureException,
-    sendVerificationCodeEmail,
+    sendEmail,
     backgroundTaskRunner,
   })
 
@@ -90,7 +92,7 @@ describe('createVerificationCode', () => {
     const createApiTokenVerificationCode = createVerificationCodeService({
       logger,
       captureException,
-      sendVerificationCodeEmail,
+      sendEmail,
       backgroundTaskRunner,
       usage: VerificationCodeUsage.apiToken,
     })
@@ -118,11 +120,13 @@ describe('createVerificationCode', () => {
 
     await flushBackgroundTasks()
 
-    expect(sendVerificationCodeEmail).toHaveBeenCalledTimes(1)
-    expect(sendVerificationCodeEmail).toHaveBeenCalledWith({
-      locale: 'en',
+    expect(sendEmail).toHaveBeenCalledTimes(1)
+    expect(sendEmail).toHaveBeenCalledWith({
       email,
-      code: createdVerificationCode?.code,
+      templateId: 125,
+      params: {
+        VERIFICATION_CODE: createdVerificationCode?.code,
+      },
     })
   })
 
@@ -133,7 +137,7 @@ describe('createVerificationCode', () => {
     const createVerificationCodeWithProbe = createVerificationCodeService({
       logger,
       captureException,
-      sendVerificationCodeEmail,
+      sendEmail,
       backgroundTaskRunner: (task) => {
         // The code must already exist in database when the email is handed
         // over to the runner.
@@ -153,8 +157,8 @@ describe('createVerificationCode', () => {
 
   it('still persists the verification code and does not fail the creation when the email delivery fails', async () => {
     const email = faker.internet.email().toLocaleLowerCase()
-    const emailError = new Error('Brevo timeout')
-    sendVerificationCodeEmail.mockRejectedValueOnce(emailError)
+    const emailError = new EmailRequestError('Brevo timeout')
+    sendEmail.mockResolvedValueOnce(failure(emailError))
 
     await expect(
       createVerificationCode({ email, locale: 'fr' })
@@ -175,8 +179,8 @@ describe('createVerificationCode', () => {
 
   it('logs and captures the exception when the email delivery fails', async () => {
     const email = faker.internet.email().toLocaleLowerCase()
-    const emailError = new Error('Brevo timeout')
-    sendVerificationCodeEmail.mockRejectedValueOnce(emailError)
+    const emailError = new EmailRequestError('Brevo timeout')
+    sendEmail.mockResolvedValueOnce(failure(emailError))
 
     await createVerificationCode({ email, locale: 'fr' })
 
