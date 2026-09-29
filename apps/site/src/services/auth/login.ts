@@ -8,7 +8,7 @@ import {
 } from '@/components/authentication/errors'
 import { env } from '@/env.server'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
-import logger, { maskEmail } from '@/logger'
+import logger from '@/logger'
 import {
   createAddOrUpdateContactAfterLogin,
   createSendWelcomeEmail,
@@ -16,6 +16,7 @@ import {
 import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
 import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
 import { captureException } from '@sentry/nextjs'
