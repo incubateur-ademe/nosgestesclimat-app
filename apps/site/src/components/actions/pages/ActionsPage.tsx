@@ -4,7 +4,6 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import Trans from '../../translation/trans/TransServer'
-import ActionsPageHeaderSwitch from '../ActionsPageHeaderSwitch'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
@@ -54,19 +53,12 @@ export default function ActionsPage({
 
       <div {...props} className={twMerge('pb-24', className)}>
         {title && (
-          <ActionsPageHeaderSwitch
-            title={title}
-            control={
-              <div className="mb-8">
-                <h1 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
-                  {title}
-                </h1>
-                <p className="text-base/normal md:text-lg/normal">
-                  {description}
-                </p>
-              </div>
-            }
-          />
+          <div className="mb-8">
+            <h1 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
+              {title}
+            </h1>
+            <p className="text-base/normal md:text-lg/normal">{description}</p>
+          </div>
         )}
 
         {topActions && topActions.length > 0 && (

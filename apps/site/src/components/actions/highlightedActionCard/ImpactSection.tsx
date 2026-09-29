@@ -5,6 +5,7 @@ import { useLocale } from '@/hooks/useLocale'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { ActionAssessment } from '@nosgestesclimat/core/features/actions/types/action'
+import type { ThemeKey } from '@nosgestesclimat/core/features/actions/types/theme'
 import { twMerge } from 'cn'
 import { Trans } from 'react-i18next'
 import type { ActionCatalogueContext } from '../types/actions'
@@ -12,7 +13,7 @@ import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayCo
 import { classesByTheme } from './impactSection/classes-by-theme'
 
 interface Props {
-  themeKey: string
+  themeKey: ThemeKey
   assessment?: ActionAssessment | null
   actionCatalogueContext: ActionCatalogueContext
 }
