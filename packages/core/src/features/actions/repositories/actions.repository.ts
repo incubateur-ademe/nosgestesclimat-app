@@ -284,17 +284,19 @@ export const findAllVisiblePersonalizedActions = async ({
   simulationId,
   userId,
   locale,
-  options,
+  themeId,
+  fallbackToDefaultLocale,
 }: {
   /** Assessments are read for this simulation, `undefined` for none. */
   simulationId: string | undefined
   userId: string | undefined
   locale: ISOSupportedLanguage
-  options: { fallbackToDefaultLocale?: boolean; themeId?: string }
+  themeId?: string
+  fallbackToDefaultLocale?: boolean
 }): Promise<PersonalizedAction[]> => {
   const actions = await findVisibleActions(locale, {
-    fallbackToDefaultLocale: options.fallbackToDefaultLocale,
-    themeId: options.themeId,
+    fallbackToDefaultLocale,
+    themeId,
   })
 
   if (actions.length === 0) return []

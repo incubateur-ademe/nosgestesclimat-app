@@ -39,10 +39,8 @@ export const getPersonalizedActionDetails = async (
     simulationId: lastFinished?.simulationId,
     userId,
     locale,
-    options: {
-      themeId: action.theme.id,
-      fallbackToDefaultLocale: true,
-    },
+    themeId: action.theme.id,
+    fallbackToDefaultLocale: true,
   })
 
   const otherThemeActions = themeActions
