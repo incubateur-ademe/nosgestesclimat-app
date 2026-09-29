@@ -185,7 +185,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
         ) : null}
       </header>
 
-      <ActionCommitmentBanner action={action} />
+      <ActionCommitmentBanner locale={locale} action={action} />
 
       <div className="mb-10 grid gap-10 md:grid-cols-2 [&>*:last-child:nth-child(even)]:col-span-full">
         <Section

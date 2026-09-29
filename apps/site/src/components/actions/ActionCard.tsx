@@ -157,6 +157,11 @@ export default function ActionCard({
             cacheTagToUpdate={GET_PERSONALIZED_ACTIONS_CACHE_TAG}
             className="w-full"
             action={action}
+            label={
+              <Trans locale={locale} i18nKey="actions.plan.addToPlan">
+                Ajouter à mon plan
+              </Trans>
+            }
           />
         </div>
       )}

@@ -8,19 +8,21 @@ import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/
 import { twMerge } from 'cn'
 import { useCommitToAction } from './commitToActionButton/useCommitToAction'
 
+interface Props {
+  action: PersonalizedAction
+  className?: string
+  label?: React.ReactNode
+  cacheTagToUpdate: string
+  buttonColor?: Extract<ButtonColor, 'primary' | 'secondary'>
+}
+
 export default function CommitToActionButton({
   action,
   className,
-  shortLabelDisplayed,
+  label,
   cacheTagToUpdate,
   buttonColor = 'secondary',
-}: {
-  action: PersonalizedAction
-  className?: string
-  shortLabelDisplayed?: boolean
-  cacheTagToUpdate: string
-  buttonColor?: Extract<ButtonColor, 'primary' | 'secondary'>
-}) {
+}: Props) {
   const { commitToAction, isPending, shouldDisplayAnimation } =
     useCommitToAction(action, cacheTagToUpdate)
 
@@ -63,13 +65,9 @@ export default function CommitToActionButton({
           )}
         />
       )}
-      {shortLabelDisplayed ? (
-        <Trans i18nKey="actions.components.actionCard.highlighted.addButton.short">
+      {label ?? (
+        <Trans i18nKey="actions.components.actionCard.highlighted.addButton.add">
           Ajouter
-        </Trans>
-      ) : (
-        <Trans i18nKey="actions.components.actionCard.highlighted.addButton.full">
-          Ajouter à mon plan
         </Trans>
       )}
     </Button>
