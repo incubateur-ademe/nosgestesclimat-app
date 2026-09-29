@@ -12,7 +12,6 @@ import HousingIcon from '../icons/HousingIcon'
 import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
-import ActionCard from './ActionCard'
 import ActionCardSwitchServer from './actionCard/ActionCardSwitchServer'
 
 interface Props {
@@ -106,30 +105,17 @@ export default function ThemeSection({
         aria-labelledby={carouselLabelId}
         className="-mx-2 md:mx-0"
         innerClassName="py-1 px-2 md:px-0">
-        {actions.map((action) =>
-          assessmentStatus ? (
-            <ActionCard
-              key={action.id}
-              action={action}
-              locale={locale}
-              withThemeBadge={false}
-              className="h-full"
-              source={trackingSource}
-              withDescription
-              from={from}
-            />
-          ) : (
-            <ActionCardSwitchServer
-              key={action.id}
-              action={action}
-              withThemeBadge={false}
-              className="h-full"
-              source={trackingSource}
-              locale={locale}
-              from={from}
-            />
-          )
-        )}
+        {actions.map((action) => (
+          <ActionCardSwitchServer
+            key={action.id}
+            action={action}
+            withThemeBadge={false}
+            className="h-full"
+            source={trackingSource}
+            locale={locale}
+            from={from}
+          />
+        ))}
       </Carousel>
     </section>
   )
