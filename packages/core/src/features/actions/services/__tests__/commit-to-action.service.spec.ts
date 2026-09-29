@@ -25,6 +25,27 @@ describe('commitToAction()', () => {
     expect(result.type).toEqual('committed')
   })
 
+  it('upsert an existing action choice if it already exist for a given user', async () => {
+    const action = await actionFactory.published().create()
+
+    const user = await userFactory.create()
+
+    const firstCommit = await commitToAction({
+      actionId: action.id,
+      userId: user.id,
+    })
+
+    await expect(
+      commitToAction({
+        actionId: action.id,
+        userId: user.id,
+      })
+    ).resolves.toMatchObject({
+      type: 'committed',
+      chosenAt: firstCommit.chosenAt,
+    })
+  })
+
   it('throws when an invalid userId is pass as an argument', async () => {
     const action = await actionFactory.published().create()
 
@@ -34,6 +55,19 @@ describe('commitToAction()', () => {
       commitToAction({
         actionId: action.id,
         userId: faker.string.uuid(),
+      })
+    ).rejects.toThrow()
+  })
+
+  it('throws when an invalid actionId is pass as an argument', async () => {
+    await actionFactory.published().create()
+
+    const user = await userFactory.create()
+
+    await expect(
+      commitToAction({
+        actionId: faker.string.uuid(),
+        userId: user.id,
       })
     ).rejects.toThrow()
   })
