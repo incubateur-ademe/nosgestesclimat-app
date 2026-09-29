@@ -3,19 +3,16 @@ import { randomInt } from 'node:crypto'
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
 import { prisma } from '../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../prisma/generated/client.ts'
+import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
-import type { createSendVerificationCodeEmail } from '../emails/auth-emails.ts'
+import { createVerificationCodeEmail } from '../emails/auth-emails.ts'
 import { createUserVerificationCode } from '../repositories/verification-codes.repository.ts'
-
-type SendVerificationCodeEmail = ReturnType<
-  typeof createSendVerificationCodeEmail
->
 
 interface CreateVerificationCodeDependencies {
   logger: Logger
   captureException: CaptureException
-  sendVerificationCodeEmail: SendVerificationCodeEmail
+  sendEmail: SendEmail
   /** Runs the email outside of the request lifecycle */
   backgroundTaskRunner: BackgroundTaskRunner
   /**
@@ -36,7 +33,7 @@ export const generateRandomVerificationCode = () =>
 export function createVerificationCodeService({
   logger,
   captureException,
-  sendVerificationCodeEmail,
+  sendEmail,
   backgroundTaskRunner,
   usage = VerificationCodeUsage.login,
   generateCode = generateRandomVerificationCode,
@@ -67,14 +64,17 @@ export function createVerificationCodeService({
     )
 
     backgroundTaskRunner(async () => {
-      try {
-        await sendVerificationCodeEmail({ locale, email, code })
-      } catch (error) {
-        captureException(error)
+      const result = await sendEmail(
+        createVerificationCodeEmail({ locale, email, code })
+      )
+      if (!result.success) {
+        captureException(result.error)
         // The email is deliberately absent: core has no masking helper, and
         // the address must not reach the logs in clear (captureException
         // already carries the full context to Sentry).
-        logger.error('Failed to send verification code email', { error })
+        logger.error('Failed to send verification code email', {
+          error: result.error,
+        })
       }
     })
 

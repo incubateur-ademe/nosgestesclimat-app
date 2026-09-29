@@ -2,11 +2,16 @@ import type { Result } from '../../lib/result.ts'
 import type { ListIds, TemplateId } from './email.constant.ts'
 import type { EmailRequestError } from './errors.ts'
 
-export type SendEmail = (params: {
+/** A fully resolved email request */
+export type Email = {
   email: string
   templateId: TemplateId
   params: Record<string, unknown>
-}) => Promise<Result<void, EmailRequestError>>
+}
+
+export type SendEmail = (
+  email: Email
+) => Promise<Result<void, EmailRequestError>>
 
 export type ContactAttributes = Record<string, unknown>
 

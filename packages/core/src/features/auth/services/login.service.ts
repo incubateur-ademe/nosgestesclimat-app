@@ -12,6 +12,8 @@ import {
   VerificationCodeUsage,
 } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
+import { Attributes } from '../../emails/email.constant.ts'
+import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import {
@@ -21,10 +23,7 @@ import {
 import { reconcileSimulationsAfterLogin } from '../../users/services/reconcile-simulations-after-login.service.ts'
 import { syncUserData } from '../../users/services/sync-user-data.service.ts'
 import type { VerifiedUser } from '../../users/types/user.ts'
-import type {
-  createAddOrUpdateContactAfterLogin,
-  createSendWelcomeEmail,
-} from '../emails/auth-emails.ts'
+import { createWelcomeEmail } from '../emails/auth-emails.ts'
 import type { LoginError } from '../errors/login.error.ts'
 import { InvalidVerificationCodeError } from '../errors/login.error.ts'
 import {
@@ -34,11 +33,6 @@ import {
   type UserVerificationCode,
 } from '../repositories/verification-codes.repository.ts'
 import type { LoginPayload } from '../schemas/verification-codes.schema.ts'
-
-type SendWelcomeEmail = ReturnType<typeof createSendWelcomeEmail>
-type AddOrUpdateContactAfterLogin = ReturnType<
-  typeof createAddOrUpdateContactAfterLogin
->
 
 type LoginResult = {
   user: VerifiedUser
@@ -205,10 +199,8 @@ const createAccountOrSignin = async ({
 interface LoginDependencies {
   logger: Logger
   captureException: CaptureException
-  /** Welcome email factory from auth-emails (sign-up only side effect). */
-  sendWelcomeEmail: SendWelcomeEmail
-  /** Brevo contact refresh factory from auth-emails (every login). */
-  addOrUpdateContactAfterLogin: AddOrUpdateContactAfterLogin
+  sendEmail: SendEmail
+  addOrUpdateContact: AddOrUpdateContact
   /** Public origin the welcome email's dashboard link points to. */
   origin: string
   /** Runs the post-login side effects outside of the request lifecycle. */
@@ -218,8 +210,8 @@ interface LoginDependencies {
 export function createLogin({
   logger,
   captureException,
-  sendWelcomeEmail,
-  addOrUpdateContactAfterLogin,
+  sendEmail,
+  addOrUpdateContact,
   origin,
   backgroundTaskRunner,
 }: LoginDependencies) {
@@ -281,14 +273,15 @@ export function createLogin({
     // A failing email must never fail the login, and the runner only
     // schedules - error handling lives here.
     backgroundTaskRunner(async () => {
-      try {
-        await addOrUpdateContactAfterLogin({
-          email: user.email,
-          userId: user.id,
-        })
-      } catch (error) {
-        captureException(error)
-        logger.error('Failed to run side effect', { error })
+      const result = await addOrUpdateContact({
+        email: user.email,
+        attributes: {
+          [Attributes.USER_ID]: user.id,
+        },
+      })
+      if (!result.success) {
+        captureException(result.error)
+        logger.error('Failed to run side effect', { error: result.error })
       }
     })
 
@@ -296,11 +289,12 @@ export function createLogin({
     // effect.
     if (mode === VerificationCodeMode.signUp) {
       backgroundTaskRunner(async () => {
-        try {
-          await sendWelcomeEmail({ locale, email: user.email, origin })
-        } catch (error) {
-          captureException(error)
-          logger.error('Failed to run side effect', { error })
+        const result = await sendEmail(
+          createWelcomeEmail({ locale, email: user.email, origin })
+        )
+        if (!result.success) {
+          captureException(result.error)
+          logger.error('Failed to run side effect', { error: result.error })
         }
       })
     }

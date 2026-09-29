@@ -9,10 +9,6 @@ import {
 import { env } from '@/env.server'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
 import logger from '@/logger'
-import {
-  createAddOrUpdateContactAfterLogin,
-  createSendWelcomeEmail,
-} from '@nosgestesclimat/core/features/auth/emails/auth-emails'
 import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
 import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
@@ -31,9 +27,8 @@ import { getUserSession } from './get-user-session'
 const loginService = createLogin({
   logger,
   captureException,
-  sendWelcomeEmail: createSendWelcomeEmail(sendEmail),
-  addOrUpdateContactAfterLogin:
-    createAddOrUpdateContactAfterLogin(addOrUpdateContact),
+  sendEmail,
+  addOrUpdateContact,
   origin: env.NEXT_PUBLIC_SITE_URL,
   backgroundTaskRunner: after,
 })
