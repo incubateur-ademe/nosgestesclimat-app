@@ -46,7 +46,7 @@ export function useCommitToAction(
     })
   }
 
-  const shouldDisplayAnimation = useTriggerShineAnimation
+  const shouldDisplayAnimation = useTriggerShineAnimation(action.choice?.type)
 
   return {
     commitToAction: handleCommitToAction,
@@ -55,7 +55,7 @@ export function useCommitToAction(
   }
 }
 
-function useTriggerShineAnimation(type: ActionChoiceType) {
+function useTriggerShineAnimation(type?: ActionChoiceType) {
   const [shouldDisplayAnimation, setShouldDisplayAnimation] = useState(false)
   const wasCommitted = useRef(type === 'committed')
   useEffect(() => {
@@ -75,5 +75,5 @@ function useTriggerShineAnimation(type: ActionChoiceType) {
     return () => clearTimeout(timeoutBeforeDisablingAnimation)
   }, [shouldDisplayAnimation])
 
-  return shouldDisplayAnimation
+  return type ? shouldDisplayAnimation : false
 }
