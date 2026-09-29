@@ -17,12 +17,14 @@ describe('commitToAction()', () => {
 
     const user = await userFactory.create()
 
-    const result = await commitToAction({
-      actionId: action.id,
-      userId: user.id,
+    await expect(
+      commitToAction({
+        actionId: action.id,
+        userId: user.id,
+      })
+    ).resolves.toMatchObject({
+      type: 'committed',
     })
-
-    expect(result.type).toEqual('committed')
   })
 
   it('upsert an existing action choice if it already exist for a given user', async () => {
