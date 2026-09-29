@@ -1,4 +1,8 @@
 import { prisma } from '../../../prisma/client.ts'
+import type {
+  ActionAssessment,
+  ActionChoice,
+} from '../../../prisma/generated/client.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import { themesById } from '../data/themes/index.ts'
 import type {
@@ -307,26 +311,31 @@ export const findAllVisiblePersonalizedActions = async ({
 
   const actionsIds = actions.map((a) => a.id)
 
-  const assessments = await prisma.actionAssessment.findMany({
-    where: {
-      actionId: { in: actionsIds },
-      simulationId,
-    },
-  })
+  const [assessments, actionChoices] = await Promise.all<
+    [ActionAssessment[], ActionChoice[] | null]
+  >([
+    await prisma.actionAssessment.findMany({
+      where: {
+        actionId: { in: actionsIds },
+        simulationId,
+      },
+    }),
+    userId
+      ? await prisma.actionChoice.findMany({
+          where: {
+            actionId: {
+              in: actionsIds,
+            },
+            userId,
+          },
+        })
+      : await new Promise((resolve) => resolve(null)),
+  ])
 
   const assessmentsByActionId = new Map(assessments.map((a) => [a.actionId, a]))
 
-  let actionChoices = null
   let actionChoicesByActionId = null
-  if (userId) {
-    actionChoices = await prisma.actionChoice.findMany({
-      where: {
-        actionId: {
-          in: actionsIds,
-        },
-        userId,
-      },
-    })
+  if (actionChoices) {
     actionChoicesByActionId = new Map(
       actionChoices.map((actionChoice) => [actionChoice.actionId, actionChoice])
     )

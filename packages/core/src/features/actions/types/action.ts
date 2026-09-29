@@ -1,3 +1,4 @@
+import type { ActionChoiceType } from '../../../prisma/generated/enums.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { ActionMedia } from './action-media.ts'
 import type { SeoMetadata } from './seo-metadata.ts'
@@ -76,13 +77,17 @@ export type UpdatedAction = Partial<NewAction>
 export interface NewActionChoice {
   userId: string
   actionId: string
-  // TODO: update when product has decided possible choices
-  type: 'committed' | 'rejected'
+  // @TODO: update when product has decided possible choices
+  type: ActionChoiceType
 }
 
-export type ActionChoice = NewActionChoice & {
+export type ActionChoice = {
   id: string
   chosenAt: Date
+  userId: string
+  actionId: string
+  // @TODO: update when product has decided possible choices
+  type: ActionChoiceType
 }
 
 export type NewActionAssessment = {

@@ -1,18 +1,17 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { commitToAction } from '../commit-to-action.service.ts'
 
 describe('commitToAction()', () => {
   afterEach(async () => {
-    await prisma.actionChoice.deleteMany()
-    await prisma.action.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
-  it('creates a new "committed" action choice for a given user', async () => {
+  it('creates a new action choice for a given user', async () => {
     const action = await actionFactory.published().create()
 
     const user = await userFactory.create()
@@ -22,9 +21,7 @@ describe('commitToAction()', () => {
         actionId: action.id,
         userId: user.id,
       })
-    ).resolves.toMatchObject({
-      type: 'committed',
-    })
+    ).resolves.toBeUndefined()
   })
 
   it('upsert an existing action choice if it already exist for a given user', async () => {
@@ -32,20 +29,19 @@ describe('commitToAction()', () => {
 
     const user = await userFactory.create()
 
-    const firstCommit = await commitToAction({
-      actionId: action.id,
-      userId: user.id,
-    })
+    await expect(
+      commitToAction({
+        actionId: action.id,
+        userId: user.id,
+      })
+    ).resolves.toBeUndefined()
 
     await expect(
       commitToAction({
         actionId: action.id,
         userId: user.id,
       })
-    ).resolves.toMatchObject({
-      type: 'committed',
-      chosenAt: firstCommit.chosenAt,
-    })
+    ).resolves.toBeUndefined()
   })
 
   it('throws when an invalid userId is pass as an argument', async () => {

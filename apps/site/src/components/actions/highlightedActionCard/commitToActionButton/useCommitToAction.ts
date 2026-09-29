@@ -2,12 +2,10 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { commitToAction } from '@/services/actions/commit-to-action'
 import { captureUniqueSessionActionEvent } from '@/utils/analytics/trackUniqueEvent'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/enums'
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { toast } from 'sonner'
 
-const ANIMATION_DURATION = 1300
-
+import { useTriggerShineAnimation } from './useTriggerShineAnimation'
 export function useCommitToAction(action: PersonalizedAction) {
   const { t } = useClientTranslation()
 
@@ -48,27 +46,4 @@ export function useCommitToAction(action: PersonalizedAction) {
     isPending,
     shouldDisplayAnimation,
   }
-}
-
-function useTriggerShineAnimation(type?: ActionChoiceType) {
-  const [shouldDisplayAnimation, setShouldDisplayAnimation] = useState(false)
-  const wasCommitted = useRef(type === 'committed')
-  useEffect(() => {
-    const isCommitted = type === 'committed'
-    if (isCommitted && !wasCommitted.current) setShouldDisplayAnimation(true)
-    wasCommitted.current = isCommitted
-  }, [type])
-
-  useEffect(() => {
-    let timeoutBeforeDisablingAnimation = undefined
-    if (shouldDisplayAnimation) {
-      timeoutBeforeDisablingAnimation = setTimeout(() => {
-        setShouldDisplayAnimation(false)
-      }, ANIMATION_DURATION)
-    }
-
-    return () => clearTimeout(timeoutBeforeDisablingAnimation)
-  }, [shouldDisplayAnimation])
-
-  return type ? shouldDisplayAnimation : false
 }

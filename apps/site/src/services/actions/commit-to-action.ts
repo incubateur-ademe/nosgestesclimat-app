@@ -11,7 +11,7 @@ export async function commitToAction(actionId: string, actionSlug: string) {
   const session = await getUserSession()
   if (!session) unauthorized()
 
-  const result = await _commitToAction({
+  await _commitToAction({
     actionId,
     userId: session.id,
   })
@@ -19,6 +19,4 @@ export async function commitToAction(actionId: string, actionSlug: string) {
   // Reset actions list AND specific action cache to avoid missmatch between pages
   updateTag(GET_PERSONALIZED_ACTIONS_CACHE_TAG)
   updateTag(getPersonalizedActionDetailsCacheTagWithSlug(actionSlug))
-
-  return result
 }

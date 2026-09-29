@@ -1,5 +1,4 @@
-import { createActionChoice } from '../repositories/action-choice.repository.ts'
-import type { ActionChoice } from '../types/action.ts'
+import { upsertActionChoice } from '../repositories/action-choice.repository.ts'
 
 export async function commitToAction({
   actionId,
@@ -7,8 +6,8 @@ export async function commitToAction({
 }: {
   actionId: string
   userId: string
-}): Promise<ActionChoice> {
-  return await createActionChoice({
+}): Promise<void> {
+  await upsertActionChoice({
     actionId,
     userId,
     type: 'committed',
