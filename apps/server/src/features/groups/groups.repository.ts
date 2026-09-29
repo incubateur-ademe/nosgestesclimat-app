@@ -30,16 +30,13 @@ export const createGroupAndUser = async (
   const { id: userId } = user
   const email = 'email' in user ? user.email : undefined
 
-  // upsert administrator
-  const { user: administrator } = await createOrUpdateUser(
-    {
-      id: userId,
-      user: {
-        name,
-        email,
-      },
-      select: defaultUserSelection,
-    },
+  // upsert administrator. The middleware only forwards an email for a
+  // verified account, so the email is persisted as the aggregate's verified
+  // record.
+  const administrator = await createOrUpdateUser(
+    email
+      ? { type: 'verified', id: userId, email, name }
+      : { type: 'unverified', id: userId, name },
     { session }
   )
 
@@ -158,8 +155,9 @@ export const createParticipantAndUser = async (
   // case so Prisma does not overwrite the name saved when they joined.
   await createOrUpdateUser(
     {
+      type: 'unverified',
       id: userId,
-      user: name ? { name } : {},
+      ...(name && { name }),
     },
     { session }
   )

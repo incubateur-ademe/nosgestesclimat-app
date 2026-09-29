@@ -3,18 +3,12 @@ import {
   verifyCode,
 } from '@nosgestesclimat/core/features/auth/services/login.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
-import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
-import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
   fetchContact,
   fetchContactOrThrow,
 } from '../../adapters/brevo/client.ts'
-import {
-  defaultUserSelection,
-  defaultVerifiedUserSelection,
-} from '../../adapters/prisma/selection.ts'
 import { transaction } from '../../adapters/prisma/transaction.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
 import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
@@ -22,11 +16,7 @@ import { EventBus } from '../../core/event-bus/event-bus.ts'
 import { isVerifiedUser } from '../../core/typeguards/isVerifiedUser.ts'
 import type { PartialUser } from '../../core/types/user.ts'
 import { UserUpdatedEvent } from './events/UserUpdated.event.ts'
-import {
-  createOrUpdateUser,
-  createOrUpdateVerifiedUser,
-  fetchUser,
-} from './users.repository.ts'
+import { createOrUpdateUser, findUserById } from './users.repository.ts'
 import type { UserUpdateDto } from './users.validator.ts'
 
 interface UserDto {
@@ -36,39 +26,28 @@ interface UserDto {
   ageRange?: AgeRange | null
   createdAt: Date
   updatedAt: Date
+  telephone?: string | null
+  position?: string | null
+  optedInForCommunications?: boolean
   contact?: BrevoContact
 }
 
 const userToDto = (user: UserDto) => user
 
 export const fetchUserContact = async (user: PartialUser) => {
-  try {
-    const contactUser = await transaction(
-      (session) =>
-        fetchUser(
-          { id: user.id, select: defaultUserSelection },
-          { session, orThrow: true }
-        ),
-      prisma
-    )
+  const contactUser = await findUserById(user.id)
 
-    if (!contactUser.email) {
-      throw new EntityNotFoundException('Contact not found')
-    }
-
-    const contact = await fetchContact(contactUser.email)
-
-    if (!contact) {
-      throw new EntityNotFoundException('Contact not found')
-    }
-
-    return contact
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Contact not found')
-    }
-    throw e
+  if (!contactUser?.email) {
+    throw new EntityNotFoundException('Contact not found')
   }
+
+  const contact = await fetchContact(contactUser.email)
+
+  if (!contact) {
+    throw new EntityNotFoundException('Contact not found')
+  }
+
+  return contact
 }
 
 const getEmailMutation = <
@@ -116,10 +95,7 @@ export const updateUserAndContact = async ({
 
       const previousUser = await (verifiedUser
         ? userToUpdate
-        : fetchUser(
-            { id: userToUpdate.id, select: defaultUserSelection },
-            { session }
-          ))
+        : findUserById(userToUpdate.id, { session }))
 
       const { emailChanged, nextEmail, previousEmail } = getEmailMutation(
         newUserData,
@@ -160,35 +136,25 @@ export const updateUserAndContact = async ({
 
       const verified = verifiedUser || !nextEmail
 
-      const update =
-        verified || !emailChanged
-          ? newUserData
-          : { ...newUserData, email: previousEmail }
-
-      let user
-      if (verifiedUser) {
-        user = (
-          await createOrUpdateVerifiedUser(
-            {
-              id: userToUpdate,
-              user: update,
-              select: defaultVerifiedUserSelection,
-            },
-            { session }
-          )
-        ).user
-      } else {
-        user = (
-          await createOrUpdateUser(
-            {
+      // A verified account is updated as one aggregate: the user together
+      // with its verified record, the email being the record's final email.
+      const user = await createOrUpdateUser(
+        verifiedUser
+          ? {
+              type: 'verified',
               id: userToUpdate.id,
-              user: update,
-              select: defaultUserSelection,
+              email: nextEmail || userToUpdate.email,
+              name: newUserData.name,
+              ageRange: newUserData.ageRange,
+            }
+          : {
+              type: 'unverified',
+              id: userToUpdate.id,
+              name: newUserData.name,
+              ageRange: newUserData.ageRange,
             },
-            { session }
-          )
-        ).user
-      }
+        { session }
+      )
 
       return {
         user,
@@ -219,10 +185,17 @@ export const updateUserAndContact = async ({
 
   await EventBus.once(userUpdatedEvent)
 
+  // The response keeps the aggregate's internal shape out of the API: the
+  // user is returned flat, with the verified-only fields on verified
+  // accounts and the age range on anonymous ones.
+  const { type: _type, ageRange, ...userDto } = user
+  const userFields =
+    user.type === 'verified' ? userDto : { ...userDto, ageRange }
+
   return {
     verified,
     user: userToDto({
-      ...user,
+      ...userFields,
       ...(user.email
         ? {
             contact: verified

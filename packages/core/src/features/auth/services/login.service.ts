@@ -6,10 +6,7 @@ import { failure, success } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type {
-  Prisma,
-  VerificationCode,
-} from '../../../prisma/generated/client.ts'
+import type { VerificationCode } from '../../../prisma/generated/client.ts'
 import {
   VerificationCodeMode,
   VerificationCodeUsage,
@@ -18,12 +15,12 @@ import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import {
-  createOrUpdateVerifiedUser,
-  defaultVerifiedUserSelection,
-  fetchVerifiedUser,
-} from '../../users/repositories/verified-users.repository.ts'
+  createOrUpdateUser,
+  findVerifiedUserByEmail,
+} from '../../users/repositories/users.repository.ts'
 import { reconcileSimulationsAfterLogin } from '../../users/services/reconcile-simulations-after-login.service.ts'
 import { syncUserData } from '../../users/services/sync-user-data.service.ts'
+import type { VerifiedUser } from '../../users/types/user.ts'
 import type {
   createAddOrUpdateContactAfterLogin,
   createSendWelcomeEmail,
@@ -43,13 +40,8 @@ type AddOrUpdateContactAfterLogin = ReturnType<
   typeof createAddOrUpdateContactAfterLogin
 >
 
-/** The verified user as the login flow selects and returns it. */
-type LoginUser = Prisma.VerifiedUserGetPayload<{
-  select: typeof defaultVerifiedUserSelection
-}>
-
 type LoginResult = {
-  user: LoginUser
+  user: VerifiedUser
   mode: VerificationCodeMode
 }
 
@@ -112,7 +104,7 @@ const createAccountOrSignin = async ({
 }): Promise<
   Result<
     {
-      user: LoginUser
+      user: VerifiedUser
       mode: VerificationCodeMode
       previousUserId: string | undefined
     },
@@ -125,7 +117,7 @@ const createAccountOrSignin = async ({
     ): Promise<
       Result<
         {
-          user: LoginUser
+          user: VerifiedUser
           mode: VerificationCodeMode
           previousUserId: string | undefined
         },
@@ -149,11 +141,8 @@ const createAccountOrSignin = async ({
       }
 
       // Try SignIn first
-      const existingUser = await fetchVerifiedUser(
-        {
-          email: loginDto.email,
-          select: defaultVerifiedUserSelection,
-        },
+      const existingUser = await findVerifiedUserByEmail(
+        { email: loginDto.email },
         { session }
       )
 
@@ -196,11 +185,11 @@ const createAccountOrSignin = async ({
       const newUserId =
         conflict || !sessionUserId ? randomUUID() : sessionUserId
 
-      const { user: newUser } = await createOrUpdateVerifiedUser(
+      const newUser = await createOrUpdateUser(
         {
-          id: { id: newUserId, email: loginDto.email },
-          user: loginDto,
-          select: defaultVerifiedUserSelection,
+          type: 'verified',
+          id: newUserId,
+          email: loginDto.email,
         },
         { session }
       )

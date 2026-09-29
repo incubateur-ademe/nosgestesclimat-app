@@ -10,12 +10,11 @@ import {
   defaultOrganisationSelection,
   defaultOrganisationSelectionWithoutPolls,
   defaultPollSelection,
-  defaultVerifiedUserSelection,
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
 import type { PartialVerifiedUser } from '../../core/types/user.ts'
-import { createOrUpdateVerifiedUser } from '../users/users.repository.ts'
+import { createOrUpdateUser } from '../users/users.repository.ts'
 import type {
   OrganisationCreateDto,
   OrganisationParams,
@@ -152,16 +151,15 @@ export const createOrganisationAndAdministrator = async (
   { id, email }: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
-  const { user: administrator } = await createOrUpdateVerifiedUser(
+  const administrator = await createOrUpdateUser(
     {
-      id: { id, email },
-      user: {
-        name: administratorName,
-        position,
-        telephone,
-        optedInForCommunications,
-      },
-      select: defaultVerifiedUserSelection,
+      type: 'verified',
+      id,
+      email,
+      name: administratorName,
+      telephone,
+      position,
+      optedInForCommunications,
     },
     { session }
   )
@@ -232,21 +230,18 @@ export const updateAdministratorOrganisation = async (
       },
     ] = administrators
 
-    const { user: adminUser } = await createOrUpdateVerifiedUser(
+    administrator = await createOrUpdateUser(
       {
-        id: { id: user.id, email: userEmail },
-        user: {
-          name: administratorName,
-          email,
-          position,
-          telephone,
-          optedInForCommunications,
-        },
-        select: defaultVerifiedUserSelection,
+        type: 'verified',
+        id: user.id,
+        email: email || userEmail,
+        name: administratorName,
+        telephone,
+        position,
+        optedInForCommunications,
       },
       { session }
     )
-    administrator = adminUser
 
     if (email) {
       user.email = email
