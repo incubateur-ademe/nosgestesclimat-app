@@ -1,57 +1,38 @@
 import type { Transaction } from '../../../lib/transaction.ts'
+import { prisma } from '../../../prisma/client.ts'
 import type {
   Prisma,
-  VerificationCode,
-  VerificationCodeMode,
   VerificationCodeUsage,
 } from '../../../prisma/generated/client.ts'
+import type { VerificationCode } from '../types/verification-code.ts'
 
-type SignVerificationCode = {
-  id: string
-  email: string
-  mode: VerificationCodeMode
-}
+const verificationCodeSelect = {
+  id: true,
+  email: true,
+  usage: true,
+  code: true,
+  expirationDate: true,
+} as const
 
-type RegisterOrganisationVerificationCode = {
-  id: string
-  email: string
-  mode?: undefined
-}
-
-type RegisterApiVerificationCode = {
-  id: string
-  email: string
-  mode?: undefined
-}
-
-export type UserVerificationCode =
-  | SignVerificationCode
-  | RegisterOrganisationVerificationCode
-  | RegisterApiVerificationCode
-
-export const createUserVerificationCode = (
+export const createVerificationCode = async (
   data: Prisma.VerificationCodeCreateInput & {
     /** Feature the code validates in: a code created for one usage never validates in another. */
     usage: VerificationCodeUsage
   },
-  { session }: { session: Transaction }
+  { session = prisma }: { session?: Transaction } = {}
 ) => {
-  return session.verificationCode.create({
+  await session.verificationCode.create({
     data,
     select: {
       id: true,
-      email: true,
-      createdAt: true,
-      updatedAt: true,
-      expirationDate: true,
     },
   })
 }
 
-export const findVerificationCode = (
+export const findVerificationCode = async (
   { email, code, usage }: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
-  { session }: { session: Transaction }
-): Promise<UserVerificationCode> => {
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<VerificationCode> => {
   return session.verificationCode.findFirstOrThrow({
     where: {
       code,
@@ -61,12 +42,8 @@ export const findVerificationCode = (
         gte: new Date(),
       },
     },
-    select: {
-      id: true,
-      email: true,
-      mode: true,
-    },
-  }) as Promise<UserVerificationCode>
+    select: verificationCodeSelect,
+  })
 }
 
 /**
@@ -79,7 +56,7 @@ export const findVerificationCode = (
  */
 export const claimVerificationCode = async (
   { id, usage }: Pick<VerificationCode, 'id' | 'usage'>,
-  { session }: { session: Transaction }
+  { session = prisma }: { session?: Transaction } = {}
 ): Promise<boolean> => {
   const now = new Date()
   const { count } = await session.verificationCode.updateMany({
@@ -98,11 +75,11 @@ export const claimVerificationCode = async (
   return count === 1
 }
 
-export const invalidateVerificationCode = (
+export const invalidateVerificationCode = async (
   { id }: Pick<VerificationCode, 'id'>,
-  { session }: { session: Transaction }
-) => {
-  return session.verificationCode.update({
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<void> => {
+  await session.verificationCode.update({
     where: { id },
     data: {
       expirationDate: new Date(Date.now() - 1),

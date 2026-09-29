@@ -96,14 +96,14 @@ describe('Given a NGC user', () => {
       beforeEach(() => {
         vi.spyOn(
           verificationCodesRepository,
-          'createUserVerificationCode'
+          'createVerificationCode'
         ).mockRejectedValueOnce(databaseError)
       })
 
       afterEach(() => {
         vi.spyOn(
           verificationCodesRepository,
-          'createUserVerificationCode'
+          'createVerificationCode'
         ).mockRestore()
       })
 
@@ -210,7 +210,6 @@ describe('Given a NGC user', () => {
           id: expect.any(String),
           code,
           email,
-          mode: null,
           usage: VerificationCodeUsage.newsletter,
           expirationDate: expect.any(Date),
           createdAt: expect.any(Date),

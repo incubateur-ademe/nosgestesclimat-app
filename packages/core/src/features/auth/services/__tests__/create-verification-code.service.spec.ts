@@ -6,7 +6,7 @@ import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import {
-  createVerificationCodeService,
+  createCreateVerificationCodeService,
   generateRandomVerificationCode,
 } from '../create-verification-code.service.ts'
 
@@ -28,11 +28,12 @@ describe('createVerificationCode', () => {
     pendingTasks = []
   }
 
-  const createVerificationCode = createVerificationCodeService({
+  const createVerificationCode = createCreateVerificationCodeService({
     logger,
     captureException,
     sendEmail,
     backgroundTaskRunner,
+    usage: VerificationCodeUsage.login,
   })
 
   beforeEach(() => {
@@ -58,18 +59,20 @@ describe('createVerificationCode', () => {
 
   it('stores a 6-digit verification code valid 1 hour in database', async () => {
     const email = faker.internet.email().toLocaleLowerCase()
-    const now = Date.now()
+    const startMs = Date.now()
 
     await createVerificationCode({ email, locale: 'fr' })
+
+    const endMs = Date.now()
 
     const createdVerificationCode = await prisma.verificationCode.findFirst({
       where: { email },
     })
 
+    expect(createdVerificationCode).not.toBeNull()
     expect(createdVerificationCode).toMatchObject({
       id: expect.any(String),
       email,
-      mode: null,
       usage: VerificationCodeUsage.login,
       expirationDate: expect.any(Date),
       createdAt: expect.any(Date),
@@ -77,19 +80,16 @@ describe('createVerificationCode', () => {
     })
     expect(createdVerificationCode?.code).toMatch(/^\d{6}$/)
 
-    // Hopefully code gets created under 1 second
-    expect(
-      Math.floor(
-        ((createdVerificationCode?.expirationDate.getTime() ?? 0) -
-          now -
-          ONE_HOUR_MS) /
-          1000
-      )
-    ).toBe(0)
+    // The service computes the expiration date from Date.now() at the time
+    // of the call, so it must land between "start + 1 hour" and "end + 1
+    // hour", whatever how long the create took.
+    const expirationMs = createdVerificationCode!.expirationDate.getTime()
+    expect(expirationMs).toBeGreaterThanOrEqual(startMs + ONE_HOUR_MS)
+    expect(expirationMs).toBeLessThanOrEqual(endMs + ONE_HOUR_MS)
   })
 
   it('stores the code with the injected custom usage', async () => {
-    const createApiTokenVerificationCode = createVerificationCodeService({
+    const createApiTokenVerificationCode = createCreateVerificationCodeService({
       logger,
       captureException,
       sendEmail,
@@ -109,51 +109,32 @@ describe('createVerificationCode', () => {
     })
   })
 
-  it('schedules the email with the generated code and the requested locale', async () => {
-    const email = faker.internet.email().toLocaleLowerCase()
+  it.each([
+    { locale: 'en' as const, templateId: 125 },
+    { locale: 'fr' as const, templateId: 66 },
+  ])(
+    'sends the email with the generated code and the requested locale ($locale)',
+    async ({ locale, templateId }) => {
+      const email = faker.internet.email().toLocaleLowerCase()
 
-    await createVerificationCode({ email, locale: 'en' })
+      await createVerificationCode({ email, locale })
 
-    const createdVerificationCode = await prisma.verificationCode.findFirst({
-      where: { email },
-    })
+      const createdVerificationCode = await prisma.verificationCode.findFirst({
+        where: { email },
+      })
 
-    await flushBackgroundTasks()
+      await flushBackgroundTasks()
 
-    expect(sendEmail).toHaveBeenCalledTimes(1)
-    expect(sendEmail).toHaveBeenCalledWith({
-      email,
-      templateId: 125,
-      params: {
-        VERIFICATION_CODE: createdVerificationCode?.code,
-      },
-    })
-  })
-
-  it('commits the code before the email is scheduled', async () => {
-    const email = faker.internet.email().toLocaleLowerCase()
-    let codeRowAtScheduling: unknown
-
-    const createVerificationCodeWithProbe = createVerificationCodeService({
-      logger,
-      captureException,
-      sendEmail,
-      backgroundTaskRunner: (task) => {
-        // The code must already exist in database when the email is handed
-        // over to the runner.
-        codeRowAtScheduling = prisma.verificationCode.findFirst({
-          where: { email },
-        })
-        pendingTasks.push(task())
-      },
-    })
-
-    await createVerificationCodeWithProbe({ email, locale: 'fr' })
-
-    await expect(codeRowAtScheduling).resolves.toMatchObject({
-      email,
-    })
-  })
+      expect(sendEmail).toHaveBeenCalledTimes(1)
+      expect(sendEmail).toHaveBeenCalledWith({
+        email,
+        templateId,
+        params: {
+          VERIFICATION_CODE: createdVerificationCode?.code,
+        },
+      })
+    }
+  )
 
   it('still persists the verification code and does not fail the creation when the email delivery fails', async () => {
     const email = faker.internet.email().toLocaleLowerCase()

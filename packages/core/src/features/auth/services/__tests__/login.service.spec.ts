@@ -4,10 +4,7 @@ import type { BackgroundTaskRunner } from '../../../../lib/background-task-runne
 import { failure, success } from '../../../../lib/result.ts'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
-import {
-  VerificationCodeMode,
-  VerificationCodeUsage,
-} from '../../../../prisma/generated/client.ts'
+import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
@@ -74,11 +71,7 @@ describe('verifyCode', () => {
     if (!result.success) {
       throw new Error('Expected verifyCode to succeed')
     }
-    expect(result.data).toEqual({
-      id: verificationCode.id,
-      email: verificationCode.email,
-      mode: verificationCode.mode,
-    })
+    expect(result.data).toEqual(verificationCode)
   })
 
   it('fails with an InvalidVerificationCodeError when no code was ever requested', async () => {
@@ -214,7 +207,6 @@ describe('login', () => {
       const verifiedUser = await userFactory.verified().create()
       const verificationCode = await verificationCodeFactory.create({
         email: verifiedUser.email,
-        mode: VerificationCodeMode.signIn,
       })
 
       const { backgroundTaskRunner, flush } =
@@ -234,7 +226,7 @@ describe('login', () => {
       if (!result.success) {
         throw new Error('Expected login to succeed')
       }
-      expect(result.data.mode).toBe(VerificationCodeMode.signIn)
+      expect(result.data.mode).toBe('signIn')
       expect(result.data.user).toMatchObject({
         id: verifiedUser.id,
         email: verifiedUser.email,
@@ -245,7 +237,6 @@ describe('login', () => {
       const verifiedUser = await userFactory.verified().create()
       const verificationCode = await verificationCodeFactory.create({
         email: verifiedUser.email,
-        mode: VerificationCodeMode.signIn,
       })
 
       const firstRunner = createAwaitingBackgroundTaskRunner()
@@ -284,7 +275,6 @@ describe('login', () => {
       const verifiedUser = await userFactory.verified().create()
       const verificationCode = await verificationCodeFactory.create({
         email: verifiedUser.email,
-        mode: VerificationCodeMode.signIn,
       })
 
       const { backgroundTaskRunner, flush } =
@@ -318,7 +308,6 @@ describe('login', () => {
           .create()
         const verificationCode = await verificationCodeFactory.create({
           email: verifiedUser.email,
-          mode: VerificationCodeMode.signIn,
         })
 
         const { backgroundTaskRunner, flush } =
@@ -361,7 +350,6 @@ describe('login', () => {
         await simulationFactory.params({ userId: anonymousUser.id }).create()
         const verificationCode = await verificationCodeFactory.create({
           email: verifiedUser.email,
-          mode: VerificationCodeMode.signIn,
         })
 
         const { backgroundTaskRunner, flush } =
@@ -397,7 +385,6 @@ describe('login', () => {
         const userB = await userFactory.verified().create()
         const verificationCode = await verificationCodeFactory.create({
           email: userB.email,
-          mode: VerificationCodeMode.signIn,
         })
 
         const { backgroundTaskRunner, flush } =
@@ -440,9 +427,7 @@ describe('login', () => {
         const anonymousSimulation = await simulationFactory
           .params({ userId: anonymousUser.id })
           .create()
-        const verificationCode = await verificationCodeFactory.create({
-          mode: VerificationCodeMode.signUp,
-        })
+        const verificationCode = await verificationCodeFactory.create()
 
         const { backgroundTaskRunner, flush } =
           createAwaitingBackgroundTaskRunner()
@@ -461,7 +446,7 @@ describe('login', () => {
         if (!result.success) {
           throw new Error('Expected login to succeed')
         }
-        expect(result.data.mode).toBe(VerificationCodeMode.signUp)
+        expect(result.data.mode).toBe('signUp')
 
         const createdUser = await prisma.verifiedUser.findUnique({
           where: { email: verificationCode.email },
@@ -490,9 +475,7 @@ describe('login', () => {
       })
 
       it('invalidates the verification code', async () => {
-        const verificationCode = await verificationCodeFactory.create({
-          mode: VerificationCodeMode.signUp,
-        })
+        const verificationCode = await verificationCodeFactory.create()
 
         const { backgroundTaskRunner, flush } =
           createAwaitingBackgroundTaskRunner()
@@ -519,9 +502,7 @@ describe('login', () => {
       })
 
       it('cannot be replayed: a second sign-up with the same code fails', async () => {
-        const verificationCode = await verificationCodeFactory.create({
-          mode: VerificationCodeMode.signUp,
-        })
+        const verificationCode = await verificationCodeFactory.create()
         const sessionUserId = faker.string.uuid()
 
         const firstRunner = createAwaitingBackgroundTaskRunner()
@@ -559,9 +540,7 @@ describe('login', () => {
       })
 
       it('schedules the welcome email and the Brevo contact update', async () => {
-        const verificationCode = await verificationCodeFactory.create({
-          mode: VerificationCodeMode.signUp,
-        })
+        const verificationCode = await verificationCodeFactory.create()
         const sessionUserId = faker.string.uuid()
 
         const { backgroundTaskRunner, flush } =
@@ -609,7 +588,6 @@ describe('login', () => {
           .create()
         const verificationCode = await verificationCodeFactory.create({
           email,
-          mode: VerificationCodeMode.signUp,
         })
         const sessionUserId = faker.string.uuid()
 
@@ -643,9 +621,7 @@ describe('login', () => {
     describe('And the session userId already belongs to another verified account', () => {
       it('signs the user up with a fresh userId instead of reusing the taken one', async () => {
         const userA = await userFactory.verified().create()
-        const verificationCode = await verificationCodeFactory.create({
-          mode: VerificationCodeMode.signUp,
-        })
+        const verificationCode = await verificationCodeFactory.create()
 
         const { backgroundTaskRunner, flush } =
           createAwaitingBackgroundTaskRunner()
@@ -680,9 +656,7 @@ describe('login', () => {
 
   describe('Given the email side effects fail', () => {
     it('still succeeds and captures the errors', async () => {
-      const verificationCode = await verificationCodeFactory.create({
-        mode: VerificationCodeMode.signUp,
-      })
+      const verificationCode = await verificationCodeFactory.create()
 
       sendEmail.mockResolvedValueOnce(
         failure(new EmailRequestError('Brevo unavailable'))
