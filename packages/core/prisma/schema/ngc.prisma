@@ -474,13 +474,6 @@ enum AgeRange {
   @@schema("ngc")
 }
 
-enum VerificationCodeMode {
-  signIn
-  signUp
-
-  @@schema("ngc")
-}
-
 enum VerificationCodeUsage {
   login
   newsletter
@@ -492,7 +485,6 @@ enum VerificationCodeUsage {
 model VerificationCode {
   id             String                  @id @default(uuid()) @db.Uuid
   email          String
-  mode           VerificationCodeMode?
   usage          VerificationCodeUsage  @default(login)
   code           String                  @db.VarChar(6)
   expirationDate DateTime

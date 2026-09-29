@@ -9,7 +9,7 @@ import {
 import { env } from '@/env.server'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
 import logger from '@/logger'
-import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
+import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/auth.schema'
 import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
 import { maskEmail } from '@nosgestesclimat/core/lib/pii'

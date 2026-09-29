@@ -7,37 +7,30 @@ import {
 } from '@/components/authentication/errors'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
 import logger from '@/logger'
-import type { AuthenticationMode } from '@/types/authentication'
-import { CreateVerificationCodePayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/verification-codes.schema'
-import { createVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { CreateVerificationCodePayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/auth.schema'
+import { createCreateVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { captureException } from '@sentry/nextjs'
 import { after } from 'next/server'
 
-const verificationCodeService = createVerificationCodeService({
+const createVerificationCodeService = createCreateVerificationCodeService({
   logger,
   captureException,
   sendEmail,
   // The action returns before the email is dispatched: the task must outlive
   // the request.
   backgroundTaskRunner: after,
+  usage: VerificationCodeUsage.login,
 })
 
 export const createVerificationCode = async ({
   email,
-  /**
-   * @deprecated Ignored: `mode` was accepted by the HTTP query validator and
-   * then ignored by the service (the core DTO is email-only). Kept in the
-   * signature for contract compatibility; removing it from the hook/UI is a
-   * separate site-only cleanup.
-   */
-  mode: _mode,
   locale,
 }: {
   email: string
-  mode?: AuthenticationMode
   locale?: string
 }): Promise<Result<{ expirationDate: Date }, EmailError>> => {
   const startedAt = Date.now()
@@ -64,7 +57,7 @@ export const createVerificationCode = async ({
   }
 
   try {
-    const { expirationDate } = await verificationCodeService({
+    const { expirationDate } = await createVerificationCodeService({
       email: parsed.data.email,
       locale: parsed.data.locale,
     })

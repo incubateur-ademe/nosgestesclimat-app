@@ -195,18 +195,4 @@ describe('createVerificationCode', () => {
       }),
     })
   })
-
-  it('ignores the deprecated mode parameter', async () => {
-    const result = await createVerificationCode({
-      email: 'with-mode@example.com',
-      mode: 'signUp',
-      locale: 'fr',
-    })
-
-    expect(result.success).toBe(true)
-    expect(mocks.createVerificationCode).toHaveBeenCalledWith({
-      email: 'with-mode@example.com',
-      locale: 'fr',
-    })
-  })
 })

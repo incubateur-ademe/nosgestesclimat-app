@@ -1,5 +1,5 @@
 import { findVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
-import { createVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { createCreateVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { EmailRequestError } from '@nosgestesclimat/core/features/emails/errors'
 import type { BackgroundTaskRunner } from '@nosgestesclimat/core/lib/background-task-runner'
 import { failure, success } from '@nosgestesclimat/core/lib/result'
@@ -126,7 +126,7 @@ const fireAndForgetEmail: BackgroundTaskRunner = (task) => {
   void task()
 }
 
-const createApiTokenVerificationCode = createVerificationCodeService({
+const createApiTokenVerificationCode = createCreateVerificationCodeService({
   logger,
   captureException,
   // The brevo adapter throws on failure: converted to the Result contract

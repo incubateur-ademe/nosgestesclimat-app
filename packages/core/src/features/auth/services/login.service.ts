@@ -6,11 +6,7 @@ import { failure, success } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { VerificationCode } from '../../../prisma/generated/client.ts'
-import {
-  VerificationCodeMode,
-  VerificationCodeUsage,
-} from '../../../prisma/generated/client.ts'
+import { VerificationCodeUsage } from '../../../prisma/generated/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
@@ -30,13 +26,15 @@ import {
   claimVerificationCode,
   findVerificationCode,
   invalidateVerificationCode,
-  type UserVerificationCode,
 } from '../repositories/verification-codes.repository.ts'
-import type { LoginPayload } from '../schemas/verification-codes.schema.ts'
+import type { LoginPayload } from '../schemas/auth.schema.ts'
+import type { VerificationCode } from '../types/verification-code.ts'
+
+export type LoginMode = 'signIn' | 'signUp'
 
 type LoginResult = {
   user: VerifiedUser
-  mode: VerificationCodeMode
+  mode: LoginMode
 }
 
 /**
@@ -48,7 +46,7 @@ type LoginResult = {
 export const verifyCode = async (
   verificationCode: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
   { session }: { session?: Transaction } = {}
-): Promise<Result<UserVerificationCode, InvalidVerificationCodeError>> => {
+): Promise<Result<VerificationCode, InvalidVerificationCodeError>> => {
   try {
     // A single read opens no transaction of its own: it joins the caller's
     // transaction when there is one, and reads on the client otherwise.
@@ -94,12 +92,12 @@ const createAccountOrSignin = async ({
 }: {
   loginDto: LoginPayload
   sessionUserId?: string
-  verificationCode: UserVerificationCode
+  verificationCode: VerificationCode
 }): Promise<
   Result<
     {
       user: VerifiedUser
-      mode: VerificationCodeMode
+      mode: LoginMode
       previousUserId: string | undefined
     },
     InvalidVerificationCodeError
@@ -112,7 +110,7 @@ const createAccountOrSignin = async ({
       Result<
         {
           user: VerifiedUser
-          mode: VerificationCodeMode
+          mode: LoginMode
           previousUserId: string | undefined
         },
         InvalidVerificationCodeError
@@ -156,7 +154,7 @@ const createAccountOrSignin = async ({
 
         return success({
           user: existingUser,
-          mode: VerificationCodeMode.signIn,
+          mode: 'signIn',
           previousUserId: sessionOwnedByOtherAccount
             ? undefined
             : sessionUserId,
@@ -190,7 +188,7 @@ const createAccountOrSignin = async ({
 
       return success({
         user: newUser,
-        mode: VerificationCodeMode.signUp,
+        mode: 'signUp',
         previousUserId: sessionUserId,
       })
     }
@@ -251,17 +249,13 @@ export function createLogin({
 
     const { user, mode, previousUserId } = account.data
 
-    if (mode === VerificationCodeMode.signUp) {
+    if (mode === 'signUp') {
       // sync-user-data-after-account-created handler: the legacy
       // anonymous-user merge runs on every account creation.
       await syncUserData({ user, verified: true })
     }
 
-    if (
-      mode === VerificationCodeMode.signIn &&
-      previousUserId &&
-      previousUserId !== user.id
-    ) {
+    if (mode === 'signIn' && previousUserId && previousUserId !== user.id) {
       // reconcile-simulations-after-login handler: the anonymous session's
       // data is reconciled into the signed-in account, unless the session
       // userId is the verified user's own id or there is no session userId to
@@ -287,7 +281,7 @@ export function createLogin({
 
     // send-welcome-email handler: the welcome email is a sign-up only side
     // effect.
-    if (mode === VerificationCodeMode.signUp) {
+    if (mode === 'signUp') {
       backgroundTaskRunner(async () => {
         const result = await sendEmail(
           createWelcomeEmail({ locale, email: user.email, origin })

@@ -1,33 +1,19 @@
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import type { VerificationCodeMode } from '../../../prisma/generated/client.ts'
 import { VerificationCodeUsage } from '../../../prisma/generated/client.ts'
+import type { VerificationCode } from '../types/verification-code.ts'
 
-export type VerificationCodeRow = {
-  id: string
-  email: string
-  mode: VerificationCodeMode | null
-  usage: VerificationCodeUsage
-  code: string
-  expirationDate: Date
-  createdAt: Date
-  updatedAt: Date
-}
-
-export const verificationCodeFactory = Factory.define<VerificationCodeRow>(
+export const verificationCodeFactory = Factory.define<VerificationCode>(
   ({ onCreate }) => {
     onCreate(async (data) => {
       await prisma.verificationCode.create({
         data: {
           id: data.id,
           email: data.email,
-          mode: data.mode,
           usage: data.usage,
           code: data.code,
           expirationDate: data.expirationDate,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
         },
       })
       return data
@@ -36,12 +22,9 @@ export const verificationCodeFactory = Factory.define<VerificationCodeRow>(
     return {
       id: faker.string.uuid(),
       email: faker.internet.email().toLocaleLowerCase(),
-      mode: null,
       usage: VerificationCodeUsage.login,
       code: faker.number.int({ min: 100000, max: 999999 }).toString(),
       expirationDate: new Date(Date.now() + 1000 * 60 * 60),
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
     }
   }
 )
