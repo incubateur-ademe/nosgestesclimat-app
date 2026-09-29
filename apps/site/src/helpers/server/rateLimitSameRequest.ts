@@ -1,49 +1,62 @@
 import { createHash } from 'node:crypto'
 
-/** hashed request key -> timestamp at which its rate limit expires */
-const rateLimitedRequests = new Map<string, number>()
-
-/** timestamp of the last expired-entry sweep */
-let lastSweepAt = 0
-
-const hashKey = (key: string) => createHash('sha256').update(key).digest('hex')
+import { redis } from '@/adapters/redis/client'
+import { RateLimitedError } from '@/components/authentication/errors'
+import logger from '@/logger'
+import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 
 /**
- * In-memory rate limiter for the server actions.
- *
- * Limitations: the state is held in the Node.js process only — it resets on
- * every deploy and is not shared across instances, so the limit is
- * per-process and weaker than a Redis-backed limiter.
+ * Redis-backed rate limiter for the server actions: one call per key and TTL
+ * window, shared across instances (unlike the previous in-memory Map, which
+ * was per-process and reset on every deploy).
  */
-export const rateLimitSameRequest = ({
+export const rateLimitSameRequest = async ({
   key,
-  ttlMs = 30_000,
+  ttlInSeconds = 30,
 }: {
-  /** e.g. `login:${email}` — hashed before being stored */
+  /** e.g. `login:${email}` — hashed before being stored in Redis. */
   key: string
-  ttlMs?: number
-}): boolean => {
-  const now = Date.now()
-  const requestKey = hashKey(key)
+  ttlInSeconds?: number
+}): Promise<Result<{ degraded: boolean }, RateLimitedError>> => {
+  // The raw key contains the user's email: hashing keeps it out of Redis,
+  // where anyone with CLI access could read it.
+  const requestHash = hashKey(key)
+  const redisKey = `${RATE_LIMIT_SAME_REQUESTS_KEY}_${requestHash}`
 
-  // Lazy TTL sweep, run at most once per TTL window (expiry is still checked
-  // on every read, so skipping the sweep never changes the verdict): each
-  // call stays amortised O(1) instead of paying an O(n) sweep, and the map
-  // only holds keys seen within their TTL window.
-  if (now - lastSweepAt >= ttlMs) {
-    lastSweepAt = now
-    for (const [storedKey, expiresAt] of rateLimitedRequests) {
-      if (expiresAt <= now) {
-        rateLimitedRequests.delete(storedKey)
-      }
+  try {
+    // A single atomic command, so two concurrent requests for the same key
+    // can never both land inside the same window:
+    // - `NX` writes only if the key does not exist yet: exactly one request
+    //   per window receives 'OK', every other one receives null.
+    // - `EX` makes Redis delete the key once the TTL has passed, which is
+    //   what closes the current window and opens the next one — no sweeping
+    //   needed, unlike the previous in-memory implementation.
+    const result = await redis.set(
+      redisKey,
+      requestHash,
+      'EX',
+      ttlInSeconds,
+      'NX'
+    )
+
+    if (result !== 'OK') {
+      // The key already exists: the same request was seen less than
+      // ttlInSeconds ago.
+      return failure(new RateLimitedError())
     }
+
+    // We won the SET: first request for this key in the window.
+    return success({ degraded: false })
+  } catch (error) {
+    // Fail-open like the previous server implementation: availability of the
+    // action wins over throttling when Redis is down. The limiter is the only
+    // place that warns, so no caller has to repeat it.
+    logger.warn('Could not rate limit same requests', { error })
+
+    return success({ degraded: true })
   }
-
-  if ((rateLimitedRequests.get(requestKey) ?? 0) > now) {
-    return false
-  }
-
-  rateLimitedRequests.set(requestKey, now + ttlMs)
-
-  return true
 }
+
+const RATE_LIMIT_SAME_REQUESTS_KEY = 'rateLimitSameRequests'
+
+const hashKey = (key: string) => createHash('sha256').update(key).digest('hex')

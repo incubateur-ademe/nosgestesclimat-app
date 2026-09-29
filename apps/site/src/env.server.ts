@@ -17,6 +17,7 @@ const NonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty())
 const ServerEnvSchema = v.object({
   BREVO_API_KEY: NonEmptyStringSchema,
   BREVO_URL: v.pipe(NonEmptyStringSchema, v.url()),
+  REDIS_URL: v.pipe(NonEmptyStringSchema, v.url()),
   POLL_STATS_COOLDOWN_TIERS: v.pipe(
     v.optional(v.string(), ''),
     v.transform((tiers: string) => parseCooldownTiers(tiers))
