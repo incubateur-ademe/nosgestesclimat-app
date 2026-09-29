@@ -85,7 +85,7 @@
 
 /* Sonner/Toaster shadcn component */
 .cn-toast {
-  @apply flex! w-full! items-center! rounded-full! bg-white p-4! text-base! font-medium! after:content-none! md:w-96!;
+  @apply flex! w-full! items-center! rounded-full! bg-white p-4! text-base! font-medium! after:content-none! sm:w-104!;
 }
 
 .cn-toast > button {
@@ -95,9 +95,13 @@
 }
 
 .cn-toast > button > svg {
-  @apply size-6 min-w-6!;
+  @apply -mr-1 -ml-1 size-6 min-w-6!;
 }
 
 .cn-toast > div {
   @apply w-auto!;
+}
+
+ol:has(.cn-toast) {
+  @apply left-0! sm:left-auto!;
 }
