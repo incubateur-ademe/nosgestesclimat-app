@@ -4,12 +4,13 @@ import { twMerge } from 'cn'
 import { useId } from 'react'
 import Trans from '../translation/trans/TransServer'
 import HighlightedActionCard from './HighlightedActionCard'
-import type { ActionFrom } from './types/actions'
+import type { ActionCatalogueContext, ActionFrom } from './types/actions'
 
 interface HighestImpactActionsSectionProps extends React.ComponentPropsWithoutRef<'section'> {
   actions: MaybePersonalizedAction[]
   locale: Locale
   from?: ActionFrom
+  actionCatalogueContext: ActionCatalogueContext
 }
 
 export default function HighestImpactActionsSection({
@@ -17,6 +18,7 @@ export default function HighestImpactActionsSection({
   locale,
   className,
   from,
+  actionCatalogueContext,
   ...props
 }: HighestImpactActionsSectionProps) {
   const headingId = useId()
@@ -41,6 +43,7 @@ export default function HighestImpactActionsSection({
               action={action}
               rank={index + 1}
               from={from}
+              actionCatalogueContext={actionCatalogueContext}
             />
           </li>
         ))}

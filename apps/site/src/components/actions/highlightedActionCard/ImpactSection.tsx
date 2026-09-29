@@ -7,18 +7,28 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 import type { ActionAssessment } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import { Trans } from 'react-i18next'
-import { useActionContext } from '../contexts/action'
+import type { ActionCatalogueContext } from '../types/actions'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
 
 interface Props {
   classes: Record<'card' | 'panel' | 'value', string>
   assessment?: ActionAssessment | null
+  actionCatalogueContext: ActionCatalogueContext
 }
 
-export default function ImpactSection({ classes, assessment }: Props) {
-  const { assessmentStatus, totalFootprint } = useActionContext()
+export default function ImpactSection({
+  classes,
+  assessment,
+  actionCatalogueContext,
+}: Props) {
   const locale = useLocale()
-  if (!assessmentStatus || !assessment) return null
+
+  if (
+    !actionCatalogueContext.assessmentStatus ||
+    !actionCatalogueContext.totalFootprint ||
+    !assessment
+  )
+    return null
 
   return (
     <div
@@ -37,11 +47,11 @@ export default function ImpactSection({ classes, assessment }: Props) {
         impact={assessment.impact}
         locale={locale}
         valueClassName={classes.value}
-        assessmentStatus={assessmentStatus}
+        assessmentStatus={actionCatalogueContext.assessmentStatus}
       />
       <FootprintShare
         impact={assessment.impact}
-        totalFootprint={totalFootprint}
+        totalFootprint={actionCatalogueContext.totalFootprint}
         locale={locale}
       />
     </div>
@@ -133,7 +143,7 @@ function FootprintShare({
 
   const percentage = Math.round((impact / totalFootprint) * 100)
 
-  if (percentage <= 0) {
+  if (percentage === 0) {
     return null
   }
 

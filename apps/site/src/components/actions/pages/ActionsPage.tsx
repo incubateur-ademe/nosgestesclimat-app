@@ -8,7 +8,6 @@ import ActionsPageHeaderSwitch from '../ActionsPageHeaderSwitch'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
-import { ActionProvider } from '../contexts/action'
 import type { ActionFrom } from '../types/actions'
 
 interface ActionsPageProps extends Omit<
@@ -50,11 +49,7 @@ export default function ActionsPage({
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
 
   return (
-    <ActionProvider
-      values={{
-        assessmentStatus,
-        totalFootprint,
-      }}>
+    <>
       <BetaBanner locale={locale} />
 
       <div {...props} className={twMerge('pb-24', className)}>
@@ -80,6 +75,10 @@ export default function ActionsPage({
             className="mb-8 md:mb-12"
             locale={locale}
             from={from}
+            actionCatalogueContext={{
+              totalFootprint,
+              assessmentStatus,
+            }}
           />
         )}
 
@@ -121,6 +120,6 @@ export default function ActionsPage({
             })}
         </div>
       </div>
-    </ActionProvider>
+    </>
   )
 }

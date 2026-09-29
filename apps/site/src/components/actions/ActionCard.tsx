@@ -39,7 +39,7 @@ export interface ActionCardProps extends React.ComponentPropsWithoutRef<'article
   source?: ActionEventSource
 }
 
-export interface ActionCardWithTempProps extends ActionCardProps {
+export interface ActionCardWithABTestProps extends ActionCardProps {
   withCta?: boolean
   withDescription?: boolean
 }
@@ -56,7 +56,7 @@ export default function ActionCard({
   withCta,
   withDescription,
   ...props
-}: ActionCardWithTempProps) {
+}: ActionCardWithABTestProps) {
   const rankEmoji = rankToEmoji(rank)
 
   const href = getActionHref({

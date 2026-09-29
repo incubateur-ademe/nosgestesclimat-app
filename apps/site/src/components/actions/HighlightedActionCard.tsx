@@ -12,6 +12,7 @@ import ActionTracker from './ActionTracker'
 import CommitToActionButton from './highlightedActionCard/CommitToActionButton'
 import ImpactSection from './highlightedActionCard/ImpactSection'
 import { ThemeBadge } from './ThemeBadge'
+import type { ActionCatalogueContext } from './types/actions'
 
 const classesByTheme: Record<
   Theme['key'],
@@ -49,7 +50,7 @@ export interface HighlightedActionCardProps extends React.ComponentPropsWithoutR
   locale: Locale
   rank?: number
   from?: 'fin' | 'mon-espace' | 'index'
-  /** Total carbon footprint in kg, used to express the impact as a share of it */
+  actionCatalogueContext: ActionCatalogueContext
 }
 
 export default function HighlightedActionCard({
@@ -58,6 +59,7 @@ export default function HighlightedActionCard({
   locale,
   rank,
   from,
+  actionCatalogueContext,
   ...props
 }: HighlightedActionCardProps) {
   const classes = classesByTheme[action.theme.key]
@@ -129,7 +131,11 @@ export default function HighlightedActionCard({
         </div>
       </div>
 
-      <ImpactSection classes={classes} assessment={action.assessment} />
+      <ImpactSection
+        classes={classes}
+        assessment={action.assessment}
+        actionCatalogueContext={actionCatalogueContext}
+      />
     </article>
   )
 }
