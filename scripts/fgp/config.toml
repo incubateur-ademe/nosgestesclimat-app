@@ -131,7 +131,7 @@ route  = "/v1/apps/nosgestesclimat-site-preprod-pr*/deployments"
 # ============================================================================ #
 # POSTDEPLOY           -> region STANDARD
 #   hook Scalingo postdeploy situe sur le review server : pousse DATABASE_URL
-#   vers le review app du site jumeau.
+#   et REDIS_URL vers le review app du site jumeau.
 # ============================================================================ #
 [env.postdeploy]
 
@@ -141,3 +141,10 @@ route  = "/v1/apps/nosgestesclimat-site-preprod-pr*/variables"
 [env.postdeploy.scope.body]
 "variable.name"  = { eq = "DATABASE_URL" }
 "variable.value" = { glob = "postgresql://*" }
+
+[[env.postdeploy.scope]]
+method = "POST"
+route  = "/v1/apps/nosgestesclimat-site-preprod-pr*/variables"
+[env.postdeploy.scope.body]
+"variable.name"  = { eq = "REDIS_URL" }
+"variable.value" = { regex = "rediss?://.*" }
