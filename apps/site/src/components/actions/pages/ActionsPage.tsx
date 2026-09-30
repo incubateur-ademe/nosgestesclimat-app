@@ -61,7 +61,7 @@ export default function ActionsPage({
         </p>
       </div>
 
-      <div className="flex items-start gap-10">
+      <div className="relative flex items-start gap-10">
         <div
           {...props}
           className={twMerge(

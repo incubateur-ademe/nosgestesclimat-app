@@ -24,7 +24,7 @@ export default function ActionsBasket({ actions, locale }: Props) {
   return (
     <section
       aria-labelledby={titleId}
-      className="w-80 rounded-xl border border-slate-200 p-4">
+      className="sticky top-22 w-80 rounded-xl border border-slate-200 p-4">
       <div className="flex items-center gap-2.5">
         <h2 className="mb-0 text-lg/normal font-bold">
           <Trans
