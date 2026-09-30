@@ -11,6 +11,8 @@ import { Attributes } from '../../emails/email.constant.ts'
 import type { AddOrUpdateContact, SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
+import { createSimulationCompletedEmail } from '../../simulations/emails/simulation-emails.ts'
+import { findLatestCompletedSimulation } from '../../simulations/repository/simulation.repository.ts'
 import {
   createOrUpdateUser,
   findUserById,
@@ -179,12 +181,31 @@ export function createLogin({
             [Attributes.USER_ID]: user.id,
           },
         }),
-        (async () =>
-          mode === 'signUp'
-            ? sendEmail(
-                createWelcomeEmail({ locale, email: user.email, origin })
-              )
-            : success())(),
+        (async () => {
+          if (mode !== 'signUp') return success()
+
+          // A user that just signed up after completing a simulation gets
+          // an email with a link to the simulation in order to find it again
+          const lastCompletedSimulation = await findLatestCompletedSimulation({
+            userId: user.id,
+          })
+
+          if (lastCompletedSimulation) {
+            return sendEmail(
+              createSimulationCompletedEmail({
+                email: user.email,
+                origin,
+                locale,
+                simulationId: lastCompletedSimulation.id,
+                computedResults: lastCompletedSimulation.computedResults,
+              })
+            )
+          }
+
+          return sendEmail(
+            createWelcomeEmail({ locale, email: user.email, origin })
+          )
+        })(),
       ])
     })
 
