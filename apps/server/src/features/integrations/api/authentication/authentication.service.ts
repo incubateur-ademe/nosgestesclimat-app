@@ -5,7 +5,6 @@ import type { BackgroundTaskRunner } from '@nosgestesclimat/core/lib/background-
 import { failure, success } from '@nosgestesclimat/core/lib/result'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
-import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
 import { captureException } from '@sentry/node'
 import type { Request, RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
@@ -162,23 +161,16 @@ export const generateApiToken = async ({
 export const exchangeCredentialsForToken = async (
   query: RecoverApiTokenQuery
 ) => {
-  try {
-    const { email } = await transaction(
-      (session) =>
-        findVerificationCode(
-          { ...query, usage: VerificationCodeUsage.apiToken },
-          { session }
-        ),
-      prisma
-    )
+  const verificationCode = await findVerificationCode({
+    ...query,
+    usage: VerificationCodeUsage.apiToken,
+  })
 
-    return signTokens(email)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('VerificationCode not found')
-    }
-    throw e
+  if (!verificationCode) {
+    throw new EntityNotFoundException('VerificationCode not found')
   }
+
+  return signTokens(verificationCode.email)
 }
 
 export const refreshApiToken = ({

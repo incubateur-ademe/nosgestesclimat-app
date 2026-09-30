@@ -281,14 +281,13 @@ describe('Given a NGC user', () => {
       const databaseError = new Error('Something went wrong')
 
       beforeEach(() => {
-        vi.spyOn(
-          prisma.verificationCode,
-          'findFirstOrThrow'
-        ).mockRejectedValueOnce(databaseError)
+        vi.spyOn(prisma.verificationCode, 'findFirst').mockRejectedValueOnce(
+          databaseError
+        )
       })
 
       afterEach(() => {
-        vi.spyOn(prisma.verificationCode, 'findFirstOrThrow').mockRestore()
+        vi.spyOn(prisma.verificationCode, 'findFirst').mockRestore()
       })
 
       test('Then it redirects to an error page', async () => {
