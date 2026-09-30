@@ -4,7 +4,7 @@
 #
 # Run during server postdeploy. Performs tasks specific to review apps
 # (ensuring the default SEDD event, syncing Notion actions, pushing
-# DATABASE_URL to the site review app).
+# DATABASE_URL and REDIS_URL to the site review app).
 #
 # On production/preprod, this is a no-op.
 #
@@ -13,6 +13,7 @@
 #   FGP_PUSH_DB_URL_TO_SITE_TOKEN     - FGP API token
 #   FGP_PUSH_DB_URL_TO_SITE_URL       - URL to the FGP
 #   DATABASE_URL                      - The database URL to share with the site app
+#   REDIS_URL                         - The Redis URL to share with the site app
 
 set -euo pipefail
 
@@ -54,24 +55,33 @@ else
   echo "Skipping demo data seed: no action catalogue to assess against."
 fi
 
-# 4. Push DATABASE_URL to the corresponding site review app
+# 4. Push DATABASE_URL and REDIS_URL to the corresponding site review app
 : "${FGP_PUSH_DB_URL_TO_SITE_TOKEN:?FGP_PUSH_DB_URL_TO_SITE_TOKEN is required}"
 : "${FGP_PUSH_DB_URL_TO_SITE_URL:?FGP_PUSH_DB_URL_TO_SITE_URL is required}"
 : "${DATABASE_URL:?DATABASE_URL is required}"
+: "${REDIS_URL:?REDIS_URL is required}"
 
 SITE_REVIEW_APP="${APP/nosgestesclimat-/nosgestesclimat-site-}"
 
-echo "── Pushing DATABASE_URL to site review app ───────────────"
-echo "  Server review app : $APP"
-echo "  Site review app   : $SITE_REVIEW_APP"
-echo "──────────────────────────────────────────────────────────"
+push_variable_to_site_review_app() {
+  local name="$1"
+  local value="$2"
 
-curl -sSf -X POST \
-  -H "Accept: application/json" \
-  -H "Content-Type: application/json" \
-  -H "X-FGP-Key: $FGP_PUSH_DB_URL_TO_SITE_TOKEN" \
-  "${FGP_PUSH_DB_URL_TO_SITE_URL}/v1/apps/${SITE_REVIEW_APP}/variables" \
-  -d "{\"variable\": {\"name\": \"DATABASE_URL\", \"value\": \"$DATABASE_URL\"}}" \
-  || echo "DATABASE_URL may already exist, continuing."
+  echo "── Pushing $name to site review app ──────────────────────"
+  echo "  Server review app : $APP"
+  echo "  Site review app   : $SITE_REVIEW_APP"
+  echo "──────────────────────────────────────────────────────────"
+
+  curl -sSf -X POST \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json" \
+    -H "X-FGP-Key: $FGP_PUSH_DB_URL_TO_SITE_TOKEN" \
+    "${FGP_PUSH_DB_URL_TO_SITE_URL}/v1/apps/${SITE_REVIEW_APP}/variables" \
+    -d "{\"variable\": {\"name\": \"$name\", \"value\": \"$value\"}}" \
+    || echo "$name may already exist, continuing."
+}
+
+push_variable_to_site_review_app "DATABASE_URL" "$DATABASE_URL"
+push_variable_to_site_review_app "REDIS_URL" "$REDIS_URL"
 
 echo "── Done ─────────────────────────────────────────────────"
