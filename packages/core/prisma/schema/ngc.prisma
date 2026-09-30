@@ -491,6 +491,7 @@ model VerificationCode {
   createdAt      DateTime                @default(now())
   updatedAt      DateTime                @updatedAt
 
+  @@index([email, usage, expirationDate])
   @@schema("ngc")
 }
 
