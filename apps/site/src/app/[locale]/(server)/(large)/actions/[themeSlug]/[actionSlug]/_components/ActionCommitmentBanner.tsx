@@ -1,14 +1,11 @@
 import CommitToActionButton from '@/components/actions/highlightedActionCard/CommitToActionButton'
-import Trans from '@/components/translation/trans/TransServer'
-import type { Locale } from '@/i18nConfig'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 
 interface Props {
   action: MaybePersonalizedAction
-  locale: Locale
 }
 
-export function ActionCommitmentBanner({ action, locale }: Props) {
+export function ActionCommitmentBanner({ action }: Props) {
   if (!action.assessment) return null
 
   return (
@@ -17,11 +14,6 @@ export function ActionCommitmentBanner({ action, locale }: Props) {
         buttonColor="primary"
         className="w-full sm:w-72"
         action={action}
-        label={
-          <Trans locale={locale} i18nKey="actions.plan.addToActionPlan">
-            Ajouter à mon plan d'action
-          </Trans>
-        }
       />
     </div>
   )
