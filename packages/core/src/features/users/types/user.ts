@@ -40,7 +40,6 @@ interface NewUserBase {
 
 export interface NewUnverifiedUser extends NewUserBase {
   type: 'unverified'
-  email?: null
 }
 
 export interface NewVerifiedUser extends NewUserBase {
