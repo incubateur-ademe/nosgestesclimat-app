@@ -4,7 +4,7 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionChoiceFactory } from '../../factories/action-choice.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
-import { abandonActionCommitment } from '../abandonActionCommitment.service.ts'
+import { abandonActionCommitment } from '../abandon-action-commitment.service.ts'
 import { getPersonalizedActionDetails } from '../get-personalized-action-details.service.ts'
 
 describe('abandonActionCommitment', () => {
