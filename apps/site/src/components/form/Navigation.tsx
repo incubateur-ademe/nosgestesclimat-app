@@ -1,8 +1,5 @@
 'use client'
 
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import type { MouseEvent } from 'react'
-import { useCallback, useEffect, useState } from 'react'
 import Trans from '@/components/translation/trans/TransClient'
 import {
   DEFAULT_FOCUS_ELEMENT_ID,
@@ -17,9 +14,13 @@ import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useMagicKey } from '@/hooks/useMagicKey'
 import { useEngine, useFormState, useRule, useUser } from '@/publicodes-state'
 import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
+import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { trackEvent } from '@/utils/analytics/trackEvent'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { twMerge } from 'cn'
 import { useRouter } from 'next/navigation'
-import { twMerge } from "cn";
+import type { MouseEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 type SubmitButtonKind = 'loading' | 'finish' | 'next'
 
@@ -91,6 +92,7 @@ export default function Navigation({
     noNextQuestion,
     currentQuestion,
     setCurrentQuestion,
+    forgottenQuestions,
   } = useFormState()
 
   const { goToNextQuestion, isIntercalaireNext } = useGotoNextQuestion()
@@ -102,6 +104,13 @@ export default function Navigation({
       remainingQuestions.length === 0
     : noNextQuestion
 
+  if (isLastQuestion && forgottenQuestions.length > 0) {
+    captureErrorForSentryAndPosthog(
+      new Error(
+        `Forgotten questions detected: ${forgottenQuestions.join(', ')}`
+      )
+    )
+  }
   const {
     isMissing,
     isFolded,
