@@ -3,24 +3,16 @@ import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import type {
-  MaybePersonalizedAction,
-  PersonalizedAction,
-} from '@nosgestesclimat/core/features/actions/types/action'
+import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { useId, type ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
 import ActionBasketItem from './actionsBasket/ActionBasketItem'
+import { getActionsWithChoice } from './utils/getActionsWithChoice'
 
 interface Props {
   actions: MaybePersonalizedAction[] | null
   locale: Locale
   assessmentStatus: AssessmentStatus
-}
-
-function hasChoice(
-  action: MaybePersonalizedAction | null
-): action is PersonalizedAction {
-  return !!action?.choice
 }
 
 export default function ActionsBasket({
@@ -32,7 +24,7 @@ export default function ActionsBasket({
 
   const { t } = getServerTranslation({ locale })
 
-  const actionsWithChoice = (actions ?? []).filter(hasChoice)
+  const actionsWithChoice = getActionsWithChoice(actions ?? [])
 
   const hasCommittedToActions = actionsWithChoice.length > 0
 

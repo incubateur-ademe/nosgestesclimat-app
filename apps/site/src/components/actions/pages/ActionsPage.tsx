@@ -4,6 +4,7 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import Trans from '../../translation/trans/TransServer'
+import ActionPlanLinks from '../ActionPlanLinks'
 import ActionsBasket from '../ActionsBasket'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
@@ -51,6 +52,10 @@ export default function ActionsPage({
   return (
     <>
       <BetaBanner locale={locale} />
+
+      {assessmentStatus && (
+        <ActionPlanLinks actions={actions} locale={locale} />
+      )}
 
       <div>
         <h1 className="mb-0 text-2xl/normal font-medium md:text-4xl/normal">
