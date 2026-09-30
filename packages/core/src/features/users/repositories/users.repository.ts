@@ -126,11 +126,13 @@ export async function createOrUpdateUser(
 
   const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email
 
-  // The user table's email column is never written: the email lives in the
-  // verified record, the only place it is read from.
+  // The verified record is the source of truth for the email; the user
+  // table's email column mirrors it for the readers that have not migrated
+  // to the verified record yet.
   const userData = {
     name: user.name,
     ageRange: user.ageRange,
+    ...(user.type === 'verified' ? { email: user.email } : {}),
   }
 
   // A verified write persists the verified record together with the user.
