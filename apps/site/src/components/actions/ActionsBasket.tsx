@@ -2,24 +2,39 @@ import Button from '@/design-system/buttons/Button'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
+import type {
+  MaybePersonalizedAction,
+  PersonalizedAction,
+} from '@nosgestesclimat/core/features/actions/types/action'
 import { useId, type ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
+import ActionBasketItem from './actionsBasket/ActionBasketItem'
 
 interface Props {
   actions: MaybePersonalizedAction[] | null
   locale: Locale
+  assessmentStatus: AssessmentStatus
 }
 
-export default function ActionsBasket({ actions, locale }: Props) {
+function hasChoice(
+  action: MaybePersonalizedAction | null
+): action is PersonalizedAction {
+  return !!action?.choice
+}
+
+export default function ActionsBasket({
+  actions,
+  locale,
+  assessmentStatus,
+}: Props) {
   const titleId = useId()
 
   const { t } = getServerTranslation({ locale })
 
-  const actionsWithChoice = actions?.filter((action) => !!action.choice)
+  const actionsWithChoice = (actions ?? []).filter(hasChoice)
 
-  const hasCommittedToActions =
-    actionsWithChoice && actionsWithChoice.length > 0
+  const hasCommittedToActions = actionsWithChoice.length > 0
 
   return (
     <section
@@ -70,6 +85,7 @@ export default function ActionsBasket({ actions, locale }: Props) {
           </Trans>
         )}
       </p>
+
       {!hasCommittedToActions && (
         <p className="bg-secondary-50 mb-20 rounded-lg p-5 text-sm text-slate-600">
           <Trans
@@ -81,7 +97,20 @@ export default function ActionsBasket({ actions, locale }: Props) {
         </p>
       )}
 
-      <div className="-mx-4 flex justify-center border-t border-slate-300 pt-5">
+      {hasCommittedToActions && (
+        <ul className="mb-4 flex flex-col gap-2.5">
+          {actionsWithChoice.map((action) => (
+            <ActionBasketItem
+              key={action.id}
+              action={action}
+              locale={locale}
+              assessmentStatus={assessmentStatus}
+            />
+          ))}
+        </ul>
+      )}
+
+      <div className="-mx-4 flex justify-center border-t border-slate-300 pt-4">
         {hasCommittedToActions ? (
           <ButtonLinkServer href="/" className="text-sm!">
             <Trans i18nKey="actions.basket.saveButton.label" locale={locale}>

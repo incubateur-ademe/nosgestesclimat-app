@@ -120,7 +120,13 @@ export default function ActionsPage({
               })}
           </div>
         </div>
-        {assessmentStatus && <ActionsBasket actions={[]} locale={locale} />}
+        {assessmentStatus && (
+          <ActionsBasket
+            actions={actions}
+            locale={locale}
+            assessmentStatus={assessmentStatus}
+          />
+        )}
       </div>
     </>
   )

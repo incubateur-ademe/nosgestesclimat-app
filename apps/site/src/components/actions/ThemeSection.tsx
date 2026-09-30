@@ -6,13 +6,10 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import { useId } from 'react'
-import CarIcon from '../icons/CarIcon'
-import FoodIcon from '../icons/FoodIcon'
-import HousingIcon from '../icons/HousingIcon'
-import MiscIcon from '../icons/MiscIcon'
-import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionCardSwitchServer from './actionCard/ActionCardSwitchServer'
+import { classesByTheme } from './theme/constants/classesByTheme'
+import ThemeIcon from './ThemeIcon'
 
 interface Props {
   theme: Pick<Theme, 'key' | 'title'>
@@ -26,37 +23,6 @@ interface Props {
   /** Defaults to the number of actions in the section */
   description?: React.ReactNode
   className?: string
-}
-
-const classesByTheme: Record<
-  Theme['key'],
-  Record<'section' | 'header' | 'icon', string>
-> = {
-  transport: {
-    section: 'bg-transport-50 border-transport-200',
-    header: 'text-transport-800',
-    icon: 'bg-transport-200 text-transport-800',
-  },
-  food: {
-    section: 'bg-alimentation-50 border-alimentation-200',
-    header: 'text-alimentation-800',
-    icon: 'bg-alimentation-200 text-alimentation-800',
-  },
-  housing: {
-    section: 'bg-logement-50 border-logement-200',
-    header: 'text-logement-800',
-    icon: 'bg-logement-200 text-logement-800',
-  },
-  misc: {
-    section: 'bg-divers-50 border-divers-200',
-    header: 'text-divers-800',
-    icon: 'bg-divers-200 text-divers-800',
-  },
-  societal_services: {
-    section: 'bg-servicessocietaux-50 border-servicessocietaux-200',
-    header: 'text-servicessocietaux-800',
-    icon: 'bg-servicessocietaux-200 text-servicessocietaux-800',
-  },
 }
 
 export default function ThemeSection({
@@ -118,37 +84,4 @@ export default function ThemeSection({
       </Carousel>
     </section>
   )
-}
-
-function ThemeIcon({ themeKey }: { themeKey: Theme['key'] }) {
-  const icon = getThemeIcon(themeKey)
-
-  return (
-    <span
-      aria-hidden="true"
-      className={twMerge(
-        'size-6 rounded-sm p-1',
-        classesByTheme[themeKey].icon
-      )}>
-      {icon}
-    </span>
-  )
-}
-
-function getThemeIcon(themeKey: Theme['key']) {
-  switch (themeKey) {
-    case 'transport':
-      return <CarIcon />
-    case 'food':
-      return <FoodIcon />
-    case 'housing':
-      return <HousingIcon />
-    case 'misc':
-      return <MiscIcon />
-    case 'societal_services':
-      return <PublicServicesIcon />
-    default:
-      themeKey satisfies never
-      return ''
-  }
 }
