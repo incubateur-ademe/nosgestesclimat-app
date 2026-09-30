@@ -43,7 +43,7 @@ export default function CommitToActionButton({
             onClick={abandonActionCommitment}
             disabled={isPending}
             className={twMerge(
-              'relative',
+              'relative w-52.5',
               'bg-green-50 text-sm! text-green-600 opacity-100! hover:bg-green-100 hover:text-green-700',
               'before:absolute before:inset-0 before:rounded-[inherit]',
               'before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,166,62,0.2)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:[transition:background-position_0s_ease]',
@@ -74,7 +74,7 @@ export default function CommitToActionButton({
       color={buttonColor}
       onClick={commitToAction}
       loading={isPending}
-      className={twMerge('text-sm!', className)}>
+      className={twMerge('w-52.5 text-sm!', className)}>
       {!isPending && (
         <PlusIcon
           className={twMerge(

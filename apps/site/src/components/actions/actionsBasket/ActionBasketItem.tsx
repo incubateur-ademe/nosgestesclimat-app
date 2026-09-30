@@ -3,6 +3,7 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { ImpactTag } from '../ImpactTag'
 import ThemeIcon from '../ThemeIcon'
+import AbandonCommitmentButton from './actionBasketItem/AbandonCommitmentButton'
 
 interface Props {
   action: PersonalizedAction
@@ -16,21 +17,25 @@ export default function ActionBasketItem({
   assessmentStatus,
 }: Props) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-slate-50 p-2">
-      <h1 className="mb-2 text-sm/normal">{action.title}</h1>
+    <article className="flex items-start gap-1 rounded-lg border border-slate-200 bg-slate-50 p-2">
+      <div>
+        <h1 className="mb-2 text-sm/normal">{action.title}</h1>
 
-      <div className="flex gap-1">
-        <ThemeIcon themeKey={action.theme.key} />
+        <div className="flex gap-1">
+          <ThemeIcon themeKey={action.theme.key} />
 
-        {action.assessment ? (
-          <ImpactTag
-            impact={action.assessment.impact}
-            locale={locale}
-            assessmentStatus={assessmentStatus}
-            className="bg-slate-50"
-          />
-        ) : null}
+          {action.assessment ? (
+            <ImpactTag
+              impact={action.assessment.impact}
+              locale={locale}
+              assessmentStatus={assessmentStatus}
+              className="bg-slate-50"
+            />
+          ) : null}
+        </div>
       </div>
+
+      <AbandonCommitmentButton action={action} />
     </article>
   )
 }

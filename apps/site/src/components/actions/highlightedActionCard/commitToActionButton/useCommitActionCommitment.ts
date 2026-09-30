@@ -5,6 +5,8 @@ import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
+const TOAST_DISPLAY_DURATION = 5_000
+
 import { abandonActionCommitment } from '@/services/actions/abandon-action-commitment'
 import { useTriggerShineAnimation } from './useTriggerShineAnimation'
 export function useCommitActionCommitment(action: PersonalizedAction) {
@@ -27,7 +29,10 @@ export function useCommitActionCommitment(action: PersonalizedAction) {
           t(
             'actions.commitToActionButton.success',
             'Action sélectionnée avec succès.'
-          )
+          ),
+          {
+            duration: TOAST_DISPLAY_DURATION,
+          }
         )
       } catch {
         toast.error(
@@ -54,6 +59,15 @@ export function useCommitActionCommitment(action: PersonalizedAction) {
           co2PotentialInKg: action.assessment?.impact,
           eventName: 'action abandonned',
         })
+        toast.success(
+          t(
+            'actions.abandonActionCommitment.success',
+            'Action retirée avec succès.'
+          ),
+          {
+            duration: TOAST_DISPLAY_DURATION,
+          }
+        )
       } catch {
         toast.error(
           t(
