@@ -12,7 +12,7 @@ import {
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
-import { useCommitActionCommitment } from './commitToActionButton/useCommitActionCommitment'
+import { useActionCommitment } from './commitToActionButton/useActionCommitment'
 
 interface Props {
   action: PersonalizedAction
@@ -32,7 +32,7 @@ export default function CommitToActionButton({
     abandonActionCommitment,
     isPending,
     shouldDisplayAnimation,
-  } = useCommitActionCommitment(action)
+  } = useActionCommitment(action)
 
   if (action.choice?.type === 'committed') {
     return (

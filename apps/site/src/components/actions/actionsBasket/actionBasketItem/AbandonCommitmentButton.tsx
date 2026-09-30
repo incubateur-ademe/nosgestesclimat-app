@@ -3,15 +3,14 @@
 import CloseIcon from '@/components/icons/Close'
 import Loader from '@/design-system/layout/Loader'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { useCommitActionCommitment } from '../../highlightedActionCard/commitToActionButton/useCommitActionCommitment'
+import { useActionCommitment } from '../../highlightedActionCard/commitToActionButton/useActionCommitment'
 
 interface Props {
   action: PersonalizedAction
 }
 
 export default function AbandonCommitmentButton({ action }: Props) {
-  const { abandonActionCommitment, isPending } =
-    useCommitActionCommitment(action)
+  const { abandonActionCommitment, isPending } = useActionCommitment(action)
   return (
     <button className="flex" onClick={abandonActionCommitment}>
       {isPending ? (

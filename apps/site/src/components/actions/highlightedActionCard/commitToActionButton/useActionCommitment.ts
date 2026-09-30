@@ -1,15 +1,15 @@
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { abandonActionCommitment } from '@/services/actions/abandon-action-commitment'
 import { commitToAction } from '@/services/actions/commit-to-action'
 import { captureUniqueSessionActionEvent } from '@/utils/analytics/trackUniqueEvent'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
+import { useTriggerShineAnimation } from './useTriggerShineAnimation'
 
 const TOAST_DISPLAY_DURATION = 5_000
 
-import { abandonActionCommitment } from '@/services/actions/abandon-action-commitment'
-import { useTriggerShineAnimation } from './useTriggerShineAnimation'
-export function useCommitActionCommitment(action: PersonalizedAction) {
+export function useActionCommitment(action: PersonalizedAction) {
   const { t } = useClientTranslation()
 
   const [isPending, startTransition] = useTransition()
