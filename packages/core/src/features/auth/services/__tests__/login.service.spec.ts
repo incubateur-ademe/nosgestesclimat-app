@@ -12,10 +12,40 @@ import {
   findUserById,
   findVerifiedUserByEmail,
 } from '../../../users/repositories/users.repository.ts'
+import { reconcileSimulationsAfterLogin } from '../../../users/services/reconcile-simulations-after-login.service.ts'
+import { syncUserData } from '../../../users/services/sync-user-data.service.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
 import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
 import { findVerificationCode } from '../../repositories/verification-codes.repository.ts'
 import { createLogin } from '../login.service.ts'
+
+// Both reconciliation helpers are spied on but keep their real
+// implementations: their database effects stay covered while the tests
+// assert the login service only reaches for them when it should.
+vi.mock(
+  '../../../users/services/sync-user-data.service.ts',
+  async (importOriginal) => {
+    const actual = await importOriginal<{
+      syncUserData: typeof syncUserData
+    }>()
+    return { ...actual, syncUserData: vi.fn(actual.syncUserData) }
+  }
+)
+
+vi.mock(
+  '../../../users/services/reconcile-simulations-after-login.service.ts',
+  async (importOriginal) => {
+    const actual = await importOriginal<{
+      reconcileSimulationsAfterLogin: typeof reconcileSimulationsAfterLogin
+    }>()
+    return {
+      ...actual,
+      reconcileSimulationsAfterLogin: vi.fn(
+        actual.reconcileSimulationsAfterLogin
+      ),
+    }
+  }
+)
 
 const logger = {
   error: vi.fn(),
@@ -79,6 +109,8 @@ describe('login', () => {
       expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
       expect(addOrUpdateContact).not.toHaveBeenCalled()
       expect(sendEmail).not.toHaveBeenCalled()
+      expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
+      expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
     })
   })
 
@@ -111,6 +143,10 @@ describe('login', () => {
         },
       })
       expect(sendEmail).not.toHaveBeenCalled()
+      // A sign-in never merges data: there is no session user to reconcile
+      // and only a sign-up syncs legacy users.
+      expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
+      expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
     })
 
     it('cannot be replayed: a second sign-in with the same code fails', async () => {
@@ -140,6 +176,10 @@ describe('login', () => {
 
       expect.assert(!replayResult.success)
       expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
+      // Neither login reached the reconciliation helpers: the first was a
+      // plain sign-in, the replay failed at the code claim.
+      expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
+      expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
     })
 
     describe('And the session belongs to an unverified user with simulations', () => {
@@ -180,6 +220,16 @@ describe('login', () => {
           })
         ).toHaveLength(0)
         expect(await findUserById(unverifiedUser.id)).toBeNull()
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).toHaveBeenCalledWith({
+          user: expect.objectContaining({
+            id: verifiedUser.id,
+            email: verifiedUser.email,
+          }),
+          previousUserId: unverifiedUser.id,
+        })
+        // The sign-in branch reconciles only: it never runs the legacy
+        // users merge.
+        expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
       })
 
       it('leaves the account untouched when there is no session userId to reconcile from', async () => {
@@ -209,6 +259,8 @@ describe('login', () => {
           })
         ).toHaveLength(1)
         expect(await findUserById(unverifiedUser.id)).not.toBeNull()
+        expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
 
@@ -241,6 +293,8 @@ describe('login', () => {
         // Reconciling userA.id into account B would have moved account A's
         // data over and deleted its user row. It must not have run.
         expect(await findUserById(userA.id)).not.toBeNull()
+        expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
   })
@@ -276,6 +330,13 @@ describe('login', () => {
             where: { userId: result.data.user.id },
           })
         ).toHaveLength(0)
+        // The fresh sign-up merges legacy users sharing the email, but has
+        // no session user to reconcile from.
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
+          user: expect.objectContaining({ id: result.data.user.id }),
+          verified: true,
+        })
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
 
@@ -313,6 +374,9 @@ describe('login', () => {
             where: { userId: result.data.user.id },
           })
         ).toHaveLength(0)
+        // The unfound session user leaves nothing to reconcile.
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
 
@@ -365,6 +429,14 @@ describe('login', () => {
 
         expect(simulations).toHaveLength(1)
         expect(simulations[0].id).toBe(unverifiedSimulation.id)
+        // The conversion updates the user row in place: the sign-up sync
+        // runs, and no reconciliation is needed since the data stays
+        // attached to the same id.
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
+          user: expect.objectContaining({ id: unverifiedUser.id }),
+          verified: true,
+        })
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
 
       it('invalidates the verification code', async () => {
@@ -417,6 +489,10 @@ describe('login', () => {
 
         expect.assert(!replayResult.success)
         expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
+        // Only the first sign-up synced: the replay failed at the code
+        // claim.
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
 
       it('schedules the welcome email and the contact update', async () => {
@@ -488,6 +564,18 @@ describe('login', () => {
 
         expect(simulations.map(({ id }) => id)).toContain(legacySimulation.id)
         expect(await findUserById(legacyUser.id)).toBeNull()
+        // The merge runs through the sign-up sync, not the sign-in
+        // reconciliation: syncUserData receives the freshly converted
+        // account - the session user's id now carrying the login email.
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
+          user: expect.objectContaining({
+            id: unverifiedUser.id,
+            email: verificationCode.email,
+          }),
+          verified: true,
+        })
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
 
@@ -540,6 +628,12 @@ describe('login', () => {
           })
         ).toHaveLength(0)
         expect(await findUserById(userA.id)).not.toBeNull()
+        expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
+          user: expect.objectContaining({ id: result.data.user.id }),
+          verified: true,
+        })
+        // The fresh account must not inherit account A's data.
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
   })
