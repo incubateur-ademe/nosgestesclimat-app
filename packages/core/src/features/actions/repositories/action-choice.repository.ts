@@ -2,22 +2,21 @@ import { prisma } from '../../../prisma/client.ts'
 import type { ActionChoiceType } from '../../../prisma/generated/enums.ts'
 import { mapActionChoiceToPrisma } from './action-choice.mapper.ts'
 
-interface Props {
+interface UpsertActionChoiceProps {
   actionId: string
   type: ActionChoiceType
   userId: string
 }
-
 export const upsertActionChoice = async ({
   actionId,
   type,
   userId,
-}: Props): Promise<void> => {
+}: UpsertActionChoiceProps): Promise<void> => {
   await prisma.actionChoice.upsert({
     where: {
       userId_actionId: {
-        actionId,
         userId,
+        actionId,
       },
     },
     create: mapActionChoiceToPrisma({
@@ -30,5 +29,23 @@ export const upsertActionChoice = async ({
       actionId,
       type,
     }),
+  })
+}
+
+interface DeleteActionChoiceProps {
+  actionId: string
+  userId: string
+}
+export const deleteActionChoice = async ({
+  actionId,
+  userId,
+}: DeleteActionChoiceProps): Promise<void> => {
+  await prisma.actionChoice.delete({
+    where: {
+      userId_actionId: {
+        userId,
+        actionId,
+      },
+    },
   })
 }
