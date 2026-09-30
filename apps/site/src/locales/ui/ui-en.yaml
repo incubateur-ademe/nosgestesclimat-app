@@ -2227,3 +2227,27 @@ entries:
   actions.plan.otherActions.title.lock: Toutes vos actions, classées par catégorie
   actions.plan.otherActions.description: These actions are tailored to your answers in the test. Choose the ones that seem achievable to you and add them to your action plan!
   actions.plan.otherActions.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
+  actions.plan.links.exploreActions: My action plan
+  actions.plan.links.exploreActions.lock: Mon plan d'action
+  actions.components.actionCard.highlighted.addedButton.tooltip: Remove from your plan
+  actions.components.actionCard.highlighted.addedButton.tooltip.lock: Retirer de votre plan
+  actions.basket.title.withActionChoices: My selection of shares
+  actions.basket.title.withActionChoices.lock: Ma sélection d'actions
+  actions.basket.subtitle.withChoices: '{{actionChoicesLength}} action{{pluralSuffix}} in your selection'
+  actions.basket.subtitle.withChoices.lock: '{{actionChoicesLength}} action{{pluralSuffix}} dans votre sélection'
+  actions.components.actionCard.highlighted.addButton.add: Add to my plan
+  actions.components.actionCard.highlighted.addButton.add.lock: Ajouter à mon plan
+  actions.basket.saveButton.ariaLabel: Save my action plan and go to my action plan page
+  actions.basket.saveButton.ariaLabel.lock: Sauvegarder mon plan d'actions et accéder à ma page plan d'actions
+  actions.components.actionCard.highlighted.addedButton.label: Added
+  actions.components.actionCard.highlighted.addedButton.label.lock: Ajouté
+  actions.abandonActionCommitment.success: Action successfully completed.
+  actions.abandonActionCommitment.success.lock: Action retirée avec succès.
+  actions.basket.subtitle.empty: Add shares to your selection.
+  actions.basket.subtitle.empty.lock: Ajoutez des actions à votre sélection.
+  actions.basket.saveButton.label: Save my action plan
+  actions.basket.saveButton.label.lock: Sauvegarder mon plan d'action
+  actions.components.actionCard.highlighted.addedButton.ariaLabel: Added; click again to remove the action from your plan
+  actions.components.actionCard.highlighted.addedButton.ariaLabel.lock: Ajouté, cliquer à nouveau pour retirer l'action de votre plan
+  actions.basket.informativeBlock.content: Your selection is empty. Browse the categories to add actions that you can implement.
+  actions.basket.informativeBlock.content.lock: Votre sélection est vide. Parcourez les catégories pour ajouter des actions que vous pourrez mettre en place.

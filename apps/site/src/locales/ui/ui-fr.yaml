@@ -1472,3 +1472,15 @@ entries:
   actions.plan.header.title: Construisez votre plan d'action
   actions.plan.otherActions.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
   actions.plan.otherActions.title: Toutes vos actions, classées par catégorie
+  actions.abandonActionCommitment.success: Action retirée avec succès.
+  actions.basket.informativeBlock.content: Votre sélection est vide. Parcourez les catégories pour ajouter des actions que vous pourrez mettre en place.
+  actions.basket.saveButton.ariaLabel: Sauvegarder mon plan d'actions et accéder à ma page plan d'actions
+  actions.basket.saveButton.label: Sauvegarder mon plan d'action
+  actions.basket.subtitle.empty: Ajoutez des actions à votre sélection.
+  actions.basket.subtitle.withChoices: '{{actionChoicesLength}} action{{pluralSuffix}} dans votre sélection'
+  actions.basket.title.withActionChoices: Ma sélection d'actions
+  actions.components.actionCard.highlighted.addButton.add: Ajouter à mon plan
+  actions.components.actionCard.highlighted.addedButton.ariaLabel: Ajouté, cliquer à nouveau pour retirer l'action de votre plan
+  actions.components.actionCard.highlighted.addedButton.label: Ajouté
+  actions.components.actionCard.highlighted.addedButton.tooltip: Retirer de votre plan
+  actions.plan.links.exploreActions: Mon plan d'action

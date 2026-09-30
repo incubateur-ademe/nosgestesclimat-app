@@ -37,7 +37,7 @@ export default function ActionsBasket({
           <Trans
             i18nKey="actions.basket.title.withActionChoices"
             locale={locale}>
-            Mes actions
+            Ma sélection d'actions
           </Trans>
         </h2>
         {hasCommittedToActions && (
@@ -102,7 +102,7 @@ export default function ActionsBasket({
         </ul>
       )}
 
-      <div className="-mx-4 flex justify-center border-t border-slate-300 pt-4">
+      <div className="-mx-4 flex justify-center border-t border-slate-300 pt-5">
         {hasCommittedToActions ? (
           <ButtonLinkServer href="/" className="text-sm!">
             <Trans i18nKey="actions.basket.saveButton.label" locale={locale}>
