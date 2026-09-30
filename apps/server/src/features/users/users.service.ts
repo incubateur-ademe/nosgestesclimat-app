@@ -1,7 +1,5 @@
-import {
-  invalidateVerificationCode,
-  verifyCode,
-} from '@nosgestesclimat/core/features/auth/services/login.service'
+import { invalidateVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { verifyCode } from '@nosgestesclimat/core/features/auth/services/verify-code.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'

@@ -21,9 +21,6 @@ import { after } from 'next/server'
 import { createAppSession } from './create-app-session'
 import { getUserSession } from './get-user-session'
 
-// Error handling for the background email side effects lives inside the core
-// service (a failing email must never fail the login), so the site injects
-// the plain scheduler.
 const loginService = createLogin({
   logger,
   captureException,
@@ -62,17 +59,17 @@ export const login = async ({
   // to failure(new UnknownCodeError()). The session lookup runs inside the
   // try so its failures collapse the same way instead of surfacing to
   // useLogin as a rejected mutation.
-  let sessionUserId: string | undefined
+  let existingSessionUserId: string | undefined
 
   try {
     const session = await getUserSession()
     // session.id is the user id, derived server-side from the signed session
     // payload. Passing it to the service directly preserves the "one session
     // id = one account" invariant.
-    sessionUserId = session?.id
+    existingSessionUserId = session?.id
 
     const context = {
-      userId: sessionUserId,
+      userId: existingSessionUserId,
       email: maskEmail(parsed.data.email),
       locale: loginLocale,
     }
@@ -82,9 +79,8 @@ export const login = async ({
     logger.info('Login attempt', context)
 
     const result = await loginService({
-      loginDto: parsed.data,
-      locale: loginLocale,
-      sessionUserId,
+      ...parsed.data,
+      sessionUserId: existingSessionUserId,
     })
 
     if (!result.success) {
@@ -104,8 +100,8 @@ export const login = async ({
       durationMs: Date.now() - startedAt,
     })
 
-    if (sessionUserId) {
-      await revokeAllSessions(sessionUserId)
+    if (existingSessionUserId) {
+      await revokeAllSessions(existingSessionUserId)
     }
     await createAppSession(user.id, email)
 
@@ -114,7 +110,7 @@ export const login = async ({
     return success({ userId: user.id })
   } catch (error) {
     const outcome = {
-      userId: sessionUserId,
+      userId: existingSessionUserId,
       email: maskEmail(email),
       locale: loginLocale,
       durationMs: Date.now() - startedAt,
