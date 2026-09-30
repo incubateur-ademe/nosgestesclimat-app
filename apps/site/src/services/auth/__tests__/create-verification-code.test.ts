@@ -48,7 +48,9 @@ vi.mock('@/logger', () => ({
 vi.mock(
   '@nosgestesclimat/core/features/auth/services/create-verification-code.service',
   () => ({
-    createVerificationCodeService: vi.fn(() => mocks.createVerificationCode),
+    createCreateVerificationCodeService: vi.fn(
+      () => mocks.createVerificationCode
+    ),
   })
 )
 

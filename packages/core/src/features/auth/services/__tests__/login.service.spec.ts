@@ -5,7 +5,10 @@ import { failure, success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
+import { mapComputedResultsToContactAttributes } from '../../../simulations/emails/map-computed-results-to-contact-attributes.ts'
+import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
@@ -521,6 +524,97 @@ describe('login', () => {
           email: verificationCode.email,
           attributes: {
             USER_ID: unverifiedUser.id,
+          },
+        })
+      })
+
+      it('sends the sign-up simulation completed email when the converted session has a completed simulation', async () => {
+        const verificationCode = await verificationCodeFactory.create()
+        const unverifiedUser = await userFactory.create()
+        const computedResults = computedResultsFactory.valid().build()
+        const simulation = await simulationFactory
+          .params({ userId: unverifiedUser.id, computedResults })
+          .completed()
+          .create()
+
+        const { backgroundTaskRunner, flush } =
+          createAwaitingBackgroundTaskRunner()
+        const result = await buildLogin(backgroundTaskRunner)({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          sessionUserId: unverifiedUser.id,
+        })
+        await flush()
+
+        expect.assert(result.success)
+        expect(sendEmail).toHaveBeenCalledTimes(1)
+        expect(sendEmail).toHaveBeenCalledWith({
+          email: verificationCode.email,
+          templateId: TemplateIds.fr.SIGN_UP_SIMULATION_COMPLETED,
+          params: {
+            SIMULATION_URL: expect.stringContaining(
+              `${origin}/fin?sid=${simulation.id}`
+            ),
+            DASHBOARD_URL: `${origin}/mon-espace`,
+            ...mapComputedResultsToContactAttributes(computedResults, 'fr'),
+          },
+        })
+      })
+
+      it('sends the sign-up simulation completed email in the language of the request', async () => {
+        const verificationCode = await verificationCodeFactory.create()
+        const unverifiedUser = await userFactory.create()
+        await simulationFactory
+          .params({ userId: unverifiedUser.id })
+          .completed()
+          .withValidComputedResults()
+          .create()
+
+        const { backgroundTaskRunner, flush } =
+          createAwaitingBackgroundTaskRunner()
+        const result = await buildLogin(backgroundTaskRunner)({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'en',
+          sessionUserId: unverifiedUser.id,
+        })
+        await flush()
+
+        expect.assert(result.success)
+        expect(sendEmail).toHaveBeenCalledWith(
+          expect.objectContaining({
+            templateId: TemplateIds.en.SIGN_UP_SIMULATION_COMPLETED,
+          })
+        )
+      })
+
+      it('sends the welcome email, not the simulation completed email, when the converted session has no completed simulation', async () => {
+        const verificationCode = await verificationCodeFactory.create()
+        const unverifiedUser = await userFactory.create()
+        await simulationFactory
+          .params({ userId: unverifiedUser.id })
+          .started()
+          .withValidComputedResults()
+          .create()
+
+        const { backgroundTaskRunner, flush } =
+          createAwaitingBackgroundTaskRunner()
+        const result = await buildLogin(backgroundTaskRunner)({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          sessionUserId: unverifiedUser.id,
+        })
+        await flush()
+
+        expect.assert(result.success)
+        expect(sendEmail).toHaveBeenCalledTimes(1)
+        expect(sendEmail).toHaveBeenCalledWith({
+          email: verificationCode.email,
+          templateId: TemplateIds.fr.SIGN_UP,
+          params: {
+            DASHBOARD_URL: `${origin}/mon-espace`,
           },
         })
       })
