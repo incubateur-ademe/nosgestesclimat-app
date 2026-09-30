@@ -11,7 +11,6 @@ export const useIframeStorageParams = (isIframe: boolean) => {
 
   const [isIframeShareData, setIsIframeShareData] = useState(false)
   const [isIframeOnlySimulation, setIsIframeOnlySimulation] = useState(false)
-  const [iframeLang, setIframeLang] = useState<string | null>(null)
   const [iframeRegion, setIframeRegion] = useState<string | null>(null)
 
   // Read iframe parameters from URL params first, then fallback to sessionStorage.
@@ -49,16 +48,6 @@ export const useIframeStorageParams = (isIframe: boolean) => {
       }
     }
 
-    const lang = searchParams.get('lang')
-    const storedLang = safeSessionStorage.getItem(STORAGE_KEYS.IFRAME_LANG)
-    const resolvedLang = lang ?? storedLang
-    if (resolvedLang) {
-      setIframeLang(resolvedLang)
-      if (lang) {
-        safeSessionStorage.setItem(STORAGE_KEYS.IFRAME_LANG, lang)
-      }
-    }
-
     safeSessionStorage.setItem(STORAGE_KEYS.IFRAME, 'true')
   }, [isIframe]) // eslint-disable-line react-hooks/exhaustive-deps
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -66,7 +55,6 @@ export const useIframeStorageParams = (isIframe: boolean) => {
   return {
     isIframeShareData,
     isIframeOnlySimulation,
-    iframeLang,
     iframeRegion,
   }
 }
