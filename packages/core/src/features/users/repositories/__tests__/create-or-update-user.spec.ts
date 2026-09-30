@@ -80,7 +80,7 @@ describe('createOrUpdateUser', () => {
       expect(await countVerifiedRecords(id)).toBe(0)
     })
 
-    it('creates a verified user with its verified record, email only on the verified record', async () => {
+    it('creates a verified user with its verified record, the email mirrored on the user table', async () => {
       const id = faker.string.uuid()
       const email = generateEmail()
       const name = faker.person.fullName()
@@ -114,7 +114,7 @@ describe('createOrUpdateUser', () => {
       expect(await findUserById(id)).toEqual(user)
       expect(await findVerifiedUserByEmail({ email })).toEqual(user)
       expect(await countVerifiedRecords(id)).toBe(1)
-      expect(await readUserEmailColumn(id)).toBeNull()
+      expect(await readUserEmailColumn(id)).toBe(email)
     })
 
     it('creates a verified user from an email alone, contact fields at their defaults', async () => {
@@ -134,7 +134,7 @@ describe('createOrUpdateUser', () => {
         optedInForCommunications: false,
       })
       expect(await findVerifiedUserByEmail({ email })).toEqual(user)
-      expect(await readUserEmailColumn(id)).toBeNull()
+      expect(await readUserEmailColumn(id)).toBe(email)
     })
   })
 
@@ -323,9 +323,9 @@ describe('createOrUpdateUser', () => {
         email: newEmail,
       })
       expect(await countVerifiedRecords(user.id)).toBe(1)
-      // The users-table column is not updated either: it keeps the value
-      // the row already carried.
-      expect(await readUserEmailColumn(user.id)).toBe(user.email)
+      // The users-table column mirrors the verified record, so it carries
+      // the new email too.
+      expect(await readUserEmailColumn(user.id)).toBe(newEmail)
     })
 
     it('keeps a single verified record when the email is unchanged', async () => {
@@ -358,7 +358,7 @@ describe('createOrUpdateUser', () => {
   })
 
   describe('Given the unverified user is verified by a later write', () => {
-    it('creates the verified record without writing the users-table email', async () => {
+    it('creates the verified record and mirrors the email on the user table', async () => {
       const user = await userFactory
         .unverified()
         .create({ name: faker.person.fullName(), ageRange: 'age_25_34' })
@@ -380,7 +380,7 @@ describe('createOrUpdateUser', () => {
         optedInForCommunications: false,
       })
       expect(await countVerifiedRecords(user.id)).toBe(1)
-      expect(await readUserEmailColumn(user.id)).toBeNull()
+      expect(await readUserEmailColumn(user.id)).toBe(email)
     })
   })
 
