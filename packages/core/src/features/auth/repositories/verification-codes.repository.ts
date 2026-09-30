@@ -32,8 +32,8 @@ export const createVerificationCode = async (
 export const findVerificationCode = async (
   { email, code, usage }: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
   { session = prisma }: { session?: Transaction } = {}
-): Promise<VerificationCode> => {
-  return session.verificationCode.findFirstOrThrow({
+): Promise<VerificationCode | null> => {
+  return session.verificationCode.findFirst({
     where: {
       code,
       email,
