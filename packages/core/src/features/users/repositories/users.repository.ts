@@ -65,7 +65,7 @@ export const findUserById = async (
  */
 export const findVerifiedUserByEmail = async (
   { email }: { email: string },
-  { session }: { session: Transaction }
+  { session = prisma }: { session?: Transaction } = {}
 ): Promise<VerifiedUser | null> => {
   const row = await session.user.findFirst({
     where: {
@@ -101,15 +101,15 @@ export const findVerifiedUserByEmail = async (
  */
 export async function createOrUpdateUser(
   user: NewVerifiedUser | VerifiedUser,
-  { session }: { session: Transaction }
+  options?: { session?: Transaction }
 ): Promise<VerifiedUser>
 export async function createOrUpdateUser(
   user: NewUser | User,
-  { session }: { session: Transaction }
+  options?: { session?: Transaction }
 ): Promise<User>
 export async function createOrUpdateUser(
   user: NewUser | User,
-  { session }: { session: Transaction }
+  { session = prisma }: { session?: Transaction } = {}
 ): Promise<User> {
   const existingUser = await session.user.findUnique({
     where: {
@@ -126,12 +126,11 @@ export async function createOrUpdateUser(
 
   const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email
 
-  // The user-level email column is deprecated: it is kept in sync on
-  // verified writes and left untouched otherwise.
+  // The user table's email column is never written: the email lives in the
+  // verified record, the only place it is read from.
   const userData = {
     name: user.name,
     ageRange: user.ageRange,
-    ...(user.type === 'verified' && { email: user.email }),
   }
 
   // A verified write persists the verified record together with the user.
