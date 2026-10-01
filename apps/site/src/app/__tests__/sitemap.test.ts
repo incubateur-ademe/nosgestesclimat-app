@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 // Matches NEXT_PUBLIC_SITE_URL set in vitest.config.ts
 const BASE_URL = 'http://localhost:3000'
 
+vi.mock('next/cache', () => ({ cacheLife: vi.fn() }))
+
 vi.mock('@/helpers/markdown/getPosts', () => ({
   getPosts: vi.fn((locale: Locale) =>
     Promise.resolve([

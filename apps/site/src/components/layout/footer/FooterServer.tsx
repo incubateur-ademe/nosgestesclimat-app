@@ -3,14 +3,14 @@ import Marianne from '@/components/images/partners/Marianne'
 import ThematicPagesSection from '@/components/layout/ThematicPagesSection'
 import Trans from '@/components/translation/trans/TransServer'
 
-import LogoLinkServer from '@/components/misc/LogoLinkServer'
+import LogoLink from '@/components/misc/LogoLink'
 import { ACTIONS_PATH } from '@/constants/urls/paths'
 import InlineLink from '@/design-system/inputs/InlineLink'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'cn'
 import { cacheLife } from 'next/cache'
 import Link from 'next/link'
+import { twMerge } from 'cn'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
@@ -45,7 +45,7 @@ export default async function FooterServer({
       )}>
       <div className="md:mx-auto md:max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
-          <LogoLinkServer />
+          <LogoLink />
         </div>
         {locale === 'fr' ? (
           <div className="my-4 block md:hidden">
