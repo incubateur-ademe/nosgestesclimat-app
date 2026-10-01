@@ -104,15 +104,20 @@ export default function Navigation({
       remainingQuestions.length === 0
     : noNextQuestion
 
-  const forgottenQuestionsList = forgottenQuestions.join(', ')
+  const hasForgottenQuestionsOnLastQuestion =
+    isLastQuestion && forgottenQuestions.length > 0
 
   useEffect(() => {
-    if (isLastQuestion && forgottenQuestionsList.length > 0) {
+    if (hasForgottenQuestionsOnLastQuestion) {
       captureErrorForSentryAndPosthog(
-        new Error(`Forgotten questions detected: ${forgottenQuestionsList}`)
+        new Error(
+          `Forgotten questions detected: ${forgottenQuestions.join(', ')}`
+        )
       )
     }
-  }, [isLastQuestion, forgottenQuestionsList])
+    // Error is only captured once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasForgottenQuestionsOnLastQuestion])
 
   const {
     isMissing,
