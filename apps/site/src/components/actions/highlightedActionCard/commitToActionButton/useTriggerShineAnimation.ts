@@ -1,4 +1,4 @@
-import type { ActionChoiceType } from '@nosgestesclimat/core/prisma/generated/enums'
+import type { ActionChoiceType } from '@nosgestesclimat/core/features/actions/types/action'
 import { useEffect, useState } from 'react'
 
 const ANIMATION_DURATION = 1300
