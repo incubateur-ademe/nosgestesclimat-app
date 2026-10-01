@@ -1483,4 +1483,9 @@ entries:
   actions.components.actionCard.highlighted.addedButton.ariaLabel: Ajouté, cliquer à nouveau pour retirer l'action de votre plan
   actions.components.actionCard.highlighted.addedButton.label: Ajouté
   actions.components.actionCard.highlighted.addedButton.tooltip: Retirer de votre plan
-  actions.plan.links.exploreActions: Mon plan d'action
+  actions.plan.links.exploreActions: Explorer les actions
+  actions.plan.links.myActionPlan: Mon plan d'action
+  actions.seeActionPlanLink.mobile.label.firstLine: Voir mon plan d'action
+  actions.seeActionPlanLink.mobile.label.secondLine_one: '{{count}} actions'
+  actions.seeActionPlanLink.mobile.label.secondLine_many: '{{count}} actions'
+  actions.seeActionPlanLink.mobile.label.secondLine_other: '{{count}} actions'
