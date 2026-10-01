@@ -75,8 +75,8 @@ importers:
   apps/e2e:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e(publicodes@1.10.1)
+        specifier: 4.17.1
+        version: 4.17.1(publicodes@1.10.1)
       '@mswjs/http-middleware':
         specifier: ^0.10.3
         version: 0.10.3(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))
@@ -112,8 +112,8 @@ importers:
         specifier: ^3.1023.0
         version: 3.1028.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e(publicodes@1.10.1)
+        specifier: 4.17.1
+        version: 4.17.1(publicodes@1.10.1)
       '@nosgestesclimat/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -281,8 +281,8 @@ importers:
   apps/site:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e(publicodes@1.10.1)
+        specifier: 4.17.1
+        version: 4.17.1(publicodes@1.10.1)
       '@next/mdx':
         specifier: ^16.2.2
         version: 16.2.2(@mdx-js/loader@3.1.1(webpack@5.105.4(esbuild@0.27.7)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.4))
@@ -558,8 +558,8 @@ importers:
   packages/core:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e
-        version: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e(publicodes@1.10.1)
+        specifier: 4.17.1
+        version: 4.17.1(publicodes@1.10.1)
       '@incubateur-ademe/nosgestesclimat-previous':
         specifier: npm:@incubateur-ademe/nosgestesclimat@4.17.0
         version: '@incubateur-ademe/nosgestesclimat@4.17.0(publicodes@1.10.1)'
@@ -2131,9 +2131,8 @@ packages:
     peerDependencies:
       publicodes: ^1.8.5
 
-  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e':
-    resolution: {tarball: https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e}
-    version: 4.17.1
+  '@incubateur-ademe/nosgestesclimat@4.17.1':
+    resolution: {integrity: sha512-LRybpC+GA4pwXlCfC/2yLIu4pkf8vzgZtJgpLlI4E4sxEowT/3Bpx4dl/O1bs0SfSiLutimzLc3FdGEiowNimw==}
     engines: {node: '>=24'}
     peerDependencies:
       publicodes: ^1.8.5
@@ -13105,7 +13104,7 @@ snapshots:
     dependencies:
       publicodes: 1.10.1
 
-  '@incubateur-ademe/nosgestesclimat@https://pkg.pr.new/@incubateur-ademe/nosgestesclimat@a5c061e(publicodes@1.10.1)':
+  '@incubateur-ademe/nosgestesclimat@4.17.1(publicodes@1.10.1)':
     dependencies:
       publicodes: 1.10.1
 
