@@ -70,7 +70,7 @@ export default function ActionsPage({
         <div
           {...props}
           className={twMerge(
-            'mt-8 w-[calc(100%-(320px+40px))] pb-24',
+            'mt-8 w-full pb-24 lg:w-[calc(100%-(320px+40px))]',
             className
           )}>
           {topActions && topActions.length > 0 && (

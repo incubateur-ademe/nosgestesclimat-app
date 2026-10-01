@@ -16,7 +16,7 @@ export default function ActionPlanLinks({ actions, locale }: Props) {
   const actionsWithChoice = getActionsWithChoice(actions ?? [])
 
   return (
-    <div className="mb-8 flex gap-4">
+    <div className="mb-8 flex gap-4 overflow-auto">
       <ButtonLinkServer
         color="secondary"
         className="bg-primary-100 border-primary-300"
@@ -29,16 +29,16 @@ export default function ActionPlanLinks({ actions, locale }: Props) {
 
       <ButtonLinkServer
         color="secondary"
-        className="text-default border-slate-300"
+        className="text-default relative border-slate-300 pr-13!"
         href="/actions/mon-plan">
-        <Star className="stroke-default mr-2.5 w-4" />
-        <Trans i18nKey="actions.plan.links.exploreActions" locale={locale}>
+        <Star className="stroke-default mr-2.5 h-4" />
+        <Trans i18nKey="actions.plan.links.myActionPlan" locale={locale}>
           Mon plan d'action
         </Trans>
 
         <CountBadge
           value={actionsWithChoice.length}
-          className="ml-2.5 size-5 text-sm"
+          className="absolute top-1/2 right-5 ml-2.5 size-5 -translate-y-1/2 text-sm"
         />
       </ButtonLinkServer>
     </div>

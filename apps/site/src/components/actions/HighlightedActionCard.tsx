@@ -72,7 +72,7 @@ export default function HighlightedActionCard({
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row">
+        <div className="flex flex-col items-start gap-4 md:flex-row">
           <ButtonLinkServer
             href={href}
             prefetch={true}
