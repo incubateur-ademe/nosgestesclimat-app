@@ -104,13 +104,16 @@ export default function Navigation({
       remainingQuestions.length === 0
     : noNextQuestion
 
-  if (isLastQuestion && forgottenQuestions.length > 0) {
-    captureErrorForSentryAndPosthog(
-      new Error(
-        `Forgotten questions detected: ${forgottenQuestions.join(', ')}`
+  const forgottenQuestionsList = forgottenQuestions.join(', ')
+
+  useEffect(() => {
+    if (isLastQuestion && forgottenQuestionsList.length > 0) {
+      captureErrorForSentryAndPosthog(
+        new Error(`Forgotten questions detected: ${forgottenQuestionsList}`)
       )
-    )
-  }
+    }
+  }, [isLastQuestion, forgottenQuestionsList])
+
   const {
     isMissing,
     isFolded,
