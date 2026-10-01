@@ -4,6 +4,8 @@ import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/se
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import Trans from '../../translation/trans/TransServer'
+import ActionPlanLinks from '../ActionPlanLinks'
+import ActionsBasket from '../ActionsBasket'
 import BetaBanner from '../BetaBanner'
 import HighestImpactActionsSection from '../HighestImpactActionsSection'
 import ThemeSection from '../ThemeSection'
@@ -51,64 +53,85 @@ export default function ActionsPage({
     <>
       <BetaBanner locale={locale} />
 
-      <div {...props} className={twMerge('pb-24', className)}>
-        <div className="mb-8">
-          <h1 className="mb-0 text-2xl/normal font-medium md:text-4xl/normal">
-            {title}
-          </h1>
-          <p className="text-base/normal md:text-lg/normal">{description}</p>
-        </div>
+      {assessmentStatus && (
+        <ActionPlanLinks actions={actions} locale={locale} />
+      )}
 
-        {topActions && topActions.length > 0 && (
-          <HighestImpactActionsSection
-            actions={topActions}
-            className="mb-8 md:mb-12"
+      <div>
+        <h1 className="mb-0 text-2xl/normal font-medium md:text-4xl/normal">
+          {title}
+        </h1>
+        <p className="w-190 max-w-full text-base/normal md:text-lg/normal">
+          {description}
+        </p>
+      </div>
+
+      <div className="relative flex items-start gap-10">
+        <div
+          {...props}
+          className={twMerge(
+            'mt-8 w-full pb-24 lg:w-[calc(100%-(320px+40px))]',
+            className
+          )}>
+          {topActions && topActions.length > 0 && (
+            <HighestImpactActionsSection
+              actions={topActions}
+              className="mb-8 md:mb-12"
+              locale={locale}
+              from={from}
+              actionCatalogueContext={{
+                totalFootprint,
+                assessmentStatus,
+              }}
+            />
+          )}
+
+          <h2 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
+            {otherActionsTitle ?? (
+              <Trans
+                locale={locale}
+                i18nKey="actions.components.themeSections.testWhiteBackground.title">
+                Voici d’autres actions qui vous aideront à réduire votre
+                empreinte
+              </Trans>
+            )}
+          </h2>
+          <p className="mb-4 text-lg/normal md:mb-8">
+            {otherActionsDescription ?? (
+              <Trans
+                locale={locale}
+                i18nKey="actions.components.themeSections.testWhiteBackground.description">
+                À impact variable : des gestes à fort impact aux petit pas.
+              </Trans>
+            )}
+          </p>
+
+          <div className="relative flex max-w-full flex-col gap-5 md:gap-10">
+            {themes
+              .filter((theme) => {
+                const actions = actionsByTheme[theme.key]
+                return actions && actions.length > 0
+              })
+              .map((theme) => {
+                return (
+                  <ThemeSection
+                    key={theme.id}
+                    theme={theme}
+                    locale={locale}
+                    actions={actionsByTheme[theme.key] ?? []}
+                    from={from}
+                  />
+                )
+              })}
+          </div>
+        </div>
+        {assessmentStatus && (
+          <ActionsBasket
+            actions={actions}
             locale={locale}
-            from={from}
-            actionCatalogueContext={{
-              totalFootprint,
-              assessmentStatus,
-            }}
+            assessmentStatus={assessmentStatus}
           />
         )}
-
-        <h2 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
-          {otherActionsTitle ?? (
-            <Trans
-              locale={locale}
-              i18nKey="actions.components.themeSections.testWhiteBackground.title">
-              Voici d’autres actions qui vous aideront à réduire votre empreinte
-            </Trans>
-          )}
-        </h2>
-        <p className="mb-4 text-lg/normal md:mb-8">
-          {otherActionsDescription ?? (
-            <Trans
-              locale={locale}
-              i18nKey="actions.components.themeSections.testWhiteBackground.description">
-              À impact variable : des gestes à fort impact aux petit pas.
-            </Trans>
-          )}
-        </p>
-
-        <div className="relative flex flex-col gap-5 md:gap-10">
-          {themes
-            .filter((theme) => {
-              const actions = actionsByTheme[theme.key]
-              return actions && actions.length > 0
-            })
-            .map((theme) => {
-              return (
-                <ThemeSection
-                  key={theme.id}
-                  theme={theme}
-                  locale={locale}
-                  actions={actionsByTheme[theme.key] ?? []}
-                  from={from}
-                />
-              )
-            })}
-        </div>
       </div>
     </>
   )

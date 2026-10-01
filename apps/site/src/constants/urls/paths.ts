@@ -32,3 +32,4 @@ export const ACTIONS_PATH = '/actions'
 export const ACTION_DETAIL_PATH = (themeSlug: string, actionSlug: string) =>
   `/actions/${themeSlug}/${actionSlug}`
 export const ACTIONS_SUGGESTED_PATH = '/actions/mes-suggestions'
+export const ACTIONS_MY_PLAN_PATH = '/actions/mon-plan'
