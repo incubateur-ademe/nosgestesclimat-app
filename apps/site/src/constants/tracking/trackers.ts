@@ -16,6 +16,8 @@ interface PosthogProps {
   category?: string
   status?: 'authenticated' | 'unauthenticated'
   cookieState?: CookieState
+  age?: string
+  location?: string
 }
 
 // Form
@@ -95,6 +97,8 @@ export const captureSimulationCompleted = ({
   bilanCarbone,
   bilanEau,
   timeSpentOnSimulation,
+  age,
+  location,
 }: PosthogProps) => {
   return {
     eventName: 'simulation completed',
@@ -102,6 +106,8 @@ export const captureSimulationCompleted = ({
       bilanCarbone,
       bilanEau,
       timeSpentOnSimulation,
+      age,
+      location,
     },
   }
 }
