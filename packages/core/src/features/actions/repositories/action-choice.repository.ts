@@ -1,5 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
-import type { ActionChoiceType } from '../../../prisma/generated/enums.ts'
+import type { ActionChoiceType } from '../types/action.ts'
 import { mapActionChoiceToPrisma } from './action-choice.mapper.ts'
 
 interface UpsertActionChoiceProps {

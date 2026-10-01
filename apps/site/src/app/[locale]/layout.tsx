@@ -6,7 +6,7 @@ import { dir } from 'i18next'
 import Script from 'next/script'
 import { Suspense } from 'react'
 
-import Toaster from '@/design-system/layout/Toaster'
+import { Toaster } from '@/design-system/shadcn/sonner'
 import i18nConfig from '@/i18nConfig'
 import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
 import '../../styles/globals.css'

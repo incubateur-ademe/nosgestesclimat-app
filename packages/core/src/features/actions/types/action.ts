@@ -1,4 +1,3 @@
-import type { ActionChoiceType } from '../../../prisma/generated/enums.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { ActionMedia } from './action-media.ts'
 import type { SeoMetadata } from './seo-metadata.ts'
@@ -89,6 +88,8 @@ export type ActionChoice = {
   // @TODO: update when product has decided possible choices
   type: ActionChoiceType
 }
+
+export type ActionChoiceType = 'committed' | 'rejected'
 
 export type NewActionAssessment = {
   simulationId: string
