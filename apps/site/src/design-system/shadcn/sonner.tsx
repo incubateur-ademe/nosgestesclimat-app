@@ -1,5 +1,6 @@
+import { marianne } from '@/app/[locale]/marianne'
+import CheckCircleIcon from '@/components/icons/status/CheckCircleIcon'
 import {
-  CircleCheckIcon,
   InfoIcon,
   Loader2Icon,
   OctagonXIcon,
@@ -12,18 +13,24 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       className="toaster group"
       icons={{
-        success: <CircleCheckIcon className="size-4" />,
-        info: <InfoIcon className="size-4" />,
-        warning: <TriangleAlertIcon className="size-4" />,
-        error: <OctagonXIcon className="size-4" />,
-        loading: <Loader2Icon className="size-4 animate-spin" />,
+        success: (
+          <CheckCircleIcon className="mr-6 block size-6 min-w-6 fill-green-600" />
+        ),
+        info: <InfoIcon className="mr-4 size-5 stroke-blue-500" />,
+        warning: (
+          <TriangleAlertIcon className="mr-4 size-5 stroke-orange-500" />
+        ),
+        error: <OctagonXIcon className="mr-4 size-5 stroke-red-500" />,
+        loading: <Loader2Icon className="mr-4 size-5 animate-spin" />,
       }}
+      closeButton
       style={
         {
           '--normal-bg': 'var(--popover)',
           '--normal-text': 'var(--popover-foreground)',
           '--normal-border': 'var(--border)',
           '--border-radius': 'var(--radius)',
+          ...marianne.style,
         } as React.CSSProperties
       }
       toastOptions={{
