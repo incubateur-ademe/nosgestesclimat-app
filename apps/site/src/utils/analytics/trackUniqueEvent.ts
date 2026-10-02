@@ -28,7 +28,7 @@ export const captureUniqueSessionActionEvent = ({
   actionTrackingId: string
   actionThemeTrackingId: string
   co2PotentialInKg?: number
-  eventName: 'action displayed' | 'action consulted'
+  eventName: 'action displayed' | 'action consulted' | 'action committed'
 }) => {
   // We deduplicate all action events, only one is processed per session
   const sessionId =

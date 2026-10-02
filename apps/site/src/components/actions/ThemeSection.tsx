@@ -12,7 +12,21 @@ import HousingIcon from '../icons/HousingIcon'
 import MiscIcon from '../icons/MiscIcon'
 import PublicServicesIcon from '../icons/PublicServicesIcon'
 import Trans from '../translation/trans/TransServer'
-import ActionCardSwitchServer from './ActionCard/ActionCardSwitchServer'
+import ActionCardSwitchServer from './actionCard/ActionCardSwitchServer'
+
+interface Props {
+  theme: Pick<Theme, 'key' | 'title'>
+  actions: MaybePersonalizedAction[]
+  locale: Locale
+  assessmentStatus?: AssessmentStatus | null
+  from?: 'fin' | 'mon-espace' | 'index'
+  trackingSource?: ActionEventSource
+  /** Defaults to the theme title */
+  title?: React.ReactNode
+  /** Defaults to the number of actions in the section */
+  description?: React.ReactNode
+  className?: string
+}
 
 const classesByTheme: Record<
   Theme['key'],
@@ -49,25 +63,12 @@ export default function ThemeSection({
   theme,
   actions,
   locale,
-  assessmentStatus,
-  from,
   trackingSource,
   title,
   description,
   className,
-}: {
-  theme: Pick<Theme, 'key' | 'title'>
-  actions: MaybePersonalizedAction[]
-  locale: Locale
-  assessmentStatus?: AssessmentStatus | null
-  from?: 'fin' | 'mon-espace' | 'index'
-  trackingSource?: ActionEventSource
-  /** Defaults to the theme title */
-  title?: React.ReactNode
-  /** Defaults to the number of actions in the section */
-  description?: React.ReactNode
-  className?: string
-}) {
+  from,
+}: Props) {
   const carouselLabelId = useId()
   const classes = classesByTheme[theme.key]
   const count = actions.length
@@ -107,12 +108,11 @@ export default function ThemeSection({
           <ActionCardSwitchServer
             key={action.id}
             action={action}
-            locale={locale}
             withThemeBadge={false}
-            assessmentStatus={assessmentStatus}
             className="h-full"
-            from={from}
             source={trackingSource}
+            locale={locale}
+            from={from}
           />
         ))}
       </Carousel>

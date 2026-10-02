@@ -82,13 +82,18 @@ export const mapUpdatedActionToPrisma = (
   translations: mapActionTranslationsToPrismaUpdate(id, data.translations),
 })
 
-export const mapPersonalizedAction = (
-  action: Action,
+export const mapPersonalizedAction = ({
+  action,
+  assessment,
+  actionChoice,
+}: {
+  action: Action
   assessment: Prisma.ActionAssessmentModel | null
-): PersonalizedAction => ({
+  actionChoice: Prisma.ActionChoiceModel | null
+}): PersonalizedAction => ({
   ...action,
   assessment: assessment ? mapAssessment(assessment) : null,
-  choice: null, // TODO: map choice when the feature will be implemented
+  choice: actionChoice ? mapActionChoice(actionChoice) : null,
 })
 
 const mapAssessment = (
@@ -113,3 +118,8 @@ const mapAssessment = (
     impact: undefined,
   }
 }
+
+const mapActionChoice = (dbActionChoice: Prisma.ActionChoiceModel) => ({
+  type: dbActionChoice.type,
+  chosenAt: dbActionChoice.chosenAt,
+})

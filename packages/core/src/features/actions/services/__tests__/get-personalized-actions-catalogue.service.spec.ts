@@ -4,6 +4,7 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
+import { actionChoiceFactory } from '../../factories/action-choice.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { getPersonalizedActionsCatalogue } from '../get-personalized-actions-catalogue.service.ts'
 
@@ -330,6 +331,50 @@ describe('getPersonalizedActionsCatalogue', () => {
         assessmentStatus: 'completed',
         actions: [],
         topActions: [],
+      })
+    })
+
+    it('returns actions with choice when a user has committed to actions', async () => {
+      const action = await actionFactory.published().create()
+      const user = await userFactory.create()
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: user.id })
+        .withCompletedComputation()
+        .create()
+      const assessment = await actionAssessmentFactory
+        .params({ simulationId: simulation.id, actionId: action.id })
+        .applicable({ impact: 1000 })
+        .create()
+      const choice = await actionChoiceFactory
+        .params({
+          actionId: action.id,
+          userId: user.id,
+        })
+        .create()
+
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
+
+      expect(result).toEqual({
+        assessmentStatus: 'completed',
+        actions: expect.arrayContaining([
+          expect.objectContaining({
+            id: action.id,
+            choice: {
+              type: choice.type,
+              chosenAt: choice.chosenAt,
+            },
+          }),
+        ]),
+        topActions: expect.arrayContaining([
+          expect.objectContaining({
+            id: action.id,
+            choice: {
+              type: choice.type,
+              chosenAt: choice.chosenAt,
+            },
+          }),
+        ]),
       })
     })
   })

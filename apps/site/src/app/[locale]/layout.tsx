@@ -6,6 +6,7 @@ import { dir } from 'i18next'
 import Script from 'next/script'
 import { Suspense } from 'react'
 
+import { Toaster } from '@/design-system/shadcn/sonner'
 import i18nConfig from '@/i18nConfig'
 import DefaultProvider from '@/publicodes-state/providers/DefaultProvider'
 import '../../styles/globals.css'
@@ -55,6 +56,8 @@ export default async function RootLayout({
           id={BODY_ID}
           className={`${marianne.className} text-default bg-white transition-colors duration-700`}>
           {children}
+
+          <Toaster />
         </body>
       </DefaultProvider>
     </html>
