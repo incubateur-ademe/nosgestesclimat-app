@@ -7,7 +7,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import CopyButton from '@/design-system/buttons/CopyButton'
 import Card from '@/design-system/layout/Card'
-import { publicEnv } from '@/env.public'
+import { publicEnv } from '@/env/public'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { PollIdentifier } from '@/types/organisations'
 import {

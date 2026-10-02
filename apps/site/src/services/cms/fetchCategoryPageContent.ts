@@ -5,6 +5,8 @@ import type {
 } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 const PAGE_SIZE = 12
 
@@ -92,7 +94,11 @@ export async function fetchCategoryPageContent({
       faq: blogCategory.faq,
       faqDescription: blogCategory.faqDescription,
     }
-  } catch {
+  } catch (error) {
+    logger.warn(toError(error), {
+      scope: 'site.action.fetchCategoryPageContent',
+    })
+
     return undefined
   }
 }

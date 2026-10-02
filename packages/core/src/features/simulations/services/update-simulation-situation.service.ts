@@ -46,7 +46,6 @@ export const updateSimulationSituation = async ({
    * to persist it keeps the bad value from overwriting the answers already
    * stored.
    */
-  // TODO: move carbon footprint check to schema
   if (computedResults.carbone.bilan === 0) {
     return failure(new ZeroFootprintError())
   }

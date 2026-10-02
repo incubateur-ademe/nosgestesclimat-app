@@ -51,7 +51,7 @@ Sur chaque instance, `/etc/nginx/deploy.env` contient :
 
     DOMAIN=preprod.nosgestesclimat.fr
     UPSTREAM=nosgestesclimat-site-preprod.osc-fr1.scalingo.io
-    ENVIRONMENT=preprod          # preprod ou prod
+    ENVIRONMENT=preprod          # preprod ou production
     REPO=incubateur-ademe/nosgestesclimat-app
     TEMPLATE_REF=main            # main ou chore/nginx-proxy-for-cache ou autre
 
@@ -106,7 +106,8 @@ par cloud-init. Aucun SDK PostHog : PostHog Logs est nativement OTLP.
     avec les attributs) pour alléger le volume ;
   - pose `event_name=nginx.access|nginx.error` : attribut semconv promu en
     champ natif `EventName` (que stanza ne sait pas écrire) puis retiré ;
-  - ajoute `service.name=nginx` et `deployment.environment=preprod|prod` ;
+  - ajoute `service.name=nginx` et
+    `deployment.environment.name=preprod|production` ;
   - exporte vers `https://eu.i.posthog.com/i/v1/logs` (OTLP HTTP) avec
     `Authorization: Bearer <POSTHOG_PROJECT_TOKEN>`.
 - Corrélation : `$request_id` (généré par nginx) est propagé à l'app via
@@ -153,8 +154,8 @@ Rétention sur disque : `/var/log/nginx/*.log` tournent sur 2 jours (logrotate
 ### Consulter les logs
 
 PostHog → Logs, filtrer sur `service.name = nginx` puis
-`deployment.environment = prod` (ou `preprod`). Exemples de recherche :
-`429`, `upstream_cache_status = MISS`, `status = 500`.
+`deployment.environment.name = production` (ou `preprod`). Exemples de
+recherche : `429`, `upstream_cache_status = MISS`, `status = 500`.
 
 ### Modifier la config du collecteur
 

@@ -35,6 +35,8 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('next/navigation', () => ({
+  // No-op, like `redirect`: the test decides who throws.
+  unstable_rethrow: vi.fn(),
   unauthorized: () => {
     throw new Error('UNAUTHORIZED')
   },

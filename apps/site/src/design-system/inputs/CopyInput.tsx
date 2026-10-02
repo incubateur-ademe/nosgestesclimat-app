@@ -1,7 +1,8 @@
 'use client'
 
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import logger from '@/logger/logger.browser'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import isMobile from 'is-mobile'
 import { useEffect, useRef, useState } from 'react'
 import Button from '../buttons/Button'
@@ -69,7 +70,7 @@ export default function CopyInput({
         if (err instanceof DOMException && err.name === 'AbortError') {
           return
         }
-        captureErrorForSentryAndPosthog(err)
+        logger.error(toError(err), { scope: 'site.interaction.copyInput' })
         setIsError(true)
       } finally {
         setIsLoading(false)
@@ -88,7 +89,7 @@ export default function CopyInput({
           buttonRef.current?.focus()
         }, 100)
       } catch (err) {
-        captureErrorForSentryAndPosthog(err)
+        logger.error(toError(err), { scope: 'site.interaction.copyInput' })
         setIsError(true)
       } finally {
         setIsLoading(false)

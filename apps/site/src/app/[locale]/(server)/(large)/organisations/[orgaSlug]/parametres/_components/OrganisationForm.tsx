@@ -3,8 +3,9 @@ import Trans from '@/components/translation/trans/TransClient'
 import Form from '@/design-system/form/Form'
 import Separator from '@/design-system/layout/Separator'
 import { useUpdateOrganisation } from '@/hooks/organisations/useUpdateOrganisation'
+import logger from '@/logger/logger.browser'
 import type { OrgaSettingsInputsType } from '@/types/organisations'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import {
   type SubmitHandler,
   useForm as useReactHookForm,
@@ -38,7 +39,7 @@ export default function OrganisationForm({
         formData,
       })
     } catch (error) {
-      captureErrorForSentryAndPosthog(error)
+      logger.error(toError(error), { scope: 'site.interaction.updateOrganisation' })
     }
   }
 

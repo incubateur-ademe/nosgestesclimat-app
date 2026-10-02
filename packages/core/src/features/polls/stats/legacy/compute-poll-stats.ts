@@ -11,6 +11,7 @@ import type {
 import modelRules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import modelFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json' with { type: 'json' }
 import * as v from 'valibot'
+import { toError } from '../../../../lib/to-error.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import type { Logger } from '../../../logger/index.ts'
 import {
@@ -99,6 +100,7 @@ async function* batchPollSimulations(pollId: string) {
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
       select: {
         id: true,
+        simulationId: true,
         simulation: {
           select: {
             progression: true,
@@ -114,72 +116,94 @@ async function* batchPollSimulations(pollId: string) {
     }
 
     for (const row of rows) {
-      yield row.simulation
+      yield row
     }
 
     cursor = { id: rows[rows.length - 1].id }
   }
 }
 
-export function createComputePollStats({ logger }: { logger: Logger }) {
+export function createComputePollStats({
+  logger: _logger,
+}: {
+  logger: Logger
+}) {
   return async function computePollStats(pollId: string): Promise<{
     computedResults: ComputedResults
     funFacts: FunFacts
     participantsCount: number
   }> {
-    let simulationCount = 0
-    let participantsCount = 0
-    let computedResults = getEmptyComputedResults()
-    const funFactValues: { [key in DottedName]?: number } = {}
+    return await _logger
+      .child({ pollId })
+      .withSpan('core.service.computePollStats', async (logger) => {
+        let simulationCount = 0
+        let participantsCount = 0
+        let computedResults = getEmptyComputedResults()
+        const funFactValues: { [key in DottedName]?: number } = {}
 
-    for await (const simulation of batchPollSimulations(pollId)) {
-      // Counted even when the results cannot be aggregated: the simulation
-      // took part.
-      participantsCount++
+        for await (const { simulation, simulationId } of batchPollSimulations(
+          pollId
+        )) {
+          // Counted even when the results cannot be aggregated: the simulation
+          // took part.
+          participantsCount++
 
-      if (!isValidSimulation(simulation)) {
-        continue
-      }
-
-      simulationCount++
-      computedResults = sumNested(
-        computedResults,
-        simulation.computedResults
-      ) as ComputedResults
-
-      for (const dottedName of Object.values(funFactsRules)) {
-        if (dottedName in frRules) {
-          let value = 0
-          try {
-            value = getSituationDottedNameValue({
-              dottedName,
-              situation: simulation.situation,
-              rules: frRules,
+          if (!isValidSimulation(simulation)) {
+            // Skipped silently, the poll totals lose it: naming it is the only
+            // way to tell a data problem from a quiet poll.
+            logger.warn('Skipping a simulation the poll stats cannot read', {
+              simulationId,
             })
-          } catch (error) {
-            logger.error('Cannot evaluate dottedName', { dottedName, error })
+            continue
           }
-          funFactValues[dottedName] = (funFactValues[dottedName] || 0) + value
+
+          simulationCount++
+          computedResults = sumNested(
+            computedResults,
+            simulation.computedResults
+          ) as ComputedResults
+
+          for (const dottedName of Object.values(funFactsRules)) {
+            if (dottedName in frRules) {
+              let value = 0
+              try {
+                value = getSituationDottedNameValue({
+                  dottedName,
+                  situation: simulation.situation,
+                  rules: frRules,
+                })
+              } catch (error) {
+                logger.error(toError(error), { dottedName: dottedName })
+              }
+              funFactValues[dottedName] =
+                (funFactValues[dottedName] || 0) + value
+            }
+          }
         }
-      }
-    }
 
-    const funFacts = Object.fromEntries(
-      Object.entries(funFactsRules).map(([key, dottedName]) => {
-        let value = funFactValues[dottedName] || 0
+        // The duration scales with the rows the batch iterated, not with the
+        // ones it could aggregate: both are recorded, and they differ on the
+        // invalid simulations.
+        logger.setSpanAttribute('participantsCount', participantsCount)
+        logger.setSpanAttribute('simulationCount', simulationCount)
 
-        if (key.startsWith('average')) {
-          value = value / simulationCount
-        }
+        const funFacts = Object.fromEntries(
+          Object.entries(funFactsRules).map(([key, dottedName]) => {
+            let value = funFactValues[dottedName] || 0
 
-        if (key.startsWith('percentage')) {
-          value = (value / simulationCount) * 100
-        }
+            if (key.startsWith('average')) {
+              value = value / simulationCount
+            }
 
-        return [key, value]
+            if (key.startsWith('percentage')) {
+              value = (value / simulationCount) * 100
+            }
+
+            return [key, value]
+          })
+        ) as FunFacts
+
+        return { computedResults, funFacts, participantsCount }
       })
-    ) as FunFacts
-
-    return { computedResults, funFacts, participantsCount }
   }
 }

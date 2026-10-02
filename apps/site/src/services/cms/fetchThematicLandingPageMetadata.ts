@@ -1,5 +1,7 @@
 import { cmsClient, type ThematicLandingPage } from '@/adapters/cmsClient'
 import i18nConfig from '@/i18nConfig'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchThematicLandingPageMetadata({
   landingPageSlug,
@@ -38,7 +40,11 @@ export async function fetchThematicLandingPageMetadata({
     return {
       thematicLandingPageMetadata: thematicLPMetadata,
     }
-  } catch {
+  } catch (error) {
+    logger.warn(toError(error), {
+      scope: 'site.action.fetchThematicLandingPageMetadata',
+    })
+
     return {}
   }
 }

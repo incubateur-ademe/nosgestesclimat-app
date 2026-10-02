@@ -2,11 +2,12 @@ import { randomUUID } from 'node:crypto'
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
+import { runSideEffect } from '../../../lib/run-side-effect.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
-import type { CaptureException, Logger } from '../../logger/index.ts'
+import type { Logger } from '../../logger/index.ts'
 import { createSendPollJoinedEmail } from '../../simulations/emails/simulation-emails.ts'
 import { SimulationNotFoundError } from '../../simulations/errors/simulations.error.ts'
 import { newSimulation } from '../../simulations/helpers/new-simulation.ts'
@@ -27,7 +28,6 @@ import { enqueuePollStatsComputation } from '../stats/services/enqueue-poll-stat
 
 interface ParticipateToPollDependencies {
   logger: Logger
-  captureException: CaptureException
   sendEmail: SendEmail
   /** Public origin the emails link back to */
   origin: string
@@ -45,8 +45,7 @@ type ParticipateToPollParams = {
 )
 
 export function createParticipateToPoll({
-  logger,
-  captureException,
+  logger: _logger,
   sendEmail,
   origin,
   backgroundTaskRunner,
@@ -61,10 +60,16 @@ export function createParticipateToPoll({
    * and only gains a membership, so the poll and the user's own results always
    * show the same figures.
    */
-  return async function participateToPoll(
-    params: ParticipateToPollParams
-  ): Promise<Result<{ simulationId: string }, ParticipateToPollError>> {
-    const { userSession, pollId, locale, reuseSimulationId } = params
+  return async function participateToPoll({
+    userSession,
+    pollId,
+    locale,
+    reuseSimulationId,
+    model,
+  }: ParticipateToPollParams): Promise<
+    Result<{ simulationId: string }, ParticipateToPollError>
+  > {
+    const logger = _logger.child({ pollId })
     const userId = userSession.id
 
     const [poll, participations, reusedSimulation] = await Promise.all([
@@ -94,12 +99,12 @@ export function createParticipateToPoll({
 
     const isNewParticipation = participations.length === 0
 
-    const simulationId = params.reuseSimulationId ?? randomUUID()
+    const simulationId = reuseSimulationId ?? randomUUID()
 
     const result = await transaction(async (tx) => {
-      if (params.reuseSimulationId === undefined) {
+      if (reuseSimulationId === undefined) {
         await createSimulation(
-          newSimulation({ id: simulationId, userId, model: params.model }),
+          newSimulation({ id: simulationId, userId, model }),
           tx
         )
       }
@@ -126,25 +131,22 @@ export function createParticipateToPoll({
       reusedSimulation &&
       isSimulationCompleted(reusedSimulation)
     ) {
-      backgroundTaskRunner(async () => {
-        const sent = await sendPollJoinedEmail({
-          email: userSession.email,
-          organisation: poll.organisation,
-          poll,
-          simulationId,
-          locale,
-          origin,
-        })
-
-        if (!sent.success) {
-          captureException(sent.error)
-          logger.error('Failed to send poll joined email', {
-            error: sent.error,
-            pollId,
+      runSideEffect(
+        'pollJoinedEmail',
+        {
+          logger: logger.child({ simulationId }),
+          backgroundTaskRunner,
+        },
+        () =>
+          sendPollJoinedEmail({
+            email: userSession.email,
+            organisation: poll.organisation,
+            poll,
             simulationId,
+            locale,
+            origin,
           })
-        }
-      })
+      )
     }
 
     return success({ simulationId })

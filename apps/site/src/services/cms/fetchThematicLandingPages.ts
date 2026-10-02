@@ -2,6 +2,8 @@
 
 import { cmsClient } from '@/adapters/cmsClient'
 import i18nConfig from '@/i18nConfig'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 interface ThematicLandingPageSummary {
   id: string
@@ -31,15 +33,20 @@ export async function fetchThematicLandingPages(): Promise<
     }>(`/api/landing-thematiques?${thematicLPSearchParams}`)
 
     if (!thematicLPResponse?.data) {
-      // eslint-disable-next-line no-console
-      console.error('Error: fetchThematicLandingPages - no data returned')
+      logger.warn('Thematic landing pages response carries no data', {
+        scope: 'site.action.fetchThematicLandingPages',
+      })
       return
     }
 
     return {
       thematicLandingPages: thematicLPResponse.data,
     }
-  } catch {
+  } catch (error) {
+    logger.warn(toError(error), {
+      scope: 'site.action.fetchThematicLandingPages',
+    })
+
     return {
       thematicLandingPages: [],
     }

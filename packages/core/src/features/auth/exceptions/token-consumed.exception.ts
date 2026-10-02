@@ -1,5 +1,7 @@
-import { Exception } from '../../../exception.ts'
+import { DomainError } from '../../../lib/errors.ts'
 
-export class TokenConsumedException extends Exception {
-  level = 'error' as const
+export class TokenConsumedException extends DomainError<'token_consumed'> {
+  constructor(message = 'Token already consumed') {
+    super('token_consumed', message)
+  }
 }

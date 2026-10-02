@@ -1,6 +1,6 @@
 import { PARTNER_JAGIS, PARTNER_KEY } from '@/constants/partners'
+import { aSimulation } from '@/helpers/tests/aSimulation'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
-import { buildNewSimulationPayload } from '@/services/simulations/build-new-simulation-payload'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { faker } from '@faker-js/faker'
 import type { UserSimulationJourney } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
@@ -40,10 +40,9 @@ describe('PartnerPage', () => {
   })
   const defaultParams = Promise.resolve({ locale: 'fr' as const })
 
-  const defaultSimulation = buildNewSimulationPayload({
+  const defaultSimulation = aSimulation({
     id: faker.string.uuid(),
     progression: 1,
-    model: 'FR-fr-1.2.3',
   })
 
   const completedProgress = {

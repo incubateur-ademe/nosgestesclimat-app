@@ -1,7 +1,8 @@
 import type { BannerType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
-import { captureException } from '@sentry/nextjs'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import dayjs from 'dayjs'
 import { cacheLife } from 'next/cache'
 
@@ -30,7 +31,7 @@ export async function fetchBanner(locale: Locale): Promise<BannerType | null> {
 
     return bannersResponse.data[0]
   } catch (error) {
-    captureException(error)
+    logger.warn(toError(error), { scope: 'site.action.fetchBanner' })
 
     return null
   }

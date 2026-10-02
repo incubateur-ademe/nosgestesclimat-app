@@ -4,6 +4,8 @@ import type { Locale } from '@/i18nConfig'
 import i18nConfig from '@/i18nConfig'
 import type { Metadata } from 'next'
 
+import { APP_ENV } from '@/env/app-env'
+
 interface Props {
   locale: Locale
   title?: string
@@ -155,8 +157,6 @@ export function getMetadataObject({
     },
     alternates: definitiveAlternates,
     ...props,
-    ...(process.env.NEXT_PUBLIC_ENV !== 'production'
-      ? { robots: noIndexObject }
-      : {}),
+    ...(APP_ENV !== 'production' ? { robots: noIndexObject } : {}),
   }
 }

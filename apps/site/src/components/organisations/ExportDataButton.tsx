@@ -3,9 +3,10 @@
 import type { ButtonProps } from '@/design-system/buttons/Button'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
+import logger from '@/logger/logger.browser'
 import { downloadPollResults } from '@/services/organisations/download-poll-results'
 import type { PollIdentifier } from '@/types/organisations'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { useTransition } from 'react'
 import DownloadIcon from '../icons/DownloadIcon'
 import Trans from '../translation/trans/TransClient'
@@ -35,7 +36,7 @@ export default function ExportDataButton({
 
         window.open(data.url, '_blank')
       } catch (error) {
-        captureErrorForSentryAndPosthog(error)
+        logger.error(toError(error), { scope: 'site.interaction.exportData' })
       }
     })
   }

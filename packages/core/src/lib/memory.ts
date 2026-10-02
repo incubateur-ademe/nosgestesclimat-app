@@ -1,35 +1,36 @@
 import v8 from 'node:v8'
+import type { OtelAttributes } from '../features/logger/index.ts'
 
 const toMB = (bytes: number): number =>
   Math.round((bytes / (1024 * 1024)) * 100) / 100
 
 /**
- * Memory snapshot of the current process, in MB.
+ * The process memory, under the names and the unit (`By`) the semantic
+ * conventions define for it: a standard name in a log line survives a later
+ * move to a real metric, a house one does not.
  *
- * `rss` is what the container OOM killer reads, but V8 rarely returns freed
- * pages to the OS, so it plateaus rather than drops when memory is released.
- * `heapUsed` reflects a release sooner, but it also counts garbage not yet
- * collected, so a single before/after delta is noisy - compare across jobs.
+ * `process.memory.usage` is what the container OOM killer reads, but V8 rarely
+ * returns freed pages to the OS, so it plateaus rather than drops when memory
+ * is released. `v8js.memory.heap.used` reflects a release sooner, and also
+ * counts garbage not yet collected: compare it across jobs, not around a single
+ * one.
  */
-export function currentMemoryMB(): {
-  rssMB: number
-  heapUsedMB: number
-  heapTotalMB: number
-  externalMB: number
-} {
-  const { rss, heapUsed, heapTotal, external } = process.memoryUsage()
+export function memoryAttributes(): Pick<
+  OtelAttributes,
+  'process.memory.usage' | 'v8js.memory.heap.used'
+> {
+  const { rss, heapUsed } = process.memoryUsage()
+
   return {
-    rssMB: toMB(rss),
-    heapUsedMB: toMB(heapUsed),
-    heapTotalMB: toMB(heapTotal),
-    externalMB: toMB(external),
+    'process.memory.usage': rss,
+    'v8js.memory.heap.used': heapUsed,
   }
 }
 
 /**
  * Ceiling V8 grows the old space to before it throws. Node derives it from the
- * cgroup limit when it can detect one, and from host RAM when it cannot - if it
- * sits above the container limit, the kernel kills the process before V8 ever
+ * cgroup limit when it detects one, and from the host RAM when it does not: if
+ * it sits above the container limit, the kernel kills the process before V8
  * feels enough pressure to run a major GC. Log it once at startup to check.
  */
 export function heapSizeLimitMB(): number {

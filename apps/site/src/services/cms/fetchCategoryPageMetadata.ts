@@ -7,7 +7,8 @@ import type {
 import { cmsClient } from '@/adapters/cmsClient'
 import { PAGE_SIZE } from '@/constants/blog/pagination'
 import { type Locale } from '@/i18nConfig'
-import { captureException } from '@sentry/nextjs'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchCategoryPageMetadata({
   slug,
@@ -80,7 +81,9 @@ export async function fetchCategoryPageMetadata({
       pageCount: meta.pagination.pageCount,
     }
   } catch (error) {
-    captureException(error)
+    logger.warn(toError(error), {
+      scope: 'site.action.fetchCategoryPageMetadata',
+    })
 
     return
   }

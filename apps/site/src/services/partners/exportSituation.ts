@@ -12,7 +12,7 @@ export async function exportSituation({
   situation: Situation
   partner: string
   partnerParams?: Record<string, string>
-}): Promise<{ redirectUrl: string } | null> {
+}): Promise<{ redirectUrl: string }> {
   const partnerParamsToSend = { ...partnerParams }
   delete partnerParamsToSend?.partner
 
@@ -22,5 +22,5 @@ export async function exportSituation({
       method: 'POST',
       body: situation,
     }
-  ).catch(() => null)
+  )
 }

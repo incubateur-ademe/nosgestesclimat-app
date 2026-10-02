@@ -1,6 +1,6 @@
 import { parseModelString } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
-import { captureException } from '@sentry/nextjs'
+import type { Logger } from '@nosgestesclimat/core/features/logger/index'
 import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
 
 /**
@@ -13,19 +13,25 @@ import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
  *
  * Server actions run current server code even for stale browser tabs, which is
  * what makes repairing here reliable.
+ *
+ * The line takes the caller's logger, and with it the action's scope: the
+ * repair is part of that action, not a unit of its own.
  */
 export async function ensureSimulationModel<
   Payload extends { id: Simulation['id']; model?: Simulation['model'] },
->(simulation: Payload): Promise<Payload & { model: Simulation['model'] }> {
+>(
+  simulation: Payload,
+  logger: Logger
+): Promise<Payload & { model: Simulation['model'] }> {
   if (hasValidModel(simulation)) {
     return simulation
   }
 
-  captureException(
+  logger.error(
     new Error('Simulation reached persistence without a valid model'),
     {
-      level: 'warning',
-      extra: { simulationId: simulation.id, model: simulation.model },
+      simulationId: simulation.id,
+      model: simulation.model,
     }
   )
 
