@@ -32,7 +32,7 @@ const initI18next = (language: string) => {
 
   void i18nInstance.use(initReactI18next).init({
     ...getOptions(language),
-    initImmediate: false,
+    initAsync: false,
     resources,
   })
 

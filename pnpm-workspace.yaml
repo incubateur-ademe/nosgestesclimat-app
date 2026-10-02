@@ -21,6 +21,10 @@ minimumReleaseAgeExclude:
   - '@posthog/core'
   - '@posthog/types'
   - '@posthog/browser-common'
+  # Latest Next, without waiting out the 7-day release delay.
+  - 'next'
+  - '@next/*'
+  - 'eslint-config-next'
 
 onlyBuiltDependencies:
   - '@incubateur-ademe/nosgestesclimat'

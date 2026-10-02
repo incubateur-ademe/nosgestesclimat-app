@@ -9,11 +9,12 @@ import { fetchThematicLandingPages } from '@/services/cms/fetchThematicLandingPa
 import type { NGCRule } from '@incubateur-ademe/nosgestesclimat'
 import { findVisibleActionSlugs } from '@nosgestesclimat/core/features/actions/repositories/actions.repository'
 import type { MetadataRoute } from 'next'
+import { cacheLife } from 'next/cache'
 import { utils } from 'publicodes'
 
-export const revalidate = 3600
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  'use cache'
+  cacheLife('hours')
   const [
     documentationUrls,
     blogUrls,
