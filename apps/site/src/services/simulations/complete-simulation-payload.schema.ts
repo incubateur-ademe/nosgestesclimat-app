@@ -12,7 +12,7 @@ export const CompleteSimulationPayloadSchema = v.strictObject({
   // when the client resumed an older simulation. Without it the completion
   // would judge computability from the persisted, possibly outdated model.
   model: ModelStringSchema,
-  progression: v.literal(1),
+  progression: v.pipe(v.number(), v.minValue(0), v.maxValue(1)),
   situation: SituationSchema,
   foldedSteps: FoldedStepsSchema,
   computedResults: ComputedResultsSchema,
@@ -24,8 +24,9 @@ type _CompleteSimulationPayload = v.InferInput<
 
 /**
  * What the client actually sends: its progression is only known at runtime.
- * The action guards it explicitly so an unfinished simulation answers with a
- * `simulation_incomplete` failure instead of a generic `invalid_payload`.
+ * That it must equal 1 is a precondition of the completion, owned by the core
+ * service — which answers `simulation_incomplete` rather than a generic
+ * `invalid_payload`.
  */
 export type CompleteSimulationPayload = Omit<
   _CompleteSimulationPayload,

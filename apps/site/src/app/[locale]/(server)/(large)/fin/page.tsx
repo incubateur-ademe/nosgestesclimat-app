@@ -8,13 +8,12 @@ import {
 } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getMetadataObject } from '@/helpers/metadata/getMetadataObject'
-import { NoSessionFoundError } from '@/helpers/server/error'
 import { getGroupDisplayInfo } from '@/helpers/server/model/utils/getGroupDisplayInfo'
 import type { Locale } from '@/i18nConfig'
+import _logger from '@/logger/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { getLatestSimulationResult } from '@/services/simulations/get-latest-simulation-result'
 import type { DefaultPageProps } from '@/types'
-import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
 export async function generateMetadata({ params }: DefaultPageProps) {
@@ -43,9 +42,11 @@ export default async function FinPage({
 }: PageProps<'/[locale]/fin'>) {
   const { locale } = await params
   const { sid } = await searchParams
+  const logger = _logger.child({scope: 'site.view.page'})
 
   // Legacy feature, allowed to load a simulation data by passing an sid param in the URL, used in transactionnal e-mailing
   if (sid) {
+    logger.info('sid found in URL, redirecting to mon-espace')
     redirect(
       MON_ESPACE_RESULTS_DETAIL_PATH.replace(':simulationId', sid as string)
     )
@@ -53,7 +54,7 @@ export default async function FinPage({
 
   const user = await getUserSession()
   if (!user) {
-    captureException(new NoSessionFoundError(), { level: 'warning' })
+    logger.warn('No session found in cookies, redirecting to the home page')
     redirect('/')
   }
 

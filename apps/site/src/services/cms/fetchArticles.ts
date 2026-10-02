@@ -1,7 +1,8 @@
 import type { ArticleType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
-import { captureException } from '@sentry/nextjs'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { cacheLife } from 'next/cache'
 import { URLSearchParams } from 'url'
 
@@ -30,7 +31,7 @@ export async function fetchArticles(
 
     return { data: articlesResponse.data }
   } catch (error) {
-    captureException(error)
+    logger.warn(toError(error), { scope: 'site.action.fetchArticles' })
 
     return { data: [], isError: true }
   }

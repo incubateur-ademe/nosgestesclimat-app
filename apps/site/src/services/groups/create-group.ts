@@ -4,6 +4,7 @@ import { GROUP_URL } from '@/constants/urls/main'
 import { UnauthorizedError } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import type { Simulation } from '@/helpers/server/model/simulations'
+import logger from '@/logger/logger.server'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { ensureSimulationModel } from '@/services/simulations/ensure-simulation-model'
 import type { Group } from '@/types/groups'
@@ -18,28 +19,29 @@ export const createGroup = async ({
   emoji: string
   administratorName: string
   participants?: { simulation: Simulation }[]
-}) => {
-  const session = await getUserSession()
-  if (!session?.isAuth) {
-    throw new UnauthorizedError()
-  }
+}) =>
+  await logger.withSpan('site.action.createGroup', async (logger) => {
+    const session = await getUserSession()
+    if (!session?.isAuth) {
+      throw new UnauthorizedError()
+    }
 
-  return await fetchServer<Group>(GROUP_URL, {
-    method: 'POST',
-    body: {
-      name,
-      emoji,
-      administrator: {
-        name: administratorName,
+    return await fetchServer<Group>(GROUP_URL, {
+      method: 'POST',
+      body: {
+        name,
+        emoji,
+        administrator: {
+          name: administratorName,
+        },
+        participants: participants
+          ? await Promise.all(
+              participants.map(async ({ simulation, ...rest }) => ({
+                ...rest,
+                simulation: await ensureSimulationModel(simulation, logger),
+              }))
+            )
+          : undefined,
       },
-      participants: participants
-        ? await Promise.all(
-            participants.map(async ({ simulation, ...rest }) => ({
-              ...rest,
-              simulation: await ensureSimulationModel(simulation),
-            }))
-          )
-        : undefined,
-    },
+    })
   })
-}

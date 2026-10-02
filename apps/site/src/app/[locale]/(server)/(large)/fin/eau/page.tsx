@@ -39,20 +39,20 @@ export default async function SimulationPage({
   if (!user) {
     notFound()
   }
-
-  return (
-    <>
-      <FootprintsLinks
-        locale={locale as Locale}
-        currentPage="eau"
-        basePathname={END_PAGE_PATH}
-      />
-
-      <WaterFootprintResults
-        computedResults={result.simulation.computedResults}
-        locale={locale as Locale}
-        hideSaveBlock={user.isAuth}
-      />
-    </>
-  )
+throw new Error('Not implemented')
+//   return (
+//     <>
+//       <FootprintsLinks
+//         locale={locale as Locale}
+//         currentPage="eau"
+//         basePathname={END_PAGE_PATH}
+//       />
+//
+//       <WaterFootprintResults
+//         computedResults={result.simulation.computedResults}
+//         locale={locale as Locale}
+//         hideSaveBlock={user.isAuth}
+//       />
+//     </>
+//   )
 }

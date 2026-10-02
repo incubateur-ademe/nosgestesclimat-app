@@ -20,10 +20,10 @@ export async function rotateSession(
     const existing = await findByToken(hashed)
 
     if (existing) {
-      throw new TokenExpiredException({})
+      throw new TokenExpiredException()
     }
 
-    throw new TokenConsumedException({})
+    throw new TokenConsumedException()
   }
 
   return createSession(deleted.userId, email)

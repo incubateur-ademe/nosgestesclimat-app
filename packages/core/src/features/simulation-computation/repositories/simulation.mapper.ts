@@ -1,18 +1,15 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { SimulationModel } from '../../../prisma/generated/models.ts'
-import { InvalidModelString } from '../../simulations/exceptions/simulations.exception.ts'
 
+import { SimulationInvalidModelStringError } from '../../simulations/errors/simulations.error.ts'
 import { parseModelString } from '../../simulations/repository/model.mapper.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
 
 export const mapSimulation = (db: SimulationModel): Simulation => {
   const model = parseModelString(db.model)
   if (!model) {
-    throw new InvalidModelString({
-      simulationId: db.id,
-      modelString: db.model,
-    })
+    throw new SimulationInvalidModelStringError(db.model, db.id)
   }
 
   return {

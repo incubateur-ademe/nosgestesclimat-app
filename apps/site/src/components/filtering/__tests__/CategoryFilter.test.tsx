@@ -16,6 +16,8 @@ const mockSearchParams = {
 const mockPathname = '/test-path'
 
 vi.mock('next/navigation', () => ({
+  // No-op, like `redirect`: the test decides who throws.
+  unstable_rethrow: vi.fn(),
   useRouter: () => mockRouter,
   useSearchParams: () => mockSearchParams,
   usePathname: () => mockPathname,

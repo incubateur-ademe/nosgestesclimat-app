@@ -25,6 +25,9 @@ minimumReleaseAgeExclude:
 onlyBuiltDependencies:
   - '@incubateur-ademe/nosgestesclimat'
   - '@nosgestesclimat/core'
+  # Downloads its binary in a postinstall; `@posthog/nextjs-config` spawns it to
+  # upload the build's source maps.
+  - '@posthog/cli'
   - '@prisma/engines'
   - '@sentry/cli'
   - msw

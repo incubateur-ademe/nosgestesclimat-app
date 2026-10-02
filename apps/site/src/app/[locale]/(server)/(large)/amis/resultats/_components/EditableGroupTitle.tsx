@@ -7,9 +7,10 @@ import InlineTextInput from '@/design-system/inputs/InlineTextInput'
 import Title from '@/design-system/layout/Title'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import logger from '@/logger/logger.browser'
 import type { Group } from '@/types/groups'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { useState, useTransition } from 'react'
 import { isGroupOwner } from '../../_helpers/isGroupOwner'
 import { updateGroupAction } from '../_actions/update-group.action'
@@ -36,7 +37,7 @@ export default function EditableGroupTitle({
           name: groupNameUpdated,
         })
       } catch (e) {
-        captureErrorForSentryAndPosthog(e)
+        logger.error(toError(e), { scope: 'site.interaction.updateGroup' })
       }
     })
   }

@@ -11,8 +11,9 @@ import {
 } from '@/helpers/partners/storage'
 import { useExportSituation } from '@/hooks/partners/useExportSituation'
 import { useVerifyPartner } from '@/hooks/partners/useVerifyPartner'
+import logger from '@/logger/logger.browser'
 import { EMPTY_SITUATION, useOptionalSimulation } from '@/publicodes-state'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { notFound, useRouter } from 'next/navigation'
 import {
   createContext,
@@ -104,7 +105,7 @@ export function PartnerProvider({ children }: PropsWithChildren) {
         content: <SuccessMessage redirectUrl={redirectUrlFromResponse} />,
       })
     } catch (error) {
-      captureErrorForSentryAndPosthog(error)
+      logger.error(toError(error), { scope: 'site.interaction.exportSituation' })
 
       setAlertToDisplay({
         type: 'error',

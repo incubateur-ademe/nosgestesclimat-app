@@ -23,7 +23,9 @@ preprod)
 prod)
   DOMAIN="nosgestesclimat.fr"
   UPSTREAM="nosgestesclimat-site.osc-secnum-fr1.scalingo.io"
-  ENVIRONMENT="prod"
+  # `prod` names the instance, `production` is the environment value shared
+  # with `APP_ENV` and PostHog's Environment facet.
+  ENVIRONMENT="production"
   TEMPLATE_REF="main"
   ;;
 *)
