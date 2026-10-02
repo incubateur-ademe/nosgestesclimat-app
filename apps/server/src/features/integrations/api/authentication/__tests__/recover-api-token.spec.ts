@@ -131,7 +131,17 @@ describe('Given a NGC integrations API user', () => {
     describe('And database failure', () => {
       const databaseError = new Error('Something went wrong')
 
-      beforeEach(() => {
+      let email: string
+      let code: string
+
+      beforeEach(async () => {
+        // The token exchange reaches the failing transaction only once the
+        // verification code has been found: create a valid one first.
+        ;({ email, code } = await generateApiToken({
+          prisma,
+          agent,
+        }))
+
         vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
           databaseError
         )
@@ -145,8 +155,8 @@ describe('Given a NGC integrations API user', () => {
         await agent
           .get(url)
           .query({
-            email: faker.internet.email(),
-            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email,
+            code,
           })
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
       })
@@ -155,8 +165,8 @@ describe('Given a NGC integrations API user', () => {
         await agent
           .get(url)
           .query({
-            email: faker.internet.email(),
-            code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+            email,
+            code,
           })
           .expect(StatusCodes.INTERNAL_SERVER_ERROR)
 

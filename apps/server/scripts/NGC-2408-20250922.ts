@@ -4,7 +4,6 @@ import * as v from 'valibot'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { deleteContact, fetchContact } from '../src/adapters/brevo/client.ts'
-import { defaultVerifiedUserSelection } from '../src/adapters/prisma/selection.ts'
 import { Locales } from '../src/core/i18n/constant.ts'
 import { PaginationQuery } from '../src/core/pagination.ts'
 import {
@@ -18,8 +17,8 @@ import {
   fetchPolls,
 } from '../src/features/organisations/organisations.service.ts'
 import {
-  fetchUsersForEmail,
-  fetchVerifiedUser,
+  findUsersForEmail,
+  findVerifiedUserByEmail,
 } from '../src/features/users/users.repository.ts'
 import logger from '../src/logger.ts'
 
@@ -55,90 +54,98 @@ const { deleteUser, deleteOrganisations, dry, email } = await args
 const DeletionMessage = dry ? 'Skipping deletion as in dry mode' : 'Deleting...'
 
 if (deleteOrganisations) {
-  try {
-    const verifiedUser = await fetchVerifiedUser(
-      { email, select: defaultVerifiedUserSelection },
-      { session: prisma, orThrow: true }
-    )
+  const verifiedUser = await findVerifiedUserByEmail(
+    { email },
+    { session: prisma }
+  )
 
-    logger.info('Found verified user. Looking for organisations', {
-      verifiedUser,
+  if (!verifiedUser) {
+    logger.info('No verified user found. Skipping organisations deletion', {
+      email,
     })
-
-    const { id: userId } = verifiedUser
-    const query = v.parse(PaginationQuery, {})
-
-    while (true) {
-      const { organisations } = await fetchOrganisations({
-        user: { id: userId, email },
-        query,
+  } else {
+    try {
+      logger.info('Found verified user. Looking for organisations', {
+        verifiedUser,
       })
 
-      for (const organisation of organisations) {
-        logger.info('Found organisations. Looking for polls', {
-          organisation,
-        })
+      const { id: userId } = verifiedUser
+      const query = v.parse(PaginationQuery, {})
 
-        const { id: organisationIdOrSlug } = organisation
-
-        const polls = await fetchPolls({
-          params: { organisationIdOrSlug },
+      while (true) {
+        const { organisations } = await fetchOrganisations({
           user: { id: userId, email },
+          query,
         })
 
-        for (const poll of polls) {
-          logger.info(`Found poll. ${DeletionMessage}`, { poll })
+        for (const organisation of organisations) {
+          logger.info('Found organisations. Looking for polls', {
+            organisation,
+          })
 
-          const { id: pollIdOrSlug } = poll
+          const { id: organisationIdOrSlug } = organisation
+
+          const polls = await fetchPolls({
+            params: { organisationIdOrSlug },
+            user: { id: userId, email },
+          })
+
+          for (const poll of polls) {
+            logger.info(`Found poll. ${DeletionMessage}`, { poll })
+
+            const { id: pollIdOrSlug } = poll
+
+            if (!dry) {
+              await deletePoll({
+                params: { organisationIdOrSlug, pollIdOrSlug },
+                user: { id: userId, email },
+              })
+            }
+          }
+
+          logger.info(
+            `Polls handled. Handling organisation. ${DeletionMessage}`
+          )
 
           if (!dry) {
-            await deletePoll({
-              params: { organisationIdOrSlug, pollIdOrSlug },
-              user: { id: userId, email },
+            await prisma.organisation.delete({
+              where: {
+                id: organisationIdOrSlug,
+              },
+              select: { id: true },
             })
           }
         }
 
-        logger.info(`Polls handled. Handling organisation. ${DeletionMessage}`)
+        if (organisations.length < query.pageSize) {
+          break
+        }
 
+        query.page++
+      }
+
+      if (deleteUser) {
+        logger.info(`User deletion Requested. ${DeletionMessage}`)
         if (!dry) {
-          await prisma.organisation.delete({
+          await prisma.verifiedUser.delete({
             where: {
-              id: organisationIdOrSlug,
+              email,
             },
             select: { id: true },
           })
         }
       }
-
-      if (organisations.length < query.pageSize) {
-        break
+    } catch (e) {
+      if (!isPrismaErrorNotFound(e)) {
+        throw e
       }
-
-      query.page++
-    }
-
-    if (deleteUser) {
-      logger.info(`User deletion Requested. ${DeletionMessage}`)
-      if (!dry) {
-        await prisma.verifiedUser.delete({
-          where: {
-            email,
-          },
-          select: { id: true },
-        })
-      }
-    }
-  } catch (e) {
-    if (!isPrismaErrorNotFound(e)) {
-      throw e
     }
   }
 }
 
 if (deleteUser) {
   try {
-    const users = await fetchUsersForEmail({ email }, { session: prisma })
+    const users = await findUsersForEmail({ email }, { session: prisma })
 
     for (const user of users) {
       logger.info('Found user. Looking for groups and simulations', {

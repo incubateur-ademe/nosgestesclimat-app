@@ -27,6 +27,11 @@ import type { MiddlewareResult } from './types'
 export async function middlewareAuth(
   request: NextRequest
 ): Promise<MiddlewareResult> {
+  // Defense in depth: identity may only come from the decrypted session
+  // cookie below. Strip any client-supplied `x-session` header so it never
+  // survives into the anonymous paths.
+  request.headers.delete('x-session')
+
   const sessionCookie = request.cookies.get(SESSION_COOKIE)
 
   // (A) No session cookie: anonymous user.

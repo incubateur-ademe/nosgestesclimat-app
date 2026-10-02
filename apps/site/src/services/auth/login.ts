@@ -1,23 +1,34 @@
 'use server'
 
+import { addOrUpdateContact, sendEmail } from '@/adapters/brevoClient'
 import {
   InvalidCodeError,
-  RateLimitedError,
   UnknownCodeError,
   type CodeError,
 } from '@/components/authentication/errors'
-import { AUTHENTICATION_URL } from '@/constants/urls/main'
-import {
-  ForbiddenError,
-  TooManyRequestsError,
-  UnauthorizedError,
-} from '@/helpers/server/error'
-import { fetchServer } from '@/helpers/server/fetchServer'
+import { env } from '@/env.server'
+import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
+import logger from '@/logger'
+import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/auth.schema'
+import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
+import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
+import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
+import { captureException } from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import { createAppSession } from './create-app-session'
 import { getUserSession } from './get-user-session'
+
+const loginService = createLogin({
+  logger,
+  captureException,
+  sendEmail,
+  addOrUpdateContact,
+  origin: env.NEXT_PUBLIC_SITE_URL,
+  backgroundTaskRunner: after,
+})
 
 export const login = async ({
   email,
@@ -27,38 +38,87 @@ export const login = async ({
   email: string
   code: string
   locale?: string
-}): Promise<Result<{ userId: string; id: string }, CodeError>> => {
+}): Promise<Result<{ userId: string }, CodeError>> => {
+  const startedAt = Date.now()
+
+  // The schema lowercases the email before the DB lookup; the throttle key
+  // must normalize the same way, or case permutations split the bucket.
+  const rateLimit = await rateLimitSameRequest({
+    key: `login:${email.toLocaleLowerCase()}`,
+    ttlInSeconds: 30,
+  })
+  if (!rateLimit.success) return rateLimit
+
+  const parsed = validatePayload(LoginPayloadSchema, { email, code, locale })
+  if (!parsed.success) {
+    return failure(new UnknownCodeError())
+  }
+  const loginLocale = parsed.data.locale
+
+  // The old action wrapped its entire body in one try: any throw collapsed
+  // to failure(new UnknownCodeError()). The session lookup runs inside the
+  // try so its failures collapse the same way instead of surfacing to
+  // useLogin as a rejected mutation.
+  let existingSessionUserId: string | undefined
+
   try {
     const session = await getUserSession()
-    const params = locale ? `?locale=${locale}` : ''
-    const data = await fetchServer<{ id: string }>(
-      `${AUTHENTICATION_URL}/login${params}`,
-      {
-        method: 'POST',
-        // userId is server-derived via x-user-id (fetchServer forwards it from
-        // the session cookie). Keeping it out of the body preserves the
-        // "one session id = one account" invariant.
-        body: {
-          email,
-          code,
-        },
-      }
-    )
+    // session.id is the user id, derived server-side from the signed session
+    // payload. Passing it to the service directly preserves the "one session
+    // id = one account" invariant.
+    existingSessionUserId = session?.id
 
-    if (session?.id) {
-      await revokeAllSessions(session.id)
+    const context = {
+      userId: existingSessionUserId,
+      email: maskEmail(parsed.data.email),
+      locale: loginLocale,
     }
-    await createAppSession(data.id, email)
+
+    // Every branch below logs an outcome, so an attempt left without one is
+    // how a request that hung - or killed the process - stays visible.
+    logger.info('Login attempt', context)
+
+    const result = await loginService({
+      ...parsed.data,
+      sessionUserId: existingSessionUserId,
+    })
+
+    if (!result.success) {
+      const outcome = { ...context, durationMs: Date.now() - startedAt }
+
+      logger.warn('Login rejected: invalid verification code', outcome)
+      captureException(result.error, { level: 'warning', extra: outcome })
+
+      return failure(new InvalidCodeError())
+    }
+
+    const { user, mode } = result.data
+
+    logger.info('Login succeeded', {
+      ...context,
+      mode,
+      durationMs: Date.now() - startedAt,
+    })
+
+    if (existingSessionUserId) {
+      await revokeAllSessions(existingSessionUserId)
+    }
+    await createAppSession(user.id, email)
 
     revalidatePath('/', 'layout')
 
-    return success({ ...data, userId: data.id })
+    return success({ userId: user.id })
   } catch (error) {
-    if (error instanceof UnauthorizedError)
-      return failure(new InvalidCodeError())
-    if (error instanceof ForbiddenError) return failure(new InvalidCodeError())
-    if (error instanceof TooManyRequestsError)
-      return failure(new RateLimitedError())
+    const outcome = {
+      userId: existingSessionUserId,
+      email: maskEmail(email),
+      locale: loginLocale,
+      durationMs: Date.now() - startedAt,
+    }
+
+    logger.error('Login failed', { ...outcome, error })
+    captureException(error, { extra: outcome })
+
     return failure(new UnknownCodeError())
   }
 }

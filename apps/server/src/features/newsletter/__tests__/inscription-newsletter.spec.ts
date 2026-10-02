@@ -1,5 +1,8 @@
 import { faker } from '@faker-js/faker'
+import * as verificationCodesRepository from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -12,17 +15,13 @@ import {
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { ListIds } from '../../../adapters/brevo/constant.ts'
 import app from '../../../app.ts'
-import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
+import {
+  authHeaders,
+  login,
+} from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import { login } from '../../authentication/__tests__/fixtures/login.fixture.ts'
-import * as authenticationService from '../../authentication/authentication.service.ts'
-import * as verificationCodesRepository from '../../authentication/verification-codes.repository.ts'
-
-vi.mock('../../../adapters/prisma/transaction', async () => ({
-  ...(await vi.importActual('../../../adapters/prisma/transaction')),
-}))
 
 describe('Given a NGC user', () => {
   const agent = supertest(app)
@@ -97,14 +96,14 @@ describe('Given a NGC user', () => {
       beforeEach(() => {
         vi.spyOn(
           verificationCodesRepository,
-          'createUserVerificationCode'
+          'createVerificationCode'
         ).mockRejectedValueOnce(databaseError)
       })
 
       afterEach(() => {
         vi.spyOn(
           verificationCodesRepository,
-          'createUserVerificationCode'
+          'createVerificationCode'
         ).mockRestore()
       })
 
@@ -141,15 +140,11 @@ describe('Given a NGC user', () => {
     beforeEach(() => {
       code = faker.number.int({ min: 100000, max: 999999 }).toString()
 
-      vi.mocked(
-        authenticationService
-      ).generateRandomVerificationCode.mockReturnValueOnce(code)
+      vi.mocked(generateRandomVerificationCode).mockReturnValueOnce(code)
     })
 
     afterEach(() => {
-      vi.mocked(
-        authenticationService
-      ).generateRandomVerificationCode.mockRestore()
+      vi.mocked(generateRandomVerificationCode).mockRestore()
     })
 
     describe('When subscribing to a single newsletter', () => {
@@ -215,7 +210,7 @@ describe('Given a NGC user', () => {
           id: expect.any(String),
           code,
           email,
-          mode: null,
+          usage: VerificationCodeUsage.newsletter,
           expirationDate: expect.any(Date),
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
@@ -322,9 +317,7 @@ describe('Given a NGC user', () => {
     let userId: string
 
     beforeEach(async () => {
-      ;({ email, userId } = await login({
-        agent,
-      }))
+      ;({ email, userId } = await login())
     })
 
     describe('When subscribing with a different email than the logged in user', () => {

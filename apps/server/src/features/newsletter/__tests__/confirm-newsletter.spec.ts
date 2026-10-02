@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import dayjs from 'dayjs'
@@ -12,19 +13,14 @@ import {
   brevoUpdateContact,
 } from '../../../adapters/brevo/__tests__/fixtures/server.fixture.ts'
 import { ListIds } from '../../../adapters/brevo/constant.ts'
-import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
+import { createVerificationCode } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import {
   mswServer,
   resetMswServer,
 } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import * as authenticationService from '../../authentication/authentication.service.ts'
-
-vi.mock('../../../adapters/prisma/transaction', async () => ({
-  ...(await vi.importActual('../../../adapters/prisma/transaction')),
-}))
 
 const createNewsletterSubscriptionRequest = async ({
   agent,
@@ -43,9 +39,7 @@ const createNewsletterSubscriptionRequest = async ({
   email = email || faker.internet.email().toLocaleLowerCase()
   listIds = listIds || [ListIds.MAIN_NEWSLETTER]
 
-  vi.mocked(
-    authenticationService
-  ).generateRandomVerificationCode.mockReturnValueOnce(code)
+  vi.mocked(generateRandomVerificationCode).mockReturnValueOnce(code)
 
   mswServer.use(brevoSendEmail())
 
@@ -69,7 +63,7 @@ const createNewsletterSubscriptionRequest = async ({
 
   resetMswServer()
 
-  vi.mocked(authenticationService).generateRandomVerificationCode.mockRestore()
+  vi.mocked(generateRandomVerificationCode).mockRestore()
 
   return {
     email,
@@ -119,6 +113,29 @@ describe('Given a NGC user', () => {
 
         expect(response.get('location')).toBe(
           'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=400'
+        )
+      })
+    })
+
+    describe('And the code was issued for the login flow', () => {
+      test('Then it redirects to an error page with 404 status', async () => {
+        const email = faker.internet.email().toLocaleLowerCase()
+        const code = faker.number.int({ min: 100000, max: 999999 }).toString()
+
+        await createVerificationCode({ email, code })
+
+        const response = await agent
+          .get(url)
+          .query({
+            code,
+            email,
+            origin: 'https://nosgestesclimat.test',
+            listIds: [ListIds.MAIN_NEWSLETTER],
+          })
+          .expect(StatusCodes.MOVED_TEMPORARILY)
+
+        expect(response.get('location')).toBe(
+          'https://nosgestesclimat.test/newsletter-confirmation?success=false&status=404'
         )
       })
     })
@@ -264,13 +281,13 @@ describe('Given a NGC user', () => {
       const databaseError = new Error('Something went wrong')
 
       beforeEach(() => {
-        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRejectedValueOnce(
+        vi.spyOn(prisma.verificationCode, 'findFirst').mockRejectedValueOnce(
           databaseError
         )
       })
 
       afterEach(() => {
-        vi.spyOn(prismaTransactionAdapter, 'transaction').mockRestore()
+        vi.spyOn(prisma.verificationCode, 'findFirst').mockRestore()
       })
 
       test('Then it redirects to an error page', async () => {

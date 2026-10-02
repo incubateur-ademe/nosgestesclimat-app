@@ -4,6 +4,7 @@ import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.t
 import { invariant } from '../../../lib/invariant.ts'
 import type { Result } from '../../../lib/result.ts'
 import { failure, success } from '../../../lib/result.ts'
+import { createSettle } from '../../../lib/settle.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import type { AppUser } from '../../auth/types/user-session.ts'
 import { Attributes } from '../../emails/email.constant.ts'
@@ -21,9 +22,9 @@ import { createSimulationComputation } from '../../simulation-computation/reposi
 import { findUserById } from '../../users/repositories/users.repository.ts'
 import { mapComputedResultsToContactAttributes } from '../emails/map-computed-results-to-contact-attributes.ts'
 import {
-  createSendGroupCreatedEmail,
-  createSendGroupJoinedEmail,
-  createSendPollJoinedEmail,
+  createGroupCreatedEmail,
+  createGroupJoinedEmail,
+  createPollJoinedEmail,
 } from '../emails/simulation-emails.ts'
 import {
   type CompleteSimulationError,
@@ -60,9 +61,6 @@ export function createCompleteSimulation({
   origin,
   backgroundTaskRunner,
 }: CompleteSimulationDependencies) {
-  const sendGroupCreatedEmail = createSendGroupCreatedEmail(sendEmail)
-  const sendGroupJoinedEmail = createSendGroupJoinedEmail(sendEmail)
-  const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
   const settle = createSettle({ logger, captureException })
 
   return async function completeSimulation({
@@ -167,14 +165,16 @@ export function createCompleteSimulation({
           // The most recent membership is the one the user just completed.
           const lastPoll = polls[0]
           if (lastPoll) {
-            return sendPollJoinedEmail({
-              organisation: lastPoll.organisation,
-              simulationId,
-              locale,
-              origin,
-              email: userSession.email,
-              poll: lastPoll,
-            })
+            return sendEmail(
+              createPollJoinedEmail({
+                organisation: lastPoll.organisation,
+                simulationId,
+                locale,
+                origin,
+                email: userSession.email,
+                poll: lastPoll,
+              })
+            )
           }
 
           const lastGroup = groups[0]
@@ -188,8 +188,8 @@ export function createCompleteSimulation({
             }
 
             return lastGroup.administratorId === userId
-              ? sendGroupCreatedEmail(params)
-              : sendGroupJoinedEmail(params)
+              ? sendEmail(createGroupCreatedEmail(params))
+              : sendEmail(createGroupJoinedEmail(params))
           }
 
           return success()
@@ -203,29 +203,3 @@ export function createCompleteSimulation({
     })
   }
 }
-
-/**
- * Waits for every side effect and reports the ones that failed, either by
- * rejecting or by resolving to a failure: none of them fails the completion.
- */
-const createSettle =
-  ({
-    logger,
-    captureException,
-  }: {
-    logger: Logger
-    captureException: CaptureException
-  }) =>
-  async (label: string, sideEffects: Promise<Result<void> | void>[]) => {
-    const results = await Promise.allSettled(sideEffects)
-
-    for (const [index, result] of results.entries()) {
-      let error: unknown
-      if (result.status === 'rejected') error = result.reason
-      else if (result.value && !result.value.success) error = result.value.error
-      if (error) {
-        captureException(error)
-        logger.error(`Failed to settle: ${label}`, { index, error })
-      }
-    }
-  }
