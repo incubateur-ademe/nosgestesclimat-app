@@ -7,13 +7,6 @@ export class NotFoundError extends APIError {
   }
 }
 
-export class NoSessionFoundError extends APIError {
-  constructor() {
-    super('No session found in cookies')
-    this.name = 'NoSessionFound'
-  }
-}
-
 export class UnauthorizedError extends APIError {
   constructor() {
     super('Unauthorized')

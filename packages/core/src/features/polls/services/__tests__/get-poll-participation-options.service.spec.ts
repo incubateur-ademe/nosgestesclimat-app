@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { pollFactory } from '../../factories/poll.factory.ts'
@@ -238,8 +239,7 @@ describe('getPollParticipationOptions', () => {
 })
 
 const participateToPollService = createParticipateToPoll({
-  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
-  captureException: vi.fn(),
+  logger: createTestLogger(),
   sendEmail: vi.fn().mockResolvedValue(success()),
   origin: 'https://nosgestesclimat.fr',
   backgroundTaskRunner: vi.fn(),

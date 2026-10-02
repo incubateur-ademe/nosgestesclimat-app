@@ -8,8 +8,11 @@ import {
   RegionDataSchema,
   type RegionData,
 } from '@nosgestesclimat/core/features/region/region.schema'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { cookies, headers } from 'next/headers'
 import { safeParse } from 'valibot'
+
+import logger from '@/logger/logger.server'
 
 export async function getRegion(): Promise<RegionData | undefined> {
   const headerStore = await headers()
@@ -18,8 +21,15 @@ export async function getRegion(): Promise<RegionData | undefined> {
   try {
     const json = JSON.parse(value)
     const result = safeParse(RegionDataSchema, json)
-    return result.success ? result.output : undefined
-  } catch {
+    if (!result.success) {
+      logger.warn('Unreadable x-region header', {
+        scope: 'site.action.getRegion',
+      })
+      return undefined
+    }
+    return result.output
+  } catch (error) {
+    logger.warn(toError(error), { scope: 'site.action.getRegion' })
     return undefined
   }
 }

@@ -7,22 +7,25 @@ import {
   supportedRegions,
   type Region,
 } from '@/helpers/server/model/models'
-import { captureException } from '@sentry/nextjs'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
-export async function getGeolocation(): Promise<Region> {
-  try {
-    const geo = await fetchServer<{ code: string; region: string }>(
-      `${MODELE_URL}/geolocation`
-    )
-    if (geo.code in supportedRegions) {
-      return geo.code as Region
+import logger from '@/logger/logger.server'
+
+export const getGeolocation = async (): Promise<Region> =>
+  await logger.withSpan('site.action.getGeolocation', async (logger) => {
+    try {
+      const geo = await fetchServer<{ code: string; region: string }>(
+        `${MODELE_URL}/geolocation`
+      )
+      if (geo.code in supportedRegions) {
+        return geo.code as Region
+      }
+      if (geo.region === 'Europe') {
+        return 'EU'
+      }
+      return DEFAULT_REGION
+    } catch (e) {
+      logger.warn(toError(e))
+      return DEFAULT_REGION
     }
-    if (geo.region === 'Europe') {
-      return 'EU'
-    }
-    return DEFAULT_REGION
-  } catch (e) {
-    captureException(e, { level: 'warning' })
-    return DEFAULT_REGION
-  }
-}
+  })

@@ -16,7 +16,8 @@ import TextInput from '@/design-system/inputs/TextInput'
 import Separator from '@/design-system/layout/Separator'
 import { useCreateOrganisation } from '@/hooks/organisations/useCreateOrganisation'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import logger from '@/logger/logger.browser'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { useRouter } from 'next/navigation'
 import { useForm as useReactHookForm } from 'react-hook-form'
 
@@ -71,7 +72,7 @@ export default function CreationForm() {
         `/organisations/${organisationUpdated.slug}/creer-campagne/informations`
       )
     } catch (error: unknown) {
-      captureErrorForSentryAndPosthog(error)
+      logger.error(toError(error), { scope: 'site.interaction.createOrganisation' })
     }
   }
 

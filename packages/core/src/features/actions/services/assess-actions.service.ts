@@ -1,5 +1,6 @@
 import type Engine from 'publicodes'
-import type { CaptureException, Logger } from '../../logger/index.ts'
+import { toError } from '../../../lib/to-error.ts'
+import type { Logger } from '../../logger/index.ts'
 import { ActionAssessmentPublicodesException } from '../exceptions/action-assessment.exception.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
 import { findActionRuleIds } from '../repositories/actions.repository.ts'
@@ -7,7 +8,6 @@ import type { NewActionAssessment } from '../types/action.ts'
 
 interface AssessActionsDeps {
   logger: Logger
-  captureException: CaptureException
 }
 
 const buildRuleIdToDottedName = (engine: Engine): Map<string, string> => {
@@ -28,7 +28,10 @@ export function createAssessActions(deps: AssessActionsDeps) {
     engine: Engine,
     simulationId: string
   ): Promise<void> {
-    const { logger, captureException } = deps
+    const logger = deps.logger.child({
+      scope: 'core.service.assessActions',
+      simulationId: simulationId,
+    })
     const actions = await findActionRuleIds()
 
     if (actions.length === 0) {
@@ -51,15 +54,10 @@ export function createAssessActions(deps: AssessActionsDeps) {
       .map(({ id, ruleId }) => {
         const dottedName = ruleIdToDottedName.get(ruleId)
         if (!dottedName) {
-          const exception = new ActionAssessmentPublicodesException({
-            message: 'No rule found with this id',
-            action: { id, ruleId },
+          logger.warn('No rule found with this id', {
+            actionId: id,
+            ruleId: ruleId,
           })
-          logger.warn(
-            `[assess-actions] ${exception.message}`,
-            exception.payload
-          )
-          captureException(exception)
           return undefined
         }
 
@@ -83,30 +81,21 @@ export function createAssessActions(deps: AssessActionsDeps) {
               impact: undefined,
             }
           } else {
-            const exception = new ActionAssessmentPublicodesException({
-              message: `Unexpected nodeValue type: ${typeof nodeValue}`,
-              action: { id, ruleId },
-              dottedName,
+            logger.warn(`Unexpected nodeValue type: ${typeof nodeValue}`, {
+              actionId: id,
+              ruleId: ruleId,
+              dottedName: dottedName,
             })
-            logger.error(
-              `[assess-actions] ${exception.message}`,
-              exception.payload
-            )
-            captureException(exception)
             return undefined
           }
         } catch (error) {
-          const exception = new ActionAssessmentPublicodesException({
-            message: 'Error calling publicodes `engine.evaluate`',
-            cause: error,
-            action: { id, ruleId },
-            dottedName,
+          // The line keeps the stack, and there is nothing more to do: the
+          // action is skipped and the iteration goes on.
+          logger.warn(toError(error), {
+            actionId: id,
+            ruleId: ruleId,
+            dottedName: dottedName,
           })
-          logger.error(`[assess-actions] ${exception.message}`, {
-            ...exception.payload,
-            cause: error,
-          })
-          captureException(exception)
           return undefined
         }
       })

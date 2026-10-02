@@ -15,6 +15,16 @@ const posthogMock = vi.hoisted(() => ({
   capture: vi.fn(),
   captureException: vi.fn(),
   get_session_id: vi.fn(() => 'session-id'),
+  // The browser logger emits its lines through the SDK's own logger, with
+  // one no-op method per level.
+  logger: {
+    trace: vi.fn(),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    fatal: vi.fn(),
+  },
 }))
 
 vi.mock('posthog-js', () => ({ default: posthogMock }))

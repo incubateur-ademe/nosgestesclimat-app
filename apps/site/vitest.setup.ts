@@ -81,6 +81,9 @@ vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
   }),
+  // No-op, like `redirect` above: the real one rethrows Next's control-flow
+  // errors, and the test decides who throws.
+  unstable_rethrow: vi.fn(),
 }))
 
 // Mock uuid
@@ -93,6 +96,7 @@ vi.mock('@sentry/nextjs', () => ({
   captureException: vi.fn(),
   captureMessage: vi.fn(),
   setExtra: vi.fn(),
+  setUser: vi.fn(),
 }))
 
 // Mock next/font/local to avoid file-system reads in jsdom

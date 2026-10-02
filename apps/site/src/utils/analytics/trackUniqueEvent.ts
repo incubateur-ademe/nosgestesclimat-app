@@ -1,7 +1,7 @@
+import { APP_ENV } from '@/env/app-env'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import posthog from 'posthog-js'
-import { APP_ENV } from '../../../config/app-env'
 
 export const getTrackingKey = (...keys: string[]): string => {
   return `ngc_tracking_${keys.join('_')}`

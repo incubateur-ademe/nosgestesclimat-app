@@ -12,9 +12,15 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
 import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useMagicKey } from '@/hooks/useMagicKey'
-import { useEngine, useFormState, useRule, useUser } from '@/publicodes-state'
+import logger from '@/logger/logger.browser'
+import {
+  useCurrentSimulation,
+  useEngine,
+  useFormState,
+  useRule,
+  useUser,
+} from '@/publicodes-state'
 import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { twMerge } from 'cn'
@@ -107,15 +113,17 @@ export default function Navigation({
   const hasForgottenQuestionsOnLastQuestion =
     isLastQuestion && forgottenQuestions.length > 0
 
+  // Just for logging in case of forgottenQuestions
+  const { situation } = useCurrentSimulation()
   useEffect(() => {
     if (hasForgottenQuestionsOnLastQuestion) {
-      captureErrorForSentryAndPosthog(
-        new Error(
-          `Forgotten questions detected: ${forgottenQuestions.join(', ')}`
-        )
-      )
+      logger.warn('Forgotten questions detected', {
+        scope: 'site.interaction.testNavigation',
+        forgottenQuestions,
+        situation,
+      })
     }
-    // Error is only captured once
+    // One line per detection: the rest changes on every answer.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasForgottenQuestionsOnLastQuestion])
 

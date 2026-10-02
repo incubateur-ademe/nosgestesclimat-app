@@ -1,5 +1,5 @@
 'use client'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import logger from '@/logger/logger.browser'
 import type { ReactNode } from 'react'
 import React from 'react'
 import ErrorContent from './ErrorContent'
@@ -27,8 +27,9 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error) {
-    // Send error to Sentry
-    captureErrorForSentryAndPosthog(error)
+    // Handled here, and reported by the default capture of `error`: Sentry keeps
+    // the stack, PostHog Error Tracking the volume.
+    logger.error(error, { scope: 'site.view.errorBoundary' })
   }
 
   render() {

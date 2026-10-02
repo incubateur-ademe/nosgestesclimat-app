@@ -1,3 +1,4 @@
+import type { Logger as CoreLogger } from '@nosgestesclimat/core/features/logger/index'
 import winston from 'winston'
 import SentryTransport from 'winston-transport-sentry-node'
 import { config } from './config.ts'
@@ -72,5 +73,37 @@ const logger = winston.createLogger({
   format: combine(timestamp(), json(), errors({ stack: true })),
   transports,
 })
+
+/**
+ * Adapts the winston instance to the core `Logger` interface, so the legacy
+ * server keeps compiling — and keeps its own log shape — until it is migrated.
+ */
+const toCoreLogger = (winstonLogger: winston.Logger): CoreLogger => ({
+  child: (bindings) => toCoreLogger(winstonLogger.child(bindings)),
+  // No tracer in the legacy server: the span is a no-op, and the callback gets
+  // the scope-bound logger — what a `withSpan` call site actually uses.
+  withSpan: (scope, run) => run(toCoreLogger(winstonLogger.child({ scope }))),
+  // No tracer either: there is no span to annotate.
+  setSpanAttribute: () => undefined,
+  debug: (message, meta) => winstonLogger.debug(message, meta),
+  info: (message, meta) => winstonLogger.info(message, meta),
+  warn: (message, meta) =>
+    winstonLogger.warn(message instanceof Error ? message.message : message, {
+      ...meta,
+      ...(message instanceof Error ? errorMeta(message) : {}),
+    }),
+  error: (error, meta) =>
+    winstonLogger.error(error.message, { ...meta, ...errorMeta(error) }),
+  // winston has no `fatal` level, so the flag in the metadata keeps the
+  // distinction readable.
+  fatal: (error, meta) =>
+    winstonLogger.error(error.message, {
+      ...meta,
+      ...errorMeta(error),
+      fatal: true,
+    }),
+})
+
+export const coreLogger = toCoreLogger(logger)
 
 export default logger

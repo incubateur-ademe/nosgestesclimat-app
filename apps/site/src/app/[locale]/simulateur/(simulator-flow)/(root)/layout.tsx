@@ -5,12 +5,11 @@ import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import { getUserSession } from '@/services/auth/get-user-session'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
-import { NotFoundError } from '@/helpers/server/error'
 import { parseModelString } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
+import logger from '@/logger/logger.server'
 import { EngineProvider, FormProvider } from '@/publicodes-state'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
-import { captureException } from '@sentry/nextjs'
 import { redirect } from 'next/navigation'
 
 export default async function SimulationLayout({
@@ -26,7 +25,11 @@ export default async function SimulationLayout({
 
   const currentSimulation = await getCurrentSimulation()
   if (!currentSimulation) {
-    captureException(new NotFoundError(), { level: 'warning' })
+    // Warn, without an `Error`: no stack is needed, the `scope` below names
+    // the view this happened in.
+    logger.warn('No current simulation, redirecting to the start page', {
+      scope: 'site.view.simulationLayout',
+    })
     redirect(START_SIMULATION_PATH)
   }
   if (currentSimulation.progression === 1) {

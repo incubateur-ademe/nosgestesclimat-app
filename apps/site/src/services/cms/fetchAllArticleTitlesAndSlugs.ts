@@ -1,7 +1,8 @@
 import type { ArticleItemType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import i18nConfig, { type Locale } from '@/i18nConfig'
-import { captureException } from '@sentry/nextjs'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 const PAGE_SIZE = 100 // Utilisation d'une taille de page plus grande pour réduire le nombre d'appels
 
@@ -44,7 +45,9 @@ export async function fetchAllArticleTitlesAndSlugs({
 
     return allArticles
   } catch (error) {
-    captureException(error)
+    logger.warn(toError(error), {
+      scope: 'site.action.fetchAllArticleTitlesAndSlugs',
+    })
     return []
   }
 }

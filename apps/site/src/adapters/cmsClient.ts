@@ -1,7 +1,6 @@
-import { captureException } from '@sentry/nextjs'
 import type { ReactNode } from 'react'
 
-const isProduction = process.env.NEXT_PUBLIC_ENV === 'production'
+import { APP_ENV } from '@/env/app-env'
 
 export const cmsClient = async <T>(
   path: string,
@@ -15,26 +14,23 @@ export const cmsClient = async <T>(
   }
 
   // Passing an empty string returns both draft and published
-  fullUrl.searchParams.set('status', isProduction ? 'published' : '')
+  fullUrl.searchParams.set(
+    'status',
+    APP_ENV === 'production' ? 'published' : ''
+  )
 
-  try {
-    const response = await fetch(fullUrl, {
-      ...options,
-      headers,
-      // In seconds, production => 5 minutes, dev => 5 seconds
-      next: { revalidate: isProduction ? 60 * 5 : 5 },
-    })
+  const response = await fetch(fullUrl, {
+    ...options,
+    headers,
+    // In seconds, production => 5 minutes, dev => 5 seconds
+    next: { revalidate: APP_ENV === 'production' ? 60 * 5 : 5 },
+  })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    captureException(error)
-
-    throw error
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
   }
+
+  return await response.json()
 }
 
 type OptionalKeys<T> = Exclude<
