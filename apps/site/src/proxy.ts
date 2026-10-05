@@ -2,11 +2,21 @@ import { middlewareAuth } from '@/helpers/server/proxy/auth.middleware'
 import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags.middleware'
 import { middlewareMigrateLegacySessions } from '@/helpers/server/proxy/migrate-legacy-sessions.middleware'
 import { middlewareRegion } from '@/helpers/server/proxy/region.middleware'
+import {
+  clearSessionHeader,
+  setSessionHeaderFromCookie,
+} from '@/helpers/server/proxy/session-header'
 import i18nConfig from '@/i18nConfig'
 import { i18nRouter } from 'next-i18n-router'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
+  // Identity is only ever derived from the session cookie: an incoming
+  // `x-session` is a forgery. Cleared here, ahead of both paths that hand
+  // request headers to the route handler, because the ones that stay anonymous
+  // never overwrite it.
+  clearSessionHeader(request)
+
   // In Turbopack dev, Next.js forwards server actions between internal workers
   // via a self-fetch to localhost:3000, targeting the action's worker page
   // (e.g. `/[locale]/simulateur/bilan`). That self-fetch goes through this
@@ -15,8 +25,15 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   // makes it re-forward indefinitely → "failed to forward action response"
   // storm. Forward-fetches target a specific worker page on purpose and must
   // not be i18n-rewritten, so pass them through untouched.
+  //
+  // Being a re-entry, this hop runs no interceptor: re-derive the identity from
+  // the cookie rather than trust the `x-session` it carries, which any client
+  // can forge. Its headers are passed explicitly because `NextResponse.next()`
+  // alone would leave the route handler with the incoming set, stripped header
+  // included.
   if (request.headers.get('x-action-forwarded')) {
-    return NextResponse.next()
+    await setSessionHeaderFromCookie(request)
+    return NextResponse.next({ request: { headers: request.headers } })
   }
 
   // Phase 1 — Interceptors

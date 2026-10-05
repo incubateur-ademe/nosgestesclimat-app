@@ -44,6 +44,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     questionsByCategories,
     missingVariables,
     remainingQuestionsByCategories,
+    forgottenQuestions,
   } = useQuestions({
     root,
     safeEvaluate,
@@ -80,6 +81,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
         setCurrentQuestion,
         missingVariables,
         remainingQuestionsByCategories,
+        forgottenQuestions,
       }}>
       {children}
     </FormContext.Provider>
