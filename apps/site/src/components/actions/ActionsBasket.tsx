@@ -25,12 +25,12 @@ export default function ActionsBasket({
 
   const { t } = getServerTranslation({ locale })
 
-  const { actions, totalC02ImpactInKg } = plan
+  const { actions, totalImpact } = plan
   const actionsLength = actions.length
   const hasCommittedToActions = actionsLength > 0
 
   const { formattedValue: formattedActionsImpactSum, unit } = formatFootprint(
-    totalC02ImpactInKg,
+    totalImpact,
     {
       locale,
       metric: 'carbone',
@@ -70,7 +70,7 @@ export default function ActionsBasket({
                   } as unknown as ReactNode
                 }{' '}
               </Trans>
-              {totalC02ImpactInKg > 0 && (
+              {totalImpact > 0 && (
                 <>
                   {' '}
                   / -{formattedActionsImpactSum} {unit}{' '}

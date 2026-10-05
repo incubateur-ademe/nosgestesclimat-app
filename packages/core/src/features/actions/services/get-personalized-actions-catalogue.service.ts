@@ -63,7 +63,7 @@ export const getPersonalizedActionsCatalogue = async (
       actionsCommittedTo.length > 0
         ? {
             actions: actionsCommittedTo,
-            totalC02ImpactInKg: actionsCommittedTo.reduce((acc, action) => {
+            totalImpact: actionsCommittedTo.reduce((acc, action) => {
               return acc + (action.assessment?.impact ?? 0)
             }, 0),
           }
