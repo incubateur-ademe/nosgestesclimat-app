@@ -1,6 +1,3 @@
-import Button from '@/design-system/buttons/Button'
-import BottomBannerWithCTA from '@/design-system/layout/BottomBannerWithCTA'
-import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
@@ -8,7 +5,8 @@ import type { ActionPlan } from '@nosgestesclimat/core/features/actions/types/ac
 import { useId, type ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
 import ActionBasketItem from './actionsBasket/ActionBasketItem'
-import SavePlanLink from './actionsBasket/SavePlanLink'
+import DesktopSaveSelectionButtonSection from './actionsBasket/DesktopSaveSelectionButtonSection'
+import MobileSaveSelectionBanner from './actionsBasket/MobileSaveSelectionBanner'
 
 interface Props {
   plan: ActionPlan
@@ -29,58 +27,13 @@ export default function ActionsBasket({
   const actionsLength = actions.length
   const hasCommittedToActions = actionsLength > 0
 
-  const { formattedValue: formattedActionsImpactSum, unit } = formatFootprint(
-    totalImpact,
-    {
-      locale,
-      metric: 'carbone',
-    }
-  )
-
   return (
     <>
-      <BottomBannerWithCTA className="lg:hidden">
-        <SavePlanLink className="w-full max-w-[320px]">
-          <span className="text-center">
-            <span className="inline-block text-base/normal font-bold">
-              <Trans
-                locale={locale}
-                i18nKey="actions.seeActionPlanLink.mobile.label.firstLine">
-                Voir mon plan d'action
-              </Trans>
-            </span>
-            <br />
-            <span className="inline-block text-sm/normal">
-              <Trans
-                locale={locale}
-                i18nKey="actions.seeActionPlanLink.mobile.label.secondLine"
-                values={{
-                  actionChoicesLength: actionsLength,
-                  pluralSuffix: actionsLength > 1 ? 's' : '',
-                }}>
-                {
-                  {
-                    actionChoicesLength: actionsLength,
-                  } as unknown as ReactNode
-                }{' '}
-                action
-                {
-                  {
-                    pluralSuffix: actionsLength > 1 ? 's' : '',
-                  } as unknown as ReactNode
-                }{' '}
-              </Trans>
-              {totalImpact > 0 && (
-                <>
-                  {' '}
-                  / -{formattedActionsImpactSum} {unit}{' '}
-                  <Trans locale={locale}>CO₂e / an</Trans>
-                </>
-              )}
-            </span>
-          </span>
-        </SavePlanLink>
-      </BottomBannerWithCTA>
+      <MobileSaveSelectionBanner
+        actionsLength={actionsLength}
+        totalImpact={totalImpact}
+        locale={locale}
+      />
       <section
         aria-labelledby={titleId}
         className="sticky top-22 mb-12 hidden w-80 rounded-xl border border-slate-200 p-4 lg:block">
@@ -154,27 +107,10 @@ export default function ActionsBasket({
           </ul>
         )}
 
-        <div className="-mx-4 flex justify-center border-t border-slate-300 pt-5">
-          {hasCommittedToActions ? (
-            <SavePlanLink>
-              <Trans i18nKey="actions.basket.saveButton.label" locale={locale}>
-                Sauvegarder mon plan d'action
-              </Trans>
-            </SavePlanLink>
-          ) : (
-            <Button
-              disabled
-              aria-label={t(
-                'actions.basket.saveButton.ariaLabel',
-                "Sauvegarder mon plan d'actions et accéder à ma page plan d'actions"
-              )}
-              className="text-sm!">
-              <Trans i18nKey="actions.basket.saveButton.label" locale={locale}>
-                Sauvegarder mon plan d'action
-              </Trans>
-            </Button>
-          )}
-        </div>
+        <DesktopSaveSelectionButtonSection
+          locale={locale}
+          hasCommittedToActions={actionsLength > 0}
+        />
       </section>
     </>
   )
