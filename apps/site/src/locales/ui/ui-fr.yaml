@@ -1489,3 +1489,6 @@ entries:
   actions.seeActionPlanLink.mobile.label.secondLine_one: '{{count}} actions'
   actions.seeActionPlanLink.mobile.label.secondLine_many: '{{count}} actions'
   actions.seeActionPlanLink.mobile.label.secondLine_other: '{{count}} actions'
+  actions.seeActionPlanLink.mobile.label.secondLine: '{{actionChoicesLength}} action{{pluralSuffix}} '
+  login.actionPlan.buttonLabel: M’inscrire et voir mon plan d’action
+  login.actionPlan.title: Créez votre espace pour accéder à votre plan d’action

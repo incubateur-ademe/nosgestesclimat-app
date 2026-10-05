@@ -33,7 +33,7 @@ interface ActionsPageProps extends Omit<
    * Total carbon footprint in kg of the user's latest simulation.
    */
   totalFootprint?: number
-  plan: ActionPlan | null
+  plan?: ActionPlan | null
 }
 
 export default function ActionsPage({

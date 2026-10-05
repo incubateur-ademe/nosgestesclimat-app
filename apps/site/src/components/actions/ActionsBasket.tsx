@@ -27,7 +27,6 @@ export default function ActionsBasket({
 
   const { actions, totalC02ImpactInKg } = plan
   const actionsLength = actions.length
-
   const hasCommittedToActions = actionsLength > 0
 
   const { formattedValue: formattedActionsImpactSum, unit } = formatFootprint(
@@ -41,37 +40,46 @@ export default function ActionsBasket({
   return (
     <>
       <BottomBannerWithCTA className="lg:hidden">
-        <SavePlanLink
-          className="w-full max-w-[320px]"
-          label={
-            <span className="text-center">
-              <span className="inline-block text-base/normal font-bold">
-                <Trans
-                  locale={locale}
-                  i18nKey="actions.seeActionPlanLink.mobile.label.firstLine">
-                  Voir mon plan d'action
-                </Trans>
-              </span>
-              <br />
-              <span className="inline-block text-sm/normal">
-                <Trans
-                  locale={locale}
-                  i18nKey="actions.seeActionPlanLink.mobile.label.secondLine"
-                  // Ne fonctionne pas
-                  count={actionsLength}>
-                  {{ count: actionsLength } as unknown as ReactNode} actions
-                </Trans>
-                {totalC02ImpactInKg > 0 && (
-                  <>
-                    {' '}
-                    / -{formattedActionsImpactSum} {unit}{' '}
-                    <Trans locale={locale}>CO₂e / an</Trans>
-                  </>
-                )}
-              </span>
+        <SavePlanLink className="w-full max-w-[320px]">
+          <span className="text-center">
+            <span className="inline-block text-base/normal font-bold">
+              <Trans
+                locale={locale}
+                i18nKey="actions.seeActionPlanLink.mobile.label.firstLine">
+                Voir mon plan d'action
+              </Trans>
             </span>
-          }
-        />
+            <br />
+            <span className="inline-block text-sm/normal">
+              <Trans
+                locale={locale}
+                i18nKey="actions.seeActionPlanLink.mobile.label.secondLine"
+                values={{
+                  actionChoicesLength: actionsLength,
+                  pluralSuffix: actionsLength > 1 ? 's' : '',
+                }}>
+                {
+                  {
+                    actionChoicesLength: actionsLength,
+                  } as unknown as ReactNode
+                }{' '}
+                action
+                {
+                  {
+                    pluralSuffix: actionsLength > 1 ? 's' : '',
+                  } as unknown as ReactNode
+                }{' '}
+              </Trans>
+              {totalC02ImpactInKg > 0 && (
+                <>
+                  {' '}
+                  / -{formattedActionsImpactSum} {unit}{' '}
+                  <Trans locale={locale}>CO₂e / an</Trans>
+                </>
+              )}
+            </span>
+          </span>
+        </SavePlanLink>
       </BottomBannerWithCTA>
       <section
         aria-labelledby={titleId}

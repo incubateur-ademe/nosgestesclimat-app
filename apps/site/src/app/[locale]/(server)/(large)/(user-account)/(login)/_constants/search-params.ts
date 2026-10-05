@@ -1,7 +1,7 @@
 import * as v from 'valibot'
 
 export const AUTHORIZED_FROM_SEARCH_PARAMS_VALUES = {
-  'action-plan': 'action-plan',
+  'build-action-plan': 'build-action-plan',
 } as const
 
 export type AuthorizedFromSearchParamsValues =

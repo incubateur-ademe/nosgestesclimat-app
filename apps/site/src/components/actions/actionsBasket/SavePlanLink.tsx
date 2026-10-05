@@ -15,7 +15,7 @@ export default async function SavePlanLink({ children, className }: Props) {
   // si non connecté /mon-espace/connexion
   const href = userSession?.isAuth
     ? ACTIONS_MY_PLAN_PATH
-    : `${CONNEXION_PATH}?from=${AUTHORIZED_FROM_SEARCH_PARAMS_VALUES['action-plan']}`
+    : `${CONNEXION_PATH}?from=${AUTHORIZED_FROM_SEARCH_PARAMS_VALUES['build-action-plan']}`
 
   return (
     <ButtonLinkServer className={cn('text-sm!', className)} href={href}>

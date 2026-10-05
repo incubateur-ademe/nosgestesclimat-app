@@ -2261,3 +2261,9 @@ entries:
   actions.seeActionPlanLink.mobile.label.secondLine_other.lock: '{{count}} actions'
   actions.seeActionPlanLink.mobile.label.firstLine: View my action plan
   actions.seeActionPlanLink.mobile.label.firstLine.lock: Voir mon plan d'action
+  actions.seeActionPlanLink.mobile.label.secondLine: '{{actionChoicesLength}} action{{pluralSuffix}}'
+  actions.seeActionPlanLink.mobile.label.secondLine.lock: '{{actionChoicesLength}} action{{pluralSuffix}} '
+  login.actionPlan.buttonLabel: Sign up and view my action plan
+  login.actionPlan.buttonLabel.lock: M’inscrire et voir mon plan d’action
+  login.actionPlan.title: Create your account to access your action plan
+  login.actionPlan.title.lock: Créez votre espace pour accéder à votre plan d’action
