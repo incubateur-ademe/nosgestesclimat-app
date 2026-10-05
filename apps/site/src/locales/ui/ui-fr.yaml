@@ -1492,3 +1492,4 @@ entries:
   actions.seeActionPlanLink.mobile.label.secondLine: '{{actionChoicesLength}} action{{pluralSuffix}} '
   login.actionPlan.buttonLabel: M’inscrire et voir mon plan d’action
   login.actionPlan.title: Créez votre espace pour accéder à votre plan d’action
+  actions.plan.abandonCommitment.button.ariaLabel: Retirer l'action de votre sélection
