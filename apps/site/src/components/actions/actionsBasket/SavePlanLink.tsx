@@ -10,9 +10,6 @@ interface Props extends React.ComponentPropsWithoutRef<'a'> {
 
 export default async function SavePlanLink({ children, className }: Props) {
   const userSession = await getUserSession()
-  // determiner le lien vers lequel diriger l'utilisateur
-  // si connecté : /actions/mon-plan
-  // si non connecté /mon-espace/connexion
   const href = userSession?.isAuth
     ? ACTIONS_MY_PLAN_PATH
     : `${CONNEXION_PATH}?from=${AUTHORIZED_FROM_SEARCH_PARAMS_VALUES['build-action-plan']}`
