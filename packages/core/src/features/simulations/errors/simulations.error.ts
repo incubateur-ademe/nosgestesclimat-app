@@ -3,8 +3,11 @@ import { DomainError } from '../../../lib/errors.ts'
 import type { ComputationAlreadyExistsError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
-  constructor() {
+  public readonly simulationId?: string
+
+  constructor(simulationId?: string) {
     super('simulation_not_found', 'Simulation introuvable')
+    this.simulationId = simulationId
   }
 }
 
@@ -26,12 +29,13 @@ export class ZeroFootprintError extends DomainError<'zero_footprint'> {
   }
 }
 
-export class SimulationInvalidModelError extends DomainError<'simulation_invalid_model'> {
+export class SimulationInvalidModelStringError extends DomainError<'simulation_invalid_model'> {
   public readonly model: string
-
-  constructor(model: string) {
+  public readonly simulationId?: string
+  constructor(model: string, simulationId?: string) {
     super('simulation_invalid_model', 'Modèle de simulation invalide')
     this.model = model
+    this.simulationId = simulationId
   }
 }
 
@@ -45,7 +49,7 @@ export type CompleteSimulationError =
   | SimulationIncompleteError
   | SimulationNotFoundError
   | SimulationCompletedError
-  | SimulationInvalidModelError
+  | SimulationInvalidModelStringError
   | ZeroFootprintError
   | ComputationAlreadyExistsError
   | InvalidPayloadError

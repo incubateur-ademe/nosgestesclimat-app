@@ -1,17 +1,13 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../../test-utils/empty-database.ts'
+import { createTestLogger } from '../../../../../test-utils/logger.ts'
 import { organisationFactory } from '../../../../organisations/factories/organisation.factory.ts'
 import { simulationFactory } from '../../../../simulations/factories/simulation.factory.ts'
 import { pollFactory } from '../../../factories/poll.factory.ts'
 import { createComputePollStats } from '../compute-poll-stats.ts'
 
-const logger = {
-  error: vi.fn(),
-  warn: vi.fn(),
-  info: vi.fn(),
-  debug: vi.fn(),
-}
+const logger = createTestLogger()
 
 const computePollStats = createComputePollStats({ logger })
 
@@ -44,6 +40,9 @@ describe('computePollStats', () => {
     )
     // The simulation still being answered is not a participant.
     expect(participantsCount).toBe(2)
+    // Without the size, the span's duration says nothing.
+    expect(logger.setSpanAttribute).toHaveBeenCalledWith('participantsCount', 2)
+    expect(logger.setSpanAttribute).toHaveBeenCalledWith('simulationCount', 2)
   })
 
   it('derives fun facts from the situation', async () => {

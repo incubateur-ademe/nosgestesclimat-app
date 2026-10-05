@@ -1,5 +1,6 @@
+import { APP_ENV } from '@/env/app-env'
+import { publicEnv } from '@/env/public'
 import posthog, { type PostHogConfig } from 'posthog-js'
-import { APP_ENV } from '../../../config/app-env'
 import { savedCookieState } from './cookieStateStore'
 import {
   getIframeInformation,
@@ -90,17 +91,18 @@ export class PostHog {
   }
 
   private initPosthog() {
-    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    if (!process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN) {
       return
     }
 
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_API_HOST,
       ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST,
       cookieless_mode: 'on_reject',
       defaults: '2026-01-30',
       debug: APP_ENV !== 'production',
       person_profiles: 'identified_only',
+      tracing_headers: tracingHeaders(),
       /** Unfortunatly, NextJS router.replace does not trigger `history.pushState` systematically, so we need to capture pageview with React */
       capture_pageview: false,
       capture_pageleave: true,
@@ -109,6 +111,22 @@ export class PostHog {
         url_ignorelist: ['/simulateur/bilan'],
       },
       rageclick: false,
+      logs: {
+        // `browser` completes `web-server` and `worker`: the third runtime, named
+        // for where it runs. Same namespace as the back end, so the whole
+        // product stays retrievable as one.
+        serviceName: 'browser',
+        environment: APP_ENV,
+        serviceVersion: process.env.NEXT_PUBLIC_APP_VERSION,
+        resourceAttributes: {
+          'service.namespace': 'nosgestesclimat',
+          // The SDK's `environment` lands on the deprecated
+          // `deployment.environment`; the back end carries
+          // `deployment.environment.name`. Emit both, so one filter reads the
+          // three runtimes.
+          'deployment.environment.name': APP_ENV,
+        },
+      },
 
       custom_campaign_params: ['mtm_campaign', 'mtm_kwd', 'mtm_keyword'], // Enable to set query parameters as properties on the events
 
@@ -129,4 +147,18 @@ export class PostHog {
   private registerProperties() {
     posthog.register(this.iframeInformation)
   }
+}
+
+/**
+ * Hosts whose requests carry the PostHog identity headers. Sending them on our
+ * own backend's requests is what lets the server logs link back to the person
+ * and the session recording.
+ *
+ * `publicEnv` carries the site URL validated, so this reads the contract
+ * rather than `process.env` again — and has nothing to catch.
+ */
+function tracingHeaders(): string[] | undefined {
+  const hostname = new URL(publicEnv.NEXT_PUBLIC_SITE_URL).hostname
+
+  return hostname ? [hostname] : undefined
 }

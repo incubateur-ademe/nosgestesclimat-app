@@ -3,7 +3,8 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIsClient } from '@/hooks/useIsClient'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import logger from '@/logger/logger.browser'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { twMerge } from 'cn'
 import isMobile from 'is-mobile'
 import type { PropsWithChildren, ReactNode } from 'react'
@@ -74,7 +75,7 @@ export default function CopyButton({
         if (err instanceof DOMException && err.name === 'AbortError') {
           return
         }
-        captureErrorForSentryAndPosthog(err)
+        logger.error(toError(err), { scope: 'site.interaction.copyButton' })
         setIsError(true)
       }
     }
@@ -92,7 +93,7 @@ export default function CopyButton({
           buttonRef.current?.focus()
         }, 100)
       } catch (err) {
-        captureErrorForSentryAndPosthog(err)
+        logger.error(toError(err), { scope: 'site.interaction.copyButton' })
         setIsError(true)
       }
     }

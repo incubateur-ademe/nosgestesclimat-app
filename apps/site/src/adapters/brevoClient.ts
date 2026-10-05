@@ -1,4 +1,4 @@
-import { env } from '@/env.server'
+import { env } from '@/env/server'
 import { createBrevoClient } from '@nosgestesclimat/core/features/emails/brevo/client'
 
 const emailClient = createBrevoClient({

@@ -5,9 +5,10 @@ import { useEffect, type Dispatch } from 'react'
 import { useCookieManagement } from '@/components/cookies/useCookieManagement'
 import { EMAIL_PENDING_AUTHENTICATION_KEY } from '@/constants/authentication/sessionStorage'
 import { reconcileUserOnAuth } from '@/helpers/user/reconcileOnAuth'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import _logger from '@/logger/logger.browser'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
@@ -18,6 +19,10 @@ import type {
   Tracker,
   VerifyStrategy,
 } from '../types'
+
+/** One scope for both steps of the sign-in: the unit is the visitor's
+ * authentication, and the step that failed stays in the error. */
+const logger = _logger.child({ scope: 'site.interaction.auth' })
 
 function useVerifyEffect(
   state: AuthPhase,
@@ -43,7 +48,7 @@ function useVerifyEffect(
         }
       })
       .catch((error) => {
-        captureErrorForSentryAndPosthog(error)
+        logger.error(toError(error))
         dispatch({ type: 'CODE_INVALID', reason: new UnknownCodeError() })
       })
 
@@ -92,7 +97,7 @@ function useCompletionEffect(
           router.refresh()
         }
       } catch (error) {
-        captureErrorForSentryAndPosthog(error)
+        logger.error(toError(error))
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps

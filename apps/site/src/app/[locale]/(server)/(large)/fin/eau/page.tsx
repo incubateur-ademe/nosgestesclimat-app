@@ -39,7 +39,6 @@ export default async function SimulationPage({
   if (!user) {
     notFound()
   }
-
   return (
     <>
       <FootprintsLinks

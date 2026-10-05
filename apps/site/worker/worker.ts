@@ -1,4 +1,5 @@
 import { createAssessActions } from '@nosgestesclimat/core/features/actions/services/assess-actions.service'
+import type { LogLevel } from '@nosgestesclimat/core/features/logger/index'
 import { createComputePollStats } from '@nosgestesclimat/core/features/polls/stats/legacy/compute-poll-stats'
 import { createProcessNextPendingPollStats } from '@nosgestesclimat/core/features/polls/stats/services/process-next-pending-poll-stats'
 import {
@@ -7,20 +8,27 @@ import {
 } from '@nosgestesclimat/core/features/simulation-computation/services/engine-registry.service'
 import { createProcessNextPendingComputation } from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
 import type { DomainError } from '@nosgestesclimat/core/lib/errors'
-import { currentMemoryMB } from '@nosgestesclimat/core/lib/memory'
+import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
 import type { Result } from '@nosgestesclimat/core/lib/result'
-import logger from '../src/logger.ts'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
+import { createLogger } from '../src/logger/logger.node.ts'
+import { captureException, flushObservability } from './observability.ts'
+
+// The worker runs unbundled and has no `env/server.ts`: it reads the two
+// variables its logger cares about here, rather than in the shared factory.
+const logger = createLogger({
+  service: 'worker',
+  level: (process.env.LOG_LEVEL as LogLevel | undefined) ?? 'info',
+  pretty: process.env.LOG_PRETTY === 'true',
+  onCapture: captureException,
+})
 
 const POLL_INTERVAL_MS = 2000
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 const warmUpHotEngines = createWarmUpHotEngines({ logger })
 const getEngineForModel = createGetEngineForModel({ logger })
-const assessActions = createAssessActions({
-  logger,
-  // TODO: Setup Sentry in worker
-  captureException() {},
-})
+const assessActions = createAssessActions({ logger })
 const processNextPendingComputation = createProcessNextPendingComputation({
   assessActions,
 })
@@ -31,48 +39,78 @@ const processNextPendingPollStats = createProcessNextPendingPollStats({
 
 let running = true
 process.on('SIGTERM', () => {
-  logger.info('[worker] SIGTERM received, shutting down after current job')
+  logger.info('SIGTERM received, shutting down after current job')
   running = false
 })
 process.on('SIGINT', () => {
-  logger.info('[worker] SIGINT received, shutting down after current job')
+  logger.info('SIGINT received, shutting down after current job')
   running = false
 })
+
+/**
+ * A process that survived an unknown failure keeps running from an unknown
+ * state: it dies instead, and the orchestrator restarts a sane one.
+ */
+async function crash(error: Error) {
+  logger.fatal(error)
+  await flushObservability()
+  process.exit(1)
+}
+
+process.on('uncaughtException', (error) => void crash(error))
+process.on('unhandledRejection', (reason) => void crash(toError(reason)))
 
 async function loop(
   name: string,
   processNext: () => Promise<Result<boolean, DomainError>>
 ) {
+  const jobLogger = logger.child({ job: name })
+
   while (running) {
     try {
-      const result = await processNext()
-      if (result.success && result.data) {
-        logger.info(`[worker] ${name} processed`, currentMemoryMB())
-        continue
-      }
-      if (!result.success) {
-        logger.error(`[worker] ${name} failed`, { error: result.error })
-      }
+      // The span covers the whole iteration: its lines share the trace ids, and
+      // a failure marks the iteration as failed. Either way the loop keeps
+      // running: a job that cannot be processed is not retried in place, it
+      // needs a human.
+      await jobLogger.withSpan(`site.worker.${name}`, async (logger) => {
+        const result = await processNext()
+
+        if (!result.success) {
+          logger.error(result.error)
+          return
+        }
+
+        if (result.data) {
+          logger.info('job processed', { ...memoryAttributes() })
+        }
+      })
     } catch (error) {
-      logger.error(`[worker] ${name} failed`, { error })
+      // The span is already marked as failed by `withSpan`.
+      jobLogger.error(toError(error))
     }
+
     await sleep(POLL_INTERVAL_MS)
   }
 }
 
 async function main() {
-  logger.info('[worker] Starting', currentMemoryMB())
+  logger.info('worker starting', { ...memoryAttributes() })
 
-  await warmUpHotEngines()
+  try {
+    await warmUpHotEngines()
+  } catch (error) {
+    await crash(toError(error))
+  }
 
   await Promise.all([
-    loop('Simulation computation', () =>
+    loop('simulationComputation', () =>
       processNextPendingComputation(getEngineForModel)
     ),
-    loop('Poll stats computation', processNextPendingPollStats),
+    loop('pollStatsComputation', processNextPendingPollStats),
   ])
 
-  logger.info('[worker] Exiting')
+  logger.info('worker exiting')
+  await flushObservability()
 }
 
-main()
+void main()

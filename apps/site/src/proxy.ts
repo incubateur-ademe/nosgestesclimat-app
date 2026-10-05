@@ -1,5 +1,6 @@
 import { middlewareAuth } from '@/helpers/server/proxy/auth.middleware'
 import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags.middleware'
+import { middlewareIdentity } from '@/helpers/server/proxy/identity.middleware'
 import { middlewareMigrateLegacySessions } from '@/helpers/server/proxy/migrate-legacy-sessions.middleware'
 import { middlewareRegion } from '@/helpers/server/proxy/region.middleware'
 import i18nConfig from '@/i18nConfig'
@@ -7,15 +8,21 @@ import { i18nRouter } from 'next-i18n-router'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  // In Turbopack dev, Next.js forwards server actions between internal workers
-  // via a self-fetch to localhost:3000, targeting the action's worker page
-  // (e.g. `/[locale]/simulateur/bilan`). That self-fetch goes through this
+  // Next forwards a server action to the worker holding it through a
+  // self-fetch stamped `x-action-forwarded`, which comes back through this
   // proxy. i18nRouter would rewrite its no-locale URL (prepending the default
   // locale), which changes the page seen by `selectWorkerForForwarding` and
   // makes it re-forward indefinitely → "failed to forward action response"
   // storm. Forward-fetches target a specific worker page on purpose and must
   // not be i18n-rewritten, so pass them through untouched.
+  //
+  // They still carry the headers of the request that forwarded them — Next
+  // copies them all, `x-session` included — and the trace they open holds the
+  // action's own work: identify them like the rest, or what they write stays
+  // anonymous.
   if (request.headers.get('x-action-forwarded')) {
+    middlewareIdentity(request)
+
     return NextResponse.next()
   }
 
@@ -27,6 +34,10 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   const auth = await middlewareAuth(request)
   if (auth.redirect) return auth.redirect
+
+  // Reads the `x-session` header auth just set. Reads only: no redirect,
+  // no cookies.
+  middlewareIdentity(request)
 
   const region = await middlewareRegion(request)
 

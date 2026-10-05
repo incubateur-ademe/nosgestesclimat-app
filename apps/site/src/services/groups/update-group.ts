@@ -10,8 +10,9 @@ export const updateGroup = async ({
 }: {
   groupId: string
   name: string
-}) =>
+}) => {
   await fetchServer<Group>(`${GROUP_URL}/${groupId}`, {
     method: 'PUT',
     body: { name },
   })
+}

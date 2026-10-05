@@ -2,18 +2,39 @@ import type { NextConfig } from 'next'
 import { version } from './package.json'
 
 import createMDX from '@next/mdx'
+import { withPostHogConfig } from '@posthog/nextjs-config'
 import { SentryBuildOptions, withSentryConfig } from '@sentry/nextjs'
 
 import redirects from './config/redirects.js'
 
-import { APP_ENV } from './config/app-env'
 import { remoteImagesPatterns } from './config/remoteImagesPatterns'
+import { APP_ENV } from './src/env/app-env'
+// The build validates the server contract like the server does: the same
+// primitives (`requiredInProduction`, the one error shape), and a variable the
+// upload needs is missing exactly where the build runs.
+import { env } from './src/env/server'
 
 const withMDX = createMDX({
   extension: /\.mdx$/,
 })
 
+/**
+ * What the browser bundle cannot read from its process, inlined at build time:
+ * the released commit and the Sentry DSN, which the server and the worker read
+ * from their environment at runtime. One source each — a `NEXT_PUBLIC_` twin
+ * left to hand drifts silently, and a browser without a DSN reports nothing.
+ */
+const browserEnv = {
+  ...(process.env.SOURCE_VERSION
+    ? { NEXT_PUBLIC_APP_VERSION: process.env.SOURCE_VERSION }
+    : {}),
+  ...(process.env.SENTRY_DSN
+    ? { NEXT_PUBLIC_SENTRY_DSN: process.env.SENTRY_DSN }
+    : {}),
+}
+
 const nextConfig = withMDX({
+  env: browserEnv,
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   reactStrictMode: true,
   transpilePackages: ['@nosgestesclimat/core'],
@@ -95,7 +116,9 @@ const nextConfig = withMDX({
   },
 } satisfies NextConfig)
 
-const releaseName = `${process.env.SOURCE_VERSION ?? version}-${process.env.APP ?? APP_ENV}`
+// One release everywhere: the deployed commit SHA, the same string as
+// `service.version` — the deploy env already records the environment.
+const releaseName = process.env.SOURCE_VERSION ?? version
 const sentryConfig: SentryBuildOptions = {
   // Suppresses source map uploading logs during dev build
   silent: APP_ENV !== 'production',
@@ -117,6 +140,33 @@ const sentryConfig: SentryBuildOptions = {
   telemetry: false,
 }
 
+/**
+ * Source maps reach PostHog at build time, browser chunks and server ones alike
+ * (the package globs `.next/static` and `.next/server`, uploads, then strips
+ * the maps from the build output). Serving them instead — what
+ * `productionBrowserSourceMaps` alone did — left PostHog fetching them from the
+ * live site: a fetch that a deploy's rotating chunk names eventually break, and
+ * that publishes the sources.
+ *
+ * In production the contract above makes the key and the project id mandatory,
+ * so this branch is only skipped where there is nothing to symbolicate: a local
+ * `next build` is a production build that deploys nothing (`APP_ENV`).
+ */
+const configWithSourceMaps =
+  env.POSTHOG_PERSONAL_API_KEY && env.POSTHOG_PROJECT_ID
+    ? withPostHogConfig(nextConfig, {
+        personalApiKey: env.POSTHOG_PERSONAL_API_KEY,
+        projectId: env.POSTHOG_PROJECT_ID,
+        // The project is on the EU instance; the package defaults to the US one.
+        host: 'https://eu.posthog.com',
+        sourcemaps: {
+          // The same release string as `service.version` and the Sentry release
+          // when the build knows it; the package falls back to the git commit.
+          ...(env.SOURCE_VERSION ? { releaseVersion: env.SOURCE_VERSION } : {}),
+        },
+      })
+    : nextConfig
+
 export default process.env.NODE_ENV === 'production'
-  ? withSentryConfig(nextConfig, sentryConfig)
-  : nextConfig
+  ? withSentryConfig(configWithSourceMaps, sentryConfig)
+  : configWithSourceMaps

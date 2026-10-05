@@ -8,10 +8,11 @@ import ConfirmationModal from '@/design-system/modals/ConfirmationModal'
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import logger from '@/logger/logger.browser'
 import type { Group, Participant } from '@/types/groups'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { twMerge } from 'cn'
 import isMobile from 'is-mobile'
 import { useState, useTransition } from 'react'
@@ -101,7 +102,7 @@ export default function RankingMember({
 
         setIsConfirmationModalOpen(false)
       } catch (error) {
-        captureErrorForSentryAndPosthog(error)
+        logger.error(toError(error), { scope: 'site.interaction.removeParticipant' })
       }
     })
   }

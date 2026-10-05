@@ -6,7 +6,8 @@ import type {
 import { cmsClient } from '@/adapters/cmsClient'
 import { PAGE_SIZE } from '@/constants/blog/pagination'
 import { type Locale } from '@/i18nConfig'
-import { captureException } from '@sentry/nextjs'
+import logger from '@/logger/logger.server'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchHomepageMetadata({
   locale,
@@ -62,7 +63,7 @@ export async function fetchHomepageMetadata({
       pageCount: meta?.pagination?.pageCount ?? 0,
     }
   } catch (error) {
-    captureException(error)
+    logger.warn(toError(error), { scope: 'site.action.fetchHomepageMetadata' })
 
     return
   }

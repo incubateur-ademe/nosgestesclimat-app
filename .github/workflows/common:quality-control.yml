@@ -42,14 +42,30 @@ jobs:
             packages/*/tsconfig.tsbuildinfo
           key: ${{ runner.os }}-tsc-${{ hashFiles('apps/*/tsconfig.json', 'packages/*/tsconfig.json') }}
 
+      # `site generate` runs `next typegen`, which loads `next.config.ts` and
+      # therefore the server env contract: without these values the contract
+      # throws, and `next typegen` writes neither `next-env.d.ts` nor the route
+      # types, so `PageProps` and `LayoutProps` go missing at typecheck time.
       - name: Generate types, db client…
-        run: pnpm --filter "...[origin/main]..." generate
+        run: |
+          set -a
+          source .github/e2e-local.env
+          source apps/site/.env.e2e
+          set +a
+          pnpm --filter "...[origin/main]..." generate
 
       - name: Lint
         run: pnpm --filter "[origin/main]" lint
 
       - name: Typecheck
         run: pnpm --filter "...[origin/main]" typecheck
+
+      # The worker runs these TypeScript sources without a bundler, through
+      # Node's strip-only loader: a parameter property, an enum or a namespace
+      # anywhere on its import graph stops it from starting. Nothing else in
+      # CI loads that graph.
+      - name: Load the worker's sources under strip-only TypeScript
+        run: pnpm --filter "...[origin/main]" --if-present run check:worker
 
       - name: Run unit and integration tests
         run: pnpm --filter "...[origin/main]" test

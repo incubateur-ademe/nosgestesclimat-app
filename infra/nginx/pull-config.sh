@@ -78,7 +78,10 @@ fi
 # On lit donc les check-runs directement : vert si toutes sont "completed"
 # avec une conclusion success/skipped/neutral, aucune en cours ou en échec.
 # Un commit n'a jamais plus de 100 check-runs ici → une seule requête suffit.
-if [ "$ENVIRONMENT" = "prod" ]; then
+# `ENVIRONMENT` is `production` in prod, same as the app's `APP_ENV` (see
+# otelcol-config.yaml). This script is only downloaded at first boot: renaming
+# the value in deploy.env without re-fetching it silently disables this gate.
+if [ "$ENVIRONMENT" = "production" ]; then
     RESP=$(curl -fsSL --max-time 30 --retry 3 \
         -H "Accept: application/vnd.github+json" \
         -H "User-Agent: nginx-config-pull" \

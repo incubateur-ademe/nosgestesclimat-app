@@ -1,5 +1,6 @@
+import logger from '@/logger/logger.browser'
 import type { Engine } from '@/publicodes-state/types'
-import { captureErrorForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import type { EvaluatedNode, PublicodesExpression } from 'publicodes'
 
 export const safeEvaluateHelper = (
@@ -10,9 +11,10 @@ export const safeEvaluateHelper = (
   try {
     evaluation = engineUsed.evaluate(expr)
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.warn(error)
-    captureErrorForSentryAndPosthog(error)
+    // A throw here is a bug, not a graceful fallback: `error` level, and the
+    // capture follows it. The expression stays out of the line — it can hold
+    // answers.
+    logger.error(toError(error), { scope: 'site.engine.safeEvaluate' })
   }
   return evaluation
 }

@@ -132,7 +132,10 @@ processors:
       - key: service.name
         value: nginx
         action: upsert
-      - key: deployment.environment
+      # `deployment.environment.name` is the key behind PostHog Logs'
+      # Environment facet. The value matches the app's `APP_ENV`
+      # (`production`, `preprod`) so one filter covers the three runtimes.
+      - key: deployment.environment.name
         value: ${env:ENVIRONMENT}
         action: upsert
 
