@@ -20,6 +20,7 @@ export default function useFormState() {
     relevantAnsweredQuestions,
     remainingQuestionsByCategories,
     missingVariables,
+    forgottenQuestions,
   } = useContext(formContext)
 
   const {
@@ -111,6 +112,10 @@ export default function useFormState() {
      */
     remainingQuestionsByCategories,
     /**
+     * The questions that were "forgotten": still missing while placed before the last answered question, or already answered out of the base order
+     */
+    forgottenQuestions,
+    /**
      * Advancement of the test between 0 and 1. This is different from "progression" which it is based on the current question index here and not on the number of answered questions.
      */
     testAdvancement,
@@ -122,7 +127,6 @@ export default function useFormState() {
      * Is true if the next question has already been seen in the current session
      */
     nextQuestionAlreadySeen: relevantAnsweredQuestions.includes(nextQuestion),
-
     /**
      * Is true if the form provider has been initialized
      */

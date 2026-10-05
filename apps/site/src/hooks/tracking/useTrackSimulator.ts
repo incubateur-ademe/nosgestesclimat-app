@@ -32,7 +32,7 @@ export function useTrackSimulator() {
 
   const { relevantAnsweredQuestions, remainingQuestions } = useFormState()
 
-  const { progression, foldedSteps } = currentSimulation
+  const { progression, foldedSteps, situation } = currentSimulation
 
   const { cookieState } = useCookieManagement()
 
@@ -101,6 +101,11 @@ export function useTrackSimulator() {
           bilanCarbone: getNumericValue('bilan'),
           bilanEau: getNumericValue('bilan', 'eau'),
           timeSpentOnSimulation,
+          age:
+            (situation['profil . âge'] as string | undefined) ?? 'non défini',
+          location:
+            (situation['logement . lieu de vie'] as string | undefined) ??
+            'non défini',
         })
       )
 
@@ -113,5 +118,6 @@ export function useTrackSimulator() {
     simulationId,
     currentSimulation,
     cookieState,
+    situation,
   ])
 }
