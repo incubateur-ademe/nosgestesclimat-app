@@ -1,20 +1,17 @@
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import CountBadge from '@/design-system/layout/CountBadge'
 import type { Locale } from '@/i18nConfig'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { ActionPlan } from '@nosgestesclimat/core/features/actions/types/action'
 import { Star } from 'lucide-react'
 import FileSearchIcon from '../icons/FileSearchIcon'
 import Trans from '../translation/trans/TransServer'
-import { getActionsWithChoice } from './utils/getActionsWithChoice'
 
 interface Props {
-  actions: MaybePersonalizedAction[] | null
+  plan: ActionPlan
   locale: Locale
 }
 
-export default function ActionPlanLinks({ actions, locale }: Props) {
-  const actionsWithChoice = getActionsWithChoice(actions ?? [])
-
+export default function ActionPlanLinks({ plan, locale }: Props) {
   return (
     <div className="mb-8 flex gap-4 overflow-auto">
       <ButtonLinkServer
@@ -37,7 +34,7 @@ export default function ActionPlanLinks({ actions, locale }: Props) {
         </Trans>
 
         <CountBadge
-          value={actionsWithChoice.length}
+          value={plan.actions.length}
           className="absolute top-1/2 right-5 ml-2.5 size-5 -translate-y-1/2 text-sm"
         />
       </ButtonLinkServer>
