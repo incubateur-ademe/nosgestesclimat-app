@@ -1,5 +1,4 @@
 import Button from '@/design-system/buttons/Button'
-import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import BottomBannerWithCTA from '@/design-system/layout/BottomBannerWithCTA'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -152,11 +151,11 @@ export default function ActionsBasket({
 
         <div className="-mx-4 flex justify-center border-t border-slate-300 pt-5">
           {hasCommittedToActions ? (
-            <ButtonLinkServer href="/" className="text-sm!">
+            <SavePlanLink>
               <Trans i18nKey="actions.basket.saveButton.label" locale={locale}>
                 Sauvegarder mon plan d'action
               </Trans>
-            </ButtonLinkServer>
+            </SavePlanLink>
           ) : (
             <Button
               disabled

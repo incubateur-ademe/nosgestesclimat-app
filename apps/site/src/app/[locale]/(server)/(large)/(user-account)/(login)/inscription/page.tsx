@@ -1,19 +1,18 @@
+import { getLoginParams } from '@/app/[locale]/(server)/(large)/(user-account)/(login)/_helpers/getLoginParams'
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
 import Trans from '@/components/translation/trans/TransServer'
 import { SIGNUP_MODE } from '@/constants/authentication/modes'
 import { captureSignupComplete } from '@/constants/tracking/trackers'
-import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
-import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
+import { validateFromSearchParam } from '../_helpers/validateFromSearchParam'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Création de compte - Nos Gestes Climat'),
@@ -25,10 +24,14 @@ export const generateMetadata = getCommonMetadata({
   },
 })
 
-export default async function Connexion({ params }: DefaultPageProps) {
+export default async function Connexion({
+  params,
+  searchParams,
+}: DefaultPageProps) {
   const { locale } = await params
-
-  const { t } = getServerTranslation({ locale })
+  const resolvedSearchParams = await searchParams
+  const validSearchParams = validateFromSearchParam(resolvedSearchParams)
+  const loginParams = getLoginParams({ from: validSearchParams?.from, locale })
 
   const userSession = await getUserSession()
 
@@ -43,9 +46,11 @@ export default async function Connexion({ params }: DefaultPageProps) {
         <Title
           containerClassName="order-0 max-w-[430px] mb-4"
           title={
-            <Trans i18nKey="signup.title" locale={locale}>
-              Créez votre espace Nos Gestes Climat
-            </Trans>
+            loginParams.signup.labels?.title ?? (
+              <Trans i18nKey="signup.title" locale={locale}>
+                Créez votre espace Nos Gestes Climat
+              </Trans>
+            )
           }
         />
 
@@ -53,8 +58,8 @@ export default async function Connexion({ params }: DefaultPageProps) {
           <UserProvider userSession={userSession}>
             <AuthenticateUserForm
               mode="signUp"
-              buttonLabel={t('signup.button.label', "M'inscrire")}
-              redirectPathname={`${MON_ESPACE_PATH}?${SHOW_WELCOME_BANNER_QUERY_PARAM}=true`}
+              buttonLabel={loginParams.signup.labels?.buttonLabel}
+              redirectPathname={loginParams.signup.redirectPathname}
               tracker={captureSignupComplete}
             />
           </UserProvider>
