@@ -58,9 +58,7 @@ export default function ActionsPage({
     <>
       <BetaBanner locale={locale} />
 
-      {assessmentStatus && (
-        <ActionPlanLinks actions={actions} locale={locale} />
-      )}
+      {plan && <ActionPlanLinks actions={actions} locale={locale} />}
 
       <div>
         <h1 className="mb-0 text-2xl/normal font-medium md:text-4xl/normal">
