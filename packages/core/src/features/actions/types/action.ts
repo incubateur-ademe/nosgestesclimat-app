@@ -129,3 +129,8 @@ export type MaybePersonalizedAction =
       choice?: null
     })
   | PersonalizedAction
+
+export interface ActionPlan {
+  actions: PersonalizedAction[]
+  totalC02ImpactInKg: number
+}

@@ -1,7 +1,10 @@
 import type { Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type {
+  ActionPlan,
+  MaybePersonalizedAction,
+} from '@nosgestesclimat/core/features/actions/types/action'
 import { twMerge } from 'cn'
 import Trans from '../../translation/trans/TransServer'
 import ActionPlanLinks from '../ActionPlanLinks'
@@ -30,6 +33,7 @@ interface ActionsPageProps extends Omit<
    * Total carbon footprint in kg of the user's latest simulation.
    */
   totalFootprint?: number
+  plan: ActionPlan | null
 }
 
 export default function ActionsPage({
@@ -45,6 +49,7 @@ export default function ActionsPage({
   assessmentStatus,
   from,
   totalFootprint,
+  plan,
   ...props
 }: ActionsPageProps) {
   const actionsByTheme = Object.groupBy(actions, (action) => action.theme.key)
@@ -125,9 +130,9 @@ export default function ActionsPage({
               })}
           </div>
         </div>
-        {assessmentStatus && (
+        {plan && assessmentStatus && (
           <ActionsBasket
-            actions={actions}
+            plan={plan}
             locale={locale}
             assessmentStatus={assessmentStatus}
           />

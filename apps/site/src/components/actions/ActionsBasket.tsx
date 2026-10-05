@@ -4,21 +4,20 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
+import type { ActionPlan } from '@nosgestesclimat/core/features/actions/types/action'
 import { useId, type ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
 import ActionBasketItem from './actionsBasket/ActionBasketItem'
 import SavePlanLink from './actionsBasket/SavePlanLink'
-import { getActionsWithChoice } from './utils/getActionsWithChoice'
 
 interface Props {
-  actions: MaybePersonalizedAction[] | null
+  plan: ActionPlan
   locale: Locale
   assessmentStatus: AssessmentStatus
 }
 
 export default function ActionsBasket({
-  actions,
+  plan,
   locale,
   assessmentStatus,
 }: Props) {
@@ -26,15 +25,13 @@ export default function ActionsBasket({
 
   const { t } = getServerTranslation({ locale })
 
-  const actionsWithChoice = getActionsWithChoice(actions ?? [])
-  const actionsLength = actionsWithChoice.length
+  const { actions, totalC02ImpactInKg } = plan
+  const actionsLength = actions.length
+
   const hasCommittedToActions = actionsLength > 0
-  const actionsImpactSum = actionsWithChoice.reduce((acc, action) => {
-    return acc + (action.assessment?.impact ?? 0)
-  }, 0)
 
   const { formattedValue: formattedActionsImpactSum, unit } = formatFootprint(
-    actionsImpactSum,
+    totalC02ImpactInKg,
     {
       locale,
       metric: 'carbone',
@@ -64,7 +61,7 @@ export default function ActionsBasket({
                   count={actionsLength}>
                   {{ count: actionsLength } as unknown as ReactNode} actions
                 </Trans>
-                {actionsImpactSum > 0 && (
+                {totalC02ImpactInKg > 0 && (
                   <>
                     {' '}
                     / -{formattedActionsImpactSum} {unit}{' '}
@@ -91,7 +88,7 @@ export default function ActionsBasket({
             <div
               aria-hidden
               className="bg-primary-600 flex size-8 items-center justify-center rounded-full text-sm font-bold text-white">
-              {actionsWithChoice.length}
+              {actionsLength}
             </div>
           )}
         </div>
@@ -102,18 +99,18 @@ export default function ActionsBasket({
               i18nKey="actions.basket.subtitle.withChoices"
               locale={locale}
               values={{
-                actionChoicesLength: actionsWithChoice.length,
-                pluralSuffix: actionsWithChoice.length > 1 ? 's' : '',
+                actionChoicesLength: actionsLength,
+                pluralSuffix: actionsLength > 1 ? 's' : '',
               }}>
               {
                 {
-                  actionChoicesLength: actionsWithChoice.length,
+                  actionChoicesLength: actionsLength,
                 } as unknown as ReactNode
               }{' '}
               action
               {
                 {
-                  pluralSuffix: actionsWithChoice.length > 1 ? 's' : '',
+                  pluralSuffix: actionsLength > 1 ? 's' : '',
                 } as unknown as ReactNode
               }{' '}
               dans votre sélection
@@ -138,7 +135,7 @@ export default function ActionsBasket({
 
         {hasCommittedToActions && (
           <ul className="mb-4 flex max-h-125 flex-col gap-2.5 overflow-auto">
-            {actionsWithChoice.map((action) => (
+            {actions.map((action) => (
               <ActionBasketItem
                 key={action.id}
                 action={action}

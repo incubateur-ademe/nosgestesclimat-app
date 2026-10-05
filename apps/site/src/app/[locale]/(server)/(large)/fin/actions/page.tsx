@@ -58,6 +58,7 @@ export default async function ResultatsActionsPage({
       topActions={actionsCatalogue.topActions}
       actions={actionsCatalogue.actions}
       assessmentStatus={actionsCatalogue.assessmentStatus}
+      plan={actionsCatalogue.plan}
       themes={themes}
       locale={locale}
       from="fin"
