@@ -3,6 +3,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { describe, expect, it } from 'vitest'
 
 const q = (...names: string[]) => names as DottedName[]
+const one = (name: string) => name as DottedName
 
 describe('getQuestionsWithForgottenAtTheEnd', () => {
   it('returns the lists as is when there is no forgotten question', () => {
@@ -12,7 +13,7 @@ describe('getQuestionsWithForgottenAtTheEnd', () => {
     const result = getQuestionsWithForgottenAtTheEnd({
       relevantQuestions,
       remainingQuestions,
-      relevantAnsweredQuestions: q('a', 'b'),
+      currentQuestion: one('b'),
     })
 
     expect(result.forgottenQuestions).toEqual([])
@@ -20,12 +21,12 @@ describe('getQuestionsWithForgottenAtTheEnd', () => {
     expect(result.remainingQuestions).toEqual(remainingQuestions)
   })
 
-  it('moves the still missing questions placed before the last answered one at the end', () => {
-    // "b" is missing while "c" (placed after it) has already been answered.
+  it('moves the still missing questions placed before the current one at the end', () => {
+    // "b" is missing while the user is already on "c" (placed after it).
     const result = getQuestionsWithForgottenAtTheEnd({
       relevantQuestions: q('a', 'b', 'c', 'd'),
       remainingQuestions: q('b', 'd'),
-      relevantAnsweredQuestions: q('a', 'c'),
+      currentQuestion: one('c'),
     })
 
     expect(result.forgottenQuestions).toEqual(q('b'))
@@ -33,26 +34,18 @@ describe('getQuestionsWithForgottenAtTheEnd', () => {
     expect(result.remainingQuestions).toEqual(q('d', 'b'))
   })
 
-  it('keeps the relative order of the forgotten questions', () => {
+  it('does not move the questions opened right after going back', () => {
+    // The user went back to "b" (already answered) and answered it again, which
+    // opened "c": it must be asked right after "b", not at the end.
     const result = getQuestionsWithForgottenAtTheEnd({
-      relevantQuestions: q('a', 'b', 'c', 'd', 'e'),
-      remainingQuestions: q('a', 'c', 'e'),
-      relevantAnsweredQuestions: q('b', 'd'),
-    })
-
-    expect(result.forgottenQuestions).toEqual(q('a', 'c'))
-    expect(result.relevantQuestions).toEqual(q('b', 'd', 'e', 'a', 'c'))
-    expect(result.remainingQuestions).toEqual(q('e', 'a', 'c'))
-  })
-
-  it('does not consider answered questions as forgotten', () => {
-    const result = getQuestionsWithForgottenAtTheEnd({
-      relevantQuestions: q('a', 'b', 'c'),
-      remainingQuestions: q('c'),
-      relevantAnsweredQuestions: q('a', 'b'),
+      relevantQuestions: q('a', 'b', 'c', 'd'),
+      remainingQuestions: q('c', 'd'),
+      currentQuestion: one('b'),
     })
 
     expect(result.forgottenQuestions).toEqual([])
+    expect(result.relevantQuestions).toEqual(q('a', 'b', 'c', 'd'))
+    expect(result.remainingQuestions).toEqual(q('c', 'd'))
   })
 
   it('keeps a forgotten question at the end once it has been answered', () => {
@@ -62,7 +55,8 @@ describe('getQuestionsWithForgottenAtTheEnd', () => {
     const result = getQuestionsWithForgottenAtTheEnd({
       relevantQuestions: q('a', 'b', 'c'),
       remainingQuestions: q(),
-      relevantAnsweredQuestions: q('a', 'c', 'b'),
+      currentQuestion: one('c'),
+      previousForgottenQuestions: q('b'),
     })
 
     expect(result.forgottenQuestions).toEqual(q('b'))
@@ -70,39 +64,32 @@ describe('getQuestionsWithForgottenAtTheEnd', () => {
     expect(result.remainingQuestions).toEqual([])
   })
 
-  it('does not flag anything when the questions are answered in the base order', () => {
+  it('asks the remaining questions after the current forgotten question', () => {
+    // The user is on "b", which has been forgotten and moved at the end: every
+    // remaining question must be asked after it, otherwise "next" would skip
+    // them.
     const result = getQuestionsWithForgottenAtTheEnd({
       relevantQuestions: q('a', 'b', 'c', 'd'),
       remainingQuestions: q('c', 'd'),
-      relevantAnsweredQuestions: q('a', 'b'),
+      currentQuestion: one('b'),
+      previousForgottenQuestions: q('b'),
+    })
+
+    expect(result.forgottenQuestions).toEqual(q('b'))
+    expect(result.relevantQuestions).toEqual(q('a', 'b', 'c', 'd'))
+    expect(result.remainingQuestions).toEqual(q('c', 'd'))
+  })
+
+  it('asks a forgotten question again in the base order when going back before it', () => {
+    const result = getQuestionsWithForgottenAtTheEnd({
+      relevantQuestions: q('a', 'b', 'c'),
+      remainingQuestions: q('b'),
+      currentQuestion: one('a'),
+      previousForgottenQuestions: q('b'),
     })
 
     expect(result.forgottenQuestions).toEqual([])
-    expect(result.relevantQuestions).toEqual(q('a', 'b', 'c', 'd'))
-  })
-
-  it('is stable: the detection relies on the base order, not on the reordered one', () => {
-    // The base order is recomputed from scratch on every render (it comes from
-    // the publicodes sort), so the same input always yields the same result and
-    // "b" can not bounce back to the middle of the form.
-    const relevantAnsweredQuestions = q('a', 'c')
-
-    const firstResult = getQuestionsWithForgottenAtTheEnd({
-      relevantQuestions: q('a', 'b', 'c'),
-      remainingQuestions: q('b'),
-      relevantAnsweredQuestions,
-    })
-
-    expect(firstResult.forgottenQuestions).toEqual(q('b'))
-    expect(firstResult.relevantQuestions).toEqual(q('a', 'c', 'b'))
-    expect(firstResult.remainingQuestions).toEqual(q('b'))
-
-    const secondResult = getQuestionsWithForgottenAtTheEnd({
-      relevantQuestions: q('a', 'b', 'c'),
-      remainingQuestions: q('b'),
-      relevantAnsweredQuestions,
-    })
-
-    expect(secondResult).toEqual(firstResult)
+    expect(result.relevantQuestions).toEqual(q('a', 'b', 'c'))
+    expect(result.remainingQuestions).toEqual(q('b'))
   })
 })

@@ -4,7 +4,6 @@ import {
   NON_PRIORITY_QUESTIONS,
   PRIORITY_QUESTIONS,
 } from '@/publicodes-state/constants/questions'
-import getQuestionsWithForgottenAtTheEnd from '@/publicodes-state/helpers/getQuestionsWithForgottenAtTheEnd'
 import getSortedQuestionsList from '@/publicodes-state/helpers/getSortedQuestionsList'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
@@ -178,30 +177,19 @@ export default function useQuestions({
     ].filter((question) => !MUST_NOT_ASK_QUESTIONS.has(question))
   )
 
-  // If there is a bug logic within publicodes model, a missing variable can be triggered by the current question but being placed BEFORE the current question in the form. It can lead to being stuck at last question as the progression can't reach 100%. These questions are moved at the end of the form (see useQuestions) so the user is asked them last. We still raise an error (posthog, sentry) to be able to fix the model.
-  const {
-    relevantQuestions,
-    remainingQuestions: reorderedRemainingQuestions,
-    forgottenQuestions,
-  } = getQuestionsWithForgottenAtTheEnd({
-    relevantQuestions: sortedRelevantQuestions,
-    remainingQuestions,
-    relevantAnsweredQuestions,
-  })
-
   const questionsByCategories = useMemo(
     () =>
       categories.reduce(
         (accumulator, currentValue) => ({
           ...accumulator,
-          [currentValue]: relevantQuestions.filter((question) =>
+          [currentValue]: sortedRelevantQuestions.filter((question) =>
             // We check that the question is in the current category
             utils.ruleParent(question).includes(currentValue)
           ),
         }),
         {} as Record<DottedName, DottedName[]>
       ),
-    [relevantQuestions, categories]
+    [sortedRelevantQuestions, categories]
   )
 
   const remainingQuestionsByCategories = useMemo(
@@ -210,21 +198,20 @@ export default function useQuestions({
         (accumulator, [category, questions]) => ({
           ...accumulator,
           [category]: questions.filter((question) =>
-            reorderedRemainingQuestions.includes(question)
+            remainingQuestions.includes(question)
           ),
         }),
         {} as Record<DottedName, DottedName[]>
       ),
-    [questionsByCategories, reorderedRemainingQuestions]
+    [questionsByCategories, remainingQuestions]
   )
 
   return {
     missingVariables,
-    remainingQuestions: reorderedRemainingQuestions,
+    remainingQuestions,
     relevantAnsweredQuestions,
-    relevantQuestions,
+    relevantQuestions: sortedRelevantQuestions,
     questionsByCategories,
     remainingQuestionsByCategories,
-    forgottenQuestions,
   }
 }

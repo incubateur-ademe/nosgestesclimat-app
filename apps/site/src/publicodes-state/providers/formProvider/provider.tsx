@@ -17,6 +17,7 @@ import FormContext from './context'
 import { useCurrent } from './hooks/useCurrent'
 import useProgression from './hooks/useProgression'
 import useQuestions from './hooks/useQuestions'
+import useQuestionsWithForgottenAtTheEnd from './hooks/useQuestionsWithForgottenAtTheEnd'
 
 interface Props {
   root: DottedName
@@ -44,7 +45,6 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     questionsByCategories,
     missingVariables,
     remainingQuestionsByCategories,
-    forgottenQuestions,
   } = useQuestions({
     root,
     safeEvaluate,
@@ -61,10 +61,20 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     remainingQuestions
   )
 
+  const {
+    relevantQuestions: reorderedRelevantQuestions,
+    remainingQuestions: reorderedRemainingQuestions,
+    forgottenQuestions,
+  } = useQuestionsWithForgottenAtTheEnd({
+    relevantQuestions,
+    remainingQuestions,
+    currentQuestion,
+  })
+
   useProgression({
     categories: orderedTestCategoriesWithProfile,
-    remainingQuestions,
-    relevantQuestions,
+    remainingQuestions: reorderedRemainingQuestions,
+    relevantQuestions: reorderedRelevantQuestions,
     updateCurrentSimulation,
     currentStoredProgression: progression,
   })
@@ -73,8 +83,8 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     <FormContext.Provider
       value={{
         questionsByCategories,
-        relevantQuestions,
-        remainingQuestions,
+        relevantQuestions: reorderedRelevantQuestions,
+        remainingQuestions: reorderedRemainingQuestions,
         relevantAnsweredQuestions,
         currentQuestion,
         currentCategory,
