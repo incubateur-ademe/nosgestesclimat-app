@@ -5,6 +5,7 @@ import { simulationFactory } from '../../../simulations/factories/simulation.fac
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { food, housing } from '../../data/themes/index.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
+import { actionChoiceFactory } from '../../factories/action-choice.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import type { Action } from '../../types/action.ts'
 import type { ThemeRow } from '../../types/theme.ts'
@@ -219,6 +220,40 @@ describe('getPersonalizedActionDetails', () => {
 
       expect.assert(result)
       expect(result.action.assessment?.id).toBe(assessment.id)
+    })
+  })
+
+  describe('with choice', () => {
+    it('returns a PersonalizedAction with the choice', async () => {
+      const action = await actionFactory.published().create()
+      const user = await userFactory.create()
+      await simulationFactory.completed().withCompletedComputation().create({
+        userId: user.id,
+      })
+
+      const choice = await actionChoiceFactory.create({
+        actionId: action.id,
+        userId: user.id,
+        type: 'committed',
+      })
+
+      const result = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
+
+      expect(result).toEqual({
+        action: {
+          ...action,
+          assessment: null,
+          choice: {
+            type: choice.type,
+            chosenAt: choice.chosenAt,
+          },
+        },
+        otherThemeActions: [],
+      })
     })
   })
 

@@ -42,4 +42,4 @@ export const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
 }
 
 export const baseClassNames =
-  'inline-flex items-center opacity-100! justify-center whitespace-nowrap rounded-full font-bold no-underline transition-colors aria-disabled:opacity-50 leading-none!'
+  'transition-colors inline-flex items-center opacity-100! justify-center whitespace-nowrap rounded-full font-bold no-underline aria-disabled:opacity-50 leading-none!'

@@ -50,16 +50,6 @@ export default async function PublicActionsCatalogue({
         themes={themes}
         locale={locale}
         from="index"
-        textOverrides={{
-          highestImpactSectionDescription: (
-            <Trans
-              locale={locale}
-              i18nKey="actions.components.highestImpactActionsSection.publicDescription">
-              Le top 3 des actions qui permettent de limiter ou réduire ses
-              émissions de CO<sub>2</sub>
-            </Trans>
-          ),
-        }}
       />
       <CallToAction
         locale={locale}

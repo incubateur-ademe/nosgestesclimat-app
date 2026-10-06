@@ -9,6 +9,7 @@ export default function BetaBanner({ locale }: { locale: string }) {
     <div className="-mt-2 mb-8 md:-mt-4">
       <BannerContent
         color="secondary"
+        className="items-center"
         banner={{
           text: (
             <Trans i18nKey={'actions.beta-banner.content'} locale={locale}>

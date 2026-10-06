@@ -31,3 +31,4 @@ export const GROUP_RESULTS_ROUTE_PATTERN = '/[locale]/amis/resultats'
 export const ACTIONS_PATH = '/actions'
 export const ACTION_DETAIL_PATH = (themeSlug: string, actionSlug: string) =>
   `/actions/${themeSlug}/${actionSlug}`
+export const ACTIONS_SUGGESTED_PATH = '/actions/mes-suggestions'

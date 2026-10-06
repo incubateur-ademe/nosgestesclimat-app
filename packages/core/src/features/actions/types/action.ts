@@ -73,14 +73,23 @@ export interface NewAction {
 
 export type UpdatedAction = Partial<NewAction>
 
-export interface ActionChoice {
-  id: string
+export interface NewActionChoice {
   userId: string
   actionId: string
-  // TODO: update when product has decided possible choices
-  type: 'committed' | 'rejected'
-  chosenAt: Date
+  // @TODO: update when product has decided possible choices
+  type: ActionChoiceType
 }
+
+export type ActionChoice = {
+  id: string
+  chosenAt: Date
+  userId: string
+  actionId: string
+  // @TODO: update when product has decided possible choices
+  type: ActionChoiceType
+}
+
+export type ActionChoiceType = 'committed' | 'rejected'
 
 export type NewActionAssessment = {
   simulationId: string
@@ -109,7 +118,7 @@ export type ActionAssessment = NewActionAssessment & {
 }
 
 export interface PersonalizedAction extends Action {
-  choice: ActionChoice | null
+  choice: Pick<ActionChoice, 'type' | 'chosenAt'> | null
   assessment: ActionAssessment | null
 }
 
