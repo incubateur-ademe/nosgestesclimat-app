@@ -84,10 +84,9 @@ export default function Ranking({
         <ul className="px-3 py-4">
           {[...restOfMembers, ...membersWithUncompletedSimulations]
             .filter(
-              (participant, index) =>
+              (_, index) =>
                 isExpanded ||
-                index + topThreeMembers.length <
-                  MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT
+                index + PODIUM_SIZE < MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT
             )
             .map((participant, index) => {
               return (
@@ -96,7 +95,6 @@ export default function Ranking({
                   isCurrentMember={participant.userId === user.id}
                   group={group}
                   user={user}
-                  // Add 3 to the index to account for the top three members
                   index={getIndexAfterPodium(index)}
                   metric={metric}
                   participant={participant}
@@ -106,7 +104,7 @@ export default function Ranking({
         </ul>
       )}
 
-      {group.participants.length > MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT &&
+      {participantsLength > MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT &&
         !isExpanded && (
           <button
             onClick={() => setIsExpanded(true)}
