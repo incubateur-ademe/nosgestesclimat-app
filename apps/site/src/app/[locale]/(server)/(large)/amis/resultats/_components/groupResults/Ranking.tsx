@@ -113,7 +113,7 @@ export default function Ranking({
           className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
           {numberOfParticipantsHiddenByDefault === 1 ? (
             <Trans i18nKey="group.ranking.expand.button.label.singular">
-              Afficher le participant restant
+              Afficher 1 autre participant
             </Trans>
           ) : (
             <Trans
