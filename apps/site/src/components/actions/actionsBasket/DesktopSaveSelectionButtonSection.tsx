@@ -1,7 +1,7 @@
+import Trans from '@/components/translation/trans/TransServer'
 import Button from '@/design-system/buttons/Button'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { Trans } from 'react-i18next'
 import SavePlanLink from './SavePlanLink'
 
 interface Props {
