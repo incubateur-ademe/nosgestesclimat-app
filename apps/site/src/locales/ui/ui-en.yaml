@@ -2205,5 +2205,7 @@ entries:
   footer.ademe.ariaLabel: ADEME (opens in a new window)
   footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
   Cette section est générée via Posthog.: This section is generated via Posthog.
-  group.ranking.expand.button.label: 'View other participants’ {{croppedParticipantsLength}} '
-  group.ranking.expand.button.label.lock: Afficher les {{croppedParticipantsLength}} autres participants
+  group.ranking.expand.button.label.singular: Show the remaining participant
+  group.ranking.expand.button.label.singular.lock: Afficher le participant restant
+  group.ranking.expand.button.label.plural: 'View other participants’ {{croppedParticipantsLength}} '
+  group.ranking.expand.button.label.plural.lock: Afficher les {{croppedParticipantsLength}} autres participants

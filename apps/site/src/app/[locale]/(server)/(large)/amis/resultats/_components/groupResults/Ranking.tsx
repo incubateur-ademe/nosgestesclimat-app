@@ -37,6 +37,9 @@ export default function Ranking({
 
   const hasOneParticipant = participantsLength === 1
 
+  const numberOfParticipantsHiddenByDefault =
+    participantsLength - MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT
+
   return (
     <>
       {metric === eauMetric && (
@@ -104,13 +107,17 @@ export default function Ranking({
         </ul>
       )}
 
-      {participantsLength > MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT &&
-        !isExpanded && (
-          <button
-            onClick={() => setIsExpanded(true)}
-            className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
+      {numberOfParticipantsHiddenByDefault > 0 && !isExpanded && (
+        <button
+          onClick={() => setIsExpanded(true)}
+          className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
+          {numberOfParticipantsHiddenByDefault === 1 ? (
+            <Trans i18nKey="group.ranking.expand.button.label.singular">
+              Afficher le participant restant
+            </Trans>
+          ) : (
             <Trans
-              i18nKey="group.ranking.expand.button.label"
+              i18nKey="group.ranking.expand.button.label.plural"
               values={{
                 croppedParticipantsLength:
                   participantsLength -
@@ -126,8 +133,9 @@ export default function Ranking({
               }{' '}
               autres participants
             </Trans>
-          </button>
-        )}
+          )}
+        </button>
+      )}
     </>
   )
 }

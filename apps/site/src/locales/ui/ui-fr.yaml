@@ -1461,4 +1461,5 @@ entries:
   shared.french: français
   Statistiques publiques du site Nos Gestes Climat.: Statistiques publiques du site Nos Gestes Climat.
   switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
-  group.ranking.expand.button.label: Afficher les {{croppedParticipantsLength}} autres participants
+  group.ranking.expand.button.label.plural: Afficher les {{croppedParticipantsLength}} autres participants
+  group.ranking.expand.button.label.singular: Afficher le participant restant
