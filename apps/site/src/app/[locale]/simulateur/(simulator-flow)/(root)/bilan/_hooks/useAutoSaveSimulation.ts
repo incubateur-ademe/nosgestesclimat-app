@@ -1,13 +1,12 @@
 'use client'
 
-import { useCurrentSimulation } from '@/publicodes-state'
-import { getComputedResults } from '@/publicodes-state/helpers/getComputedResults'
-import { EngineContext } from '@/publicodes-state/providers/engineProvider/context'
+import { useCurrentSimulation, useEngine } from '@/publicodes-state'
 import { updateSimulationSituation } from '@/services/simulations/update-simulation-situation'
 import type { UpdateSimulationSituationPayload } from '@/services/simulations/update-simulation-situation-payload.schema'
 import { useDebounce } from '@/utils/debounce'
+import { getComputedResults } from '@nosgestesclimat/core/features/simulations/helpers/get-computed-results'
 import { captureException, setExtra } from '@sentry/nextjs'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 
 /**
  * Saves the answers of the simulation being taken, trailing the last change by
@@ -15,7 +14,7 @@ import { useContext, useEffect } from 'react'
  */
 export function useAutoSaveSimulation() {
   const currentSimulation = useCurrentSimulation()
-  const engineContext = useContext(EngineContext)
+  const { engine } = useEngine()
 
   const debouncedSave = useDebounce(
     async (payload: UpdateSimulationSituationPayload) => {
@@ -51,7 +50,7 @@ export function useAutoSaveSimulation() {
       progression,
       // The engine holds fresher results than the provider state, which only
       // catches up on the next render.
-      computedResults: getComputedResults(engineContext),
+      computedResults: getComputedResults(engine),
     })
   }, [currentSimulation.situation, currentSimulation.foldedSteps])
 }

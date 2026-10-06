@@ -1,8 +1,36 @@
 import type { DottedName, NGCRule } from '@incubateur-ademe/nosgestesclimat'
 
 /**
- * TODO: this is a duplicate of site code, refactor apps and server fixtures to use these functions.
- **/
+ * We use this hook to get the content of the [somme] of a rule.
+ *
+ * This is needed because in optimized rules, the syntaxic-sugar mechanism
+ * [formule] is unfolded (i.e. replaced by its content). The [somme] is then
+ * at the root of the rule and not in a [formule] mechanism (both syntaxes are valid).
+ *
+ * With the new `eau` metric, for some categories, the `somme` is not in the `formule` only but in a `variations` mechanism like:
+ *
+[
+    {
+        "si": "métrique = 'carbone'",
+        "alors": {
+            "somme": [
+                "repas",
+                "boisson",
+                "déchets"
+            ]
+        }
+    },
+    {
+        "si": "métrique = 'eau'",
+        "alors": {
+            "somme": [
+                "repas",
+                "boisson"
+            ]
+        }
+    }
+]
+ */
 
 type SommeVariations = { si: string; alors: { somme: DottedName[] } }[]
 

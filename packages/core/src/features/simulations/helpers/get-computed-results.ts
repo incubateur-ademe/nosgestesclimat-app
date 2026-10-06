@@ -31,7 +31,13 @@ const valueForMetric = ({
   return typeof value === 'number' ? value : 0
 }
 
-export const getComputedResults = (engine: Engine): ComputedResults => {
+export const getComputedResults = (
+  engine: Engine<DottedName> | undefined
+): ComputedResults => {
+  if (!engine) {
+    throw new Error('Engine is not defined')
+  }
+
   const parsedRules = engine.getParsedRules()
 
   const categories =

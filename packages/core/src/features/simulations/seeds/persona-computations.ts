@@ -58,7 +58,7 @@ const readPersona = (name: string): Persona => {
 
 const computePersona = (
   persona: Persona,
-  engine: Engine
+  engine: Engine<DottedName>
 ): PersonaComputation => {
   engine.setSituation(persona.situation, { keepPreviousSituation: false })
 
@@ -76,7 +76,7 @@ const computePersona = (
  */
 const computeActionAssessments = (
   persona: Persona,
-  engine: Engine
+  engine: Engine<DottedName>
 ): PersonaActionAssessment[] => {
   engine.setSituation(persona.situation, { keepPreviousSituation: false })
 
@@ -103,12 +103,12 @@ const computeActionAssessments = (
   return assessments
 }
 
-let engine: Engine | undefined
+let engine: Engine<DottedName> | undefined
 
-const getEngine = (): Engine => {
+const getEngine = (): Engine<DottedName> => {
   engine ??= createTestEngine(
     rules as Parameters<typeof createTestEngine>[0]
-  ) as unknown as Engine
+  ) as unknown as Engine<DottedName>
 
   return engine
 }

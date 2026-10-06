@@ -1,5 +1,4 @@
 import { orderedCategories } from '@/constants/model/orderedCategories'
-import getSomme from '@/publicodes-state/helpers/getSomme'
 import { getSubcategories } from '@/publicodes-state/helpers/getSubcategories'
 import { captureMessageForSentryAndPosthog } from '@/utils/analytics/captureErrorForSentryAndPosthog'
 import type {
@@ -7,6 +6,7 @@ import type {
   NGCRuleNode,
   NGCRulesNodes,
 } from '@incubateur-ademe/nosgestesclimat'
+import { getSomme } from '@nosgestesclimat/core/features/simulations/helpers/get-somme'
 import { useMemo } from 'react'
 
 interface Props {
