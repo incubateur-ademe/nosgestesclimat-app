@@ -1,4 +1,3 @@
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { ActionPlan } from '@nosgestesclimat/core/features/actions/types/action'
@@ -20,8 +19,6 @@ export default function ActionsBasket({
   assessmentStatus,
 }: Props) {
   const titleId = useId()
-
-  const { t } = getServerTranslation({ locale })
 
   const { actions, totalImpact } = plan
   const actionsLength = actions.length
