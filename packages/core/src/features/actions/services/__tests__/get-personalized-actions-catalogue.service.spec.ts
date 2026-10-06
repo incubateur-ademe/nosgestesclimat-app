@@ -354,7 +354,7 @@ describe('getPersonalizedActionsCatalogue', () => {
         .withCompletedComputation()
         .create()
       await actionAssessmentFactory
-        .params({ simulationId: simulation.id, actionId: action.id })
+        .params({ simulationId: simulation.id, actionId: action1.id })
         .applicable({ impact: 1000 })
         .create()
       await actionAssessmentFactory
