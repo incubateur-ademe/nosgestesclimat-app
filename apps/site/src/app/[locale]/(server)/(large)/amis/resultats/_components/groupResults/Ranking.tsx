@@ -13,6 +13,11 @@ import { useState } from 'react'
 import RankingMember from './ranking/RankingMember'
 
 const MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT = 5
+const PODIUM_SIZE = 3
+
+function getIndexAfterPodium(index: number) {
+  return index + PODIUM_SIZE
+}
 
 export default function Ranking({
   group,
@@ -77,51 +82,54 @@ export default function Ranking({
 
       {restOfMembers.length > 0 && (
         <ul className="px-3 py-4">
-          {restOfMembers.length > 0 &&
-            [...restOfMembers, ...membersWithUncompletedSimulations]
-              .filter(
-                (participant, index) =>
-                  isExpanded || index + topThreeMembers.length < 5
+          {[...restOfMembers, ...membersWithUncompletedSimulations]
+            .filter(
+              (participant, index) =>
+                isExpanded ||
+                index + topThreeMembers.length <
+                  MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT
+            )
+            .map((participant, index) => {
+              return (
+                <RankingMember
+                  key={participant.id}
+                  isCurrentMember={participant.userId === user.id}
+                  group={group}
+                  user={user}
+                  // Add 3 to the index to account for the top three members
+                  index={getIndexAfterPodium(index)}
+                  metric={metric}
+                  participant={participant}
+                />
               )
-              .map((participant, index) => {
-                return (
-                  <RankingMember
-                    key={participant.id}
-                    isCurrentMember={participant.userId === user.id}
-                    group={group}
-                    user={user}
-                    // Add 3 to the index to account for the top three members
-                    index={index + 3}
-                    metric={metric}
-                    participant={participant}
-                  />
-                )
-              })}
+            })}
         </ul>
       )}
 
-      {group.participants.length > 5 && !isExpanded && (
-        <button
-          onClick={() => setIsExpanded(true)}
-          className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
-          <Trans
-            i18nKey="group.ranking.expand.button.label"
-            values={{
-              croppedParticipantsLength:
-                participantsLength - MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
-            }}>
-            Afficher les{' '}
-            {
-              {
+      {group.participants.length > MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT &&
+        !isExpanded && (
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
+            <Trans
+              i18nKey="group.ranking.expand.button.label"
+              values={{
                 croppedParticipantsLength:
                   participantsLength -
                   MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
-              } as unknown as React.ReactNode
-            }{' '}
-            autres participants
-          </Trans>
-        </button>
-      )}
+              }}>
+              Afficher les{' '}
+              {
+                {
+                  croppedParticipantsLength:
+                    participantsLength -
+                    MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
+                } as unknown as React.ReactNode
+              }{' '}
+              autres participants
+            </Trans>
+          </button>
+        )}
     </>
   )
 }
