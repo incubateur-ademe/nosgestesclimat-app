@@ -2205,6 +2205,8 @@ entries:
   footer.ademe.ariaLabel: ADEME (opens in a new window)
   footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
   Cette section est générée via Posthog.: This section is generated via Posthog.
+  save-results-form.verification.button-label: Save my results
+  save-results-form.verification.button-label.lock: Enregistrer mes résultats
   group.ranking.expand.button.label.singular: Show 1 more participant
   group.ranking.expand.button.label.singular.lock: Afficher 1 autre participant
   group.ranking.expand.button.label.plural: 'View other participants’ {{croppedParticipantsLength}} '
