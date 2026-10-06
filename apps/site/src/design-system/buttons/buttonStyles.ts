@@ -11,7 +11,7 @@ export type ButtonColor =
 
 export const colorClassNames: Record<ButtonColor, string> = {
   primary:
-    'text-white bg-primary-700 border-2 border-primary-700 shadow-xs hover:text-white hover:bg-primary-800',
+    'text-white bg-primary-700 border-2 border-primary-700 shadow-xs hover:text-white hover:bg-primary-800 dark:bg-primary-50 dark:hover:bg-primary-100 dark:text-primary-700!',
   secondary:
     'border-solid border-primary-700 border-2 text-primary-700 bg-transparent shadow-xs hover:text-primary-700 hover:bg-primary-100 hover:border-primary-700',
   success:
