@@ -35,8 +35,12 @@ export default function LaconicRanking({ group }: Props) {
     )
   }
 
+  const participantsWithCompletedTest = group.participants.filter(
+    ({ simulation }) => simulation.progression === 1
+  )
+
   const particpantsOrdered = sortParticipantsByFootprint(
-    group.participants,
+    participantsWithCompletedTest,
     carboneMetric
   )
 

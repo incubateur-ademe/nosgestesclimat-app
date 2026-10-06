@@ -1,5 +1,4 @@
 entries:
-  404.action: Revenir en lieu sûr
   'Accessibilité : partiellement conforme': 'Accessibilité : partiellement conforme'
   Choisir une autre région: Choisir une autre région
   Choisissez une région parmi celles disponibles !: Choisissez une région parmi celles disponibles !
@@ -72,7 +71,6 @@ entries:
   publicodes.Tutoriel.slide6: <0>Prendre la voiture, manger un steak, chauffer sa maison, se faire soigner, acheter une TV...</0><1>L'empreinte de notre consommation individuelle, c'est la somme de toutes ces activités qui font notre vie moderne.</1>
   Répondez aux questions en votre nom, pas pour votre foyer.: Répondez aux questions en votre nom, pas pour votre foyer.
   'Revenir à ma région par défaut ': 'Revenir à ma région par défaut '
-  Sélectionner: Sélectionner
   Supprimer: Supprimer
   Vous: Vous
   'Vous faites cette simulation depuis :': 'Vous faites cette simulation depuis :'
@@ -148,11 +146,9 @@ entries:
   Télécharger le kit, ouvrir dans un nouvel onglet: Télécharger le kit, ouvrir dans un nouvel onglet
   Valorisez vos données carbone: Valorisez vos données carbone
   Veuillez entrer votre code postal: Veuillez entrer votre code postal
-  Voir les {String(group.participants.length - 5)} autre{withS} participant{withS}: Voir les {String(group.participants.length - 5)} autre{withS} participant{withS}
   Vos données seront stockées de manière sécurisée et anonyme. Elles seront agrégées à des fins statistiques ; lesdites statistiques seront consultables sur la page "Rapport détaillé" de votre sondage en fin de parcours. Cette page restera exclusivement accessible aux participant·es ainsi qu'aux organisateur·ices.: Vos données seront stockées de manière sécurisée et anonyme. Elles seront agrégées à des fins statistiques ; lesdites statistiques seront consultables sur la page "Rapport détaillé" de votre sondage en fin de parcours. Cette page restera exclusivement accessible aux participant·es ainsi qu'aux organisateur·ices.
   En cliquant sur le bouton Accepter, vous autorisez {{ parent }} à récupérer le bilan de votre empreinte climat.: En cliquant sur le bouton Accepter, vous autorisez {{ parent }} à récupérer le bilan de votre empreinte climat.
   Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.: Nosgestesclimat.fr n'est pas affilié au site {{ parent }}.
-  Oups ! Une erreur est survenue: Oups ! Une erreur est survenue
   Partage de vos résultats à {{ parent }} ?: Partage de vos résultats à {{ parent }} ?
   Découvrir le calculateur: Découvrir le calculateur
   Empreinte: Empreinte
@@ -207,11 +203,9 @@ entries:
   Reprendre mon test: Reprendre mon test
   Votre empreinte: Votre empreinte
   'Logo, affiches et présentations : retrouvez tous les outils pour partager Nos Gestes Climat dans ce kit.': 'Logo, affiches et présentations : retrouvez tous les outils pour partager Nos Gestes Climat dans ce kit.'
-  Simulation terminée: Simulation terminée
   Diffusion: Diffusion
   International: International
   Ce champ est requis.: Ce champ est requis.
-  Simulations terminées: Simulations terminées
   Votre nom: Votre nom
   Association: Association
   Autre: Autre
@@ -277,9 +271,6 @@ entries:
   sur: sur
   Rien à l'horizon ! <1></1>La page recherchée n'existe pas.: Rien à l'horizon ! <1></1>La page recherchée n'existe pas.
   Un bonhomme se demandant où il est: Un bonhomme se demandant où il est
-  Données qualitatives: Données qualitatives
-  Modes "Groupes": Modes "Groupes"
-  Visites et simulations: Visites et simulations
   Vos informations ont bien été mises à jour.: Vos informations ont bien été mises à jour.
   L’eau est une ressource planétaire précieuse. Comme le climat, <2>le cycle de l’eau est fortement impacté par les activités humaines.</2> Nous avons fait le choix d’ajouter l'empreinte eau à notre modèle de calcul afin de vous apporter des éléments de compréhension de cet impact.: L’eau est une ressource planétaire précieuse. Comme le climat, <2>le cycle de l’eau est fortement impacté par les activités humaines.</2> Nous avons fait le choix d’ajouter l'empreinte eau à notre modèle de calcul afin de vous apporter des éléments de compréhension de cet impact.
   Les 3 réflexes à adopter pour une garde-robe économe en eau: Les 3 réflexes à adopter pour une garde-robe économe en eau
@@ -468,7 +459,6 @@ entries:
   Partager l'article: Partager l'article
   En participant vous acceptez que vos résultats soient partagés anonymement avec cette organisation.: En participant vous acceptez que vos résultats soient partagés anonymement avec cette organisation.
   '{{signe}} {{value}} {{unit}} sur votre empreinte {{metric}}': '{{signe}} {{value}} {{unit}} sur votre empreinte {{metric}}'
-  Il est question ici des modes "Organisations" et "Challenge tes amis". Cette section est générée via Metabase.: Il est question ici des modes "Organisations" et "Challenge tes amis". Cette section est générée via Metabase.
   Diffuser Nos Gestes Climat: Diffuser Nos Gestes Climat
   Qui sommes-nous: Qui sommes-nous
   Relais et partenaires: Relais et partenaires
@@ -690,16 +680,8 @@ entries:
   documentation.search.results_many: '{{count}} résultat(s) trouvé(s)'
   documentation.search.results_other: '{{count}} résultat(s) trouvé(s)'
   documentation.search.results.label: Résultats de recherche
-  Ce graphique présente la distribution des résultats de simulation des utilisateurs, permettant d'analyser les tendances et les comportements.: Ce graphique présente la distribution des résultats de simulation des utilisateurs, permettant d'analyser les tendances et les comportements.
-  Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, et les tendances d'utilisation.: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, et les tendances d'utilisation.
   Chargement du tableau de bord...: Chargement du tableau de bord...
-  Graphique de distribution des résultats de simulation pour le mois dernier: Graphique de distribution des résultats de simulation pour le mois dernier
-  Graphiques du nombre de visites et de simulations sur le site: Graphiques du nombre de visites et de simulations sur le site
   Impossible de charger le tableau de bord. Veuillez réessayer plus tard.: Impossible de charger le tableau de bord. Veuillez réessayer plus tard.
-  Statistiques d'usage du mode "Challenge tes amis": Statistiques d'usage du mode "Challenge tes amis"
-  Statistiques d'usage du mode "Organisations": Statistiques d'usage du mode "Organisations"
-  Statistiques détaillées sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants, et d'actions réalisées.: Statistiques détaillées sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants, et d'actions réalisées.
-  Statistiques sur l'utilisation du mode Challenge, incluant le nombre de défis créés, de participants, et de résultats partagés.: Statistiques sur l'utilisation du mode Challenge, incluant le nombre de défis créés, de participants, et de résultats partagés.
   common.burgerMenu.title: Fermer le menu de navigation
   common.buttons.close: Fermer
   common.interactiveIllustration.item.car: Voiture
@@ -826,7 +808,6 @@ entries:
   Sélectionné: Sélectionné
   Sélectionner cette option: Sélectionner cette option
   simulator.car.addTravel: Ajouter un trajet
-  simulator.inputs.choice.questionButton.title: Plus d'informations - {{label}}
   simulator.mosaicNumberInput.add: 'Ajouter un élément : {{title}}'
   simulator.mosaicNumberInput.remove: 'Retirer un élément : {{title}}'
   Cliquez pour afficher la réponse: Cliquez pour afficher la réponse
@@ -1163,7 +1144,6 @@ entries:
   (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.): (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.)
   '{mode.descriptionDefault}': '{mode.descriptionDefault}'
   '{mode.titleDefault}': '{mode.titleDefault}'
-  Choisissez le mode du test: Choisissez le mode du test
   collectiveTest.form.name.label: Choisissez un nom pour votre test collectif
   collectiveTest.form.name.placeholder: 'ex : Défi climat équipe RH, Classe 5ème A…'
   collectiveTest.form.name.required: Veuillez renseigner un nom
@@ -1194,7 +1174,6 @@ entries:
   organisations.inscription.cta: Créer mon compte
   organisations.inscription.subtitle: Pour diffuser un test collectif à vos élèves, vos étudiants, vos collègues ou encore vos clients, il vous suffit de créer votre espace personnel.
   organisations.inscription.title: Créez votre compte pour diffuser un lien collectif
-  Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.: Oups ! Une erreur s'est produite au moment de récupérer les informations du test collectif. Veuillez réessayer ultérieurement.
   Oups, nous n'avons pas trouvé les résultats de ce test collectif: Oups, nous n'avons pas trouvé les résultats de ce test collectif
   Paramètres de mon test collectif - Nos Gestes Climat: Paramètres de mon test collectif - Nos Gestes Climat
   Précisez le nombre de participants attendus: Précisez le nombre de participants attendus
@@ -1206,7 +1185,6 @@ entries:
   Test collectif créé par: Test collectif créé par
   Test collectif personnalisé: Test collectif personnalisé
   Une erreur est survenue lors de la suppression du test.: Une erreur est survenue lors de la suppression du test.
-  Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
   Voir tous les tests collectifs: Voir tous les tests collectifs
   Votre e-mail, rejoindre un test collectif - Nos Gestes Climat: Votre e-mail, rejoindre un test collectif - Nos Gestes Climat
   vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !: vous souhaitez lancer un test collectif Nos Gestes Climat et sensibiliser toutes vos parties prenantes ? Découvrez nos outils 100% gratuits !
@@ -1284,7 +1262,6 @@ entries:
   common.skip: Passer
   tutorial.email.contest.default: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.contest.youth: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
-  tutorial.email.seeMore: En savoir plus
   tutorial.email.subtitle.default: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.title.default: Votre adresse e-mail
@@ -1485,3 +1462,5 @@ entries:
   Statistiques publiques du site Nos Gestes Climat.: Statistiques publiques du site Nos Gestes Climat.
   switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
   save-results-form.verification.button-label: Enregistrer mes résultats
+  group.ranking.expand.button.label.plural: Afficher les {{croppedParticipantsLength}} autres participants
+  group.ranking.expand.button.label.singular: Afficher 1 autre participant
