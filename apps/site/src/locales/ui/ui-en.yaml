@@ -1550,8 +1550,8 @@ entries:
   results.saveResults.buttonLabel.authenticated.noPreviousResults.lock: Accéder à mon espace
   common.navigation.nextQuestion.loading.label: End the test and go to the results page, loading in progress
   common.navigation.nextQuestion.loading.label.lock: Terminer le test et accéder à la page de résultats, chargement en cours
-  results.groupThankYou.description: Find out the results of the group test
-  results.groupThankYou.description.lock: Découvrez les résultats du test collectif
+  results.groupThankYou.description: Find out the results of the group test <2> ‘{{groupName}} ’</2>
+  results.groupThankYou.description.lock: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
   results.objective.collectiveEffort.companies: The companies
   results.objective.collectiveEffort.companies.lock: Les entreprises
   results.objective.collectiveEffort.collectivities: Local authorities
@@ -2234,3 +2234,5 @@ entries:
   footer.ademe.ariaLabel: ADEME (opens in a new window)
   footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
   Cette section est générée via Posthog.: This section is generated via Posthog.
+  save-results-form.verification.button-label: Save my results
+  save-results-form.verification.button-label.lock: Enregistrer mes résultats

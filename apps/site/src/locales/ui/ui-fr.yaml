@@ -1141,7 +1141,7 @@ entries:
   results.saveResults.buttonLabel.authenticated.noPreviousResults: Accéder à mon espace
   results.saveResults.buttonLabel.authenticated.withPreviousResults: Voir l’évolution de mon résultat
   simulator.navigation.nextButton.loading: <0></0> Terminer
-  results.groupThankYou.description: Découvrez les résultats du test collectif
+  results.groupThankYou.description: Découvrez les résultats du test collectif <2>"{{groupName}}"</2>
   results.objective.collectiveEffort.collectivities: Les collectivités
   results.objective.collectiveEffort.collectivitiesDescription: Par leurs choix d’aménagements du territoire, elles participent à <2>l'adoption de nouvelles pratiques plus durables</2> à l’échelle locale.
   results.objective.collectiveEffort.companies: Les entreprises
@@ -1484,3 +1484,4 @@ entries:
   shared.french: français
   Statistiques publiques du site Nos Gestes Climat.: Statistiques publiques du site Nos Gestes Climat.
   switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
+  save-results-form.verification.button-label: Enregistrer mes résultats
