@@ -18,8 +18,6 @@ export default async function GroupResultsPage({
 }>) {
   const locale = (await params).locale
 
-  // La métrique vit dans l'URL (cf. `GroupFootprintSelector`) : le serveur peut
-  // donc rendre directement le bloc correspondant.
   const metric =
     (await searchParams)?.metric === eauMetric ? eauMetric : carboneMetric
 
