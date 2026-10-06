@@ -1,6 +1,6 @@
 'use client'
 
-import type { Group, Participant } from '@/types/groups'
+import type { Group } from '@/types/groups'
 
 import Trans from '@/components/translation/trans/TransClient'
 import { eauMetric } from '@/constants/model/metric'
@@ -11,6 +11,8 @@ import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-ses
 import { twMerge } from 'cn'
 import { useState } from 'react'
 import RankingMember from './ranking/RankingMember'
+
+const MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT = 5
 
 export default function Ranking({
   group,
@@ -24,11 +26,11 @@ export default function Ranking({
   const [isExpanded, setIsExpanded] = useState(false)
 
   const { topThreeMembers, restOfMembers, membersWithUncompletedSimulations } =
-    getTopThreeAndRestMembers(group.participants, metric) || {}
+    getTopThreeAndRestMembers(group.participants, metric)
 
-  const withS = group.participants.length - 5 > 1 ? 's' : ''
+  const participantsLength = group.participants.length
 
-  const hasOneParticipant = group.participants.length === 1
+  const hasOneParticipant = participantsLength === 1
 
   return (
     <>
@@ -51,7 +53,7 @@ export default function Ranking({
             : 'bg-primary-700 text-white',
           metric === eauMetric ? 'bg-primary-300' : ''
         )}>
-        {topThreeMembers.map((participant: Participant, index: number) => {
+        {topThreeMembers.map((participant, index) => {
           return (
             <RankingMember
               metric={metric}
@@ -78,10 +80,10 @@ export default function Ranking({
           {restOfMembers.length > 0 &&
             [...restOfMembers, ...membersWithUncompletedSimulations]
               .filter(
-                (participant: Participant, index: number) =>
-                  isExpanded || index + topThreeMembers?.length < 5
+                (participant, index) =>
+                  isExpanded || index + topThreeMembers.length < 5
               )
-              .map((participant: Participant, index: number) => {
+              .map((participant, index) => {
                 return (
                   <RankingMember
                     key={participant.id}
@@ -102,10 +104,21 @@ export default function Ranking({
         <button
           onClick={() => setIsExpanded(true)}
           className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
-          <Trans>
-            Voir les {String(group.participants.length - 5)} autre{withS}{' '}
-            participant
-            {withS}
+          <Trans
+            i18nKey="group.ranking.expand.button.label"
+            values={{
+              croppedParticipantsLength:
+                participantsLength - MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
+            }}>
+            Afficher les{' '}
+            {
+              {
+                croppedParticipantsLength:
+                  participantsLength -
+                  MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
+              } as unknown as React.ReactNode
+            }{' '}
+            autres participants
           </Trans>
         </button>
       )}
