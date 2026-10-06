@@ -28,7 +28,7 @@ export default async function Homepage({ params }: DefaultPageProps) {
     <ClientLayout locale={locale} userSession={userSession}>
       <iframe
         title="ngc"
-        src="https://nosgestesclimat-site-preprod-pr2122.osc-fr1.scalingo.io/en/?iframe=true&shareData=true&onlySimulation=true&integratorUrl=https://energic.io&bypass_key=3eb78d2ca4ebd94378f80bc78a8f31f3197dcc7ba5d69eebec8f6e2096beaffe"
+        src="https://nosgestesclimat-site-preprod-pr2120.osc-fr1.scalingo.io/en/?iframe=true&shareData=true&onlySimulation=true&integratorUrl=https://energic.io&bypass_key=3eb78d2ca4ebd94378f80bc78a8f31f3197dcc7ba5d69eebec8f6e2096beaffe"
       />
 
       <Footer locale={locale} />
