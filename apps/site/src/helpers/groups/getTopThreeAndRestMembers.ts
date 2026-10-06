@@ -29,7 +29,6 @@ export const getTopThreeAndRestMembers = (
     membersWithUncompletedSimulations: Participant[]
   }>(
     (acc, member) => {
-      // We store apart the members with uncompleted simulations
       if (member.simulation.progression !== 1) {
         acc.membersWithUncompletedSimulations.push(member)
         return acc
