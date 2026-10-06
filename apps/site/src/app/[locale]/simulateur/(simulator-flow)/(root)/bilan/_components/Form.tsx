@@ -17,12 +17,8 @@ import ResultsBlocksDesktop from './form/ResultsBlockDesktop'
 import ResultsBlockMobile from './form/ResultsBlockMobile'
 
 export default function Form() {
-  const {
-    remainingQuestions,
-    currentQuestion,
-
-    currentCategory,
-  } = useFormState()
+  const { remainingQuestions, currentQuestion, currentCategory } =
+    useFormState()
 
   const { completeSimulation, isPending } = useCompleteSimulation()
 
