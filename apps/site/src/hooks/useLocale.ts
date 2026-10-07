@@ -1,10 +1,12 @@
-import type { Locale } from '@/i18nConfig'
-import i18nConfig from '@/i18nConfig'
-import { useCurrentLocale } from 'next-i18n-router/client'
+import i18nConfig, { LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
+import { useParams } from 'next/navigation'
+
+const isLocale = (value: unknown): value is Locale =>
+  typeof value === 'string' && i18nConfig.locales.includes(value)
 
 export function useLocale(): Locale {
-  return (
-    (useCurrentLocale(i18nConfig) as Locale | undefined) ??
-    i18nConfig.defaultLocale
-  )
+  const { locale } = useParams()
+  if (!isLocale(locale)) return LOCALE_FR_KEY
+
+  return locale
 }
