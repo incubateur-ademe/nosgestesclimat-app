@@ -112,7 +112,7 @@ export default function useFormState() {
      */
     remainingQuestionsByCategories,
     /**
-     * The questions that were "forgotten": still missing while placed before the last answered question, or already answered out of the base order
+     * The questions that were "forgotten": they should have been asked before the current question but were not (bug in the publicodes model). They are asked at the end of the form.
      */
     forgottenQuestions,
     /**

@@ -117,7 +117,7 @@ export default async function SaveResultsBlock({
               </ButtonLink>
             ) : (
               <QueryClientProviderWrapper>
-                <SaveResultsForm userSession={user} />
+                <SaveResultsForm userSession={user} locale={locale} />
               </QueryClientProviderWrapper>
             )}
           </div>
