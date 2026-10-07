@@ -2,7 +2,7 @@
 
 import Card from '@/design-system/layout/Card'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 interface Props {
   className?: string

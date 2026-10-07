@@ -1,4 +1,5 @@
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 import supertest from 'supertest'
@@ -22,11 +23,7 @@ describe('Given a NGC integrations API user', () => {
   const url = REFRESH_API_TOKEN_ROUTE
 
   afterEach(async () => {
-    await prisma.integrationWhitelist.deleteMany()
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.integrationApiScope.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When refreshing his/her API token', () => {

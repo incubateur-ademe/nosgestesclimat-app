@@ -6,8 +6,8 @@ import Emoji from '@/design-system/utils/Emoji'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
+import { twMerge } from 'cn'
 import { motion } from 'framer-motion'
-import { twMerge } from 'tailwind-merge'
 import { useIsNotApplicableHack } from '../useIsNotApplicableHack'
 
 interface Props {

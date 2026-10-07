@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { SEDD_EVENT } from '../../constants/sedd-event.ts'
 import { ensureSeddEvent } from '../ensure-sedd-event.service.ts'
 
 describe('ensureSeddEvent', () => {
   afterEach(async () => {
-    await prisma.event.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   it('creates the default SEDD event on an empty database', async () => {

@@ -2,8 +2,8 @@
 
 import Button from '@/design-system/buttons/Button'
 import type { AuthenticationMode } from '@/types/authentication'
+import { twMerge } from 'cn'
 import { type ReactNode, useCallback } from 'react'
-import { twMerge } from 'tailwind-merge'
 import type { ButtonColor } from '../../design-system/buttons/Button'
 import Trans from '../translation/trans/TransClient'
 import { useLogin } from './_hooks/useLogin'
@@ -24,6 +24,7 @@ interface Props {
   tracker?: Tracker
   isVerticalLayout?: boolean
   verificationClassName?: string
+  verificationButtonLabel?: string | ReactNode
 }
 
 export default function AuthenticateUserForm({
@@ -38,6 +39,7 @@ export default function AuthenticateUserForm({
   tracker,
   isVerticalLayout = true,
   verificationClassName,
+  verificationButtonLabel,
 }: Props) {
   const { mutateAsync } = useLogin()
 
@@ -61,6 +63,7 @@ export default function AuthenticateUserForm({
         required={required}
         isVerticalLayout={isVerticalLayout}
         verificationClassName={verificationClassName}
+        verificationButtonLabel={verificationButtonLabel}
       />
     </AuthProvider>
   )
@@ -74,6 +77,7 @@ function AuthenticateUserFormContent({
   required,
   isVerticalLayout,
   verificationClassName,
+  verificationButtonLabel,
 }: {
   buttonLabel?: string | ReactNode
   buttonColor?: ButtonColor
@@ -82,6 +86,7 @@ function AuthenticateUserFormContent({
   required?: boolean
   isVerticalLayout?: boolean
   verificationClassName?: string
+  verificationButtonLabel?: string | ReactNode
 }) {
   const { state, goBack } = useAuth()
 
@@ -107,7 +112,7 @@ function AuthenticateUserFormContent({
             'dark:bg-primary-700 mb-8 rounded-xl bg-[#F4F5FB] p-4 md:p-8 dark:text-white',
             verificationClassName
           )}>
-          <VerifyCodeForm />
+          <VerifyCodeForm verificationButtonLabel={verificationButtonLabel} />
 
           {state.phase !== 'authenticated' && (
             <Button

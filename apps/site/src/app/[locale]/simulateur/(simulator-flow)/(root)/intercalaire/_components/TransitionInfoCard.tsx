@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import CurvedArrowSvg from './transitionInfoCard/CurvedArrowSvg'
 import FunFactCard from './transitionInfoCard/FunFactCard'
 

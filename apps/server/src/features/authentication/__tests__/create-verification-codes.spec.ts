@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { captureException } from '@sentry/node'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -34,10 +35,7 @@ describe('Given a NGC user', () => {
   const url = CREATE_VERIFICATION_CODE_ROUTE
 
   afterEach(async () => {
-    await Promise.all([
-      prisma.verificationCode.deleteMany(),
-      prisma.verifiedUser.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('When creating a verification-code', () => {

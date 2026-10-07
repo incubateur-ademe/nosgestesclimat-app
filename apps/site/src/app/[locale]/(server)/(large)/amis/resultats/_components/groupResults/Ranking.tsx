@@ -1,6 +1,6 @@
 'use client'
 
-import type { Group, Participant } from '@/types/groups'
+import type { Group } from '@/types/groups'
 
 import Trans from '@/components/translation/trans/TransClient'
 import { eauMetric } from '@/constants/model/metric'
@@ -8,9 +8,16 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getTopThreeAndRestMembers } from '@/helpers/groups/getTopThreeAndRestMembers'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
+import { twMerge } from 'cn'
 import { useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import RankingMember from './ranking/RankingMember'
+
+const MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT = 5
+const PODIUM_SIZE = 3
+
+function getIndexAfterPodium(index: number) {
+  return index + PODIUM_SIZE
+}
 
 export default function Ranking({
   group,
@@ -24,11 +31,14 @@ export default function Ranking({
   const [isExpanded, setIsExpanded] = useState(false)
 
   const { topThreeMembers, restOfMembers, membersWithUncompletedSimulations } =
-    getTopThreeAndRestMembers(group.participants, metric) || {}
+    getTopThreeAndRestMembers(group.participants, metric)
 
-  const withS = group.participants.length - 5 > 1 ? 's' : ''
+  const participantsLength = group.participants.length
 
-  const hasOneParticipant = group.participants.length === 1
+  const hasOneParticipant = participantsLength === 1
+
+  const numberOfParticipantsHiddenByDefault =
+    participantsLength - MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT
 
   return (
     <>
@@ -51,7 +61,7 @@ export default function Ranking({
             : 'bg-primary-700 text-white',
           metric === eauMetric ? 'bg-primary-300' : ''
         )}>
-        {topThreeMembers.map((participant: Participant, index: number) => {
+        {topThreeMembers.map((participant, index) => {
           return (
             <RankingMember
               metric={metric}
@@ -75,38 +85,55 @@ export default function Ranking({
 
       {restOfMembers.length > 0 && (
         <ul className="px-3 py-4">
-          {restOfMembers.length > 0 &&
-            [...restOfMembers, ...membersWithUncompletedSimulations]
-              .filter(
-                (participant: Participant, index: number) =>
-                  isExpanded || index + topThreeMembers?.length < 5
+          {[...restOfMembers, ...membersWithUncompletedSimulations]
+            .filter(
+              (_, index) =>
+                isExpanded ||
+                index + PODIUM_SIZE < MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT
+            )
+            .map((participant, index) => {
+              return (
+                <RankingMember
+                  key={participant.id}
+                  isCurrentMember={participant.userId === user.id}
+                  group={group}
+                  user={user}
+                  index={getIndexAfterPodium(index)}
+                  metric={metric}
+                  participant={participant}
+                />
               )
-              .map((participant: Participant, index: number) => {
-                return (
-                  <RankingMember
-                    key={participant.id}
-                    isCurrentMember={participant.userId === user.id}
-                    group={group}
-                    user={user}
-                    // Add 3 to the index to account for the top three members
-                    index={index + 3}
-                    metric={metric}
-                    participant={participant}
-                  />
-                )
-              })}
+            })}
         </ul>
       )}
 
-      {group.participants.length > 5 && !isExpanded && (
+      {numberOfParticipantsHiddenByDefault > 0 && !isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
           className="bg-Transparent text-primary-700 mt-4 w-full border-none text-center text-sm underline">
-          <Trans>
-            Voir les {String(group.participants.length - 5)} autre{withS}{' '}
-            participant
-            {withS}
-          </Trans>
+          {numberOfParticipantsHiddenByDefault === 1 ? (
+            <Trans i18nKey="group.ranking.expand.button.label.singular">
+              Afficher 1 autre participant
+            </Trans>
+          ) : (
+            <Trans
+              i18nKey="group.ranking.expand.button.label.plural"
+              values={{
+                croppedParticipantsLength:
+                  participantsLength -
+                  MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
+              }}>
+              Afficher les{' '}
+              {
+                {
+                  croppedParticipantsLength:
+                    participantsLength -
+                    MAX_NUMBER_PARTICIPANTS_TO_SHOW_BY_DEFAULT,
+                } as unknown as React.ReactNode
+              }{' '}
+              autres participants
+            </Trans>
+          )}
         </button>
       )}
     </>

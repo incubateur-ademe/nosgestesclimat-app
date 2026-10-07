@@ -9,7 +9,7 @@ import {
 import Title from '@/design-system/layout/Title'
 import Link from '@/design-system/links/Link'
 import type { Group } from '@/types/groups'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import GroupContent from './groups/GroupContent'
 
 interface Props {

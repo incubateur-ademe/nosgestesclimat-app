@@ -1,4 +1,5 @@
 import { invariant } from '../../../../lib/invariant.ts'
+import { success, type Result } from '../../../../lib/result.ts'
 import type { Transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { findPollById } from '../../repositories/poll.repository.ts'
@@ -15,7 +16,7 @@ import {
 export type EnqueuePollStatsComputation = (
   pollId: string,
   tx?: Transaction
-) => Promise<void>
+) => Promise<Result<void, never>>
 
 export function createEnqueuePollStatsComputation({
   cooldownTiers,
@@ -25,12 +26,12 @@ export function createEnqueuePollStatsComputation({
   return async function enqueuePollStatsComputation(
     pollId: string,
     tx: Transaction = prisma
-  ): Promise<void> {
+  ): Promise<Result<void, never>> {
     const current = await getPollStatsComputationStatus(pollId, tx)
 
     // pending | processing → coalescing (no-op)
     if (current?.status === 'pending' || current?.status === 'processing') {
-      return
+      return success()
     }
 
     let scheduledAt = new Date()
@@ -46,6 +47,7 @@ export function createEnqueuePollStatsComputation({
     }
 
     await schedulePollStatsComputation(pollId, scheduledAt, tx)
+    return success()
   }
 }
 

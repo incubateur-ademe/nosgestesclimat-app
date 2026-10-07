@@ -2,7 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getTextDarkColor } from '@/helpers/getCategoryColorClass'
 import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function Category({ category }: { category: DottedName }) {
   const { icons, title } = useRule(category)
@@ -14,7 +14,12 @@ export default function Category({ category }: { category: DottedName }) {
           'mb-0 text-base font-bold lg:text-lg',
           getTextDarkColor(category)
         )}>
-        <Emoji>{icons}</Emoji> {title}
+        {icons && (
+          <span className="mr-2">
+            <Emoji>{icons}</Emoji>
+          </span>
+        )}
+        {title}
       </h1>
     </div>
   )

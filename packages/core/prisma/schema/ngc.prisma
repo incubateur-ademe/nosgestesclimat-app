@@ -385,7 +385,8 @@ model Simulation {
   // Created partial (progression = 1) by the migration: Prisma cannot express
   // the predicate, so a schema edit would rebuild it whole.
   @@index([createdAt, id])
-  @@index([progression])
+  // Read by the PostHog warehouse sync, never by the app.
+  @@index([updatedAt])
   @@schema("ngc")
 }
 

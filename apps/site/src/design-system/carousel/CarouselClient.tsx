@@ -8,8 +8,8 @@ import type { Swiper as SwiperInstance } from 'swiper/types'
 import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
 import Button from '@/design-system/buttons/Button'
-import { twMerge } from 'tailwind-merge'
 import './Carousel.css'
+import { twMerge } from "cn";
 
 export interface CarouselTranslations {
   prevSlideMessage: string

@@ -2,7 +2,7 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import { fetchCategories } from '@/services/cms/fetchCategories'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from 'cn'
 import Badge from '../layout/Badge'
 import ColorLine from '../layout/ColorLine'
 

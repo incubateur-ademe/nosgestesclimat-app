@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import useRule from '@/publicodes-state/hooks/useRule/useRule'
 import type { Metric } from '@/publicodes-state/types'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 type Sizes = 'md' | 'lg'
 

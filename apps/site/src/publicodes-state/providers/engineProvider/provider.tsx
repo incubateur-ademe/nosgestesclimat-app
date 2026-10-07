@@ -57,7 +57,6 @@ export default function EngineProvider({
   const { categories, subcategories } = useCategories({
     parsedRules,
     everyRules,
-    root,
     safeGetRule,
   })
 

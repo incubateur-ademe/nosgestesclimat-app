@@ -13,9 +13,9 @@ export const useCurrent = (
   const questionInQueryParams = useQuestionInQueryParams()
   const pathname = usePathname()
   const nextQuestion = remainingQuestions.at(0)
-  const lastQuestion = relevantAnsweredQuestions.at(-1)
+  const lastAnsweredQuestion = relevantAnsweredQuestions.at(-1)
   const defaultCurrentQuestion = pathname.includes('intercalaire')
-    ? lastQuestion
+    ? lastAnsweredQuestion
     : questionInQueryParams &&
         (relevantAnsweredQuestions.includes(questionInQueryParams) || isDebug)
       ? questionInQueryParams

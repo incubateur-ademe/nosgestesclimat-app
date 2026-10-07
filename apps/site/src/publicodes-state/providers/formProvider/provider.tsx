@@ -1,5 +1,6 @@
 'use client'
 
+import { orderedTestCategoriesWithProfile } from '@/constants/model/categories'
 import {
   EMPTY_FOLDED_STEPS,
   EMPTY_SITUATION,
@@ -7,7 +8,6 @@ import {
   useOptionalSimulation,
   useUser,
 } from '@/publicodes-state'
-
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { notFound } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
@@ -16,6 +16,7 @@ import FormContext from './context'
 import { useCurrent } from './hooks/useCurrent'
 import useProgression from './hooks/useProgression'
 import useQuestions from './hooks/useQuestions'
+import useQuestionsWithForgottenAtTheEnd from './hooks/useQuestionsWithForgottenAtTheEnd'
 
 interface Props {
   root: DottedName
@@ -23,7 +24,6 @@ interface Props {
 
 function FormProvider({ root, children }: PropsWithChildren<Props>) {
   const {
-    categories,
     subcategories,
     safeEvaluate,
     everyQuestions,
@@ -46,7 +46,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
   } = useQuestions({
     root,
     safeEvaluate,
-    categories,
+    categories: orderedTestCategoriesWithProfile,
     subcategories,
     foldedSteps,
     situation,
@@ -59,10 +59,46 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     remainingQuestions
   )
 
-  const { remainingQuestionsByCategories } = useProgression({
-    categories,
-    remainingQuestions,
+  const {
+    relevantQuestions: reorderedRelevantQuestions,
+    remainingQuestions: reorderedRemainingQuestions,
+    forgottenQuestions,
+  } = useQuestionsWithForgottenAtTheEnd({
     relevantQuestions,
+    remainingQuestions,
+    currentQuestion,
+  })
+
+  const reorderedQuestionsByCategories = useMemo(
+    () =>
+      Object.fromEntries(
+        orderedTestCategoriesWithProfile.map((category) => [
+          category,
+          reorderedRelevantQuestions.filter((question) =>
+            questionsByCategories[category].includes(question)
+          ),
+        ])
+      ) as Record<DottedName, DottedName[]>,
+    [questionsByCategories, reorderedRelevantQuestions]
+  )
+
+  const reorderedRemainingQuestionsByCategories = useMemo(
+    () =>
+      Object.fromEntries(
+        orderedTestCategoriesWithProfile.map((category) => [
+          category,
+          reorderedQuestionsByCategories[category].filter((question) =>
+            reorderedRemainingQuestions.includes(question)
+          ),
+        ])
+      ) as Record<DottedName, DottedName[]>,
+    [reorderedQuestionsByCategories, reorderedRemainingQuestions]
+  )
+
+  useProgression({
+    categories: orderedTestCategoriesWithProfile,
+    remainingQuestions: reorderedRemainingQuestions,
+    relevantQuestions: reorderedRelevantQuestions,
     updateCurrentSimulation,
     currentStoredProgression: progression,
   })
@@ -70,15 +106,16 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
   return (
     <FormContext.Provider
       value={{
-        questionsByCategories,
-        relevantQuestions,
-        remainingQuestions,
+        questionsByCategories: reorderedQuestionsByCategories,
+        relevantQuestions: reorderedRelevantQuestions,
+        remainingQuestions: reorderedRemainingQuestions,
         relevantAnsweredQuestions,
-        remainingQuestionsByCategories,
         currentQuestion,
         currentCategory,
         setCurrentQuestion,
         missingVariables,
+        remainingQuestionsByCategories: reorderedRemainingQuestionsByCategories,
+        forgottenQuestions,
       }}>
       {children}
     </FormContext.Provider>

@@ -452,14 +452,17 @@ server {
     set $ph_api eu.i.posthog.com;
 
     # Avec une variable, l'URI de `proxy_pass` est prise littéralement : chaque
-    # `location` porte donc le chemin à transmettre, et capture le suffixe pour
-    # le conserver. Ce sont des regex : c'est leur ordre qui départage
-    # `/revp/static/` de `/revp/`, la première qui matche l'emporte.
+    # `location` porte donc le chemin à transmettre, capture le suffixe pour le
+    # conserver, et recolle `$is_args$args`. Sans ce dernier, nginx n'ajoute plus
+    # la query d'origine — or `/revp/api/surveys/` y transporte le token de
+    # projet, que PostHog rejette alors en 401.
+    # Ce sont des regex : c'est leur ordre qui départage `/revp/static/` de
+    # `/revp/`, la première qui matche l'emporte.
 
     # Sert du JS exécuté par les navigateurs : un certificat non vérifié y laisse
     # passer du code tiers.
     location ~ ^/revp/static/(.*)$ {
-        proxy_pass https://$ph_assets/static/$1;
+        proxy_pass https://$ph_assets/static/$1$is_args$args;
         proxy_set_header Host $ph_assets;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
@@ -472,7 +475,7 @@ server {
     }
 
     location ~ ^/revp/array/(.*)$ {
-        proxy_pass https://$ph_assets/array/$1;
+        proxy_pass https://$ph_assets/array/$1$is_args$args;
         proxy_set_header Host $ph_assets;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";
@@ -485,7 +488,7 @@ server {
     }
 
     location ~ ^/revp/(.*)$ {
-        proxy_pass https://$ph_api/$1;
+        proxy_pass https://$ph_api/$1$is_args$args;
         proxy_set_header Host $ph_api;
         proxy_set_header Cookie "";
         proxy_set_header Authorization "";

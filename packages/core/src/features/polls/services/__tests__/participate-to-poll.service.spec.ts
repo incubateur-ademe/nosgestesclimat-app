@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import type { AppUser } from '../../../auth/types/user-session.ts'
 import { TemplateIds } from '../../../emails/email.constant.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
@@ -18,13 +19,7 @@ import { createParticipateToPoll } from '../participate-to-poll.service.ts'
 
 describe('participateToPoll', () => {
   afterEach(async () => {
-    await prisma.simulationPoll.deleteMany()
-    await prisma.pollStatsComputation.deleteMany()
-    await prisma.poll.deleteMany()
-    await prisma.organisation.deleteMany()
-    await prisma.simulation.deleteMany()
-    await prisma.verifiedUser.deleteMany()
-    await prisma.user.deleteMany()
+    await emptyDatabase(prisma)
   })
 
   describe('starting a new simulation', () => {
@@ -60,8 +55,6 @@ describe('participateToPoll', () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         userId: user.id,
-        polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
-        groups: [],
       })
     })
 
@@ -144,7 +137,6 @@ describe('participateToPoll', () => {
           progression: 1,
           updatedAt: simulation.updatedAt,
           situation: simulation.situation,
-          polls: [{ id: poll.id, slug: poll.slug, name: poll.name }],
         })
       )
     })

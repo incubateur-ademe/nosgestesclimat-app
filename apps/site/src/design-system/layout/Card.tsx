@@ -1,5 +1,5 @@
 import type { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function Card({
   children,

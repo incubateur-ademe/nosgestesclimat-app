@@ -10,7 +10,7 @@ import Tabs from '@/design-system/layout/Tabs'
 import { useShouldHideIfIframe } from '@/hooks/iframe/useShouldHideIfIframe'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { usePathname } from 'next/navigation'
-import { twMerge } from 'tailwind-merge'
+import { twMerge } from "cn";
 
 export default function FinTabs() {
   const pathname = usePathname()

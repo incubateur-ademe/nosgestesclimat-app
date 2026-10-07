@@ -1,6 +1,6 @@
 'use client'
 
-import { testOrderedCategories } from '@/constants/model/orderedCategories'
+import { orderedTestCategoriesWithProfile } from '@/constants/model/categories'
 import type { Categories } from '@incubateur-ademe/nosgestesclimat'
 import { useContext, useMemo } from 'react'
 import formContext from '../../providers/formProvider/context'
@@ -20,6 +20,7 @@ export default function useFormState() {
     relevantAnsweredQuestions,
     remainingQuestionsByCategories,
     missingVariables,
+    forgottenQuestions,
   } = useContext(formContext)
 
   const {
@@ -39,8 +40,8 @@ export default function useFormState() {
 
   const remainingCategories = useMemo(() => {
     return (
-      testOrderedCategories.length -
-      testOrderedCategories.indexOf(currentCategory as Categories) -
+      orderedTestCategoriesWithProfile.length -
+      orderedTestCategoriesWithProfile.indexOf(currentCategory as Categories) -
       1
     )
   }, [currentCategory])
@@ -98,7 +99,6 @@ export default function useFormState() {
      * Every missing questions needed to complete the form
      */
     remainingQuestions,
-
     /**
      * Every answered questions that are still relevant and should be displayed in the form (foldedsteps minus questions that are disabled by parents and can't enable themselves)
      */
@@ -112,6 +112,10 @@ export default function useFormState() {
      */
     remainingQuestionsByCategories,
     /**
+     * The questions that were "forgotten": they should have been asked before the current question but were not (bug in the publicodes model). They are asked at the end of the form.
+     */
+    forgottenQuestions,
+    /**
      * Advancement of the test between 0 and 1. This is different from "progression" which it is based on the current question index here and not on the number of answered questions.
      */
     testAdvancement,
@@ -123,7 +127,6 @@ export default function useFormState() {
      * Is true if the next question has already been seen in the current session
      */
     nextQuestionAlreadySeen: relevantAnsweredQuestions.includes(nextQuestion),
-
     /**
      * Is true if the form provider has been initialized
      */

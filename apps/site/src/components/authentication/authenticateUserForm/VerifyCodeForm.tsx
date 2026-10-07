@@ -5,7 +5,11 @@ import Trans from '@/components/translation/trans/TransClient'
 import NotReceived from './verifyCodeForm/NotReceived'
 import VerificationCodeForm from './verifyCodeForm/VerificationCodeForm'
 
-export default function VerifyCode() {
+interface Props {
+  verificationButtonLabel?: string | React.ReactNode
+}
+
+export default function VerifyCode({ verificationButtonLabel }: Props) {
   const { state } = useAuth()
 
   if (state.phase === 'idle' || state.phase === 'email_sending') {
@@ -33,7 +37,7 @@ export default function VerifyCode() {
         <span>{state.email}</span>.
       </p>
 
-      <VerificationCodeForm />
+      <VerificationCodeForm verificationButtonLabel={verificationButtonLabel} />
 
       {state.phase !== 'authenticated' && <NotReceived />}
     </div>
