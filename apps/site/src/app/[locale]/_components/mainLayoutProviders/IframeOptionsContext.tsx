@@ -16,7 +16,6 @@ export const IframeOptionsContext = createContext<{
   iframeRegion?: string | null
   isIframeOnlySimulation?: boolean
   isIntegratorAllowedToBypassConsentDataShare?: boolean
-  iframeLang?: string | null
   isFrenchRegion?: boolean
 }>({})
 
@@ -31,12 +30,8 @@ export const IframeOptionsProvider = ({
   // Special case : Safari doesn't handle cookies in iframes
   const { needPermission, askForPermission, hasError } = useStoragePermissions()
 
-  const {
-    isIframeShareData,
-    isIframeOnlySimulation,
-    iframeLang,
-    iframeRegion,
-  } = useIframeStorageParams(isIframe)
+  const { isIframeShareData, isIframeOnlySimulation, iframeRegion } =
+    useIframeStorageParams(isIframe)
 
   const { isAllowedToBypassConsentDataShare } = useBypassConsentDataShare()
 
@@ -67,7 +62,6 @@ export const IframeOptionsProvider = ({
         isIframeOnlySimulation,
         isIntegratorAllowedToBypassConsentDataShare:
           isAllowedToBypassConsentDataShare,
-        iframeLang,
         isFrenchRegion,
       }}>
       {isIframe && needPermission ? (
