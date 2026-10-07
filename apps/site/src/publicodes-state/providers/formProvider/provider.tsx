@@ -1,5 +1,6 @@
 'use client'
 
+import { orderedTestCategoriesWithProfile } from '@/constants/model/categories'
 import {
   EMPTY_FOLDED_STEPS,
   EMPTY_SITUATION,
@@ -7,8 +8,6 @@ import {
   useOptionalSimulation,
   useUser,
 } from '@/publicodes-state'
-
-import { orderedTestCategoriesWithProfile } from '@/constants/model/categories'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { notFound } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
@@ -44,7 +43,6 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     relevantQuestions,
     questionsByCategories,
     missingVariables,
-    remainingQuestionsByCategories,
   } = useQuestions({
     root,
     safeEvaluate,
@@ -77,10 +75,10 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
         orderedTestCategoriesWithProfile.map((category) => [
           category,
           reorderedRelevantQuestions.filter((question) =>
-            questionsByCategories[category]?.includes(question)
+            questionsByCategories[category].includes(question)
           ),
         ])
-      ),
+      ) as Record<DottedName, DottedName[]>,
     [questionsByCategories, reorderedRelevantQuestions]
   )
 
@@ -89,11 +87,11 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
       Object.fromEntries(
         orderedTestCategoriesWithProfile.map((category) => [
           category,
-          reorderedQuestionsByCategories[category]?.filter((question) =>
+          reorderedQuestionsByCategories[category].filter((question) =>
             reorderedRemainingQuestions.includes(question)
           ),
         ])
-      ),
+      ) as Record<DottedName, DottedName[]>,
     [reorderedQuestionsByCategories, reorderedRemainingQuestions]
   )
 

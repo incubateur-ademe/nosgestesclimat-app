@@ -341,7 +341,7 @@ export default function Navigation({
   }[submitButtonKind]
 
   const submitButtonIsDisabled =
-    isPending ||
+    isPending === true ||
     isNextDisabled ||
     (!isFolded && !canNavigateFromAnsweredForgottenQuestion)
 
