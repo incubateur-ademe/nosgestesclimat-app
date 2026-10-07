@@ -1,4 +1,3 @@
-import { getLoginProps } from '@/app/[locale]/(server)/(large)/(user-account)/(login)/_helpers/getLoginProps'
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
@@ -13,6 +12,7 @@ import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
 import { validateSearchParams } from '../_helpers/validateSearchParams'
+import { getSignupProps } from './_helpers/getSignUpProps'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Création de compte - Nos Gestes Climat'),
@@ -31,7 +31,10 @@ export default async function Connexion({
   const { locale } = await params
   const resolvedSearchParams = await searchParams
   const validSearchParams = validateSearchParams(resolvedSearchParams)
-  const loginProps = getLoginProps({ from: validSearchParams?.from, locale })
+  const { labels, redirectPathname } = getSignupProps({
+    from: validSearchParams?.from,
+    locale,
+  })
 
   const userSession = await getUserSession()
 
@@ -45,15 +48,15 @@ export default async function Connexion({
 
         <Title
           containerClassName="order-0 max-w-[430px] mb-4"
-          title={loginProps.signup.labels.title}
+          title={labels.title}
         />
 
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>
             <AuthenticateUserForm
               mode="signUp"
-              buttonLabel={loginProps.signup.labels.buttonLabel}
-              redirectPathname={loginProps.signup.redirectPathname}
+              buttonLabel={labels.buttonLabel}
+              redirectPathname={redirectPathname}
               tracker={captureSignupComplete}
             />
           </UserProvider>

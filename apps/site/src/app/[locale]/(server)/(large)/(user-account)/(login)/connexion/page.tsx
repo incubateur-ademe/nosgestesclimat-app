@@ -1,4 +1,3 @@
-import { getLoginProps } from '@/app/[locale]/(server)/(large)/(user-account)/(login)/_helpers/getLoginProps'
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
@@ -13,6 +12,7 @@ import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
 import { validateSearchParams } from '../_helpers/validateSearchParams'
+import { getLoginProps } from './_helpers/getLoginProps'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Connexion à votre espace - Nos Gestes Climat'),
@@ -31,7 +31,10 @@ export default async function Connexion({
   const { locale } = await params
   const resolvedSearchParams = await searchParams
   const validSearchParams = validateSearchParams(resolvedSearchParams)
-  const loginProps = getLoginProps({ from: validSearchParams?.from, locale })
+  const { labels, redirectPathname } = getLoginProps({
+    from: validSearchParams?.from,
+    locale,
+  })
 
   const userSession = await getUserSession()
 
@@ -45,16 +48,16 @@ export default async function Connexion({
 
         <Title
           containerClassName="order-0 max-w-[430px] mb-4"
-          title={loginProps.login.labels.title}
+          title={labels.title}
         />
 
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>
             <AuthenticateUserForm
               mode="signIn"
-              redirectPathname={loginProps.login.redirectPathname}
+              redirectPathname={redirectPathname}
               tracker={captureLoginComplete}
-              buttonLabel={loginProps.login.labels.buttonLabel}
+              buttonLabel={labels.buttonLabel}
             />
           </UserProvider>
         </QueryClientProviderWrapper>
