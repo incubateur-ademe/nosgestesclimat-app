@@ -1,3 +1,4 @@
+import type { Logger } from '../src/features/logger/index.ts'
 import { prisma } from '../src/prisma/client.ts'
 import { seedDemoData } from '../src/seeds/seed-demo-data.service.ts'
 
@@ -16,11 +17,20 @@ const report = (message: string) => {
   console.log(`[seed +${elapsed}s] ${message}`)
 }
 
-seedDemoData({ report })
-  .then(async ({ accounts, organisations, polls }) => {
+const logger: Logger = {
+  info: report,
+  warn: report,
+  debug: report,
+  error: (message, meta) => console.error(message, meta ?? ''),
+}
+
+seedDemoData({ logger })
+  .then(async ({ skipped, accounts, organisations, polls }) => {
     report(
-      `Done: ${accounts} account(s), ${organisations} organisation(s), ` +
-        `${polls.length} poll(s)`
+      skipped
+        ? 'Done: the demo data was already seeded.'
+        : `Done: ${accounts} account(s), ${organisations} organisation(s), ` +
+            `${polls.length} poll(s)`
     )
 
     await prisma.$disconnect()

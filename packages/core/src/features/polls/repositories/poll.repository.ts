@@ -1,7 +1,6 @@
 import { isCuid } from '../../../lib/cuid.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { PollMode } from '../../../prisma/generated/client.ts'
 import type { Poll, PollSummary } from '../types/poll.ts'
 import { toPoll } from './poll.mapper.ts'
 
@@ -34,17 +33,6 @@ export const findPollById = async (
 ): Promise<Poll | null> => {
   const row = await tx.poll.findUnique({
     where: { id },
-    select: pollSelect,
-  })
-  return row ? toPoll(row) : null
-}
-
-export const findPollBySlug = async (
-  slug: string,
-  tx: Transaction = prisma
-): Promise<Poll | null> => {
-  const row = await tx.poll.findUnique({
-    where: { slug },
     select: pollSelect,
   })
   return row ? toPoll(row) : null
@@ -98,30 +86,18 @@ export const findPollSummaryByIdOrSlug = async ({
   })
 }
 
-export const createPoll = async (
-  {
-    name,
-    slug,
-    organisationId,
-    mode = 'standard',
-  }: {
-    name: string
-    slug: string
-    organisationId: string
-    mode?: PollMode
-  },
-  tx: Transaction = prisma
-): Promise<Poll> => {
-  const row = await tx.poll.create({
-    data: {
-      name,
-      slug,
-      organisationId,
-      mode,
-      customAdditionalQuestions: {},
-    },
-    select: pollSelect,
+/**
+ * Return polls sorted by most recent participation
+ */
+export const findManyPollSummariesBySimulationId = async ({
+  simulationId,
+}: {
+  simulationId: string
+}): Promise<PollSummary[]> => {
+  const simulationPolls = await prisma.simulationPoll.findMany({
+    where: { simulationId: simulationId },
+    orderBy: { createdAt: 'desc' },
+    select: { poll: { select: pollSummarySelect } },
   })
-
-  return toPoll(row)
+  return simulationPolls.map((sp) => sp.poll)
 }

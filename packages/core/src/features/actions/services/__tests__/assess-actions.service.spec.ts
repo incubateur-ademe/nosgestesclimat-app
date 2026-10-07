@@ -1,18 +1,13 @@
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { noopLogger } from '../../../logger/index.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { ActionAssessmentPublicodesException } from '../../exceptions/action-assessment.exception.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { createAssessActions } from '../assess-actions.service.ts'
 
-const noopLogger = {
-  error: () => {},
-  warn: () => {},
-  info: () => {},
-  debug: () => {},
-}
 const assessActions = createAssessActions({
   logger: noopLogger,
   captureException: () => {},

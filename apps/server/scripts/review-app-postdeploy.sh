@@ -39,7 +39,8 @@ else
   echo "Notion credentials not configured. Skipping actions sync."
 fi
 
-# 3. Seed the demo data (accounts, organisations, campaigns and their stats).
+# 3. Seed the demo data (accounts, organisations, campaigns and their
+# participants; the campaign statistics are queued for the worker).
 #
 # Only when the catalogue was synced: the simulations' action assessments are
 # built from it, and where a review app starts from an empty database there is

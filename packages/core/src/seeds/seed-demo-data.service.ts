@@ -1,19 +1,12 @@
 import { ensureSeddEvent } from '../features/events/services/ensure-sedd-event.service.ts'
-import { seedOrganisation } from '../features/organisations/seeds/organisation.seed.ts'
-import { findPollBySlug } from '../features/polls/repositories/poll.repository.ts'
-import { seedPollStats } from '../features/polls/seeds/poll-stats.seed.ts'
-import {
-  defaultPollSeedShapes,
-  pollSlug,
-  seedPoll,
-  type PollSeedShape,
-} from '../features/polls/seeds/poll.seed.ts'
-import { findLatestSimulation } from '../features/simulations/repository/simulation.repository.ts'
+import { noopLogger, type Logger } from '../features/logger/index.ts'
+import { organisationFactory } from '../features/organisations/factories/organisation.factory.ts'
+import { seedPolls } from '../features/polls/seeds/poll.seed.ts'
 import { seedSimulations } from '../features/simulations/seeds/simulations.seed.ts'
+import { userFactory } from '../features/users/factories/user.factory.ts'
 import {
+  haveSeedUsers,
   readSeedAdminEmails,
-  seedVerifiedUser,
-  slugifyEmail,
 } from '../features/users/seeds/users.seed.ts'
 
 /**
@@ -26,132 +19,76 @@ export interface SeededPoll {
 }
 
 export interface SeedDemoDataResult {
+  /** True when a previous run had already seeded the demo accounts. */
+  skipped: boolean
   polls: SeededPoll[]
   organisations: number
   accounts: number
 }
 
 /**
- * Progress reporting. The caller decides what to do with the lines: the local
- * seed prints them, a job logs them, a test may discard them.
- */
-export type SeedReporter = (message: string) => void
-
-const noopReporter: SeedReporter = () => {}
-
-/**
  * Seeds everything a local database needs to exercise the app: for every
  * `SEED_ADMIN_EMAILS` entry, an account, its organisation, the account's own
- * simulation, and its campaigns with their participants and statistics.
+ * simulation, and its campaigns with their participants.
  *
  * The action catalogue is not seeded here: it comes from the Notion sync, and
  * the simulations' action assessments are built from it.
  *
+ * The run is idempotent by skipping entirely when the demo accounts are already
+ * there, rather than by making every step tolerate partial data.
  */
 export const seedDemoData = async ({
-  report = noopReporter,
-}: { report?: SeedReporter } = {}): Promise<SeedDemoDataResult> => {
-  report('Seeding the default event…')
+  logger = noopLogger,
+}: { logger?: Logger } = {}): Promise<SeedDemoDataResult> => {
+  logger.info('Seeding the default event…')
   await ensureSeddEvent()
 
   const emails = readSeedAdminEmails()
-  const polls: SeededPoll[] = []
 
   if (emails.length === 0) {
-    report(
+    logger.info(
       'No SEED_ADMIN_EMAILS: skipping the accounts, organisations and campaigns.'
     )
+
+    return { skipped: false, polls: [], organisations: 0, accounts: 0 }
   }
 
-  for (const email of emails) {
-    report(`Seeding the account ${email}…`)
+  if (await haveSeedUsers(emails)) {
+    logger.info('Demo data already seeded: skipping.')
 
-    const account = await seedVerifiedUser(email)
-    const emailSlug = slugifyEmail(email)
-
-    const { organisation } = await seedOrganisation({
-      slug: `organisation-${emailSlug}`,
-      name: `Organisation de démonstration (${email})`,
-      administratorEmail: account.email,
-    })
-
-    // The account's own simulation, so the personalised pages have something
-    // to show. It is deliberately attached to no poll: a poll participation is
-    // an anonymous answer, and the account stands for the organisation's
-    // administrator rather than for one of its participants.
-    const existingSimulation = await findLatestSimulation({
-      userId: account.id,
-    })
-
-    if (!existingSimulation) {
-      report(`Seeding the simulation of ${email}…`)
-      await seedSimulations({ count: 1, userId: account.id })
-    }
-
-    report(`Seeding the campaigns of ${email}…`)
-    for (const shape of defaultPollSeedShapes) {
-      polls.push(await seedPollIfMissing({ shape, organisation, report }))
-    }
+    return { skipped: true, polls: [], organisations: 0, accounts: 0 }
   }
 
-  report('Computing the campaign statistics…')
-  const stats = await seedPollStats(polls.map(({ id }) => id))
-  const participants = stats.reduce(
-    (total, { participantsCount }) => total + participantsCount,
-    0
-  )
-  report(
-    `Campaign statistics computed for ${stats.length} poll(s), ${participants} participant(s)`
+  logger.info(`Seeding ${emails.length} account(s)…`)
+  const users = await Promise.all(
+    emails.map((email) => userFactory.verified().create({ email }))
   )
 
-  return {
-    polls,
-    organisations: emails.length,
-    accounts: emails.length,
-  }
-}
+  logger.info(`Seeding ${emails.length} organisation(s)…`)
+  const organisations = await Promise.all(
+    emails.map((email) =>
+      organisationFactory
+        .withAdministrator(email)
+        .create({ name: `Organisation de démonstration (${email})` })
+    )
+  )
 
-/**
- * Seeds one campaign, unless it is already there.
- *
- */
-const seedPollIfMissing = async ({
-  shape,
-  organisation,
-  report,
-}: {
-  shape: PollSeedShape
-  organisation: { id: string; slug: string }
-  report: SeedReporter
-}): Promise<SeededPoll> => {
-  const slug = pollSlug({ organisationSlug: organisation.slug, shape })
+  logger.info('Seeding the campaigns and their participants…')
+  const polls = await seedPolls({ organisations })
 
-  const existing = await findPollBySlug(slug)
-
-  if (existing) {
-    report(`Campaign "${shape.name}" already exists, skipping`)
-
-    return {
-      id: existing.id,
-      slug: existing.slug,
-      participantsCount: existing.participantsCount,
-    }
+  for (const user of users) {
+    logger.info(`Seeding the simulation of ${user.email}…`)
+    await seedSimulations({ count: 1, userId: user.id })
   }
 
-  const simulationIds = await seedSimulations({
-    count: shape.participantsCount,
-  })
-
-  const poll = await seedPoll({
-    organisationId: organisation.id,
-    slug,
-    shape,
-    simulationIds,
-  })
-
   return {
-    id: poll.id,
-    slug: poll.slug,
-    participantsCount: shape.participantsCount,
+    skipped: false,
+    polls: polls.map(({ id, slug, participantsCount }) => ({
+      id,
+      slug,
+      participantsCount,
+    })),
+    organisations: organisations.length,
+    accounts: users.length,
   }
 }

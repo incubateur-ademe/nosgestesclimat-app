@@ -1,11 +1,13 @@
-import type { PollMode } from '../../../prisma/generated/client.ts'
-import { createPollParticipation } from '../repositories/poll-participation.repository.ts'
-import { createPoll } from '../repositories/poll.repository.ts'
+import type {
+  Organisation,
+  PollMode,
+} from '../../../prisma/generated/client.ts'
+import { seedSimulations } from '../../simulations/seeds/simulations.seed.ts'
+import { pollFactory } from '../factories/poll.factory.ts'
 import type { Poll } from '../types/poll.ts'
 
 export interface PollSeedShape {
   name: string
-  slug: string
   mode: PollMode
   participantsCount: number
 }
@@ -13,51 +15,60 @@ export interface PollSeedShape {
 export const defaultPollSeedShapes: PollSeedShape[] = [
   {
     name: 'Campagne de démonstration',
-    slug: 'campagne-demonstration',
     mode: 'standard',
     participantsCount: 2,
   },
   {
     name: 'Campagne avec 60 réponses',
-    slug: 'campagne-60-reponses',
     mode: 'standard',
     participantsCount: 60,
   },
 ]
 
-/** The slug a campaign is stored under, derived from its organisation as poll slugs must be unique. In production, already existing slugs are incremented with a number. */
-export const pollSlug = ({
-  organisationSlug,
-  shape,
-}: {
-  organisationSlug: string
-  shape: PollSeedShape
-}): string => `${organisationSlug}-${shape.slug}`
-
 /**
- * Creates a poll and attaches the participants it is given.
+ * Seeds one campaign for an organisation, with its participants: the
+ * simulations are created with the shape's count, attached to the poll, and the
+ * poll is left with a pending statistics computation for the worker to pick up.
  */
-export const seedPoll = async ({
-  organisationId,
-  slug,
+const seedPoll = async ({
+  organisation,
   shape,
-  simulationIds,
 }: {
-  organisationId: string
-  slug: string
+  organisation: Organisation
   shape: PollSeedShape
-  simulationIds: string[]
 }): Promise<Poll> => {
-  const poll = await createPoll({
-    name: shape.name,
-    slug,
-    organisationId,
-    mode: shape.mode,
-  })
+  const poll = await pollFactory
+    .withOrganisation({
+      id: organisation.id,
+      name: organisation.name,
+      slug: organisation.slug,
+    })
+    .withParticipantsCount(shape.participantsCount)
+    .withPendingComputation(new Date())
+    .create({ name: shape.name, mode: shape.mode })
 
-  for (const simulationId of simulationIds) {
-    await createPollParticipation({ pollId: poll.id, simulationId })
-  }
+  await seedSimulations({ count: shape.participantsCount, pollId: poll.id })
 
   return poll
+}
+
+/**
+ * Seeds the default campaigns for every given organisation.
+ */
+export const seedPolls = async ({
+  organisations,
+  shapes = defaultPollSeedShapes,
+}: {
+  organisations: Organisation[]
+  shapes?: PollSeedShape[]
+}): Promise<Poll[]> => {
+  const polls: Poll[] = []
+
+  for (const organisation of organisations) {
+    for (const shape of shapes) {
+      polls.push(await seedPoll({ organisation, shape }))
+    }
+  }
+
+  return polls
 }

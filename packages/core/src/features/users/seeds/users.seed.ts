@@ -1,5 +1,4 @@
-import { upsertVerifiedUser } from '../repositories/users.repository.ts'
-import type { VerifiedUser } from '../types/user.ts'
+import { prisma } from '../../../prisma/client.ts'
 
 /**
  * The demo accounts a seed run creates, read from `SEED_ADMIN_EMAILS`.
@@ -15,18 +14,14 @@ export const readSeedAdminEmails = (): string[] =>
     .filter(Boolean)
 
 /**
- * Turns an email into the slug fragment identifying its demo data, so an
- * account, its organisation and its polls all derive from the same stable
- * value.
+ * Whether a previous run already created any of these accounts. The seed is
+ * idempotent by skipping entirely in that case, rather than by trying to upsert
+ * its way through partially seeded data.
  */
-export const slugifyEmail = (email: string): string =>
-  email
-    .split('@')[0]
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+export const haveSeedUsers = async (emails: string[]): Promise<boolean> => {
+  const count = await prisma.verifiedUser.count({
+    where: { email: { in: emails } },
+  })
 
-/**
- * The verified account behind a demo email, created when absent.
- */
-export const seedVerifiedUser = (email: string): Promise<VerifiedUser> =>
-  upsertVerifiedUser({ email })
+  return count > 0
+}

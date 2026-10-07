@@ -13,16 +13,9 @@ import { createTestEngine } from '../../simulation-computation/factories/engine.
 import { getComputedResults } from '../../simulations/helpers/get-computed-results.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
 
-/**
- * The model's personas, keyed by display name.
- */
-const personasByName = Object.fromEntries(
-  Object.values(personas as Record<string, Persona>).map(
-    (persona) => [persona.nom, persona] as const
-  )
-) as Record<string, Persona>
+export type PersonaName = keyof typeof personas
 
-export const personaNames = Object.keys(personasByName)
+export const personaNames = Object.keys(personas) as PersonaName[]
 
 if (personaNames.length === 0) {
   throw new Error('The model ships no persona to seed simulations from.')
@@ -43,24 +36,16 @@ export interface PersonaActionAssessment {
  * Computed once per persona and kept for the process' lifetime: a simulation is
  * only a copy of its persona's answers, so reading one twice is pure waste.
  */
-const computationCache = new Map<string, PersonaComputation>()
-const assessmentCache = new Map<string, PersonaActionAssessment[]>()
+const computationCache = new Map<PersonaName, PersonaComputation>()
+const assessmentCache = new Map<PersonaName, PersonaActionAssessment[]>()
 
-const readPersona = (name: string): Persona => {
-  const persona = personasByName[name]
-
-  if (!persona) {
-    throw new Error(`Unknown persona "${name}".`)
-  }
-
-  return persona
-}
+const readPersona = (name: PersonaName): Persona => personas[name] as Persona
 
 const computePersona = (
   persona: Persona,
   engine: Engine<DottedName>
 ): PersonaComputation => {
-  engine.setSituation(persona.situation, { keepPreviousSituation: false })
+  engine.setSituation(persona.situation)
 
   const computedResults = getComputedResults(engine)
 
@@ -78,7 +63,7 @@ const computeActionAssessments = (
   persona: Persona,
   engine: Engine<DottedName>
 ): PersonaActionAssessment[] => {
-  engine.setSituation(persona.situation, { keepPreviousSituation: false })
+  engine.setSituation(persona.situation)
 
   const ruleIdToDottedName = buildRuleIdToDottedName(engine)
 
@@ -98,8 +83,6 @@ const computeActionAssessments = (
     }
   )
 
-  engine.resetCache()
-
   return assessments
 }
 
@@ -114,8 +97,8 @@ const getEngine = (): Engine<DottedName> => {
 }
 
 export const getPersonaComputations = (
-  names: string[]
-): Map<string, PersonaComputation> => {
+  names: PersonaName[]
+): Map<PersonaName, PersonaComputation> => {
   const missing = [...new Set(names)].filter(
     (name) => !computationCache.has(name)
   )
@@ -140,12 +123,10 @@ export const getPersonaComputations = (
 
 /**
  * The action assessments of the given personas, computed on first ask.
- *
- * Called for the simulations an account owns, and only for those.
  */
 export const getPersonaActionAssessments = (
-  names: string[]
-): Map<string, PersonaActionAssessment[]> => {
+  names: PersonaName[]
+): Map<PersonaName, PersonaActionAssessment[]> => {
   const missing = [...new Set(names)].filter(
     (name) => !assessmentCache.has(name)
   )
@@ -177,5 +158,5 @@ export const getPersonaActionAssessments = (
  * drawn several times: its computation is cached, which is what keeps seeding
  * dozens of simulations affordable.
  */
-export const pickPersonaName = (): string =>
+export const pickPersonaName = (): PersonaName =>
   faker.helpers.arrayElement(personaNames)

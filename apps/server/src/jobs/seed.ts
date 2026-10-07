@@ -3,13 +3,15 @@ import logger from '../logger.ts'
 
 const main = async () => {
   try {
-    const { accounts, organisations, polls } = await seedDemoData({
-      report: (message) => logger.info(message),
+    const { skipped, accounts, organisations, polls } = await seedDemoData({
+      logger,
     })
 
     logger.info(
-      `Demo data seeded: ${accounts} account(s), ` +
-        `${organisations} organisation(s), ${polls.length} poll(s)`
+      skipped
+        ? 'Demo data already present, nothing to seed'
+        : `Demo data seeded: ${accounts} account(s), ` +
+            `${organisations} organisation(s), ${polls.length} poll(s)`
     )
     process.exit(0)
   } catch (e) {
