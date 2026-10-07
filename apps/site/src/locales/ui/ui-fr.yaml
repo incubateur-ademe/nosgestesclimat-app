@@ -1464,3 +1464,15 @@ entries:
   save-results-form.verification.button-label: Enregistrer mes résultats
   group.ranking.expand.button.label.plural: Afficher les {{croppedParticipantsLength}} autres participants
   group.ranking.expand.button.label.singular: Afficher 1 autre participant
+  results.footprintBlock.carbone.comparison.less: '{{delta}} {{unit}} de moins que la moyenne*'
+  results.footprintBlock.carbone.comparison.more: '{{delta}} {{unit}} de plus que la moyenne*'
+  results.footprintBlock.carbone.info.definition: Le CO₂e (équivalent CO₂) regroupe tous les gaz à effet de serre que vous émettez, notamment via vos déplacements, votre alimentation, votre logement et votre consommation.
+  results.footprintBlock.carbone.info.impact: 'Ces gaz retiennent la chaleur dans l’atmosphère : plus ils s’accumulent, plus le climat se dérègle, avec des canicules, sécheresses et inondations plus fréquentes.'
+  results.footprintBlock.carbone.info.label: Qu’est-ce que l’empreinte carbone ?
+  results.footprintBlock.carbone.legend: '* Moyenne de nos utilisateurs, calculée sur plus de 600 000 simulations réalisées chaque année.'
+  results.footprintBlock.carbone.message.above: <0>Il est toujours temps de réduire votre impact !</0> Explorez les actions que vous pourriez mettre en place à votre échelle pour faire baisser vos émissions.
+  results.footprintBlock.carbone.title: Votre empreinte carbone
+  results.footprintBlock.carbone.unitSuffix: de CO₂e / an
+  results.footprintBlock.carbone.message.below: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l'exemple !
+  results.footprintBlock.carbone.message.close: '<0>Votre empreinte ressemble à celle de millions de Français.</0> Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre première action, et embarquez vos proches.'
+  results.footprintBlock.carbone.comparison.equal: Égal à la moyenne*

@@ -49,6 +49,7 @@ export default function ErrorPage({
           computedResults={DUMMY_COMPUTED_RESULTS}
           locale={locale as Locale}
           hideSaveBlock
+          disableHeroTest
         />
       </div>
     </>

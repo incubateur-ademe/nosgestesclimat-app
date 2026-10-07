@@ -10,6 +10,8 @@ import FootprintDetail from '../FootprintDetail'
 import GroupThankYouBlock from '../GroupThankYouBlock'
 import Objective from '../objective/Objective'
 import SaveResultsBlock from '../SaveResultsBlock'
+import CarbonFootprintHero from './CarbonFootprintHero'
+import CarbonFootprintHeroSwitch from './CarbonFootprintHeroSwitch'
 
 interface Props {
   computedResults: ComputedResults
@@ -18,6 +20,7 @@ interface Props {
   tendency?: Tendency
   hasPreviousSimulation?: boolean
   group?: GroupDisplayInfo | null
+  disableHeroTest?: boolean
 }
 
 export default function CarbonFootprintResults({
@@ -27,26 +30,50 @@ export default function CarbonFootprintResults({
   tendency,
   hasPreviousSimulation = false,
   group,
+  disableHeroTest = false,
 }: Props) {
+  // Collective test participants (friends group or organisation campaign) keep
+  // the current section, and never read the flag, so they are not exposed to
+  // the experiment.
+  const isHeroTestEnabled = !disableHeroTest && !group
+
+  const currentHero = (
+    <FootprintBlock
+      className="mb-8 md:mb-12"
+      tendency={tendency}
+      locale={locale}
+      value={computedResults.carbone.bilan}
+      title={
+        <Trans locale={locale} i18nKey="simulation.carbone.title">
+          Vos émissions annuelles :
+        </Trans>
+      }
+      metric="carbone"
+      unitSuffix={
+        <Trans locale={locale} i18nKey="common.co2eAn.title">
+          CO₂e&nbsp;/&nbsp;an
+        </Trans>
+      }
+    />
+  )
+
   return (
     <>
-      <FootprintBlock
-        className="mb-8 md:mb-12"
-        tendency={tendency}
-        locale={locale}
-        value={computedResults.carbone.bilan}
-        title={
-          <Trans locale={locale} i18nKey="simulation.carbone.title">
-            Vos émissions annuelles :
-          </Trans>
-        }
-        metric="carbone"
-        unitSuffix={
-          <Trans locale={locale} i18nKey="common.co2eAn.title">
-            CO₂e&nbsp;/&nbsp;an
-          </Trans>
-        }
-      />
+      {isHeroTestEnabled ? (
+        <CarbonFootprintHeroSwitch
+          control={currentHero}
+          test={
+            <CarbonFootprintHero
+              className="mb-8 md:mb-12"
+              locale={locale}
+              value={computedResults.carbone.bilan}
+              tendency={tendency}
+            />
+          }
+        />
+      ) : (
+        currentHero
+      )}
 
       <FootprintDetail
         computedResults={computedResults}
