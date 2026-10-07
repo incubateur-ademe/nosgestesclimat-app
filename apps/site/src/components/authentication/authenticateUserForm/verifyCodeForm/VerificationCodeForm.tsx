@@ -7,6 +7,7 @@ import Button from '@/design-system/buttons/Button'
 import { defaultInputStyleClassNames } from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import {
   type ChangeEvent,
   type FormEvent,
@@ -15,9 +16,14 @@ import {
   useState,
 } from 'react'
 import { match } from 'ts-pattern'
-import { twMerge } from "cn";
 
-export default function VerificationCodeForm() {
+interface Props {
+  verificationButtonLabel?: string | React.ReactNode
+}
+
+export default function VerificationCodeForm({
+  verificationButtonLabel,
+}: Props) {
   const { state, submitCode, clearCodeError } = useAuth()
   const { t } = useClientTranslation()
   const [code, setCode] = useState('')
@@ -123,9 +129,11 @@ export default function VerificationCodeForm() {
             code.length !== 6 || state.isResending || state.codeError !== null
           }
           data-testid="verification-code-submit-button">
-          <Trans i18nKey="signIn.verificationForm.submitButton">
-            Valider mon code
-          </Trans>
+          {verificationButtonLabel ?? (
+            <Trans i18nKey="signIn.verificationForm.submitButton">
+              Valider mon code
+            </Trans>
+          )}
         </Button>
       )}
 

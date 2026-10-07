@@ -50,7 +50,7 @@ export default function GroupResults({
 
       <InviteBlock group={group} />
 
-      {group?.participants?.length > 1 && isCarbonFootprintSelected && (
+      {group.participants.length > 1 && isCarbonFootprintSelected && (
         <>
           <Separator />
 
