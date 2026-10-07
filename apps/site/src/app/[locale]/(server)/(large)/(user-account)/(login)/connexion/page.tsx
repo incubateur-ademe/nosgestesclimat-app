@@ -1,4 +1,4 @@
-import { getLoginParams } from '@/app/[locale]/(server)/(large)/(user-account)/(login)/_helpers/getLoginParams'
+import { getLoginProps } from '@/app/[locale]/(server)/(large)/(user-account)/(login)/_helpers/getLoginProps'
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import SigninSignupTabs from '@/components/signIn/SignInSignUpTabs'
@@ -31,7 +31,7 @@ export default async function Connexion({
   const { locale } = await params
   const resolvedSearchParams = await searchParams
   const validSearchParams = validateFromSearchParam(resolvedSearchParams)
-  const loginParams = getLoginParams({ from: validSearchParams?.from, locale })
+  const loginProps = getLoginProps({ from: validSearchParams?.from, locale })
 
   const userSession = await getUserSession()
 
@@ -45,22 +45,16 @@ export default async function Connexion({
 
         <Title
           containerClassName="order-0 max-w-[430px] mb-4"
-          title={
-            loginParams.login.labels?.title ?? (
-              <Trans i18nKey="login.login.title" locale={locale}>
-                Accédez à votre espace Nos Gestes Climat
-              </Trans>
-            )
-          }
+          title={loginProps.login.labels.title}
         />
 
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>
             <AuthenticateUserForm
               mode="signIn"
-              redirectPathname={loginParams.login.redirectPathname}
+              redirectPathname={loginProps.login.redirectPathname}
               tracker={captureLoginComplete}
-              buttonLabel={loginParams.login.labels?.buttonLabel}
+              buttonLabel={loginProps.login.labels.buttonLabel}
             />
           </UserProvider>
         </QueryClientProviderWrapper>
