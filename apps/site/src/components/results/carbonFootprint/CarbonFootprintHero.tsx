@@ -80,18 +80,18 @@ export default function CarbonFootprintHero({
   return (
     <Card
       className={twMerge(
-        'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:grid-cols-[minmax(0,1fr)_360px] md:px-11 md:py-10',
+        'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:grid-cols-[minmax(0,1fr)_306px] md:px-11 md:py-7',
         className
       )}>
       <div className="flex w-full flex-col items-start">
-        <h1 className="mb-3.5 text-[1.75rem] leading-tight font-bold">
+        <h1 className="-mb-2 text-lg leading-tight font-bold">
           <Trans locale={locale} i18nKey="results.footprintBlock.carbone.title">
             Votre empreinte carbone
           </Trans>
         </h1>
 
         <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1">
-          <p className="text-primary-700 mb-0 text-[clamp(3.6rem,8vw,5.4rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
+          <p className="text-primary-700 mb-0 text-[clamp(3.6rem,6vw,4.5rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
             {formattedValue}
           </p>
 
@@ -154,7 +154,7 @@ export default function CarbonFootprintHero({
           )}
         </div>
 
-        <p className="mb-7 max-w-[46ch] leading-relaxed text-slate-600">
+        <p className="mb-6 max-w-[46ch] leading-normal text-slate-600">
           {level === 'above' && (
             <Trans
               locale={locale}
@@ -205,12 +205,11 @@ export default function CarbonFootprintHero({
 
         <p
           id="footprint-average-legend"
-          className="mt-4 mb-0 text-sm text-slate-600">
+          className="mt-3 mb-0 text-sm text-slate-600">
           <Trans
             locale={locale}
             i18nKey="results.footprintBlock.carbone.legend">
-            * Moyenne de nos utilisateurs, calculée sur plus de 600 000
-            simulations réalisées chaque année.
+            * Moyenne de nos utilisateurs (plus de 600 000 simulations par an).
           </Trans>
         </p>
       </div>
