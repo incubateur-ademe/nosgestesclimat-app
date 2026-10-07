@@ -1,6 +1,6 @@
 import getQuestionsWithForgottenAtTheEnd from '@/publicodes-state/helpers/getQuestionsWithForgottenAtTheEnd'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface Props {
   relevantQuestions: DottedName[]
@@ -9,46 +9,67 @@ interface Props {
 }
 
 /**
- * Moves the "forgotten" questions at the end of the form.
- *
- * A forgotten question is a question that is still missing while it is placed
- * before the question the user is on: going forward would never ask it and the
- * progression could never reach 100%. This can happen when a publicodes rule
- * (buggy or with a late condition) triggers a missing variable for a question
- * placed before the one being answered.
- *
- * The forgotten questions are remembered across renders: a question that has
- * been moved at the end stays there, even once it has been answered, otherwise
- * it would go back to its original position in the middle of the form.
+ * Detects forgotten questions only when the base form reaches its last
+ * question, then keeps them at the end for the rest of the session.
  */
 export default function useQuestionsWithForgottenAtTheEnd({
   relevantQuestions,
   remainingQuestions,
   currentQuestion,
 }: Props) {
-  const [previousForgottenQuestions, setPreviousForgottenQuestions] = useState<
-    DottedName[]
-  >([])
+  const [forgottenQuestions, setForgottenQuestions] = useState<DottedName[]>([])
 
-  const result = getQuestionsWithForgottenAtTheEnd({
-    relevantQuestions,
-    remainingQuestions,
-    currentQuestion,
-    previousForgottenQuestions,
-  })
+  const newlyForgottenQuestions: DottedName[] = useMemo(
+    () =>
+      getQuestionsWithForgottenAtTheEnd({
+        relevantQuestions,
+        remainingQuestions,
+        currentQuestion,
+        forgottenQuestions,
+      }),
+    [relevantQuestions, remainingQuestions, currentQuestion, forgottenQuestions]
+  )
 
-  const forgottenQuestionsKey = result.forgottenQuestions.join(',')
+  const allForgottenQuestions: DottedName[] = useMemo(
+    () => [
+      ...forgottenQuestions,
+      ...newlyForgottenQuestions.filter(
+        (question) => !forgottenQuestions.includes(question)
+      ),
+    ],
+    [forgottenQuestions, newlyForgottenQuestions]
+  )
 
-  // Remember the forgotten questions for the next renders. The key comparison
-  // avoids a state update (and thus an extra render) when the list is unchanged.
   useEffect(() => {
-    setPreviousForgottenQuestions((previous) =>
-      previous.join(',') === forgottenQuestionsKey
-        ? previous
-        : result.forgottenQuestions
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forgottenQuestionsKey])
+    if (newlyForgottenQuestions.length === 0) return
 
-  return result
+    // This effect persists questions discovered after the render that reaches
+    // the end of the base form. The update is guarded below to avoid loops.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setForgottenQuestions((previous) => {
+      const newQuestions: DottedName[] = newlyForgottenQuestions.filter(
+        (question) => !previous.includes(question)
+      )
+
+      if (newQuestions.length === 0) return previous
+
+      return [...previous, ...newQuestions]
+    })
+  }, [newlyForgottenQuestions])
+
+  const forgottenQuestionsSet = useMemo(
+    () => new Set(allForgottenQuestions),
+    [allForgottenQuestions]
+  )
+
+  const moveForgottenToTheEnd = (questions: DottedName[]) => [
+    ...questions.filter((question) => !forgottenQuestionsSet.has(question)),
+    ...questions.filter((question) => forgottenQuestionsSet.has(question)),
+  ]
+
+  return {
+    relevantQuestions: moveForgottenToTheEnd(relevantQuestions),
+    remainingQuestions: moveForgottenToTheEnd(remainingQuestions),
+    forgottenQuestions: allForgottenQuestions,
+  }
 }

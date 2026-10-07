@@ -71,6 +71,32 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     currentQuestion,
   })
 
+  const reorderedQuestionsByCategories = useMemo(
+    () =>
+      Object.fromEntries(
+        orderedTestCategoriesWithProfile.map((category) => [
+          category,
+          reorderedRelevantQuestions.filter((question) =>
+            questionsByCategories[category]?.includes(question)
+          ),
+        ])
+      ),
+    [questionsByCategories, reorderedRelevantQuestions]
+  )
+
+  const reorderedRemainingQuestionsByCategories = useMemo(
+    () =>
+      Object.fromEntries(
+        orderedTestCategoriesWithProfile.map((category) => [
+          category,
+          reorderedQuestionsByCategories[category]?.filter((question) =>
+            reorderedRemainingQuestions.includes(question)
+          ),
+        ])
+      ),
+    [reorderedQuestionsByCategories, reorderedRemainingQuestions]
+  )
+
   useProgression({
     categories: orderedTestCategoriesWithProfile,
     remainingQuestions: reorderedRemainingQuestions,
@@ -82,7 +108,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
   return (
     <FormContext.Provider
       value={{
-        questionsByCategories,
+        questionsByCategories: reorderedQuestionsByCategories,
         relevantQuestions: reorderedRelevantQuestions,
         remainingQuestions: reorderedRemainingQuestions,
         relevantAnsweredQuestions,
@@ -90,7 +116,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
         currentCategory,
         setCurrentQuestion,
         missingVariables,
-        remainingQuestionsByCategories,
+        remainingQuestionsByCategories: reorderedRemainingQuestionsByCategories,
         forgottenQuestions,
       }}>
       {children}
