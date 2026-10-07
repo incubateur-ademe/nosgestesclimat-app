@@ -131,6 +131,6 @@ export type MaybePersonalizedAction =
   | PersonalizedAction
 
 export interface ActionPlan {
-  actions: PersonalizedAction[]
+  numberOfCommittedActions: number
   totalImpact: number
 }

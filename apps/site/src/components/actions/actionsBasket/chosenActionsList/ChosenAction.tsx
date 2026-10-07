@@ -1,9 +1,9 @@
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { ImpactTag } from '../ImpactTag'
-import ThemeIcon from '../ThemeIcon'
-import AbandonCommitmentButton from './actionBasketItem/AbandonCommitmentButton'
+import { ImpactTag } from '../../ImpactTag'
+import ThemeIcon from '../../ThemeIcon'
+import AbandonCommitmentButton from './chosen-action/AbandonCommitmentButton'
 
 interface Props {
   action: PersonalizedAction
@@ -11,7 +11,7 @@ interface Props {
   assessmentStatus: AssessmentStatus
 }
 
-export default function ActionBasketItem({
+export default function ChosenAction({
   action,
   locale,
   assessmentStatus,

@@ -130,6 +130,7 @@ export default function ActionsPage({
         </div>
         {plan && assessmentStatus && (
           <ActionsBasket
+            actions={actions}
             plan={plan}
             locale={locale}
             assessmentStatus={assessmentStatus}

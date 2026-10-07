@@ -353,54 +353,43 @@ describe('getPersonalizedActionsCatalogue', () => {
         .params({ userId: user.id })
         .withCompletedComputation()
         .create()
-      await actionAssessmentFactory
-        .params({ simulationId: simulation.id, actionId: action1.id })
-        .applicable({ impact: 1000 })
-        .create()
-      await actionAssessmentFactory
-        .params({ simulationId: simulation.id, actionId: action2.id })
-        .applicable({ impact: 1000 })
-        .create()
-      const choice1 = await actionChoiceFactory
-        .params({
-          actionId: action1.id,
-          userId: user.id,
-        })
-        .create()
-      const choice2 = await actionChoiceFactory
-        .params({
-          actionId: action2.id,
-          userId: user.id,
-        })
-        .create()
+      await Promise.all([
+        actionAssessmentFactory
+          .params({ simulationId: simulation.id, actionId: action1.id })
+          .applicable({ impact: 1000 })
+          .create(),
+        actionAssessmentFactory
+          .params({ simulationId: simulation.id, actionId: action2.id })
+          .applicable({ impact: 1000 })
+          .create(),
+      ])
+      await Promise.all([
+        actionChoiceFactory
+          .params({
+            actionId: action1.id,
+            userId: user.id,
+          })
+          .create(),
+        actionChoiceFactory
+          .params({
+            actionId: action2.id,
+            userId: user.id,
+          })
+          .create(),
+      ])
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
 
-      const { action: action1FromDB } =
-        (await getPersonalizedActionDetails(action1.slug, 'fr', user.id)) ?? {}
-      const { action: action2FromDB } =
-        (await getPersonalizedActionDetails(action2.slug, 'fr', user.id)) ?? {}
+      const [personalizedAction1, personalizedAction2] = await Promise.all([
+        getPersonalizedActionDetails(action1.slug, 'fr', user.id),
+        getPersonalizedActionDetails(action2.slug, 'fr', user.id),
+      ])
 
       expect(result.plan).toEqual({
-        actions: expect.arrayContaining([
-          expect.objectContaining({
-            id: action1.id,
-            choice: {
-              type: choice1.type,
-              chosenAt: choice1.chosenAt,
-            },
-          }),
-          expect.objectContaining({
-            id: action2.id,
-            choice: {
-              type: choice2.type,
-              chosenAt: choice2.chosenAt,
-            },
-          }),
-        ]),
+        numberOfCommittedActions: 2,
         totalImpact:
-          (action1FromDB?.assessment?.impact ?? 0) +
-          (action2FromDB?.assessment?.impact ?? 0),
+          (personalizedAction1?.action?.assessment?.impact ?? 0) +
+          (personalizedAction2?.action?.assessment?.impact ?? 0),
       })
     })
   })

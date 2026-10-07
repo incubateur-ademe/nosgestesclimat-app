@@ -34,7 +34,7 @@ export default function ActionPlanLinks({ plan, locale }: Props) {
         </Trans>
 
         <CountBadge
-          value={plan.actions.length}
+          value={plan.numberOfCommittedActions}
           className="absolute top-1/2 right-5 ml-2.5 size-5 -translate-y-1/2 text-sm"
         />
       </ButtonLinkServer>

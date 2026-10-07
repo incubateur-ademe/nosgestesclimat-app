@@ -9,7 +9,7 @@ import {
 } from '@/design-system/shadcn/tooltip'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { useActionCommitment } from '../../highlightedActionCard/commitToActionButton/useActionCommitment'
+import { useActionCommitment } from '../../../highlightedActionCard/commitToActionButton/useActionCommitment'
 
 interface Props {
   action: PersonalizedAction

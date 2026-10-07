@@ -1,33 +1,38 @@
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import type { ActionPlan } from '@nosgestesclimat/core/features/actions/types/action'
+import type {
+  ActionPlan,
+  MaybePersonalizedAction,
+} from '@nosgestesclimat/core/features/actions/types/action'
 import { useId, type ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
-import ActionBasketItem from './actionsBasket/ActionBasketItem'
+import ChosenActionsList from './actionsBasket/ChosenActionsList'
 import DesktopSaveSelectionButtonSection from './actionsBasket/DesktopSaveSelectionButtonSection'
 import MobileSaveSelectionBanner from './actionsBasket/MobileSaveSelectionBanner'
 
 interface Props {
+  actions: MaybePersonalizedAction[]
   plan: ActionPlan
   locale: Locale
   assessmentStatus: AssessmentStatus
 }
 
 export default function ActionsBasket({
+  actions,
   plan,
   locale,
   assessmentStatus,
 }: Props) {
   const titleId = useId()
 
-  const { actions, totalImpact } = plan
-  const actionsLength = actions.length
-  const hasCommittedToActions = actionsLength > 0
+  const { numberOfCommittedActions, totalImpact } = plan
+
+  const hasCommittedToActions = numberOfCommittedActions > 0
 
   return (
     <>
       <MobileSaveSelectionBanner
-        actionsLength={actionsLength}
+        actionsLength={numberOfCommittedActions}
         totalImpact={totalImpact}
         locale={locale}
       />
@@ -46,7 +51,7 @@ export default function ActionsBasket({
             <div
               aria-hidden
               className="bg-primary-600 flex size-8 items-center justify-center rounded-full text-sm font-bold text-white">
-              {actionsLength}
+              {numberOfCommittedActions}
             </div>
           )}
         </div>
@@ -56,22 +61,16 @@ export default function ActionsBasket({
             <Trans
               i18nKey="actions.basket.subtitle.withChoices"
               locale={locale}
+              count={numberOfCommittedActions}
               values={{
-                actionChoicesLength: actionsLength,
-                pluralSuffix: actionsLength > 1 ? 's' : '',
+                numberOfCommittedActions,
               }}>
               {
                 {
-                  actionChoicesLength: actionsLength,
+                  numberOfCommittedActions,
                 } as unknown as ReactNode
               }{' '}
-              action
-              {
-                {
-                  pluralSuffix: actionsLength > 1 ? 's' : '',
-                } as unknown as ReactNode
-              }{' '}
-              dans votre sélection
+              actions dans votre sélection
             </Trans>
           ) : (
             <Trans i18nKey="actions.basket.subtitle.empty" locale={locale}>
@@ -80,33 +79,16 @@ export default function ActionsBasket({
           )}
         </p>
 
-        {!hasCommittedToActions && (
-          <p className="bg-secondary-50 mb-20 rounded-lg p-5 text-sm text-slate-600">
-            <Trans
-              i18nKey="actions.basket.informativeBlock.content"
-              locale={locale}>
-              Votre sélection est vide. Parcourez les catégories pour ajouter
-              des actions que vous pourrez mettre en place.
-            </Trans>
-          </p>
-        )}
-
-        {hasCommittedToActions && (
-          <ul className="mb-4 flex max-h-125 flex-col gap-2.5 overflow-auto">
-            {actions.map((action) => (
-              <ActionBasketItem
-                key={action.id}
-                action={action}
-                locale={locale}
-                assessmentStatus={assessmentStatus}
-              />
-            ))}
-          </ul>
-        )}
+        <ChosenActionsList
+          locale={locale}
+          actions={actions}
+          hasCommittedToActions={hasCommittedToActions}
+          assessmentStatus={assessmentStatus}
+        />
 
         <DesktopSaveSelectionButtonSection
           locale={locale}
-          hasCommittedToActions={actionsLength > 0}
+          hasCommittedToActions={hasCommittedToActions}
         />
       </section>
     </>
