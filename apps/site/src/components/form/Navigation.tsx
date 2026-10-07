@@ -129,6 +129,9 @@ export default function Navigation({
 
   const { getValue } = useEngine()
 
+  const canNavigateFromAnsweredForgottenQuestion =
+    forgottenQuestions.includes(question) && !isMissing
+
   // Reset notifications when navigating away
   const hasActiveNotifications = activeNotifications.length > 0
   const { setValue: setNotificationValue } = useRule(
@@ -337,7 +340,10 @@ export default function Navigation({
     ),
   }[submitButtonKind]
 
-  const submitButtonIsDisabled = isPending || isNextDisabled || !isFolded
+  const submitButtonIsDisabled =
+    isPending === true ||
+    isNextDisabled ||
+    (!isFolded && !canNavigateFromAnsweredForgottenQuestion)
 
   const submitButtonColor = 'primary'
 

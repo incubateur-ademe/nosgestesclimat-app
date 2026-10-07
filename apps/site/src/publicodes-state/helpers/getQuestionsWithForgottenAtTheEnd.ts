@@ -3,78 +3,42 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 interface Props {
   relevantQuestions: DottedName[]
   remainingQuestions: DottedName[]
-  relevantAnsweredQuestions: DottedName[]
+  currentQuestion: DottedName | null
+  forgottenQuestions?: DottedName[]
 }
 
 /**
- * A question is "forgotten" when it is still missing while it should already
- * have been asked, i.e. it is placed before the last answered question in the
- * base order.
- *
- * This may happen when a publicodes rule (buggy or with a late condition)
- * triggers a missing variable for a question that is placed before the one
- * currently being answered. Left as is, the user could be sent back in the
- * middle of the form while clicking "next" and the progression could never
- * reach 100%.
- *
- * We detect those questions and move them at the end of the form, where they
- * will be asked in the order they appear.
- *
- * "Forgotten" covers two cases:
- * - a still missing question placed before the last answered question: it should
- *   already have been asked;
- * - a question that has been answered out of the base order, i.e. answered while another question placed after it had already been answered.
+ * Computes the missing questions that were skipped by the base form order.
+ * This is intentionally only meaningful when the current question is the last
+ * question in that order: before then, a missing question may still be opened
+ * by an answer after going back in the form.
  */
 export default function getQuestionsWithForgottenAtTheEnd({
   relevantQuestions,
   remainingQuestions,
-  relevantAnsweredQuestions,
-}: Props): {
-  relevantQuestions: DottedName[]
-  remainingQuestions: DottedName[]
-  forgottenQuestions: DottedName[]
-} {
-  const baseIndexOf = (question: DottedName) =>
-    relevantQuestions.indexOf(question)
-
-  const forgottenQuestionsSet = new Set<DottedName>()
-
-  let lastAnsweredIndex = -1
-
-  relevantAnsweredQuestions.forEach((question) => {
-    const index = baseIndexOf(question)
-
-    if (index === -1) return
-
-    if (index < lastAnsweredIndex) {
-      forgottenQuestionsSet.add(question)
-    }
-
-    lastAnsweredIndex = Math.max(lastAnsweredIndex, index)
-  })
-
-  // Every still missing question placed before the last answered one has been
-  // "forgotten" too.
-  remainingQuestions.forEach((question) => {
-    const index = baseIndexOf(question)
-
-    if (index !== -1 && index < lastAnsweredIndex) {
-      forgottenQuestionsSet.add(question)
-    }
-  })
-
-  if (forgottenQuestionsSet.size === 0) {
-    return { relevantQuestions, remainingQuestions, forgottenQuestions: [] }
+  currentQuestion,
+  forgottenQuestions = [],
+}: Props): DottedName[] {
+  if (
+    !currentQuestion ||
+    (relevantQuestions.at(-1) !== currentQuestion &&
+      !forgottenQuestions.includes(currentQuestion))
+  ) {
+    return []
   }
 
-  const moveForgottenToTheEnd = (questions: DottedName[]) => [
-    ...questions.filter((question) => !forgottenQuestionsSet.has(question)),
-    ...questions.filter((question) => forgottenQuestionsSet.has(question)),
-  ]
-
-  return {
-    relevantQuestions: moveForgottenToTheEnd(relevantQuestions),
-    remainingQuestions: moveForgottenToTheEnd(remainingQuestions),
-    forgottenQuestions: Array.from(forgottenQuestionsSet),
+  // Once a forgotten question is being answered at the end of the form, any
+  // new missing question it opens belongs to the same final block, regardless
+  // of its position in the base order.
+  if (forgottenQuestions.includes(currentQuestion)) {
+    return remainingQuestions.filter(
+      (question) => !forgottenQuestions.includes(question)
+    )
   }
+
+  const currentQuestionIndex = relevantQuestions.indexOf(currentQuestion)
+
+  return remainingQuestions.filter(
+    (question) => relevantQuestions.indexOf(question) < currentQuestionIndex
+  )
 }
