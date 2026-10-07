@@ -59,22 +59,18 @@ describe('CarbonFootprintResults', () => {
   it.each([
     ['a friends group', friendsGroup],
     ['an organisation campaign', organisationCampaign],
-  ])(
-    'keeps the current section, without reading the flag, for participants of %s',
-    (_, group) => {
-      render(
-        <CarbonFootprintResults
-          computedResults={computedResults}
-          locale="fr"
-          group={group}
-        />
-      )
+  ])('takes part in the test for participants of %s', (_, group) => {
+    render(
+      <CarbonFootprintResults
+        computedResults={computedResults}
+        locale="fr"
+        group={group}
+      />
+    )
 
-      expect(screen.getByText('current section')).toBeInTheDocument()
-      expect(screen.queryByText('new section')).not.toBeInTheDocument()
-      expect(useFeatureFlagMock).not.toHaveBeenCalled()
-    }
-  )
+    expect(screen.getByText('new section')).toBeInTheDocument()
+    expect(useFeatureFlagMock).toHaveBeenCalled()
+  })
 
   it('keeps the current section, without reading the flag, when the test is disabled', () => {
     render(

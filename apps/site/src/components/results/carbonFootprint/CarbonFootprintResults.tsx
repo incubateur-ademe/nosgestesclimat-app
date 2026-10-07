@@ -20,6 +20,7 @@ interface Props {
   tendency?: Tendency
   hasPreviousSimulation?: boolean
   group?: GroupDisplayInfo | null
+  /** Dummy results (error page backdrop) must not expose anyone to the test */
   disableHeroTest?: boolean
 }
 
@@ -32,11 +33,6 @@ export default function CarbonFootprintResults({
   group,
   disableHeroTest = false,
 }: Props) {
-  // Collective test participants (friends group or organisation campaign) keep
-  // the current section, and never read the flag, so they are not exposed to
-  // the experiment.
-  const isHeroTestEnabled = !disableHeroTest && !group
-
   const currentHero = (
     <FootprintBlock
       className="mb-8 md:mb-12"
@@ -59,7 +55,9 @@ export default function CarbonFootprintResults({
 
   return (
     <>
-      {isHeroTestEnabled ? (
+      {disableHeroTest ? (
+        currentHero
+      ) : (
         <CarbonFootprintHeroSwitch
           control={currentHero}
           test={
@@ -71,8 +69,6 @@ export default function CarbonFootprintResults({
             />
           }
         />
-      ) : (
-        currentHero
       )}
 
       <FootprintDetail
