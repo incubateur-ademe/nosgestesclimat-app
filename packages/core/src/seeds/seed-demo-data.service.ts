@@ -1,3 +1,4 @@
+import { assertActionCatalogueIsSeeded } from '../features/actions/seeds/action-assessments.seed.ts'
 import { ensureSeddEvent } from '../features/events/services/ensure-sedd-event.service.ts'
 import { noopLogger, type Logger } from '../features/logger/index.ts'
 import { organisationFactory } from '../features/organisations/factories/organisation.factory.ts'
@@ -32,10 +33,13 @@ export interface SeedDemoDataResult {
  * simulation, and its campaigns with their participants.
  *
  * The action catalogue is not seeded here: it comes from the Notion sync, and
- * the simulations' action assessments are built from it.
+ * the simulations' action assessments are built from it. A missing catalogue is
+ * the one failure that would leave the run half done, so it is checked before
+ * anything is written.
  *
  * The run is idempotent by skipping entirely when the demo accounts are already
- * there, rather than by making every step tolerate partial data.
+ * there. A database left half seeded by a failed run is not repaired here: it
+ * has to be cleared first.
  */
 export const seedDemoData = async ({
   logger = noopLogger,
@@ -58,6 +62,10 @@ export const seedDemoData = async ({
 
     return { skipped: true, polls: [], organisations: 0, accounts: 0 }
   }
+
+  // Checked before the first write: the accounts and simulations that precede
+  // the assessments would otherwise be left behind, unseedable and unusable.
+  await assertActionCatalogueIsSeeded()
 
   logger.info(`Seeding ${emails.length} account(s)…`)
   const users = await Promise.all(

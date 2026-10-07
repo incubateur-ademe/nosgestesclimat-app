@@ -6,12 +6,9 @@ import type { ActionEvaluation } from '../types/action.ts'
 /**
  * The actions of the catalogue, as a rule id -> action id lookup.
  *
- * Scoped like the worker's own `findActionRuleIds`, so seeds and real
- * computations assess the same set of actions.
- *
  * The catalogue is a prerequisite of these seeds rather than something they
  * create: it comes from the Notion sync. Seeding without it would produce
- * simulations whose actions page stays empty, so it fails loudly instead.
+ * simulations whose actions page stays empty, so the seed fails loudly instead.
  */
 const readActionIdsByRuleId = async (): Promise<Map<string, string>> => {
   const actions = await prisma.action.findMany({
@@ -27,6 +24,10 @@ const readActionIdsByRuleId = async (): Promise<Map<string, string>> => {
   }
 
   return new Map(actions.map(({ id, ruleId }) => [ruleId, id]))
+}
+
+export const assertActionCatalogueIsSeeded = async (): Promise<void> => {
+  await readActionIdsByRuleId()
 }
 
 /**
