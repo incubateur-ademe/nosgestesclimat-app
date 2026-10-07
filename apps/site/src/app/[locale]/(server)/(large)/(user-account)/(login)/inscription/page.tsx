@@ -12,7 +12,7 @@ import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
 import ColourBlock from '../_components/ColourBlocks'
-import { validateFromSearchParam } from '../_helpers/validateFromSearchParam'
+import { validateSearchParams } from '../_helpers/validateSearchParams'
 
 export const generateMetadata = getCommonMetadata({
   title: t('Création de compte - Nos Gestes Climat'),
@@ -30,7 +30,7 @@ export default async function Connexion({
 }: DefaultPageProps) {
   const { locale } = await params
   const resolvedSearchParams = await searchParams
-  const validSearchParams = validateFromSearchParam(resolvedSearchParams)
+  const validSearchParams = validateSearchParams(resolvedSearchParams)
   const loginProps = getLoginProps({ from: validSearchParams?.from, locale })
 
   const userSession = await getUserSession()
