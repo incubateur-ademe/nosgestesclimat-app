@@ -1,11 +1,8 @@
-import { orderedCategories } from '@/constants/model/categories'
-import { getComputedResults } from '@/publicodes-state/helpers/getComputedResults'
-import { getSubcategories } from '@/publicodes-state/helpers/getSubcategories'
-import { safeGetRuleHelper } from '@/publicodes-state/helpers/safeGetRuleHelper'
 import { faker } from '@faker-js/faker'
 import type { DottedName, NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json'
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json'
+import { getComputedResults } from '@nosgestesclimat/core/features/simulations/helpers/get-computed-results'
 import Engine from 'publicodes'
 
 const engine = new Engine<DottedName>(rules as Partial<NGCRules>, {
@@ -27,20 +24,7 @@ function createSimulation({ persona }: { persona?: string }) {
     date: faker.date.recent().toISOString(),
     foldedSteps: [],
     situation: {},
-    computedResults: getComputedResults({
-      categories: orderedCategories,
-      subcategories: getSubcategories({
-        categories: orderedCategories,
-        everyRules: Object.keys(rules).map(
-          (dottedName) => dottedName as DottedName
-        ),
-        parsedRules: engine.getParsedRules(),
-        safeGetRule: (dottedName) =>
-          safeGetRuleHelper(dottedName, engine) ?? undefined,
-      }),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-      safeEvaluate: (dottedName) => engine.evaluate(dottedName) as any,
-    }),
+    computedResults: getComputedResults(engine),
     progression: 1,
   }
 }

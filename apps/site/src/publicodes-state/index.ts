@@ -8,7 +8,6 @@ export {
   default as useCurrentSimulation,
   useOptionalSimulation,
 } from './hooks/useCurrentSimulation/useCurrentSimulation'
-export { default as useDisposableEngine } from './hooks/useDisposableEngine/useDisposableEngine'
 export { default as useEngine } from './hooks/useEngine/useEngine'
 export { default as useFormState } from './hooks/useFormState/useFormState'
 export { default as useRule } from './hooks/useRule/useRule'

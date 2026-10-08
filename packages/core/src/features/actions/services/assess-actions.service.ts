@@ -1,6 +1,11 @@
 import type Engine from 'publicodes'
 import type { CaptureException, Logger } from '../../logger/index.ts'
 import { ActionAssessmentPublicodesException } from '../exceptions/action-assessment.exception.ts'
+import {
+  buildRuleIdToDottedName,
+  evaluateAction,
+  toNewActionAssessment,
+} from '../helpers/action-assessment.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
 import { findActionRuleIds } from '../repositories/actions.repository.ts'
 import type { NewActionAssessment } from '../types/action.ts'
@@ -8,19 +13,6 @@ import type { NewActionAssessment } from '../types/action.ts'
 interface AssessActionsDeps {
   logger: Logger
   captureException: CaptureException
-}
-
-const buildRuleIdToDottedName = (engine: Engine): Map<string, string> => {
-  const parsedRules = engine.getParsedRules()
-  const map = new Map<string, string>()
-  for (const [dottedName, ruleNode] of Object.entries(parsedRules)) {
-    const meta = (ruleNode as { rawNode?: { meta?: { id?: string } } }).rawNode
-      ?.meta
-    if (meta?.id) {
-      map.set(meta.id, dottedName)
-    }
-  }
-  return map
 }
 
 export function createAssessActions(deps: AssessActionsDeps) {
@@ -64,27 +56,11 @@ export function createAssessActions(deps: AssessActionsDeps) {
         }
 
         try {
-          const evaluated = engine.evaluate(dottedName)
-          const nodeValue = evaluated.nodeValue
-          const assessment = { simulationId, actionId: id }
+          const evaluation = evaluateAction({ engine, dottedName })
 
-          if (nodeValue === undefined) {
-            return { ...assessment, applicable: undefined, impact: undefined }
-          } else if (typeof nodeValue === 'number') {
-            return {
-              ...assessment,
-              applicable: true as const,
-              impact: nodeValue || undefined, // 0 encodes for impact not evaluable, hence the `||`
-            }
-          } else if (nodeValue === null || nodeValue === false) {
-            return {
-              ...assessment,
-              applicable: false as const,
-              impact: undefined,
-            }
-          } else {
+          if (evaluation.outcome === 'unexpected_node_value') {
             const exception = new ActionAssessmentPublicodesException({
-              message: `Unexpected nodeValue type: ${typeof nodeValue}`,
+              message: `Unexpected nodeValue type: ${evaluation.nodeValueType}`,
               action: { id, ruleId },
               dottedName,
             })
@@ -95,6 +71,11 @@ export function createAssessActions(deps: AssessActionsDeps) {
             captureException(exception)
             return undefined
           }
+
+          return toNewActionAssessment(
+            { simulationId, actionId: id },
+            evaluation.applicability
+          )
         } catch (error) {
           const exception = new ActionAssessmentPublicodesException({
             message: 'Error calling publicodes `engine.evaluate`',

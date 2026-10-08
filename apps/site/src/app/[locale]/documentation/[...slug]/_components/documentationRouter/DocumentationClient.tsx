@@ -2,7 +2,6 @@
 
 import Link from '@/components/Link'
 import BilanChart from '@/components/charts/BilanChart'
-import ServicesChart from '@/components/charts/ServicesChart'
 import { RULES_TO_HIDE } from '@/constants/documentation'
 import { carboneMetric } from '@/constants/model/metric'
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
@@ -32,7 +31,6 @@ const DocumentationText = ({ children }: { children: string }) => (
         .replaceAll('<RavijenChartSocietaux/>', '')}
     </Markdown>
     {children.includes('<RavijenChart/>') && <BilanChart />}
-    {children.includes('<RavijenChartSocietaux/>') && <ServicesChart />}
   </>
 )
 
