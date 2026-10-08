@@ -2,22 +2,16 @@ import { assertActionCatalogueIsSeeded } from '../features/actions/seeds/action-
 import { ensureSeddEvent } from '../features/events/services/ensure-sedd-event.service.ts'
 import { noopLogger, type Logger } from '../features/logger/index.ts'
 import { organisationFactory } from '../features/organisations/factories/organisation.factory.ts'
-import { seedPolls } from '../features/polls/seeds/poll.seed.ts'
+import {
+  seedPolls,
+  type SeededPoll,
+} from '../features/polls/seeds/poll.seed.ts'
 import { seedSimulations } from '../features/simulations/seeds/simulations.seed.ts'
 import { userFactory } from '../features/users/factories/user.factory.ts'
 import {
   haveSeedUsers,
   readSeedAdminEmails,
 } from '../features/users/seeds/users.seed.ts'
-
-/**
- * A seeded poll, as the orchestrator reports it back to its caller.
- */
-export interface SeededPoll {
-  id: string
-  slug: string
-  participantsCount: number
-}
 
 export interface SeedDemoDataResult {
   /** True when a previous run had already seeded the demo accounts. */
@@ -91,11 +85,7 @@ export const seedDemoData = async ({
 
   return {
     skipped: false,
-    polls: polls.map(({ id, slug, participantsCount }) => ({
-      id,
-      slug,
-      participantsCount,
-    })),
+    polls,
     organisations: organisations.length,
     accounts: users.length,
   }

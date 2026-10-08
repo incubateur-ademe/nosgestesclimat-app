@@ -4,11 +4,16 @@ import type {
 } from '../../../prisma/generated/client.ts'
 import { seedSimulations } from '../../simulations/seeds/simulations.seed.ts'
 import { pollFactory } from '../factories/poll.factory.ts'
-import type { Poll } from '../types/poll.ts'
 
 export interface PollSeedShape {
   name: string
   mode: PollMode
+  participantsCount: number
+}
+
+export interface SeededPoll {
+  id: string
+  slug: string
   participantsCount: number
 }
 
@@ -36,7 +41,7 @@ const seedPoll = async ({
 }: {
   organisation: Organisation
   shape: PollSeedShape
-}): Promise<Poll> => {
+}): Promise<SeededPoll> => {
   const poll = await pollFactory
     .withOrganisation({
       id: organisation.id,
@@ -49,7 +54,11 @@ const seedPoll = async ({
 
   await seedSimulations({ count: shape.participantsCount, pollId: poll.id })
 
-  return poll
+  return {
+    id: poll.id,
+    slug: poll.slug,
+    participantsCount: poll.participantsCount,
+  }
 }
 
 /**
@@ -61,8 +70,8 @@ export const seedPolls = async ({
 }: {
   organisations: Organisation[]
   shapes?: PollSeedShape[]
-}): Promise<Poll[]> => {
-  const polls: Poll[] = []
+}): Promise<SeededPoll[]> => {
+  const polls: SeededPoll[] = []
 
   for (const organisation of organisations) {
     for (const shape of shapes) {

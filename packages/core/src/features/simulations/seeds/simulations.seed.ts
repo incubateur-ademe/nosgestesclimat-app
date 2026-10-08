@@ -3,8 +3,7 @@ import { seedActionAssessments } from '../../actions/seeds/action-assessments.se
 import { simulationFactory } from '../factories/simulation.factory.ts'
 import type { Model } from '../types/model.ts'
 import {
-  getPersonaActionAssessments,
-  getPersonaComputations,
+  getPersonaComputation,
   pickPersonaName,
 } from './persona-computations.ts'
 
@@ -46,22 +45,16 @@ export const seedSimulations = async ({
   userId,
   pollId,
 }: SimulationSeedShape): Promise<string[]> => {
-  const personaNames = Array.from({ length: count }, pickPersonaName)
-
-  const computations = getPersonaComputations(personaNames)
-
   const factory = pollId
     ? simulationFactory.withPollId(pollId)
     : simulationFactory
 
   const simulationIds: string[] = []
 
-  for (const personaName of personaNames) {
-    const computation = computations.get(personaName)
+  for (let index = 0; index < count; index++) {
+    const personaName = pickPersonaName()
 
-    if (!computation) {
-      throw new Error(`No computation cached for persona "${personaName}".`)
-    }
+    const computation = getPersonaComputation(personaName)
 
     const simulation = await factory.create({
       // Anonymous by default: a poll participation is recorded without an
@@ -76,13 +69,9 @@ export const seedSimulations = async ({
     })
 
     simulationIds.push(simulation.id)
-  }
 
-  await seedActionAssessments({
-    simulationIds,
-    personaNames,
-    assessmentsByPersona: getPersonaActionAssessments(personaNames),
-  })
+    await seedActionAssessments({ simulationId: simulation.id, personaName })
+  }
 
   return simulationIds
 }

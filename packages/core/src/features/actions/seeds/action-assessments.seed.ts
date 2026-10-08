@@ -1,7 +1,8 @@
 import { prisma } from '../../../prisma/client.ts'
+import type { PersonaName } from '../../simulations/seeds/persona-computations.ts'
+import { getPersonaActionAssessments } from '../../simulations/seeds/persona-computations.ts'
 import { toNewActionAssessment } from '../helpers/action-assessment.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
-import type { ActionEvaluation } from '../types/action.ts'
 
 /**
  * The actions of the catalogue, as a rule id -> action id lookup.
@@ -9,8 +10,15 @@ import type { ActionEvaluation } from '../types/action.ts'
  * The catalogue is a prerequisite of these seeds rather than something they
  * create: it comes from the Notion sync. Seeding without it would produce
  * simulations whose actions page stays empty, so the seed fails loudly instead.
+ *
+ * Read once for the process: it does not change while a seed runs, and every
+ * seeded simulation asks for it.
  */
+let actionIdsByRuleId: Map<string, string> | undefined
+
 const readActionIdsByRuleId = async (): Promise<Map<string, string>> => {
+  if (actionIdsByRuleId) return actionIdsByRuleId
+
   const actions = await prisma.action.findMany({
     where: { deletedAt: null },
     select: { id: true, ruleId: true },
@@ -23,53 +31,48 @@ const readActionIdsByRuleId = async (): Promise<Map<string, string>> => {
     )
   }
 
-  return new Map(actions.map(({ id, ruleId }) => [ruleId, id]))
+  actionIdsByRuleId = new Map(actions.map(({ id, ruleId }) => [ruleId, id]))
+
+  return actionIdsByRuleId
 }
 
+/**
+ * Fails when the catalogue is missing.
+ *
+ * Meant to be called before a seed writes anything: the accounts, campaigns and
+ * simulations it creates come first, and failing only on the assessments would
+ * leave them behind, unseedable and unusable.
+ */
 export const assertActionCatalogueIsSeeded = async (): Promise<void> => {
   await readActionIdsByRuleId()
 }
 
 /**
- * Persists, for each seeded simulation, how the model's actions apply to the
+ * Persists, for one seeded simulation, how the model's actions apply to the
  * situation it was answered from.
  *
- * The assessments are keyed on the simulation, not on the persona it was drawn
- * from: every simulation gets its own rows, attached to its own `simulationId`,
- * even when several were answered from the same persona.
- *
- * The assessments go through the same repository the worker writes through, so
- * the seeded rows carry exactly what a real computation would have produced.
+ * Everything is derived from the persona the simulation was drawn from, so the
+ * assessments describe that simulation and no other: the caller passes the same
+ * persona it used for the situation and the computed results.
  */
 export const seedActionAssessments = async ({
-  simulationIds,
-  personaNames,
-  assessmentsByPersona,
+  simulationId,
+  personaName,
 }: {
-  simulationIds: string[]
-  personaNames: string[]
-  assessmentsByPersona: Map<
-    string,
-    { ruleId: string; applicability: ActionEvaluation }[]
-  >
+  simulationId: string
+  personaName: PersonaName
 }): Promise<void> => {
   const actionIdByRuleId = await readActionIdsByRuleId()
 
-  const assessments = personaNames.flatMap((personaName, index) => {
-    const personaAssessments = assessmentsByPersona.get(personaName)
-
-    if (!personaAssessments) return []
-
-    const simulationId = simulationIds[index]
-
-    return personaAssessments.flatMap(({ ruleId, applicability }) => {
+  const assessments = getPersonaActionAssessments(personaName).flatMap(
+    ({ ruleId, applicability }) => {
       const actionId = actionIdByRuleId.get(ruleId)
 
       if (!actionId) return []
 
       return [toNewActionAssessment({ simulationId, actionId }, applicability)]
-    })
-  })
+    }
+  )
 
   if (assessments.length === 0) return
 

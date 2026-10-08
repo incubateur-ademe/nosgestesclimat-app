@@ -96,57 +96,40 @@ const getEngine = (): Engine<DottedName> => {
   return engine
 }
 
-export const getPersonaComputations = (
-  names: PersonaName[]
-): Map<PersonaName, PersonaComputation> => {
-  const missing = [...new Set(names)].filter(
-    (name) => !computationCache.has(name)
-  )
+/**
+ * The computation of a persona, computed on first ask and kept for the
+ * process' lifetime: a simulation is only a copy of its persona's answers, so
+ * reading one twice is pure waste.
+ */
+export const getPersonaComputation = (
+  name: PersonaName
+): PersonaComputation => {
+  const cached = computationCache.get(name)
 
-  if (missing.length > 0) {
-    const sharedEngine = getEngine()
+  if (cached) return cached
 
-    for (const name of missing) {
-      computationCache.set(
-        name,
-        computePersona(readPersona(name), sharedEngine)
-      )
-    }
-  }
+  const computation = computePersona(readPersona(name), getEngine())
 
-  return new Map(
-    names
-      .filter((name) => computationCache.has(name))
-      .map((name) => [name, computationCache.get(name)!] as const)
-  )
+  computationCache.set(name, computation)
+
+  return computation
 }
 
 /**
- * The action assessments of the given personas, computed on first ask.
+ * The action assessments of a persona, computed on first ask.
  */
 export const getPersonaActionAssessments = (
-  names: PersonaName[]
-): Map<PersonaName, PersonaActionAssessment[]> => {
-  const missing = [...new Set(names)].filter(
-    (name) => !assessmentCache.has(name)
-  )
+  name: PersonaName
+): PersonaActionAssessment[] => {
+  const cached = assessmentCache.get(name)
 
-  if (missing.length > 0) {
-    const sharedEngine = getEngine()
+  if (cached) return cached
 
-    for (const name of missing) {
-      assessmentCache.set(
-        name,
-        computeActionAssessments(readPersona(name), sharedEngine)
-      )
-    }
-  }
+  const assessments = computeActionAssessments(readPersona(name), getEngine())
 
-  return new Map(
-    names
-      .filter((name) => assessmentCache.has(name))
-      .map((name) => [name, assessmentCache.get(name)!] as const)
-  )
+  assessmentCache.set(name, assessments)
+
+  return assessments
 }
 
 /**
