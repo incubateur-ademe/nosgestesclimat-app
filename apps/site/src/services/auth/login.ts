@@ -55,10 +55,6 @@ export const login = async ({
   }
   const loginLocale = parsed.data.locale
 
-  // The old action wrapped its entire body in one try: any throw collapsed
-  // to failure(new UnknownCodeError()). The session lookup runs inside the
-  // try so its failures collapse the same way instead of surfacing to
-  // useLogin as a rejected mutation.
   let existingSessionUserId: string | undefined
 
   try {
