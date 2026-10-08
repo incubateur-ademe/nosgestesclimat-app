@@ -1,8 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
-import type { AgeRange } from '../types/age-range.ts'
-import { AgeRangeSchema } from '../types/age-range.ts'
 import type { UnverifiedUser, VerifiedUser } from '../types/user.ts'
 
 class UserFactory extends Factory<UnverifiedUser> {
@@ -24,7 +22,6 @@ export const userFactory = UserFactory.define(({ onCreate }) => {
         id: data.id,
         name: data.name,
         email: data.email,
-        ageRange: data.ageRange,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       },
@@ -46,7 +43,6 @@ const verifiedUserFactory = Factory.define<VerifiedUser>(({ onCreate }) => {
         id: data.id,
         name: data.name,
         email: data.email,
-        ageRange: data.ageRange,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       },
@@ -76,17 +72,9 @@ const verifiedUserFactory = Factory.define<VerifiedUser>(({ onCreate }) => {
   }
 })
 
-const userBase = () => {
-  const ageRange = faker.helpers.arrayElement([
-    ...AgeRangeSchema.options,
-    null,
-  ]) as AgeRange | null
-
-  return {
-    id: faker.string.uuid(),
-    name: faker.helpers.maybe(() => faker.person.fullName()) ?? null,
-    ageRange,
-    createdAt: faker.date.past(),
-    updatedAt: faker.date.recent(),
-  }
-}
+const userBase = () => ({
+  id: faker.string.uuid(),
+  name: faker.helpers.maybe(() => faker.person.fullName()) ?? null,
+  createdAt: faker.date.past(),
+  updatedAt: faker.date.recent(),
+})

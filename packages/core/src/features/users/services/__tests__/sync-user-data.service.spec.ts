@@ -89,11 +89,10 @@ describe('syncUserData', () => {
 
       const simulations = await prisma.simulation.findMany({
         where: { userId: verifiedUser.id },
-        select: { id: true, userEmail: true },
+        select: { id: true },
       })
 
       expect(simulations.map(({ id }) => id)).toContain(legacySimulation.id)
-      expect(simulations[0].userEmail).toBe(verifiedUser.email)
       expect(
         await prisma.user.findUnique({ where: { id: legacyUser.id } })
       ).toBeNull()
@@ -273,7 +272,7 @@ describe('syncUserData', () => {
   })
 
   describe('Given the user is not verified', () => {
-    it('moves the simulations without attaching an email', async () => {
+    it('moves the simulations', async () => {
       const verifiedUser = await userFactory.verified().create()
       const legacyUser = await createLegacyUserWithEmail(verifiedUser.email)
       await simulationFactory.params({ userId: legacyUser.id }).create()
@@ -284,11 +283,10 @@ describe('syncUserData', () => {
 
       const simulations = await prisma.simulation.findMany({
         where: { userId: verifiedUser.id },
-        select: { userEmail: true },
+        select: { id: true },
       })
 
       expect(simulations).toHaveLength(1)
-      expect(simulations[0].userEmail).toBeNull()
     })
   })
 })

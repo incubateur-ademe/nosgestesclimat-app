@@ -9,7 +9,6 @@ view AnonSimulation {
   foldedSteps     Json[]
   userId          String              @db.Uuid
   user            AnonUser            @relation(fields: [userId], references: [id])
-  userEmail       String?
   polls           AnonSimulationPoll[]
   groups          AnonGroupParticipant[]
   createdAt       DateTime
@@ -21,7 +20,6 @@ view AnonSimulation {
 
 view AnonUser {
   id            String                   @unique @db.Uuid
-  ageRange      AgeRange?
   createdAt     DateTime
   updatedAt     DateTime
   simulations   AnonSimulation[]

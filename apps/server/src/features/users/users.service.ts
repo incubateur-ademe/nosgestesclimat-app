@@ -1,5 +1,4 @@
 import { claimVerificationCode } from '@nosgestesclimat/core/features/auth/services/claim-verification-code.service'
-import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
 import {
@@ -20,7 +19,6 @@ interface UserDto {
   id: string
   name: string | null
   email: string | null
-  ageRange?: AgeRange | null
   createdAt: Date
   updatedAt: Date
   telephone?: string | null
@@ -139,13 +137,11 @@ export const updateUserAndContact = async ({
               id: userToUpdate.id,
               email: nextEmail || userToUpdate.email,
               name: newUserData.name,
-              ageRange: newUserData.ageRange,
             }
           : {
               type: 'unverified',
               id: userToUpdate.id,
               name: newUserData.name,
-              ageRange: newUserData.ageRange,
             },
         { session }
       )

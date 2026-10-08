@@ -372,15 +372,12 @@ model Simulation {
   groups                     GroupParticipant[]
   userId                     String?                              @db.Uuid
   user                       User?                                @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userEmail                  String?
-  verifiedUser               VerifiedUser?                        @relation(fields: [userEmail], references: [email], onDelete: Cascade)
   createdAt                  DateTime                             @default(now())
   updatedAt                  DateTime                             @updatedAt
   actionAssessments          ActionAssessment[]
   computations               SimulationComputation[]
 
   @@index([userId])
-  @@index([userEmail])
   @@index([createdAt])
   // Created partial (progression = 1) by the migration: Prisma cannot express
   // the predicate, so a schema edit would rebuild it whole.
@@ -450,7 +447,6 @@ model User {
   id            String               @id @db.Uuid
   name          String?
   email         String?
-  ageRange      AgeRange?
   administrator GroupAdministrator[]
   member        GroupParticipant[]
   simulations   Simulation[]
@@ -458,18 +454,6 @@ model User {
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   verifiedUsers VerifiedUser[]
-
-  @@schema("ngc")
-}
-
-enum AgeRange {
-  under_18
-  age_18_24
-  age_25_34
-  age_35_49
-  age_50_64
-  over_65
-  undisclosed
 
   @@schema("ngc")
 }
@@ -504,7 +488,6 @@ model VerifiedUser {
   position                 String?
   optedInForCommunications Boolean                     @default(false)
   administrator            OrganisationAdministrator[]
-  simulations              Simulation[]
   createdAt                DateTime                    @default(now())
   updatedAt                DateTime                    @updatedAt
 

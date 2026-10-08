@@ -4,19 +4,16 @@ import { USER_URL } from '@/constants/urls/main'
 import { ForbiddenError, UnauthorizedError } from '@/helpers/server/error'
 import { fetchServer } from '@/helpers/server/fetchServer'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
-import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { createAppSession } from '../auth/create-app-session'
 import { getUserSession } from '../auth/get-user-session'
 
 export const updateUser = async ({
   email,
   name,
-  ageRange,
   code,
 }: {
   email?: string
   name?: string
-  ageRange?: AgeRange
   code?: string
 }) => {
   const session = await getUserSession()
@@ -33,7 +30,7 @@ export const updateUser = async ({
 
   const data = await fetchServer<{ id: string }>(url.toString(), {
     method: 'PUT',
-    body: { email, name, ageRange },
+    body: { email, name },
   })
   if (email !== undefined && email !== session.email) {
     await revokeAllSessions(session.id)

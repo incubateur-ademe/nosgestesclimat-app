@@ -26,7 +26,6 @@ describe('getUser', () => {
       id: user.id,
       name: user.name,
       email: null,
-      ageRange: user.ageRange,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     })

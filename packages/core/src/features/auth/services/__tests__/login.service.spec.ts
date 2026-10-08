@@ -280,10 +280,7 @@ describe('login', () => {
           email: verifiedUser.email,
         })
         expect(vi.mocked(reconcileSimulationsAfterLogin)).toHaveBeenCalledWith({
-          user: expect.objectContaining({
-            id: verifiedUser.id,
-            email: verifiedUser.email,
-          }),
+          userId: verifiedUser.id,
           previousUserId: unverifiedUser.id,
         })
         // The sign-in branch reconciles only: it never runs the legacy
