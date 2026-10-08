@@ -2211,6 +2211,14 @@ entries:
   group.ranking.expand.button.label.singular.lock: Afficher 1 autre participant
   group.ranking.expand.button.label.plural: 'View other participants’ {{croppedParticipantsLength}} '
   group.ranking.expand.button.label.plural.lock: Afficher les {{croppedParticipantsLength}} autres participants
+  results.footprintBlock.carbone.chart.average: Average*
+  results.footprintBlock.carbone.chart.average.lock: Moyenne*
+  results.footprintBlock.carbone.chart.label: 'Your footprint: {{footprint}}. Average of our users: {{average}}. Target 2050: {{objective}}.'
+  results.footprintBlock.carbone.chart.label.lock: 'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.'
+  results.footprintBlock.carbone.chart.objective: Target 2050
+  results.footprintBlock.carbone.chart.objective.lock: Objectif 2050
+  results.footprintBlock.carbone.chart.you: You
+  results.footprintBlock.carbone.chart.you.lock: Vous
   results.footprintBlock.carbone.comparison.less: '{{delta}} {{unit}} less than the average*'
   results.footprintBlock.carbone.comparison.less.lock: '{{delta}} {{unit}} de moins que la moyenne*'
   results.footprintBlock.carbone.comparison.more: '{{delta}} {{unit}} more than the average*'

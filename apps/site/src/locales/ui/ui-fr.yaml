@@ -1476,3 +1476,7 @@ entries:
   results.footprintBlock.carbone.message.below: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l'exemple !
   results.footprintBlock.carbone.message.close: '<0>Votre empreinte ressemble à celle de millions de Français.</0> Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre première action, et embarquez vos proches.'
   results.footprintBlock.carbone.comparison.equal: Égal à la moyenne*
+  results.footprintBlock.carbone.chart.average: Moyenne*
+  results.footprintBlock.carbone.chart.label: 'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.'
+  results.footprintBlock.carbone.chart.objective: Objectif 2050
+  results.footprintBlock.carbone.chart.you: Vous

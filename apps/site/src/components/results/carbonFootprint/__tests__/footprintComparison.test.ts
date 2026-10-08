@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { getFootprintComparison } from '../footprintComparison'
+import {
+  getComparisonBarPercents,
+  getFootprintComparison,
+} from '../footprintComparison'
 
 describe('getFootprintComparison', () => {
   it('is above the average when the footprint is strictly over 8 t', () => {
@@ -37,5 +40,33 @@ describe('getFootprintComparison', () => {
       level: 'above',
       deltaKg: 100,
     })
+  })
+})
+
+describe('getComparisonBarPercents', () => {
+  it('fills the chart with the footprint when it is above the average', () => {
+    expect(getComparisonBarPercents(16000)).toEqual({
+      footprint: 100,
+      average: 50,
+      objective: 12.5,
+    })
+  })
+
+  it('fills the chart with the average when the footprint is below it', () => {
+    expect(getComparisonBarPercents(4000)).toEqual({
+      footprint: 50,
+      average: 100,
+      objective: 25,
+    })
+    expect(getComparisonBarPercents(8000)).toEqual({
+      footprint: 100,
+      average: 100,
+      objective: 25,
+    })
+  })
+
+  it('keeps a tiny footprint visible', () => {
+    expect(getComparisonBarPercents(200).footprint).toBe(8)
+    expect(getComparisonBarPercents(0).footprint).toBe(8)
   })
 })

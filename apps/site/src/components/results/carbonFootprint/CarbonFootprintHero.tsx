@@ -7,10 +7,10 @@ import type { Locale } from '@/i18nConfig'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
 import { twMerge } from 'cn'
 import { ThermometerSun } from 'lucide-react'
-import Image from 'next/image'
 import Trans from '../../translation/trans/TransServer'
 import FootprintInfoPopover from '../FootprintInfoPopover'
 import TendencyIndicator from '../TendencyIndicator'
+import FootprintComparisonChart from './FootprintComparisonChart'
 import {
   getFootprintComparison,
   type FootprintComparisonLevel,
@@ -80,7 +80,7 @@ export default function CarbonFootprintHero({
   return (
     <Card
       className={twMerge(
-        'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:grid-cols-[minmax(0,1fr)_306px] md:px-11 md:py-7',
+        'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:px-11 md:py-7 lg:grid-cols-2 lg:gap-10',
         className
       )}>
       <div className="flex w-full flex-col items-start">
@@ -154,6 +154,13 @@ export default function CarbonFootprintHero({
           )}
         </div>
 
+        <FootprintComparisonChart
+          locale={locale}
+          value={value}
+          orientation="horizontal"
+          className="mb-6 lg:hidden"
+        />
+
         <p className="mb-6 max-w-[46ch] leading-normal text-slate-600">
           {level === 'above' && (
             <Trans
@@ -214,13 +221,11 @@ export default function CarbonFootprintHero({
         </p>
       </div>
 
-      <Image
-        src="/images/results/carbon-footprint-hero.png"
-        alt=""
-        width={690}
-        height={716}
-        priority
-        className="hidden h-auto w-full md:block"
+      <FootprintComparisonChart
+        locale={locale}
+        value={value}
+        orientation="vertical"
+        className="hidden lg:block"
       />
     </Card>
   )
