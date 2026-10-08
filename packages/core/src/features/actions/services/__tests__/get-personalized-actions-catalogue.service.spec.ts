@@ -4,7 +4,6 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
-import { actionChoiceFactory } from '../../factories/action-choice.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { getPersonalizedActionsCatalogue } from '../get-personalized-actions-catalogue.service.ts'
 
@@ -346,12 +345,17 @@ describe('getPersonalizedActionsCatalogue', () => {
         .params({ simulationId: simulation.id, actionId: action.id })
         .applicable({ impact: 1000 })
         .create()
-      const choice = await actionChoiceFactory
-        .params({
+
+      await actionFactory.chosen({
+        actionId: action.id,
+        userId: user.id,
+      })
+      const choice = await prisma.actionChoice.findFirst({
+        where: {
           actionId: action.id,
           userId: user.id,
-        })
-        .create()
+        },
+      })
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
 
@@ -361,8 +365,8 @@ describe('getPersonalizedActionsCatalogue', () => {
           expect.objectContaining({
             id: action.id,
             choice: {
-              type: choice.type,
-              chosenAt: choice.chosenAt,
+              type: choice?.type,
+              chosenAt: choice?.chosenAt,
             },
           }),
         ]),
@@ -370,8 +374,8 @@ describe('getPersonalizedActionsCatalogue', () => {
           expect.objectContaining({
             id: action.id,
             choice: {
-              type: choice.type,
-              chosenAt: choice.chosenAt,
+              type: choice?.type,
+              chosenAt: choice?.chosenAt,
             },
           }),
         ]),
