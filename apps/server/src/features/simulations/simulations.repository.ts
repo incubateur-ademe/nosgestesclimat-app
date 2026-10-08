@@ -13,7 +13,6 @@ export const createParticipantSimulation = async <
   T extends Prisma.SimulationSelect = typeof simulationSelectionWithPolls,
 >(
   {
-    email,
     userId,
     simulation: {
       id,
@@ -27,7 +26,6 @@ export const createParticipantSimulation = async <
     },
     select = simulationSelectionWithPolls as T,
   }: {
-    email?: string
     userId: string
     simulation: SimulationParticipantCreateDto
     select?: T
@@ -61,15 +59,6 @@ export const createParticipantSimulation = async <
         id: userId,
       },
     },
-    ...(email
-      ? {
-          verifiedUser: {
-            connect: {
-              email,
-            },
-          },
-        }
-      : {}),
     situation,
     foldedSteps,
     progression,

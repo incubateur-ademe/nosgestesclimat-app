@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../factories/user.factory.ts'
-import type { AgeRange } from '../../types/age-range.ts'
 import {
   createOrUpdateUser,
   findUserById,
@@ -54,7 +53,6 @@ describe('createOrUpdateUser', () => {
         id,
         name: null,
         email: null,
-        ageRange: null,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       })
@@ -66,15 +64,13 @@ describe('createOrUpdateUser', () => {
     it('creates an unverified user carrying its profile fields', async () => {
       const id = faker.string.uuid()
       const name = faker.person.fullName()
-      const ageRange: AgeRange = 'age_25_34'
 
-      await createOrUpdateUser({ type: 'unverified', id, name, ageRange })
+      await createOrUpdateUser({ type: 'unverified', id, name })
 
       expect(await findUserById(id)).toMatchObject({
         type: 'unverified',
         id,
         name,
-        ageRange,
         email: null,
       })
       expect(await countVerifiedRecords(id)).toBe(0)
@@ -84,7 +80,6 @@ describe('createOrUpdateUser', () => {
       const id = faker.string.uuid()
       const email = generateEmail()
       const name = faker.person.fullName()
-      const ageRange: AgeRange = 'age_35_49'
       const telephone = faker.phone.number()
       const position = faker.person.jobTitle()
 
@@ -93,7 +88,6 @@ describe('createOrUpdateUser', () => {
         id,
         email,
         name,
-        ageRange,
         telephone,
         position,
         optedInForCommunications: true,
@@ -104,7 +98,6 @@ describe('createOrUpdateUser', () => {
         id,
         name,
         email,
-        ageRange,
         telephone,
         position,
         optedInForCommunications: true,
@@ -128,7 +121,6 @@ describe('createOrUpdateUser', () => {
         id,
         email,
         name: null,
-        ageRange: null,
         telephone: null,
         position: null,
         optedInForCommunications: false,
@@ -142,13 +134,12 @@ describe('createOrUpdateUser', () => {
     it('preserves the fields the write does not carry', async () => {
       const user = await userFactory
         .unverified()
-        .create({ name: faker.person.fullName(), ageRange: 'age_18_24' })
+        .create({ name: faker.person.fullName() })
 
       await createOrUpdateUser({ type: 'unverified', id: user.id })
 
       expect(await findUserById(user.id)).toMatchObject({
         name: user.name,
-        ageRange: user.ageRange,
         email: null,
       })
     })
@@ -156,34 +147,30 @@ describe('createOrUpdateUser', () => {
     it('clears the fields explicitly set to null', async () => {
       const user = await userFactory
         .unverified()
-        .create({ name: faker.person.fullName(), ageRange: 'age_18_24' })
+        .create({ name: faker.person.fullName() })
 
       await createOrUpdateUser({
         type: 'unverified',
         id: user.id,
         name: null,
-        ageRange: null,
       })
 
       expect(await findUserById(user.id)).toMatchObject({
         name: null,
-        ageRange: null,
       })
     })
 
     it('updates the fields the write carries', async () => {
       const user = await userFactory.unverified().create()
       const name = faker.person.fullName()
-      const ageRange: AgeRange = 'over_65'
 
       await createOrUpdateUser({
         type: 'unverified',
         id: user.id,
         name,
-        ageRange,
       })
 
-      expect(await findUserById(user.id)).toMatchObject({ name, ageRange })
+      expect(await findUserById(user.id)).toMatchObject({ name })
     })
 
     it('leaves a legacy users-table email untouched', async () => {
@@ -219,7 +206,6 @@ describe('createOrUpdateUser', () => {
     it('updates the user row and the verified record together', async () => {
       const user = await userFactory.verified().create()
       const name = faker.person.fullName()
-      const ageRange: AgeRange = 'age_50_64'
       const telephone = faker.phone.number()
       const position = faker.person.jobTitle()
       const optedInForCommunications = !user.optedInForCommunications
@@ -230,7 +216,6 @@ describe('createOrUpdateUser', () => {
           id: user.id,
           email: user.email,
           name,
-          ageRange,
           telephone,
           position,
           optedInForCommunications,
@@ -240,7 +225,6 @@ describe('createOrUpdateUser', () => {
 
       expect(await findUserById(user.id)).toMatchObject({
         name,
-        ageRange,
         email: user.email,
       })
       expect(
@@ -256,7 +240,7 @@ describe('createOrUpdateUser', () => {
     it('preserves the fields the write does not carry', async () => {
       const user = await userFactory
         .verified()
-        .create({ name: faker.person.fullName(), ageRange: 'age_25_34' })
+        .create({ name: faker.person.fullName() })
 
       await createOrUpdateUser({
         type: 'verified',
@@ -266,7 +250,6 @@ describe('createOrUpdateUser', () => {
 
       expect(await findUserById(user.id)).toMatchObject({
         name: user.name,
-        ageRange: user.ageRange,
         email: user.email,
       })
       expect(
@@ -282,21 +265,19 @@ describe('createOrUpdateUser', () => {
     it('clears the fields explicitly set to null', async () => {
       const user = await userFactory
         .verified()
-        .create({ name: faker.person.fullName(), ageRange: 'age_25_34' })
+        .create({ name: faker.person.fullName() })
 
       await createOrUpdateUser({
         type: 'verified',
         id: user.id,
         email: user.email,
         name: null,
-        ageRange: null,
         telephone: null,
         position: null,
       })
 
       expect(await findUserById(user.id)).toMatchObject({
         name: null,
-        ageRange: null,
       })
       expect(
         await findVerifiedUserByEmail({ email: user.email })
@@ -361,7 +342,7 @@ describe('createOrUpdateUser', () => {
     it('creates the verified record and mirrors the email on the user table', async () => {
       const user = await userFactory
         .unverified()
-        .create({ name: faker.person.fullName(), ageRange: 'age_25_34' })
+        .create({ name: faker.person.fullName() })
       const email = generateEmail()
 
       await createOrUpdateUser({ type: 'verified', id: user.id, email })
@@ -369,7 +350,6 @@ describe('createOrUpdateUser', () => {
       expect(await findUserById(user.id)).toMatchObject({
         type: 'verified',
         name: user.name,
-        ageRange: user.ageRange,
         email,
       })
       expect(await findVerifiedUserByEmail({ email })).toMatchObject({
@@ -388,7 +368,6 @@ describe('createOrUpdateUser', () => {
     it('persists the aggregate unchanged', async () => {
       const created = await userFactory.verified().create({
         name: faker.person.fullName(),
-        ageRange: 'age_35_49',
       })
       const user = await findUserById(created.id)
       expect(user?.type).toBe('verified')
@@ -403,7 +382,6 @@ describe('createOrUpdateUser', () => {
         id: user.id,
         name: user.name,
         email: user.email,
-        ageRange: user.ageRange,
         telephone: user.telephone,
         position: user.position,
         optedInForCommunications: user.optedInForCommunications,

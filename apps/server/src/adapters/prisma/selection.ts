@@ -15,21 +15,12 @@ export const defaultUserSelection = {
   email: true,
   createdAt: true,
   updatedAt: true,
-  ageRange: true,
-}
-
-export const defaultUserSelectionWithoutAgeRange = {
-  id: true,
-  name: true,
-  email: true,
-  createdAt: true,
-  updatedAt: true,
 }
 
 export const defaultGroupParticipantSelection = {
   id: true,
   user: {
-    select: defaultUserSelectionWithoutAgeRange,
+    select: defaultUserSelection,
   },
   simulationId: true,
   createdAt: true,
@@ -184,11 +175,7 @@ export const simulationSelectionWithUsers = {
       id: true,
       name: true,
       email: true,
-      ageRange: true,
     },
-  },
-  verifiedUser: {
-    select: defaultVerifiedUserSelection,
   },
 }
 
@@ -202,7 +189,6 @@ export const simulationSelection = {
   ...defaultSimulationSelection,
   polls: simulationSelectionWithPolls.polls,
   user: simulationSelectionWithUsers.user,
-  verifiedUser: simulationSelectionWithUsers.verifiedUser,
   groups: simulationSelectionWithGroup.groups,
 }
 

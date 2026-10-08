@@ -12,7 +12,6 @@ import { mapUnverifiedUser, mapUser, mapVerifiedUser } from './user.mapper.ts'
 const unverifiedUserSelect = {
   id: true,
   name: true,
-  ageRange: true,
   createdAt: true,
   updatedAt: true,
 } as const
@@ -131,7 +130,6 @@ export async function createOrUpdateUser(
   // to the verified record yet.
   const userData = {
     name: user.name,
-    ageRange: user.ageRange,
     ...(user.type === 'verified' ? { email: user.email } : {}),
   }
 

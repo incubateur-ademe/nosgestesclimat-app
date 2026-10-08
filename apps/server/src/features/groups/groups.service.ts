@@ -49,7 +49,6 @@ const groupToDto = (
           id: admin.id,
           name: admin.name,
           email: admin.email,
-          ageRange: admin.ageRange,
           createdAt: admin.createdAt,
           updatedAt: admin.updatedAt,
         }

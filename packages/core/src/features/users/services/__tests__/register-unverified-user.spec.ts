@@ -17,7 +17,6 @@ describe('registerUnverifiedUser', () => {
       id: expect.any(String),
       name: null,
       email: null,
-      ageRange: null,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     })

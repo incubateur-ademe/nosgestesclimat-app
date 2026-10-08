@@ -127,7 +127,6 @@ describe('Given a NGC user', () => {
             id: userId,
             email: null,
             name: null,
-            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           })
@@ -148,7 +147,6 @@ describe('Given a NGC user', () => {
               id: userId,
               email: null,
               name,
-              ageRange: null,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             })
@@ -176,7 +174,6 @@ describe('Given a NGC user', () => {
             id: userId,
             email: null,
             name: null,
-            ageRange: null,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
           })
@@ -196,7 +193,6 @@ describe('Given a NGC user', () => {
               id: userId,
               email: null,
               name,
-              ageRange: null,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             })
@@ -287,7 +283,6 @@ describe('Given a NGC user', () => {
           id: userId,
           email,
           name,
-          ageRange: null,
           contact: {
             email: contact.email,
             id: contact.id,
@@ -325,7 +320,6 @@ describe('Given a NGC user', () => {
           id: userId,
           email,
           name,
-          ageRange: null,
           contact: {
             email: contact.email,
             id: contact.id,
@@ -454,7 +448,6 @@ describe('Given a NGC user', () => {
             email: newEmail,
             id: userId,
             name: null,
-            ageRange: null,
             optedInForCommunications: false,
             position: null,
             telephone: null,
@@ -503,7 +496,6 @@ describe('Given a NGC user', () => {
               email: newEmail,
               id: userId,
               name: null,
-              ageRange: null,
               optedInForCommunications: false,
               position: null,
               telephone: null,

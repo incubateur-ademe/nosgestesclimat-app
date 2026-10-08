@@ -138,8 +138,7 @@ describe('Given a NGC user', () => {
           },
         }))
 
-        const { ageRange: _a, ...rest } = group1.administrator
-        participantAdmin = rest
+        participantAdmin = group1.administrator
       }, 10000)
 
       test(`Then it returns a ${StatusCodes.OK} response with a list containing the groups`, async () => {

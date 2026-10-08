@@ -6,7 +6,6 @@ import type {
   SuggestionValue,
 } from '@incubateur-ademe/nosgestesclimat'
 import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
-import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import type PublicodesEngine from 'publicodes'
 import type {
   EvaluatedNode,
@@ -36,7 +35,6 @@ export interface RegionFromGeolocation {
 
 export type User = UserSession & {
   name?: string
-  ageRange?: AgeRange
 }
 
 export type Tutorials = Record<string, boolean>

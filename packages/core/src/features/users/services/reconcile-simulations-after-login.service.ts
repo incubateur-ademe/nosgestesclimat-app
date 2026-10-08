@@ -2,13 +2,13 @@ import { transaction } from '../../../lib/transaction.ts'
 import { transferSimulationsFromUser } from '../repositories/ownership-transfer.repository.ts'
 
 export const reconcileSimulationsAfterLogin = async ({
-  user,
+  userId,
   previousUserId,
 }: {
-  user: { id: string; email: string }
+  userId: string
   previousUserId: string
 }) => {
   await transaction((session) =>
-    transferSimulationsFromUser({ user, previousUserId }, { session })
+    transferSimulationsFromUser({ userId, previousUserId }, { session })
   )
 }

@@ -1,10 +1,8 @@
-import type { AgeRange } from '../types/age-range.ts'
 import type { UnverifiedUser, User, VerifiedUser } from '../types/user.ts'
 
 export type UserBaseRow = {
   id: string
   name: string | null
-  ageRange: AgeRange | null
   createdAt: Date
   updatedAt: Date
 }
@@ -30,7 +28,6 @@ export const mapUnverifiedUser = (row: UserBaseRow): UnverifiedUser => ({
   id: row.id,
   name: row.name,
   email: null, // user's table email field is deprecated
-  ageRange: row.ageRange,
   createdAt: row.createdAt,
   updatedAt: row.updatedAt,
 })
@@ -47,7 +44,6 @@ export const mapVerifiedUser = (row: UserRow): VerifiedUser => {
     id: row.id,
     name: row.name,
     email: verifiedUser.email,
-    ageRange: row.ageRange,
     telephone: verifiedUser.telephone,
     position: verifiedUser.position,
     optedInForCommunications: verifiedUser.optedInForCommunications,

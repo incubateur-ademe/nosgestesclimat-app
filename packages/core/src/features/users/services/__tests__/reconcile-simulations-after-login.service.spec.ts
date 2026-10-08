@@ -48,7 +48,7 @@ describe('reconcileSimulationsAfterLogin', () => {
         .create()
 
       await reconcileSimulationsAfterLogin({
-        user: { id: user.id, email: user.email },
+        userId: user.id,
         previousUserId: user.id,
       })
 
@@ -68,7 +68,7 @@ describe('reconcileSimulationsAfterLogin', () => {
       await simulationFactory.params({ userId: user.id }).create()
 
       await reconcileSimulationsAfterLogin({
-        user: { id: user.id, email: user.email },
+        userId: user.id,
         previousUserId: faker.string.uuid(),
       })
 
@@ -90,17 +90,16 @@ describe('reconcileSimulationsAfterLogin', () => {
         .create()
 
       await reconcileSimulationsAfterLogin({
-        user: { id: verifiedUser.id, email: verifiedUser.email },
+        userId: verifiedUser.id,
         previousUserId: anonymousUser.id,
       })
 
       const simulations = await prisma.simulation.findMany({
         where: { userId: verifiedUser.id },
-        select: { id: true, userEmail: true },
+        select: { id: true },
       })
 
       expect(simulations.map(({ id }) => id)).toContain(anonymousSimulation.id)
-      expect(simulations[0].userEmail).toBe(verifiedUser.email)
     })
 
     it('leaves the anonymous session without any simulations', async () => {
@@ -109,7 +108,7 @@ describe('reconcileSimulationsAfterLogin', () => {
       await simulationFactory.params({ userId: anonymousUser.id }).create()
 
       await reconcileSimulationsAfterLogin({
-        user: { id: verifiedUser.id, email: verifiedUser.email },
+        userId: verifiedUser.id,
         previousUserId: anonymousUser.id,
       })
 
@@ -139,7 +138,7 @@ describe('reconcileSimulationsAfterLogin', () => {
       })
 
       await reconcileSimulationsAfterLogin({
-        user: { id: verifiedUser.id, email: verifiedUser.email },
+        userId: verifiedUser.id,
         previousUserId: anonymousUser.id,
       })
 
@@ -175,7 +174,7 @@ describe('reconcileSimulationsAfterLogin', () => {
       ])
 
       await reconcileSimulationsAfterLogin({
-        user: { id: verifiedUser.id, email: verifiedUser.email },
+        userId: verifiedUser.id,
         previousUserId: anonymousUser.id,
       })
 
