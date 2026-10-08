@@ -157,7 +157,7 @@ export const createParticipantAndUser = async (
     {
       type: 'unverified',
       id: userId,
-      ...(name && { name }),
+      ...(name ? { name } : {}),
     },
     { session }
   )
