@@ -47,6 +47,7 @@ export default async function Connexion({ params }: DefaultPageProps) {
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>
             <AuthenticateUserForm
+              intent="create-account"
               mode="signIn"
               redirectPathname={MON_ESPACE_PATH}
               tracker={captureLoginComplete}

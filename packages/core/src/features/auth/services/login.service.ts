@@ -23,6 +23,7 @@ import { syncUserData } from '../../users/services/sync-user-data.service.ts'
 import type { VerifiedUser } from '../../users/types/user.ts'
 import { createWelcomeEmail } from '../emails/auth-emails.ts'
 import type { LoginError } from '../errors/login.error.ts'
+import type { Intent } from '../schemas/auth.schema.ts'
 import { claimVerificationCode } from './claim-verification-code.service.ts'
 
 export type LoginMode = 'signIn' | 'signUp'
@@ -57,11 +58,14 @@ export function createLogin({
     email,
     code,
     locale,
+    intent,
     sessionUserId,
   }: {
     email: string
     code: string
     locale: ISOSupportedLanguage
+    /** Why the user logs in: decides which post-login email is sent. */
+    intent: Intent
     /**
      * The current session's userId. A session user that cannot be found is
      * the same as no session.
@@ -198,11 +202,25 @@ export function createLogin({
         (async () => {
           if (mode !== 'signUp') return success()
 
-          // A user that just signed up after completing a simulation gets
-          // an email with a link to the simulation in order to find it again
-          const lastCompletedSimulation = await findLatestCompletedSimulation({
-            userId: user.id,
-          })
+          // The simulation completed email is the point of the
+          // save-simulation intent: the user signed up right after
+          // finishing a simulation to save it. Every other intent signs
+          // up for something else - a poll, a group, an organisation, a
+          // plain account - and only gets the welcome email.
+          const lastCompletedSimulation =
+            intent === 'save-simulation'
+              ? await findLatestCompletedSimulation({ userId: user.id })
+              : null
+
+          if (intent === 'save-simulation' && !lastCompletedSimulation) {
+            // The user signed up to save a simulation, yet none is found:
+            // unexpected enough to investigate - the welcome email is sent
+            // as a fallback.
+            logger.warn(
+              'Save-simulation sign-up without any completed simulation',
+              { userId: user.id }
+            )
+          }
 
           if (lastCompletedSimulation) {
             return sendEmail(

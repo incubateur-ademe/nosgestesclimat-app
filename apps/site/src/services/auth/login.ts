@@ -9,6 +9,7 @@ import {
 import { env } from '@/env.server'
 import { rateLimitSameRequest } from '@/helpers/server/rateLimitSameRequest'
 import logger from '@/logger'
+import type { Intent } from '@nosgestesclimat/core/features/auth/schemas/auth.schema'
 import { LoginPayloadSchema } from '@nosgestesclimat/core/features/auth/schemas/auth.schema'
 import { createLogin } from '@nosgestesclimat/core/features/auth/services/login.service'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
@@ -34,10 +35,12 @@ export const login = async ({
   email,
   code,
   locale,
+  intent,
 }: {
   email: string
   code: string
   locale?: string
+  intent: Intent
 }): Promise<Result<{ userId: string }, CodeError>> => {
   const startedAt = Date.now()
 
@@ -49,7 +52,12 @@ export const login = async ({
   })
   if (!rateLimit.success) return rateLimit
 
-  const parsed = validatePayload(LoginPayloadSchema, { email, code, locale })
+  const parsed = validatePayload(LoginPayloadSchema, {
+    email,
+    code,
+    locale,
+    intent,
+  })
   if (!parsed.success) {
     return failure(new UnknownCodeError())
   }
@@ -68,6 +76,7 @@ export const login = async ({
       userId: existingSessionUserId,
       email: maskEmail(parsed.data.email),
       locale: loginLocale,
+      intent: parsed.data.intent,
     }
 
     // Every branch below logs an outcome, so an attempt left without one is

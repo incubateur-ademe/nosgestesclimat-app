@@ -91,6 +91,7 @@ describe('login', () => {
         email,
         code,
         locale: 'fr',
+        intent: 'create-account',
       })
 
       expect(addOrUpdateContact).not.toHaveBeenCalled()
@@ -168,6 +169,7 @@ describe('login', () => {
         email: verifiedUser.email,
         code: verificationCode.code,
         locale: 'fr',
+        intent: 'create-account',
       })
       await flushBackgroundTasks()
 
@@ -190,6 +192,32 @@ describe('login', () => {
       expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
     })
 
+    it('sends no email on a save-simulation sign-in', async () => {
+      const verifiedUser = await userFactory.verified().create()
+      const computedResults = computedResultsFactory.valid().build()
+      await simulationFactory
+        .params({ userId: verifiedUser.id, computedResults })
+        .completed()
+        .create()
+      const verificationCode = await verificationCodeFactory.create({
+        email: verifiedUser.email,
+      })
+
+      const result = await login({
+        email: verifiedUser.email,
+        code: verificationCode.code,
+        locale: 'fr',
+        intent: 'save-simulation',
+      })
+      await flushBackgroundTasks()
+
+      expect.assert(result.success)
+      // The simulation completed email belongs to the save-simulation
+      // sign-up only: a sign-in never receives it, even with a completed
+      // simulation behind it.
+      expect(sendEmail).not.toHaveBeenCalled()
+    })
+
     it('cannot be replayed: a second sign-in with the same code fails', async () => {
       const verifiedUser = await userFactory.verified().create()
       const verificationCode = await verificationCodeFactory.create({
@@ -200,6 +228,7 @@ describe('login', () => {
         email: verifiedUser.email,
         code: verificationCode.code,
         locale: 'fr',
+        intent: 'create-account',
       })
 
       expect.assert(firstResult.success)
@@ -208,6 +237,7 @@ describe('login', () => {
         email: verifiedUser.email,
         code: verificationCode.code,
         locale: 'fr',
+        intent: 'create-account',
       })
 
       expect.assert(!replayResult.success)
@@ -239,6 +269,7 @@ describe('login', () => {
           email: verifiedUser.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId: unverifiedUser.id,
         })
 
@@ -273,6 +304,7 @@ describe('login', () => {
           email: userB.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId: userA.id,
         })
 
@@ -310,6 +342,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
         })
 
         expect.assert(result.success)
@@ -343,6 +376,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId,
         })
 
@@ -375,6 +409,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId: unverifiedUser.id,
         })
 
@@ -417,6 +452,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId,
         })
 
@@ -426,6 +462,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId,
         })
 
@@ -454,6 +491,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'en',
+          intent: 'create-account',
           sessionUserId: unverifiedUser.id,
         })
         await flushBackgroundTasks()
@@ -474,7 +512,7 @@ describe('login', () => {
         })
       })
 
-      it('sends the sign-up simulation completed email when the converted session has a completed simulation', async () => {
+      it('sends the simulation completed email on a save-simulation sign-up with a completed simulation', async () => {
         const verificationCode = await verificationCodeFactory.create()
         const unverifiedUser = await userFactory.create()
         const computedResults = computedResultsFactory.valid().build()
@@ -487,6 +525,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'save-simulation',
           sessionUserId: unverifiedUser.id,
         })
         await flushBackgroundTasks()
@@ -506,7 +545,7 @@ describe('login', () => {
         })
       })
 
-      it('sends the sign-up simulation completed email in the language of the request', async () => {
+      it('sends the simulation completed email in the language of the request', async () => {
         const verificationCode = await verificationCodeFactory.create()
         const unverifiedUser = await userFactory.create()
         await simulationFactory
@@ -519,6 +558,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'en',
+          intent: 'save-simulation',
           sessionUserId: unverifiedUser.id,
         })
         await flushBackgroundTasks()
@@ -531,7 +571,7 @@ describe('login', () => {
         )
       })
 
-      it('sends the welcome email, not the simulation completed email, when the converted session has no completed simulation', async () => {
+      it('sends the welcome email, not the simulation completed email, when the save-simulation sign-up has no completed simulation', async () => {
         const verificationCode = await verificationCodeFactory.create()
         const unverifiedUser = await userFactory.create()
         await simulationFactory
@@ -544,6 +584,42 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'save-simulation',
+          sessionUserId: unverifiedUser.id,
+        })
+        await flushBackgroundTasks()
+
+        expect.assert(result.success)
+        // No simulation behind a save-simulation sign-up is unexpected
+        // enough to be logged.
+        expect(logger.warn).toHaveBeenCalledWith(
+          'Save-simulation sign-up without any completed simulation',
+          { userId: unverifiedUser.id }
+        )
+        expect(sendEmail).toHaveBeenCalledTimes(1)
+        expect(sendEmail).toHaveBeenCalledWith({
+          email: verificationCode.email,
+          templateId: TemplateIds.fr.SIGN_UP,
+          params: {
+            DASHBOARD_URL: `${origin}/mon-espace`,
+          },
+        })
+      })
+
+      it('sends the welcome email, not the simulation completed email, on a sign-up whose intent is not save-simulation', async () => {
+        const verificationCode = await verificationCodeFactory.create()
+        const unverifiedUser = await userFactory.create()
+        await simulationFactory
+          .params({ userId: unverifiedUser.id })
+          .completed()
+          .withValidComputedResults()
+          .create()
+
+        const result = await login({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          intent: 'create-account',
           sessionUserId: unverifiedUser.id,
         })
         await flushBackgroundTasks()
@@ -569,6 +645,7 @@ describe('login', () => {
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
+          intent: 'create-account',
           sessionUserId: userA.id,
         })
 
@@ -620,6 +697,7 @@ describe('login', () => {
         email: verificationCode.email,
         code: verificationCode.code,
         locale: 'fr',
+        intent: 'create-account',
         sessionUserId: faker.string.uuid(),
       })
       await flushBackgroundTasks()
