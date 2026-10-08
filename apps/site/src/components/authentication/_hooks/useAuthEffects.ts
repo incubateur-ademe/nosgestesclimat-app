@@ -20,8 +20,6 @@ import type {
   VerifyStrategy,
 } from '../types'
 
-/** One scope for both steps of the sign-in: the unit is the visitor's
- * authentication, and the step that failed stays in the error. */
 const logger = _logger.child({ scope: 'site.interaction.auth' })
 
 function useVerifyEffect(

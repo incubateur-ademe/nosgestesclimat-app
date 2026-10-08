@@ -1,9 +1,5 @@
-/**
- * The Node implementation of the `Logger` port: pino to stdout, the OTLP bridge
- * to PostHog, Sentry through the injected capture. Two roots wire it — the site
- * server (`logger.server.ts`, which adds Next's control flow) and the worker
- * (`worker/observability.ts`) — and tests instantiate it directly.
- */
+/** Node `Logger` port: pino → stdout, OTLP → PostHog, Sentry via injected
+ * capture. Wired by `logger.server.ts` (site) and `worker/observability.ts`. */
 import { toAttributeKey } from '@nosgestesclimat/core/features/logger/attribute-key'
 import type {
   Logger,
@@ -70,15 +66,8 @@ export function createLogger({
    */
   rethrowControlFlow?: (error: unknown) => void
 }): Logger {
-  /**
-   * One line per call, in JSON: Scalingo's drain splits a multi-line object
-   * into separate timestamped lines, which then interleave with concurrent
-   * lines and read as scrambled. Pino writes one line per log call, so the
-   * pretty transport stays opt-in and local-only.
-   *
-   * The field names are pino's own (`time`, `level` as a number, `message`):
-   * no shape is enforced across apps, apps/server (legacy winston) keeps its.
-   */
+  /** One JSON line per call: Scalingo's drain fragments multi-line objects.
+   * Field names are pino's own; apps/server (legacy winston) keeps its shape. */
   const pinoLogger = pino({
     level,
     base: { service },

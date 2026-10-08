@@ -7,15 +7,6 @@ import { publicEnv } from './public'
 import { mayBeUnset, NonEmptyStringSchema, parseEnv } from './shared'
 
 /**
- * Server environment configuration, validated once at import time: a missing
- * or empty variable fails loudly here rather than surfacing as an obscure
- * runtime error (an unauthenticated Brevo call, a `undefined/...` URL, ...).
- *
- * Server-only: it reads secrets, so it must never be imported from a client
- * component. Use `env/public.ts` for client-side access.
- */
-
-/**
  * The variables whose absence costs the telemetry without saying so: required
  * in production, free elsewhere, where nothing is exported anyway.
  */

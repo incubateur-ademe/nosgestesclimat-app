@@ -6,12 +6,9 @@ import type { AnyValue, LogAttributes } from '@opentelemetry/api-logs'
  * full value. */
 const MAX_ATTRIBUTE_LENGTH = 4_000
 
-/**
- * Maps the meta of a line to OTLP attribute values: scalars go through, other
- * values become JSON text so a record never fails to export. The flattening is
- * `flattenMeta`'s, where the line is built; the limits applied here (PostHog's)
- * do not apply to the stdout line.
- */
+/** Maps line meta to OTLP attribute values: scalars pass through, others
+ * become JSON text so export never fails. Limits here are PostHog's; stdout
+ * keeps full values. */
 export function toLogAttributes(meta: LogMeta): LogAttributes {
   const attributes: LogAttributes = {}
 

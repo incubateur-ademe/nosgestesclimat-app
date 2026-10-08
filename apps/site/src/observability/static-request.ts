@@ -1,12 +1,5 @@
-/**
- * The requests that serve a file, not a page.
- *
- * `HttpInstrumentation` traces everything that reaches the Node server, and
- * these carry no operation worth a span: nobody investigates the trace of a
- * favicon. The prefixes mirror what the proxy matcher already excludes — the
- * assets Next serves, the CMS media rewritten to S3 (`next.config.ts`), the
- * public directories — plus the asset extensions the CMS hands over by URL.
- */
+/** Requests that serve a file, not a page. Mirrors the proxy matcher
+ * exclusions, kept in step by hand. */
 const STATIC_PREFIXES = [
   '/_next/',
   '/_static/',

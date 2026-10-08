@@ -4,8 +4,8 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mswServer } from '../../../__tests__/server'
-import { aSimulation } from '../../../helpers/tests/aSimulation'
 import { mockAuthenticatedSession } from '../../../helpers/tests/mockAuthenticatedSession'
+import { simulationFactory } from '../../../helpers/tests/simulation.factory'
 import { createGroup } from '../../groups/create-group'
 import { updateGroupParticipant } from '../../groups/update-group-participant'
 import { uploadLocalSimulations } from '../upload-local-simulations'
@@ -55,7 +55,7 @@ vi.mock(
 
 /** A simulation as it comes out of long-lived client state: no model at all. */
 const modellessSimulation = (): Simulation => {
-  const simulation = aSimulation()
+  const simulation = simulationFactory.build()
   simulation.computedResults.carbone.bilan = 1000
   return { ...simulation, model: undefined } as unknown as Simulation
 }
@@ -139,7 +139,7 @@ describe('simulation write paths', () => {
 
   describe('given a simulation still in progress', () => {
     it('should join the group with it rather than stranding it behind a new one', async () => {
-      const inProgress = aSimulation({ progression: 0.4 })
+      const inProgress = simulationFactory.started().build()
       getCurrentSimulationMock.mockResolvedValue(inProgress)
       const captured = captureSimulationBody(
         'post',
@@ -150,7 +150,7 @@ describe('simulation write paths', () => {
       await updateGroupParticipant({ groupId: 'group-id', name: 'Alice' })
 
       expect(captured.value?.id).toBe(inProgress.id)
-      expect(captured.value?.progression).toBe(0.4)
+      expect(captured.value?.progression).toBe(inProgress.progression)
     })
   })
 

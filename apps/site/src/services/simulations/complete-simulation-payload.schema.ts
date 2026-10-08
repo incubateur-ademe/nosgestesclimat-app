@@ -22,12 +22,8 @@ type _CompleteSimulationPayload = v.InferInput<
   typeof CompleteSimulationPayloadSchema
 >
 
-/**
- * What the client actually sends: its progression is only known at runtime.
- * That it must equal 1 is a precondition of the completion, owned by the core
- * service — which answers `simulation_incomplete` rather than a generic
- * `invalid_payload`.
- */
+/** What the client sends: progression is runtime-known. Must equal 1 at
+ * completion (core answers `simulation_incomplete`, not `invalid_payload`). */
 export type CompleteSimulationPayload = Omit<
   _CompleteSimulationPayload,
   'progression'

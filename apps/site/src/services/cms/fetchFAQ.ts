@@ -1,7 +1,7 @@
 import type { FAQType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchFaq({
@@ -9,6 +9,8 @@ export async function fetchFaq({
 }: {
   locale: Locale
 }): Promise<FAQType[] | null> {
+  const logger = _logger.child({ scope: 'site.action.fetchFaq', locale })
+
   try {
     const faqSearchParams = new URLSearchParams({
       locale,
@@ -22,7 +24,7 @@ export async function fetchFaq({
 
     return faqResponse.data.faqs
   } catch (error) {
-    logger.warn(toError(error), { scope: 'site.action.fetchFaq' })
+    logger.warn(toError(error))
 
     return null
   }

@@ -1,5 +1,5 @@
 import { PARTNER_JAGIS, PARTNER_KEY } from '@/constants/partners'
-import { aSimulation } from '@/helpers/tests/aSimulation'
+import { simulationFactory } from '@/helpers/tests/simulation.factory'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
 import { faker } from '@faker-js/faker'
@@ -40,9 +40,8 @@ describe('PartnerPage', () => {
   })
   const defaultParams = Promise.resolve({ locale: 'fr' as const })
 
-  const defaultSimulation = aSimulation({
+  const defaultSimulation = simulationFactory.completed().build({
     id: faker.string.uuid(),
-    progression: 1,
   })
 
   const completedProgress = {

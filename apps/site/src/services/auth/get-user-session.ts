@@ -12,11 +12,7 @@ import { cache } from 'react'
 
 import logger from '@/logger/logger.server'
 
-/**
- * The session of the request being served, decrypted from its headers. `cache`
- * keeps one read per request: the action, the page and the services below can
- * ask for it as many times as they like.
- */
+/** The session of the request being served. */
 export const getUserSession = cache(
   async (): Promise<UserSession> =>
     await logger.withSpan('site.action.getUserSession', async () => {

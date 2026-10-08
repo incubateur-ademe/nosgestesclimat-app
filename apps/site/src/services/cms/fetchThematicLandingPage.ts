@@ -1,7 +1,7 @@
 import type { ThematicLandingPage } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import i18nConfig from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchThematicLandingPage({
@@ -14,6 +14,12 @@ export async function fetchThematicLandingPage({
     }
   | undefined
 > {
+  const logger = _logger.child({
+    scope: 'site.action.fetchThematicLandingPage',
+    landingPageSlug,
+    locale: i18nConfig.defaultLocale,
+  })
+
   try {
     const thematicLPSearchParams = new URLSearchParams({
       locale: i18nConfig.defaultLocale,
@@ -67,10 +73,7 @@ export async function fetchThematicLandingPage({
       data: [ThematicLandingPage]
     }>(`/api/landing-thematiques?${thematicLPSearchParams}`)
     if (thematicLPResponse.data?.length !== 1) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Error: fetch thematic LP error for slug: ${landingPageSlug}`
-      )
+      logger.info('The CMS returned no thematic landing page')
       return
     }
 
@@ -82,9 +85,7 @@ export async function fetchThematicLandingPage({
       thematicLandingPage: thematicLP,
     }
   } catch (error) {
-    logger.warn(toError(error), {
-      scope: 'site.action.fetchThematicLandingPage',
-    })
+    logger.warn(toError(error))
 
     return {}
   }

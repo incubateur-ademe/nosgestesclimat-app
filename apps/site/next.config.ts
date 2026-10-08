@@ -18,12 +18,8 @@ const withMDX = createMDX({
   extension: /\.mdx$/,
 })
 
-/**
- * What the browser bundle cannot read from its process, inlined at build time:
- * the released commit and the Sentry DSN, which the server and the worker read
- * from their environment at runtime. One source each — a `NEXT_PUBLIC_` twin
- * left to hand drifts silently, and a browser without a DSN reports nothing.
- */
+/** Build-time inlined values the browser cannot read from `process.env` at
+ * runtime. One source each — a twin left to hand drifts silently. */
 const browserEnv = {
   ...(process.env.SOURCE_VERSION
     ? { NEXT_PUBLIC_APP_VERSION: process.env.SOURCE_VERSION }
@@ -61,16 +57,9 @@ const nextConfig = withMDX({
 
     return [...redirects, ...enRedirects]
   },
-  // Les assets du CMS sont référencés sous /_static/cms/.
-  //
-  // En prod/preprod, c'est nginx qui les sert depuis S3 (cache immutable) : les
-  // requêtes du navigateur n'atteignent jamais Next.js. Mais l'optimiseur
-  // d'images récupère les images locales par une requête interne vers l'app
-  // (`/_next/image?url=/_static/cms/…`), et nginx réécrit le `Host` vers l'app
-  // Scalingo : cette requête interne ne traverse donc pas nginx. Sans ce proxy,
-  // elle reçoit un 404 et l'optimiseur répond 400.
-  //
-  // On proxy donc /_static/cms/ vers S3 dans tous les environnements.
+  // CMS assets are served from S3 by nginx in prod, but Next's image optimizer
+  // fetches them via an internal request that bypasses nginx. Without this
+  // rewrite, that request gets a 404 and the optimizer returns 400.
   async rewrites() {
     return [
       {
@@ -140,18 +129,9 @@ const sentryConfig: SentryBuildOptions = {
   telemetry: false,
 }
 
-/**
- * Source maps reach PostHog at build time, browser chunks and server ones alike
- * (the package globs `.next/static` and `.next/server`, uploads, then strips
- * the maps from the build output). Serving them instead — what
- * `productionBrowserSourceMaps` alone did — left PostHog fetching them from the
- * live site: a fetch that a deploy's rotating chunk names eventually break, and
- * that publishes the sources.
- *
- * In production the contract above makes the key and the project id mandatory,
- * so this branch is only skipped where there is nothing to symbolicate: a local
- * `next build` is a production build that deploys nothing (`APP_ENV`).
- */
+/** Source maps uploaded to PostHog at build time, then stripped from the
+ * output. Serving them live would break on rotating chunk names and publish
+ * sources. Skipped locally where there is nothing to symbolicate. */
 const configWithSourceMaps =
   env.POSTHOG_PERSONAL_API_KEY && env.POSTHOG_PROJECT_ID
     ? withPostHogConfig(nextConfig, {

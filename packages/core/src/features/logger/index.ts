@@ -32,27 +32,15 @@ export type ScopeLayer =
 /** Workspaces that emit telemetry. */
 export type ScopePackage = 'core' | 'site'
 
-/**
- * Qualified name of the unit that emits — `<package>.<layer>.<unit>`, e.g.
- * `core.service.engineRegistry`. The shape is enforced by the compiler;
- * uniqueness across units is a review rule.
- *
- * The site has no `service` layer: a scope it emits under that name does not
- * compile, which is what keeps it from coming back.
- */
+/** `<package>.<layer>.<unit>`, e.g. `core.service.engineRegistry`. The shape is
+ * compiler-enforced; uniqueness across units is a review rule, and the site has
+ * no `service` layer. */
 export type ScopeName =
   | `core.${ScopeLayer}.${string}`
   | `site.${Exclude<ScopeLayer, 'service'>}.${string}`
 
-/**
- * Attributes another party named, kept as they are on the wire: a query engine
- * looks for `process.memory.usage`, not for our version of it. This is the
- * list `toAttributeKey` leaves alone.
- *
- * Ours carry the `ngc.` prefix: semantic conventions reserve the unprefixed
- * names, and a generic word (`code`, `job`, `count`) is what they explicitly
- * tell application developers to avoid.
- */
+/** Attributes another party named, kept unprefixed (`process.memory.usage`).
+ * Ours carry `ngc.` (semconv reserves unprefixed names). */
 export type OtelAttributes = Partial<{
   'error.type': string
   'exception.type': string
@@ -68,16 +56,8 @@ export type OtelAttributes = Partial<{
   [key: `next.${string}`]: string
 }>
 
-/**
- * Attributes of a line. Never PII nor business payloads: they are exported to
- * PostHog, outside the nginx collector that scrubs its own logs. Scalars
- * query best; anything structured ends up as JSON text.
- *
- * Our own keys are open on purpose: the transport prefixes them, so there is no
- * list to maintain. Typing pays where a value carries a contract, as
- * `OtelAttributes` does on the producers that emit standard names
- * (`memoryAttributes`, the request identity).
- */
+/** Line attributes. Never PII. Scalars query best; structured values become
+ * JSON text. Keys are open — the transport prefixes them. */
 export type LogMeta = Record<string, unknown> & {
   /**
    * Qualified name of the emitting unit, enforced: a bare name would not
@@ -101,40 +81,22 @@ export interface Logger {
    * parent.
    */
   child(bindings: LogBindings): Logger
-  /**
-   * Runs an operation in its own span, with a logger bound to the scope. The
-   * span covers the whole body, so opening and closing cannot drift apart, and
-   * a nested call gets its own span — its duration is its own.
-   *
-   * The span carries the logger's bindings: a `child(...)` chain is on the
-   * trace as it is on the lines, so one filter reads both.
-   *
-   * The implementation brings the tracer, the way it brings pino: core knows
-   * neither. A failure marks the span and goes out unchanged — what to report
-   * stays the caller's decision.
-   */
+  /** Runs an operation in its own span with a scoped logger. The span covers
+   * the whole body. Failure marks the span but goes out unchanged — reporting
+   * stays the caller's decision. */
   withSpan<Result>(
     scope: ScopeName,
     run: (logger: Logger) => Promise<Result>
   ): Promise<Result>
-  /**
-   * Annotates the span of the operation with what it measured — the size it
-   * worked on, the branch it took. Span only: the bindings name the context
-   * that lines and span share, this carries a measurement the lines do not.
-   *
-   * Only for a value that cannot be known before the span opens; one that can
-   * belongs in a `child` binding. Same naming rule (`ngc.` prefix), same PII
-   * rule.
-   */
+  /** Annotates the span with a measurement (size, branch taken). Only for
+   * values unknown before the span opens; known values go in `child` bindings. */
   setSpanAttribute(key: string, value: SpanAttributeValue): void
   debug(message: string, meta?: LogMeta): void
   info(message: string, meta?: LogMeta): void
   /** An anomaly without an `Error`: no stack, so nothing to capture. */
   warn(message: string, meta?: LogMeta): void
-  /**
-   * An `Error` when one was caught: it keeps its stack in the log. An anomaly
-   * that was handled is a line, not an issue — `warn` never reports.
-   */
+  /** An `Error` when caught: keeps its stack. `warn` never reports — a handled
+   * anomaly is a line, not an issue. */
   warn(error: Error, meta?: LogMeta): void
   /**
    * Requires an `Error`: a message alone can be neither located nor

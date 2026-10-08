@@ -1,7 +1,7 @@
 import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
 import rulesOpti from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr-opti.json'
 
-import { captureException } from '@sentry/nextjs'
+import _logger from '@/logger/logger.server'
 import { CURRENT_MODEL_VERSION, type Model } from '../server/model/models'
 import { importPreviewFile } from './importPreviewFile'
 import { importRulesFromModel } from './importRulesFromModel'
@@ -9,6 +9,8 @@ import { importRulesFromModel } from './importRulesFromModel'
 interface Props extends Model {
   isOptim?: boolean
 }
+
+const logger = _logger.child({ scope: 'site.action.getRules' })
 
 /*
  * This function is used to get the rules. It is used in the useRules hook and can also be called directly from a server component.
@@ -37,7 +39,7 @@ export async function getRules({
   }
 
   if (version.publishedTag !== CURRENT_MODEL_VERSION) {
-    captureException(
+    logger.error(
       new Error(
         `Model version mismatch: ${version.publishedTag} !== ${CURRENT_MODEL_VERSION}`
       )

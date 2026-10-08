@@ -1,4 +1,4 @@
-import { trackModelWarning } from '@/utils/analytics/trackModelWarning'
+import _logger from '@/logger/logger.browser'
 import type {
   DottedName,
   NGCRule,
@@ -7,6 +7,8 @@ import type {
 } from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
 import getSomme from './getSomme'
+
+const logger = _logger.child({ scope: 'site.engine.getSubcategories' })
 
 export function getSubcategories({
   categories,
@@ -25,25 +27,17 @@ export function getSubcategories({
 
       const rule = safeGetRule?.(currentValue)
       if (!rule) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `[useCategories:subcategories] No rule found for ${currentValue}`
-        )
-        trackModelWarning(
-          `[useCategories:subcategories] No rule found for ${currentValue}`
-        )
+        logger.warn('No rule found for the category', {
+          dottedName: currentValue,
+        })
         return accumulator
       }
 
       const sum = getSomme(rule.rawNode as NGCRule)
       if (!sum) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `[useCategories:subcategories] No [somme] found for ${currentValue}`
-        )
-        trackModelWarning(
-          `[useCategories:subcategories] No [somme] found for ${currentValue}`
-        )
+        logger.warn('No [somme] found for the category', {
+          dottedName: currentValue,
+        })
         return accumulator
       }
 

@@ -1,18 +1,9 @@
 import { ExportResultCode, type ExportResult } from '@opentelemetry/core'
 import type { ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base'
 
-/**
- * The spans that measure the framework's own bookkeeping rather than an
- * operation: Next resolving a page's modules, Prisma compiling and serializing
- * around the query it runs. A deterministic list, not a sampler — nothing is
- * dropped by chance, and the spans a reader follows stay whole: the route keeps
- * its render, the query keeps its SQL.
- *
- * The relation to preserve is the parent-child one. Of these, only
- * `build component tree` parents anything, and only `resolve segment modules`,
- * which is dropped with it: the rest are leaves, so nothing kept is orphaned.
- * A new name goes in only with its children — or their absence — checked.
- */
+/** Framework bookkeeping spans to drop: Next module resolution, Prisma
+ * compile/serialize. Deterministic list (not a sampler) — parent-child
+ * relations stay intact, nothing kept is orphaned. */
 const BOOKKEEPING_SPANS = new Set([
   'build component tree',
   'prisma:client:compile',
@@ -22,13 +13,8 @@ const BOOKKEEPING_SPANS = new Set([
   'start response',
 ])
 
-/**
- * Drops them where they would leave the process. An exporter rather than a
- * span processor: every processor of the provider is called with every span,
- * so one of them decided alone would filter nothing for the batch processor
- * registered beside it — and a sampler would take the decision at span
- * creation, where the list is not known yet.
- */
+/** Drops bookkeeping spans at export time. An exporter rather than a processor
+ * or sampler: processors run per-provider and samplers decide too early. */
 export class FilteringSpanExporter implements SpanExporter {
   // Written out rather than a parameter property: the worker runs these
   // sources through Node's strip-only TypeScript, which erases types and

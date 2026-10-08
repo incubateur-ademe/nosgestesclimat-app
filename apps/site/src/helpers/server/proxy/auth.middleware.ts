@@ -19,13 +19,8 @@ import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { type NextRequest, NextResponse } from 'next/server'
 import type { MiddlewareResult } from './types'
 
-/**
- * Auth interceptor middleware.
- *
- * Decrypts the session cookie, validates it, and if expired attempts a
- * silent refresh-token rotation. Returns either a redirect (to retry rotation
- * or strip stale query params) or the cookies to set on the final response.
- */
+/** Auth middleware: decrypts session, validates, silently rotates expired
+ * tokens. Returns a redirect or cookies for the final response. */
 export async function middlewareAuth(
   request: NextRequest
 ): Promise<MiddlewareResult> {
@@ -76,13 +71,8 @@ export async function middlewareAuth(
     }
 
     if (err instanceof TokenConsumedException) {
-      //
-      // (F) Replay-protection loop: the token was already consumed
-      // by a concurrent request that won the race.  `_rt` tracks
-      // how many times we've retried.  Up to 2 redirects before
-      // giving up — this gives the winner enough time to commit
-      // its new tokens.
-      //
+      // Replay protection: the token was consumed by a concurrent request.
+      // Retry up to 2 times with a short delay to let the winner commit.
       const url = request.nextUrl.clone()
       const rtCount = parseInt(url.searchParams.get('_rt') ?? '0', 10) + 1
 
@@ -120,14 +110,8 @@ export async function middlewareAuth(
   }
 }
 
-/**
- * Clean up the `_rt` replay-tracking parameter from the URL.
- *
- * When a URL still carries `_rt` but the session is now valid (rotation
- * completed successfully in a previous request), we redirect to the same
- * URL without the stale parameter to keep URLs clean and avoid
- * accumulating clutter in analytics / bookmarks.
- */
+/** Strips the `_rt` replay-tracking param from URLs where rotation already
+ * completed, keeping URLs clean. */
 function stripRt(request: NextRequest): MiddlewareResult {
   if (!request.nextUrl.searchParams.has('_rt')) {
     return { redirect: null, cookies: [] }

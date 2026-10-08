@@ -1,5 +1,7 @@
 import { getPreviewUrl } from '@/constants/urls/main'
-import { captureException } from '@sentry/nextjs'
+import _logger from '@/logger/logger.browser'
+import { isServerSide } from '@/utils/nextjs/isServerSide'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import axios from 'axios'
 
 interface Props {
@@ -12,14 +14,22 @@ export async function importPreviewFile({
   fileName,
   PRNumber,
 }: Props): Promise<unknown> {
+  const logger = _logger.child({
+    scope: 'site.engine.importPreviewFile',
+    PRNumber,
+    fileName,
+  })
   const previewURL = getPreviewUrl(PRNumber)
-  // eslint-disable-next-line no-console
-  console.log('fetching preview file', fileName)
+
+  if (!isServerSide()) {
+    logger.debug('Fetching the model from the preview deployment')
+  }
+
   return await axios
     .get(`${previewURL}/${fileName}`)
     .then((res) => res.data)
-    .catch((e) => {
-      captureException(e)
+    .catch((error) => {
+      logger.error(toError(error))
       return null
     })
 }

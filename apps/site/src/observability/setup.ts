@@ -41,18 +41,9 @@ interface OtlpConfig {
   token: string
 }
 
-/**
- * Wires the OpenTelemetry SDK: traces and logs are exported to PostHog, and the
- * spans come from the framework (Next emits through the OTel API),
- * `HttpInstrumentation` and `PrismaInstrumentation`. Sentry reports errors only
- * and reads its trace context from this provider (`skipOpenTelemetrySetup`), so
- * one `trace_id` covers the whole request.
- *
- * Called from `register()` (site) or from the worker bootstrap, before any
- * instrumented module is imported. The call sites hold the configuration, and
- * skip the call where there is none: nothing would be exported, and the SDK is
- * only here to carry that export.
- */
+/** Wires OTel: traces + logs exported to PostHog. Called before any
+ * instrumented module is imported; skipped when there is no config (nothing
+ * would be exported). */
 export function initObservability(
   service: string,
   sourceVersion: string | undefined,

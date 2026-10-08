@@ -149,14 +149,8 @@ export class PostHog {
   }
 }
 
-/**
- * Hosts whose requests carry the PostHog identity headers. Sending them on our
- * own backend's requests is what lets the server logs link back to the person
- * and the session recording.
- *
- * `publicEnv` carries the site URL validated, so this reads the contract
- * rather than `process.env` again — and has nothing to catch.
- */
+/** Hosts whose requests carry PostHog identity headers, so server logs link
+ * back to the person and session recording. */
 function tracingHeaders(): string[] | undefined {
   const hostname = new URL(publicEnv.NEXT_PUBLIC_SITE_URL).hostname
 

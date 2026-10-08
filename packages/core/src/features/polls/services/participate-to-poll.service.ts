@@ -52,14 +52,8 @@ export function createParticipateToPoll({
 }: ParticipateToPollDependencies) {
   const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
 
-  /**
-   * Enters a user in a poll, either with a simulation they already completed
-   * or with a fresh one they are about to answer.
-   *
-   * Reusing does not copy anything: the simulation stays as it was answered
-   * and only gains a membership, so the poll and the user's own results always
-   * show the same figures.
-   */
+  /** Enters a user in a poll with an existing or fresh simulation. Reusing
+   * adds membership only — the simulation stays as answered. */
   return async function participateToPoll({
     userSession,
     pollId,
@@ -119,12 +113,8 @@ export function createParticipateToPoll({
     })
     if (!result.success) return result
 
-    /**
-     * A simulation that still has to be answered gets its email when it is
-     * completed - `completeSimulation` sends it. Only an already completed
-     * simulation has nothing left to trigger it, so this is where the user
-     * learns they joined.
-     */
+    /** Only already-completed simulations need the email here; incomplete ones
+     * get it from `completeSimulation`. */
     if (
       userSession.isAuth &&
       isNewParticipation &&

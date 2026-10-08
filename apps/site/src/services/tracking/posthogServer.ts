@@ -22,17 +22,11 @@ class PosthogServer {
     return await this.client.getFeatureFlag(flag, userId)
   }
 
-  /**
-   * Reports an exception to PostHog Error Tracking. `distinctId` is optional:
-   * without one the SDK files the error anonymously
-   * (`$process_person_profile: false`) rather than inventing a person, which is
-   * what a crash outside a request deserves.
-   *
-   * `properties` lands on the event as is — that is how a server-side error
-   * gets the pair the browser SDK sets by itself.
-   */
   captureException(
     error: Error,
+    // Without one the SDK files the error anonymously
+    // (`$process_person_profile: false`) rather than inventing a person, which
+    // is what a crash outside a request deserves.
     distinctId?: string,
     properties?: Record<string, string>
   ): void {

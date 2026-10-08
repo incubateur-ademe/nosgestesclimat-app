@@ -35,20 +35,11 @@ class TestSideEffectError extends DomainError<'test_side_effect_error'> {
   }
 }
 
-/**
- * Stands in for Next's `after()`: it binds the callback with
- * `AsyncLocalStorage.bind` (next/dist/server/app-render/async-local-storage) to
- * "preserve all currently available ALS-es", the request's OTel context among
- * them. The work then runs after the response, in another frame, where an
- * `enterWith` could not have carried the identity — that is why the trace id
- * keys it.
- *
- * Next's helper is not imported on purpose: it resolves
- * `globalThis.AsyncLocalStorage` once, and that global is undefined under
- * vitest, where the helper degrades to a no-op that binds nothing. The static
- * method below is what it calls in a real Node process.
- */
-const afterLikeRunner = (deferred: (() => Promise<void>)[]) => {
+/** Stands in for Next's `after()`: binds the task with `AsyncLocalStorage.bind`
+ * so the deferred work keeps the request's OTel context. Next's helper is not
+ * imported: it resolves `globalThis.AsyncLocalStorage` once, undefined under
+ * vitest, degrading to a no-op. */
+const nextAfterRunner = (deferred: (() => Promise<void>)[]) => {
   return (task: () => Promise<void>) => {
     deferred.push(AsyncLocalStorage.bind(task))
   }
@@ -107,7 +98,7 @@ describe('deferred side effect', () => {
             'joinedEmail',
             {
               logger: logger.child({ pollId: 'poll-1' }),
-              backgroundTaskRunner: afterLikeRunner(deferred),
+              backgroundTaskRunner: nextAfterRunner(deferred),
             },
             () => Promise.resolve(failure(new TestSideEffectError()))
           )

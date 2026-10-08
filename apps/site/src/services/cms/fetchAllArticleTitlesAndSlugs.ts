@@ -1,7 +1,7 @@
 import type { ArticleItemType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import i18nConfig, { type Locale } from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 const PAGE_SIZE = 100 // Utilisation d'une taille de page plus grande pour réduire le nombre d'appels
@@ -11,6 +11,11 @@ export async function fetchAllArticleTitlesAndSlugs({
 }: {
   locale: Locale
 }): Promise<ArticleItemType[]> {
+  const logger = _logger.child({
+    scope: 'site.action.fetchAllArticleTitlesAndSlugs',
+    locale,
+  })
+
   try {
     let allArticles: ArticleItemType[] = []
     let currentPage = 1
@@ -45,9 +50,7 @@ export async function fetchAllArticleTitlesAndSlugs({
 
     return allArticles
   } catch (error) {
-    logger.warn(toError(error), {
-      scope: 'site.action.fetchAllArticleTitlesAndSlugs',
-    })
+    logger.warn(toError(error))
     return []
   }
 }

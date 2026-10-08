@@ -1,5 +1,5 @@
 import PartnerRedirectionAlert from '@/app/[locale]/(server)/(large)/fin/_components/PartnerRedirectionAlert'
-import { aSimulation } from '@/helpers/tests/aSimulation'
+import { simulationFactory } from '@/helpers/tests/simulation.factory'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
 import { useExportSituation } from '@/hooks/partners/useExportSituation'
 import { useVerifyPartner } from '@/hooks/partners/useVerifyPartner'
@@ -52,9 +52,8 @@ describe('PartnerContext', () => {
     })
   })
 
-  const defaultSimulation = aSimulation({
+  const defaultSimulation = simulationFactory.completed().build({
     id: 'simulation-id',
-    progression: 1,
   })
 
   const redirectUrl = '/partner-site'
@@ -175,10 +174,9 @@ describe('PartnerContext', () => {
   describe('given a user with an incompleted test', () => {
     it('should save the partner params to the session storage and redirect to the test', async () => {
       // Given
-      const incompleteSimulation = aSimulation({
-        id: 'incomplete-simulation-id',
-        progression: 0,
-      })
+      const incompleteSimulation = simulationFactory
+        .withProgression(0)
+        .build({ id: 'incomplete-simulation-id' })
       // Mock window.location.search with partner parameters
       Object.defineProperty(window, 'location', {
         value: {

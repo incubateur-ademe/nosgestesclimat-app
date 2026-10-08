@@ -76,13 +76,9 @@ const buildURL = ({
 const buildAlternateUrl = (path: string, locale: Locale) =>
   `${BASE_URL}${getLocalizedPath(locale, path)}`
 
-/**
- * Absolute-URL `alternates` metadata: canonical + hreflang languages
- * (including x-default, derived from the default locale entry).
- *
- * Exported for pages that only need to declare alternates on top of
- * metadata inherited from a parent layout.
- */
+/** Absolute-URL `alternates` metadata: canonical + hreflang (including
+ * x-default). Exported for pages that only need alternates on top of inherited
+ * metadata. */
 export const buildAlternates = ({
   locale,
   canonical,

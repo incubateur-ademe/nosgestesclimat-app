@@ -1,7 +1,3 @@
-/**
- * Empty stand-in for the `server-only` marker package, aliased in
- * `vitest.config.ts`: the package throws under the default export condition,
- * and tests import server modules directly — outside Next's bundler, the
- * `react-server` condition that empties it does not exist.
- */
+/** Empty stand-in for `server-only`, aliased in `vitest.config.ts`: the
+ * package throws outside Next's bundler where `react-server` empties it. */
 export {}

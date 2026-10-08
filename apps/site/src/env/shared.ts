@@ -1,19 +1,10 @@
 import * as v from 'valibot'
 
-/**
- * What both environment contracts are built from: the shape of a variable, the
- * two policies a variable can follow, and the one place a validation failure is
- * rendered.
- */
-
 export const NonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty())
 
-/**
- * A `.env` file writes an unset variable as `KEY=`, which `process.env` reports
- * as `''`. As the first branch of a union, a field declares that it accepts it —
- * the pattern the maintainers give on
- * https://github.com/open-circle/valibot/issues/892.
- */
+/** `.env` writes unset as `KEY=` → `process.env` reports `''`. As the first
+ * union branch, a field declares it accepts empty-as-unset.
+ * See https://github.com/open-circle/valibot/issues/892 */
 const EmptyIsUnsetSchema = v.pipe(
   v.literal(''),
   v.transform(() => undefined)

@@ -22,14 +22,9 @@ function randomSpanId(): string {
   )
 }
 
-/**
- * Adopts nginx's `X-Request-ID` as the trace id.
- *
- * The edge already generates one per request and the collector writes it as
- * `trace_id` on the nginx logs exported to PostHog (`infra/nginx`). Continuing
- * that id here is what makes one request readable as a single trace from the
- * edge to the database.
- */
+/** Adopts nginx's `X-Request-ID` as the trace id so one request reads as a
+ * single trace from edge to database (the collector already writes it as
+ * `trace_id` on nginx logs in PostHog). */
 export class XRequestIdPropagator implements TextMapPropagator {
   fields(): string[] {
     return [REQUEST_ID_HEADER]

@@ -24,14 +24,8 @@ interface EngineRegistryDeps {
   logger: Logger
 }
 
-/**
- * Combinations kept warm at all times, built eagerly by warmUpHotEngines()
- * and never evicted. Comma-separated `<region>:<versionKind>` keys.
- * Defaults to the busiest combination only (~205MB total RSS with worker
- * deps included - see MAX_CACHE_SIZE below), which is what a 256MB review
- * app container can safely hold. Production overrides this via env var to
- * also warm ED:current, on a bigger container.
- */
+/** Combinations kept warm at all times, never evicted. Defaults to the busiest
+ * only (~205MB RSS); production overrides via `ENGINE_HOT_KEYS` env var. */
 const HOT_KEYS = new Map<string, HotKey>(
   (process.env.ENGINE_HOT_KEYS ?? 'FR:current')
     .split(',')
@@ -41,18 +35,9 @@ const HOT_KEYS = new Map<string, HotKey>(
     .map((hotKey) => [engineKey(hotKey.region, hotKey.versionKind), hotKey])
 )
 
-/**
- * Max number of non-hot engines kept in the LRU cache at once.
- * Defaults to 1 (hot set + currently used lazy engine)
- * so a small sized container never OOMs on a burst of rare region/version requests.
- * Production should raise this via env once its container is sized for it.
- *
- * Measured RSS deltas, not a flat per-engine cost:
- * worker deps loaded but no engine ~110MB;
- * +FR ~95MB (first engine also pays a one-time publicodes/V8 warmup cost);
- * +ED ~20-60MB;
- * A single FR:current hot engine alone already sits close to 256MB total RSS.
- */
+/** Max non-hot engines in the LRU cache. Default 1 (hot set + one lazy) so
+ * small containers don't OOM on rare requests. Raise via
+ * `ENGINE_CACHE_MAX_SIZE` when the container is sized for it. */
 const MAX_CACHE_SIZE =
   Math.max(Number(process.env.ENGINE_CACHE_MAX_SIZE), 1) || 1
 
@@ -61,13 +46,8 @@ const hotEngines = new Map<string, Engine>()
 // the end, so the first key is always the least recently used one.
 const lruCache = new Map<string, Engine>()
 
-/**
- * Rule sets are only published in French, and locale does not affect
- * computed values (only rule labels do) so every engine is built from the
- * fr rules regardless of the simulation's own locale.
- *
- * Prefer almost hardcoded dynamic imports in case we move to bundling
- */
+/** Rules are French-only; locale affects labels, not values. Dynamic imports
+ * kept explicit for potential bundling. */
 async function loadRules(
   region: ModelRegion,
   versionKind: ModelVersionKind

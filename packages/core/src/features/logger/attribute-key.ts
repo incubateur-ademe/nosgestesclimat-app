@@ -5,12 +5,8 @@
  */
 const PREFIX = 'ngc.'
 
-/**
- * Namespaces another party owns: everything under them keeps its exact
- * spelling. A query engine looks for `process.memory.usage`, not for our
- * version of it, which is why these are listed instead of guessed at call
- * sites.
- */
+/** Namespaces another party owns (kept as-is on the wire). Listed here so
+ * query engines find `process.memory.usage`, not our version. */
 const FOREIGN_PREFIXES = [
   'exception.',
   'http.',

@@ -6,15 +6,9 @@ import { getUserSession } from '@/services/auth/get-user-session'
 import { importLegacyLocalSimulations } from '@nosgestesclimat/core/features/simulations/services/import-legacy-local-simulations.service'
 import type { ComputedResults as CoreComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 
-/**
- * Uploads simulations found in localStorage on first authentication.
- *
- * These predate the `model` field entirely (see `LIMIT_DATE` in
- * `reconcileOnAuth`), so `ensureSimulationModel` is deliberately NOT applied
- * here: stamping them with a current model would claim they were computed with
- * rules they never ran against. They are stored with the database default
- * instead, which is truthful and keeps them out of the computation queue.
- */
+/** Uploads localStorage simulations on first auth. Pre-dates the `model` field,
+ * so `ensureSimulationModel` is NOT applied: stamping a current model would
+ * lie about what rules computed them. Stored with the database default instead. */
 export const uploadLocalSimulations = async (simulations: Simulation[]) => {
   const session = await getUserSession()
   if (!session) return

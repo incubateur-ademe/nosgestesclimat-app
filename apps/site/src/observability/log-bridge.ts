@@ -22,14 +22,8 @@ const SEVERITY_NUMBER: Record<LogLevel, SeverityNumber> = {
 
 const loggers = new Map<string, ApiLogger>()
 
-/**
- * Ships a line to the OpenTelemetry pipeline, which exports it to PostHog. The
- * active context gives the record its trace ids, so a line stays reachable from
- * the trace it belongs to.
- *
- * A no-op while no provider is registered: stdout is the only output in local
- * dev and tests.
- */
+/** Ships a line to OTel → PostHog. The active context provides trace ids.
+ * No-op until a provider is registered (local dev / tests: stdout only). */
 export function emitLogRecord({
   service,
   level,

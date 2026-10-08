@@ -7,16 +7,9 @@ import type {
 import { v4 as uuidv4 } from 'uuid'
 import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
 
-/**
- * Builds the body of a simulation about to be persisted.
- *
- * Server-only on purpose: a simulation exists once the API has stored it, so
- * nothing client-side may construct one. `model` can only be resolved
- * server-side anyway (the region lives in an httpOnly cookie).
- *
- * Takes nothing: this is a simulation with no answers, and nothing to migrate —
- * legacy client state never comes through here.
- */
+/** Builds a new simulation payload for persistence. Server-only: `model` needs
+ * the region from an httpOnly cookie. No migration — legacy state never lands
+ * here. */
 export async function buildNewSimulationPayload(): Promise<Simulation> {
   return {
     id: uuidv4(),

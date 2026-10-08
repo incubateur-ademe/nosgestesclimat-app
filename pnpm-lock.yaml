@@ -557,6 +557,9 @@ importers:
       dotenv:
         specifier: ^17.3.1
         version: 17.4.1
+      fishery:
+        specifier: ^2.4.0
+        version: 2.4.0
       glob:
         specifier: ^11.0.1
         version: 11.0.1

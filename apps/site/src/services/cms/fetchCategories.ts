@@ -1,7 +1,7 @@
 import type { BlogCategoryType } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchCategories({
@@ -9,6 +9,8 @@ export async function fetchCategories({
 }: {
   locale: Locale
 }): Promise<BlogCategoryType[]> {
+  const logger = _logger.child({ scope: 'site.action.fetchCategories', locale })
+
   try {
     const categoriesSearchParams = new URLSearchParams({
       locale,
@@ -21,7 +23,7 @@ export async function fetchCategories({
 
     return categoriesResponse.data
   } catch (error) {
-    logger.warn(toError(error), { scope: 'site.action.fetchCategories' })
+    logger.warn(toError(error))
 
     return []
   }

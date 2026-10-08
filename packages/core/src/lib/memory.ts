@@ -4,17 +4,9 @@ import type { OtelAttributes } from '../features/logger/index.ts'
 const toMB = (bytes: number): number =>
   Math.round((bytes / (1024 * 1024)) * 100) / 100
 
-/**
- * The process memory, under the names and the unit (`By`) the semantic
- * conventions define for it: a standard name in a log line survives a later
- * move to a real metric, a house one does not.
- *
- * `process.memory.usage` is what the container OOM killer reads, but V8 rarely
- * returns freed pages to the OS, so it plateaus rather than drops when memory
- * is released. `v8js.memory.heap.used` reflects a release sooner, and also
- * counts garbage not yet collected: compare it across jobs, not around a single
- * one.
- */
+/** Process memory under OTel semconv names. `process.memory.usage` plateaus
+ * (V8 rarely returns pages to OS); `v8js.memory.heap.used` reflects releases
+ * sooner. Compare heap across jobs, not around one. */
 export function memoryAttributes(): Pick<
   OtelAttributes,
   'process.memory.usage' | 'v8js.memory.heap.used'
@@ -27,12 +19,8 @@ export function memoryAttributes(): Pick<
   }
 }
 
-/**
- * Ceiling V8 grows the old space to before it throws. Node derives it from the
- * cgroup limit when it detects one, and from the host RAM when it does not: if
- * it sits above the container limit, the kernel kills the process before V8
- * feels enough pressure to run a major GC. Log it once at startup to check.
- */
+/** V8 old-space ceiling. If above the container limit, the kernel OOM-kills
+ * before V8 pressures itself. Log once at startup to verify. */
 export function heapSizeLimitMB(): number {
   return toMB(v8.getHeapStatistics().heap_size_limit)
 }

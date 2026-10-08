@@ -7,14 +7,8 @@ import { env } from '@/env/server'
 import { captureToPostHog } from '@/observability/error-capture'
 import { createLogger } from './logger.node'
 
-/** Site server logger: Sentry for the captures, Next for the control flow. The
- * implementation (`logger.node.ts`) is shared with the worker, which wires its
- * own — a Node process has neither Next nor Sentry-next to import, nor the
- * `react-server` condition that empties `server-only`.
- *
- * Both sinks are fed while Sentry is on its way out, with the same attributes
- * as the line: PostHog gets the error with the identity and the request context
- * it came from, Sentry adds its release until it is removed. */
+/** Site server logger: Sentry captures + Next control flow. Shared with the
+ * worker via `logger.node.ts`; both sinks receive the same attributes. */
 const logger = createLogger({
   service: 'web-server',
   level: env.LOG_LEVEL,

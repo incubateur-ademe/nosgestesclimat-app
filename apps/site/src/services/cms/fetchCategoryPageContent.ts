@@ -5,7 +5,7 @@ import type {
 } from '@/adapters/cmsClient'
 import { cmsClient } from '@/adapters/cmsClient'
 import { type Locale } from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 const PAGE_SIZE = 12
@@ -29,6 +29,13 @@ export async function fetchCategoryPageContent({
     })
   | undefined
 > {
+  const logger = _logger.child({
+    scope: 'site.action.fetchCategoryPageContent',
+    slug,
+    locale,
+    page,
+  })
+
   try {
     const categorySearchParams = new URLSearchParams({
       locale,
@@ -50,8 +57,7 @@ export async function fetchCategoryPageContent({
     }>(`/api/blog-categories?${categorySearchParams}`)
 
     if (categoryResponse?.data?.length !== 1) {
-      // eslint-disable-next-line no-console
-      console.error(`Error: fetch blogCategory error for categorySlug: ${slug}`)
+      logger.info('The CMS returned no blog category')
     }
 
     const {
@@ -95,9 +101,7 @@ export async function fetchCategoryPageContent({
       faqDescription: blogCategory.faqDescription,
     }
   } catch (error) {
-    logger.warn(toError(error), {
-      scope: 'site.action.fetchCategoryPageContent',
-    })
+    logger.warn(toError(error))
 
     return undefined
   }

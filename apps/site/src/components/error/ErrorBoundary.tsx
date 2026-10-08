@@ -1,5 +1,6 @@
 'use client'
 import logger from '@/logger/logger.browser'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import type { ReactNode } from 'react'
 import React from 'react'
 import ErrorContent from './ErrorContent'
@@ -10,7 +11,7 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean
-  error: Error | null
+  error: unknown
 }
 
 class ErrorBoundary extends React.Component<
@@ -22,14 +23,13 @@ class ErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null }
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error) {
-    // Handled here, and reported by the default capture of `error`: Sentry keeps
-    // the stack, PostHog Error Tracking the volume.
-    logger.error(error, { scope: 'site.view.errorBoundary' })
+  componentDidCatch(error: unknown) {
+    // The boundary swallows the failure, so nothing else reports it.
+    logger.error(toError(error), { scope: 'site.view.errorBoundary' })
   }
 
   render() {

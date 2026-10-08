@@ -34,17 +34,8 @@ const RANK: Record<LogLevel, number> = {
   fatal: 60,
 }
 
-/**
- * The two sinks of a captured failure, both given the error and the line it was
- * reported with: Sentry for the prototype, the stack and its release until it
- * is removed, PostHog Error Tracking for the issue and the volume. It lives
- * inside the logger, so a failure cannot be reported without its line — the two
- * go out together or not at all, and an issue names its scope, its route, its
- * digest.
- *
- * Browser-only by construction: `write` returns before reaching it outside the
- * browser, which is why nothing here checks for the server again.
- */
+/** Sends a failure to both sinks with its line. Inside the logger so nothing
+ * reports without a line. */
 function capture(error: Error, line: LogMeta): void {
   captureException(error, { extra: line })
   posthog.captureException(error, line)
@@ -56,25 +47,10 @@ function capture(error: Error, line: LogMeta): void {
  */
 const DEFAULT_LEVEL: LogLevel = APP_ENV === 'development' ? 'debug' : 'warn'
 
-/**
- * The browser logger: the server's port and the server's line, with the sinks a
- * browser has — the console, for whoever is looking, and `posthog.logger`, which
- * lands in the same PostHog Logs instance as `web-server` and `worker` (see
- * `logs.serviceName` in `Posthog.ts`).
- *
- * Two things this runtime cannot carry:
- *
- * - **No spans**: nothing ships an OTel SDK to the browser and Sentry
- *   Performance is retired, so `withSpan` binds the scope and runs the body,
- *   `setSpanAttribute` does nothing. The port stays whole, and a call site
- *   reads the same on both runtimes.
- * - **No `trace_id`**: the correlation goes the other way. posthog-js stamps
- *   `posthogDistinctId`/`sessionId` on every record it sends — the pair the
- *   server attaches per request — so one session reads front and back as one.
- *
- * The capture is the logger's own (`capture` below): no injection point, so
- * nothing in the app can report a failure on the side, without its line.
- */
+/** Browser logger: console + PostHog Logs. No spans (no OTel SDK in the
+ * browser); `withSpan` binds the scope only. Correlation via posthog-js's own
+ * `distinctId`/`sessionId`, not a trace id from here. The capture is the
+ * logger's own — nothing reports on the side. */
 export function createBrowserLogger({
   service = 'browser',
   level = publicEnv.NEXT_PUBLIC_LOG_LEVEL ?? DEFAULT_LEVEL,
@@ -84,21 +60,8 @@ export function createBrowserLogger({
 } = {}): Logger {
   const threshold = RANK[level]
 
-  /**
-   * The two sinks of a line. The console is this runtime's stdout without the
-   * drain: nothing parses it, so the line goes out as an object devtools can
-   * expand, and the attributes are the exported ones — a value read here is
-   * also a PostHog search. `service` tells these lines from the server's in
-   * `next dev`, where both print to the same terminal; it stays out of the
-   * export, where the resource carries `service.name` (`logs.serviceName`).
-   *
-   * posthog-js merges its own context into every record —
-   * `posthogDistinctId`, `sessionId`, `url.full`, the active feature flags —
-   * so the line carries its request without this logger naming any of it, and
-   * our attributes win the merge: never re-add those keys here. A no-op until
-   * `posthog.init` ran — no key, or consent refused: the SDK falls back on its
-   * own noop logger, and its queue drops what opt-out withholds.
-   */
+  /** Console (dev/review/preprod) + PostHog Logs. posthog-js merges its own
+   * context (`distinctId`, `sessionId`) — never re-add those keys here. */
   const emit = (level: LogLevel, message: string, shaped: LogMeta): void => {
     // The console is for whoever is looking, which is dev, review and preprod.
     // Production has nobody in it, and the line reaches PostHog Logs anyway.
@@ -192,12 +155,8 @@ export function createBrowserLogger({
   return build({})
 }
 
-/**
- * Browser composition root: the console and PostHog Logs for the lines, and the
- * logger's own capture for the failures. The root sits with the implementation:
- * the browser has one composition, where the Node side has two sharing
- * `logger.node.ts`.
- */
+/** Browser composition root. One composition, unlike the Node side which has
+ * two sharing `logger.node.ts`. */
 const browserLogger = createBrowserLogger()
 
 export default browserLogger

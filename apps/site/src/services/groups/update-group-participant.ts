@@ -9,12 +9,8 @@ import { ensureSimulationModel } from '@/services/simulations/ensure-simulation-
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { withUserSession } from '../auth/with-user-session'
 
-/**
- * Adds the connected user to a group, or updates the simulation they take part
- * with.
- *
- * Revalidating the group results page is left to the caller.
- */
+/** Adds the connected user to a group or updates their simulation.
+ * Revalidating the group results page is left to the caller. */
 export const updateGroupParticipant = async ({
   groupId,
   simulation,

@@ -42,7 +42,7 @@ describe('request identity', () => {
     exporter.reset()
   })
 
-  it('stamps the identity on the spans started once it is known', () => {
+  it('stamps the identity on the started spans once it is known', () => {
     const tracer = trace.getTracer('test')
 
     tracer.startActiveSpan('POST /fr/simulateur/bilan', (request) => {

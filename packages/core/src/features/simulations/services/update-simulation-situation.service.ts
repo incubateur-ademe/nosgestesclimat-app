@@ -40,12 +40,9 @@ export const updateSimulationSituation = async ({
     SimulationNotFoundError | SimulationCompletedError | ZeroFootprintError
   >
 > => {
-  /**
-   * A simulation whose carbon footprint is zero is the symptom of a broken
-   * computation or a pristine simulation, never of a real answer set: refusing
-   * to persist it keeps the bad value from overwriting the answers already
-   * stored.
-   */
+  /** Zero carbon footprint = broken computation or pristine simulation, never
+   * a real answer set. Refuse to persist so bad values don't overwrite stored
+   * answers. */
   if (computedResults.carbone.bilan === 0) {
     return failure(new ZeroFootprintError())
   }

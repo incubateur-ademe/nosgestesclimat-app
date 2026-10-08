@@ -77,18 +77,10 @@ export async function register() {
   }
 }
 
-/**
- * Net for the errors no boundary controlled: Server Components, Server Actions,
- * the proxy. The line carries the request context a reader needs, and the
- * capture follows the level: both sinks get the error with those same
- * attributes, so an issue names the route it came from. Sentry's own
- * `captureRequestError` would file the same error a second time, which is why
- * the logger is the only capture path on Node.
- *
- * The HTTP attributes use the names the semantic conventions define today, the
- * ones the nginx logs already carry in PostHog, so one filter spans both.
- * Next's own vocabulary stays under its `next.*` namespace.
- */
+/** Catches errors no boundary controlled. The logger is the only capture
+ * path: Sentry's own `captureRequestError` would file the same error twice.
+ * HTTP attributes follow OTel semconv so one filter spans nginx logs and
+ * traces. */
 export const onRequestError: Instrumentation.onRequestError = async (
   error,
   request,

@@ -14,15 +14,9 @@ export type SideEffectDeps = {
   backgroundTaskRunner: BackgroundTaskRunner
 }
 
-/**
- * Runs a side effect in its own span, deferred by the runner so it outlives the
- * response. The work receives the span's logger, so its lines carry the side
- * effect's scope and the caller's bindings by default. A failure is reported,
- * and never undoes the work that triggered it: the next side effect still runs.
- *
- * The span is opened by the wrapped task, not at dispatch: its duration is the
- * work, not the wait before it starts.
- */
+/** Runs a side effect in its own span, deferred so it outlives the response.
+ * Failure is reported but never undoes the triggering work. Span duration =
+ * the work, not the wait. */
 export function runSideEffect<Failure extends ErrorWithCode>(
   name: string,
   { logger, backgroundTaskRunner }: SideEffectDeps,

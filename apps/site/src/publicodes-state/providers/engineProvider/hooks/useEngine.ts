@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 
 import { carboneMetric } from '@/constants/model/metric'
+import _logger from '@/logger/logger.browser'
 import { safeEvaluateHelper } from '@/publicodes-state/helpers/safeEvaluateHelper'
 import { safeGetRuleHelper } from '@/publicodes-state/helpers/safeGetRuleHelper'
 import type { Metric, SafeEvaluate, Situation } from '@/publicodes-state/types'
-import { trackModelWarning } from '@/utils/analytics/trackModelWarning'
 import { isServerSide } from '@/utils/nextjs/isServerSide'
 import type {
   DottedName,
@@ -15,13 +15,11 @@ import type { PublicodesExpression } from 'publicodes'
 import Engine from 'publicodes'
 import { useCallback, useMemo } from 'react'
 
-/**
- * Initiate the engine based on the rules we pass
- *
- * Also return safeEvaluate and safeGetRule wich catch errors if dottedName is invalid
- *
- * And a pristine engine wich can be used to assess rules without any situation (for exemple, we can reliably sort the subcategories this way)
- */
+const logger = _logger.child({ scope: 'site.engine.useEngine' })
+
+/** Builds the publicodes engine from rules + situation. Also exposes
+ * `safeEvaluate`/`safeGetRule` (catch invalid dotted names) and a pristine
+ * engine for rule inspection without a situation. */
 export function useEngine(
   rules: Partial<NGCRules>,
   initialSituation: Situation
@@ -43,9 +41,11 @@ export function useEngine(
         error(msg: string) {
           console.error(`[publicodes:error] ${msg}`)
 
-          // If it's a situation error, we report it to Sentry (as a message) and PostHog
+          // A situation that cannot be updated is a diagnostic about the rules,
+          // not a failure: PostHog Logs reads its rate, where Sentry would
+          // capture it without a stack.
           if (/[ Erreur lors de la mise à jour de la situation ]/.exec(msg)) {
-            trackModelWarning(msg)
+            logger.warn(msg)
           }
         },
       },

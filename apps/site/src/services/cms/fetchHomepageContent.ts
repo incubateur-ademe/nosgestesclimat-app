@@ -7,7 +7,7 @@ import type {
 import { cmsClient } from '@/adapters/cmsClient'
 import { PAGE_SIZE } from '@/constants/blog/pagination'
 import { type Locale } from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 export async function fetchHomepageContent({
@@ -24,6 +24,12 @@ export async function fetchHomepageContent({
     })
   | undefined
 > {
+  const logger = _logger.child({
+    scope: 'site.action.fetchHomepageContent',
+    locale,
+    page,
+  })
+
   try {
     const homepageSearchParams = new URLSearchParams({
       locale,
@@ -40,8 +46,7 @@ export async function fetchHomepageContent({
     }>(`/api/home-page?${homepageSearchParams}`)
 
     if (!homepageResponse?.data) {
-      // eslint-disable-next-line no-console
-      console.error('Error: homepageResponse?.data is undefined')
+      logger.warn('The CMS returned no home page content')
       return undefined
     }
 
@@ -79,7 +84,7 @@ export async function fetchHomepageContent({
       pageCount: meta?.pagination?.pageCount ?? 0,
     }
   } catch (error) {
-    logger.warn(toError(error), { scope: 'site.action.fetchHomepageContent' })
+    logger.warn(toError(error))
 
     return undefined
   }

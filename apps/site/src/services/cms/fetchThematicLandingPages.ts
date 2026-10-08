@@ -2,7 +2,7 @@
 
 import { cmsClient } from '@/adapters/cmsClient'
 import i18nConfig from '@/i18nConfig'
-import logger from '@/logger/logger.server'
+import _logger from '@/logger/logger.server'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 
 interface ThematicLandingPageSummary {
@@ -18,6 +18,11 @@ export async function fetchThematicLandingPages(): Promise<
     }
   | undefined
 > {
+  const logger = _logger.child({
+    scope: 'site.action.fetchThematicLandingPages',
+    locale: i18nConfig.defaultLocale,
+  })
+
   try {
     const thematicLPSearchParams = new URLSearchParams({
       locale: i18nConfig.defaultLocale,
@@ -33,9 +38,7 @@ export async function fetchThematicLandingPages(): Promise<
     }>(`/api/landing-thematiques?${thematicLPSearchParams}`)
 
     if (!thematicLPResponse?.data) {
-      logger.warn('Thematic landing pages response carries no data', {
-        scope: 'site.action.fetchThematicLandingPages',
-      })
+      logger.warn('The CMS returned no thematic landing pages')
       return
     }
 
@@ -43,9 +46,7 @@ export async function fetchThematicLandingPages(): Promise<
       thematicLandingPages: thematicLPResponse.data,
     }
   } catch (error) {
-    logger.warn(toError(error), {
-      scope: 'site.action.fetchThematicLandingPages',
-    })
+    logger.warn(toError(error))
 
     return {
       thematicLandingPages: [],
