@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker'
-import { preserveSearchParams } from '../preserveSearchParams'
+import { appendSearchParams } from '../appendSearchParams'
 
-describe('preserveSearchParams', () => {
+describe('appendSearchParams', () => {
   it('should return the inputted url or pathname if no searchParams are passed', () => {
     const url = faker.internet.url()
 
     expect(
-      preserveSearchParams({ urlOrPathname: url, searchParams: undefined })
+      appendSearchParams({ urlOrPathname: url, searchParams: undefined })
     ).toEqual(url)
   })
 
@@ -14,7 +14,7 @@ describe('preserveSearchParams', () => {
     const url = faker.internet.url()
 
     expect(
-      preserveSearchParams({
+      appendSearchParams({
         urlOrPathname: url,
         searchParams: { test: 'test', foo: 'bar' },
       })
@@ -25,7 +25,7 @@ describe('preserveSearchParams', () => {
     const url = faker.internet.url()
 
     expect(
-      preserveSearchParams({
+      appendSearchParams({
         urlOrPathname: url,
         searchParams: { test: ['test1', 'test2'] },
       })

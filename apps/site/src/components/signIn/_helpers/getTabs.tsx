@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { SIGNIN_MODE, SIGNUP_MODE } from '@/constants/authentication/modes'
 import type { TabItem } from '@/design-system/layout/Tabs'
-import { preserveSearchParams } from '@/helpers/navigation/preserveSearchParams'
+import { appendSearchParams } from '@/helpers/navigation/appendSearchParams'
 import type { AuthenticationMode } from '@/types/authentication'
 import type { SearchParams } from 'next/dist/server/request/search-params'
 import type { ReadonlyURLSearchParams } from 'next/navigation'
@@ -17,7 +17,7 @@ export function getTabs({
     {
       id: 'connexion',
       label: <Trans i18nKey="login.list.login.label">Se connecter</Trans>,
-      href: preserveSearchParams({
+      href: appendSearchParams({
         urlOrPathname: './connexion',
         searchParams,
       }),
@@ -28,7 +28,7 @@ export function getTabs({
     {
       id: 'inscription',
       label: <Trans i18nKey="login.list.signin.label">Créer un compte</Trans>,
-      href: preserveSearchParams({
+      href: appendSearchParams({
         urlOrPathname: './inscription',
         searchParams,
       }),

@@ -6,7 +6,7 @@ interface Props {
   searchParams: ReadonlyURLSearchParams | SearchParams | undefined
 }
 
-export function preserveSearchParams({
+export function appendSearchParams({
   urlOrPathname,
   searchParams,
 }: Props): string {

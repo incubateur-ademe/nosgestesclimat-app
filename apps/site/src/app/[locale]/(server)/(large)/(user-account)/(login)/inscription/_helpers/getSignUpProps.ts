@@ -1,7 +1,6 @@
 import { SHOW_WELCOME_BANNER_QUERY_PARAM } from '@/constants/urls/params'
 import { ACTIONS_MY_PLAN_PATH, MON_ESPACE_PATH } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { preserveSearchParams } from '@/helpers/navigation/preserveSearchParams'
 import type { Locale } from '@/i18nConfig'
 import { match } from 'ts-pattern'
 import type { AuthorizedFromSearchParamsValues } from '../../_constants/search-params'
@@ -32,10 +31,7 @@ export function getSignupProps({ from, locale }: Props): {
           'M’inscrire et voir mon plan d’action'
         ),
       },
-      redirectPathname: preserveSearchParams({
-        urlOrPathname: ACTIONS_MY_PLAN_PATH,
-        searchParams: { from },
-      }),
+      redirectPathname: `${ACTIONS_MY_PLAN_PATH}?from=${from}`,
     }))
     .otherwise(() => ({
       labels: {
@@ -45,9 +41,6 @@ export function getSignupProps({ from, locale }: Props): {
         ),
         buttonLabel: t('signup.button.label', "M'inscrire"),
       },
-      redirectPathname: preserveSearchParams({
-        urlOrPathname: MON_ESPACE_PATH,
-        searchParams: { [SHOW_WELCOME_BANNER_QUERY_PARAM]: 'true' },
-      }),
+      redirectPathname: `${MON_ESPACE_PATH}?${SHOW_WELCOME_BANNER_QUERY_PARAM}=true`,
     }))
 }

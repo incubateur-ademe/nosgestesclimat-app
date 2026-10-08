@@ -1,6 +1,5 @@
 import { ACTIONS_MY_PLAN_PATH, MON_ESPACE_PATH } from '@/constants/urls/paths'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { preserveSearchParams } from '@/helpers/navigation/preserveSearchParams'
 import type { Locale } from '@/i18nConfig'
 import { match } from 'ts-pattern'
 import type { AuthorizedFromSearchParamsValues } from '../../_constants/search-params'
@@ -31,10 +30,7 @@ export function getLoginProps({ from, locale }: Props): {
           'Me connecter et voir mon plan d’action'
         ),
       },
-      redirectPathname: preserveSearchParams({
-        urlOrPathname: ACTIONS_MY_PLAN_PATH,
-        searchParams: { from },
-      }),
+      redirectPathname: `${ACTIONS_MY_PLAN_PATH}?from=${from}`,
     }))
     .otherwise(() => ({
       labels: {
