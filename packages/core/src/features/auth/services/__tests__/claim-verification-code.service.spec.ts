@@ -3,23 +3,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
 import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
-import { verifyCode } from '../verify-code.service.ts'
+import { findValidVerificationCode } from '../../repositories/verification-codes.repository.ts'
+import { claimVerificationCode } from '../claim-verification-code.service.ts'
 
-describe('verifyCode', () => {
+describe('claimVerificationCode', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   afterEach(async () => {
-    await prisma.verificationCode.deleteMany()
+    await emptyDatabase(prisma)
   })
 
-  it('succeeds for a valid code', async () => {
+  it('succeeds for a valid code and returns it', async () => {
     const verificationCode = await verificationCodeFactory.create()
 
-    const result = await verifyCode({
+    const result = await claimVerificationCode({
       email: verificationCode.email,
       code: verificationCode.code,
       usage: VerificationCodeUsage.login,
@@ -29,8 +31,35 @@ describe('verifyCode', () => {
     expect(result.data).toEqual(verificationCode)
   })
 
+  it('invalidates the code on a successful claim: a replay fails', async () => {
+    const verificationCode = await verificationCodeFactory.create()
+
+    const firstResult = await claimVerificationCode({
+      email: verificationCode.email,
+      code: verificationCode.code,
+      usage: VerificationCodeUsage.login,
+    })
+    const replayResult = await claimVerificationCode({
+      email: verificationCode.email,
+      code: verificationCode.code,
+      usage: VerificationCodeUsage.login,
+    })
+
+    expect.assert(firstResult.success)
+    expect.assert(!replayResult.success)
+    expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
+    // The claimed code is invalidated: the lookup no longer finds it.
+    expect(
+      await findValidVerificationCode({
+        email: verificationCode.email,
+        code: verificationCode.code,
+        usage: VerificationCodeUsage.login,
+      })
+    ).toBeNull()
+  })
+
   it('fails with an InvalidVerificationCodeError when no code was ever requested', async () => {
-    const result = await verifyCode({
+    const result = await claimVerificationCode({
       email: faker.internet.email().toLocaleLowerCase(),
       code: faker.number.int({ min: 100000, max: 999999 }).toString(),
       usage: VerificationCodeUsage.login,
@@ -45,7 +74,7 @@ describe('verifyCode', () => {
       code: '123456',
     })
 
-    const result = await verifyCode({
+    const result = await claimVerificationCode({
       email: verificationCode.email,
       code: '654321',
       usage: VerificationCodeUsage.login,
@@ -60,7 +89,7 @@ describe('verifyCode', () => {
       expirationDate: new Date(Date.now() - 1000),
     })
 
-    const result = await verifyCode({
+    const result = await claimVerificationCode({
       email: verificationCode.email,
       code: verificationCode.code,
       usage: VerificationCodeUsage.login,
@@ -75,7 +104,7 @@ describe('verifyCode', () => {
       usage: VerificationCodeUsage.newsletter,
     })
 
-    const result = await verifyCode({
+    const result = await claimVerificationCode({
       email: verificationCode.email,
       code: verificationCode.code,
       usage: VerificationCodeUsage.login,
@@ -88,9 +117,9 @@ describe('verifyCode', () => {
   it('joins a caller transaction when one is given', async () => {
     const verificationCode = await verificationCodeFactory.create()
 
-    let result: Awaited<ReturnType<typeof verifyCode>> | undefined
+    let result: Awaited<ReturnType<typeof claimVerificationCode>> | undefined
     await transaction(async (session) => {
-      result = await verifyCode(
+      result = await claimVerificationCode(
         {
           email: verificationCode.email,
           code: verificationCode.code,

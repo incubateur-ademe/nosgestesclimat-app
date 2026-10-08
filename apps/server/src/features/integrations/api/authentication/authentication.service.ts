@@ -1,4 +1,4 @@
-import { findVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { findValidVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
 import { createCreateVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { EmailRequestError } from '@nosgestesclimat/core/features/emails/errors'
 import type { BackgroundTaskRunner } from '@nosgestesclimat/core/lib/background-task-runner'
@@ -161,7 +161,7 @@ export const generateApiToken = async ({
 export const exchangeCredentialsForToken = async (
   query: RecoverApiTokenQuery
 ) => {
-  const verificationCode = await findVerificationCode({
+  const verificationCode = await findValidVerificationCode({
     ...query,
     usage: VerificationCodeUsage.apiToken,
   })

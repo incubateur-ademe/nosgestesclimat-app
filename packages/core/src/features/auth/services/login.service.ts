@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
 import { maskEmail } from '../../../lib/pii.ts'
 import type { Result } from '../../../lib/result.ts'
-import { failure, success } from '../../../lib/result.ts'
+import { success } from '../../../lib/result.ts'
 import { createSettle } from '../../../lib/settle.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import { VerificationCodeUsage } from '../../../prisma/generated/client.ts'
@@ -23,9 +23,7 @@ import { syncUserData } from '../../users/services/sync-user-data.service.ts'
 import type { VerifiedUser } from '../../users/types/user.ts'
 import { createWelcomeEmail } from '../emails/auth-emails.ts'
 import type { LoginError } from '../errors/login.error.ts'
-import { InvalidVerificationCodeError } from '../errors/login.error.ts'
-import { claimVerificationCode } from '../repositories/verification-codes.repository.ts'
-import { verifyCode } from './verify-code.service.ts'
+import { claimVerificationCode } from './claim-verification-code.service.ts'
 
 export type LoginMode = 'signIn' | 'signUp'
 
@@ -70,31 +68,22 @@ export function createLogin({
      */
     sessionUserId?: string
   }): Promise<Result<LoginResult, LoginError>> {
-    const verificationCode = await verifyCode({
-      email,
-      code,
-      usage: VerificationCodeUsage.login,
-    })
-    if (!verificationCode.success) {
-      return failure(verificationCode.error)
-    }
-
     const account = await transaction(async (session) => {
       // Single-use by construction, on both branches: the code is claimed
       // atomically, inside the transaction, before the sign-in/sign-up
       // branch runs. A replayed code is already expired here, and a
       // concurrent request racing on the same code loses the claim
       // (count !== 1) however it interleaves with this one - there is no
-      // read-then-write gap to exploit. This is the authoritative check:
-      // the earlier verifyCode lookup outside the transaction is only a
-      // fast-fail.
-      const claimed = await claimVerificationCode(
-        { id: verificationCode.data.id, usage: VerificationCodeUsage.login },
+      // read-then-write gap to exploit.
+      const claimedCode = await claimVerificationCode(
+        {
+          email,
+          code,
+          usage: VerificationCodeUsage.login,
+        },
         { session }
       )
-      if (!claimed) {
-        return failure(new InvalidVerificationCodeError())
-      }
+      if (!claimedCode.success) return claimedCode
 
       const [existingVerifiedUser, sessionUser] = await Promise.all([
         findVerifiedUserByEmail({ email }, { session }),
@@ -181,7 +170,7 @@ export function createLogin({
       })
     })
 
-    if (!account.success) return failure(account.error)
+    if (!account.success) return account
 
     const { user, mode, reconcileUserId } = account.data
 

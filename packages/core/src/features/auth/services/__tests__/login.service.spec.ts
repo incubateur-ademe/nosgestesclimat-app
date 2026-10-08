@@ -16,7 +16,7 @@ import { reconcileSimulationsAfterLogin } from '../../../users/services/reconcil
 import { syncUserData } from '../../../users/services/sync-user-data.service.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
 import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
-import { findVerificationCode } from '../../repositories/verification-codes.repository.ts'
+import { findValidVerificationCode } from '../../repositories/verification-codes.repository.ts'
 import { createLogin } from '../login.service.ts'
 
 // Both reconciliation helpers are fully mocked: their database effects are
@@ -97,8 +97,8 @@ describe('login', () => {
       expect(sendEmail).not.toHaveBeenCalled()
       expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
       expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
-      // The failure short-circuits before the transaction: the user
-      // lookup log never runs.
+      // The failure short-circuits at the code claim: the user lookup log
+      // never runs.
       expect(logger.info).not.toHaveBeenCalled()
 
       return result
@@ -215,7 +215,7 @@ describe('login', () => {
       // The claimed code is invalidated: the login lookup no longer
       // finds it.
       expect(
-        await findVerificationCode({
+        await findValidVerificationCode({
           email: verifiedUser.email,
           code: verificationCode.code,
           usage: VerificationCodeUsage.login,
@@ -434,7 +434,7 @@ describe('login', () => {
         // The claimed code is invalidated: the login lookup no longer
         // finds it.
         expect(
-          await findVerificationCode({
+          await findValidVerificationCode({
             email: verificationCode.email,
             code: verificationCode.code,
             usage: VerificationCodeUsage.login,

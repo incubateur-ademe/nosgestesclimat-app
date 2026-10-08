@@ -1,6 +1,6 @@
 import { createVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { claimVerificationCode } from '@nosgestesclimat/core/features/auth/services/claim-verification-code.service'
 import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
-import { verifyCode } from '@nosgestesclimat/core/features/auth/services/verify-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import dayjs from 'dayjs'
@@ -46,7 +46,7 @@ export const confirmNewsletterSubscriptions = async ({
 }: {
   query: NewsletterConfirmationQuery
 }) => {
-  const result = await verifyCode({
+  const result = await claimVerificationCode({
     ...query,
     usage: VerificationCodeUsage.newsletter,
   })

@@ -281,12 +281,20 @@ describe('Given a NGC user', () => {
       const databaseError = new Error('Something went wrong')
 
       beforeEach(() => {
+        // The claim runs inside a transaction, so its queries reach the
+        // transaction client, not the spied root client: the transaction
+        // itself is stubbed to hand its callback the spied client.
+        vi.spyOn(prisma, '$transaction').mockImplementation(
+          // The interactive-transaction overload is the one at play.
+          async (cb: (tx: typeof prisma) => Promise<unknown>) => cb(prisma)
+        )
         vi.spyOn(prisma.verificationCode, 'findFirst').mockRejectedValueOnce(
           databaseError
         )
       })
 
       afterEach(() => {
+        vi.spyOn(prisma, '$transaction').mockRestore()
         vi.spyOn(prisma.verificationCode, 'findFirst').mockRestore()
       })
 
