@@ -62,8 +62,6 @@ export const createVerificationCode = async ({
       locale: parsed.data.locale,
     })
 
-    // The old server controller logged the creation: this line is the anchor
-    // for "user never received a code" investigations.
     logger.info('VerificationCode created', {
       ...context,
       expirationDate,
