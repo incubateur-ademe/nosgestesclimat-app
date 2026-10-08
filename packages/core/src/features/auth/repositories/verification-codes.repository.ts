@@ -29,7 +29,7 @@ export const createVerificationCode = async (
   })
 }
 
-export const findVerificationCode = async (
+export const findValidVerificationCode = async (
   { email, code, usage }: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<VerificationCode | null> => {
@@ -73,16 +73,4 @@ export const claimVerificationCode = async (
   })
 
   return count === 1
-}
-
-export const invalidateVerificationCode = async (
-  { id }: Pick<VerificationCode, 'id'>,
-  { session = prisma }: { session?: Transaction } = {}
-): Promise<void> => {
-  await session.verificationCode.update({
-    where: { id },
-    data: {
-      expirationDate: new Date(Date.now() - 1),
-    },
-  })
 }

@@ -1,5 +1,4 @@
-import { invalidateVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
-import { verifyCode } from '@nosgestesclimat/core/features/auth/services/verify-code.service'
+import { claimVerificationCode } from '@nosgestesclimat/core/features/auth/services/claim-verification-code.service'
 import type { AgeRange } from '@nosgestesclimat/core/features/users/types/age-range'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import type { BrevoContact } from '../../adapters/brevo/client.ts'
@@ -115,21 +114,18 @@ export const updateUserAndContact = async ({
 
         // The email-change code is created by the site's code-creation flow,
         // the same one that issues login codes.
-        const verificationCode = await verifyCode(
+        const claimedCode = await claimVerificationCode(
           {
-            ...userToUpdate,
-            code,
             email: nextEmail,
+            code,
             usage: VerificationCodeUsage.login,
           },
           { session }
         )
 
-        if (!verificationCode.success) {
+        if (!claimedCode.success) {
           throw new ForbiddenException('Forbidden ! Invalid verification code.')
         }
-
-        await invalidateVerificationCode(verificationCode.data, { session })
       }
 
       const verified = verifiedUser || !nextEmail
