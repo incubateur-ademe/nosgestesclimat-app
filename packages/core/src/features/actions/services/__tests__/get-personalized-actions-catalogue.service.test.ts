@@ -342,9 +342,43 @@ describe('getPersonalizedActionsCatalogue', () => {
       })
     })
 
-    it('returns a plan when a user has committed to actions', async () => {
-      const action1 = await actionFactory.published().create()
-      const action2 = await actionFactory.published().create()
+    it('returns a plan when a user has committed an action', async () => {
+      const action = await actionFactory.published().create()
+
+      const user = await userFactory.create()
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: user.id })
+        .withCompletedComputation()
+        .create()
+      await actionAssessmentFactory
+        .params({ simulationId: simulation.id, actionId: action.id })
+        .applicable({ impact: 1000 })
+        .create()
+      await actionFactory.chosen({
+        actionId: action.id,
+        userId: user.id,
+      })
+
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
+
+      const personalizedAction = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
+
+      expect(result.plan).toEqual({
+        numberOfCommittedActions: 1,
+        totalImpact: personalizedAction?.action?.assessment?.impact ?? 0,
+      })
+    })
+
+    it('returns a plan with the summed impact of the chosen actions', async () => {
+      const [action1, action2] = await Promise.all([
+        actionFactory.published().create(),
+        actionFactory.published().create(),
+      ])
 
       const user = await userFactory.create()
       const simulation = await simulationFactory
