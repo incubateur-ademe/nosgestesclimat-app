@@ -11,10 +11,7 @@ import { mapComputedResultsToContactAttributes } from '../../../simulations/emai
 import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import {
-  findUserById,
-  findVerifiedUserByEmail,
-} from '../../../users/repositories/users.repository.ts'
+import { findVerifiedUserByEmail } from '../../../users/repositories/users.repository.ts'
 import { reconcileSimulationsAfterLogin } from '../../../users/services/reconcile-simulations-after-login.service.ts'
 import { syncUserData } from '../../../users/services/sync-user-data.service.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
@@ -22,32 +19,18 @@ import { verificationCodeFactory } from '../../factories/verification-code.facto
 import { findVerificationCode } from '../../repositories/verification-codes.repository.ts'
 import { createLogin } from '../login.service.ts'
 
-// Both reconciliation helpers are spied on but keep their real
-// implementations: their database effects stay covered while the tests
-// assert the login service only reaches for them when it should.
-vi.mock(
-  '../../../users/services/sync-user-data.service.ts',
-  async (importOriginal) => {
-    const actual = await importOriginal<{
-      syncUserData: typeof syncUserData
-    }>()
-    return { ...actual, syncUserData: vi.fn(actual.syncUserData) }
-  }
-)
+// Both reconciliation helpers are fully mocked: their database effects are
+// covered by their own specs. This file only asserts that the login service
+// reaches for them when it should - and never when it should not.
+vi.mock('../../../users/services/sync-user-data.service.ts', () => ({
+  syncUserData: vi.fn(),
+}))
 
 vi.mock(
   '../../../users/services/reconcile-simulations-after-login.service.ts',
-  async (importOriginal) => {
-    const actual = await importOriginal<{
-      reconcileSimulationsAfterLogin: typeof reconcileSimulationsAfterLogin
-    }>()
-    return {
-      ...actual,
-      reconcileSimulationsAfterLogin: vi.fn(
-        actual.reconcileSimulationsAfterLogin
-      ),
-    }
-  }
+  () => ({
+    reconcileSimulationsAfterLogin: vi.fn(),
+  })
 )
 
 const logger = {
@@ -62,23 +45,22 @@ const addOrUpdateContact = vi.fn().mockResolvedValue(success())
 
 const origin = 'https://nosgestesclimat.test'
 
-// The runner collects the scheduled tasks so the tests can await them: the
-// email side effects stay assertable while the service keeps scheduling
-// without awaiting.
-const createAwaitingBackgroundTaskRunner = () => {
-  const tasks: Array<Promise<void>> = []
+describe('login', () => {
+  let pendingTasks: Array<Promise<void>>
+
+  // The runner collects the scheduled tasks so the tests can await them: the
+  // email side effects stay assertable while the service keeps scheduling
+  // without awaiting.
   const backgroundTaskRunner: BackgroundTaskRunner = (task) => {
-    tasks.push(task())
+    pendingTasks.push(task())
   }
 
-  return {
-    backgroundTaskRunner,
-    flush: () => Promise.all(tasks.splice(0, tasks.length)),
+  const flushBackgroundTasks = async () => {
+    await Promise.all(pendingTasks)
+    pendingTasks = []
   }
-}
 
-const buildLogin = (backgroundTaskRunner: BackgroundTaskRunner) =>
-  createLogin({
+  const login = createLogin({
     logger,
     captureException,
     sendEmail,
@@ -87,33 +69,91 @@ const buildLogin = (backgroundTaskRunner: BackgroundTaskRunner) =>
     backgroundTaskRunner,
   })
 
-describe('login', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    pendingTasks = []
   })
 
   afterEach(async () => {
+    await flushBackgroundTasks()
     await emptyDatabase(prisma)
+    vi.clearAllMocks()
   })
 
   describe('Given the verification code is invalid', () => {
-    it('returns an InvalidVerificationCodeError failure', async () => {
-      const { backgroundTaskRunner, flush } =
-        createAwaitingBackgroundTaskRunner()
-
-      const result = await buildLogin(backgroundTaskRunner)({
-        email: faker.internet.email().toLocaleLowerCase(),
-        code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+    const loginWithInvalidCode = async ({
+      email,
+      code,
+    }: {
+      email: string
+      code: string
+    }) => {
+      const result = await login({
+        email,
+        code,
         locale: 'fr',
       })
-      await flush()
 
-      expect.assert(!result.success)
-      expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
       expect(addOrUpdateContact).not.toHaveBeenCalled()
       expect(sendEmail).not.toHaveBeenCalled()
       expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
       expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
+      // The failure short-circuits before the transaction: the user
+      // lookup log never runs.
+      expect(logger.info).not.toHaveBeenCalled()
+
+      return result
+    }
+
+    it('returns an InvalidVerificationCodeError when no code was ever requested', async () => {
+      const result = await loginWithInvalidCode({
+        email: faker.internet.email().toLocaleLowerCase(),
+        code: faker.number.int({ min: 100000, max: 999999 }).toString(),
+      })
+
+      expect.assert(!result.success)
+      expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
+    })
+
+    it('returns an InvalidVerificationCodeError when the code does not match the one sent', async () => {
+      const verificationCode = await verificationCodeFactory.create({
+        code: '123456',
+      })
+
+      const result = await loginWithInvalidCode({
+        email: verificationCode.email,
+        code: '654321',
+      })
+
+      expect.assert(!result.success)
+      expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
+    })
+
+    it('returns an InvalidVerificationCodeError when the code is expired', async () => {
+      const verificationCode = await verificationCodeFactory.create({
+        expirationDate: new Date(Date.now() - 1000),
+      })
+
+      const result = await loginWithInvalidCode({
+        email: verificationCode.email,
+        code: verificationCode.code,
+      })
+
+      expect.assert(!result.success)
+      expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
+    })
+
+    it('returns an InvalidVerificationCodeError when the code was issued for another usage', async () => {
+      const verificationCode = await verificationCodeFactory.create({
+        usage: VerificationCodeUsage.newsletter,
+      })
+
+      const result = await loginWithInvalidCode({
+        email: verificationCode.email,
+        code: verificationCode.code,
+      })
+
+      expect.assert(!result.success)
+      expect(result.error).toBeInstanceOf(InvalidVerificationCodeError)
     })
   })
 
@@ -124,14 +164,12 @@ describe('login', () => {
         email: verifiedUser.email,
       })
 
-      const { backgroundTaskRunner, flush } =
-        createAwaitingBackgroundTaskRunner()
-      const result = await buildLogin(backgroundTaskRunner)({
+      const result = await login({
         email: verifiedUser.email,
         code: verificationCode.code,
         locale: 'fr',
       })
-      await flush()
+      await flushBackgroundTasks()
 
       expect.assert(result.success)
       expect(result.data.mode).toBe('signIn')
@@ -158,71 +196,58 @@ describe('login', () => {
         email: verifiedUser.email,
       })
 
-      const firstRunner = createAwaitingBackgroundTaskRunner()
-      const firstResult = await buildLogin(firstRunner.backgroundTaskRunner)({
+      const firstResult = await login({
         email: verifiedUser.email,
         code: verificationCode.code,
         locale: 'fr',
       })
-      await firstRunner.flush()
 
       expect.assert(firstResult.success)
 
-      const { backgroundTaskRunner, flush } =
-        createAwaitingBackgroundTaskRunner()
-      const replayResult = await buildLogin(backgroundTaskRunner)({
+      const replayResult = await login({
         email: verifiedUser.email,
         code: verificationCode.code,
         locale: 'fr',
       })
-      await flush()
 
       expect.assert(!replayResult.success)
       expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
+      // The claimed code is invalidated: the login lookup no longer
+      // finds it.
+      expect(
+        await findVerificationCode({
+          email: verifiedUser.email,
+          code: verificationCode.code,
+          usage: VerificationCodeUsage.login,
+        })
+      ).toBeNull()
       // Neither login reached the reconciliation helpers: the first was a
       // plain sign-in, the replay failed at the code claim.
       expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
       expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
     })
 
-    describe('And the session belongs to an unverified user with simulations', () => {
-      it('transfers the unverified user simulations to the signed-in account', async () => {
+    describe('And the session belongs to an unverified user', () => {
+      it('signs in on the existing account and delegates the session data transfer to the reconciliation', async () => {
         const verifiedUser = await userFactory.verified().create()
         const unverifiedUser = await userFactory.create()
-        const unverifiedSimulation = await simulationFactory
-          .params({ userId: unverifiedUser.id })
-          .create()
         const verificationCode = await verificationCodeFactory.create({
           email: verifiedUser.email,
         })
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verifiedUser.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId: unverifiedUser.id,
         })
-        await flush()
 
         expect.assert(result.success)
-
-        const simulations = await prisma.simulation.findMany({
-          where: { userId: verifiedUser.id },
-          select: { id: true, userEmail: true },
+        expect(result.data.mode).toBe('signIn')
+        expect(result.data.user).toMatchObject({
+          id: verifiedUser.id,
+          email: verifiedUser.email,
         })
-
-        expect(simulations.map(({ id }) => id)).toContain(
-          unverifiedSimulation.id
-        )
-        expect(simulations[0].userEmail).toBe(verifiedUser.email)
-        expect(
-          await prisma.simulation.findMany({
-            where: { userId: unverifiedUser.id },
-          })
-        ).toHaveLength(0)
-        expect(await findUserById(unverifiedUser.id)).toBeNull()
         expect(vi.mocked(reconcileSimulationsAfterLogin)).toHaveBeenCalledWith({
           user: expect.objectContaining({
             id: verifiedUser.id,
@@ -234,56 +259,22 @@ describe('login', () => {
         // users merge.
         expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
       })
-
-      it('leaves the account untouched when there is no session userId to reconcile from', async () => {
-        const verifiedUser = await userFactory.verified().create()
-        const unverifiedUser = await userFactory.create()
-        await simulationFactory.create({ userId: unverifiedUser.id })
-        const verificationCode = await verificationCodeFactory.create({
-          email: verifiedUser.email,
-        })
-
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
-          email: verifiedUser.email,
-          code: verificationCode.code,
-          locale: 'fr',
-        })
-        await flush()
-
-        expect.assert(result.success)
-
-        // Without a session userId the reconciliation cannot run: the
-        // unverified user keeps their data.
-        expect(
-          await prisma.simulation.findMany({
-            where: { userId: unverifiedUser.id },
-          })
-        ).toHaveLength(1)
-        expect(await findUserById(unverifiedUser.id)).not.toBeNull()
-        expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
-        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
-      })
     })
 
     describe('And the session userId already belongs to another verified account', () => {
-      it('signs in on the requested account without reconciling the session', async () => {
+      it('signs in on the requested account without reconciling the session and warns about the swap', async () => {
         const userA = await userFactory.verified().create()
         const userB = await userFactory.verified().create()
         const verificationCode = await verificationCodeFactory.create({
           email: userB.email,
         })
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: userB.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId: userA.id,
         })
-        await flush()
 
         expect.assert(result.success)
         // The session's userId (userA.id) belongs to account A, so it must
@@ -293,9 +284,17 @@ describe('login', () => {
           id: userB.id,
           email: userB.email,
         })
+        // Swapping between verified accounts is surprising enough to be
+        // logged.
+        expect(logger.warn).toHaveBeenCalledWith(
+          'Login account swap: the session user belongs to another verified account',
+          expect.objectContaining({
+            sessionUserId: userA.id,
+            signedInUserId: userB.id,
+          })
+        )
         // Reconciling userA.id into account B would have moved account A's
-        // data over and deleted its user row. It must not have run.
-        expect(await findUserById(userA.id)).not.toBeNull()
+        // data over. It must not have run.
         expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
@@ -304,17 +303,14 @@ describe('login', () => {
 
   describe('Given no verified account exists for the email', () => {
     describe('And there is no session userId', () => {
-      it('signs the user up with a fresh empty verified account', async () => {
+      it('signs the user up with a fresh account and syncs it', async () => {
         const verificationCode = await verificationCodeFactory.create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
         })
-        await flush()
 
         expect.assert(result.success)
         expect(result.data.mode).toBe('signUp')
@@ -328,15 +324,10 @@ describe('login', () => {
         // pre-existing user id.
         expect.assert(createdUser)
         expect(createdUser.id).toBe(result.data.user.id)
-        expect(
-          await prisma.simulation.findMany({
-            where: { userId: result.data.user.id },
-          })
-        ).toHaveLength(0)
-        // The fresh sign-up merges legacy users sharing the email, but has
-        // no session user to reconcile from.
+        // The fresh sign-up merges the legacy users sharing the email, but
+        // has no session user to reconcile from.
         expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
-          user: expect.objectContaining({ id: result.data.user.id }),
+          user: expect.objectContaining({ id: createdUser.id }),
           verified: true,
         })
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
@@ -344,19 +335,16 @@ describe('login', () => {
     })
 
     describe('And the session user id matches no user', () => {
-      it('signs the user up as if there were no session: a fresh empty verified account', async () => {
+      it('signs the user up as if there were no session: a fresh account with a fresh id', async () => {
         const verificationCode = await verificationCodeFactory.create()
         const sessionUserId = faker.string.uuid()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId,
         })
-        await flush()
 
         expect.assert(result.success)
         expect(result.data.mode).toBe('signUp')
@@ -372,11 +360,6 @@ describe('login', () => {
         expect.assert(createdUser)
         expect(createdUser.id).toBe(result.data.user.id)
         expect(result.data.user.id).not.toBe(sessionUserId)
-        expect(
-          await prisma.simulation.findMany({
-            where: { userId: result.data.user.id },
-          })
-        ).toHaveLength(0)
         // The unfound session user leaves nothing to reconcile.
         expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
@@ -386,20 +369,14 @@ describe('login', () => {
     describe('And the session userId belongs to an unverified user', () => {
       it('signs the user up, reusing the session userId as the account id', async () => {
         const unverifiedUser = await userFactory.create()
-        const unverifiedSimulation = await simulationFactory
-          .params({ userId: unverifiedUser.id })
-          .create()
         const verificationCode = await verificationCodeFactory.create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId: unverifiedUser.id,
         })
-        await flush()
 
         expect.assert(result.success)
         expect(result.data.mode).toBe('signUp')
@@ -422,19 +399,9 @@ describe('login', () => {
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
         })
-
-        // The unverified user row is updated in place, keeping the user's
-        // data attached.
-        const simulations = await prisma.simulation.findMany({
-          where: { userId: unverifiedUser.id },
-          select: { id: true },
-        })
-
-        expect(simulations).toHaveLength(1)
-        expect(simulations[0].id).toBe(unverifiedSimulation.id)
-        // The conversion updates the user row in place: the sign-up sync
-        // runs, and no reconciliation is needed since the data stays
-        // attached to the same id.
+        // The conversion updates the user row in place, keeping the user's
+        // data attached: the sign-up sync runs, and no reconciliation is
+        // needed since the data stays attached to the same id.
         expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
           user: expect.objectContaining({ id: unverifiedUser.id }),
           verified: true,
@@ -442,20 +409,30 @@ describe('login', () => {
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
 
-      it('invalidates the verification code', async () => {
+      it('cannot be replayed: a second sign-up with the same code fails', async () => {
         const verificationCode = await verificationCodeFactory.create()
+        const sessionUserId = faker.string.uuid()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        await buildLogin(backgroundTaskRunner)({
+        const firstResult = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
-          sessionUserId: faker.string.uuid(),
+          sessionUserId,
         })
-        await flush()
 
-        // The claimed code is expired: the login lookup no longer finds it.
+        expect.assert(firstResult.success)
+
+        const replayResult = await login({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          sessionUserId,
+        })
+
+        expect.assert(!replayResult.success)
+        expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
+        // The claimed code is invalidated: the login lookup no longer
+        // finds it.
         expect(
           await findVerificationCode({
             email: verificationCode.email,
@@ -463,35 +440,6 @@ describe('login', () => {
             usage: VerificationCodeUsage.login,
           })
         ).toBeNull()
-      })
-
-      it('cannot be replayed: a second sign-up with the same code fails', async () => {
-        const verificationCode = await verificationCodeFactory.create()
-        const sessionUserId = faker.string.uuid()
-
-        const firstRunner = createAwaitingBackgroundTaskRunner()
-        const firstResult = await buildLogin(firstRunner.backgroundTaskRunner)({
-          email: verificationCode.email,
-          code: verificationCode.code,
-          locale: 'fr',
-          sessionUserId,
-        })
-        await firstRunner.flush()
-
-        expect.assert(firstResult.success)
-
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const replayResult = await buildLogin(backgroundTaskRunner)({
-          email: verificationCode.email,
-          code: verificationCode.code,
-          locale: 'fr',
-          sessionUserId,
-        })
-        await flush()
-
-        expect.assert(!replayResult.success)
-        expect(replayResult.error).toBeInstanceOf(InvalidVerificationCodeError)
         // Only the first sign-up synced: the replay failed at the code
         // claim.
         expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
@@ -502,15 +450,13 @@ describe('login', () => {
         const verificationCode = await verificationCodeFactory.create()
         const unverifiedUser = await userFactory.create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'en',
           sessionUserId: unverifiedUser.id,
         })
-        await flush()
+        await flushBackgroundTasks()
 
         expect.assert(result.success)
         expect(sendEmail).toHaveBeenCalledWith({
@@ -537,15 +483,13 @@ describe('login', () => {
           .completed()
           .create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId: unverifiedUser.id,
         })
-        await flush()
+        await flushBackgroundTasks()
 
         expect.assert(result.success)
         expect(sendEmail).toHaveBeenCalledTimes(1)
@@ -571,15 +515,13 @@ describe('login', () => {
           .withValidComputedResults()
           .create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'en',
           sessionUserId: unverifiedUser.id,
         })
-        await flush()
+        await flushBackgroundTasks()
 
         expect.assert(result.success)
         expect(sendEmail).toHaveBeenCalledWith(
@@ -598,15 +540,13 @@ describe('login', () => {
           .withValidComputedResults()
           .create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId: unverifiedUser.id,
         })
-        await flush()
+        await flushBackgroundTasks()
 
         expect.assert(result.success)
         expect(sendEmail).toHaveBeenCalledTimes(1)
@@ -618,78 +558,19 @@ describe('login', () => {
           },
         })
       })
-
-      it('merges the legacy unverified users sharing the email into the fresh account', async () => {
-        const email = faker.internet.email().toLocaleLowerCase()
-        // Legacy row: an unverified user with the deprecated user-level
-        // email set. No factory fits: an unverified user has no email.
-        const legacyUser = await prisma.user.create({
-          data: {
-            id: faker.string.uuid(),
-            email,
-            name: faker.person.fullName(),
-          },
-          select: { id: true },
-        })
-        const legacySimulation = await simulationFactory
-          .params({ userId: legacyUser.id })
-          .create()
-        const verificationCode = await verificationCodeFactory.create({
-          email,
-        })
-        const unverifiedUser = await userFactory.create()
-
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
-          email: verificationCode.email,
-          code: verificationCode.code,
-          locale: 'fr',
-          sessionUserId: unverifiedUser.id,
-        })
-        await flush()
-
-        expect.assert(result.success)
-
-        const simulations = await prisma.simulation.findMany({
-          where: { userId: unverifiedUser.id },
-          select: { id: true },
-        })
-
-        expect(simulations.map(({ id }) => id)).toContain(legacySimulation.id)
-        expect(await findUserById(legacyUser.id)).toBeNull()
-        // The merge runs through the sign-up sync, not the sign-in
-        // reconciliation: syncUserData receives the freshly converted
-        // account - the session user's id now carrying the login email.
-        expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
-        expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
-          user: expect.objectContaining({
-            id: unverifiedUser.id,
-            email: verificationCode.email,
-          }),
-          verified: true,
-        })
-        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
-      })
     })
 
     describe('And the session userId already belongs to another verified account', () => {
       it('signs the user up with a fresh userId instead of reusing the taken one, without transferring the session user data', async () => {
         const userA = await userFactory.verified().create()
-        const userASimulation = await simulationFactory
-          .params({ userId: userA.id })
-          .create()
         const verificationCode = await verificationCodeFactory.create()
 
-        const { backgroundTaskRunner, flush } =
-          createAwaitingBackgroundTaskRunner()
-        const result = await buildLogin(backgroundTaskRunner)({
+        const result = await login({
           email: verificationCode.email,
           code: verificationCode.code,
           locale: 'fr',
           sessionUserId: userA.id,
         })
-        await flush()
 
         expect.assert(result.success)
         expect(result.data.mode).toBe('signUp')
@@ -698,6 +579,16 @@ describe('login', () => {
         // account A.
         expect(result.data.user.id).not.toBe(userA.id)
 
+        // Signing up while the session belongs to another verified account
+        // is surprising enough to be logged.
+        expect(logger.warn).toHaveBeenCalledWith(
+          'Sign-up with a fresh identity: the session user belongs to another verified account',
+          expect.objectContaining({
+            sessionUserId: userA.id,
+            signedUpUserId: result.data.user.id,
+          })
+        )
+
         const createdUser = await findVerifiedUserByEmail(
           { email: verificationCode.email },
           { session: prisma }
@@ -705,23 +596,6 @@ describe('login', () => {
 
         expect.assert(createdUser)
         expect(createdUser.id).toBe(result.data.user.id)
-
-        // The session's data belongs to account A: none of it may move to
-        // the fresh account, and account A must survive the sign-up.
-        expect(
-          (
-            await prisma.simulation.findMany({
-              where: { userId: userA.id },
-              select: { id: true },
-            })
-          ).map(({ id }) => id)
-        ).toEqual([userASimulation.id])
-        expect(
-          await prisma.simulation.findMany({
-            where: { userId: result.data.user.id },
-          })
-        ).toHaveLength(0)
-        expect(await findUserById(userA.id)).not.toBeNull()
         expect(vi.mocked(syncUserData)).toHaveBeenCalledWith({
           user: expect.objectContaining({ id: result.data.user.id }),
           verified: true,
@@ -736,22 +610,19 @@ describe('login', () => {
     it('still succeeds and captures the errors', async () => {
       const verificationCode = await verificationCodeFactory.create()
 
-      sendEmail.mockResolvedValueOnce(
-        failure(new EmailRequestError('Brevo unavailable'))
-      )
-      addOrUpdateContact.mockResolvedValueOnce(
-        failure(new EmailRequestError('Brevo unavailable'))
-      )
+      const contactError = new EmailRequestError('Brevo unavailable')
+      const emailError = new EmailRequestError('Brevo unavailable')
 
-      const { backgroundTaskRunner, flush } =
-        createAwaitingBackgroundTaskRunner()
-      const result = await buildLogin(backgroundTaskRunner)({
+      addOrUpdateContact.mockResolvedValueOnce(failure(contactError))
+      sendEmail.mockResolvedValueOnce(failure(emailError))
+
+      const result = await login({
         email: verificationCode.email,
         code: verificationCode.code,
         locale: 'fr',
         sessionUserId: faker.string.uuid(),
       })
-      await flush()
+      await flushBackgroundTasks()
 
       expect.assert(result.success)
 
@@ -762,9 +633,21 @@ describe('login', () => {
       expect.assert(createdUser)
 
       expect(captureException).toHaveBeenCalledTimes(2)
+      expect(captureException).toHaveBeenCalledWith(contactError)
+      expect(captureException).toHaveBeenCalledWith(emailError)
       expect(logger.error).toHaveBeenCalledWith(
         'Failed to settle: side effects',
-        expect.objectContaining({ error: expect.any(Error) })
+        {
+          index: 0,
+          error: contactError,
+        }
+      )
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to settle: side effects',
+        {
+          index: 1,
+          error: emailError,
+        }
       )
     })
   })

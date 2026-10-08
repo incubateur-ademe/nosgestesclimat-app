@@ -4,6 +4,7 @@ import type { BackgroundTaskRunner } from '../../../../lib/background-task-runne
 import { failure, success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { VerificationCodeUsage } from '../../../../prisma/generated/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import {
   createCreateVerificationCodeService,
@@ -42,7 +43,7 @@ describe('createVerificationCode', () => {
 
   afterEach(async () => {
     await flushBackgroundTasks()
-    await prisma.verificationCode.deleteMany()
+    await emptyDatabase(prisma)
     vi.clearAllMocks()
   })
 

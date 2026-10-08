@@ -125,6 +125,18 @@ export function createLogin({
         // fresh one. Only an unverified session user's data is reconciled
         // into the signed-in account: a verified session user is another
         // account being swapped away from, and its data stays put.
+        if (sessionUser?.type === 'verified') {
+          logger.warn(
+            'Login account swap: the session user belongs to another verified account',
+            {
+              sessionUserId: sessionUser.id,
+              sessionUserEmail: sessionUser.email
+                ? maskEmail(sessionUser.email)
+                : undefined,
+              signedInUserId: existingVerifiedUser.id,
+            }
+          )
+        }
         return success({
           user: existingVerifiedUser,
           mode: 'signIn' as const,
@@ -148,6 +160,19 @@ export function createLogin({
         },
         { session }
       )
+
+      if (sessionUser?.type === 'verified') {
+        logger.warn(
+          'Sign-up with a fresh identity: the session user belongs to another verified account',
+          {
+            sessionUserId: sessionUser.id,
+            sessionUserEmail: sessionUser.email
+              ? maskEmail(sessionUser.email)
+              : undefined,
+            signedUpUserId: newUser.id,
+          }
+        )
+      }
 
       return success({
         user: newUser,
