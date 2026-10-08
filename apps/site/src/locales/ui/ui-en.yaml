@@ -2035,7 +2035,7 @@ entries:
   event.podium.empty.type.public-services: local authority
   event.podium.empty.type.public-services.lock: collectivité
   event.podium.remainingList.ariaLabel.lock: Suite du classement
-  results.footprintBlock.actionsBlock.link: Find out about my activities
+  results.footprintBlock.actionsBlock.link: Discover my actions
   results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
   common.co2eAn.title: CO₂e per year
   common.co2eAn.title.lock: CO₂e / an
@@ -2231,10 +2231,10 @@ entries:
   results.footprintBlock.carbone.info.label.lock: Qu’est-ce que l’empreinte carbone ?
   results.footprintBlock.carbone.legend: '* Average of our users (more than 600,000 simulations per year).'
   results.footprintBlock.carbone.legend.lock: '* Moyenne de nos utilisateurs (plus de 600 000 simulations par an).'
-  results.footprintBlock.carbone.message.above: <0>It’s always time to reduce your impact!</0> Explore the actions you could take at your own level to lower your emissions.
+  results.footprintBlock.carbone.message.above: <0>It’s never too late to reduce your impact!</0> Explore the actions you could take at your own level to lower your emissions.
   results.footprintBlock.carbone.message.above.lock: <0>Il est toujours temps de réduire votre impact !</0> Explorez les actions que vous pourriez mettre en place à votre échelle pour faire baisser vos émissions.
   results.footprintBlock.carbone.message.below: <0>Well done, you’re leading the way!</0> Your footprint brings our average down. Keep it up, and bring your loved ones along by setting an example!
-  results.footprintBlock.carbone.message.below.lock: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l'exemple !
+  results.footprintBlock.carbone.message.below.lock: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l’exemple !
   results.footprintBlock.carbone.message.close: '<0>Your footprint is similar to that of millions of French people.</0> Together, we can bring our average down: find your first action, and bring your loved ones along.'
   results.footprintBlock.carbone.message.close.lock: '<0>Votre empreinte ressemble à celle de millions de Français.</0> Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre première action, et embarquez vos proches.'
   results.footprintBlock.carbone.title: Your carbon footprint

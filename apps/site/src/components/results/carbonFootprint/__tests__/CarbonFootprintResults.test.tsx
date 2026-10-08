@@ -47,9 +47,22 @@ describe('CarbonFootprintResults', () => {
     useFeatureFlagMock.mockReturnValue('test-new-footprint-display')
   })
 
-  it('takes part in the footprint display test by default', () => {
+  it('keeps the current section, without reading the flag, by default', () => {
     render(
       <CarbonFootprintResults computedResults={computedResults} locale="fr" />
+    )
+
+    expect(screen.getByText('current section')).toBeInTheDocument()
+    expect(useFeatureFlagMock).not.toHaveBeenCalled()
+  })
+
+  it('takes part in the footprint display test when enabled', () => {
+    render(
+      <CarbonFootprintResults
+        computedResults={computedResults}
+        locale="fr"
+        enableHeroTest
+      />
     )
 
     expect(screen.getByText('new section')).toBeInTheDocument()
@@ -65,23 +78,11 @@ describe('CarbonFootprintResults', () => {
         computedResults={computedResults}
         locale="fr"
         group={group}
+        enableHeroTest
       />
     )
 
     expect(screen.getByText('new section')).toBeInTheDocument()
     expect(useFeatureFlagMock).toHaveBeenCalled()
-  })
-
-  it('keeps the current section, without reading the flag, when the test is disabled', () => {
-    render(
-      <CarbonFootprintResults
-        computedResults={computedResults}
-        locale="fr"
-        disableHeroTest
-      />
-    )
-
-    expect(screen.getByText('current section')).toBeInTheDocument()
-    expect(useFeatureFlagMock).not.toHaveBeenCalled()
   })
 })

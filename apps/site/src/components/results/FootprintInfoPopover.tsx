@@ -32,7 +32,7 @@ export default function FootprintInfoPopover({
             'focus-visible:ring-primary-700 hover:text-primary-700 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-500 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden',
             className
           )}>
-          <Info aria-hidden="true" className="size-[22px]" />
+          <Info aria-hidden="true" className="size-5.5" />
         </button>
       </PopoverTrigger>
 
@@ -40,7 +40,7 @@ export default function FootprintInfoPopover({
         align="start"
         collisionPadding={16}
         aria-label={label}
-        className="border-primary-200 text-default w-[22rem] max-w-[calc(100vw-2rem)] gap-0 overflow-hidden rounded-2xl border bg-white p-0 shadow-xl ring-0">
+        className="border-primary-200 text-default w-88 max-w-[calc(100vw-2rem)] gap-0 overflow-hidden rounded-2xl border bg-white p-0 shadow-xl ring-0">
         <div className="bg-primary-50 border-primary-100 flex items-center gap-3 border-b px-5 py-4">
           <span className="bg-primary-100 text-primary-700 flex size-10 shrink-0 items-center justify-center rounded-full">
             <Globe aria-hidden="true" className="size-5" />

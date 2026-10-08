@@ -71,6 +71,7 @@ export default async function DetailledResultsPage({
         computedResults={simulationResult.simulation.computedResults}
         locale={locale}
         hideSaveBlock
+        enableHeroTest
         group={
           simulationResult.group
             ? getGroupDisplayInfo(simulationResult.group)

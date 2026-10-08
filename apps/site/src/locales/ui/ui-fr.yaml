@@ -1473,7 +1473,7 @@ entries:
   results.footprintBlock.carbone.message.above: <0>Il est toujours temps de réduire votre impact !</0> Explorez les actions que vous pourriez mettre en place à votre échelle pour faire baisser vos émissions.
   results.footprintBlock.carbone.title: Votre empreinte carbone
   results.footprintBlock.carbone.unitSuffix: de CO₂e / an
-  results.footprintBlock.carbone.message.below: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l'exemple !
+  results.footprintBlock.carbone.message.below: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l’exemple !
   results.footprintBlock.carbone.message.close: '<0>Votre empreinte ressemble à celle de millions de Français.</0> Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre première action, et embarquez vos proches.'
   results.footprintBlock.carbone.comparison.equal: Égal à la moyenne*
   results.footprintBlock.carbone.chart.average: Moyenne*

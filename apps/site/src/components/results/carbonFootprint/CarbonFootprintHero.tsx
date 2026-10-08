@@ -7,6 +7,7 @@ import type { Locale } from '@/i18nConfig'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
 import { twMerge } from 'cn'
 import { ThermometerSun } from 'lucide-react'
+import { match } from 'ts-pattern'
 import Trans from '../../translation/trans/TransServer'
 import FootprintInfoPopover from '../FootprintInfoPopover'
 import TendencyIndicator from '../TendencyIndicator'
@@ -141,7 +142,6 @@ export default function CarbonFootprintHero({
 
         <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3">
           <p
-            aria-describedby="footprint-average-legend"
             className={twMerge(
               'mb-0 inline-flex items-center rounded-lg px-3 py-1.5 text-[0.9rem] font-bold tabular-nums',
               pillClassNames[level]
@@ -159,43 +159,46 @@ export default function CarbonFootprintHero({
           value={value}
           orientation="horizontal"
           className="mb-6 lg:hidden"
+          describedById="footprint-average-legend"
         />
 
         <p className="mb-6 max-w-[46ch] leading-normal text-slate-600">
-          {level === 'above' && (
-            <Trans
-              locale={locale}
-              i18nKey="results.footprintBlock.carbone.message.above">
-              <strong className="text-default">
-                Il est toujours temps de réduire votre impact !
-              </strong>{' '}
-              Explorez les actions que vous pourriez mettre en place à votre
-              échelle pour faire baisser vos émissions.
-            </Trans>
-          )}
-          {level === 'close' && (
-            <Trans
-              locale={locale}
-              i18nKey="results.footprintBlock.carbone.message.close">
-              <strong className="text-default">
-                Votre empreinte ressemble à celle de millions de Français.
-              </strong>{' '}
-              Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre
-              première action, et embarquez vos proches.
-            </Trans>
-          )}
-          {level === 'below' && (
-            <Trans
-              locale={locale}
-              i18nKey="results.footprintBlock.carbone.message.below">
-              <strong className="text-default">
-                Bravo, vous montrez la voie !
-              </strong>{' '}
-              Votre empreinte tire notre moyenne vers le bas. Continuez sur
-              votre lancée, et embarquez vos proches en leur montrant l'exemple
-              !
-            </Trans>
-          )}
+          {match(level)
+            .with('above', () => (
+              <Trans
+                locale={locale}
+                i18nKey="results.footprintBlock.carbone.message.above">
+                <strong className="text-default">
+                  Il est toujours temps de réduire votre impact !
+                </strong>{' '}
+                Explorez les actions que vous pourriez mettre en place à votre
+                échelle pour faire baisser vos émissions.
+              </Trans>
+            ))
+            .with('close', () => (
+              <Trans
+                locale={locale}
+                i18nKey="results.footprintBlock.carbone.message.close">
+                <strong className="text-default">
+                  Votre empreinte ressemble à celle de millions de Français.
+                </strong>{' '}
+                Ensemble, nous pouvons faire baisser notre moyenne : trouvez
+                votre première action, et embarquez vos proches.
+              </Trans>
+            ))
+            .with('below', () => (
+              <Trans
+                locale={locale}
+                i18nKey="results.footprintBlock.carbone.message.below">
+                <strong className="text-default">
+                  Bravo, vous montrez la voie !
+                </strong>{' '}
+                Votre empreinte tire notre moyenne vers le bas. Continuez sur
+                votre lancée, et embarquez vos proches en leur montrant
+                l’exemple !
+              </Trans>
+            ))
+            .exhaustive()}
         </p>
 
         <ButtonLink href={END_PAGE_ACTIONS_PATH} color="primary" size="md">
@@ -226,6 +229,7 @@ export default function CarbonFootprintHero({
         value={value}
         orientation="vertical"
         className="hidden lg:block"
+        describedById="footprint-average-legend"
       />
     </Card>
   )

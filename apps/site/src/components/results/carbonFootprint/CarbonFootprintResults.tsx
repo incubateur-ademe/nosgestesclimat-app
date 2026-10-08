@@ -20,8 +20,8 @@ interface Props {
   tendency?: Tendency
   hasPreviousSimulation?: boolean
   group?: GroupDisplayInfo | null
-  /** Dummy results (error page backdrop) must not expose anyone to the test */
-  disableHeroTest?: boolean
+  /** Whether to take part in the hero display A/B test (dummy results, e.g. error page backdrop, must not) */
+  enableHeroTest?: boolean
 }
 
 export default function CarbonFootprintResults({
@@ -31,7 +31,7 @@ export default function CarbonFootprintResults({
   tendency,
   hasPreviousSimulation = false,
   group,
-  disableHeroTest = false,
+  enableHeroTest = false,
 }: Props) {
   const currentHero = (
     <FootprintBlock
@@ -55,9 +55,7 @@ export default function CarbonFootprintResults({
 
   return (
     <>
-      {disableHeroTest ? (
-        currentHero
-      ) : (
+      {enableHeroTest ? (
         <CarbonFootprintHeroSwitch
           control={currentHero}
           test={
@@ -69,6 +67,8 @@ export default function CarbonFootprintResults({
             />
           }
         />
+      ) : (
+        currentHero
       )}
 
       <FootprintDetail

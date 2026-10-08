@@ -72,6 +72,7 @@ export default async function FinPage({
         locale={locale as Locale}
         tendency={result.tendency ?? undefined}
         hasPreviousSimulation={result.tendency !== null}
+        enableHeroTest
         group={result.group ? getGroupDisplayInfo(result.group) : null}
       />
 
