@@ -7,30 +7,19 @@ import { captureException } from '@sentry/nextjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createVerificationCode } from '../create-verification-code'
 
-const mocks = vi.hoisted(() => {
-  // Persists across the tests of this file, like a real Redis would.
-  const storedKeys = new Set<string>()
-
-  return {
-    redisSet: vi.fn((key: string) => {
-      if (storedKeys.has(key)) {
-        return null
-      }
-      storedKeys.add(key)
-
-      return 'OK'
-    }),
-    createVerificationCode: vi.fn(),
-    sendEmail: vi.fn(),
-    after: vi.fn(),
-    loggerInfo: vi.fn(),
-    loggerError: vi.fn(),
-  }
-})
-
-vi.mock('@/adapters/redis/client', () => ({
-  redis: { set: mocks.redisSet },
+const mocks = vi.hoisted(() => ({
+  createVerificationCode: vi.fn(),
+  sendEmail: vi.fn(),
+  after: vi.fn(),
+  loggerInfo: vi.fn(),
+  loggerError: vi.fn(),
 }))
+
+vi.mock('@/adapters/redis/client', async () => {
+  const { mockRedisClient } = await import('@/helpers/tests/mockRedisClient')
+
+  return { redis: mockRedisClient() }
+})
 
 vi.mock('@/adapters/brevoClient', () => ({
   sendEmail: mocks.sendEmail,
