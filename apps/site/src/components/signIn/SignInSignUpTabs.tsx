@@ -1,10 +1,10 @@
 'use client'
 
-import Trans from '@/components/translation/trans/TransClient'
-import { SIGNIN_MODE, SIGNUP_MODE } from '@/constants/authentication/modes'
-import Tabs, { type TabItem } from '@/design-system/layout/Tabs'
+import Tabs from '@/design-system/layout/Tabs'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { AuthenticationMode } from '@/types/authentication'
+import { useSearchParams } from 'next/navigation'
+import { getTabs } from './_helpers/getTabs'
 
 interface Props {
   mode: AuthenticationMode
@@ -14,24 +14,12 @@ interface Props {
 export default function SigninSignupTabs({ mode, className }: Props) {
   const { t } = useClientTranslation()
 
-  const tabItems: TabItem[] = [
-    {
-      id: 'connexion',
-      label: <Trans i18nKey="login.list.login.label">Se connecter</Trans>,
-      href: './connexion',
-      isActive: mode === SIGNIN_MODE,
-      tab: 'connexion',
-      prefetch: false,
-    },
-    {
-      id: 'inscription',
-      label: <Trans i18nKey="login.list.signin.label">Créer un compte</Trans>,
-      href: './inscription',
-      isActive: mode === SIGNUP_MODE,
-      tab: 'inscription',
-      prefetch: false,
-    },
-  ]
+  const searchParams = useSearchParams()
+
+  const tabItems = getTabs({
+    searchParams,
+    mode,
+  })
 
   return (
     <div className={className}>

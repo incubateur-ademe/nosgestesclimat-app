@@ -988,8 +988,6 @@ entries:
   login.colourBlock.highlight2.title.strong.lock: progresser dans vos actions climat
   login.login.title: Access your Nos Gestes Climat area
   login.login.title.lock: Accédez à votre espace Nos Gestes Climat
-  signup.title: Create your Nos Gestes Climat space
-  signup.title.lock: Créez votre espace Nos Gestes Climat
   signIn.verificationForm.email.verificationCode.prefix: Enter the
   signIn.verificationForm.email.verificationCode.prefix.lock: Entrez le
   signIn.verificationForm.email.verificationCode.strong: verification code
@@ -1829,8 +1827,6 @@ entries:
   actions.components.actionCard.link.lock: Voir l'action<1> "{{actionTitle}}"</1>
   actions.components.highestImpactActionsSection.testWhiteBackground.title: Here are your 3 actions with the greatest impact
   actions.components.highestImpactActionsSection.testWhiteBackground.title.lock: Voici vos 3 actions qui auront le plus d'impact
-  actions.components.highestImpactActionsSection.testWhiteBackground.description: This is where most of your footprint is decided.
-  actions.components.highestImpactActionsSection.testWhiteBackground.description.lock: C'est ici que se joue l'essentiel de votre empreinte.
   actions.components.actionCard.highlighted.link: View the action
   actions.components.actionCard.highlighted.link.lock: Voir l'action
   actions.components.actionCard.highlighted.potentialImpact: Potential impact
@@ -2201,24 +2197,10 @@ entries:
   footer.ademe.ariaLabel: ADEME (opens in a new window)
   footer.ademe.ariaLabel.lock: ADEME (ouvrir dans une nouvelle fenêtre)
   Cette section est générée via Posthog.: This section is generated via Posthog.
-  actions.components.actionCard.highlighted.addButton.short: Add
-  actions.components.actionCard.highlighted.addButton.short.lock: Ajouter
-  actions.commitToActionButton.success: Action selected successfully.
-  actions.commitToActionButton.success.lock: Action sélectionnée avec succès.
-  actions.components.actionCard.highlighted.addedButton.short: Added
-  actions.components.actionCard.highlighted.addedButton.short.lock: Ajouté
-  actions.mySuggestions.otherActionsTitle: All your actions, organised by category
-  actions.mySuggestions.otherActionsTitle.lock: Toutes vos actions, classées par catégorie
-  actions.components.actionCard.highlighted.addButton.full: Add to my plan
-  actions.components.actionCard.highlighted.addButton.full.lock: Ajouter à mon plan
+  actions.commitToActionButton.success: Added to your action plan
+  actions.commitToActionButton.success.lock: Ajouté à votre plan d'action
   actions.commitToActionButton.error: An error has occurred. Please try again.
   actions.commitToActionButton.error.lock: Une erreur s'est produite, veuillez réessayer.
-  actions.actionPlanPage.metaTitle: My suggestions – Nos Gestes Climat
-  actions.actionPlanPage.metaTitle.lock: Mes suggestions - Nos Gestes Climat
-  actions.mySuggestions.otherActionsDescription: These actions are tailored to your answers in the test. Choose the ones that seem achievable to you and add them to your action plan!
-  actions.mySuggestions.otherActionsDescription.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
-  actions.actionPlanPage.metaDescription: My personalised suggestions for actions I can take to reduce my carbon footprint with Nos Gestes Climat
-  actions.actionPlanPage.metaDescription.lock: Mes suggestions personnalisées d'actions à mettre en place pour réduire mon empreinte carbone avec Nos Gestes Climat
   actions.plan.header.title: Draw up your action plan
   actions.plan.header.title.lock: Construisez votre plan d'action
   actions.plan.header.description: This is where the bulk of your impact is determined. Discover your personalised actions and add those you can implement to your action plan.
@@ -2227,3 +2209,41 @@ entries:
   actions.plan.otherActions.title.lock: Toutes vos actions, classées par catégorie
   actions.plan.otherActions.description: These actions are tailored to your answers in the test. Choose the ones that seem achievable to you and add them to your action plan!
   actions.plan.otherActions.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
+  actions.plan.links.exploreActions: Explore the shares
+  actions.plan.links.exploreActions.lock: Explorer les actions
+  actions.components.actionCard.highlighted.addedButton.tooltip: Remove from your plan
+  actions.components.actionCard.highlighted.addedButton.tooltip.lock: Retirer de votre plan
+  actions.basket.title.withActionChoices: My selection of shares
+  actions.basket.title.withActionChoices.lock: Ma sélection d'actions
+  actions.components.actionCard.highlighted.addButton.add: Add to my plan
+  actions.components.actionCard.highlighted.addButton.add.lock: Ajouter à mon plan
+  actions.basket.saveButton.ariaLabel: Save my action plan and go to my action plan page
+  actions.basket.saveButton.ariaLabel.lock: Sauvegarder mon plan d'actions et accéder à ma page plan d'actions
+  actions.components.actionCard.highlighted.addedButton.label: Added
+  actions.components.actionCard.highlighted.addedButton.label.lock: Ajouté
+  actions.basket.subtitle.empty: Add shares to your selection.
+  actions.basket.subtitle.empty.lock: Ajoutez des actions à votre sélection.
+  actions.basket.saveButton.label: Save my action plan
+  actions.basket.saveButton.label.lock: Sauvegarder mon plan d'action
+  actions.components.actionCard.highlighted.addedButton.ariaLabel: Added; click again to remove the action from your plan
+  actions.components.actionCard.highlighted.addedButton.ariaLabel.lock: Ajouté, cliquer à nouveau pour retirer l'action de votre plan
+  actions.basket.informativeBlock.content: Your selection is empty. Browse the categories to add actions that you can implement.
+  actions.basket.informativeBlock.content.lock: Votre sélection est vide. Parcourez les catégories pour ajouter des actions que vous pourrez mettre en place.
+  actions.plan.links.myActionPlan: My action plan
+  actions.plan.links.myActionPlan.lock: Mon plan d'action
+  actions.seeActionPlanLink.mobile.label.firstLine: View my action plan
+  actions.seeActionPlanLink.mobile.label.firstLine.lock: Voir mon plan d'action
+  actions.seeActionPlanLink.mobile.label.secondLine: '{{actionChoicesLength}} action{{pluralSuffix}}'
+  actions.seeActionPlanLink.mobile.label.secondLine.lock: '{{actionChoicesLength}} action{{pluralSuffix}} '
+  login.actionPlan.buttonLabel: Sign up and view my action plan
+  login.actionPlan.buttonLabel.lock: M’inscrire et voir mon plan d’action
+  login.actionPlan.title: Create your account to access your action plan
+  login.actionPlan.title.lock: Créez votre espace pour accéder à votre plan d’action
+  actions.plan.abandonCommitment.button.ariaLabel: Remove the share from your selection
+  actions.plan.abandonCommitment.button.ariaLabel.lock: Retirer l'action de votre sélection
+  actions.basket.subtitle.choices_other: '{{numberOfCommittedActions}} shares in your selection'
+  actions.basket.subtitle.choices_other.lock: '{{numberOfCommittedActions}} actions dans votre sélection'
+  actions.basket.subtitle.choices_many: '{{numberOfCommittedActions}} shares in your selection'
+  actions.basket.subtitle.choices_many.lock: '{{numberOfCommittedActions}} actions dans votre sélection'
+  actions.basket.subtitle.choices_one: '{{numberOfCommittedActions}} shares in your selection'
+  actions.basket.subtitle.choices_one.lock: '{{numberOfCommittedActions}} actions dans votre sélection'

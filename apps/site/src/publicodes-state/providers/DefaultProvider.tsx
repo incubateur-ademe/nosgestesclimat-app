@@ -2,6 +2,7 @@
 import { IframeOptionsProvider } from '@/app/[locale]/_components/mainLayoutProviders/IframeOptionsContext'
 import CookieConsent from '@/components/cookies/CookieConsent'
 import { CookieConsentProvider } from '@/components/cookies/useCookieManagement'
+import { TooltipProvider } from '@/design-system/shadcn/tooltip'
 import { MotionConfig } from 'framer-motion'
 
 export default function DefaultProvider({
@@ -14,7 +15,9 @@ export default function DefaultProvider({
       <CookieConsentProvider>
         <CookieConsent />
 
-        <MotionConfig reducedMotion="user">{children}</MotionConfig>
+        <MotionConfig reducedMotion="user">
+          <TooltipProvider>{children}</TooltipProvider>
+        </MotionConfig>
       </CookieConsentProvider>
     </IframeOptionsProvider>
   )

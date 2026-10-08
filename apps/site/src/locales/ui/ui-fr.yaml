@@ -786,7 +786,6 @@ entries:
   actions.detailPage.impact.title: Réduction max sur votre empreinte
   actions.detailPage.impact.value: <0>{{formattedValue}}</0> {{unit}} CO<4>2</4>e / an
   actions.components.highestImpactActionsSection.testWhiteBackground.title: Voici vos 3 actions qui auront le plus d'impact
-  actions.components.highestImpactActionsSection.testWhiteBackground.description: C'est ici que se joue l'essentiel de votre empreinte.
   actions.components.actionCard.highlighted.link: Voir l'action
   actions.components.actionCard.highlighted.potentialImpact: Impact potentiel
   actions.components.actionCard.highlighted.footprintShare: soit {{percentage}} % de votre empreinte totale
@@ -834,7 +833,6 @@ entries:
   signup.colourBlock.highlight2.title.strong2: suivez vos progrès
   signup.colourBlock.highlight3.title.middle: et
   signup.colourBlock.highlight3.title.strong1: Lancez
-  signup.title: Créez votre espace Nos Gestes Climat
   signIn.verificationForm.email.verificationCode.prefix: Entrez le
   signIn.verificationForm.email.verificationCode.strong: code de vérification
   signIn.verificationForm.email.verificationCode.suffix: 'envoyé à '
@@ -1459,16 +1457,28 @@ entries:
   shared.french: français
   Statistiques publiques du site Nos Gestes Climat.: Statistiques publiques du site Nos Gestes Climat.
   switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
-  actions.actionPlanPage.metaDescription: Mes suggestions personnalisées d'actions à mettre en place pour réduire mon empreinte carbone avec Nos Gestes Climat
-  actions.actionPlanPage.metaTitle: Mes suggestions - Nos Gestes Climat
   actions.commitToActionButton.error: Une erreur s'est produite, veuillez réessayer.
-  actions.commitToActionButton.success: Action sélectionnée avec succès.
-  actions.components.actionCard.highlighted.addButton.full: Ajouter à mon plan
-  actions.components.actionCard.highlighted.addButton.short: Ajouter
-  actions.components.actionCard.highlighted.addedButton.short: Ajouté
-  actions.mySuggestions.otherActionsDescription: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
-  actions.mySuggestions.otherActionsTitle: Toutes vos actions, classées par catégorie
+  actions.commitToActionButton.success: Ajouté à votre plan d'action
   actions.plan.header.description: C'est ici que se joue l'essentiel de votre empreinte. Découvrez vos actions personnalisées et ajoutez celles que vous pouvez mettre en place dans votre plan d’action.
   actions.plan.header.title: Construisez votre plan d'action
   actions.plan.otherActions.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
   actions.plan.otherActions.title: Toutes vos actions, classées par catégorie
+  actions.basket.informativeBlock.content: Votre sélection est vide. Parcourez les catégories pour ajouter des actions que vous pourrez mettre en place.
+  actions.basket.saveButton.ariaLabel: Sauvegarder mon plan d'actions et accéder à ma page plan d'actions
+  actions.basket.saveButton.label: Sauvegarder mon plan d'action
+  actions.basket.subtitle.empty: Ajoutez des actions à votre sélection.
+  actions.basket.title.withActionChoices: Ma sélection d'actions
+  actions.components.actionCard.highlighted.addButton.add: Ajouter à mon plan
+  actions.components.actionCard.highlighted.addedButton.ariaLabel: Ajouté, cliquer à nouveau pour retirer l'action de votre plan
+  actions.components.actionCard.highlighted.addedButton.label: Ajouté
+  actions.components.actionCard.highlighted.addedButton.tooltip: Retirer de votre plan
+  actions.plan.links.exploreActions: Explorer les actions
+  actions.plan.links.myActionPlan: Mon plan d'action
+  actions.seeActionPlanLink.mobile.label.firstLine: Voir mon plan d'action
+  actions.seeActionPlanLink.mobile.label.secondLine: '{{actionChoicesLength}} action{{pluralSuffix}} '
+  login.actionPlan.buttonLabel: M’inscrire et voir mon plan d’action
+  login.actionPlan.title: Créez votre espace pour accéder à votre plan d’action
+  actions.plan.abandonCommitment.button.ariaLabel: Retirer l'action de votre sélection
+  actions.basket.subtitle.choices_one: '{{numberOfCommittedActions}} actions dans votre sélection'
+  actions.basket.subtitle.choices_many: '{{numberOfCommittedActions}} actions dans votre sélection'
+  actions.basket.subtitle.choices_other: '{{numberOfCommittedActions}} actions dans votre sélection'

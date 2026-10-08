@@ -5,6 +5,7 @@ import { simulationFactory } from '../../../simulations/factories/simulation.fac
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
+import { getPersonalizedActionDetails } from '../get-personalized-action-details.service.ts'
 import { getPersonalizedActionsCatalogue } from '../get-personalized-actions-catalogue.service.ts'
 
 describe('getPersonalizedActionsCatalogue', () => {
@@ -30,6 +31,7 @@ describe('getPersonalizedActionsCatalogue', () => {
         assessmentStatus: null,
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
         topActions: [],
+        plan: null,
       })
     })
   })
@@ -45,6 +47,7 @@ describe('getPersonalizedActionsCatalogue', () => {
         assessmentStatus: 'never-assessed',
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
         topActions: [],
+        plan: null,
       })
     })
 
@@ -75,6 +78,7 @@ describe('getPersonalizedActionsCatalogue', () => {
         assessmentStatus: 'never-assessed',
         actions: [expect.objectContaining({ id: action.id, assessment: null })],
         topActions: [],
+        plan: null,
       })
     })
   })
@@ -98,6 +102,7 @@ describe('getPersonalizedActionsCatalogue', () => {
             expect.objectContaining({ id: action.id, assessment: null }),
           ],
           topActions: [],
+          plan: null,
         })
       }
     )
@@ -145,6 +150,7 @@ describe('getPersonalizedActionsCatalogue', () => {
           expect.objectContaining({ id: inapplicable.id, assessment: null }),
         ]),
         topActions: [],
+        plan: null,
       })
     })
   })
@@ -189,6 +195,7 @@ describe('getPersonalizedActionsCatalogue', () => {
         topActions: [
           { ...applicable, assessment: applicableAssessment, choice: null },
         ],
+        plan: null,
       })
     })
 
@@ -249,6 +256,7 @@ describe('getPersonalizedActionsCatalogue', () => {
           { ...high, assessment: highAssessment, choice: null },
           { ...low, assessment: lowAssessment, choice: null },
         ],
+        plan: null,
       })
     })
 
@@ -330,11 +338,13 @@ describe('getPersonalizedActionsCatalogue', () => {
         assessmentStatus: 'completed',
         actions: [],
         topActions: [],
+        plan: null,
       })
     })
 
-    it('returns actions with choice when a user has committed to actions', async () => {
+    it('returns a plan when a user has committed an action', async () => {
       const action = await actionFactory.published().create()
+
       const user = await userFactory.create()
       const simulation = await simulationFactory
         .completed()
@@ -345,40 +355,70 @@ describe('getPersonalizedActionsCatalogue', () => {
         .params({ simulationId: simulation.id, actionId: action.id })
         .applicable({ impact: 1000 })
         .create()
-
       await actionFactory.chosen({
         actionId: action.id,
         userId: user.id,
       })
-      const choice = await prisma.actionChoice.findFirst({
-        where: {
-          actionId: action.id,
-          userId: user.id,
-        },
-      })
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
 
-      expect(result).toEqual({
-        assessmentStatus: 'completed',
-        actions: expect.arrayContaining([
-          expect.objectContaining({
-            id: action.id,
-            choice: {
-              type: choice?.type,
-              chosenAt: choice?.chosenAt,
-            },
-          }),
-        ]),
-        topActions: expect.arrayContaining([
-          expect.objectContaining({
-            id: action.id,
-            choice: {
-              type: choice?.type,
-              chosenAt: choice?.chosenAt,
-            },
-          }),
-        ]),
+      const personalizedAction = await getPersonalizedActionDetails(
+        action.slug,
+        'fr',
+        user.id
+      )
+
+      expect(result.plan).toEqual({
+        numberOfCommittedActions: 1,
+        totalImpact: personalizedAction?.action?.assessment?.impact ?? 0,
+      })
+    })
+
+    it('returns a plan with the summed impact of the chosen actions', async () => {
+      const [action1, action2] = await Promise.all([
+        actionFactory.published().create(),
+        actionFactory.published().create(),
+      ])
+
+      const user = await userFactory.create()
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: user.id })
+        .withCompletedComputation()
+        .create()
+      await Promise.all([
+        actionAssessmentFactory
+          .params({ simulationId: simulation.id, actionId: action1.id })
+          .applicable({ impact: 1000 })
+          .create(),
+        actionAssessmentFactory
+          .params({ simulationId: simulation.id, actionId: action2.id })
+          .applicable({ impact: 1000 })
+          .create(),
+      ])
+      await Promise.all([
+        actionFactory.chosen({
+          actionId: action1.id,
+          userId: user.id,
+        }),
+        actionFactory.chosen({
+          actionId: action2.id,
+          userId: user.id,
+        }),
+      ])
+
+      const result = await getPersonalizedActionsCatalogue(user.id, 'fr')
+
+      const [personalizedAction1, personalizedAction2] = await Promise.all([
+        getPersonalizedActionDetails(action1.slug, 'fr', user.id),
+        getPersonalizedActionDetails(action2.slug, 'fr', user.id),
+      ])
+
+      expect(result.plan).toEqual({
+        numberOfCommittedActions: 2,
+        totalImpact:
+          (personalizedAction1?.action?.assessment?.impact ?? 0) +
+          (personalizedAction2?.action?.assessment?.impact ?? 0),
       })
     })
   })
