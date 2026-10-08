@@ -93,7 +93,11 @@ describe('login', () => {
       failure(new RateLimitedError())
     )
 
-    const result = await login({ email: 'user@example.com', code: '123456' })
+    const result = await login({
+      intent: 'create-account',
+      email: 'user@example.com',
+      code: '123456',
+    })
 
     expect(result).toEqual(failure(new RateLimitedError()))
     expect(mocks.rateLimitSameRequest).toHaveBeenCalledWith({
@@ -119,8 +123,16 @@ describe('login', () => {
       failure(new InvalidVerificationCodeError())
     )
 
-    const first = await login({ email: 'Case@Example.com', code: '123456' })
-    const second = await login({ email: 'case@example.com', code: '123456' })
+    const first = await login({
+      intent: 'create-account',
+      email: 'Case@Example.com',
+      code: '123456',
+    })
+    const second = await login({
+      intent: 'create-account',
+      email: 'case@example.com',
+      code: '123456',
+    })
 
     expect(first).toEqual(failure(new InvalidCodeError()))
     expect(second).toEqual(failure(new RateLimitedError()))
@@ -136,7 +148,11 @@ describe('login', () => {
   })
 
   it('returns UnknownCodeError on a malformed code', async () => {
-    const result = await login({ email: 'user@example.com', code: '12ab' })
+    const result = await login({
+      intent: 'create-account',
+      email: 'user@example.com',
+      code: '12ab',
+    })
 
     expect(result).toEqual(failure(new UnknownCodeError()))
     expect(mocks.loginService).not.toHaveBeenCalled()
@@ -144,9 +160,22 @@ describe('login', () => {
 
   it('returns UnknownCodeError on an unsupported locale', async () => {
     const result = await login({
+      intent: 'create-account',
       email: 'user@example.com',
       code: '123456',
       locale: 'de',
+    })
+
+    expect(result).toEqual(failure(new UnknownCodeError()))
+    expect(mocks.loginService).not.toHaveBeenCalled()
+  })
+
+  it('returns UnknownCodeError on an unknown intent', async () => {
+    const result = await login({
+      // @ts-expect-error an intent outside the contract must be rejected
+      intent: 'not-an-intent',
+      email: 'user@example.com',
+      code: '123456',
     })
 
     expect(result).toEqual(failure(new UnknownCodeError()))
@@ -159,6 +188,7 @@ describe('login', () => {
     )
 
     const result = await login({
+      intent: 'create-account',
       email: 'User@Example.com',
       code: '123456',
       locale: 'en',
@@ -168,6 +198,7 @@ describe('login', () => {
       email: 'user@example.com',
       code: '123456',
       locale: 'en',
+      intent: 'create-account',
       sessionUserId,
     })
     expect(mocks.revokeAllSessions).toHaveBeenCalledWith(sessionUserId)
@@ -187,6 +218,7 @@ describe('login', () => {
     )
 
     const result = await login({
+      intent: 'create-account',
       email: 'user@example.com',
       code: '123456',
       locale: 'en',
@@ -196,6 +228,7 @@ describe('login', () => {
       email: 'user@example.com',
       code: '123456',
       locale: 'en',
+      intent: 'create-account',
       sessionUserId: undefined,
     })
     expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
@@ -214,6 +247,7 @@ describe('login', () => {
     )
 
     await login({
+      intent: 'create-account',
       email: 'user@example.com',
       code: '123456',
       locale: 'en',
@@ -223,11 +257,13 @@ describe('login', () => {
       userId: sessionUserId,
       email: 'us***@ex***',
       locale: 'en',
+      intent: 'create-account',
     })
     expect(mocks.loggerInfo).toHaveBeenCalledWith('Login succeeded', {
       userId: sessionUserId,
       email: 'us***@ex***',
       locale: 'en',
+      intent: 'create-account',
       mode: 'signIn',
       durationMs: expect.any(Number) as number,
     })
@@ -238,12 +274,17 @@ describe('login', () => {
       success({ user: verifiedUser, mode: 'signIn' })
     )
 
-    await login({ email: 'User@Example.com', code: '123456' })
+    await login({
+      intent: 'create-account',
+      email: 'User@Example.com',
+      code: '123456',
+    })
 
     expect(mocks.loggerInfo).toHaveBeenCalledWith('Login attempt', {
       userId: sessionUserId,
       email: 'us***@ex***',
       locale: 'fr',
+      intent: 'create-account',
     })
   })
 
@@ -252,7 +293,11 @@ describe('login', () => {
       failure(new InvalidVerificationCodeError())
     )
 
-    const result = await login({ email: 'user@example.com', code: '000000' })
+    const result = await login({
+      intent: 'create-account',
+      email: 'user@example.com',
+      code: '000000',
+    })
 
     expect(result).toEqual(failure(new InvalidCodeError()))
     expect(captureException).toHaveBeenCalledWith(
@@ -272,7 +317,11 @@ describe('login', () => {
   it('maps an unexpected error to UnknownCodeError', async () => {
     mocks.loginService.mockRejectedValue(new Error('Prisma is down'))
 
-    const result = await login({ email: 'user@example.com', code: '123456' })
+    const result = await login({
+      intent: 'create-account',
+      email: 'user@example.com',
+      code: '123456',
+    })
 
     expect(result).toEqual(failure(new UnknownCodeError()))
     expect(captureException).toHaveBeenCalledWith(expect.any(Error), {
@@ -286,7 +335,11 @@ describe('login', () => {
   it('collapses a getUserSession throw into a Result failure instead of rejecting the mutation', async () => {
     mocks.getUserSession.mockRejectedValue(new Error('session store down'))
 
-    const result = await login({ email: 'user@example.com', code: '123456' })
+    const result = await login({
+      intent: 'create-account',
+      email: 'user@example.com',
+      code: '123456',
+    })
 
     expect(result).toEqual(failure(new UnknownCodeError()))
     expect(mocks.loginService).not.toHaveBeenCalled()

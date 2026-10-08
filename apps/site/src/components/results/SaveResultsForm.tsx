@@ -22,6 +22,7 @@ export default function SaveResultsForm({
     <UserProvider userSession={userSession}>
       <div className="dark">
         <AuthenticateUserForm
+          intent="save-simulation"
           buttonColor="borderless"
           isVerticalLayout={false}
           buttonLabel={

@@ -64,6 +64,7 @@ export default async function Page({
               mode={SIGNIN_MODE}
             />
             <AuthenticateUserForm
+              intent="create-organisation"
               onComplete={redirectAfterLogin}
               tracker={captureOrganisationsLoginComplete}
             />

@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation'
 interface EmailPageData {
   isSchoolMode: boolean
   hasContest: boolean
+  hasPoll: boolean
   currentSimulation: Simulation
   organisationName?: string
 }
@@ -39,6 +40,7 @@ export async function getEmailPageData(): Promise<EmailPageData> {
     currentSimulation: toSimulationDto(result.simulation),
     isSchoolMode,
     hasContest,
+    hasPoll: poll !== undefined,
     organisationName,
   }
 }

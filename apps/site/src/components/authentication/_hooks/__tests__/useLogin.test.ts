@@ -29,7 +29,7 @@ describe('useLogin', () => {
     vi.clearAllMocks()
   })
 
-  it('calls the login service with email, code and locale on mutateAsync', async () => {
+  it('calls the login service with email, code, intent and locale on mutateAsync', async () => {
     mockLoginFn.mockResolvedValue({ userId: 'user-123' })
 
     const { result } = renderHook(() => useLogin(), {
@@ -39,12 +39,14 @@ describe('useLogin', () => {
     await result.current.mutateAsync({
       email: 'user@example.com',
       code: '123456',
+      intent: 'create-account',
     })
 
     await waitFor(() => {
       expect(mockLoginFn).toHaveBeenCalledWith({
         email: 'user@example.com',
         code: '123456',
+        intent: 'create-account',
         locale: 'fr',
       })
     })
@@ -62,6 +64,7 @@ describe('useLogin', () => {
       result.current.mutateAsync({
         email: 'user@example.com',
         code: '123456',
+        intent: 'create-account',
       })
     ).rejects.toThrow('Network error')
 

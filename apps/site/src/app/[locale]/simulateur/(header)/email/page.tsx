@@ -19,8 +19,13 @@ export default async function Email({
   const { t } = getServerTranslation({ locale })
 
   const user = await getUserSession()
-  const { currentSimulation, isSchoolMode, hasContest, organisationName } =
-    await getEmailPageData()
+  const {
+    currentSimulation,
+    isSchoolMode,
+    hasContest,
+    hasPoll,
+    organisationName,
+  } = await getEmailPageData()
 
   if (confirm === 'true') {
     return <EmailConfirmation organisationName={organisationName ?? ''} />
@@ -106,6 +111,7 @@ export default async function Email({
       <UserProvider userSession={user} simulation={currentSimulation}>
         <QueryClientProviderWrapper>
           <AuthenticateUserForm
+            intent={hasPoll ? 'participate-to-poll' : 'save-simulation'}
             inputLabel={
               isSchoolMode ? (
                 <Trans i18nKey="tutorial.email.title.youth" locale={locale}>
