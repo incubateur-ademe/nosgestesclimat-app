@@ -32,26 +32,25 @@ import type { DottedName, NGCRule } from '@incubateur-ademe/nosgestesclimat'
 ]
  */
 
-type subCatWithVariations = {
-  si: string
-  alors: {
-    somme: DottedName[]
-  }
-}[]
+type SommeVariations = { si: string; alors: { somme: DottedName[] } }[]
 
-export default function getSomme(rawNode?: NGCRule): DottedName[] | undefined {
+export const getSomme = (rawNode?: NGCRule): DottedName[] | undefined => {
   if (!rawNode) return undefined
 
   if ('formule' in rawNode) {
-    const formule = rawNode.formule as Record<string, unknown>
+    const formule = rawNode.formule
 
-    if (typeof formule === 'string') {
-      return undefined
+    // `bilan . formule` can be a string (`'services sociétaux'`) or a number,
+    // neither of which carries a somme.
+    if (typeof formule !== 'object' || formule === null) return undefined
+
+    const formuleNode = formule as Record<string, unknown>
+
+    if ('variations' in formuleNode) {
+      return (formuleNode.variations as SommeVariations)[0]?.alors?.somme
     }
 
-    return 'variations' in formule
-      ? (formule.variations as subCatWithVariations)[0]?.alors?.somme
-      : (formule.somme as DottedName[])
+    return formuleNode.somme as DottedName[] | undefined
   }
 
   if ('somme' in rawNode) {
@@ -59,8 +58,7 @@ export default function getSomme(rawNode?: NGCRule): DottedName[] | undefined {
   }
 
   if ('variations' in rawNode) {
-    const variations = rawNode.variations as subCatWithVariations
-    return variations[0].alors.somme
+    return (rawNode.variations as SommeVariations)[0]?.alors?.somme
   }
 
   return undefined

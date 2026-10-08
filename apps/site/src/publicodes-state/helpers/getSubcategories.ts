@@ -5,8 +5,8 @@ import type {
   NGCRuleNode,
   NGCRulesNodes,
 } from '@incubateur-ademe/nosgestesclimat'
+import { getSomme } from '@nosgestesclimat/core/features/simulations/helpers/get-somme'
 import { utils } from 'publicodes'
-import getSomme from './getSomme'
 
 export function getSubcategories({
   categories,
