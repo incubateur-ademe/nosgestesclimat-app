@@ -180,16 +180,13 @@ export const updateUserAndContact = async ({
   await EventBus.once(userUpdatedEvent)
 
   // The response keeps the aggregate's internal shape out of the API: the
-  // user is returned flat, with the verified-only fields on verified
-  // accounts and the age range on anonymous ones.
-  const { type: _type, ageRange, ...userDto } = user
-  const userFields =
-    user.type === 'verified' ? userDto : { ...userDto, ageRange }
+  // user is returned flat.
+  const { type: _type, ...userDto } = user
 
   return {
     verified,
     user: userToDto({
-      ...userFields,
+      ...userDto,
       ...(user.email
         ? {
             contact: verified
