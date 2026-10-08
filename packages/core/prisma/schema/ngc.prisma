@@ -447,17 +447,19 @@ model Survey {
 }
 
 model User {
-  id            String               @id @db.Uuid
-  name          String?
-  email         String?
-  ageRange      AgeRange?
-  administrator GroupAdministrator[]
-  member        GroupParticipant[]
-  simulations   Simulation[]
-  refreshTokens RefreshToken[]
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
-  verifiedUsers VerifiedUser[]
+  id             String               @id @db.Uuid
+  name           String?
+  email          String?
+  ageRange       AgeRange?
+  administrator  GroupAdministrator[]
+  member         GroupParticipant[]
+  simulations    Simulation[]
+  refreshTokens  RefreshToken[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  /// Set when a session is issued to a verified account.
+  lastActivityAt DateTime?            @db.Timestamptz(3)
+  verifiedUsers  VerifiedUser[]
 
   @@schema("ngc")
 }
