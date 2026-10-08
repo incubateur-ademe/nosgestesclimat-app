@@ -1,8 +1,9 @@
 import type { SearchParams } from 'next/dist/server/request/search-params'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 
 interface Props {
   urlOrPathname: string
-  searchParams: SearchParams | undefined
+  searchParams: ReadonlyURLSearchParams | SearchParams | undefined
 }
 
 export function preserveSearchParams({

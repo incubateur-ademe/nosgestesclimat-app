@@ -4,12 +4,13 @@ import type { TabItem } from '@/design-system/layout/Tabs'
 import { preserveSearchParams } from '@/helpers/navigation/preserveSearchParams'
 import type { AuthenticationMode } from '@/types/authentication'
 import type { SearchParams } from 'next/dist/server/request/search-params'
+import type { ReadonlyURLSearchParams } from 'next/navigation'
 
 export function getTabs({
   searchParams,
   mode,
 }: {
-  searchParams: SearchParams | undefined
+  searchParams: ReadonlyURLSearchParams | SearchParams | undefined
   mode: AuthenticationMode
 }): TabItem[] {
   return [
