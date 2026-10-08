@@ -71,6 +71,19 @@ class ActionFactory extends Factory<Action, ActionFactoryTransientParams> {
     })
   }
 
+  async chosen({ userId, actionId }: { userId: string; actionId: string }) {
+    await prisma.actionChoice.create({
+      data: {
+        id: faker.string.uuid(),
+        userId,
+        actionId,
+        type: 'committed' as const,
+        chosenAt: new Date(),
+      },
+    })
+    return this
+  }
+
   /** Persist additional locale translations beyond the built `fr` one. */
   withTranslations(translations: ActionFactoryTransientParams['translations']) {
     return this.transient({ translations })

@@ -4,7 +4,6 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { actionAssessmentFactory } from '../../factories/action-assessment.factory.ts'
-import { actionChoiceFactory } from '../../factories/action-choice.factory.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
 import { getPersonalizedActionDetails } from '../get-personalized-action-details.service.ts'
 import { getPersonalizedActionsCatalogue } from '../get-personalized-actions-catalogue.service.ts'
@@ -364,18 +363,14 @@ describe('getPersonalizedActionsCatalogue', () => {
           .create(),
       ])
       await Promise.all([
-        actionChoiceFactory
-          .params({
-            actionId: action1.id,
-            userId: user.id,
-          })
-          .create(),
-        actionChoiceFactory
-          .params({
-            actionId: action2.id,
-            userId: user.id,
-          })
-          .create(),
+        actionFactory.chosen({
+          actionId: action1.id,
+          userId: user.id,
+        }),
+        actionFactory.chosen({
+          actionId: action2.id,
+          userId: user.id,
+        }),
       ])
 
       const result = await getPersonalizedActionsCatalogue(user.id, 'fr')

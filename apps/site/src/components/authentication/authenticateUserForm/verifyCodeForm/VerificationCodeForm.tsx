@@ -7,6 +7,7 @@ import Button from '@/design-system/buttons/Button'
 import { defaultInputStyleClassNames } from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { twMerge } from 'cn'
 import {
   type ChangeEvent,
   type FormEvent,
@@ -15,7 +16,6 @@ import {
   useState,
 } from 'react'
 import { match } from 'ts-pattern'
-import { twMerge } from "cn";
 
 export default function VerificationCodeForm() {
   const { state, submitCode, clearCodeError } = useAuth()
