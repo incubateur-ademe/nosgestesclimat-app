@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+import { recordUserActivity } from '../../users/repositories/users.repository.ts'
 import {
   REFRESH_TOKEN_TTL_DAYS,
   SESSION_TTL_SECONDS,
@@ -21,6 +22,10 @@ export async function createSession(
   const expiresAt = new Date(
     Date.now() + REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000
   )
+
+  // Stamped before the token: a missing activity date lets the sweep mistake
+  // an active account for an idle one, and that mistake cannot be undone.
+  await recordUserActivity({ userId })
 
   await createRefreshToken({
     userId,

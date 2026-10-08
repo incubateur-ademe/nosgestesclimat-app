@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
+import { findUserLastActivityAt } from '../../../users/repositories/users.repository.ts'
 import { hashToken } from '../../helpers/hash-token.ts'
 import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
 import { createSession } from '../create-session.service.ts'
@@ -45,5 +46,21 @@ describe('createSession', () => {
     await expect(
       createSession('00000000-0000-0000-0000-000000000099')
     ).rejects.toThrow()
+  })
+
+  it('records the activity date of a verified session', async () => {
+    const user = await userFactory.verified().create()
+
+    await createSession(user.id, user.email)
+
+    expect(await findUserLastActivityAt({ userId: user.id })).toEqual(
+      expect.any(Date)
+    )
+  })
+
+  it('records the activity date of an unverified session too', async () => {
+    await createSession(userId)
+
+    expect(await findUserLastActivityAt({ userId })).toEqual(expect.any(Date))
   })
 })
