@@ -28,7 +28,7 @@ export function useActionCommitment(action: PersonalizedAction) {
         toast.success(
           t(
             'actions.commitToActionButton.success',
-            'Action sélectionnée avec succès.'
+            "Ajouté à votre plan d'action"
           ),
           {
             duration: TOAST_DISPLAY_DURATION,
@@ -59,15 +59,6 @@ export function useActionCommitment(action: PersonalizedAction) {
           co2PotentialInKg: action.assessment?.impact,
           eventName: 'action abandonned',
         })
-        toast.success(
-          t(
-            'actions.abandonActionCommitment.success',
-            'Action retirée avec succès.'
-          ),
-          {
-            duration: TOAST_DISPLAY_DURATION,
-          }
-        )
       } catch {
         toast.error(
           t(

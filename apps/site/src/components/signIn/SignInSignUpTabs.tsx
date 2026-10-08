@@ -17,8 +17,7 @@ export default function SigninSignupTabs({ mode, className }: Props) {
   const searchParams = useSearchParams()
 
   const tabItems = getTabs({
-    // Avoid type conflict between SearchParams and ReadonlyURLSearchParams
-    searchParams: Object.fromEntries(searchParams.entries()),
+    searchParams,
     mode,
   })
 

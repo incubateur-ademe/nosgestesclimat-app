@@ -38,7 +38,7 @@ export default function ActionsBasket({
       />
       <section
         aria-labelledby={titleId}
-        className="sticky top-22 mb-12 hidden w-80 rounded-xl border border-slate-200 p-4 lg:block">
+        className="sticky top-20.5 mt-21 mb-12 hidden w-80 rounded-xl border border-slate-200 p-4 lg:block">
         <div className="flex items-center gap-2.5">
           <h2 className="mb-0 text-lg/normal font-bold">
             <Trans
@@ -59,7 +59,7 @@ export default function ActionsBasket({
         <p className="m text-sm text-slate-600">
           {hasCommittedToActions ? (
             <Trans
-              i18nKey="actions.basket.subtitle.withChoices"
+              i18nKey="actions.basket.subtitle.choices"
               locale={locale}
               count={numberOfCommittedActions}
               values={{
