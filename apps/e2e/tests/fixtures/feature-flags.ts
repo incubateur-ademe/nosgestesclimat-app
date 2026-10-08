@@ -12,6 +12,7 @@ const DOMAIN = new URL(process.env.NEXT_PUBLIC_SITE_URL!).hostname
 export const DEFAULT_FLAGS = {
   'abc-test-layout-catalogue': 'control',
   'abc-test-action-card': 'control',
+  'ab-test-global-footprint-display': 'control',
 } satisfies DefaultFlagValues
 
 export class FeatureFlags {

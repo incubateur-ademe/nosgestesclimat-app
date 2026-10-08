@@ -11,6 +11,10 @@ export const FLAGS = {
     kind: 'variant',
     variants: ['control', 'cta', 'teaser-cta'],
   },
+  'ab-test-global-footprint-display': {
+    kind: 'variant',
+    variants: ['control', 'test-new-footprint-display'],
+  },
 } as const satisfies Record<string, FlagDefinition>
 
 export type FeatureFlagName = keyof typeof FLAGS

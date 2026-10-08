@@ -2035,7 +2035,7 @@ entries:
   event.podium.empty.type.public-services: local authority
   event.podium.empty.type.public-services.lock: collectivité
   event.podium.remainingList.ariaLabel.lock: Suite du classement
-  results.footprintBlock.actionsBlock.link: Find out about my activities
+  results.footprintBlock.actionsBlock.link: Discover my actions
   results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
   common.co2eAn.title: CO₂e per year
   common.co2eAn.title.lock: CO₂e / an
@@ -2211,3 +2211,35 @@ entries:
   group.ranking.expand.button.label.singular.lock: Afficher 1 autre participant
   group.ranking.expand.button.label.plural: 'View other participants’ {{croppedParticipantsLength}} '
   group.ranking.expand.button.label.plural.lock: Afficher les {{croppedParticipantsLength}} autres participants
+  results.footprintBlock.carbone.chart.average: Average*
+  results.footprintBlock.carbone.chart.average.lock: Moyenne*
+  results.footprintBlock.carbone.chart.label: 'Your footprint: {{footprint}}. Average of our users: {{average}}. Target 2050: {{objective}}.'
+  results.footprintBlock.carbone.chart.label.lock: 'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.'
+  results.footprintBlock.carbone.chart.objective: Target 2050
+  results.footprintBlock.carbone.chart.objective.lock: Objectif 2050
+  results.footprintBlock.carbone.chart.you: You
+  results.footprintBlock.carbone.chart.you.lock: Vous
+  results.footprintBlock.carbone.comparison.less: '{{delta}} {{unit}} less than the average*'
+  results.footprintBlock.carbone.comparison.less.lock: '{{delta}} {{unit}} de moins que la moyenne*'
+  results.footprintBlock.carbone.comparison.more: '{{delta}} {{unit}} more than the average*'
+  results.footprintBlock.carbone.comparison.more.lock: '{{delta}} {{unit}} de plus que la moyenne*'
+  results.footprintBlock.carbone.info.definition: CO₂e (CO₂ equivalent) brings together all the greenhouse gases you emit, notably through your travel, your food, your housing and your consumption.
+  results.footprintBlock.carbone.info.definition.lock: Le CO₂e (équivalent CO₂) regroupe tous les gaz à effet de serre que vous émettez, notamment via vos déplacements, votre alimentation, votre logement et votre consommation.
+  results.footprintBlock.carbone.info.impact: 'These gases trap heat in the atmosphere: the more they build up, the more the climate is disrupted, with more frequent heatwaves, droughts and floods.'
+  results.footprintBlock.carbone.info.impact.lock: 'Ces gaz retiennent la chaleur dans l’atmosphère : plus ils s’accumulent, plus le climat se dérègle, avec des canicules, sécheresses et inondations plus fréquentes.'
+  results.footprintBlock.carbone.info.label: What is a carbon footprint?
+  results.footprintBlock.carbone.info.label.lock: Qu’est-ce que l’empreinte carbone ?
+  results.footprintBlock.carbone.legend: '* Average of our users (more than 600,000 simulations per year).'
+  results.footprintBlock.carbone.legend.lock: '* Moyenne de nos utilisateurs (plus de 600 000 simulations par an).'
+  results.footprintBlock.carbone.message.above: <0>It’s never too late to reduce your impact!</0> Explore the actions you could take at your own level to lower your emissions.
+  results.footprintBlock.carbone.message.above.lock: <0>Il est toujours temps de réduire votre impact !</0> Explorez les actions que vous pourriez mettre en place à votre échelle pour faire baisser vos émissions.
+  results.footprintBlock.carbone.message.below: <0>Well done, you’re leading the way!</0> Your footprint brings our average down. Keep it up, and bring your loved ones along by setting an example!
+  results.footprintBlock.carbone.message.below.lock: <0>Bravo, vous montrez la voie !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches en leur montrant l’exemple !
+  results.footprintBlock.carbone.message.close: '<0>Your footprint is similar to that of millions of French people.</0> Together, we can bring our average down: find your first action, and bring your loved ones along.'
+  results.footprintBlock.carbone.message.close.lock: '<0>Votre empreinte ressemble à celle de millions de Français.</0> Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre première action, et embarquez vos proches.'
+  results.footprintBlock.carbone.title: Your carbon footprint
+  results.footprintBlock.carbone.title.lock: Votre empreinte carbone
+  results.footprintBlock.carbone.unitSuffix: of CO₂e per year
+  results.footprintBlock.carbone.unitSuffix.lock: de CO₂e / an
+  results.footprintBlock.carbone.comparison.equal: Equal to the average*
+  results.footprintBlock.carbone.comparison.equal.lock: Égal à la moyenne*
