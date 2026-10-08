@@ -3,6 +3,7 @@
 import Trans from '@/components/translation/trans/TransClient'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import { useLocale } from '@/hooks/useLocale'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
@@ -15,7 +16,6 @@ interface TimeLeft {
 
 interface Props {
   targetDate: Date
-  launchDateLabel: string
   primaryCtaHref: string
   secondaryCtaHref: string
 }
@@ -62,12 +62,22 @@ function AnimatedNumber({ value, label }: { value: number; label: string }) {
 
 export default function EventCountdown({
   targetDate,
-  launchDateLabel,
   primaryCtaHref,
   secondaryCtaHref,
 }: Props) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() =>
     calculateTimeLeft(targetDate)
+  )
+
+  const locale = useLocale()
+  const launchDateLabel = targetDate.toLocaleDateString(
+    locale === 'fr' ? 'fr-FR' : 'en-GB',
+    {
+      timeZone: 'Europe/Paris',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }
   )
 
   const { t } = useClientTranslation()

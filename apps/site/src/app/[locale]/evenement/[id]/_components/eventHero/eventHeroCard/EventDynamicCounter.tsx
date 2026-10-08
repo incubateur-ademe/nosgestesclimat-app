@@ -1,10 +1,11 @@
 import Trans from '@/components/translation/trans/TransServer'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
-import Emoji from '@/design-system/utils/Emoji'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import type { EventStatusWithoutNotStarted } from '../../../_types/event'
 import { COUNTER_BLOCK_ANIMATION_TOTAL } from './AnimatedCounterBlock'
 import ClientCircularProgressBar from './eventDynamicCounter/ClientCircularProgressBar'
+import EventLinks from './eventDynamicCounter/EventLinks'
+import ObjectiveStatus from './eventDynamicCounter/ObjectiveStatus'
+import StatusTitle from './eventDynamicCounter/StatusTitle'
 
 interface Props {
   locale: Locale
@@ -13,6 +14,8 @@ interface Props {
   progressPercentage: number
   primaryCtaHref: string
   secondaryCtaHref: string
+  endedCtaHref: string
+  status: EventStatusWithoutNotStarted
 }
 
 export default function EventDynamicCounter({
@@ -22,24 +25,14 @@ export default function EventDynamicCounter({
   progressPercentage,
   primaryCtaHref,
   secondaryCtaHref,
+  endedCtaHref,
+  status,
 }: Props) {
-  const { t } = getServerTranslation({ locale })
   const numberFormatter = new Intl.NumberFormat(locale)
 
   return (
     <div className="relative rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
-      <span className="mb-4 flex items-center text-green-700">
-        <span
-          aria-hidden
-          className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-green-700 align-baseline motion-reduce:animate-none"
-        />
-
-        <span className="text-xs font-bold uppercase">
-          <Trans i18nKey="event.dynamicCounter.text" locale={locale}>
-            EN DIRECT
-          </Trans>
-        </span>
-      </span>
+      <StatusTitle locale={locale} status={status} />
 
       <div className="mb-6 flex gap-4 md:gap-6">
         <div className="max-w-full min-w-16 md:min-w-28 lg:min-w-36">
@@ -51,31 +44,11 @@ export default function EventDynamicCounter({
 
         <div>
           <p className="mb-1! text-slate-600">
-            {progressPercentage === 100 ? (
-              <span>
-                <Trans
-                  i18nKey="event.dynamicCounter.target.title.topped"
-                  locale={locale}>
-                  Objectif atteint
-                </Trans>{' '}
-                <Emoji>🚀</Emoji>
-              </span>
-            ) : progressPercentage > 100 ? (
-              <span>
-                <Trans
-                  i18nKey="event.dynamicCounter.target.title.over"
-                  locale={locale}>
-                  Objectif dépassé
-                </Trans>{' '}
-                <Emoji>🚀</Emoji>
-              </span>
-            ) : (
-              <Trans
-                i18nKey="event.dynamicCounter.target.title.default"
-                locale={locale}>
-                Objectif
-              </Trans>
-            )}
+            <ObjectiveStatus
+              progressPercentage={progressPercentage}
+              locale={locale}
+              status={status}
+            />
           </p>
           <p>
             <span className="mb-1 flex flex-wrap items-baseline gap-1 leading-none! lg:flex-nowrap">
@@ -96,36 +69,13 @@ export default function EventDynamicCounter({
         </div>
       </div>
 
-      <div className="btn-group mb-4">
-        <ButtonLink
-          className="mb-3 w-full text-base lg:text-xl"
-          size="xl"
-          href={primaryCtaHref}
-          target="_blank"
-          aria-label={t(
-            'event.dynamicCounter.primaryCta.ariaLabel',
-            'Je mobilise mon organisation, ouvrir dans une nouvelle fenêtre'
-          )}>
-          <Trans i18nKey="event.dynamicCounter.primaryCta" locale={locale}>
-            Je mobilise mon organisation
-          </Trans>
-        </ButtonLink>
-
-        <ButtonLink
-          className="w-full text-base lg:text-xl"
-          href={secondaryCtaHref}
-          size="xl"
-          color="secondary"
-          target="_blank"
-          aria-label={t(
-            'event.dynamicCounter.secondaryCta.ariaLabel',
-            'Je participe individuellement, ouvrir dans une nouvelle fenêtre'
-          )}>
-          <Trans i18nKey="event.dynamicCounter.secondaryCta" locale={locale}>
-            Je participe individuellement
-          </Trans>
-        </ButtonLink>
-      </div>
+      <EventLinks
+        locale={locale}
+        primaryCtaHref={primaryCtaHref}
+        secondaryCtaHref={secondaryCtaHref}
+        endedCtaHref={endedCtaHref}
+        status={status}
+      />
 
       <p className="text-center text-sm text-slate-600">
         <Trans i18nKey="event.dynamicCounter.promise" locale={locale}>

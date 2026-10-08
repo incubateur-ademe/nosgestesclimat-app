@@ -2,11 +2,12 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
+import type { EventStatus } from '../_types/event'
 import EventNumber from './eventStatistics/EventNumber'
 
 interface Props {
   locale: Locale
-  hasStarted: boolean
+  status: EventStatus
   values: {
     simulations: number
     actions: number
@@ -14,13 +15,13 @@ interface Props {
   }
 }
 
-export default function EventStatistics({ locale, hasStarted, values }: Props) {
+export default function EventStatistics({ locale, status, values }: Props) {
   const { t } = getServerTranslation({ locale })
-
+  const isEventInProgress = status === 'inProgress'
   return (
     <div className="bg-primary-700 py-12">
       <div className="mx-auto flex w-5xl max-w-full flex-col px-4 lg:p-0">
-        {!hasStarted && (
+        {status === 'notStarted' && (
           <p className="mb-6 text-center text-sm font-bold tracking-wide text-white uppercase">
             <Trans i18nKey="event.statistics.title" locale={locale}>
               Les données en direct apparaîtront au lancement
@@ -32,10 +33,17 @@ export default function EventStatistics({ locale, hasStarted, values }: Props) {
           <EventNumber
             value={values.simulations}
             locale={locale}
-            text={t(
-              'event.statistics.first',
-              "calculs d'empreinte carbone déjà réalisés"
-            )}
+            text={
+              isEventInProgress
+                ? t(
+                    'event.statistics.first.inProgress',
+                    "calculs d'empreinte carbone déjà réalisés"
+                  )
+                : t(
+                    'event.statistics.first.ended',
+                    "calculs d'empreinte carbone réalisés"
+                  )
+            }
           />
 
           <EventNumber
@@ -53,21 +61,33 @@ export default function EventStatistics({ locale, hasStarted, values }: Props) {
             text={
               <>
                 <span>
-                  <Trans i18nKey="event.statistics.third.text" locale={locale}>
-                    Organisations déjà mobilisées
-                  </Trans>
+                  {isEventInProgress ? (
+                    <Trans
+                      i18nKey="event.statistics.third.text.inProgress"
+                      locale={locale}>
+                      Organisations déjà mobilisées
+                    </Trans>
+                  ) : (
+                    <Trans
+                      i18nKey="event.statistics.third.text.ended"
+                      locale={locale}>
+                      Organisations mobilisées
+                    </Trans>
+                  )}
 
                   <br />
 
-                  <Link
-                    href="/organisations"
-                    className="hover:text-secondary-100 text-white transition-colors">
-                    <Trans
-                      i18nKey="event.statistics.third.link"
-                      locale={locale}>
-                      Rejoignez-les !
-                    </Trans>
-                  </Link>
+                  {isEventInProgress && (
+                    <Link
+                      href="/organisations"
+                      className="hover:text-secondary-100 text-white transition-colors">
+                      <Trans
+                        i18nKey="event.statistics.third.link"
+                        locale={locale}>
+                        Rejoignez-les !
+                      </Trans>
+                    </Link>
+                  )}
                 </span>
               </>
             }

@@ -5,6 +5,7 @@ import type {
   PodiumCategory,
   PodiumItem,
 } from '@nosgestesclimat/core/features/events/types/event-info'
+import type { EventStatus } from '../_types/event'
 import EventTabs from './eventPodium/EventTabs'
 import PodiumVisual from './eventPodium/PodiumVisual'
 import { getActiveCategoryFilter } from './eventPodium/helpers/getActiveCategoryFilter'
@@ -14,14 +15,14 @@ interface Props {
   locale: Locale
   searchParams: Promise<Record<string, string | string[] | undefined>>
   podiumItemsByCategory: Record<PodiumCategory, PodiumItem[]>
-  hasStarted: boolean
+  status: EventStatus
 }
 
 export default async function EventPodium({
   locale,
   searchParams,
   podiumItemsByCategory,
-  hasStarted,
+  status,
 }: Props) {
   const params = await searchParams
 
@@ -59,7 +60,7 @@ export default async function EventPodium({
         items={podiumItemsByCategory[activeCategoryFilter]}
         prevHref={prevHref}
         nextHref={nextHref}
-        hasStarted={hasStarted}
+        status={status}
         activeCategoryFilter={activeCategoryFilter}
       />
     </div>
