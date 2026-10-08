@@ -1,4 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
+import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import type { ActionChoiceType } from '../types/action.ts'
 import { mapActionChoiceToPrisma } from './action-choice.mapper.ts'
 
@@ -40,12 +41,20 @@ export const deleteActionChoice = async ({
   actionId,
   userId,
 }: DeleteActionChoiceProps): Promise<void> => {
-  await prisma.actionChoice.delete({
-    where: {
-      userId_actionId: {
-        userId,
-        actionId,
+  try {
+    await prisma.actionChoice.delete({
+      where: {
+        userId_actionId: {
+          userId,
+          actionId,
+        },
       },
-    },
-  })
+    })
+  } catch (error) {
+    // The actionChoice doesn't exist, not a problem
+    if (isPrismaErrorNotFound(error)) {
+      return
+    }
+    throw error
+  }
 }
