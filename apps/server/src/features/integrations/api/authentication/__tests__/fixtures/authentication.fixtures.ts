@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { StatusCodes } from 'http-status-codes'
 import type supertest from 'supertest'
@@ -15,7 +16,6 @@ import {
   resetMswServer,
 } from '../../../../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../../../../core/event-bus/event-bus.ts'
-import * as authenticationService from '../../../../../authentication/authentication.service.ts'
 
 type TestAgent = ReturnType<typeof supertest>
 
@@ -102,9 +102,7 @@ export const generateApiToken = async ({
   const emailWhitelist =
     await createIntegrationEmailWhitelist(emailWhiteListParams)
 
-  vi.mocked(
-    authenticationService
-  ).generateRandomVerificationCode.mockReturnValueOnce(code)
+  vi.mocked(generateRandomVerificationCode).mockReturnValueOnce(code)
 
   const payload = {
     email: email || emailWhitelist.emailPattern,
@@ -129,7 +127,7 @@ export const generateApiToken = async ({
 
   resetMswServer()
 
-  vi.mocked(authenticationService).generateRandomVerificationCode.mockRestore()
+  vi.mocked(generateRandomVerificationCode).mockRestore()
 
   return {
     emailWhitelist,

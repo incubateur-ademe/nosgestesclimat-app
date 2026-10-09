@@ -5,7 +5,7 @@ import {
   TRACKING_MEDIUM,
   TRACKING_SOURCE,
 } from '../../emails/email.constant.ts'
-import type { SendEmail } from '../../emails/types.ts'
+import type { Email } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import {
   UTM_CAMPAIGN_KEY,
@@ -14,8 +14,6 @@ import {
 } from '../../tracking/utm.ts'
 import type { Simulation } from '../types/simulation.ts'
 import { mapComputedResultsToContactAttributes } from './map-computed-results-to-contact-attributes.ts'
-
-type Email = Parameters<SendEmail>[0]
 
 type EmailUser = Readonly<{
   id: string
@@ -92,7 +90,7 @@ const createGroupEmail = ({
   }
 }
 
-const createPollJoinedEmail = ({
+export const createPollJoinedEmail = ({
   email,
   locale,
   origin,
@@ -135,7 +133,7 @@ const createPollJoinedEmail = ({
   }
 }
 
-const createSimulationCompletedEmail = ({
+export const createSimulationCompletedEmail = ({
   email,
   locale,
   origin,
@@ -165,22 +163,8 @@ const createSimulationCompletedEmail = ({
   }
 }
 
-export const createSendGroupCreatedEmail =
-  (sendEmail: SendEmail) => (params: GroupEmailParams) =>
-    sendEmail(
-      createGroupEmail({ ...params, templateId: TemplateIds.fr.GROUP_CREATED })
-    )
+export const createGroupCreatedEmail = (params: GroupEmailParams): Email =>
+  createGroupEmail({ ...params, templateId: TemplateIds.fr.GROUP_CREATED })
 
-export const createSendGroupJoinedEmail =
-  (sendEmail: SendEmail) => (params: GroupEmailParams) =>
-    sendEmail(
-      createGroupEmail({ ...params, templateId: TemplateIds.fr.GROUP_JOINED })
-    )
-
-export const createSendPollJoinedEmail =
-  (sendEmail: SendEmail) => (params: PollJoinedEmailParams) =>
-    sendEmail(createPollJoinedEmail(params))
-
-export const createSendSimulationCompletedEmail =
-  (sendEmail: SendEmail) => (params: SimulationCompletedEmailParams) =>
-    sendEmail(createSimulationCompletedEmail(params))
+export const createGroupJoinedEmail = (params: GroupEmailParams): Email =>
+  createGroupEmail({ ...params, templateId: TemplateIds.fr.GROUP_JOINED })

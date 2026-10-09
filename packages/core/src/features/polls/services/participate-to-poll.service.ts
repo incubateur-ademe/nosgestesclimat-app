@@ -7,7 +7,7 @@ import type { AppUser } from '../../auth/types/user-session.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { CaptureException, Logger } from '../../logger/index.ts'
-import { createSendPollJoinedEmail } from '../../simulations/emails/simulation-emails.ts'
+import { createPollJoinedEmail } from '../../simulations/emails/simulation-emails.ts'
 import { SimulationNotFoundError } from '../../simulations/errors/simulations.error.ts'
 import { newSimulation } from '../../simulations/helpers/new-simulation.ts'
 import { isSimulationCompleted } from '../../simulations/helpers/simulation-guards.ts'
@@ -51,8 +51,6 @@ export function createParticipateToPoll({
   origin,
   backgroundTaskRunner,
 }: ParticipateToPollDependencies) {
-  const sendPollJoinedEmail = createSendPollJoinedEmail(sendEmail)
-
   /**
    * Enters a user in a poll, either with a simulation they already completed
    * or with a fresh one they are about to answer.
@@ -127,14 +125,16 @@ export function createParticipateToPoll({
       isSimulationCompleted(reusedSimulation)
     ) {
       backgroundTaskRunner(async () => {
-        const sent = await sendPollJoinedEmail({
-          email: userSession.email,
-          organisation: poll.organisation,
-          poll,
-          simulationId,
-          locale,
-          origin,
-        })
+        const sent = await sendEmail(
+          createPollJoinedEmail({
+            email: userSession.email,
+            organisation: poll.organisation,
+            poll,
+            simulationId,
+            locale,
+            origin,
+          })
+        )
 
         if (!sent.success) {
           captureException(sent.error)

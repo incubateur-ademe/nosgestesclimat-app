@@ -17,6 +17,8 @@ const nextConfig = withMDX({
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   reactStrictMode: true,
   transpilePackages: ['@nosgestesclimat/core'],
+  // ioredis relies on native Node modules and must not be bundled.
+  serverExternalPackages: ['ioredis'],
   images: {
     remotePatterns: remoteImagesPatterns,
     minimumCacheTTL: 60 * 60 * 24 * 30,

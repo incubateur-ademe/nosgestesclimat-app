@@ -12,11 +12,13 @@ import {
 import type { BrevoContactDto } from '../../../adapters/brevo/client.ts'
 import * as prismaTransactionAdapter from '../../../adapters/prisma/transaction.ts'
 import app from '../../../app.ts'
-import { authHeaders } from '../../../core/__tests__/fixtures/authentication.fixture.ts'
+import {
+  authHeaders,
+  createVerificationCode,
+} from '../../../core/__tests__/fixtures/authentication.fixture.ts'
 import { mswServer } from '../../../core/__tests__/fixtures/server.fixture.ts'
 import { EventBus } from '../../../core/event-bus/event-bus.ts'
 import logger from '../../../logger.ts'
-import { createVerificationCode } from '../../authentication/__tests__/fixtures/verification-codes.fixture.ts'
 import { createSimulation } from '../../simulations/__tests__/fixtures/simulations.fixtures.ts'
 import {
   createUser,
@@ -285,6 +287,7 @@ describe('Given a NGC user', () => {
           id: userId,
           email,
           name,
+          ageRange: null,
           contact: {
             email: contact.email,
             id: contact.id,
@@ -322,6 +325,7 @@ describe('Given a NGC user', () => {
           id: userId,
           email,
           name,
+          ageRange: null,
           contact: {
             email: contact.email,
             id: contact.id,
@@ -395,8 +399,7 @@ describe('Given a NGC user', () => {
 
         beforeEach(async () => {
           ;({ code } = await createVerificationCode({
-            agent,
-            verificationCode: { email: newEmail },
+            email: newEmail,
           }))
         })
 
@@ -451,6 +454,7 @@ describe('Given a NGC user', () => {
             email: newEmail,
             id: userId,
             name: null,
+            ageRange: null,
             optedInForCommunications: false,
             position: null,
             telephone: null,
@@ -499,6 +503,7 @@ describe('Given a NGC user', () => {
               email: newEmail,
               id: userId,
               name: null,
+              ageRange: null,
               optedInForCommunications: false,
               position: null,
               telephone: null,

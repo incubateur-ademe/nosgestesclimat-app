@@ -80,6 +80,7 @@ export default async function Page({
               mode={SIGNUP_MODE}
             />
             <AuthenticateUserForm
+              intent="create-organisation"
               onComplete={redirectAfterLogin}
               tracker={captureOrganisationsLoginComplete}
               buttonLabel={t(

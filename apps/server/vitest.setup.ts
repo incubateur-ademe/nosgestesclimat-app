@@ -1,3 +1,4 @@
+import type * as CreateVerificationCodeServiceModule from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
 import { Prisma } from '@nosgestesclimat/core/prisma/generated/client'
 import { createTestDatabase } from '@nosgestesclimat/core/test-utils/db'
 import { createRequire } from 'module'
@@ -57,12 +58,30 @@ vi.mock('./src/adapters/redis/client', () => ({
   redis,
   redisClientFactory: () => redis,
 }))
-vi.mock('./src/features/authentication/authentication.service', async () => ({
-  ...(await vi.importActual(
-    './src/features/authentication/authentication.service'
-  )),
-  generateRandomVerificationCode: vi.fn(),
-}))
+vi.mock(
+  '@nosgestesclimat/core/features/auth/services/create-verification-code.service',
+  async () => {
+    const actual = await vi.importActual<typeof CreateVerificationCodeServiceModule>(
+      '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+    )
+    const generateRandomVerificationCode = vi.fn()
+
+    return {
+      ...actual,
+      generateRandomVerificationCode,
+      // The service generates the code through a default dependency the
+      // spread above cannot intercept: re-inject the mock so specs can keep
+      // controlling the code through vi.mocked(generateRandomVerificationCode).
+      createCreateVerificationCodeService: (
+        dependencies: Parameters<typeof actual.createCreateVerificationCodeService>[0]
+      ) =>
+        actual.createCreateVerificationCodeService({
+          ...dependencies,
+          generateCode: generateRandomVerificationCode,
+        }),
+    }
+  }
+)
 
 const models = Object.values(Prisma.ModelName).map((modelName) => ({
   name: modelName,

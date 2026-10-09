@@ -2,6 +2,7 @@
 
 import Button from '@/design-system/buttons/Button'
 import type { AuthenticationMode } from '@/types/authentication'
+import type { Intent } from '@nosgestesclimat/core/features/auth/schemas/auth.schema'
 import { twMerge } from 'cn'
 import { type ReactNode, useCallback } from 'react'
 import type { ButtonColor } from '../../design-system/buttons/Button'
@@ -25,6 +26,8 @@ interface Props {
   isVerticalLayout?: boolean
   verificationClassName?: string
   verificationButtonLabel?: string | ReactNode
+  /** Why the user logs in: decides which post-login email is sent. */
+  intent: Intent
 }
 
 export default function AuthenticateUserForm({
@@ -40,12 +43,13 @@ export default function AuthenticateUserForm({
   isVerticalLayout = true,
   verificationClassName,
   verificationButtonLabel,
+  intent,
 }: Props) {
   const { mutateAsync } = useLogin()
 
   const verify = useCallback(
-    (email: string, code: string) => mutateAsync({ email, code }),
-    [mutateAsync]
+    (email: string, code: string) => mutateAsync({ email, code, intent }),
+    [mutateAsync, intent]
   )
 
   return (

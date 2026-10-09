@@ -143,7 +143,7 @@ export const deleteContact = async (email: string) => {
   }
 }
 
-const sendEmail = ({
+export const sendEmail = ({
   email,
   templateId,
   params,
@@ -176,24 +176,6 @@ const sendEmail = ({
       },
     }
   )
-}
-
-export const sendVerificationCodeEmail = ({
-  locale,
-  email,
-  code,
-}: Readonly<{
-  email: string
-  code: string
-  locale: Locales
-}>) => {
-  return sendEmail({
-    email,
-    templateId: TemplateIds[locale].VERIFICATION_CODE,
-    params: {
-      VERIFICATION_CODE: code,
-    },
-  })
 }
 
 export const sendWelcomeEmail = ({

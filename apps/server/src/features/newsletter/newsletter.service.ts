@@ -1,4 +1,8 @@
-import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
+import { createVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { claimVerificationCode } from '@nosgestesclimat/core/features/auth/services/claim-verification-code.service'
+import { generateRandomVerificationCode } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import dayjs from 'dayjs'
 import {
   addOrUpdateContact,
@@ -8,8 +12,6 @@ import {
 } from '../../adapters/brevo/client.ts'
 import { config } from '../../config.ts'
 import { EntityNotFoundException } from '../../core/errors/EntityNotFoundException.ts'
-import { verifyCode } from '../authentication/authentication.service.ts'
-import { generateVerificationCode } from '../authentication/verification-codes.service.ts'
 import {
   REACHABLE_NEWSLETTER_LIST_IDS,
   type NewsletterConfirmationQuery,
@@ -44,15 +46,16 @@ export const confirmNewsletterSubscriptions = async ({
 }: {
   query: NewsletterConfirmationQuery
 }) => {
-  try {
-    await verifyCode(query)
-    await updateNewslettersInscription(query)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('Verification code not found')
-    }
-    throw e
+  const result = await claimVerificationCode({
+    ...query,
+    usage: VerificationCodeUsage.newsletter,
+  })
+
+  if (!result.success) {
+    throw new EntityNotFoundException('Verification code not found')
   }
+
+  await updateNewslettersInscription(query)
 }
 
 export const sendNewsletterConfirmationEmail = async ({
@@ -60,10 +63,17 @@ export const sendNewsletterConfirmationEmail = async ({
 }: {
   inscriptionDto: NewsletterInscriptionDto
 }) => {
-  const { code } = await generateVerificationCode({
-    verificationCodeDto: { email },
-    expirationDate: dayjs().add(1, 'day').toDate(),
-  })
+  const code = generateRandomVerificationCode()
+
+  await createVerificationCode(
+    {
+      email,
+      code,
+      expirationDate: dayjs().add(1, 'day').toDate(),
+      usage: VerificationCodeUsage.newsletter,
+    },
+    { session: prisma }
+  )
 
   return sendNewsLetterConfirmationEmail({
     newsLetterConfirmationBaseUrl: config.app.serverUrl,

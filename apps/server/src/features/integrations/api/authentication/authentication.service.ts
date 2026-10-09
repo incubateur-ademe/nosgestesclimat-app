@@ -1,17 +1,23 @@
+import { findValidVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { createCreateVerificationCodeService } from '@nosgestesclimat/core/features/auth/services/create-verification-code.service'
+import { EmailRequestError } from '@nosgestesclimat/core/features/emails/errors'
+import type { BackgroundTaskRunner } from '@nosgestesclimat/core/lib/background-task-runner'
+import { failure, success } from '@nosgestesclimat/core/lib/result'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
-import { isPrismaErrorNotFound } from '@nosgestesclimat/core/prisma/utils'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
+import { captureException } from '@sentry/node'
 import type { Request, RequestHandler } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import type { JwtPayload } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
+import { sendEmail as brevoSendEmail } from '../../../../adapters/brevo/client.ts'
 import { ApiScopeName } from '../../../../adapters/prisma/generated.ts'
 import { transaction } from '../../../../adapters/prisma/transaction.ts'
 import { config } from '../../../../config.ts'
 import { EntityNotFoundException } from '../../../../core/errors/EntityNotFoundException.ts'
 import { UnauthorizedException } from '../../../../core/errors/UnauthorizedException.ts'
 import { Locales } from '../../../../core/i18n/constant.ts'
-import { findVerificationCode } from '../../../authentication/verification-codes.repository.ts'
-import { createVerificationCode } from '../../../authentication/verification-codes.service.ts'
+import logger from '../../../../logger.ts'
 import { fetchWhitelists } from '../email-whitelist/email-whitelist.repository.ts'
 import type {
   GenerateAPITokenRequestDto,
@@ -112,6 +118,31 @@ const signTokens = async (email: string) => {
   }
 }
 
+// The token email is a best-effort side effect of the stored code: the
+// response is sent before the email is dispatched, and a Brevo failure is
+// logged and captured by the core service instead of failing the request.
+const fireAndForgetEmail: BackgroundTaskRunner = (task) => {
+  void task()
+}
+
+const createApiTokenVerificationCode = createCreateVerificationCodeService({
+  logger,
+  captureException,
+  // The brevo adapter throws on failure: converted to the Result contract
+  // the core service expects, so the failure is logged and captured there
+  // instead of failing the request.
+  sendEmail: async (email) => {
+    try {
+      await brevoSendEmail(email)
+      return success()
+    } catch (error) {
+      return failure(new EmailRequestError(undefined, { cause: error }))
+    }
+  },
+  backgroundTaskRunner: fireAndForgetEmail,
+  usage: VerificationCodeUsage.apiToken,
+})
+
 export const generateApiToken = async ({
   generateApiTokenDto: { email },
 }: {
@@ -123,31 +154,23 @@ export const generateApiToken = async ({
   )
 
   if (emailWhitelist.length) {
-    await createVerificationCode({
-      verificationCodeDto: {
-        email,
-      },
-      locale: Locales.fr,
-    })
+    await createApiTokenVerificationCode({ email, locale: Locales.fr })
   }
 }
 
 export const exchangeCredentialsForToken = async (
   query: RecoverApiTokenQuery
 ) => {
-  try {
-    const { email } = await transaction(
-      (session) => findVerificationCode(query, { session }),
-      prisma
-    )
+  const verificationCode = await findValidVerificationCode({
+    ...query,
+    usage: VerificationCodeUsage.apiToken,
+  })
 
-    return signTokens(email)
-  } catch (e) {
-    if (isPrismaErrorNotFound(e)) {
-      throw new EntityNotFoundException('VerificationCode not found')
-    }
-    throw e
+  if (!verificationCode) {
+    throw new EntityNotFoundException('VerificationCode not found')
   }
+
+  return signTokens(verificationCode.email)
 }
 
 export const refreshApiToken = ({
