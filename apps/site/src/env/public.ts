@@ -6,7 +6,7 @@ import {
   NonEmptyStringSchema,
   parseEnv,
   requiredInProduction,
-} from './shared'
+} from './shared.ts'
 
 const PublicEnvSchema = v.object({
   NEXT_PUBLIC_SITE_URL: v.pipe(NonEmptyStringSchema, v.url()),
