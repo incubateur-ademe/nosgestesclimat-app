@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function SparklesIcon({
   className,
@@ -13,7 +13,7 @@ export default function SparklesIcon({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('fill-default inline-block stroke-[1.5]', className)}
+      className={cn('fill-default inline-block stroke-[1.5]', className)}
       aria-hidden="true"
       {...props}>
       <path

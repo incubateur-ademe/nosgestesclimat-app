@@ -18,7 +18,7 @@ export default function MetricSwitchButton({ metric, setMetric }: Props) {
     <ul className="mb-2 flex justify-center gap-2 lg:justify-end">
       <li>
         <Button
-          color={metric === carboneMetric ? 'primary' : 'secondary'}
+          variant={metric === carboneMetric ? 'filled' : 'outlined'}
           onClick={() => setMetric(carboneMetric)}
           size="sm"
           aria-label={t('Carbone, évaluer la métrique carbone')}
@@ -29,7 +29,7 @@ export default function MetricSwitchButton({ metric, setMetric }: Props) {
       </li>
       <li>
         <Button
-          color={metric === eauMetric ? 'primary' : 'secondary'}
+          variant={metric === eauMetric ? 'filled' : 'outlined'}
           onClick={() => setMetric(eauMetric)}
           size="sm"
           aria-label={t('Eau, évaluer la métrique eau')}

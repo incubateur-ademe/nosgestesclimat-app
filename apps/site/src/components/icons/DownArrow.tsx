@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function DownArrow({
   className,
@@ -13,7 +13,7 @@ export default function DownArrow({
       viewBox="0 0 28 28"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('inline-block fill-white stroke-[1.5]', className)}
+      className={cn('inline-block fill-white stroke-[1.5]', className)}
       aria-hidden="true"
       {...props}>
       <path

@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function Hero({
   illustration,
@@ -19,7 +19,7 @@ export default function Hero({
   return (
     <>
       <div
-        className={twMerge(
+        className={cn(
           'bg-heroLightBackground flex min-h-147 items-center px-4 pt-10 pb-10 md:min-h-full md:py-20',
           className
         )}

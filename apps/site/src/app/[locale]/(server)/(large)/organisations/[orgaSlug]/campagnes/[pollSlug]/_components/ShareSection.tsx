@@ -14,9 +14,9 @@ import {
   UTM_MEDIUM_KEY,
   UTM_SOURCE_KEY,
 } from '@nosgestesclimat/core/features/tracking/utm'
+import { cn } from 'cn'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
-import { twMerge } from "cn";
 
 interface Props {
   poll: PollIdentifier
@@ -53,7 +53,7 @@ export default function ShareSection({ poll, className, title }: Props) {
   })
 
   return (
-    <section className={twMerge('mt-8', className)}>
+    <section className={cn('mt-8', className)}>
       <div className="flex flex-col items-start">
         <h2 className="mb-4">
           {title ?? (
@@ -87,7 +87,7 @@ export default function ShareSection({ poll, className, title }: Props) {
               orgaSlug,
               pollSlug,
             })}
-            color="primary"
+            variant="filled"
             className="mx-auto mt-4 h-11 w-40"
             data-testid="poll-invite-copy-button"
           />
@@ -105,7 +105,7 @@ export default function ShareSection({ poll, className, title }: Props) {
         <ButtonLink
           data-testid="share-button-link-0"
           className="max-h-10 w-full! flex-1 py-5 text-sm! md:w-auto md:max-w-48"
-          color="secondary"
+          variant="outlined"
           target="_blank"
           rel="noopener noreferrer"
           href={`mailto:?subject=${t('Voici mes empreintes carbone et eau ; tu connais les tiennes ?')}&body=${url}`}>

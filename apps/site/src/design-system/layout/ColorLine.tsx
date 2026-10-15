@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function ColorLine({
   className,
@@ -7,5 +7,5 @@ export default function ColorLine({
   className?: string
   style?: React.CSSProperties
 }) {
-  return <div className={twMerge('bg-secondary-700', className)} {...props} />
+  return <div className={cn('bg-secondary-700', className)} {...props} />
 }

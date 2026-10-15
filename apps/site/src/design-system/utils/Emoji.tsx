@@ -1,6 +1,6 @@
 import type { HTMLAttributes, PropsWithChildren } from 'react'
 import emoji from 'react-easy-emoji'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export type EmojiProps = HTMLAttributes<HTMLSpanElement> &
   PropsWithChildren<{ className?: string; alt?: string }>
@@ -15,7 +15,7 @@ export default function Emoji({
     // Emojis are decorative and don't need to be read by screen readers
     <span
       aria-hidden
-      className={twMerge('*:inline-block', className)}
+      className={cn('*:inline-block', className)}
       {...props}>
       {emoji(children, {
         baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/15.1.0/svg',

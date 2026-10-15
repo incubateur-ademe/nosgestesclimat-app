@@ -86,7 +86,7 @@ export default async function SaveResultsBlock({
 
             {user?.isAuth ? (
               <ButtonLink
-                color="borderless"
+                variant="filled"
                 href={`${MON_ESPACE_PATH}${hasPreviousSimulation ? '#chart' : ''}`}>
                 {hasPreviousSimulation ? (
                   <Trans i18nKey="results.saveResults.buttonLabel.authenticated.withPreviousResults">

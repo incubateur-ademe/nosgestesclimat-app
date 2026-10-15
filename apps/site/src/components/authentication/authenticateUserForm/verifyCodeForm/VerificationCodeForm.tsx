@@ -7,7 +7,7 @@ import Button from '@/design-system/buttons/Button'
 import { defaultInputStyleClassNames } from '@/design-system/inputs/TextInput'
 import Loader from '@/design-system/layout/Loader'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import {
   type ChangeEvent,
   type FormEvent,
@@ -81,7 +81,7 @@ export default function VerificationCodeForm({
           state.phase === 'code_sent' && !!state.codeError ? 'true' : 'false'
         }
         placeholder="000000"
-        className={twMerge(
+        className={cn(
           'dark:text-default! w-full max-w-120 bg-white! p-4 text-2xl tracking-widest',
           defaultInputStyleClassNames,
           state.phase === 'code_sent' && state.codeError

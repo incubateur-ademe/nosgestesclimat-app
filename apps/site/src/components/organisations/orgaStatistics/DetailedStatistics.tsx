@@ -8,7 +8,7 @@ import type { Entries } from '@/publicodes-state/types'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
 import importedFunFacts from '@incubateur-ademe/nosgestesclimat/public/funFactsRules.json'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { utils } from 'publicodes'
 import { useState } from 'react'
 import DetailedFunFacts from './funFacts/DetailedFunFacts'
@@ -53,16 +53,16 @@ export default function DetailedStatistics({ funFacts, className }: Props) {
   if (!funFacts) return null
 
   return (
-    <div className={twMerge('flex flex-col', className)}>
+    <div className={cn('flex flex-col', className)}>
       <Button
         className="my-4 w-auto self-center px-4! no-underline md:self-end"
-        color="link"
+        variant="link"
         onClick={() => {
           trackEvent(captureClickFunFactsPlus)
           setIsSectionVisible(!isSectionVisible)
         }}>
         <ChevronRight
-          className={twMerge(
+          className={cn(
             'mr-2 rotate-90',
             isSectionVisible && '-rotate-90'
           )}

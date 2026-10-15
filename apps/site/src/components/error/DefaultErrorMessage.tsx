@@ -1,5 +1,5 @@
 'use client'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Link from '../Link'
 import Trans from '../translation/trans/TransClient'
 
@@ -9,7 +9,7 @@ export default function DefaultErrorMessage({
   className?: string
 }) {
   return (
-    <span className={twMerge('block text-sm text-red-800', className)}>
+    <span className={cn('block text-sm text-red-800', className)}>
       <Trans>
         Oups ! Une erreur s'est produite. Veuillez recharger la page. Si le
         problème persiste, vous pouvez

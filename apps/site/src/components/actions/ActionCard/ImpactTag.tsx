@@ -1,7 +1,7 @@
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import type { Locale } from '@/i18nConfig'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Trans from '../../translation/trans/TransServer'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
 
@@ -67,7 +67,7 @@ export function ImpactTag({
 
   return (
     <span
-      className={twMerge(
+      className={cn(
         `inline-block rounded-xl border border-slate-200 bg-white p-2 py-1.5 text-xs/none! font-bold whitespace-nowrap`,
         className
       )}

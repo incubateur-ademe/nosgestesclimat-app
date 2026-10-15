@@ -1,5 +1,5 @@
 import React from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function SquareImageContainer({
   children,
@@ -10,7 +10,7 @@ export default function SquareImageContainer({
 }) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'relative flex aspect-square w-full items-center justify-center',
         className
       )}>

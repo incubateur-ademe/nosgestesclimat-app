@@ -18,7 +18,7 @@ export default function ReuseButtons({
     <div className="flex flex-col items-start gap-2" data-track>
       <Button
         disabled={isClicked}
-        color="secondary"
+        variant="outlined"
         showLoadingOnClickWhilePending
         onClick={() => {
           setIsClicked(true)

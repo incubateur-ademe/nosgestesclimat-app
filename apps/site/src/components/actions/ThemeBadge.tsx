@@ -1,6 +1,6 @@
 import Badge from '@/design-system/layout/Badge'
 import type { Theme } from '@/types/themes'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 const classesByTheme: Record<Theme['key'], string> = {
   transport: 'bg-transport-50 text-transport-800',
@@ -20,7 +20,7 @@ interface ThemeBadgeProps extends Omit<
 export function ThemeBadge({ theme, className, ...props }: ThemeBadgeProps) {
   return (
     <Badge
-      className={twMerge(classesByTheme[theme.key], className)}
+      className={cn(classesByTheme[theme.key], className)}
       border={false}
       {...props}>
       {theme.title}

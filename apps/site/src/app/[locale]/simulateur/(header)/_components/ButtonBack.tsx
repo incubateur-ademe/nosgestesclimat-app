@@ -14,7 +14,7 @@ export default function ButtonBack({ className }: Props) {
   const { back } = useRouter()
   return (
     <Button
-      color="secondary"
+      variant="outlined"
       title={t("Revenir à l'accueil")}
       className={className}
       onClick={() => {

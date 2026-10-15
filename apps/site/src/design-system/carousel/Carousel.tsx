@@ -1,5 +1,5 @@
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import CarouselClient from './CarouselClient'
 
 export interface CarouselProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -52,7 +52,7 @@ export default async function Carousel({
   return (
     <div
       {...rest}
-      className={twMerge('relative', className)}
+      className={cn('relative', className)}
       role="region"
       aria-roledescription={roleDescription}>
       <CarouselClient

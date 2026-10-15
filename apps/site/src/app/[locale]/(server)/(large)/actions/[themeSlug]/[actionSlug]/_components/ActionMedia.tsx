@@ -2,7 +2,7 @@ import ImpactCO2Iframe from '@/components/iframe/ImpactCO2Iframe'
 import type { Locale } from '@/i18nConfig'
 import { type ActionMedia as ActionMediaType } from '@nosgestesclimat/core/features/actions/types/action-media'
 import Image from 'next/image'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface MediaProps extends React.ComponentPropsWithoutRef<'figure'> {
   media: ActionMediaType
@@ -16,7 +16,7 @@ export function ActionMedia({
   ...props
 }: MediaProps) {
   return (
-    <figure className={twMerge('flex flex-col md:gap-2', className)} {...props}>
+    <figure className={cn('flex flex-col md:gap-2', className)} {...props}>
       {(() => {
         switch (media.type) {
           case 'impact_co2':

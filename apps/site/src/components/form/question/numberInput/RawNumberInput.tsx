@@ -5,7 +5,7 @@ import type { Evaluation } from 'publicodes'
 import { type ComponentProps } from 'react'
 import type { NumberFormatValues, SourceInfo } from 'react-number-format'
 import { NumericFormat } from 'react-number-format'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   unit?: string
@@ -27,11 +27,11 @@ export default function RawNumberInput({
 }: ComponentProps<typeof NumericFormat> & Props) {
   return (
     <div
-      className={twMerge(`flex items-center justify-start gap-1`, className)}>
+      className={cn(`flex items-center justify-start gap-1`, className)}>
       <NumericFormat
         value={value}
         placeholder={placeholder}
-        className={twMerge(
+        className={cn(
           `max-w-[8rem] rounded-xl border border-solid border-slate-500 bg-white p-4 text-right text-base transition-colors md:max-w-full`,
           'focus:ring-primary-700! placeholder:text-slate-500! focus:ring-2! focus:ring-offset-3! focus:outline-hidden!',
           className

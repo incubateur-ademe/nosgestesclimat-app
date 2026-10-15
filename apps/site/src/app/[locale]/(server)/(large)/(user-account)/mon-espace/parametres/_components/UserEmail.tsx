@@ -49,7 +49,7 @@ export default function UserEmail({ user }: Props) {
       </p>
 
       <Button
-        color="link"
+        variant="link"
         className="text-base font-bold md:text-lg"
         data-testid="edit-email-button"
         onClick={onEditClick}>

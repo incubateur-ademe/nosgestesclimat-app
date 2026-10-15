@@ -4,7 +4,7 @@ import DotIcon from '@/components/icons/DotIcon'
 import WaterDropIcon from '@/components/icons/WaterDropIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import type { ReactNode } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function FloatingInfo({
   title,
@@ -22,7 +22,7 @@ export default function FloatingInfo({
   return (
     <div
       aria-hidden
-      className={twMerge(
+      className={cn(
         'absolute w-36 -translate-y-[120%] rounded-xl bg-white px-3 py-2 shadow-lg md:-translate-y-1/2',
         orientation === 'left'
           ? '-translate-x-[80%] md:-translate-x-[110%]'
@@ -40,7 +40,7 @@ export default function FloatingInfo({
             {Array.from({ length: 5 }).map((_, index) => (
               <WaterDropIcon
                 key={index}
-                className={twMerge(
+                className={cn(
                   'h-4 w-4 fill-blue-600',
                   index + 1 > (waterScore ?? 0) ? 'fill-gray-300' : ''
                 )}
@@ -59,7 +59,7 @@ export default function FloatingInfo({
             {Array.from({ length: 5 }).map((_, index) => (
               <DotIcon
                 key={index}
-                className={twMerge(
+                className={cn(
                   'h-4 w-4',
                   index + 1 > (carbonScore ?? 0) ? 'fill-gray-300' : ''
                 )}

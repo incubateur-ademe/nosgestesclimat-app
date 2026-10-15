@@ -6,7 +6,7 @@ import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Metric } from '@/publicodes-state/types'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
 import TendencyIndicator from './TendencyIndicator'
@@ -36,7 +36,7 @@ export default async function FootprintBlock({
   })
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex flex-col items-stretch gap-4 md:flex-row md:gap-8',
         className
       )}>
@@ -45,7 +45,7 @@ export default async function FootprintBlock({
           <span className="mb-1 block text-lg font-normal">{title}</span>
 
           <span
-            className={twMerge(
+            className={cn(
               titleSizesClassNames.lg,
               'text-primary-600 font-bold!'
             )}>

@@ -1,5 +1,5 @@
 import Link from '@/design-system/links/Link'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Logo from './Logo'
 
 interface Props {
@@ -14,7 +14,7 @@ export default function LogoLink({
   unoptimized,
 }: Props) {
   return (
-    <div className={twMerge('flex items-center', className)}>
+    <div className={cn('flex items-center', className)}>
       <Link
         href="/"
         data-testid="home-logo-link"

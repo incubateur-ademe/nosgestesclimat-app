@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/design-system/shadcn/popover'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { Globe, Info } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -28,7 +28,7 @@ export default function FootprintInfoPopover({
         <button
           type="button"
           aria-label={label}
-          className={twMerge(
+          className={cn(
             'focus-visible:ring-primary-700 hover:text-primary-700 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-500 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden',
             className
           )}>

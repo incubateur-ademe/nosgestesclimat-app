@@ -71,7 +71,7 @@ export default function StorageAccessOverlay({
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  color="secondary"
+                  variant="outlined"
                   className="mt-2">
                   <Trans i18nKey="iframe.safari.openInNewTab">
                     Ouvrir le calculateur dans un nouvel onglet

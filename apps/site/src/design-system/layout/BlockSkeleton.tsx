@@ -1,9 +1,9 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function BlockSkeleton({ className }: { className?: string }) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'mt-4 mb-8 h-[100px] animate-pulse motion-reduce:animate-none',
         className
       )}

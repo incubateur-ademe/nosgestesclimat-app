@@ -1,21 +1,22 @@
 'use client'
 
 import Link from '@/components/Link'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Image from 'next/image'
 import type { ElementType, PropsWithChildren, ReactNode } from 'react'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   sizeClassNames,
 } from '../../design-system/buttons/Button'
+import type { ButtonVariant } from '../../design-system/buttons/buttonStyles'
 import Card from '../../design-system/layout/Card'
 
 interface Props {
   href: string
   label: ReactNode
   icon?: ReactNode
-  color?: 'primary' | 'secondary'
+  variant?: ButtonVariant
   highlight?: boolean
   className?: string
   imageSrc: string
@@ -32,7 +33,7 @@ export default function NewItemCardLink({
   href,
   label,
   icon,
-  color = 'primary',
+  variant = 'filled',
   highlight = false,
   className,
   imageSrc,
@@ -50,7 +51,7 @@ export default function NewItemCardLink({
       tag={tag}
       href={href}
       target={target}
-      className={twMerge(
+      className={cn(
         'bg-primary-50 border-primary-700 flex min-h-64 flex-col rounded-xl border p-6 no-underline',
         highlight ? 'rainbow-border' : '',
         className
@@ -58,7 +59,7 @@ export default function NewItemCardLink({
       {...props}>
       <div className="mb-6 flex flex-1 items-center justify-center">
         <Image
-          className={twMerge('self-start', imageClassName)}
+          className={cn('self-start', imageClassName)}
           src={imageSrc}
           width={imageWidth}
           height={imageHeight}
@@ -67,11 +68,11 @@ export default function NewItemCardLink({
       </div>
 
       <div
-        className={twMerge(
+        className={cn(
           'w-full! text-sm',
           baseClassNames,
           sizeClassNames.md,
-          colorClassNames[color],
+          getVariantClassNames(variant, 'primary'),
           ctaClassName
         )}>
         {icon}

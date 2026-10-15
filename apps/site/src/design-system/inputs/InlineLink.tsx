@@ -1,7 +1,7 @@
 import Link from '@/components/Link'
 import type { LinkProps } from 'next/link'
 import type { HTMLAttributes, PropsWithChildren } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 type Props = {
   href: string
@@ -26,7 +26,7 @@ export default function InlineLink({
       href={href}
       title={title}
       onClick={onClick}
-      className={twMerge(
+      className={cn(
         `text-primary-700 hover:text-primary-700! inline-block underline transition-colors`,
         className
       )}

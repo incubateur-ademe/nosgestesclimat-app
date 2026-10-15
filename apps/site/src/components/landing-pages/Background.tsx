@@ -1,5 +1,5 @@
 import ColorLine from '@/design-system/layout/ColorLine'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   direction?: 'left' | 'right'
@@ -15,7 +15,7 @@ export default function Background({
 }: Props) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'absolute top-0 -left-1/2 h-full w-[200%] bg-gray-100 transition-transform xl:w-[300%]',
         className
       )}

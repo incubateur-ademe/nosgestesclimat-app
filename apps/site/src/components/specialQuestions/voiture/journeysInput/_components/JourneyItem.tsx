@@ -72,7 +72,7 @@ export default function JourneyItem({ journey, odd, setJourneys }: Props) {
 
       <td className="absolute -top-2 -right-1 block py-2 pl-2 text-right text-xs sm:static sm:table-cell">
         <Button
-          color="text"
+          variant="text"
           size="sm"
           title={t(
             'simulator.customQuestions.voiture.deleteItem',

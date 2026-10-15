@@ -55,7 +55,7 @@ export default function WaterFootprintCard({
             href={learnMoreHref}
             target="_blank"
             rel="noopener noreferrer"
-            color="borderless">
+            variant="filled">
             <Trans i18nKey="pollResults.waterFootprint.learnMore">
               En savoir plus
             </Trans>

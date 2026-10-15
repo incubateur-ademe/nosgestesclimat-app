@@ -80,7 +80,7 @@ export default function DontKnowButton({ question }: Props) {
       <Button
         onClick={handleClick}
         className="text-sm!"
-        color="borderless"
+        variant="filled"
         disabled={!isMissing}
         data-testid="skip-question-button"
         aria-label={t(

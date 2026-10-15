@@ -1,6 +1,6 @@
 'use client'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useContext, useEffect, useState } from 'react'
 import { FloatingElementDisplayedContext } from './FloatingElementDisplayedProvider'
 import FloatingInfo from './pulsatingDot/FloatingInfo'
@@ -55,7 +55,7 @@ export default function PulsatingDot({
   }
 
   return (
-    <div className={twMerge('absolute', className)}>
+    <div className={cn('absolute', className)}>
       {isHovered && (
         <FloatingInfo
           title={itemTitle}
@@ -68,7 +68,7 @@ export default function PulsatingDot({
       )}
 
       <div
-        className={twMerge(
+        className={cn(
           'group focus:ring-primary-700 absolute h-6 w-6 cursor-pointer rounded-full bg-white shadow-lg focus:ring-2 focus:ring-offset-3 focus:outline-hidden'
         )}
         tabIndex={0}
@@ -109,7 +109,7 @@ export default function PulsatingDot({
             : ''
         }`}>
         <div
-          className={twMerge(
+          className={cn(
             'bg-secondary-600 absolute inset-0 scale-[0.15] rounded-full transition-all duration-500',
             isHovered
               ? 'scale-[0.7]'

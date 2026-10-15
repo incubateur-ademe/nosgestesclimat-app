@@ -3,7 +3,7 @@
 import CloseIcon from '@/components/icons/Close'
 import Trans from '@/components/translation/trans/TransClient'
 import { type ReactNode, createElement } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export type AlertType = 'default' | 'success' | 'warning' | 'error'
 
@@ -43,7 +43,7 @@ export default function Alert({
   return (
     <section
       id={id}
-      className={twMerge(
+      className={cn(
         'relative rounded-xl border-2 p-4 md:p-6',
         getTypeClassNames(type),
         onCloseClassName,

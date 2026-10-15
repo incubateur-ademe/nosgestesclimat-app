@@ -19,7 +19,7 @@ export default function TotalButtons({ toggleQuestionList }: Props) {
 
       {isDebug && (
         <Button
-          color="text"
+          variant="text"
           size="sm"
           className="h-10 w-10 p-0! font-medium lg:w-auto lg:gap-2 lg:px-4! lg:py-2!"
           onClick={() => {

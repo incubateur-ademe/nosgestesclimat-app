@@ -8,7 +8,7 @@ import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import removeMarkdown from 'remove-markdown'
 import Trans from '../../translation/trans/TransServer'
 import ActionTracker from '../ActionTracker'
@@ -70,7 +70,7 @@ export default async function ActionCard({
   return (
     <article
       {...props}
-      className={twMerge(
+      className={cn(
         `relative flex min-h-38 flex-col gap-6 rounded-lg border border-t-8 bg-white`,
         'translate-y-0 transition-[box-shadow_border-color_transform] duration-300 ease-out',
         'hover:-translate-y-0.5 hover:shadow-sm',
@@ -83,7 +83,7 @@ export default async function ActionCard({
         <ActionTracker eventName="displayed" action={action} />
       ) : null}
       <div
-        className={twMerge(
+        className={cn(
           'flex grow flex-col gap-2 p-2',
           withCta ? 'px-4 pt-2 pb-0' : null
         )}>
@@ -126,7 +126,7 @@ export default async function ActionCard({
       ) : null}
       <Link
         href={href}
-        className={twMerge(
+        className={cn(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink
         )}>

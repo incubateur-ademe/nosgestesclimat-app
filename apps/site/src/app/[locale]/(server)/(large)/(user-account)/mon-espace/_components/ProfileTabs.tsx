@@ -12,7 +12,7 @@ import {
 import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default async function ProfileTab({
   activePath,
@@ -29,7 +29,7 @@ export default async function ProfileTab({
           className="flex flex-col items-center gap-1 md:flex-row"
           data-testid="my-results-tab">
           <BilanIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-6',
               activePath === MON_ESPACE_PATH
                 ? 'fill-primary-600'
@@ -57,7 +57,7 @@ export default async function ProfileTab({
       label: (
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <ActionsIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-6',
               activePath === MON_ESPACE_ACTIONS_PATH
                 ? 'fill-primary-600'
@@ -87,7 +87,7 @@ export default async function ProfileTab({
           className="flex flex-col items-center gap-1 md:flex-row"
           data-testid="my-groups-tab">
           <AmisIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-6',
               activePath === MON_ESPACE_GROUPS_PATH
                 ? 'stroke-primary-600 fill-primary-600'
@@ -115,7 +115,7 @@ export default async function ProfileTab({
       label: (
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <SettingsIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-6',
               activePath === MON_ESPACE_SETTINGS_PATH
                 ? 'fill-primary-600'

@@ -58,7 +58,7 @@ export const WithCustomButtons: Story = {
     hasAbortButton: false, // On cache le bouton "Annuler" par défaut
     buttons: (
       <div className="flex gap-2">
-        <Button color="secondary">Action secondaire</Button>
+        <Button variant="outlined">Action secondaire</Button>
         <Button>Action principale</Button>
       </div>
     ),

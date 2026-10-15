@@ -5,7 +5,7 @@ import { eauMetric } from '@/constants/model/metric'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useLocale } from '@/hooks/useLocale'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import WaterFootprintCard from './waterFootprintSection/WaterFootprintCard'
 
 const DEFAULT_LEARN_MORE_HREF =
@@ -48,7 +48,7 @@ export default function WaterFootprintSection({
 
   return (
     <section
-      className={twMerge('mb-8', className)}
+      className={cn('mb-8', className)}
       data-testid="water-footprint-section">
       <h2 className="mb-4">
         <Trans i18nKey="pollResults.waterFootprint.title">

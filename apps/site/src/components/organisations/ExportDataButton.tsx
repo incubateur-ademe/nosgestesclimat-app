@@ -2,6 +2,7 @@
 
 import type { ButtonProps } from '@/design-system/buttons/Button'
 import Button from '@/design-system/buttons/Button'
+import type { ButtonVariant } from '@/design-system/buttons/buttonStyles'
 import Loader from '@/design-system/layout/Loader'
 import logger from '@/logger/logger.browser'
 import { downloadPollResults } from '@/services/organisations/download-poll-results'
@@ -13,12 +14,12 @@ import Trans from '../translation/trans/TransClient'
 
 interface Props {
   poll: PollIdentifier
-  color?: 'primary' | 'secondary' | 'borderless'
+  variant?: ButtonVariant
   onClick?: () => void
 }
 
 export default function ExportDataButton({
-  color = 'secondary',
+  variant = 'outlined',
   onClick,
   className,
   ...props
@@ -45,7 +46,7 @@ export default function ExportDataButton({
     <div className="relative pb-11" aria-live="polite">
       <Button
         className={className}
-        color={color}
+        variant={variant}
         disabled={isPending}
         onClick={handleClick}
         size="sm"

@@ -1,6 +1,6 @@
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useId } from 'react'
 import Trans from '../translation/trans/TransServer'
 import HighlightedActionCard from './HighlightedActionCard'
@@ -26,7 +26,7 @@ export default function HighestImpactActionsSectionWhiteBackground({
     <section
       {...props}
       aria-labelledby={headingId}
-      className={twMerge('flex flex-col gap-4 md:gap-8', className)}>
+      className={cn('flex flex-col gap-4 md:gap-8', className)}>
       <div>
         <h2
           id={headingId}

@@ -2,7 +2,7 @@ import Separator from '@/design-system/layout/Separator'
 import type { Theme } from '@/types/themes'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Trans from '../../translation/trans/TransServer'
 import ActionsPageHeaderSwitch from '../ActionsPageHeaderSwitch'
 import BetaBanner from '../BetaBanner'
@@ -76,7 +76,7 @@ export default function ActionsPage({
     <>
       <BetaBanner />
 
-      <div {...props} className={twMerge('pb-24', className)}>
+      <div {...props} className={cn('pb-24', className)}>
         <ActionsPageHeaderSwitch
           title={title}
           control={

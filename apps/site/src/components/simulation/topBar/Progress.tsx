@@ -4,7 +4,7 @@ import {
 } from '@/helpers/getCategoryColorClass'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function Progress() {
   const { testAdvancement, currentCategory } = useFormState()
@@ -33,7 +33,7 @@ export default function Progress() {
       className="absolute right-0 bottom-0 left-0 h-1">
       {/* Barre de fond */}
       <div
-        className={twMerge(
+        className={cn(
           'absolute right-0 bottom-0 left-0 h-1 transition-transform',
           getBackgroundLightColor(currentCategory)
         )}
@@ -41,7 +41,7 @@ export default function Progress() {
       />
       {/* Barre de progression */}
       <div
-        className={twMerge(
+        className={cn(
           'absolute right-0 bottom-0 left-0 h-1 origin-left transition-transform',
           getBackgroundDarkColor(currentCategory)
         )}

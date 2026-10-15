@@ -27,7 +27,7 @@ export default async function ShareSimulator() {
             'mon-espace.shareSimulator.buttonLabel.desktop',
             'Partager le test Nos Gestes Climat'
           )}
-          buttonColor="borderless"
+          variant="filled"
           shouldHideTextOnMobile={false}
         />
       </span>
@@ -38,7 +38,7 @@ export default async function ShareSimulator() {
             'mon-espace.shareSimulator.buttonLabel.mobile',
             'Partager le test'
           )}
-          buttonColor="borderless"
+          variant="filled"
           shouldHideTextOnMobile={false}
         />
       </span>

@@ -2,7 +2,7 @@
 
 import Card from '@/design-system/layout/Card'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   className?: string
@@ -13,7 +13,7 @@ export default function VerticalBarChart({
 }: PropsWithChildren<Props>) {
   return (
     <Card
-      className={twMerge(
+      className={cn(
         'mt-4 flex w-full justify-end rounded-xl border-none bg-gray-100 p-3 shadow-none',
         className
       )}>

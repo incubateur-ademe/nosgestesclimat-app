@@ -54,7 +54,7 @@ export default function Localisation({
           {region !== initialRegion && (
             <div className="mt-2">
               <Button
-                color="text"
+                variant="text"
                 size="sm"
                 onClick={resetRegion as () => void}>
                 <Trans>Revenir à ma région par défaut </Trans>{' '}

@@ -10,7 +10,7 @@ import Tabs from '@/design-system/layout/Tabs'
 import { useShouldHideIfIframe } from '@/hooks/iframe/useShouldHideIfIframe'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { usePathname } from 'next/navigation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function FinTabs() {
   const pathname = usePathname()
@@ -33,7 +33,7 @@ export default function FinTabs() {
       label: (
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <BilanIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-4 md:w-6',
               isResultsActive ? 'fill-primary-600' : 'fill-default'
             )}
@@ -54,7 +54,7 @@ export default function FinTabs() {
       label: (
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <ActionsIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-4 md:w-6',
               isActionsActive ? 'fill-primary-600' : 'fill-default'
             )}
@@ -79,7 +79,7 @@ export default function FinTabs() {
                 className="flex flex-col items-center gap-1 md:flex-row"
                 data-testid="my-groups-tab">
                 <AmisIcon
-                  className={twMerge(
+                  className={cn(
                     'h-6 w-4 md:w-6',
                     isGroupsActive
                       ? 'stroke-primary-600 fill-primary-600'

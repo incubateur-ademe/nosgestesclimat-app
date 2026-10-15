@@ -1,10 +1,10 @@
 import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import LockIcon from '../icons/LockIcon'
 import Link from '../Link'
 import Trans from '../translation/trans/TransServer'
@@ -22,9 +22,9 @@ export default function NoResultsBlock() {
       <div className="flex justify-center">
         <Link
           href={TUTORIAL_PATH}
-          className={twMerge(
+          className={cn(
             baseClassNames,
-            colorClassNames.secondary,
+            getVariantClassNames('outlined', 'primary'),
             sizeClassNames.md
           )}>
           <Trans i18nKey="mon-espace.noResults.link.text">

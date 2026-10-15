@@ -8,7 +8,7 @@ import { useIsClient } from '@/hooks/useIsClient'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import type { DottedName, Metrics } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 
 export default function CategoryResult({
   category,
@@ -53,17 +53,17 @@ export default function CategoryResult({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'relative mb-0 flex w-full items-center justify-between gap-4 overflow-hidden bg-white px-4 py-2 text-sm transition-colors',
         isStarted || isCurrent ? 'text-default' : 'text-slate-600'
       )}>
       <div
-        className={twMerge(
+        className={cn(
           'relative flex items-center text-sm font-normal',
           getTextDarkColor(category)
         )}>
         <Emoji
-          className={twMerge(
+          className={cn(
             isStarted || isCurrent ? 'opacity-100' : 'opacity-50',
             'mr-2 transition-opacity'
           )}>
@@ -72,7 +72,7 @@ export default function CategoryResult({
         <span>{isClient ? title : null}</span>{' '}
       </div>
       <span
-        className={twMerge(
+        className={cn(
           'relative block font-semibold transition-opacity',
           isCompleted || isStarted
             ? 'visible opacity-100'

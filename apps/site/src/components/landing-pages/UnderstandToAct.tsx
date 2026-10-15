@@ -1,7 +1,7 @@
 import PostThumbnail from '@/design-system/cms/PostThumbnail'
 import ColorLine from '@/design-system/layout/ColorLine'
 import type { LandingPagePostType } from '@/types/landing-page'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { JSX, ReactNode } from 'react'
 import Trans from '../translation/trans/TransServer'
 
@@ -20,7 +20,7 @@ export default function UnderstandToAct({
     <div className="bg-heroLightBackground relative w-full py-16 md:py-20">
       <div className="mx-auto flex max-w-full flex-col gap-4 px-4 md:max-w-5xl md:px-0">
         <h2
-          className={twMerge(
+          className={cn(
             'mb-0 text-center text-2xl md:text-3xl',
             !description ? 'mb-10' : ''
           )}>
@@ -37,7 +37,7 @@ export default function UnderstandToAct({
         )}
 
         <ul
-          className={twMerge(
+          className={cn(
             'grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3',
             posts?.length === 2 ? 'md:grid-cols-2' : '',
             posts?.length === 1 ? 'md:grid-cols-1' : ''

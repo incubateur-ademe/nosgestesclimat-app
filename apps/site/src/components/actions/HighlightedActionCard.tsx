@@ -8,7 +8,7 @@ import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import type { Theme } from '@/types/themes'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionTracker from './ActionTracker'
@@ -80,7 +80,7 @@ export default async function HighlightedActionCard({
   return (
     <article
       {...props}
-      className={twMerge(
+      className={cn(
         'relative flex flex-col overflow-hidden rounded-lg border border-t-8 bg-white md:flex-row md:border-t md:border-l-8',
         classes.card,
         className
@@ -128,7 +128,7 @@ export default async function HighlightedActionCard({
 
       {assessmentStatus ? (
         <div
-          className={twMerge(
+          className={cn(
             'flex flex-col justify-center gap-0.5 border-t border-slate-100 px-6 py-6 md:w-75 md:border-t-0 md:border-l',
             classes.panel
           )}>
@@ -196,7 +196,7 @@ function ImpactValue({
   return (
     <p className="mb-0 flex items-baseline gap-1.5 whitespace-nowrap">
       <span
-        className={twMerge(
+        className={cn(
           'text-[2rem]/none font-extrabold tracking-[-0.9px] md:text-5xl/none',
           valueClassName
         )}>

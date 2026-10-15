@@ -5,7 +5,7 @@ import CloseIcon from '@/components/icons/Close'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Button from '../buttons/Button'
@@ -50,7 +50,7 @@ export const BannerContent = ({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         colorClassNames[color],
         'xs:flex-row xs:items-center xs:gap-2 relative inline-flex w-full flex-col items-start justify-center gap-1 px-4 py-2 text-sm md:h-12'
       )}>
@@ -64,7 +64,7 @@ export const BannerContent = ({
           safeLocalStorage.setItem(`${STORAGE_KEY_PREFIX}-${banner.id}`, 'true')
           setShouldHideBanner(true)
         }}
-        color="secondary"
+        variant="outlined"
         aria-label={closeButtonString}
         title={closeButtonString}
         className="bg-primary-700 hover:bg-primary-700 -m-2.5 ml-1 border-none p-2.5! md:absolute md:top-2.5 md:right-4">

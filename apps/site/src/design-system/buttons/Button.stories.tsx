@@ -10,10 +10,15 @@ const meta: Meta<typeof Button> = {
   },
   tags: ['autodocs'],
   argTypes: {
+    variant: {
+      control: 'select',
+      options: ['filled', 'outlined', 'text', 'link'],
+      description: 'The variant of the button',
+    },
     color: {
       control: 'select',
-      options: ['primary', 'secondary', 'text', 'link', 'success'],
-      description: 'The color variant of the button',
+      options: ['primary', 'green', 'red'],
+      description: 'The color of the button',
     },
     size: {
       control: 'select',
@@ -55,7 +60,7 @@ export const Primary: Story = {
 export const Secondary: Story = {
   args: {
     children: 'Secondary Button',
-    color: 'secondary',
+    variant: 'outlined',
     size: 'md',
   },
 }
@@ -63,7 +68,7 @@ export const Secondary: Story = {
 export const Success: Story = {
   args: {
     children: 'Success Button',
-    color: 'success',
+    color: 'green',
     size: 'md',
   },
 }
@@ -71,7 +76,7 @@ export const Success: Story = {
 export const Text: Story = {
   args: {
     children: 'Text Button',
-    color: 'text',
+    variant: 'text',
     size: 'md',
   },
 }
@@ -79,7 +84,7 @@ export const Text: Story = {
 export const Link: Story = {
   args: {
     children: 'Link Button',
-    color: 'link',
+    variant: 'link',
     size: 'md',
   },
 }
@@ -115,7 +120,7 @@ export const Loading: Story = {
 export const LoadingSecondary: Story = {
   args: {
     children: 'Loading Secondary',
-    color: 'secondary',
+    variant: 'outlined',
     loading: true,
   },
 }

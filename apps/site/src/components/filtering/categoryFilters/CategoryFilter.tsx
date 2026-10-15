@@ -13,7 +13,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { encodeDottedNameAsURI } from '@/utils/format/encodeDottedNameAsURI'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   title: string
@@ -82,7 +82,7 @@ export default function CategoryFilter({
       aria-controls={`category-panel-${index}`}
       tabIndex={isActive ? 0 : -1}
       title={`${title} - ${isSelected ? t('Page active') : t('Sélectionner ce filtre et afficher uniquement les éléments de cette catégorie')}`}
-      className={twMerge(
+      className={cn(
         'height-[1.8rem] rounded-md! border-2 border-transparent p-2 text-xs font-bold transition-colors',
         baseClassNames,
         isSelected || !categorySelected

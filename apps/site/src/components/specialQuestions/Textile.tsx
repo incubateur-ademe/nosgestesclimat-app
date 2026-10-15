@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useRule, useUser } from '@/publicodes-state'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { utils } from 'publicodes'
 import { useEffect } from 'react'
 import PencilIcon from '../icons/PencilIcon'
@@ -71,7 +71,7 @@ export default function Textile({ question, ...props }: Props) {
     <>
       <Question
         question={question}
-        className={twMerge(
+        className={cn(
           'mb-4',
           preciseChoice && 'pointer-events-none opacity-20'
         )}
@@ -81,7 +81,7 @@ export default function Textile({ question, ...props }: Props) {
         <span>{t('Pour plus de précision:')}</span>
         <div>
           <Button
-            color="link"
+            variant="link"
             size="xs"
             onClick={() => {
               trackEvent(

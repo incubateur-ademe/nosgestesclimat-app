@@ -1,7 +1,7 @@
 import Carousel from '@/design-system/carousel/Carousel'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useId } from 'react'
 import TrophyIcon from '../icons/TrophyIcon'
 import Trans from '../translation/trans/TransServer'
@@ -26,7 +26,7 @@ export default function HighestImpactActionsSection({
   return (
     <section
       {...props}
-      className={twMerge(
+      className={cn(
         'relative -mx-4 px-2 pt-5 pb-4 shadow-lg md:mx-0 md:rounded-2xl md:px-5 md:pt-8 md:pb-7',
         className
       )}

@@ -1,5 +1,5 @@
 import type { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function Card({
   children,
@@ -26,7 +26,7 @@ export default function Card({
   return (
     <Tag
       onClick={onClick}
-      className={twMerge(
+      className={cn(
         `flex list-none flex-col rounded-lg border border-slate-300 bg-white p-6 transition-colors`,
         isInteractive
           ? 'focus:ring-primary-700 cursor-pointer focus:ring-2 focus:ring-offset-3 focus:outline-hidden'

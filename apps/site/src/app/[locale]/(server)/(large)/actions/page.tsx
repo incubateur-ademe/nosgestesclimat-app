@@ -8,7 +8,7 @@ import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getPublicActionsCatalogue } from '@/services/actions/get-public-actions-catalogue'
 import { getThemes } from '@/services/actions/get-themes'
 import type { DefaultPageProps } from '@/types'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export const generateMetadata = getCommonMetadata({
   title: t('actions.publicListPage.metaTitle'),
@@ -69,7 +69,7 @@ type CallToActionProps = React.ComponentPropsWithoutRef<'aside'>
 
 function CallToAction({ className, ...rest }: CallToActionProps) {
   return (
-    <aside className={twMerge('mb-10', className)} {...rest}>
+    <aside className={cn('mb-10', className)} {...rest}>
       <h2 className="mb-0 text-2xl/normal font-medium">
         <Trans i18nKey="actions.publicListPage.cta.title">
           Connaissez-vous votre empreinte carbone ?

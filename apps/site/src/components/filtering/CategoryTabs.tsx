@@ -3,7 +3,7 @@
 import { FILTER_SEARCH_PARAM_KEY } from '@/constants/filtering'
 import { encodeDottedNameAsURI } from '@/utils/format/encodeDottedNameAsURI'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import CategoryFilter from './categoryFilters/CategoryFilter'
@@ -86,7 +86,7 @@ export default function CategoryTabs({
         role="tablist"
         aria-label="Filtres par catégorie"
         tabIndex={-1}
-        className={twMerge(
+        className={cn(
           'mb-4 flex flex-wrap justify-start gap-2',
           className
         )}

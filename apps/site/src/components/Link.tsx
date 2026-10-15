@@ -4,7 +4,7 @@ import BaseLink from '@/design-system/links/Link'
 import { getExternalLinkProps } from '@/helpers/navigation/externalLink'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { MouseEventHandler } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export interface LinkProps extends React.ComponentProps<typeof BaseLink> {
   href: string
@@ -44,7 +44,7 @@ export default function Link({
   return (
     <BaseLink
       href={href}
-      className={twMerge(
+      className={cn(
         'text-primary-700 hover:text-primary-800 break-words underline transition-colors',
         className
       )}
