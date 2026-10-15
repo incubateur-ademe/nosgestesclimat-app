@@ -424,6 +424,10 @@ model User {
   updatedAt      DateTime             @updatedAt
   /// Set when a session is issued to a verified account.
   lastActivityAt DateTime?
+  /// Stamped by the retention sweep as it warns the account. A stamp older than
+  /// `lastActivityAt` belongs to a previous inactivity period.
+  retentionNoticeSentAt DateTime? @db.Timestamptz(3)
+  finalNoticeSentAt     DateTime? @db.Timestamptz(3)
   verifiedUsers  VerifiedUser[]
   actionChoices  ActionChoice[]
 
