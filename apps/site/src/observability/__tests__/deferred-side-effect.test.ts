@@ -50,7 +50,7 @@ describe('deferred side effect', () => {
   const logExporter = new InMemoryLogRecordExporter()
   const tracerProvider = new NodeTracerProvider({
     spanProcessors: [
-      // `setup.ts` wires it this way: the identity lands on the spans on their
+      // `otel.ts` wires it this way: the identity lands on the spans on their
       // way out.
       new IdentitySpanProcessor(),
       new SimpleSpanProcessor(spanExporter),

@@ -45,7 +45,7 @@ describe('log export', () => {
 
   beforeAll(() => {
     // Production wiring, in miniature: this test registers its own provider
-    // instead of calling `initObservability`.
+    // instead of calling `initOtel`.
     logs.setGlobalLoggerProvider(loggerProvider)
     tracerProvider.register()
   })
