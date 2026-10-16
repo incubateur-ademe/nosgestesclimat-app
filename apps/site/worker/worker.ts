@@ -1,5 +1,4 @@
 import { createAssessActions } from '@nosgestesclimat/core/features/actions/services/assess-actions.service'
-import type { LogVerbosity } from '@nosgestesclimat/core/features/logger/index'
 import { createComputePollStats } from '@nosgestesclimat/core/features/polls/stats/legacy/compute-poll-stats'
 import { createProcessNextPendingPollStats } from '@nosgestesclimat/core/features/polls/stats/services/process-next-pending-poll-stats'
 import {
@@ -11,17 +10,14 @@ import type { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
 import type { Result } from '@nosgestesclimat/core/lib/result'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
+import { env } from '../src/env/server.ts'
 import { createLogger } from '../src/logger/logger.node.ts'
 import { captureException, flushObservability } from './observability.ts'
 
-// The worker runs unbundled and has no `env/server.ts`: it reads the two
-// variables its logger cares about here, rather than in the shared factory.
 const logger = createLogger({
   service: 'worker',
-  verbosity:
-    (process.env.NEXT_PUBLIC_LOG_VERBOSITY as LogVerbosity | undefined) ??
-    'info',
-  pretty: process.env.LOG_PRETTY === 'true',
+  verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY ?? 'info',
+  pretty: env.LOG_PRETTY ?? false,
   onCapture: captureException,
 })
 

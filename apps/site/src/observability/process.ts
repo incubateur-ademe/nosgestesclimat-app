@@ -2,6 +2,7 @@ import type { LogMeta } from '@nosgestesclimat/core/features/logger/index'
 import * as Sentry from '@sentry/node'
 
 import { APP_ENV } from '../env/app-env.ts'
+import { env } from '../env/server.ts'
 import { captureToPostHog } from './error-capture.ts'
 import { initObservability, shutdownObservability } from './setup.ts'
 
@@ -16,7 +17,7 @@ const version = '__SOURCE_VERSION__'
  */
 export function initProcessObservability(service: string): void {
   Sentry.init({
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    dsn: env.NEXT_PUBLIC_SENTRY_DSN,
     environment: APP_ENV,
     sampleRate: 1,
     // Traces live in PostHog, and this process reads them from the provider
@@ -25,12 +26,9 @@ export function initProcessObservability(service: string): void {
     tracesSampleRate: 0,
   })
 
-  // These processes have no `env/server.ts` — that file is the site's contract,
-  // and it requires variables they never read — so their export settings are
-  // read here, at their root. No token or no endpoint: nothing to export, so
-  // nothing to instrument.
-  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
-  const endpoint = process.env.POSTHOG_OTLP_ENDPOINT
+  // No token or no endpoint: nothing to export, so nothing to instrument.
+  const token = env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+  const endpoint = env.POSTHOG_OTLP_ENDPOINT
   if (token && endpoint) {
     initObservability(service, version, { token, endpoint })
   }
