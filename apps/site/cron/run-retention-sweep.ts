@@ -4,17 +4,8 @@ import { runRetentionSweep } from '@nosgestesclimat/core/features/users/services
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { parseArgs } from 'node:util'
-import * as v from 'valibot'
-import { NonEmptyStringSchema, parseEnv } from '../src/env/shared.ts'
 import { createLogger } from '../src/logger/logger.node.ts'
 import { captureException, flushObservability } from './observability.ts'
-
-// This process has no `env/server.ts` either: that file is the site's contract,
-// and it requires variables the cron never reads.
-const BrevoEnvSchema = v.object({
-  BREVO_API_KEY: NonEmptyStringSchema,
-  BREVO_URL: v.pipe(NonEmptyStringSchema, v.url()),
-})
 
 const logger = createLogger({
   service: 'cron',
@@ -36,11 +27,16 @@ const main = async () => {
       allowNegative: true,
     })
 
-    const brevo = parseEnv(BrevoEnvSchema, process.env)
-    const { sendEmail } = createBrevoClient({
-      apiKey: brevo.BREVO_API_KEY,
-      url: brevo.BREVO_URL,
-    })
+    // Read at the root, like the worker reads its own: this process has no
+    // `env/server.ts`, and the site's contract requires variables it never
+    // reads. Missing ones are fatal rather than a run that sends nothing.
+    const apiKey = process.env.BREVO_API_KEY
+    const url = process.env.BREVO_URL
+    if (!apiKey || !url) {
+      throw new Error('BREVO_API_KEY and BREVO_URL are required')
+    }
+
+    const { sendEmail } = createBrevoClient({ apiKey, url })
 
     // The sweep reports its own run: what it selected, what went out, what
     // failed. A failed send is retried on the next run.
