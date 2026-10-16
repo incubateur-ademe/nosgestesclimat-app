@@ -1,18 +1,16 @@
 import { createBrevoClient } from '@nosgestesclimat/core/features/emails/brevo/client'
-import type { LogVerbosity } from '@nosgestesclimat/core/features/logger/index'
 import { runRetentionSweep } from '@nosgestesclimat/core/features/users/services/run-retention-sweep.service'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { parseArgs } from 'node:util'
+import { env } from '../src/env/server.ts'
 import { createLogger } from '../src/logger/logger.node.ts'
 import { captureException, flushObservability } from './observability.ts'
 
 const logger = createLogger({
   service: 'cron',
-  verbosity:
-    (process.env.NEXT_PUBLIC_LOG_VERBOSITY as LogVerbosity | undefined) ??
-    'info',
-  pretty: process.env.LOG_PRETTY === 'true',
+  verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY ?? 'info',
+  pretty: env.LOG_PRETTY ?? false,
   onCapture: captureException,
 })
 
@@ -27,16 +25,10 @@ const main = async () => {
       allowNegative: true,
     })
 
-    // Read at the root, like the worker reads its own: this process has no
-    // `env/server.ts`, and the site's contract requires variables it never
-    // reads. Missing ones are fatal rather than a run that sends nothing.
-    const apiKey = process.env.BREVO_API_KEY
-    const url = process.env.BREVO_URL
-    if (!apiKey || !url) {
-      throw new Error('BREVO_API_KEY and BREVO_URL are required')
-    }
-
-    const { sendEmail } = createBrevoClient({ apiKey, url })
+    const { sendEmail } = createBrevoClient({
+      apiKey: env.BREVO_API_KEY,
+      url: env.BREVO_URL,
+    })
 
     // The sweep reports its own run: what it selected, what went out, what
     // failed. A failed send is retried on the next run.

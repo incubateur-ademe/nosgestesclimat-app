@@ -1,13 +1,13 @@
 import { parseCooldownTiers } from '@nosgestesclimat/core/features/polls/stats/helpers/cooldown-policy'
 import * as v from 'valibot'
 
-import { publicEnv } from './public'
+import { publicEnv } from './public.ts'
 import {
   mayBeUnset,
   NonEmptyStringSchema,
   parseEnv,
   requiredInProduction,
-} from './shared'
+} from './shared.ts'
 
 const ServerEnvSchema = v.object({
   BREVO_API_KEY: NonEmptyStringSchema,
