@@ -1,6 +1,6 @@
 import * as v from 'valibot'
 
-import { APP_ENV } from './app-env.ts'
+import { APP_ENV } from './app-env'
 
 export const NonEmptyStringSchema = v.pipe(v.string(), v.nonEmpty())
 
