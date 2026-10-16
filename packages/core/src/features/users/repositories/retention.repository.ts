@@ -22,7 +22,7 @@ import {
  * The last condition compares two columns of the row, which Prisma's `where`
  * cannot express (`FieldRef` covers `orderBy` only): the accounts a notice is
  * due to are read in SQL. The language comes with them, deduplicated in the
- * database — `DISTINCT ON`, ordered by simulation date — so that the sweep
+ * database — `DISTINCT ON`, ordered by the simulation's last write — so that the sweep
  * never carries the simulations of an account along.
  */
 export const findAccountsDueForRetentionNotice = async (
@@ -39,7 +39,7 @@ export const findAccountsDueForRetentionNotice = async (
       AND u."lastActivityAt" > ${finalNoticeActivityBefore(now)}
       AND (u."retentionNoticeSentAt" IS NULL
         OR u."retentionNoticeSentAt" < u."lastActivityAt")
-    ORDER BY u.id, s."createdAt" DESC
+    ORDER BY u.id, s."updatedAt" DESC
   `
 
   return rows.map(mapRetentionNoticeCandidate)
@@ -61,7 +61,7 @@ export const findAccountsDueForFinalNotice = async (
     WHERE u."lastActivityAt" <= ${finalNoticeActivityBefore(now)}
       AND (u."finalNoticeSentAt" IS NULL
         OR u."finalNoticeSentAt" < u."lastActivityAt")
-    ORDER BY u.id, s."createdAt" DESC
+    ORDER BY u.id, s."updatedAt" DESC
   `
 
   return rows.map(mapRetentionNoticeCandidate)

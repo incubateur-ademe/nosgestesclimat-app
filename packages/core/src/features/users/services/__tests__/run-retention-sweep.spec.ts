@@ -35,15 +35,17 @@ const seedAccount = async ({
 const seedSimulation = ({
   userId,
   locale,
-  createdAt,
+  at,
 }: {
   userId: string
   locale: 'fr' | 'en'
-  createdAt: Date
+  at: Date
 }) =>
   simulationFactory
     .withModelLocale(locale)
-    .create({ userId, createdAt, date: createdAt })
+    // The sweep reads the language of the account's last *write*, and the
+    // factory stamps `updatedAt` with the current time.
+    .create({ userId, createdAt: at, updatedAt: at, date: at })
 
 const runSweep = ({
   at = now,
@@ -236,12 +238,12 @@ describe('runRetentionSweep', () => {
       await seedSimulation({
         userId: inEnglish.id,
         locale: 'fr',
-        createdAt: new Date('2024-01-01T00:00:00.000Z'),
+        at: new Date('2024-01-01T00:00:00.000Z'),
       })
       await seedSimulation({
         userId: inEnglish.id,
         locale: 'en',
-        createdAt: new Date('2024-06-01T00:00:00.000Z'),
+        at: new Date('2024-06-01T00:00:00.000Z'),
       })
 
       const inFrench = await seedAccount({
@@ -250,12 +252,12 @@ describe('runRetentionSweep', () => {
       await seedSimulation({
         userId: inFrench.id,
         locale: 'en',
-        createdAt: new Date('2024-01-01T00:00:00.000Z'),
+        at: new Date('2024-01-01T00:00:00.000Z'),
       })
       await seedSimulation({
         userId: inFrench.id,
         locale: 'fr',
-        createdAt: new Date('2024-06-01T00:00:00.000Z'),
+        at: new Date('2024-06-01T00:00:00.000Z'),
       })
 
       await runSweep()
@@ -282,7 +284,7 @@ describe('runRetentionSweep', () => {
       await seedSimulation({
         userId: account.id,
         locale: 'en',
-        createdAt: new Date('2024-06-01T00:00:00.000Z'),
+        at: new Date('2024-06-01T00:00:00.000Z'),
       })
 
       await runSweep()
@@ -291,6 +293,34 @@ describe('runRetentionSweep', () => {
         expect.objectContaining({
           email: account.email,
           templateId: TemplateIds.en.FINAL_RETENTION_NOTICE,
+        })
+      )
+    })
+
+    it('reads the last write, not the last creation', async () => {
+      const account = await seedAccount({
+        lastActivityAt: new Date('2024-12-15T06:00:00.000Z'),
+      })
+      // An old simulation, recomputed since in English, and a recent French one.
+      await simulationFactory.withModelLocale('en').create({
+        userId: account.id,
+        date: new Date('2023-01-01T00:00:00.000Z'),
+        createdAt: new Date('2023-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2024-09-01T00:00:00.000Z'),
+      })
+      await simulationFactory.withModelLocale('fr').create({
+        userId: account.id,
+        date: new Date('2024-06-01T00:00:00.000Z'),
+        createdAt: new Date('2024-06-01T00:00:00.000Z'),
+        updatedAt: new Date('2024-06-01T00:00:00.000Z'),
+      })
+
+      await runSweep()
+
+      expect(sendEmail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: account.email,
+          templateId: TemplateIds.en.RETENTION_NOTICE,
         })
       )
     })
