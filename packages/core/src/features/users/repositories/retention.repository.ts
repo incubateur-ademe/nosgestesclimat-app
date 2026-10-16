@@ -21,51 +21,47 @@ import {
  *
  * The last condition compares two columns of the row, which Prisma's `where`
  * cannot express (`FieldRef` covers `orderBy` only): the accounts a notice is
- * due to are read in SQL. The language comes with them, one row per account, so
- * that the sweep never carries the simulations of an account along.
+ * due to are read in SQL. The language comes with them, deduplicated in the
+ * database — `DISTINCT ON`, ordered by simulation date — so that the sweep
+ * never carries the simulations of an account along.
  */
 export const findAccountsDueForRetentionNotice = async (
   { now }: { now: Date },
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<RetentionNoticeCandidate[]> => {
   const rows = await session.$queryRaw<RetentionNoticeRow[]>`
-    SELECT u.id AS "userId", vu.email, u."lastActivityAt", s.model
+    SELECT DISTINCT ON (u.id)
+      u.id AS "userId", vu.email, u."lastActivityAt", s.model
     FROM ngc."User" u
     JOIN ngc."VerifiedUser" vu ON vu.id = u.id
-    LEFT JOIN LATERAL (
-      SELECT model FROM ngc."Simulation"
-      WHERE "userId" = u.id
-      ORDER BY "createdAt" DESC
-      LIMIT 1
-    ) s ON true
+    LEFT JOIN ngc."Simulation" s ON s."userId" = u.id
     WHERE u."lastActivityAt" <= ${retentionNoticeActivityBefore(now)}
       AND u."lastActivityAt" > ${finalNoticeActivityBefore(now)}
       AND (u."retentionNoticeSentAt" IS NULL
         OR u."retentionNoticeSentAt" < u."lastActivityAt")
+    ORDER BY u.id, s."createdAt" DESC
   `
 
   return rows.map(mapRetentionNoticeCandidate)
 }
 
 /** Reads the accounts the final notice is due to: within a week of erasure,
- * and not notified for their current inactivity period. */
+ * and not notified for their current inactivity period. Same language read as
+ * above. */
 export const findAccountsDueForFinalNotice = async (
   { now }: { now: Date },
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<RetentionNoticeCandidate[]> => {
   const rows = await session.$queryRaw<RetentionNoticeRow[]>`
-    SELECT u.id AS "userId", vu.email, u."lastActivityAt", s.model
+    SELECT DISTINCT ON (u.id)
+      u.id AS "userId", vu.email, u."lastActivityAt", s.model
     FROM ngc."User" u
     JOIN ngc."VerifiedUser" vu ON vu.id = u.id
-    LEFT JOIN LATERAL (
-      SELECT model FROM ngc."Simulation"
-      WHERE "userId" = u.id
-      ORDER BY "createdAt" DESC
-      LIMIT 1
-    ) s ON true
+    LEFT JOIN ngc."Simulation" s ON s."userId" = u.id
     WHERE u."lastActivityAt" <= ${finalNoticeActivityBefore(now)}
       AND (u."finalNoticeSentAt" IS NULL
         OR u."finalNoticeSentAt" < u."lastActivityAt")
+    ORDER BY u.id, s."createdAt" DESC
   `
 
   return rows.map(mapRetentionNoticeCandidate)
