@@ -1,7 +1,9 @@
 import { initProcessObservability } from '../src/observability/process.ts'
+import { reportStartupFailures } from '../src/observability/startup-failure.ts'
 
-// Registered before the core services are imported, which is before Prisma is
-// instantiated: that is what lets the queries be traced.
+// Before the wiring below reads the environment, which is what may fail here.
+reportStartupFailures('cron')
+
 initProcessObservability('cron')
 
 export {
