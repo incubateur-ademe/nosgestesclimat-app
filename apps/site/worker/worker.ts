@@ -47,16 +47,14 @@ process.on('SIGINT', () => {
 
 /**
  * A process that survived an unknown failure keeps running from an unknown
- * state: it dies instead, and the orchestrator restarts a sane one.
+ * state: it dies instead, and the orchestrator restarts a sane one. An error
+ * escaping the process is `reportStartupFailures`' business.
  */
 async function crash(error: Error) {
   logger.fatal(error)
   await flushObservability()
   process.exit(1)
 }
-
-process.on('uncaughtException', (error) => void crash(error))
-process.on('unhandledRejection', (reason) => void crash(toError(reason)))
 
 async function loop(
   name: string,
