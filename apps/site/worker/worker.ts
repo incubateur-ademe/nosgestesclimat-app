@@ -48,7 +48,7 @@ process.on('SIGINT', () => {
 /**
  * A process that survived an unknown failure keeps running from an unknown
  * state: it dies instead, and the orchestrator restarts a sane one. An error
- * escaping the process is `reportStartupFailures`' business.
+ * escaping the process is `wireProcessObservability`'s business.
  */
 async function crash(error: Error) {
   logger.fatal(error)

@@ -10,7 +10,7 @@ Sentry.init({
   dsn: env.NEXT_PUBLIC_SENTRY_DSN,
   environment: APP_ENV,
   sampleRate: 1,
-  // Traces live in PostHog (`src/observability/setup.ts`): Sentry reports
+  // Traces live in PostHog (`src/observability/otel.ts`): Sentry reports
   // errors only and reads the trace context from that provider instead of
   // owning one, so an error event and its trace share a `trace_id`.
   skipOpenTelemetrySetup: true,
