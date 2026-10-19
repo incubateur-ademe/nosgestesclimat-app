@@ -27,13 +27,9 @@ const main = async () => {
       apiKey: env.BREVO_API_KEY,
       url: env.BREVO_URL,
     })
-    const retentionSweep = createRetentionSweep({
-      logger,
-      sendEmail,
-      dryRun: values.dry,
-    })
+    const retentionSweep = createRetentionSweep({ logger, sendEmail })
 
-    await retentionSweep({ now: new Date() })
+    await retentionSweep({ now: new Date(), dryRun: values.dry })
 
     await flushObservability()
     process.exit(0)

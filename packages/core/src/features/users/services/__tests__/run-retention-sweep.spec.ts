@@ -53,7 +53,7 @@ const runSweep = ({
 }: {
   at?: Date
   dryRun?: boolean
-} = {}) => createRetentionSweep({ logger, sendEmail, dryRun })({ now: at })
+} = {}) => createRetentionSweep({ logger, sendEmail })({ now: at, dryRun })
 
 const noticeStamps = (userId: string) =>
   prisma.user.findFirst({
