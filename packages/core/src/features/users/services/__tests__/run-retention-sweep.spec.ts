@@ -8,7 +8,7 @@ import { EmailRequestError } from '../../../emails/errors.ts'
 import type { SendEmail } from '../../../emails/types.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
-import { runRetentionSweep } from '../run-retention-sweep.service.ts'
+import { createRetentionSweep } from '../run-retention-sweep.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn<SendEmail>()
@@ -47,14 +47,15 @@ const seedSimulation = ({
     // factory stamps `updatedAt` with the current time.
     .create({ userId, createdAt: at, updatedAt: at, date: at })
 
+const sweep = createRetentionSweep({ logger })
+
 const runSweep = ({
   at = now,
   dryRun = false,
 }: {
   at?: Date
   dryRun?: boolean
-} = {}) =>
-  runRetentionSweep({ session: prisma, now: at, dryRun, sendEmail, logger })
+} = {}) => sweep({ session: prisma, now: at, dryRun, sendEmail })
 
 const noticeStamps = (userId: string) =>
   prisma.user.findFirst({
