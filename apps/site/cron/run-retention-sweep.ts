@@ -1,7 +1,6 @@
 import { createBrevoClient } from '@nosgestesclimat/core/features/emails/brevo/client'
 import { createRetentionSweep } from '@nosgestesclimat/core/features/users/services/run-retention-sweep.service'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { parseArgs } from 'node:util'
 import { env } from '../src/env/server.ts'
 import { createLogger } from '../src/logger/logger.node.ts'
@@ -28,11 +27,7 @@ const main = async () => {
       apiKey: env.BREVO_API_KEY,
       url: env.BREVO_URL,
     })
-    const retentionSweep = createRetentionSweep({
-      logger,
-      session: prisma,
-      sendEmail,
-    })
+    const retentionSweep = createRetentionSweep({ logger, sendEmail })
 
     await retentionSweep({ now: new Date(), dryRun: values.dry })
 

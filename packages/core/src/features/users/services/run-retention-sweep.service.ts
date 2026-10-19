@@ -1,4 +1,3 @@
-import type { Transaction } from '../../../lib/transaction.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { Logger } from '../../logger/index.ts'
 import { createRetentionNoticeEmail } from '../emails/retention-emails.ts'
@@ -15,7 +14,6 @@ import type {
 
 interface RetentionSweepDependencies {
   logger: Logger
-  session: Transaction
   sendEmail: SendEmail
 }
 
@@ -31,7 +29,6 @@ type RetentionSweepParams = {
 /** Warns the accounts a notice is due to, and logs what the run did. */
 export const createRetentionSweep = ({
   logger,
-  session,
   sendEmail,
 }: RetentionSweepDependencies) =>
   logger.withSpan(
@@ -39,8 +36,8 @@ export const createRetentionSweep = ({
     async ({ now, dryRun, logger }: RetentionSweepParams) => {
       // Both windows are read before anything goes out: a failed read fails the run.
       const [retention, final] = await Promise.all([
-        findAccountsDueForRetentionNotice({ now }, { session }),
-        findAccountsDueForFinalNotice({ now }, { session }),
+        findAccountsDueForRetentionNotice({ now }),
+        findAccountsDueForFinalNotice({ now }),
       ])
 
       let sent = 0
@@ -78,10 +75,11 @@ export const createRetentionSweep = ({
             continue
           }
 
-          await stampRetentionNotice(
-            { userId: account.userId, stage, at: now },
-            { session }
-          )
+          await stampRetentionNotice({
+            userId: account.userId,
+            stage,
+            at: now,
+          })
           sent++
         }
       }
