@@ -1,8 +1,8 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import {
-  finalNoticeActivityBefore,
-  retentionNoticeActivityBefore,
+  finalNoticeCutoff,
+  retentionNoticeCutoff,
 } from '../helpers/retention-period.ts'
 import type {
   RetentionNoticeCandidate,
@@ -29,8 +29,8 @@ export const findAccountsDueForRetentionNotice = async (
     FROM ngc."User" u
     JOIN ngc."VerifiedUser" vu ON vu.id = u.id
     LEFT JOIN ngc."Simulation" s ON s."userId" = u.id
-    WHERE u."lastActivityAt" <= ${retentionNoticeActivityBefore(now)}
-      AND u."lastActivityAt" > ${finalNoticeActivityBefore(now)}
+    WHERE u."lastActivityAt" <= ${retentionNoticeCutoff(now)}
+      AND u."lastActivityAt" > ${finalNoticeCutoff(now)}
       AND (u."retentionNoticeSentAt" IS NULL
         OR u."retentionNoticeSentAt" < u."lastActivityAt")
     ORDER BY u.id, s."updatedAt" DESC
@@ -50,7 +50,7 @@ export const findAccountsDueForFinalNotice = async (
     FROM ngc."User" u
     JOIN ngc."VerifiedUser" vu ON vu.id = u.id
     LEFT JOIN ngc."Simulation" s ON s."userId" = u.id
-    WHERE u."lastActivityAt" <= ${finalNoticeActivityBefore(now)}
+    WHERE u."lastActivityAt" <= ${finalNoticeCutoff(now)}
       AND (u."finalNoticeSentAt" IS NULL
         OR u."finalNoticeSentAt" < u."lastActivityAt")
     ORDER BY u.id, s."updatedAt" DESC
