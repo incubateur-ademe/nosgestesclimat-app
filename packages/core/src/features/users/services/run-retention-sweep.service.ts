@@ -13,11 +13,7 @@ import type {
   RetentionNoticeStage,
 } from '../types/retention.ts'
 
-/**
- * Warns the verified accounts a notice is due to, and reports the run: what it
- * selected, what went out, what failed. A dry run selects and reports without
- * sending anything or writing.
- */
+/** Warns the accounts a notice is due to, and logs what the run did. */
 export const runRetentionSweep = ({
   session,
   now,
@@ -29,6 +25,7 @@ export const runRetentionSweep = ({
   /** The sweep never reads the clock: an injected instant makes the windows
    * reviewable and the runs reproducible. */
   now: Date
+  /** Selects and reports without sending or stamping. */
   dryRun: boolean
   sendEmail: SendEmail
   logger: Logger
