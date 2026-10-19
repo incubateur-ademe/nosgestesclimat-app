@@ -8,7 +8,7 @@ import {
   requiredInProduction,
 } from './shared.ts'
 
-export const PublicEnvSchema = v.object({
+const PublicEnvSchema = v.object({
   NEXT_PUBLIC_SITE_URL: v.pipe(NonEmptyStringSchema, v.url()),
   NEXT_PUBLIC_LOG_VERBOSITY: mayBeUnset(v.picklist(LOG_VERBOSITIES)),
   // Public by design, like the token below: it ships in the browser bundle, so
