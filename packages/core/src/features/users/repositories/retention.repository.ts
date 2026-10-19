@@ -16,8 +16,7 @@ import {
 
 /**
  * Reads the accounts the retention notice is due to. The due condition compares
- * two columns, which Prisma's `where` cannot express: hence the SQL, which also
- * reads the account's language without carrying its simulations along.
+ * two columns, which Prisma's `where` cannot express: hence the SQL.
  */
 export const findAccountsDueForRetentionNotice = async (
   { now }: { now: Date },
@@ -70,7 +69,7 @@ export const stampRetentionNotice = async (
   await session.user.update({
     where: { id: userId },
     data: mapNoticeStamp({ stage, at }),
-    // Prisma always returns a row and nothing here reads it.
+    // Narrowed to the id: nothing reads the returned row.
     select: { id: true },
   })
 }

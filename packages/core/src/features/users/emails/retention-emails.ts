@@ -23,8 +23,7 @@ export const createRetentionNoticeEmail = ({
   deletionAt: Date
 }>): Email => ({
   email,
-  // Every supported language carries both notices: this lookup is what holds it.
+  // Every supported language carries both notices.
   templateId: TemplateIds[locale][STAGE_TEMPLATES[stage]],
-  // The reconnect link is built into the template itself.
   params: { DELETION_DATE: deletionAt.toISOString().slice(0, 10) },
 })

@@ -48,8 +48,7 @@ export const runRetentionSweep = ({
       stage: RetentionNoticeStage,
       accounts: RetentionNoticeCandidate[]
     ) => {
-      // On demand: a wave can hold thousands of them, and they are what a dry
-      // run is inspected on.
+      // On demand: a wave can hold thousands of them.
       logger.debug('Retention notices selected', {
         stage,
         userIds: accounts.map((account) => account.userId),
