@@ -15,14 +15,14 @@ import type {
 interface RetentionSweepDependencies {
   logger: Logger
   sendEmail: SendEmail
+  /** Selects and reports without sending or stamping. */
+  dryRun: boolean
 }
 
 type RetentionSweepParams = {
   /** The sweep never reads the clock: an injected instant makes the windows
    * reviewable and the runs reproducible. */
   now: Date
-  /** Selects and reports without sending or stamping. */
-  dryRun: boolean
   logger: Logger
 }
 
@@ -30,10 +30,11 @@ type RetentionSweepParams = {
 export const createRetentionSweep = ({
   logger,
   sendEmail,
+  dryRun,
 }: RetentionSweepDependencies) =>
   logger.withSpan(
     'core.service.runRetentionSweep',
-    async ({ now, dryRun, logger }: RetentionSweepParams) => {
+    async ({ now, logger }: RetentionSweepParams) => {
       // Both windows are read before anything goes out: a failed read fails the run.
       const [retention, final] = await Promise.all([
         findAccountsDueForRetentionNotice({ now }),
