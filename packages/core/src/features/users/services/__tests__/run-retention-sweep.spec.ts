@@ -47,7 +47,7 @@ const seedSimulation = ({
     // factory stamps `updatedAt` with the current time.
     .create({ userId, createdAt: at, updatedAt: at, date: at })
 
-const sweep = createRetentionSweep({ logger })
+const sweep = createRetentionSweep({ logger, session: prisma, sendEmail })
 
 const runSweep = ({
   at = now,
@@ -55,7 +55,7 @@ const runSweep = ({
 }: {
   at?: Date
   dryRun?: boolean
-} = {}) => sweep({ session: prisma, now: at, dryRun, sendEmail })
+} = {}) => sweep({ now: at, dryRun })
 
 const noticeStamps = (userId: string) =>
   prisma.user.findFirst({

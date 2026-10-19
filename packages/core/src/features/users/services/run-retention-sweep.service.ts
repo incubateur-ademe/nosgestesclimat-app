@@ -13,28 +13,30 @@ import type {
   RetentionNoticeStage,
 } from '../types/retention.ts'
 
-type RetentionSweepParams = {
+interface RetentionSweepDependencies {
+  logger: Logger
   session: Transaction
+  sendEmail: SendEmail
+}
+
+type RetentionSweepParams = {
   /** The sweep never reads the clock: an injected instant makes the windows
    * reviewable and the runs reproducible. */
   now: Date
   /** Selects and reports without sending or stamping. */
   dryRun: boolean
-  sendEmail: SendEmail
   logger: Logger
 }
 
 /** Warns the accounts a notice is due to, and logs what the run did. */
-export const createRetentionSweep = ({ logger }: { logger: Logger }) =>
+export const createRetentionSweep = ({
+  logger,
+  session,
+  sendEmail,
+}: RetentionSweepDependencies) =>
   logger.withSpan(
     'core.service.runRetentionSweep',
-    async ({
-      session,
-      now,
-      dryRun,
-      sendEmail,
-      logger,
-    }: RetentionSweepParams) => {
+    async ({ now, dryRun, logger }: RetentionSweepParams) => {
       // Both windows are read before anything goes out: a failed read fails the run.
       const [retention, final] = await Promise.all([
         findAccountsDueForRetentionNotice({ now }, { session }),

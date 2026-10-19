@@ -28,13 +28,13 @@ const main = async () => {
       apiKey: env.BREVO_API_KEY,
       url: env.BREVO_URL,
     })
-
-    await createRetentionSweep({ logger })({
+    const retentionSweep = createRetentionSweep({
+      logger,
       session: prisma,
-      now: new Date(),
-      dryRun: values.dry,
       sendEmail,
     })
+
+    await retentionSweep({ now: new Date(), dryRun: values.dry })
 
     await flushObservability()
     process.exit(0)
