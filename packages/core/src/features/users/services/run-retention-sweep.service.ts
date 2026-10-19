@@ -41,9 +41,8 @@ export const runRetentionSweep = ({
     let failed = 0
 
     /**
-     * Sends each account the notice it is owed, then stamps it. The stamp comes
-     * after the send, never before: it short-circuits the next run, so a failed
-     * send left unstamped is the one the sweep retries.
+     * Sends each account the notice it is owed, then stamps it — after the send,
+     * so an account whose send failed stays due and the next run retries it.
      */
     const notify = async (
       stage: RetentionNoticeStage,
