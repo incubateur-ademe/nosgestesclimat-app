@@ -12,7 +12,7 @@ const logger = createLogger({
   verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY,
   pretty: env.LOG_PRETTY,
   onCapture: captureException,
-})
+}).child({ scope: 'site.cron.sendRetentionSweep' })
 
 const main = async () => {
   try {
