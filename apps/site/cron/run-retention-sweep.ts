@@ -9,16 +9,15 @@ import { captureException, flushObservability } from './observability.ts'
 
 const logger = createLogger({
   service: 'cron',
-  verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY ?? 'info',
-  pretty: env.LOG_PRETTY ?? false,
+  verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY,
+  pretty: env.LOG_PRETTY,
   onCapture: captureException,
 })
 
 const main = async () => {
   try {
     // Dry by default: the notices announce an erasure that does not exist yet
-    // (NGC-3981), and a mistake in the activity rule is a mass email. An
-    // unknown flag throws rather than run for real.
+    // (NGC-3981), and a mistake in the activity rule is a mass email.
     const { values } = parseArgs({
       args: process.argv.slice(2),
       options: { dry: { type: 'boolean', default: true } },
@@ -30,8 +29,6 @@ const main = async () => {
       url: env.BREVO_URL,
     })
 
-    // The sweep reports its own run: what it selected, what went out, what
-    // failed. A failed send is retried on the next run.
     await runRetentionSweep({
       session: prisma,
       now: new Date(),

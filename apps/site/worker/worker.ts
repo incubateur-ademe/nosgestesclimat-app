@@ -16,8 +16,8 @@ import { captureException, flushObservability } from './observability.ts'
 
 const logger = createLogger({
   service: 'worker',
-  verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY ?? 'info',
-  pretty: env.LOG_PRETTY ?? false,
+  verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY,
+  pretty: env.LOG_PRETTY,
   onCapture: captureException,
 })
 
