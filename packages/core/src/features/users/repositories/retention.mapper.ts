@@ -1,8 +1,5 @@
-import { parseModelString } from '../../simulations/repository/model.mapper.ts'
-import type {
-  RetentionNoticeCandidate,
-  RetentionNoticeStage,
-} from '../types/retention.ts'
+import { parseModel } from '../../models/helpers/model-versions.ts'
+import type { RetentionNoticeCandidate } from '../types/retention.ts'
 
 export type RetentionNoticeRow = {
   userId: string
@@ -19,13 +16,5 @@ export const mapRetentionNoticeCandidate = (
   lastActivityAt: row.lastActivityAt,
   // Nothing stores the account's language: the language of its last simulation
   // is the closest thing to the one it reads the site in.
-  locale: parseModelString(row.model ?? '')?.locale ?? 'fr',
+  locale: parseModel(row.model ?? '')?.locale ?? 'fr',
 })
-
-export const mapNoticeStamp = ({
-  stage,
-  at,
-}: Readonly<{ stage: RetentionNoticeStage; at: Date }>) =>
-  stage === 'final-notice'
-    ? { finalNoticeSentAt: at }
-    : { retentionNoticeSentAt: at }

@@ -1,3 +1,4 @@
+import { toError } from '../../../lib/to-error.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { Logger } from '../../logger/index.ts'
 import { createRetentionNoticeEmail } from '../emails/retention-emails.ts'
@@ -5,11 +6,12 @@ import { erasureDate } from '../helpers/retention-period.ts'
 import {
   findAccountsDueForFinalNotice,
   findAccountsDueForRetentionNotice,
-  stampRetentionNotice,
+  updateRetentionNotice,
 } from '../repositories/retention.repository.ts'
 import type {
   RetentionNoticeCandidate,
   RetentionNoticeStage,
+  RetentionNoticeStamp,
 } from '../types/retention.ts'
 
 interface RetentionSweepDependencies {
@@ -26,8 +28,16 @@ type RetentionSweepParams = {
   logger: Logger
 }
 
+const stampOf = (
+  stage: RetentionNoticeStage,
+  at: Date
+): RetentionNoticeStamp =>
+  stage === 'final-notice'
+    ? { finalNoticeSentAt: at }
+    : { retentionNoticeSentAt: at }
+
 /** Warns the accounts a notice is due to, and logs what the run did. */
-export const createRetentionSweep = ({
+export const createRunRetentionSweep = ({
   logger,
   sendEmail,
 }: RetentionSweepDependencies) =>
@@ -60,27 +70,31 @@ export const createRetentionSweep = ({
         for (const account of accounts) {
           if (dryRun) continue
 
-          const result = await sendEmail(
-            createRetentionNoticeEmail({
-              locale: account.locale,
-              email: account.email,
-              stage,
-              deletionAt: erasureDate(account.lastActivityAt),
+          try {
+            const result = await sendEmail(
+              createRetentionNoticeEmail({
+                locale: account.locale,
+                email: account.email,
+                stage,
+                deletionAt: erasureDate(account.lastActivityAt),
+              })
+            )
+
+            if (!result.success) {
+              logger.error(result.error, { userId: account.userId, stage })
+              failed++
+              continue
+            }
+
+            await updateRetentionNotice({
+              userId: account.userId,
+              data: stampOf(stage, now),
             })
-          )
-
-          if (!result.success) {
-            logger.error(result.error, { userId: account.userId, stage })
+            sent++
+          } catch (error) {
+            logger.error(toError(error), { userId: account.userId, stage })
             failed++
-            continue
           }
-
-          await stampRetentionNotice({
-            userId: account.userId,
-            stage,
-            at: now,
-          })
-          sent++
         }
       }
 

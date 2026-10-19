@@ -6,10 +6,9 @@ import {
 } from '../helpers/retention-period.ts'
 import type {
   RetentionNoticeCandidate,
-  RetentionNoticeStage,
+  RetentionNoticeStamp,
 } from '../types/retention.ts'
 import {
-  mapNoticeStamp,
   mapRetentionNoticeCandidate,
   type RetentionNoticeRow,
 } from './retention.mapper.ts'
@@ -58,17 +57,14 @@ export const findAccountsDueForFinalNotice = async (
   return rows.map(mapRetentionNoticeCandidate)
 }
 
-export const stampRetentionNotice = async (
-  {
-    userId,
-    stage,
-    at,
-  }: { userId: string; stage: RetentionNoticeStage; at: Date },
+/** Writes the notice stamps of an account. */
+export const updateRetentionNotice = async (
+  { userId, data }: { userId: string; data: RetentionNoticeStamp },
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<void> => {
   await session.user.update({
     where: { id: userId },
-    data: mapNoticeStamp({ stage, at }),
+    data,
     // Narrowed to the id: nothing reads the returned row.
     select: { id: true },
   })

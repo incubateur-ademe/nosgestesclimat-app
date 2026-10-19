@@ -8,7 +8,7 @@ import { EmailRequestError } from '../../../emails/errors.ts'
 import type { SendEmail } from '../../../emails/types.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
-import { createRetentionSweep } from '../run-retention-sweep.service.ts'
+import { createRunRetentionSweep } from '../run-retention-sweep.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn<SendEmail>()
@@ -53,7 +53,7 @@ const runSweep = ({
 }: {
   at?: Date
   dryRun?: boolean
-} = {}) => createRetentionSweep({ logger, sendEmail })({ now: at, dryRun })
+} = {}) => createRunRetentionSweep({ logger, sendEmail })({ now: at, dryRun })
 
 const noticeStamps = (userId: string) =>
   prisma.user.findFirst({
@@ -432,6 +432,38 @@ describe('runRetentionSweep', () => {
       )
       expect(await noticeStamps(failing.id)).toEqual({
         retentionNoticeSentAt: now,
+        finalNoticeSentAt: null,
+      })
+    })
+  })
+
+  describe('Given a send throws', () => {
+    it('notices the other accounts', async () => {
+      const throwing = await seedAccount({
+        lastActivityAt: new Date('2024-12-15T06:00:00.000Z'),
+      })
+      const passing = await seedAccount({
+        lastActivityAt: new Date('2024-12-20T06:00:00.000Z'),
+      })
+
+      sendEmail.mockImplementation(({ email }) =>
+        email === throwing.email
+          ? Promise.reject(new Error('Brevo exploded'))
+          : Promise.resolve(success())
+      )
+
+      await runSweep()
+
+      expect(logger.error).toHaveBeenCalledWith(expect.any(Error), {
+        userId: throwing.id,
+        stage: 'retention-notice',
+      })
+      expect(await noticeStamps(passing.id)).toEqual({
+        retentionNoticeSentAt: now,
+        finalNoticeSentAt: null,
+      })
+      expect(await noticeStamps(throwing.id)).toEqual({
+        retentionNoticeSentAt: null,
         finalNoticeSentAt: null,
       })
     })

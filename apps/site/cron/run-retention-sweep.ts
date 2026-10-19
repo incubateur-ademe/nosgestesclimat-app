@@ -1,5 +1,5 @@
 import { createBrevoClient } from '@nosgestesclimat/core/features/emails/brevo/client'
-import { createRetentionSweep } from '@nosgestesclimat/core/features/users/services/run-retention-sweep.service'
+import { createRunRetentionSweep } from '@nosgestesclimat/core/features/users/services/run-retention-sweep.service'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { parseArgs } from 'node:util'
 import { env } from '../src/env/server.ts'
@@ -18,7 +18,7 @@ const { sendEmail } = createBrevoClient({
   url: env.BREVO_URL,
 })
 
-const retentionSweep = createRetentionSweep({ logger, sendEmail })
+const retentionSweep = createRunRetentionSweep({ logger, sendEmail })
 
 const main = async () => {
   try {

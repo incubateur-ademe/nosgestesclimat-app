@@ -431,6 +431,7 @@ model User {
   verifiedUsers  VerifiedUser[]
   actionChoices  ActionChoice[]
 
+  @@index([lastActivityAt])
   @@schema("ngc")
 }
 
