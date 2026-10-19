@@ -13,6 +13,13 @@ const logger = createLogger({
   onCapture: captureException,
 }).child({ scope: 'site.cron.sendRetentionSweep' })
 
+const { sendEmail } = createBrevoClient({
+  apiKey: env.BREVO_API_KEY,
+  url: env.BREVO_URL,
+})
+
+const retentionSweep = createRetentionSweep({ logger, sendEmail })
+
 const main = async () => {
   try {
     // Dry by default: the notices announce an erasure that does not exist yet
@@ -22,12 +29,6 @@ const main = async () => {
       options: { dry: { type: 'boolean', default: true } },
       allowNegative: true,
     })
-
-    const { sendEmail } = createBrevoClient({
-      apiKey: env.BREVO_API_KEY,
-      url: env.BREVO_URL,
-    })
-    const retentionSweep = createRetentionSweep({ logger, sendEmail })
 
     await retentionSweep({ now: new Date(), dryRun: values.dry })
 
