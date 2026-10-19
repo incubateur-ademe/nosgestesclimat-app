@@ -34,9 +34,7 @@ export const runRetentionSweep = ({
   logger: Logger
 }): Promise<void> =>
   logger.withSpan('core.service.runRetentionSweep', async ({ logger }) => {
-    // Both windows are read before anything goes out: a read that fails fails
-    // the run, rather than notifying accounts from a run that could not see the
-    // other window.
+    // Both windows are read before anything goes out: a failed read fails the run.
     const [retention, final] = await Promise.all([
       findAccountsDueForRetentionNotice({ now }, { session }),
       findAccountsDueForFinalNotice({ now }, { session }),

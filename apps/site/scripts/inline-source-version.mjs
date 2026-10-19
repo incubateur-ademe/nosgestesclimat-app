@@ -2,10 +2,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-// Inlines the deployed commit into the processes no bundler ever sees (the
-// worker, the cron): the value Next writes into the web bundles is out of their
-// reach. `SOURCE_VERSION` only exists in the build environment, so the
-// replacement happens here.
+// Inlines the deployed commit into the processes no bundler ever sees: the value
+// Next writes into the web bundles is out of their reach. `SOURCE_VERSION` only
+// exists in the build environment, so the replacement happens here.
 const MARKER = '__SOURCE_VERSION__'
 
 const version = process.env.SOURCE_VERSION

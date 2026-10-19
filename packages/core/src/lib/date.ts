@@ -1,7 +1,6 @@
 /**
  * Moves a date by whole calendar months. The day is clamped to the target
  * month, so three months before 31 May is the end of February, not 3 March.
- * Node has no Temporal yet: when it does, this is one `PlainDate.add`.
  */
 export const shiftMonths = ({
   date,

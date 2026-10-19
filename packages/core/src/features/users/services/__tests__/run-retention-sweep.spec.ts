@@ -157,7 +157,6 @@ describe('runRetentionSweep', () => {
     })
 
     it('counts whole calendar months, clamping on shorter ones', async () => {
-      // Twenty-one months before 31 March is 30 June, a month that has no 31st.
       const at = new Date('2026-03-31T06:00:00.000Z')
       const entered = await seedAccount({
         lastActivityAt: new Date('2024-06-30T06:00:00.000Z'),
@@ -223,7 +222,6 @@ describe('runRetentionSweep', () => {
       await runSweep()
       expect(sendEmail).toHaveBeenCalledTimes(1)
 
-      // Two years later, this second inactivity period deserves its own notice.
       await runSweep({ at: new Date('2028-07-17T06:00:00.000Z') })
 
       expect(sendEmail).toHaveBeenCalledTimes(2)
@@ -429,7 +427,6 @@ describe('runRetentionSweep', () => {
       sendEmail.mockResolvedValue(success())
       await runSweep()
 
-      // The account that got through is not warned twice, the other one is.
       expect(sendEmail).toHaveBeenCalledTimes(3)
       expect(sendEmail).toHaveBeenLastCalledWith(
         expect.objectContaining({ email: failing.email })

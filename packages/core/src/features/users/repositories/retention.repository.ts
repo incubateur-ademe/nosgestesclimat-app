@@ -15,15 +15,9 @@ import {
 } from './retention.mapper.ts'
 
 /**
- * Reads the accounts the retention notice is due to: inactive past its window,
- * but not yet into the final one — an account there is owed the final notice,
- * not this one — and not notified for its current inactivity period.
- *
- * The last condition compares two columns of the row, which Prisma's `where`
- * cannot express (`FieldRef` covers `orderBy` only): the accounts a notice is
- * due to are read in SQL. The language comes with them, deduplicated in the
- * database — `DISTINCT ON`, ordered by the simulation's last write — so that the sweep
- * never carries the simulations of an account along.
+ * Reads the accounts the retention notice is due to. The due condition compares
+ * two columns, which Prisma's `where` cannot express: hence the SQL, which also
+ * reads the account's language without carrying its simulations along.
  */
 export const findAccountsDueForRetentionNotice = async (
   { now }: { now: Date },
@@ -45,9 +39,7 @@ export const findAccountsDueForRetentionNotice = async (
   return rows.map(mapRetentionNoticeCandidate)
 }
 
-/** Reads the accounts the final notice is due to: within a week of erasure,
- * and not notified for their current inactivity period. Same language read as
- * above. */
+/** Reads the accounts the final notice is due to. */
 export const findAccountsDueForFinalNotice = async (
   { now }: { now: Date },
   { session = prisma }: { session?: Transaction } = {}
@@ -67,7 +59,6 @@ export const findAccountsDueForFinalNotice = async (
   return rows.map(mapRetentionNoticeCandidate)
 }
 
-/** Stamps the notice the sweep just sent, on the account it warned. */
 export const stampRetentionNotice = async (
   {
     userId,
