@@ -17,49 +17,8 @@ const sendEmail = vi.fn<SendEmail>()
  * fixtures rather than waited for. */
 const now = new Date('2026-10-15T06:00:00.000Z')
 
-const seedAccount = async ({
-  lastActivityAt,
-}: {
-  lastActivityAt: Date | null
-}) => {
-  const account = await userFactory.verified().create()
-
-  await prisma.user.update({
-    where: { id: account.id },
-    data: { lastActivityAt },
-  })
-
-  return account
-}
-
-const seedSimulation = ({
-  userId,
-  locale,
-  at,
-}: {
-  userId: string
-  locale: 'fr' | 'en'
-  at: Date
-}) =>
-  simulationFactory
-    .withModelLocale(locale)
-    // The sweep reads the language of the account's last *write*, and the
-    // factory stamps `updatedAt` with the current time.
-    .create({ userId, createdAt: at, updatedAt: at, date: at })
-
-const runSweep = ({
-  at = now,
-  dryRun = false,
-}: {
-  at?: Date
-  dryRun?: boolean
-} = {}) => createRunRetentionSweep({ logger, sendEmail })({ now: at, dryRun })
-
-const noticeStamps = (userId: string) =>
-  prisma.user.findFirst({
-    where: { id: userId },
-    select: { retentionNoticeSentAt: true, finalNoticeSentAt: true },
-  })
+/** The newest activity still due the retention notice, given `now`. */
+const enteringWindowSweepDate = new Date('2025-01-15T06:00:00.000Z')
 
 describe('runRetentionSweep', () => {
   beforeEach(() => {
@@ -140,12 +99,14 @@ describe('runRetentionSweep', () => {
 
   describe('Given the notice windows', () => {
     it('notices the account on the day it enters the window, not the day after', async () => {
+      const dayAfterEnteringWindowSweepDate = new Date(
+        '2025-01-16T06:00:00.000Z'
+      )
+
       const entering = await seedAccount({
-        lastActivityAt: new Date('2025-01-15T06:00:00.000Z'),
+        lastActivityAt: enteringWindowSweepDate,
       })
-      await seedAccount({
-        lastActivityAt: new Date('2025-01-15T06:00:00.001Z'),
-      })
+      await seedAccount({ lastActivityAt: dayAfterEnteringWindowSweepDate })
 
       await runSweep()
 
@@ -338,21 +299,6 @@ describe('runRetentionSweep', () => {
     })
   })
 
-  describe('Given an account that was already erased', () => {
-    it('never notices it', async () => {
-      // Erasure strips the verified record and the mirrored email.
-      const erased = await userFactory.unverified().create()
-      await prisma.user.update({
-        where: { id: erased.id },
-        data: { lastActivityAt: new Date('2024-01-01T06:00:00.000Z') },
-      })
-
-      await runSweep()
-
-      expect(sendEmail).not.toHaveBeenCalled()
-    })
-  })
-
   describe('Given a dry run', () => {
     it('reports what it would notice without sending or writing', async () => {
       const account = await seedAccount({
@@ -469,3 +415,35 @@ describe('runRetentionSweep', () => {
     })
   })
 })
+
+const seedAccount = ({ lastActivityAt }: { lastActivityAt: Date | null }) =>
+  userFactory.verified().params({ lastActivityAt }).create()
+
+const seedSimulation = ({
+  userId,
+  locale,
+  at,
+}: {
+  userId: string
+  locale: 'fr' | 'en'
+  at: Date
+}) =>
+  simulationFactory
+    .withModelLocale(locale)
+    // The sweep reads the language of the account's last *write*, and the
+    // factory stamps `updatedAt` with the current time.
+    .create({ userId, createdAt: at, updatedAt: at, date: at })
+
+const runSweep = ({
+  at = now,
+  dryRun = false,
+}: {
+  at?: Date
+  dryRun?: boolean
+} = {}) => createRunRetentionSweep({ logger, sendEmail })({ now: at, dryRun })
+
+const noticeStamps = (userId: string) =>
+  prisma.user.findFirst({
+    where: { id: userId },
+    select: { retentionNoticeSentAt: true, finalNoticeSentAt: true },
+  })

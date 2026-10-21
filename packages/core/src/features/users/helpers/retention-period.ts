@@ -8,14 +8,14 @@ const FINAL_NOTICE_LEAD_DAYS = 7
 const DAY_MS = 24 * 60 * 60 * 1000
 
 /** An account last active before this instant is due the retention notice. */
-export const retentionNoticeCutoff = (now: Date) =>
+export const retentionNoticeActivityCutoff = (now: Date) =>
   shiftMonths({
     date: now,
     months: -(RETENTION_PERIOD_MONTHS - RETENTION_NOTICE_LEAD_MONTHS),
   })
 
 /** An account last active before this instant is due the final notice. */
-export const finalNoticeCutoff = (now: Date) =>
+export const finalNoticeActivityCutoff = (now: Date) =>
   new Date(
     shiftMonths({ date: now, months: -RETENTION_PERIOD_MONTHS }).getTime() +
       FINAL_NOTICE_LEAD_DAYS * DAY_MS
