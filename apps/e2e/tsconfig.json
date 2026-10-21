@@ -19,7 +19,7 @@
     "tests/**/*.ts",
     "mock/**/*.ts",
     "reporters/**/*.ts",
-    "playwright.config.ts"
+    "playwright*.ts"
   ],
   "exclude": ["node_modules"]
 }

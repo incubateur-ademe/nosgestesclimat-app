@@ -1,7 +1,7 @@
-import { expect, test as setup } from '../fixtures'
-import { Group } from '../fixtures/groups'
-import { UserSpace } from '../fixtures/user-account'
-import { saveContext } from '../helpers/save-context'
+import { expect, test as setup } from '../../fixtures'
+import { Group } from '../../fixtures/groups'
+import { UserSpace } from '../../fixtures/user-account'
+import { saveContext } from '../../helpers/save-context'
 
 import {
   COMPLETED_TEST_STATE,
@@ -9,7 +9,7 @@ import {
   NEW_VISITOR_STATE,
   ORGANISATION_ADMIN_STATE,
   USER_ACCOUNT_STATE,
-} from '../state'
+} from '../../state'
 
 setup.setTimeout(120_000)
 

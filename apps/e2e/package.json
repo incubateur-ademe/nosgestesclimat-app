@@ -7,6 +7,8 @@
     "mock": "node --experimental-strip-types mock/server.ts",
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
+    "test:e2e:preprod": "playwright test -c playwright.preprod.config.ts",
+    "test:ui:preprod": "playwright test -c playwright.preprod.config.ts --ui",
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{js,ts,mjs,md,json}\""

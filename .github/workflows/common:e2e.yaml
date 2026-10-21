@@ -109,7 +109,7 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
 
-      # The `global setup` Playwright project runs in Desktop Chrome.
+      # Playwright setup projects run in Desktop Chrome.
       - name: Install Chromium for state generation
         if: matrix.browser != 'chromium'
         working-directory: apps/e2e

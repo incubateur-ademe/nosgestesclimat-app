@@ -8,7 +8,12 @@ Boîte à outils des tests end-to-end (Playwright), extraite de `apps/site`.
   Brevo/Connect + boîte mail locale) exposé en HTTP via
   [`@mswjs/http-middleware`](https://www.npmjs.com/package/@mswjs/http-middleware).
 - `tests/` — la suite Playwright, qui pilote le site en HTTP (boîte noire).
-- `playwright.config.ts` — configuration Playwright.
+  - `tests/preprod/` — suite exécutée contre la preprod.
+- `playwright.config.ts` — configuration Playwright de la suite locale (tout
+  `tests/` sauf `tests/preprod`), utilisée par défaut.
+- `playwright.preprod.config.ts` — configuration de la suite preprod (projets
+  `Preprod *`).
+- `playwright.shared.ts` — réglages communs aux deux configurations.
 
 ## Lancer les tests en local
 
@@ -46,15 +51,20 @@ reproduisez-la sans Docker :
    pnpm -F @nosgestesclimat/e2e test:e2e
    # ou l'interface Playwright :
    pnpm -F @nosgestesclimat/e2e test:ui
+
+   # Suite preprod :
+   pnpm -F @nosgestesclimat/e2e test:e2e:preprod --project="Preprod Chrome"
+   pnpm -F @nosgestesclimat/e2e test:ui:preprod
    ```
 
 ## CI
 
-- `common:e2e.yaml` — exécute la suite sur une stack locale à chaque PR.
-- `common:deploy.yaml` (job `e2e-preprod`) — exécute la même suite contre la
-  preprod (mailbox Mailisk) avant le déploiement en production. Les emails de
-  test vont dans la namespace Mailisk : la variable GitHub
-  `E2E_MAILBOX_MAILISK_NAMESPACE` (le domaine des adresses est
-  `<namespace>.mailisk.net`) et le secret `E2E_MAILBOX_MAILISK_API_KEY`.
-  `createMailboxAdapter` choisit la boîte sur la présence de cette namespace :
-  posée, Mailisk ; absente, le stub local.
+- `common:e2e.yaml` — exécute sur une stack locale, à chaque PR, les tests
+  hors `tests/preprod` (projets `Chrome` et `Firefox`).
+- `common:deploy.yaml` (job `e2e-preprod`) — exécute la suite preprod
+  (`tests/preprod`, via `playwright.preprod.config.ts`) contre la preprod
+  avant le déploiement en production. Les emails de test vont dans la
+  namespace Mailisk : la variable GitHub `E2E_MAILBOX_MAILISK_NAMESPACE` (le
+  domaine des adresses est `<namespace>.mailisk.net`) et le secret
+  `E2E_MAILBOX_MAILISK_API_KEY`. `createMailboxAdapter` choisit la boîte sur la
+  présence de cette namespace : posée, Mailisk ; absente, le stub local.

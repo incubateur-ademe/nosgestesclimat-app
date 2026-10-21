@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures'
+import { expect, test } from '../../fixtures'
 
 export const PLAN_OUTILS_TITLE = 'plan-outils-title'
 export const PLAN_ACTIONS_TITLE = 'plan-actions-title'

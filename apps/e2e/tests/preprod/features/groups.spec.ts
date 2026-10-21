@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
-import { TEST_EMAIL_DOMAIN } from '../constants'
-import { expect, test } from '../fixtures'
-import { createPage } from '../fixtures/feature-flags'
-import { Group } from '../fixtures/groups'
-import { NGCTest } from '../fixtures/ngc-test'
-import { TutorialPage } from '../fixtures/tutorial'
-import { User } from '../fixtures/user'
-import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../state'
+import { TEST_EMAIL_DOMAIN } from '../../constants'
+import { expect, test } from '../../fixtures'
+import { createPage } from '../../fixtures/feature-flags'
+import { Group } from '../../fixtures/groups'
+import { NGCTest } from '../../fixtures/ngc-test'
+import { TutorialPage } from '../../fixtures/tutorial'
+import { User } from '../../fixtures/user'
+import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../../state'
 
 test.use({ storageState: GROUP_ADMIN_STATE })
 
