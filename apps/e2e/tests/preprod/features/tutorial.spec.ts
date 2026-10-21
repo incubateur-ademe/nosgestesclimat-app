@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures'
-import { TutorialPage } from '../fixtures/tutorial'
+import { expect, test } from '../../fixtures'
+import { TutorialPage } from '../../fixtures/tutorial'
 
 test('should be displayed when coming from the home', async ({ page }) => {
   await page.goto('/')

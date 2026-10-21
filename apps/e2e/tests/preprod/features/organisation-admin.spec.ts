@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures'
-import { ORGANISATION_ADMIN_STATE } from '../state'
+import { expect, test } from '../../fixtures'
+import { ORGANISATION_ADMIN_STATE } from '../../state'
 
 test.use({ storageState: ORGANISATION_ADMIN_STATE })
 

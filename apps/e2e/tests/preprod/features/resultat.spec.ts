@@ -1,7 +1,7 @@
 import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
-import { expect, test } from '../fixtures'
-import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
-import { COMPLETED_TEST_STATE, USER_ACCOUNT_STATE } from '../state'
+import { expect, test } from '../../fixtures'
+import { getCarbonFootprintElem } from '../../helpers/carbon-footprint'
+import { COMPLETED_TEST_STATE, USER_ACCOUNT_STATE } from '../../state'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/fin')

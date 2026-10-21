@@ -1,13 +1,13 @@
 import type { Page } from '@playwright/test'
-import { EMAIL_PAGE_PATH } from '../constants'
-import { expect, test } from '../fixtures'
-import { createPage } from '../fixtures/feature-flags'
-import { NGCTest } from '../fixtures/ngc-test'
-import { Organisation } from '../fixtures/organisations'
-import { Poll } from '../fixtures/polls'
-import { TutorialPage } from '../fixtures/tutorial'
-import { User } from '../fixtures/user'
-import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
+import { EMAIL_PAGE_PATH } from '../../constants'
+import { expect, test } from '../../fixtures'
+import { createPage } from '../../fixtures/feature-flags'
+import { NGCTest } from '../../fixtures/ngc-test'
+import { Organisation } from '../../fixtures/organisations'
+import { Poll } from '../../fixtures/polls'
+import { TutorialPage } from '../../fixtures/tutorial'
+import { User } from '../../fixtures/user'
+import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../../state'
 
 test.use({ storageState: ORGANISATION_ADMIN_STATE })
 

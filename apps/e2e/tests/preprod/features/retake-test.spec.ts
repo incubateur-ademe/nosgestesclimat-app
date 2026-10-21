@@ -1,5 +1,5 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
-import { expect, test } from '../fixtures'
+import { expect, test } from '../../fixtures'
 
 test.setTimeout(250_000)
 
