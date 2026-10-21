@@ -84,7 +84,7 @@ describe('runRetentionSweep', () => {
       expect(sendEmail).toHaveBeenCalledWith({
         email: account.email,
         templateId: TemplateIds.fr.RETENTION_NOTICE,
-        params: { DELETION_DATE: '2026-12-15' },
+        params: { DELETION_DATE: '14 décembre 2026' },
       })
     })
 
@@ -100,7 +100,7 @@ describe('runRetentionSweep', () => {
       expect(sendEmail).toHaveBeenCalledWith({
         email: account.email,
         templateId: TemplateIds.fr.FINAL_RETENTION_NOTICE,
-        params: { DELETION_DATE: '2026-10-20' },
+        params: { DELETION_DATE: '19 octobre 2026' },
       })
     })
 
