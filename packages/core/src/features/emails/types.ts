@@ -20,3 +20,9 @@ export type AddOrUpdateContact = (params: {
   attributes: ContactAttributes
   listIds?: ListIds[]
 }) => Promise<Result<void, EmailRequestError>>
+
+/** Erases every attribute a contact holds except its address, and unlinks it
+ * from every non-newsletter list. */
+export type EraseContact = (params: {
+  email: string
+}) => Promise<Result<void, EmailRequestError>>
