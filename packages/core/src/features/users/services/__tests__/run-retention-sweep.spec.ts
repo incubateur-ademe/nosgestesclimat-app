@@ -21,21 +21,21 @@ const now = new Date('2026-10-15T06:00:00.000Z')
 // they check: erasure comes at 24 months idle, the retention notice 3 months
 // before it, the final one 7 days before it.
 /** 22 months idle: the retention notice is due, the final one is not. */
-const dueTheRetentionNotice = new Date('2024-12-15T06:00:00.000Z')
+const retentionNoticeDueDate = new Date('2024-12-15T06:00:00.000Z')
 /** Five days behind it: the retention notice is due here too. */
-const alsoDueTheRetentionNotice = new Date('2024-12-20T06:00:00.000Z')
+const laterRetentionNoticeAlsoDueDate = new Date('2024-12-20T06:00:00.000Z')
 /** Five days short of erasure: the final notice is due. */
-const dueTheFinalNotice = new Date('2024-10-20T06:00:00.000Z')
+const finalNoticeDueDate = new Date('2024-10-20T06:00:00.000Z')
 /** Nine months idle: no notice is due. */
-const nothingDueYet = new Date('2026-01-15T06:00:00.000Z')
+const nothingDueYetDate = new Date('2026-01-15T06:00:00.000Z')
 
 /** The newest activity still due the retention notice: 21 months of idle. */
-const theNewestActivityStillDue = new Date('2025-01-15T06:00:00.000Z')
+const newestActivityStillDueDate = new Date('2025-01-15T06:00:00.000Z')
 /** One day newer, so one day too recent for the notice. */
-const oneDayTooRecentForTheNotice = new Date('2025-01-16T06:00:00.000Z')
+const oneDayTooRecentForTheNoticeDate = new Date('2025-01-16T06:00:00.000Z')
 
 /** The run that first finds an account due the final notice. */
-const whenTheFinalNoticeFallsDue = new Date('2026-12-08T06:00:00.000Z')
+const finalNoticeFirstDueDate = new Date('2026-12-08T06:00:00.000Z')
 
 describe('runRetentionSweep', () => {
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe('runRetentionSweep', () => {
   describe('Given an account whose inactivity reaches a notice window', () => {
     it('sends the retention notice three months before erasure', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
 
       await runSweep()
@@ -65,7 +65,7 @@ describe('runRetentionSweep', () => {
 
     it('sends the final notice one week before erasure', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheFinalNotice,
+        lastActivityAt: finalNoticeDueDate,
       })
 
       await runSweep()
@@ -80,7 +80,7 @@ describe('runRetentionSweep', () => {
 
     it('stamps the notice it sent', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
 
       await runSweep()
@@ -92,7 +92,7 @@ describe('runRetentionSweep', () => {
     })
 
     it('leaves an account inside the retention period alone', async () => {
-      await seedAccount({ lastActivityAt: nothingDueYet })
+      await seedAccount({ lastActivityAt: nothingDueYetDate })
 
       await runSweep()
 
@@ -113,9 +113,9 @@ describe('runRetentionSweep', () => {
   describe('Given the notice windows', () => {
     it('notices the account on the day it enters the window, not the day after', async () => {
       const notified = await seedAccount({
-        lastActivityAt: theNewestActivityStillDue,
+        lastActivityAt: newestActivityStillDueDate,
       })
-      await seedAccount({ lastActivityAt: oneDayTooRecentForTheNotice })
+      await seedAccount({ lastActivityAt: oneDayTooRecentForTheNoticeDate })
 
       await runSweep()
 
@@ -127,18 +127,18 @@ describe('runRetentionSweep', () => {
 
     it('clamps the cutoff to the last day of a shorter month', async () => {
       /** The sweep runs on the 31st; 21 months back, June ends a day earlier. */
-      const sweptOnTheThirtyFirst = new Date('2026-03-31T06:00:00.000Z')
+      const thirtyFirstSweepDate = new Date('2026-03-31T06:00:00.000Z')
       /** Clamped to June's length, this activity is exactly old enough. */
-      const just3monthBeforeDeletion = new Date('2024-06-30T06:00:00.000Z')
+      const just3MonthsBeforeDeletionDate = new Date('2024-06-30T06:00:00.000Z')
       /** An unclamped shift puts the cutoff here instead, one day too late. */
-      const oneDayTooRecent = new Date('2024-07-01T06:00:00.000Z')
+      const oneDayTooRecentDate = new Date('2024-07-01T06:00:00.000Z')
 
       const notified = await seedAccount({
-        lastActivityAt: just3monthBeforeDeletion,
+        lastActivityAt: just3MonthsBeforeDeletionDate,
       })
-      await seedAccount({ lastActivityAt: oneDayTooRecent })
+      await seedAccount({ lastActivityAt: oneDayTooRecentDate })
 
-      await runSweep({ now: sweptOnTheThirtyFirst })
+      await runSweep({ now: thirtyFirstSweepDate })
 
       expect(sendEmail).toHaveBeenCalledTimes(1)
       expect(sendEmail).toHaveBeenCalledWith(
@@ -149,7 +149,7 @@ describe('runRetentionSweep', () => {
 
   describe('Given an account already noticed in this inactivity period', () => {
     it('sends nothing on a repeat run', async () => {
-      await seedAccount({ lastActivityAt: dueTheRetentionNotice })
+      await seedAccount({ lastActivityAt: retentionNoticeDueDate })
 
       await runSweep()
       await runSweep()
@@ -159,11 +159,11 @@ describe('runRetentionSweep', () => {
 
     it('sends the final notice once the account reaches it', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
 
       await runSweep()
-      await runSweep({ now: whenTheFinalNoticeFallsDue })
+      await runSweep({ now: finalNoticeFirstDueDate })
 
       expect(sendEmail).toHaveBeenCalledTimes(2)
       expect(sendEmail).toHaveBeenLastCalledWith(
@@ -178,23 +178,23 @@ describe('runRetentionSweep', () => {
   describe('Given a noticed account becomes active again', () => {
     it('stops noticing it, and warns it again the next time it goes idle', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
 
       await runSweep()
 
-      const theDayItCameBack = new Date('2026-10-17T06:00:00.000Z')
+      const cameBackDate = new Date('2026-10-17T06:00:00.000Z')
       await prisma.user.update({
         where: { id: account.id },
-        data: { lastActivityAt: theDayItCameBack },
+        data: { lastActivityAt: cameBackDate },
       })
 
       await runSweep()
       expect(sendEmail).toHaveBeenCalledTimes(1)
 
       /** 21 months after the account came back: its window opens again. */
-      const theDayItGoesIdleAgain = new Date('2028-07-17T06:00:00.000Z')
-      await runSweep({ now: theDayItGoesIdleAgain })
+      const idleAgainDate = new Date('2028-07-17T06:00:00.000Z')
+      await runSweep({ now: idleAgainDate })
 
       expect(sendEmail).toHaveBeenCalledTimes(2)
     })
@@ -202,33 +202,37 @@ describe('runRetentionSweep', () => {
 
   describe('Given the language the account uses the site in', () => {
     /** Two writes months apart: the sweep reads the language of the last one. */
-    const firstWrite = new Date('2024-01-01T00:00:00.000Z')
-    const lastWrite = new Date('2024-06-01T00:00:00.000Z')
+    const firstWriteDate = new Date('2024-01-01T00:00:00.000Z')
+    const lastWriteDate = new Date('2024-06-01T00:00:00.000Z')
 
     it('writes the notice in the language of its last simulation', async () => {
       const inEnglish = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
       await seedSimulation({
         userId: inEnglish.id,
         locale: 'fr',
-        at: firstWrite,
+        at: firstWriteDate,
       })
       await seedSimulation({
         userId: inEnglish.id,
         locale: 'en',
-        at: lastWrite,
+        at: lastWriteDate,
       })
 
       const inFrench = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
       await seedSimulation({
         userId: inFrench.id,
         locale: 'en',
-        at: firstWrite,
+        at: firstWriteDate,
       })
-      await seedSimulation({ userId: inFrench.id, locale: 'fr', at: lastWrite })
+      await seedSimulation({
+        userId: inFrench.id,
+        locale: 'fr',
+        at: lastWriteDate,
+      })
 
       await runSweep()
 
@@ -249,9 +253,13 @@ describe('runRetentionSweep', () => {
     it('carries it to the final notice too', async () => {
       // The two windows are two queries: each reads the language itself.
       const account = await seedAccount({
-        lastActivityAt: dueTheFinalNotice,
+        lastActivityAt: finalNoticeDueDate,
       })
-      await seedSimulation({ userId: account.id, locale: 'en', at: lastWrite })
+      await seedSimulation({
+        userId: account.id,
+        locale: 'en',
+        at: lastWriteDate,
+      })
 
       await runSweep()
 
@@ -265,22 +273,22 @@ describe('runRetentionSweep', () => {
 
     it('reads the last write, not the last creation', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
       // An old simulation, recomputed since in English, and a recent French one.
-      const inEnglishWrittenFirst = new Date('2023-01-01T00:00:00.000Z')
-      const inEnglishRecomputedAt = new Date('2024-09-01T00:00:00.000Z')
+      const inEnglishWrittenFirstDate = new Date('2023-01-01T00:00:00.000Z')
+      const inEnglishRecomputedDate = new Date('2024-09-01T00:00:00.000Z')
       await simulationFactory.withModelLocale('en').create({
         userId: account.id,
-        date: inEnglishWrittenFirst,
-        createdAt: inEnglishWrittenFirst,
-        updatedAt: inEnglishRecomputedAt,
+        date: inEnglishWrittenFirstDate,
+        createdAt: inEnglishWrittenFirstDate,
+        updatedAt: inEnglishRecomputedDate,
       })
       await simulationFactory.withModelLocale('fr').create({
         userId: account.id,
-        date: lastWrite,
-        createdAt: lastWrite,
-        updatedAt: lastWrite,
+        date: lastWriteDate,
+        createdAt: lastWriteDate,
+        updatedAt: lastWriteDate,
       })
 
       await runSweep()
@@ -295,7 +303,7 @@ describe('runRetentionSweep', () => {
 
     it('falls back to French for an account that never simulated', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
 
       await runSweep()
@@ -312,7 +320,7 @@ describe('runRetentionSweep', () => {
   describe('Given a dry run', () => {
     it('reports what it would notice without sending or writing', async () => {
       const account = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
 
       await runSweep({ dryRun: true })
@@ -341,10 +349,10 @@ describe('runRetentionSweep', () => {
   describe('Given a send fails part way through the run', () => {
     it('notices the other accounts and retries the failed one on the next run', async () => {
       const failing = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
       const passing = await seedAccount({
-        lastActivityAt: alsoDueTheRetentionNotice,
+        lastActivityAt: laterRetentionNoticeAlsoDueDate,
       })
 
       sendEmail.mockImplementation(({ email }) =>
@@ -396,10 +404,10 @@ describe('runRetentionSweep', () => {
   describe('Given a send throws', () => {
     it('notices the other accounts', async () => {
       const throwing = await seedAccount({
-        lastActivityAt: dueTheRetentionNotice,
+        lastActivityAt: retentionNoticeDueDate,
       })
       const passing = await seedAccount({
-        lastActivityAt: alsoDueTheRetentionNotice,
+        lastActivityAt: laterRetentionNoticeAlsoDueDate,
       })
 
       sendEmail.mockImplementation(({ email }) =>

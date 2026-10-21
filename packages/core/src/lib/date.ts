@@ -2,7 +2,7 @@
  * Moves a date by whole calendar months. The day is clamped to the target
  * month, so three months before 31 May is the end of February, not 3 March.
  */
-export const shiftMonths = ({
+export const shiftDateByNumberOfMonths = ({
   date,
   months,
 }: Readonly<{ date: Date; months: number }>): Date => {
