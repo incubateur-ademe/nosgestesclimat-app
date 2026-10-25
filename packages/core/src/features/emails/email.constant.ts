@@ -1,3 +1,5 @@
+import type { ISOSupportedLanguage } from '../geo/types/language.ts'
+
 type ValueOf<T> = T[keyof T]
 
 export const Attributes = {
@@ -57,6 +59,8 @@ const FrTemplateIds = {
   NEWSLETTER_CONFIRMATION: 118,
   SIGN_UP: 137,
   SIGN_UP_SIMULATION_COMPLETED: 138,
+  RETENTION_NOTICE: 194,
+  FINAL_RETENTION_NOTICE: 195,
 } as const
 
 type FrTemplateIds = ValueOf<typeof FrTemplateIds>
@@ -68,6 +72,8 @@ const EnTemplateIds = {
   POLL_CREATED: 127,
   SIGN_UP: 139,
   SIGN_UP_SIMULATION_COMPLETED: 140,
+  RETENTION_NOTICE: 196,
+  FINAL_RETENTION_NOTICE: 197,
 } as const
 
 type EnTemplateIds = ValueOf<typeof EnTemplateIds>
@@ -75,7 +81,7 @@ type EnTemplateIds = ValueOf<typeof EnTemplateIds>
 export const TemplateIds = {
   en: EnTemplateIds,
   fr: FrTemplateIds,
-} as const
+} as const satisfies Record<ISOSupportedLanguage, unknown>
 
 export type TemplateIds = ValueOf<typeof TemplateIds>
 

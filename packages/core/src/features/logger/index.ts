@@ -35,6 +35,9 @@ export type ScopeLayer =
   /** A unit that renders: page, layout, error boundary. */
   | 'view'
   | 'sideEffect'
+  /** A scheduled task: one run, then it exits. One scope per task. */
+  | 'cron'
+  /** The loop that consumes jobs: one scope per iteration. */
   | 'worker'
 
 /** Workspaces that emit telemetry. */

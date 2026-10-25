@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { ModelLocaleSchema } from '../../types/model.ts'
 import {
   parseModel,
   parseModelVersion,
@@ -64,6 +65,13 @@ describe('parseModel', () => {
       locale: 'en',
       version: { publishedTag: '2.0.0' },
     })
+  })
+
+  // The regex repeats the picklist: this fails when only one of them moves.
+  it('parses every locale the schema supports', () => {
+    for (const locale of ModelLocaleSchema.options) {
+      expect(parseModel(`FR-${locale}-1.0.0`)).not.toBeNull()
+    }
   })
 
   it('returns null for an invalid locale', () => {

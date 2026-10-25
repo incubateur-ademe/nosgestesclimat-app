@@ -1,0 +1,8 @@
+{
+  "jobs": [
+    {
+      "command": "0 3 * * * pnpm cron:runRetentionSweep --dry",
+      "size": "M"
+    }
+  ]
+}

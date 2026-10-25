@@ -37,10 +37,9 @@ interface OtlpConfig {
   token: string
 }
 
-/** Wires OTel: traces + logs exported to PostHog. Called before any
- * instrumented module is imported; skipped when there is no config (nothing
- * would be exported). */
-export function initObservability(
+/** Traces + logs exported to PostHog. Called before any instrumented module is
+ * imported. */
+export function initOtel(
   service: string,
   sourceVersion: string | undefined,
   otlp: OtlpConfig
@@ -127,7 +126,7 @@ export function appTracer(): Tracer {
 }
 
 /** Exports what is buffered. Called on shutdown and before a fatal exit. */
-export async function shutdownObservability(): Promise<void> {
+export async function shutdownOtel(): Promise<void> {
   await Promise.allSettled([
     tracerProvider?.shutdown(),
     loggerProvider?.shutdown(),
