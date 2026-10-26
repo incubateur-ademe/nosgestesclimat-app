@@ -84,6 +84,7 @@ describe('deleteUser', () => {
     const userWithoutDates = getUserWithoutDates(user)
     const userEmail = faker.internet.email()
 
+    // First sign-in before user account deletion
     const verifiedUser1 = await createOrUpdateUser({
       ...userWithoutDates,
       email: userEmail,
@@ -116,7 +117,7 @@ describe('deleteUser', () => {
     )
     expect(refreshTokensAfterDeletion).toHaveLength(0)
 
-    // Sign-in again after deletion
+    // Second sign-in after deletion
     const verifiedUser2 = await createOrUpdateUser({
       ...user,
       email: userEmail,
