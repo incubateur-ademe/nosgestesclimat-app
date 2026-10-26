@@ -134,6 +134,10 @@ jobs:
         working-directory: apps/e2e
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          # Tests seed their data with core factories/services and sign in by
+          # issuing a session the site must be able to decrypt.
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
+          SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
           E2E_MAILBOX: stub
           E2E_MAILBOX_URL: http://localhost:3002
           CI: 'true'
