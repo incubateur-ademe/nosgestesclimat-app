@@ -14,6 +14,7 @@ const unverifiedUserSelect = {
   name: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
 } as const
 
 const userSelect = {
