@@ -79,5 +79,4 @@ const userBase = () => ({
   name: faker.helpers.maybe(() => faker.person.fullName()) ?? null,
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
-  lastActivityAt: null,
 })
