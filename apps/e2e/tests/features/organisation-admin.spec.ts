@@ -41,7 +41,7 @@ const test = base.extend<{ organisationAdmin: OrganisationAdmin }>({
       name: `${firstName}${ADMINISTRATOR_NAME_SEPARATOR}${lastName}`,
     })
     const organisation = await organisationFactory
-      .withAdministrator(admin.email)
+      .withAdministrator({ userEmail: admin.email })
       .create()
     const poll = await pollFactory.withOrganisation(organisation).create()
     await signIn(context, admin)
