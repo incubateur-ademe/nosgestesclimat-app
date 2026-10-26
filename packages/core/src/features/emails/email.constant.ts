@@ -44,6 +44,19 @@ export const ListIds = {
 
 export type ListIds = ValueOf<typeof ListIds>
 
+/** The lists a contact is on by its own choice, independently of any account. */
+export const AllNewsletters = [
+  ListIds.MAIN_NEWSLETTER,
+  ListIds.LOGEMENT_NEWSLETTER,
+  ListIds.TRANSPORT_NEWSLETTER,
+  ListIds.CONSO_NEWSLETTER,
+  ListIds.ALIMENTATION_NEWSLETTER,
+  ListIds.CITOYENS_NEWSLETTER,
+] as const
+
+export const isNewsletterList = (listId: number) =>
+  (AllNewsletters as readonly number[]).includes(listId)
+
 const FrTemplateIds = {
   SIMULATION_COMPLETED: 55,
   GROUP_CREATED: 57,
