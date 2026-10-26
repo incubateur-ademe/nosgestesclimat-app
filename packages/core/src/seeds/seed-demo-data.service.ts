@@ -70,10 +70,10 @@ export const seedDemoData = async ({
 
   logger.info(`Seeding ${emails.length} organisation(s)…`)
   const organisations = await Promise.all(
-    emails.map((email) =>
+    users.map((user) =>
       organisationFactory
-        .withAdministrator({ userEmail: email })
-        .create({ name: `Organisation de démonstration (${email})` })
+        .withAdministrator(user)
+        .create({ name: `Organisation de démonstration (${user.email})` })
     )
   )
 

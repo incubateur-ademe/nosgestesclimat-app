@@ -5,7 +5,7 @@ export type UserBaseRow = {
   name: string | null
   createdAt: Date
   updatedAt: Date
-  deletedAt?: Date
+  deletedAt?: Date | null
 }
 
 export type VerifiedUserRelation = {
