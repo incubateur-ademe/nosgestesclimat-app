@@ -12,6 +12,8 @@ const verificationCodeSelect = {
   usage: true,
   code: true,
   expirationDate: true,
+  createdAt: true,
+  updatedAt: true,
 } as const
 
 export const createVerificationCode = async (

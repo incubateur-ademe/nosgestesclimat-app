@@ -14,6 +14,8 @@ export const verificationCodeFactory = Factory.define<VerificationCode>(
           usage: data.usage,
           code: data.code,
           expirationDate: data.expirationDate,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
         },
       })
       return data
@@ -25,6 +27,8 @@ export const verificationCodeFactory = Factory.define<VerificationCode>(
       usage: VerificationCodeUsage.login,
       code: faker.number.int({ min: 100000, max: 999999 }).toString(),
       expirationDate: new Date(Date.now() + 1000 * 60 * 60),
+      createdAt: new Date(Date.now() + 1000 * 60 * 60),
+      updatedAt: new Date(Date.now() + 1000 * 60 * 60),
     }
   }
 )

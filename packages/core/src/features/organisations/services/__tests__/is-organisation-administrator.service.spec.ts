@@ -14,7 +14,7 @@ describe('isOrganisationAdministrator', () => {
   it('returns true for the administrator of the organisation', async () => {
     const user = await userFactory.verified().create()
     const organisation = await organisationFactory
-      .withAdministrator(user.email)
+      .withAdministrator({ userEmail: user.email })
       .create()
 
     const result = await isOrganisationAdministrator({
@@ -38,7 +38,9 @@ describe('isOrganisationAdministrator', () => {
 
   it('returns false for an administrator of another organisation', async () => {
     const user = await userFactory.verified().create()
-    await organisationFactory.withAdministrator(user.email).create()
+    await organisationFactory
+      .withAdministrator({ userEmail: user.email })
+      .create()
     const otherOrganisation = await organisationFactory.create()
 
     const result = await isOrganisationAdministrator({

@@ -24,6 +24,7 @@ export const userFactory = UserFactory.define(({ onCreate }) => {
         email: data.email,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
+        lastActivityAt: data.lastActivityAt,
       },
     })
     return data
@@ -45,6 +46,7 @@ const verifiedUserFactory = Factory.define<VerifiedUser>(({ onCreate }) => {
         email: data.email,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
+        lastActivityAt: data.lastActivityAt,
       },
     })
     await prisma.verifiedUser.create({

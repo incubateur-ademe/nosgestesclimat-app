@@ -9,4 +9,6 @@ export type VerificationCode = {
   usage: VerificationCodeUsage
   code: string
   expirationDate: Date
+  createdAt: Date
+  updatedAt: Date
 }
