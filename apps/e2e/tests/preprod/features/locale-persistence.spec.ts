@@ -1,4 +1,4 @@
-import { expect, test } from '../../fixtures'
+import { expect, test } from '../fixtures'
 
 test.describe('Locale persistence via cookie', () => {
   test('should switch to English locale after visiting /fr and navigating to /en', async ({

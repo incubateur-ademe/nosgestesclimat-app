@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
 import { TEST_EMAIL_DOMAIN } from '../../constants'
-import { expect, test } from '../../fixtures'
 import { createPage } from '../../fixtures/feature-flags'
-import { Group } from '../../fixtures/groups'
-import { NGCTest } from '../../fixtures/ngc-test'
-import { TutorialPage } from '../../fixtures/tutorial'
-import { User } from '../../fixtures/user'
-import { getPlaywrightState } from '../../helpers/save-context'
-import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../../state'
+import { Group } from '../../pages/group'
+import { NGCTest } from '../../pages/ngc-test'
+import { TutorialPage } from '../../pages/tutorial'
+import { User } from '../../pages/user'
+import { expect, test } from '../fixtures'
+import { restoreGroup } from '../fixtures/context'
+import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../state'
 
 test.use({ storageState: GROUP_ADMIN_STATE })
 
@@ -203,17 +203,7 @@ test.describe('A user with a completed test that joined a group', () => {
         storageState: GROUP_ADMIN_STATE,
       })
       .then((context) => context.newPage())
-    const userData = await getPlaywrightState<{
-      firstName: string
-      lastName: string
-      email: string
-    }>(adminPage, 'user')
-    const groupData = await getPlaywrightState<{
-      name: string
-      inviteLink?: string
-      url?: string
-    }>(adminPage, 'group')
-    const group = new Group(adminPage, new User(adminPage, userData), groupData)
+    const group = await restoreGroup(adminPage)
 
     await group.joinWithInviteLink(user)
   })

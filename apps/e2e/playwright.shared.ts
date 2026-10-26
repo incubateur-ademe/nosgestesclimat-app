@@ -1,6 +1,6 @@
 import type { PlaywrightTestConfig } from '@playwright/test'
 import dotenv from 'dotenv'
-import type { FixturesOptions } from './tests/fixtures/options'
+import type { FixturesOptions } from './tests/preprod/fixtures/options'
 
 dotenv.config({ quiet: true })
 

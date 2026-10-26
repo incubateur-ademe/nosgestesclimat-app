@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker'
 import { START_SIMULATION_PATH, TEST_EMAIL_DOMAIN } from '../../constants'
-import { expect, test } from '../../fixtures'
 import { UserMailbox } from '../../helpers/user-mailbox'
+import { expect, test } from '../fixtures'
 import {
   GROUP_ADMIN_STATE,
   NEW_VISITOR_STATE,
   USER_ACCOUNT_STATE,
-} from '../../state'
+} from '../state'
 
 test.use({ storageState: USER_ACCOUNT_STATE })
 

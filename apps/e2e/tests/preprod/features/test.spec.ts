@@ -1,8 +1,8 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
 import type { Locator, Page } from '@playwright/test'
-import { expect, test } from '../../fixtures'
-import type { NGCTest } from '../../fixtures/ngc-test'
 import { getCarbonFootprintElem } from '../../helpers/carbon-footprint'
+import type { NGCTest } from '../../pages/ngc-test'
+import { expect, test } from '../fixtures'
 
 test.setTimeout(250_000)
 for (const persona of Object.values(personas)) {
