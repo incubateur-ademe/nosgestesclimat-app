@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 import { firefoxLaunchOptions, sharedConfig } from './playwright.shared'
-import type { FixturesOptions } from './tests/preprod/fixtures/options'
-import { localVisitorState } from './tests/state'
+import { localVisitorState } from './tests/local/fixtures'
 
 /**
  * Local suite (tests/, except tests/preprod): run on the local e2e stack on
@@ -10,7 +9,7 @@ import { localVisitorState } from './tests/state'
  * No setup project: each test seeds the data it needs in the e2e database
  * (core factories and services) and signs in through tests/helpers/session.
  */
-export default defineConfig<FixturesOptions>({
+export default defineConfig({
   ...sharedConfig,
   testDir: './tests',
   testIgnore: '**/preprod/**',

@@ -6,8 +6,8 @@ import { userFactory } from '@nosgestesclimat/core/features/users/factories/user
 import type { VerifiedUser } from '@nosgestesclimat/core/features/users/types/user'
 import type { Organisation } from '@nosgestesclimat/core/prisma/generated/client'
 import { ADMINISTRATOR_NAME_SEPARATOR } from '../constants'
-import { test as base, expect } from '../fixtures'
 import { signIn } from '../helpers/session'
+import { test as base, expect } from '../local/fixtures'
 
 /**
  * Organisation admin context, seeded in the e2e database: a verified user,
