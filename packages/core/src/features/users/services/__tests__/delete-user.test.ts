@@ -52,9 +52,7 @@ describe('deleteUser', () => {
 
   it('should delete the verified user, the organisation administrator and the refresh tokens linked to the user deleted', async () => {
     const user = await userFactory.verified().create()
-
     await organisationFactory.withAdministrator(user).create()
-
     await refreshTokenFactory
       .params({
         userId: user.id,
@@ -85,16 +83,15 @@ describe('deleteUser', () => {
     const user = await userFactory.create()
     const userWithoutDates = getUserWithoutDates(user)
     const userEmail = faker.internet.email()
+
     const verifiedUser1 = await createOrUpdateUser({
       ...userWithoutDates,
       email: userEmail,
       type: 'verified',
     })
-
     const verificationCode1 = await verificationCodeFactory.create({
       email: verifiedUser1.email,
     })
-
     const result1 = await login({
       email: verifiedUser1.email,
       code: verificationCode1.code,
@@ -117,7 +114,7 @@ describe('deleteUser', () => {
     const refreshTokensAfterDeletion = await findAllRefreshTokenByUserId(
       verifiedUser1.id
     )
-    expect(refreshTokensAfterDeletion).toEqual([])
+    expect(refreshTokensAfterDeletion).toHaveLength(0)
 
     // Sign-in again after deletion
     const verifiedUser2 = await createOrUpdateUser({
