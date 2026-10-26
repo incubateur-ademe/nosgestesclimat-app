@@ -9,6 +9,11 @@ Boîte à outils des tests end-to-end (Playwright), extraite de `apps/site`.
   [`@mswjs/http-middleware`](https://www.npmjs.com/package/@mswjs/http-middleware).
 - `tests/` — la suite Playwright, qui pilote le site en HTTP (boîte noire).
   - `tests/preprod/` — suite exécutée contre la preprod.
+  - le reste (`tests/features/`…) — suite locale : chaque test est isolé et
+    crée ses propres données en base via les factories/services de
+    `@nosgestesclimat/core`, puis se connecte avec `helpers/session.ts`
+    (session émise par core, posée en cookie) sans passer par le code de
+    vérification.
 - `playwright.config.ts` — configuration Playwright de la suite locale (tout
   `tests/` sauf `tests/preprod`), utilisée par défaut.
 - `playwright.preprod.config.ts` — configuration de la suite preprod (projets
@@ -43,6 +48,14 @@ reproduisez-la sans Docker :
    la suite lit le mock local (`E2E_MAILBOX_STUB_URL`,
    `http://localhost:3002` par défaut). Les variables sont listées dans
    `.env.template`.
+
+   Pour la suite locale, ajoutez aussi la base et la clé de session **du site
+   testé** (mêmes valeurs que `apps/site/.env`) :
+
+   ```env
+   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ngc
+   SESSION_ENCRYPTION_KEY=…
+   ```
 
 4. Lancez les tests (le serveur de dev du site est démarré automatiquement,
    avec `apps/site/.env.e2e` préchargé) :

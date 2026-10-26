@@ -135,6 +135,10 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           E2E_MAILBOX_STUB_URL: http://localhost:3002
+          # Tests seed their data with core factories/services and sign in by
+          # issuing a session the site must be able to decrypt.
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
+          SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
           CI: 'true'
         run: pnpm playwright test --project="${{ matrix.project }}"
 
