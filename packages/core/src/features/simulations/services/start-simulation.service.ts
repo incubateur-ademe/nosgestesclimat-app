@@ -1,6 +1,6 @@
+import type { Model } from '../../models/types/model.ts'
 import { newSimulation } from '../helpers/new-simulation.ts'
 import { createSimulation } from '../repository/simulation.repository.ts'
-import type { Model } from '../types/model.ts'
 
 /**
  * Starts a new simulation for a user that already exists.

@@ -2,14 +2,14 @@
 
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { formatValue } from 'publicodes'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function ValueDiff({ value }: { value: number }) {
   const { t } = useClientTranslation()
 
   return (
     <span
-      className={twMerge(
+      className={cn(
         'inline-block text-xs',
         Math.round(value) !== 0 && value > 0
           ? 'text-red-600'

@@ -1,5 +1,5 @@
 import { DomainError } from '../../../lib/errors.ts'
-import type { Model } from '../../simulations/types/model.ts'
+import type { Model } from '../../models/types/model.ts'
 
 export class UnsupportedModelError extends DomainError<'unsupported_model'> {
   public readonly model: Model

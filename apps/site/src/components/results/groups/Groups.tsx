@@ -3,13 +3,13 @@ import PlusIcon from '@/components/icons/PlusIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import Title from '@/design-system/layout/Title'
 import Link from '@/design-system/links/Link'
 import type { Group } from '@/types/groups'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import GroupContent from './groups/GroupContent'
 
 interface Props {
@@ -44,7 +44,7 @@ export default function Groups({ groups }: Props) {
                   Créer un groupe
                 </Trans>
               }
-              color="secondary"
+              variant="outlined"
               imageAlt=""
               imageSrc="/_static/cms/medium_people_raising_arm_fe915601cd.png"
               icon={<PlusIcon className="stroke-primary-700 min-w-8" />}
@@ -54,11 +54,11 @@ export default function Groups({ groups }: Props) {
             {/* Mobile */}
             <Link
               href="/amis/creer"
-              className={twMerge(
+              className={cn(
                 'block md:hidden',
                 baseClassNames,
                 sizeClassNames.md,
-                colorClassNames.secondary
+                getVariantClassNames('outlined', 'primary')
               )}>
               <PlusIcon className="stroke-primary-700 min-w-8" />
               <Trans i18nKey="mon-espace.groups.create">Créer un groupe</Trans>

@@ -1,5 +1,5 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
-import { serializeModel } from '@nosgestesclimat/core/features/simulations/repository/model.mapper'
+import { serializeModel } from '@nosgestesclimat/core/features/models/helpers/model-versions'
 import type { Simulation as SimulationEntity } from '@nosgestesclimat/core/features/simulations/types/simulation'
 
 export function toSimulationDto(simulation: SimulationEntity): Simulation {

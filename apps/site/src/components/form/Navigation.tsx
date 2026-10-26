@@ -24,7 +24,7 @@ import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestio
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { ErrorWithCode } from '@nosgestesclimat/core/lib/errors'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useRouter } from 'next/navigation'
 import type { MouseEvent } from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -363,14 +363,14 @@ export default function Navigation({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'fixed right-0 bottom-0 left-0 z-50 min-h-16.5 bg-gray-100 py-3',
         isEmbedded && 'static bg-transparent p-0',
         isIframe &&
           'relative right-auto bottom-auto left-auto z-0 bg-transparent'
       )}>
       <div
-        className={twMerge(
+        className={cn(
           'relative mx-auto flex w-full max-w-6xl justify-between gap-1 px-4 md:gap-4 lg:justify-start',
           isEmbedded && 'justify-start'
         )}>
@@ -378,7 +378,7 @@ export default function Navigation({
           size="md"
           onClick={handleGoToPrevQuestion}
           disabled={isPending}
-          color="text"
+          variant="text"
           className="px-3"
           title={t(
             'common.navigation.previousButton.label',
@@ -396,14 +396,14 @@ export default function Navigation({
           size="md"
           title={submitButtonTitle}
           onClick={handleGoToNextQuestion}
-          className={twMerge(
+          className={cn(
             'p-3 text-sm',
             submitButtonKind === 'finish' &&
               !submitButtonIsDisabled &&
               'animate-bg-pulse hover:bg-primary-900! motion-reduce:animate-none'
           )}>
           <span
-            className={twMerge(
+            className={cn(
               submitButtonKind === 'finish' &&
                 !submitButtonIsDisabled &&
                 'bg-rainbow animate-rainbow-fast bg-clip-text! text-transparent! duration-1000 motion-reduce:animate-none'

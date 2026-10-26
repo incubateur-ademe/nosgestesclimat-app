@@ -2,7 +2,7 @@
 
 import type { ImpactCO2Language } from '@nosgestesclimat/core/features/actions/types/action-media'
 import { useEffect, useRef, useState } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface ImpactCO2IframeProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
@@ -95,7 +95,7 @@ export default function ImpactCO2Iframe({
     <div
       key={type}
       ref={wrapperRef}
-      className={twMerge('relative', className)}
+      className={cn('relative', className)}
       {...rest}>
       {/* Skeleton loader */}
       {isLoading && (

@@ -1,10 +1,10 @@
 import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ReactNode } from 'react'
 import LockIcon from '../icons/LockIcon'
 import Link from '../Link'
@@ -33,9 +33,9 @@ export default function NoResultsBlock({ title, link }: Props) {
       <div className="flex justify-center">
         <Link
           href={link?.href ?? TUTORIAL_PATH}
-          className={twMerge(
+          className={cn(
             baseClassNames,
-            colorClassNames.secondary,
+            getVariantClassNames('outlined', 'primary'),
             sizeClassNames.md
           )}>
           {link?.label ?? (

@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { HTMLAttributes, JSX, PropsWithChildren } from 'react'
 import Separator from './Separator'
 
@@ -35,10 +35,10 @@ export default function Title({
 }: PropsWithChildren<TitleProps>) {
   const Tag = tag
   return (
-    <div className={twMerge('relative', containerClassName)}>
+    <div className={cn('relative', containerClassName)}>
       <div className={hasSeparator ? 'mb-6' : ''}>
         <Tag
-          className={twMerge('mb-2', titleSizesClassNames[size], className)}
+          className={cn('mb-2', titleSizesClassNames[size], className)}
           {...props}>
           {title ?? children}
         </Tag>

@@ -1,6 +1,6 @@
 import Link from '@/design-system/links/Link'
 import Emoji from '@/design-system/utils/Emoji'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { CtaCard } from '../../_helpers/eventPageData'
 
 interface Props extends CtaCard {
@@ -28,7 +28,7 @@ export default function ActionCard({
 
       {/* Card content */}
       <div
-        className={twMerge(
+        className={cn(
           'relative flex flex-1 flex-col items-start rounded-3xl bg-white px-4 py-6 shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02]',
           index === 0 ? 'bg-primary-100' : 'border-primary-600 border bg-white',
           className

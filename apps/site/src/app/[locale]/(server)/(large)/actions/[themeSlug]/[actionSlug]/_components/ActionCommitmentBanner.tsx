@@ -12,7 +12,7 @@ export function ActionCommitmentBanner({ action }: Props) {
   return (
     <BottomBannerWithCTA>
       <CommitToActionButton
-        buttonColor="primary"
+        buttonVariant="filled"
         className="w-full sm:w-72"
         action={action}
       />

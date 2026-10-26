@@ -1,4 +1,4 @@
-import { ModelStringSchema } from '@nosgestesclimat/core/features/simulations/types/model'
+import { ModelStringSchema } from '@nosgestesclimat/core/features/models/types/model'
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import {
   FoldedStepsSchema,

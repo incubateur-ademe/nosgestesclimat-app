@@ -1,5 +1,5 @@
 import type { Post } from '@/types/posts'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Item from './list/Item'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 export default function PostList({ items, path, className, locale }: Props) {
   return (
     <ul
-      className={twMerge(
+      className={cn(
         'grid list-none grid-cols-1 justify-center gap-4 pl-0 sm:grid-cols-2',
         className
       )}

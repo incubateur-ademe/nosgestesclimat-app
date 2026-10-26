@@ -3,7 +3,7 @@ import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useId } from 'react'
 import Trans from '../translation/trans/TransServer'
 import ActionCard from './ActionCard'
@@ -38,7 +38,7 @@ export default function ThemeSection({
   const count = actions.length
   return (
     <section
-      className={twMerge(
+      className={cn(
         '-mx-4 min-w-0 border-t-2 border-b-2 px-2 pt-5 pb-4 md:mx-0 md:rounded-2xl md:border-2 md:px-5 md:pt-8 md:pb-7',
         classes.section,
         className

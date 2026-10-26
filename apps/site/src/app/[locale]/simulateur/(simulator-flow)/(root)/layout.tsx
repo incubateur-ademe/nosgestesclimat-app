@@ -5,7 +5,7 @@ import { getCachedRules } from '@/helpers/modelFetching/getCachedRules'
 import { getUserSession } from '@/services/auth/get-user-session'
 
 import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTracker'
-import { parseModelString } from '@/helpers/server/model/models'
+import { parseModel } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
 import logger from '@/logger/logger.server'
 import { EngineProvider, FormProvider } from '@/publicodes-state'
@@ -40,7 +40,7 @@ export default async function SimulationLayout({
     modelStr: currentSimulation.model,
     locale: locale as Locale,
   })
-  const model = parseModelString(currentSimulation.model)
+  const model = parseModel(currentSimulation.model)
   return (
     <ClientLayout
       simulation={currentSimulation}

@@ -1,8 +1,7 @@
 'use client'
 
 import Link from '@/components/Link'
-import type { ButtonSize } from '@/types/values'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { LinkProps } from 'next/link'
 import {
   type HtmlHTMLAttributes,
@@ -14,10 +13,11 @@ import Loader from '../layout/Loader'
 import type { ButtonColor } from './Button'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   loaderColorMap,
   sizeClassNames,
 } from './Button'
+import type { ButtonSize, ButtonVariant } from './buttonStyles'
 import { useButtonState } from './useButtonState'
 
 interface Props {
@@ -25,6 +25,7 @@ interface Props {
   className?: string
   color?: ButtonColor
   size?: ButtonSize
+  variant?: ButtonVariant
   title?: string
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void
   onKeyDown?: (e: KeyboardEvent<HTMLAnchorElement>) => void
@@ -42,6 +43,7 @@ export default function ButtonLink({
   className = '',
   color = 'primary',
   size = 'md',
+  variant = 'filled',
   title,
   onClick,
   onKeyDown,
@@ -85,15 +87,15 @@ export default function ButtonLink({
       }}
       title={title}
       aria-disabled={isDisabled}
-      className={twMerge(
-        `${baseClassNames} ${sizeClassNames[size]} ${colorClassNames[color]}`,
+      className={cn(
+        `${baseClassNames} ${sizeClassNames[size]} ${getVariantClassNames(variant, color)}`,
         isDisabled && 'cursor-not-allowed opacity-50!',
         className
       )}
       target={target}
       {...props}>
       {showLoader && (
-        <Loader size="sm" color={loaderColorMap[color]} className="mr-2" />
+        <Loader size="sm" color={loaderColorMap[variant]} className="mr-2" />
       )}
       {children}
     </Link>

@@ -1,4 +1,4 @@
-import { parseModelString } from '@/helpers/server/model/models'
+import { parseModel } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Logger } from '@nosgestesclimat/core/features/logger/index'
 import { resolveNewSimulationModelString } from './resolve-new-simulation-model'
@@ -30,5 +30,5 @@ export async function ensureSimulationModel<
 function hasValidModel<Payload extends { model?: Simulation['model'] }>(
   simulation: Payload
 ): simulation is Payload & { model: Simulation['model'] } {
-  return !!simulation.model && !!parseModelString(simulation.model)
+  return !!simulation.model && !!parseModel(simulation.model)
 }

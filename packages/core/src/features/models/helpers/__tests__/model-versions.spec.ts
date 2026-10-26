@@ -1,9 +1,46 @@
 import { describe, expect, it } from 'vitest'
-import { parseModelString, serializeModel } from '../model.mapper.ts'
+import {
+  parseModel,
+  parseModelVersion,
+  serializeModel,
+  serializeModelVersion,
+} from '../model-versions.ts'
 
-describe('parseModelString', () => {
+describe('parseModelVersion', () => {
+  it('reads a published tag', () => {
+    expect(parseModelVersion('4.14.2')).toEqual({
+      publishedTag: '4.14.2',
+    })
+  })
+
+  it('reads a prerelease published tag', () => {
+    expect(parseModelVersion('4.15.0-beta.1')).toEqual({
+      publishedTag: '4.15.0-beta.1',
+    })
+  })
+
+  it('reads a PR reference', () => {
+    expect(parseModelVersion('pr-1234')).toEqual({ PRNumber: '1234' })
+  })
+
+  it('returns null for anything else', () => {
+    expect(parseModelVersion('current')).toBeNull()
+    expect(parseModelVersion('4.14')).toBeNull()
+    expect(parseModelVersion('')).toBeNull()
+  })
+})
+
+describe('serializeModelVersion', () => {
+  it('round-trips both forms', () => {
+    for (const ref of ['4.14.2', 'pr-1234']) {
+      expect(serializeModelVersion(parseModelVersion(ref)!)).toBe(ref)
+    }
+  })
+})
+
+describe('parseModel', () => {
   it('parses a published tag version', () => {
-    const result = parseModelString('FR-fr-1.2.3')
+    const result = parseModel('FR-fr-1.2.3')
     expect(result).toEqual({
       region: 'FR',
       locale: 'fr',
@@ -12,7 +49,7 @@ describe('parseModelString', () => {
   })
 
   it('parses a PR number version', () => {
-    const result = parseModelString('FR-fr-pr-42')
+    const result = parseModel('FR-fr-pr-42')
     expect(result).toEqual({
       region: 'FR',
       locale: 'fr',
@@ -21,7 +58,7 @@ describe('parseModelString', () => {
   })
 
   it('parses with English locale', () => {
-    const result = parseModelString('EU-en-2.0.0')
+    const result = parseModel('EU-en-2.0.0')
     expect(result).toEqual({
       region: 'EU',
       locale: 'en',
@@ -30,19 +67,19 @@ describe('parseModelString', () => {
   })
 
   it('returns null for an invalid locale', () => {
-    expect(parseModelString('FR-de-1.0.0')).toBeNull()
+    expect(parseModel('FR-de-1.0.0')).toBeNull()
   })
 
   it('returns null for an invalid version format', () => {
-    expect(parseModelString('FR-fr-gibberish')).toBeNull()
+    expect(parseModel('FR-fr-gibberish')).toBeNull()
   })
 
   it('returns null for a completely invalid string', () => {
-    expect(parseModelString('not-a-model')).toBeNull()
+    expect(parseModel('not-a-model')).toBeNull()
   })
 
   it('returns null for an empty string', () => {
-    expect(parseModelString('')).toBeNull()
+    expect(parseModel('')).toBeNull()
   })
 })
 

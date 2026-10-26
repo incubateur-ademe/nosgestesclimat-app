@@ -1,16 +1,14 @@
 import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
-import rulesOpti from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr-opti.json'
 
-import _logger from '@/logger/logger.server'
+import logger from '@/logger/logger.server'
+import { createGetModelRules } from '@nosgestesclimat/core/features/models/services/get-model-rules.service'
 import { CURRENT_MODEL_VERSION, type Model } from '../server/model/models'
-import { importPreviewFile } from './importPreviewFile'
-import { importRulesFromModel } from './importRulesFromModel'
+
+const getModelRules = createGetModelRules({ logger })
 
 interface Props extends Model {
   isOptim?: boolean
 }
-
-const logger = _logger.child({ scope: 'site.action.getRules' })
 
 /*
  * This function is used to get the rules. It is used in the useRules hook and can also be called directly from a server component.
@@ -23,40 +21,16 @@ export async function getRules({
     publishedTag: CURRENT_MODEL_VERSION,
   },
 }: Partial<Props> = {}): Promise<NGCRules> {
-  // We provide the FR version of the model if the region is not supported
-  let fileName = ''
-
-  if ('PRNumber' in version) {
-    if (region === 'FR') {
-      fileName = `co2-model.FR-lang.${locale}${isOptim ? '-opti' : ''}.json`
-    } else {
-      fileName = `co2-model.${region}-lang.${locale}.json`
-    }
-    return await (importPreviewFile({
-      fileName,
-      PRNumber: version.PRNumber,
-    }) as Promise<NGCRules>)
+  // The site migrates outdated situations forward to the current model
+  // (see migrateSimulationIfNeeded), so it keeps rendering the installed
+  // rules and only reports the mismatch. The worker is the one fetching old
+  // versions.
+  const result = await getModelRules(
+    { region, locale, version },
+    { isOptim, outdatedPublishedTagStrategy: 'fallback_to_current' }
+  )
+  if (!result.success) {
+    throw result.error
   }
-
-  if (version.publishedTag !== CURRENT_MODEL_VERSION) {
-    logger.error(
-      new Error(
-        `Model version mismatch: ${version.publishedTag} !== ${CURRENT_MODEL_VERSION}`
-      )
-    )
-  }
-
-  if (region === 'FR' && locale === 'fr' && isOptim === true) {
-    // The rules are optimized so some rules are voluntarily removed. While we don't implement a specific type for this
-    // subset, we accept to loose some of type soundness for increased code clarity.
-    return rulesOpti as unknown as NGCRules
-  }
-  if (region === 'FR') {
-    fileName = `co2-model.FR-lang.${locale}${isOptim ? '-opti' : ''}.json`
-  } else {
-    fileName = `co2-model.${region}-lang.${locale}.json`
-  }
-  return await (importRulesFromModel({
-    fileName,
-  }) as Promise<NGCRules>)
+  return result.data
 }

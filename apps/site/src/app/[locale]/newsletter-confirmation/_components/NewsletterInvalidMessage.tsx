@@ -14,7 +14,7 @@ export default async function NewsletterInvalidMessage() {
       )}
       buttonElement={
         <>
-          <ButtonLink color="secondary" href="/">
+          <ButtonLink variant="outlined" href="/">
             <Trans>Revenir à la page d'accueil</Trans>
           </ButtonLink>
 

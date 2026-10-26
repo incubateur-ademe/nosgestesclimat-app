@@ -2,6 +2,10 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import {
+  parseModel,
+  type ModelString,
+} from '../../../models/helpers/model-versions.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
   SimulationCompletedError,
@@ -10,7 +14,6 @@ import {
 } from '../../errors/simulations.error.ts'
 import { computedResultsFactory } from '../../factories/computed-results.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { parseModelString } from '../../repository/model.mapper.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
 import { updateSimulationSituation } from '../update-simulation-situation.service.ts'
 
@@ -124,7 +127,7 @@ describe('updateSimulationSituation', () => {
       userId: user.id,
       simulationId: simulation.id,
       ...payload,
-      model: 'FR-fr-4.15.0',
+      model: 'FR-fr-4.15.0' as ModelString,
     })
 
     const updated = await findSimulationById({
@@ -133,7 +136,7 @@ describe('updateSimulationSituation', () => {
     })
 
     expect(updated).toEqual(
-      expect.objectContaining({ model: parseModelString('FR-fr-4.15.0') })
+      expect.objectContaining({ model: parseModel('FR-fr-4.15.0') })
     )
   })
 

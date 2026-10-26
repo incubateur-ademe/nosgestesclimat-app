@@ -8,13 +8,13 @@ import type { AppUser } from '../../auth/types/user-session.ts'
 import type { SendEmail } from '../../emails/types.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
 import type { Logger } from '../../logger/index.ts'
+import type { Model } from '../../models/types/model.ts'
 import { createPollJoinedEmail } from '../../simulations/emails/simulation-emails.ts'
 import { SimulationNotFoundError } from '../../simulations/errors/simulations.error.ts'
 import { newSimulation } from '../../simulations/helpers/new-simulation.ts'
 import { isSimulationCompleted } from '../../simulations/helpers/simulation-guards.ts'
 import { findSimulationProgressById } from '../../simulations/repository/simulation-progress.repository.ts'
 import { createSimulation } from '../../simulations/repository/simulation.repository.ts'
-import type { Model } from '../../simulations/types/model.ts'
 import {
   type ParticipateToPollError,
   PollNotFoundError,

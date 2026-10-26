@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ButtonColor } from '../buttons/Button'
 import Button from '../buttons/Button'
 
@@ -35,12 +35,12 @@ export default function Form({
   return (
     <form className={className} {...props} noValidate>
       <div
-        className={twMerge(
+        className={cn(
           'flex w-full flex-col items-start gap-4 lg:flex-row',
           isVerticalLayout && 'md:flex-col lg:flex-col'
         )}>
         <div
-          className={twMerge(
+          className={cn(
             'flex w-full flex-col',
             !isVerticalLayout && 'md:w-auto'
           )}>
@@ -59,7 +59,7 @@ export default function Form({
 
         <div className="flex w-full flex-col items-stretch gap-2 pb-8 sm:flex-row md:items-start md:gap-4">
           <Button
-            className={twMerge(!isVerticalLayout && 'lg:mt-8 lg:h-14')}
+            className={cn(!isVerticalLayout && 'lg:mt-8 lg:h-14')}
             type="submit"
             data-testid="button-submit"
             disabled={disabled}

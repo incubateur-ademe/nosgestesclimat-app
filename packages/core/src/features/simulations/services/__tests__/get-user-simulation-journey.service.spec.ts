@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { serializeModel } from '../../../models/helpers/model-versions.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { serializeModel } from '../../repository/model.mapper.ts'
 import { getUserSimulationJourney } from '../get-user-simulation-journey.service.ts'
 
 describe('getUserSimulationJourney', () => {

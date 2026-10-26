@@ -59,7 +59,7 @@ export default async function CampagnePage({
             <div>
               <ButtonLinkServer
                 href={`/organisations/${orgaSlug}/campagnes/${pollSlug}/parametres`}
-                color="secondary"
+                variant="outlined"
                 size="sm"
                 data-testid="poll-admin-section-see-parameters-button"
                 className="flex items-center">

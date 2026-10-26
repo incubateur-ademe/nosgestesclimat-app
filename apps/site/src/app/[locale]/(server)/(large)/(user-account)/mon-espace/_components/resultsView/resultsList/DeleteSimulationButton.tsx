@@ -37,8 +37,9 @@ export function DeleteButtonWithConfirmModal({
     <>
       <Button
         onClick={() => setIsModalOpen(true)}
-        color="link"
-        className="font-normal text-red-700 hover:text-red-800">
+        variant="link"
+        color="red"
+        className="font-normal">
         <Trans i18nKey="mySpace.resultList.item.delete.mainButton.label">
           Supprimer
         </Trans>

@@ -1,4 +1,5 @@
 import { prisma } from '../../../prisma/client.ts'
+import type { ModelString } from '../../models/helpers/model-versions.ts'
 import type {
   CompletedSimulationProgress,
   SimulationProgress,
@@ -19,15 +20,15 @@ const latestSimulationSelect = {
 type SimulationProgressRow = {
   id: string
   progression: number
-  model: string
+  model: ModelString
   computedResults: ComputedResults
 }
 
 const toProgress = <Progression extends number>(row: {
   id: string
   progression: Progression
-  model: string
-}): { id: string; progression: Progression; model: string } => ({
+  model: ModelString
+}): { id: string; progression: Progression; model: ModelString } => ({
   id: row.id,
   progression: row.progression,
   model: row.model,
@@ -79,5 +80,7 @@ export const findSimulationProgressById = async ({
   })
 
   // cannot validate model string here in order to be able to update it
-  return row && hasValidComputedResults(row) ? toProgress(row) : null
+  return row && hasValidComputedResults(row)
+    ? toProgress({ ...row, model: row.model as ModelString })
+    : null
 }

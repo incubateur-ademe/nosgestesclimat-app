@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function MessengerIcon({ className }: { className?: string }) {
   return (
@@ -8,7 +8,7 @@ export default function MessengerIcon({ className }: { className?: string }) {
       viewBox="0 0 15 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('stroke-default inline-block stroke-2', className)}
+      className={cn('stroke-default inline-block stroke-2', className)}
       aria-hidden="true">
       <g clipPath="url(#clip0_54647_13205)">
         <path

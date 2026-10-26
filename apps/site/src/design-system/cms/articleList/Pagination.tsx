@@ -4,7 +4,7 @@ import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
 import Link from '@/components/Link'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default async function Pagination({
   currentPage,
@@ -36,7 +36,7 @@ export default async function Pagination({
               return (
                 <li key={index}>
                   <Link
-                    className={twMerge(
+                    className={cn(
                       'text-lg',
                       isCurrentPage
                         ? 'text-primary-700 font-medium underline'

@@ -1,7 +1,7 @@
 import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { parseModelString } from '@/helpers/server/model/models'
+import { parseModel } from '@/helpers/server/model/models'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { mockAuthenticatedSession } from '../../../helpers/tests/mockAuthenticatedSession'
 import { toSimulationDto } from '../simulation.dto'
@@ -124,7 +124,7 @@ describe('updateSimulationSituation', () => {
     const [[written]] = serviceMock.updateSimulationSituation.mock.calls as [
       { model?: string },
     ][]
-    expect(parseModelString(written.model ?? '')).not.toBeNull()
+    expect(parseModel(written.model ?? '')).not.toBeNull()
     expect(written.model).not.toBe('FR-fr-0.0.0')
   })
 

@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function TrophyIcon({
   className,
@@ -11,7 +11,7 @@ export default function TrophyIcon({
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('inline-block', className)}
+      className={cn('inline-block', className)}
       aria-hidden="true"
       {...props}>
       <path

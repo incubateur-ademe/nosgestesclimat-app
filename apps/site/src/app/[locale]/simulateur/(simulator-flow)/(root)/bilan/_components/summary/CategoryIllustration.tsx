@@ -3,7 +3,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import Image from 'next/image'
 import { useMemo } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function CategoryIllustration({
   category,
@@ -59,7 +59,7 @@ export default function CategoryIllustration({
       alt={categoryProps.alt}
       width={300}
       height={500}
-      className={twMerge(
+      className={cn(
         'bottom-0 ml-auto block w-[160px] md:static md:top-auto md:left-auto md:mx-auto md:w-[240px] md:opacity-100',
         categoryProps.className ?? ''
       )}

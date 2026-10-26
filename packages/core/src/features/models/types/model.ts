@@ -1,7 +1,7 @@
 import type supportedRegionsType from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json'
 import supportedRegions from '@incubateur-ademe/nosgestesclimat/public/supportedRegions.json' with { type: 'json' }
 import * as v from 'valibot'
-import { parseModelString } from '../repository/model.mapper.ts'
+import { parseModel } from '../helpers/model-versions.ts'
 
 export const ModelLocaleSchema = v.picklist(['fr', 'en'])
 
@@ -33,7 +33,7 @@ export type Model = v.InferOutput<typeof ModelSchema>
  */
 export const ModelStringSchema = v.pipe(
   v.string(),
-  v.custom((data) => !!parseModelString(String(data))),
+  v.custom((data) => !!parseModel(String(data))),
   v.brand('ModelString')
 )
 

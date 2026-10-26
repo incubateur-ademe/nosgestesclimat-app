@@ -2,13 +2,20 @@ import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import type { Organisation } from '../../../prisma/generated/client.ts'
+import type { OrganisationAdministratorUncheckedCreateWithoutOrganisationInput } from '../../../prisma/generated/models.ts'
 
 class OrganisationFactory extends Factory<Organisation> {
   /** Registers this email as an administrator of the organisation. */
-  withAdministrator(userEmail: string) {
+  withAdministrator(
+    administrator: OrganisationAdministratorUncheckedCreateWithoutOrganisationInput
+  ) {
     return this.afterCreate(async (organisation) => {
       await prisma.organisationAdministrator.create({
-        data: { userEmail, organisationId: organisation.id },
+        data: {
+          userEmail: administrator.userEmail,
+          organisationId: organisation.id,
+          updatedAt: administrator.updatedAt,
+        },
       })
       return organisation
     })

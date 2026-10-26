@@ -5,7 +5,7 @@ import { useLocale } from '@/hooks/useLocale'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { ActionAssessment } from '@nosgestesclimat/core/features/actions/types/action'
 import type { ThemeKey } from '@nosgestesclimat/core/features/actions/types/theme'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { Trans } from 'react-i18next'
 import type { ActionCatalogueContext } from '../types/actions'
 import { shouldDisplayComputationInProgressText } from '../utils/shouldDisplayComputationInProgressText'
@@ -35,7 +35,7 @@ export default function ImpactSection({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex flex-col justify-center gap-0.5 rounded-lg border-slate-100 px-6 py-6 md:w-75 md:rounded-none md:border-l',
         classes.panel,
         className
@@ -100,7 +100,7 @@ function ImpactValue({
   return (
     <p className="mb-0 flex items-baseline gap-1.5 whitespace-nowrap">
       <span
-        className={twMerge(
+        className={cn(
           'text-[2rem]/none font-extrabold tracking-[-0.9px] md:text-5xl/none',
           valueClassName
         )}>

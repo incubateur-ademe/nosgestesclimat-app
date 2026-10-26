@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import type { Model } from '../../../models/types/model.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { emptyComputedResults } from '../../helpers/empty-computed-results.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
-import type { Model } from '../../types/model.ts'
 import { startSimulation } from '../start-simulation.service.ts'
 
 describe('startSimulation', () => {

@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import Badge from '@/design-system/layout/Badge'
 import Card from '@/design-system/layout/Card'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   className?: string
@@ -9,7 +9,7 @@ interface Props {
 
 export default function CollectiveEfforts({ className }: Props) {
   return (
-    <div className={twMerge('mt-6', className)}>
+    <div className={cn('mt-6', className)}>
       <Badge className="text-default border-none text-sm md:text-base">
         <Trans
           i18nKey="results.objective.collectiveEffort.title">

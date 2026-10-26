@@ -2,7 +2,7 @@
 
 import CloseIcon from '@/components/icons/Close'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import Button from '../buttons/Button'
@@ -122,14 +122,14 @@ export default function BurgerMenu({
   return (
     <div id="burger-menu">
       <Button
-        color="text"
+        variant="text"
         aria-label={isOpen ? t('Fermer le menu') : t('Ouvrir le menu')}
         aria-expanded={isOpen}
         aria-controls="burger-menu-panel"
         onClick={handleToggleMenu}
         onKeyDown={handleButtonKeyDown}
         ref={openButtonRef}
-        className={twMerge(
+        className={cn(
           'focus:ring-primary-700 absolute top-4 right-4 flex h-[44px] w-[44px] flex-col items-center justify-center p-0! focus:ring-2 focus:ring-offset-3 focus:outline-hidden',
           isOpen ? 'hidden' : ''
         )}>
@@ -151,7 +151,7 @@ export default function BurgerMenu({
               />
               {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
               <section
-                className={twMerge(
+                className={cn(
                   'pointer-events-none fixed top-0 right-0 z-50 h-screen w-[90vw] max-w-[20rem] translate-x-full bg-white p-4 pt-16 opacity-0 shadow-md transition-all duration-300 ease-in-out focus:outline-none',
                   isOpen ? 'pointer-events-auto translate-x-0 opacity-100' : ''
                 )}
@@ -167,13 +167,13 @@ export default function BurgerMenu({
                   {t('common.burgerMenu.title', 'Menu de navigation')}
                 </h2>
                 <Button
-                  color="text"
+                  variant="text"
                   aria-label={t(
                     'common.burgerMenu.title',
                     'Fermer le menu de navigation'
                   )}
                   onClick={handleToggleMenu}
-                  className={twMerge(
+                  className={cn(
                     'absolute top-4 right-4 z-100 flex h-[44px] w-[44px] flex-col items-center justify-center p-0!',
                     isOpen ? 'flex' : ''
                   )}>

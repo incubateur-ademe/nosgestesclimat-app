@@ -7,7 +7,7 @@ import { ISOSupportedLanguageSchema } from '@nosgestesclimat/core/features/geo/t
 import type { Logger } from '@nosgestesclimat/core/features/logger/index'
 import type { ParticipateToPollError } from '@nosgestesclimat/core/features/polls/errors/polls.error'
 import { createParticipateToPoll } from '@nosgestesclimat/core/features/polls/services/participate-to-poll.service'
-import { ModelSchema } from '@nosgestesclimat/core/features/simulations/types/model'
+import { ModelSchema } from '@nosgestesclimat/core/features/models/types/model'
 import type { InvalidPayloadError } from '@nosgestesclimat/core/lib/errors'
 import { type Result } from '@nosgestesclimat/core/lib/result'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'

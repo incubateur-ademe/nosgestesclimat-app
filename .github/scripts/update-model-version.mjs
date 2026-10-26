@@ -14,7 +14,6 @@ import { fileURLToPath } from 'node:url'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 const PACKAGE = '@incubateur-ademe/nosgestesclimat'
-const PREVIOUS_PACKAGE = '@incubateur-ademe/nosgestesclimat-previous'
 
 const FILES = [
   'packages/core/package.json',
@@ -68,12 +67,6 @@ for (const file of FILES) {
   let touched = false
   if (deps[PACKAGE] !== undefined) {
     deps[PACKAGE] = newVersion
-
-    if (deps[PREVIOUS_PACKAGE] !== undefined) {
-      deps[PREVIOUS_PACKAGE] =
-        `npm:@incubateur-ademe/nosgestesclimat@${currentVersion}`
-    }
-
     touched = true
   }
 

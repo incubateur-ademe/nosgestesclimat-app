@@ -7,3 +7,12 @@ export interface Group {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface GroupParticipant {
+  id: string
+  userId: string
+  simulationId: string
+  groupId: string
+  createdAt: Date
+  updatedAt: Date
+}

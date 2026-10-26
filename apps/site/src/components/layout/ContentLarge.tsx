@@ -1,6 +1,6 @@
 import Main from '@/design-system/layout/Main'
 import type { HTMLAttributes, PropsWithChildren } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 type ContentLargeProps = HTMLAttributes<HTMLDivElement> &
   PropsWithChildren<{
@@ -20,7 +20,7 @@ export default function ContentLarge({
 
   return (
     <Tag
-      className={twMerge(
+      className={cn(
         'flex w-full max-w-5xl flex-1 flex-col overflow-visible lg:mx-auto',
         className
       )}

@@ -162,7 +162,7 @@ export default function EventCountdown({
           className="w-full text-sm sm:text-base lg:text-xl"
           href={secondaryCtaHref}
           size="xl"
-          color="secondary"
+          variant="outlined"
           target="_blank"
           aria-label={t(
             'event.dynamicCounter.secondaryCta.ariaLabel',

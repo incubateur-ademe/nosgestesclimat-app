@@ -5,15 +5,16 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIsClient } from '@/hooks/useIsClient'
 import logger from '@/logger/logger.browser'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import isMobile from 'is-mobile'
 import type { PropsWithChildren, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import Alert from '../alerts/alert/Alert'
+import Alert from '../alert/Alert'
 import Button, { type ButtonProps } from './Button'
 
 interface Props {
   color?: ButtonProps['color']
+  variant?: ButtonProps['variant']
   textToCopy: string
   className?: string
   copiedStateText?: ReactNode
@@ -25,7 +26,8 @@ interface Props {
 
 export default function CopyButton({
   children,
-  color = 'text',
+  color,
+  variant = 'text',
   textToCopy,
   className = '',
   copiedStateText,
@@ -133,7 +135,8 @@ export default function CopyButton({
       <Button
         ref={buttonRef}
         color={color}
-        className={twMerge('w-full', className)}
+        variant={variant}
+        className={cn('w-full', className)}
         onClick={handleShareOrCopy}
         aria-label={getButtonAriaLabel()}
         aria-live="polite"

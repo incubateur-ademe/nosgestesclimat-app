@@ -1,7 +1,7 @@
 import Trans from '@/components/translation/trans/TransServer'
 import type { PodiumItem } from '@nosgestesclimat/core/features/events/types/event-info'
 import type { EventStatus } from '@nosgestesclimat/core/features/events/types/status'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import AnimatedPodiumBlock from './AnimatedPodiumBlock'
 import RankBadge from './RankBadge'
 
@@ -27,7 +27,7 @@ export default function PodiumBlock({
   return (
     <AnimatedPodiumBlock rank={rank}>
       <div
-        className={twMerge(
+        className={cn(
           'flex flex-col items-center justify-start px-4',
           'rounded-3xl md:rounded-t-3xl md:rounded-b-none',
           heightClasses[rank as 1 | 2 | 3],
@@ -37,14 +37,14 @@ export default function PodiumBlock({
         )}>
         <RankBadge rank={rank} />
         <span
-          className={twMerge(
+          className={cn(
             'mb-6 text-center text-base leading-tight font-bold',
             isFirst && 'text-xl'
           )}>
           {name}
         </span>
         <span
-          className={twMerge(
+          className={cn(
             'mt-auto text-center text-lg font-bold',
             !isFirst && 'text-primary-600 text-base'
           )}>
@@ -55,7 +55,7 @@ export default function PodiumBlock({
         </span>
         {status === 'not_started' && (
           <span
-            className={twMerge(
+            className={cn(
               'mt-1 block text-center text-sm',
               !isFirst && 'text-primary-600'
             )}>

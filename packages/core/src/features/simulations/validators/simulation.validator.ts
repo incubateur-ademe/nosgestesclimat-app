@@ -1,4 +1,7 @@
-import { parseModelString } from '../repository/model.mapper.ts'
+import {
+  parseModel,
+  type ModelString,
+} from '../../models/helpers/model-versions.ts'
 import {
   hasValidComputedResults,
   type ComputedResults,
@@ -14,5 +17,5 @@ export const isValidSimulation = <
   Row extends { model: string; computedResults?: unknown },
 >(
   row: Row
-): row is Row & { computedResults: ComputedResults } =>
-  parseModelString(row.model) !== null && hasValidComputedResults(row)
+): row is Row & { model: ModelString; computedResults: ComputedResults } =>
+  parseModel(row.model) !== null && hasValidComputedResults(row)

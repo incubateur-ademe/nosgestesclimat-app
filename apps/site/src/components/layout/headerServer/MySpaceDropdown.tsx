@@ -16,9 +16,9 @@ import { resetLocalState } from '@/helpers/user/resetLocalState'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useUser } from '@/publicodes-state'
 import { PostHog } from '@/services/tracking/Posthog'
+import { cn } from 'cn'
 import Link from 'next/link'
 import { useState } from 'react'
-import { twMerge } from "cn";
 
 const MAX_EMAIL_LENGTH = 20
 
@@ -77,7 +77,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
       <DropdownMenuTrigger asChild>
         <Button
           size="sm"
-          color="secondary"
+          variant="outlined"
           className="max-tiny:px-2 max-tiny:py-2 inline-flex gap-1 align-baseline"
           data-testid="my-space-button"
           aria-label={ariaLabelTitle}
@@ -85,7 +85,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
           <Trans i18nKey="header.monEspace.title">Mon espace</Trans>{' '}
           <span className="hidden md:inline">({displayEmail})</span>
           <ChevronRight
-            className={twMerge(
+            className={cn(
               'max-tiny:ml-1.5 ml-3 inline-block w-2 transition-transform',
               // Using -rotate-90 causes the rotation to freeze mid-course
               isPopoverOpen ? 'rotate-[-90deg]' : 'rotate-90'

@@ -1,6 +1,6 @@
 import Main from '@/design-system/layout/Main'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function ContentNarrow({
   children,
@@ -8,7 +8,7 @@ export default function ContentNarrow({
 }: PropsWithChildren<{ className?: string }>) {
   return (
     <Main
-      className={twMerge(
+      className={cn(
         'my-8 w-full max-w-4xl overflow-visible px-4 pb-12 lg:mx-auto',
         className
       )}>

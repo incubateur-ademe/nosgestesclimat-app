@@ -1,7 +1,7 @@
 'use server'
 
 import type { Locale } from '@/i18nConfig'
-import { parseModelString } from '../server/model/models'
+import { parseModel } from '../server/model/models'
 import { getRules } from './getRules'
 
 export async function getCachedRules({
@@ -15,7 +15,7 @@ export async function getCachedRules({
 }) {
   'use cache'
   return await getRules({
-    ...(modelStr ? parseModelString(modelStr) : {}),
+    ...(modelStr ? parseModel(modelStr) : {}),
     locale,
     isOptim,
   })

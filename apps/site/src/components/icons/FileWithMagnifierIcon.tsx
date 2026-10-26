@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 
 export default function FileWithMagnifierIcon({
   className,
@@ -12,7 +12,7 @@ export default function FileWithMagnifierIcon({
       viewBox="0 0 14 15"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('fill-default inline-block stroke-[1.5]', className)}
+      className={cn('fill-default inline-block stroke-[1.5]', className)}
       aria-hidden="true">
       <path
         fillRule="evenodd"

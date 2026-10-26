@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   type: 'vertical' | 'horizontal'
@@ -23,7 +23,7 @@ export default function BarChart({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         `max-w-full min-w-0 ${propertyAffected === 'width' ? 'h-4' : 'w-4'} ${
           color ?? 'bg-secondary-700'
         } rotate-180 rounded-xl motion-reduce:animate-none ${

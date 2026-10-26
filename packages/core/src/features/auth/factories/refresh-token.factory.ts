@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { Factory } from 'fishery'
-import { randomBytes } from 'node:crypto'
+import { generateRefreshToken } from '../helpers/generate-refresh-token.ts'
 import { hashToken } from '../helpers/hash-token.ts'
 import { createRefreshToken } from '../repositories/refresh-token.repository.ts'
 
@@ -31,7 +31,7 @@ export const refreshTokenFactory = RefreshTokenFactory.define(
       return data
     })
 
-    const token = randomBytes(32).toString('base64url')
+    const token = generateRefreshToken()
 
     return {
       id: faker.string.uuid(),

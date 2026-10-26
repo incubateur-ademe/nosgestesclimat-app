@@ -1,5 +1,5 @@
+import { serializeModel } from '@nosgestesclimat/core/features/models/helpers/model-versions'
 import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
-import { serializeModel } from '@nosgestesclimat/core/features/simulations/repository/model.mapper'
 import { v4 as randomUUID } from 'uuid'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 

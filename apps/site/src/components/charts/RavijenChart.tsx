@@ -52,7 +52,7 @@ export default function RavijenChart({
       <div className="md:px-4">
         <Button
           size="sm"
-          color="secondary"
+          variant="outlined"
           onClick={() => {
             const ravijen = document.getElementById('ravijen')!
 

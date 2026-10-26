@@ -22,10 +22,15 @@ const meta: Meta<typeof CopyButton> = {
       control: 'text',
       description: 'Additional CSS classes',
     },
+    variant: {
+      control: 'select',
+      options: ['filled', 'outlined', 'text', 'link'],
+      description: 'The variant of the button',
+    },
     color: {
       control: 'select',
-      options: ['primary', 'secondary', 'text', 'link', 'success'],
-      description: 'The color variant of the button',
+      options: ['primary', 'green', 'red'],
+      description: 'The color of the button',
     },
     copiedStateText: {
       control: 'text',
@@ -67,6 +72,7 @@ export const WithCallback: Story = {
 export const PrimaryColor: Story = {
   args: {
     textToCopy: 'Primary button',
+    variant: 'filled',
     color: 'primary',
   },
 }

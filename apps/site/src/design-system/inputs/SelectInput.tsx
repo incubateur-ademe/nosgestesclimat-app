@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type {
   ChangeEvent,
   ForwardedRef,
@@ -60,7 +60,7 @@ export default forwardRef(function SelectInput(
         onChange={onChange ?? (() => null)}
         required={required}
         aria-disabled={disabled}
-        className={twMerge(
+        className={cn(
           'w-full max-w-[30rem] cursor-pointer appearance-none p-4 pr-12 text-base',
           defaultInputStyleClassNames,
           error ? 'border-red-200! bg-red-50! ring-2 ring-red-700!' : '',

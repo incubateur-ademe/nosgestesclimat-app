@@ -1,25 +1,25 @@
 import packageJson from '@incubateur-ademe/nosgestesclimat/package.json'
 import {
-  supportedRegions,
-  type Region,
-} from '@nosgestesclimat/core/features/region/region.schema'
-import {
-  parseModelString,
+  parseModel,
   serializeModel,
-} from '@nosgestesclimat/core/features/simulations/repository/model.mapper'
+} from '@nosgestesclimat/core/features/models/helpers/model-versions'
 import {
   type Model,
   type ModelLocale,
   type ModelRegion,
   type ModelVersion,
-} from '@nosgestesclimat/core/features/simulations/types/model'
+} from '@nosgestesclimat/core/features/models/types/model'
+import {
+  supportedRegions,
+  type Region,
+} from '@nosgestesclimat/core/features/region/region.schema'
 import type { SimulationMode } from './simulations'
 
 export { supportedRegions }
 
 export type { Model, ModelLocale, ModelRegion, ModelVersion, Region }
 
-export { parseModelString }
+export { parseModel }
 
 export const CURRENT_MODEL_VERSION = packageJson.version
 export const DEFAULT_REGION: Region = 'FR'

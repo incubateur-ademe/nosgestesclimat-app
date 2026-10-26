@@ -20,7 +20,6 @@ export default function SaveResultsForm({
       <div className="dark">
         <AuthenticateUserForm
           intent="save-simulation"
-          buttonColor="borderless"
           isVerticalLayout={false}
           buttonLabel={
             <Trans i18nKey="fin.getResultsOnUserProfile.buttonLabel">

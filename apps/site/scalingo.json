@@ -24,7 +24,7 @@
     },
     "ENGINE_HOT_KEYS": {
       "value": "FR:current",
-      "description": "Worker: rule engines kept warm at all times. Review apps only fit the single busiest combination on their S container (see apps/site/scripts/memory-usage)"
+      "description": "Worker: rule engines kept warm at all times, as comma-separated {region}:{version} keys where version is `current` (the installed model), a published tag such as 4.14.2, or pr-{number}. Review apps only fit the single busiest combination on their S container"
     },
     "ENGINE_CACHE_MAX_SIZE": {
       "value": "1",

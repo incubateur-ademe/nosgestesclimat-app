@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import React, { useId } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface InputGroupProps {
   name: string
@@ -45,19 +45,19 @@ export default function InputGroup({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex w-full flex-col items-start',
         containerClassName
       )}>
       {label ? (
         <label
           htmlFor={fieldId}
-          className={twMerge(
+          className={cn(
             'mb-2 flex w-full max-w-[30rem] justify-between text-left',
             labelClassName
           )}>
           <span
-            className={twMerge(
+            className={cn(
               `w-full text-base font-bold text-slate-900`,
               error ? 'text-red-800 dark:text-red-50' : ''
             )}>
@@ -72,7 +72,7 @@ export default function InputGroup({
       {srOnlyHelperText ? (
         <span
           id={srOnlyHelperTextId}
-          className={twMerge('sr-only -mt-1 mb-2 text-base text-slate-900')}>
+          className={cn('sr-only -mt-1 mb-2 text-base text-slate-900')}>
           {srOnlyHelperText}
         </span>
       ) : null}
@@ -80,7 +80,7 @@ export default function InputGroup({
       {helperText ? (
         <span
           id={helperTextId}
-          className={twMerge(
+          className={cn(
             '-mt-1 mb-2 text-base text-slate-900',
             error && 'text-red-800 dark:text-red-50'
           )}>

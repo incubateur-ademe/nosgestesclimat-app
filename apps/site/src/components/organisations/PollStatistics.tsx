@@ -46,11 +46,11 @@ export default function PollStatistics({
         {isAdmin && anonymity.isReached && (
           <ExportDataButton
             poll={poll}
-            color="borderless"
+            variant="filled"
             onClick={() => {
               trackEvent(captureExportPollData)
             }}
-            className="h-14"
+            className="dark h-14"
           />
         )}
       </div>

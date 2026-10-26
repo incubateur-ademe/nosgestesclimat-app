@@ -11,6 +11,7 @@ import type { SimulationMode } from '@/helpers/server/model/simulations'
 import type { Locale } from '@/i18nConfig'
 import { getGeolocation } from '@/services/geolocation/get-geolocation'
 import { getRegion } from '@/services/users/region'
+import type { ModelString } from '@nosgestesclimat/core/features/models/helpers/model-versions'
 import type { SearchParams } from 'next/dist/server/request/search-params'
 
 interface ResolveNewSimulationModelOptions {
@@ -78,6 +79,6 @@ export async function resolveNewSimulationModel({
  */
 export async function resolveNewSimulationModelString(
   options: ResolveNewSimulationModelOptions = {}
-): Promise<string> {
+): Promise<ModelString> {
   return stringifyModel(await resolveNewSimulationModel(options))
 }

@@ -2,7 +2,7 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { CSSProperties, ReactNode } from 'react'
 import Trans from '../../translation/trans/TransServer'
 import { THIRD_OBJECTIVE } from '../objective/_constants/objectives'
@@ -158,14 +158,14 @@ export default async function FootprintComparisonChart({
         role="img"
         aria-label={ariaLabel}
         aria-describedby={describedById}
-        className={twMerge(
+        className={cn(
           'grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 text-sm',
           className
         )}>
         {bars.map((bar, index) => (
           <div key={bar.key} className="contents">
             <span
-              className={twMerge('col-start-1', bar.nameClassName)}
+              className={cn('col-start-1', bar.nameClassName)}
               style={{ gridRowStart: index + 1 }}>
               {bar.name}
             </span>
@@ -174,7 +174,7 @@ export default async function FootprintComparisonChart({
               className="col-start-2 flex h-7 items-center gap-2"
               style={{ gridRowStart: index + 1 }}>
               <div
-                className={twMerge(
+                className={cn(
                   'animate-bar-grow-horizontal h-full w-0 rounded-l-sm rounded-r-lg motion-reduce:w-(--target-value)',
                   barGrowClassName,
                   bar.barClassName
@@ -185,7 +185,7 @@ export default async function FootprintComparisonChart({
                 )}
               />
               <span
-                className={twMerge(
+                className={cn(
                   'font-bold whitespace-nowrap tabular-nums',
                   bar.valueClassName,
                   revealClassName
@@ -199,7 +199,7 @@ export default async function FootprintComparisonChart({
         {/* Spans all bars to mark the average level */}
         <div className="relative col-start-2 row-span-3 row-start-1 -my-1 self-stretch">
           <div
-            className={twMerge(
+            className={cn(
               'border-primary-300 absolute inset-y-0 border-l-2 border-dashed',
               revealClassName
             )}
@@ -218,11 +218,11 @@ export default async function FootprintComparisonChart({
       role="img"
       aria-label={ariaLabel}
       aria-describedby={describedById}
-      className={twMerge('mx-auto w-98 text-sm', className)}>
+      className={cn('mx-auto w-98 text-sm', className)}>
       {/* The top margin leaves room for the value above the tallest bar */}
       <div className="relative mt-9 h-52">
         <div
-          className={twMerge(
+          className={cn(
             'border-primary-300 absolute right-0 left-16 border-t-2 border-dashed',
             revealClassName
           )}
@@ -232,7 +232,7 @@ export default async function FootprintComparisonChart({
         {deltaKg !== 0 && (
           <>
             <div
-              className={twMerge(
+              className={cn(
                 'absolute left-17 w-2 rounded-l-md border-2 border-r-0',
                 colors.bracket,
                 revealClassName
@@ -243,7 +243,7 @@ export default async function FootprintComparisonChart({
               }}
             />
             <span
-              className={twMerge(
+              className={cn(
                 'absolute left-0 w-16 translate-y-1/2 pr-1 text-right font-bold whitespace-nowrap tabular-nums',
                 colors.text,
                 revealClassName
@@ -258,7 +258,7 @@ export default async function FootprintComparisonChart({
           {bars.map((bar) => (
             <div key={bar.key} className="relative flex w-22 items-end">
               <div
-                className={twMerge(
+                className={cn(
                   'animate-bar-grow-vertical h-0 w-full rounded-t-xl rounded-b-sm motion-reduce:h-(--target-value)',
                   barGrowClassName,
                   bar.barClassName
@@ -266,7 +266,7 @@ export default async function FootprintComparisonChart({
                 style={targetStyle(bar.percent, bar.delayMs)}
               />
               <span
-                className={twMerge(
+                className={cn(
                   'absolute inset-x-0 mb-1.5 text-center text-lg font-bold whitespace-nowrap tabular-nums',
                   bar.valueClassName,
                   revealClassName
@@ -283,7 +283,7 @@ export default async function FootprintComparisonChart({
         {bars.map((bar) => (
           <span
             key={bar.key}
-            className={twMerge('w-22 text-center', bar.nameClassName)}>
+            className={cn('w-22 text-center', bar.nameClassName)}>
             {bar.name}
           </span>
         ))}

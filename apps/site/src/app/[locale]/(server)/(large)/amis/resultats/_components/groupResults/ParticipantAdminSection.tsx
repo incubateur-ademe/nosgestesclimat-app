@@ -56,7 +56,7 @@ export default function ParticipantAdminSection({ group, user }: Props) {
               <Button
                 type="button"
                 disabled={isPending}
-                color="secondary"
+                variant="outlined"
                 onClick={() => setIsConfirming(false)}
                 size="sm">
                 <Trans>Annuler</Trans>
@@ -78,7 +78,7 @@ export default function ParticipantAdminSection({ group, user }: Props) {
       {!isConfirming && (
         <Button
           type="button"
-          color="link"
+          variant="link"
           onClick={() => setIsConfirming(true)}
           data-testid="button-leave-group">
           <Trans>Quitter le groupe</Trans>

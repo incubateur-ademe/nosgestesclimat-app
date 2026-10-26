@@ -1,7 +1,6 @@
 'use client'
 
-import type { ButtonSize } from '@/types/values'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import {
   type HtmlHTMLAttributes,
   type MouseEventHandler,
@@ -11,10 +10,12 @@ import {
 import Loader from '../layout/Loader'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   loaderColorMap,
   sizeClassNames,
   type ButtonColor,
+  type ButtonSize,
+  type ButtonVariant,
 } from './buttonStyles'
 import { useButtonState } from './useButtonState'
 
@@ -22,6 +23,7 @@ export type ButtonProps = {
   onClick?: MouseEventHandler<HTMLButtonElement>
   className?: string
   size?: ButtonSize
+  variant?: ButtonVariant
   color?: ButtonColor
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
@@ -33,7 +35,7 @@ export type ButtonProps = {
   showLoadingOnClickWhilePending?: boolean
 } & PropsWithChildren
 
-export { baseClassNames, colorClassNames, loaderColorMap, sizeClassNames }
+export { baseClassNames, getVariantClassNames, loaderColorMap, sizeClassNames }
 export type { ButtonColor }
 
 export default function Button({
@@ -42,6 +44,7 @@ export default function Button({
   className,
   size = 'md',
   color = 'primary',
+  variant = 'filled',
   type,
   disabled,
   loading,
@@ -79,16 +82,16 @@ export default function Button({
       title={title}
       form={form}
       id={id}
-      className={twMerge(
+      className={cn(
         baseClassNames,
         sizeClassNames[size],
-        colorClassNames[color],
-        isDisabled && 'cursor-not-allowed opacity-80!',
+        getVariantClassNames(variant, color),
+        isDisabled && 'cursor-not-allowed opacity-50!',
         className
       )}
       {...props}>
       {showLoader && (
-        <Loader size="sm" color={loaderColorMap[color]} className="mr-2" />
+        <Loader size="sm" color={loaderColorMap[variant]} className="mr-2" />
       )}
       {children}
     </button>

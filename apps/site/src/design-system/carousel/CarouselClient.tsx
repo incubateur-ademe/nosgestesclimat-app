@@ -8,8 +8,8 @@ import type { Swiper as SwiperInstance } from 'swiper/types'
 import ChevronLeft from '@/components/icons/ChevronLeft'
 import ChevronRight from '@/components/icons/ChevronRight'
 import Button from '@/design-system/buttons/Button'
+import { cn } from 'cn'
 import './Carousel.css'
-import { twMerge } from "cn";
 
 export interface CarouselTranslations {
   prevSlideMessage: string
@@ -44,7 +44,7 @@ export default function CarouselClient({
     <>
       <NavigationButton
         ref={prevButton}
-        className={twMerge(
+        className={cn(
           !isInitialized && 'pointer-events-none opacity-0',
           'left-2 md:-left-2 md:-translate-x-1/2 xl:-left-5'
         )}>
@@ -52,7 +52,7 @@ export default function CarouselClient({
       </NavigationButton>
       <NavigationButton
         ref={nextButton}
-        className={twMerge(
+        className={cn(
           !isInitialized && 'pointer-events-none opacity-0',
           'right-2 md:-right-2 md:translate-x-1/2 xl:-right-7'
         )}>
@@ -99,7 +99,7 @@ export default function CarouselClient({
         {Children.map(children, (child) => {
           return (
             <SwiperSlide
-              className={twMerge(
+              className={cn(
                 !isInitialized && 'mr-2', // Same value as `spaceBetween` to prevent layout shift before initialization
                 'h-auto w-3/4 max-w-55 sm:w-62 sm:max-w-none',
                 slideClassName
@@ -112,14 +112,14 @@ export default function CarouselClient({
       <div className="mt-4 flex items-center justify-center gap-4 md:hidden">
         <Button
           onClick={() => swiper?.slidePrev()}
-          color="secondary"
+          variant="outlined"
           className="h-11 w-11 p-0!"
           aria-label={translations.prevSlideMessage}>
           <ChevronLeft />
         </Button>
         <Button
           onClick={() => swiper?.slideNext()}
-          color="secondary"
+          variant="outlined"
           className="h-11 w-11 p-0!"
           aria-label={translations.nextSlideMessage}>
           <ChevronLeft className="rotate-180" />
@@ -136,7 +136,7 @@ const NavigationButton = forwardRef(function NavigationButtonWithRef(
   return (
     <button
       {...props}
-      className={twMerge(
+      className={cn(
         'absolute top-1/2 z-10 hidden -translate-y-1/2 md:flex',
         'border-primary-700 h-11 w-11 items-center justify-center rounded-full border-2 bg-white text-blue-500 shadow-sm transition-all',
         'focus:outline-primary-700 hover:scale-110 disabled:opacity-0',

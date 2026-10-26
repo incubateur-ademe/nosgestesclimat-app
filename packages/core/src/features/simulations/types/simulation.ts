@@ -1,7 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
+import type { Model } from '../../models/types/model.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
-import type { Model } from './model.ts'
 
 export type { Model }
 

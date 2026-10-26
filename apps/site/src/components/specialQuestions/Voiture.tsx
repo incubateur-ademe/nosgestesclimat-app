@@ -22,7 +22,7 @@ export default function Voiture({ question, ...props }: Props) {
       <Question question={question} className="mb-4" {...props} />
       <div className="mb-4 flex flex-col items-start">
         <Button
-          color="link"
+          variant="link"
           size="xs"
           onClick={() => {
             trackEvent(

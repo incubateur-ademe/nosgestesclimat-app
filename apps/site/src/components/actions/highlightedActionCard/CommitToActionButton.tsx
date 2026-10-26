@@ -3,7 +3,8 @@
 import PlusIcon from '@/components/icons/PlusIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
-import Button, { type ButtonColor } from '@/design-system/buttons/Button'
+import Button from '@/design-system/buttons/Button'
+import type { ButtonVariant } from '@/design-system/buttons/buttonStyles'
 import {
   Tooltip,
   TooltipContent,
@@ -11,19 +12,19 @@ import {
 } from '@/design-system/shadcn/tooltip'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useActionCommitment } from './commitToActionButton/useActionCommitment'
 
 interface Props {
   action: PersonalizedAction
   className?: string
-  buttonColor?: Extract<ButtonColor, 'primary' | 'secondary'>
+  buttonVariant?: Extract<ButtonVariant, 'filled' | 'outlined'>
 }
 
 export default function CommitToActionButton({
   action,
   className,
-  buttonColor = 'secondary',
+  buttonVariant = 'outlined',
 }: Props) {
   const { t } = useClientTranslation()
 
@@ -39,10 +40,10 @@ export default function CommitToActionButton({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            color="borderless"
+            variant="text"
             onClick={abandonActionCommitment}
             disabled={isPending}
-            className={twMerge(
+            className={cn(
               'relative w-auto md:w-52.5',
               'bg-green-50 text-sm! text-green-600 opacity-100! hover:bg-green-100 hover:text-green-700',
               'before:absolute before:inset-0 before:rounded-[inherit]',
@@ -71,15 +72,15 @@ export default function CommitToActionButton({
 
   return (
     <Button
-      color={buttonColor}
+      variant={buttonVariant}
       onClick={commitToAction}
       loading={isPending}
-      className={twMerge('w-auto px-7 text-sm! md:w-52.5', className)}>
+      className={cn('w-auto px-7 text-sm! md:w-52.5', className)}>
       {!isPending && (
         <PlusIcon
-          className={twMerge(
+          className={cn(
             'stroke-primary-700 mr-2 inline-block size-3',
-            buttonColor === 'primary' && 'stroke-white'
+            buttonVariant === 'filled' && 'stroke-white'
           )}
         />
       )}

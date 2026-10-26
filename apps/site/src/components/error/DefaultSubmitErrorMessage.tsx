@@ -1,5 +1,5 @@
 'use client'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Link from '../Link'
 import Trans from '../translation/trans/TransClient'
 
@@ -12,7 +12,7 @@ export default function DefaultSubmitErrorMessage({
     <span
       role="alert"
       data-testid="submit-error-message"
-      className={twMerge(
+      className={cn(
         'mt-2 block text-sm font-medium text-red-800 dark:text-red-50',
         className
       )}>

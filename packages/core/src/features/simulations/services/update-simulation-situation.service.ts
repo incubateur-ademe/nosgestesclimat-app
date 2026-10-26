@@ -2,6 +2,7 @@ import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
 import type { Result } from '../../../lib/result.ts'
 import { failure } from '../../../lib/result.ts'
+import type { ModelString } from '../../models/helpers/model-versions.ts'
 import {
   SimulationCompletedError,
   SimulationNotFoundError,
@@ -33,7 +34,7 @@ export const updateSimulationSituation = async ({
   progression: number
   computedResults: ComputedResults
   /** Written only when supplied in order to repair a broken model string */
-  model?: string
+  model?: ModelString
 }): Promise<
   Result<
     void,

@@ -15,7 +15,7 @@ import { useFormState, useRule } from '@/publicodes-state'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { capitalizeString } from '@/utils/capitalizeString'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   question: DottedName
@@ -35,7 +35,7 @@ export default function Suggestions({ question, setValue }: Props) {
         <button
           key={suggestion.label}
           data-testid={`suggestion-${suggestion.value}`}
-          className={twMerge(
+          className={cn(
             baseClassNames,
             getBgCategoryColor(currentCategory, '200'),
             getBorderCategoryColor(currentCategory, '200'),

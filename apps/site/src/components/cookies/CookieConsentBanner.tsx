@@ -84,7 +84,7 @@ export default function CookieConsentBanner({
           <li>
             <Button
               size="sm"
-              color="secondary"
+              variant="outlined"
               onClick={() => {
                 onOpenForm()
               }}
@@ -95,7 +95,7 @@ export default function CookieConsentBanner({
           <li>
             <Button
               size="sm"
-              color="secondary"
+              variant="outlined"
               onClick={() => {
                 rejectAll()
               }}

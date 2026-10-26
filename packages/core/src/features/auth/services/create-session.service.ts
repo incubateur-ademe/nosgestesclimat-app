@@ -1,10 +1,10 @@
-import { randomBytes } from 'node:crypto'
 import { recordUserActivity } from '../../users/repositories/users.repository.ts'
 import {
   REFRESH_TOKEN_TTL_DAYS,
   SESSION_TTL_SECONDS,
 } from '../constants/session.ts'
 import { encryptSession } from '../helpers/encrypt-session.ts'
+import { generateRefreshToken } from '../helpers/generate-refresh-token.ts'
 import { hashToken } from '../helpers/hash-token.ts'
 import { createRefreshToken } from '../repositories/refresh-token.repository.ts'
 import type { SessionTokens } from '../types/session.ts'
@@ -13,7 +13,7 @@ export async function createSession(
   userId: string,
   email?: string
 ): Promise<SessionTokens> {
-  const refreshToken = randomBytes(32).toString('base64url')
+  const refreshToken = generateRefreshToken()
   const accessToken = await encryptSession(
     { userId, email },
     SESSION_TTL_SECONDS

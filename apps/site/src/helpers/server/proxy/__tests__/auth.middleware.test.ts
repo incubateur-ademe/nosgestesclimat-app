@@ -11,7 +11,7 @@ import { middlewareAuth } from '../auth.middleware'
 
 const mocks = vi.hoisted(() => ({
   decryptSession: vi.fn(),
-  rotateSession: vi.fn(),
+  renewSession: vi.fn(),
 }))
 
 vi.mock(
@@ -20,8 +20,8 @@ vi.mock(
 )
 
 vi.mock(
-  '@nosgestesclimat/core/features/auth/services/rotate-session.service',
-  () => ({ rotateSession: mocks.rotateSession })
+  '@nosgestesclimat/core/features/auth/services/renew-session.service',
+  () => ({ renewSession: mocks.renewSession })
 )
 
 const spoofedSessionHeader = JSON.stringify({
@@ -60,10 +60,16 @@ function makeRequest({
   })
 }
 
+const expiredRequest = () =>
+  makeRequest({
+    sessionCookie: 'expired-cookie-value',
+    refreshCookie: 'refresh-cookie-value',
+  })
+
 describe('middlewareAuth', () => {
   beforeEach(() => {
     mocks.decryptSession.mockReset()
-    mocks.rotateSession.mockReset()
+    mocks.renewSession.mockReset()
   })
 
   it('stays anonymous when the request carries no session cookie', async () => {
@@ -105,30 +111,79 @@ describe('middlewareAuth', () => {
     expect(result.cookies).toHaveLength(2)
   })
 
-  it('rotates an expired session with the refresh cookie', async () => {
+  it('renews an expired session with the refresh cookie', async () => {
     mocks.decryptSession.mockResolvedValueOnce(expiredSession)
-    mocks.rotateSession.mockResolvedValueOnce({
-      accessToken: 'fresh-access-token',
-      refreshToken: 'fresh-refresh-token',
+    mocks.renewSession.mockResolvedValueOnce({
+      status: 'rotated',
+      tokens: {
+        accessToken: 'fresh-access-token',
+        refreshToken: 'fresh-refresh-token',
+      },
     })
 
-    const request = makeRequest({
-      sessionCookie: 'expired-cookie-value',
-      refreshCookie: 'refresh-cookie-value',
-    })
+    const request = expiredRequest()
     const result = await middlewareAuth(request)
 
-    // The rotation is fed from the expired payload: reading it is why
+    // The renewal is fed from the expired payload: reading it is why
     // `readSession` does not drop it.
-    expect(mocks.rotateSession).toHaveBeenCalledWith(
-      'refresh-cookie-value',
-      'user@example.org'
-    )
-    expect(result.cookies.map((cookie) => cookie.value)).toContain(
-      'fresh-access-token'
+    expect(mocks.renewSession).toHaveBeenCalledWith({
+      refreshToken: 'refresh-cookie-value',
+      email: 'user@example.org',
+    })
+    expect(result.cookies.map((cookie) => cookie.value)).toEqual(
+      expect.arrayContaining(['fresh-access-token', 'fresh-refresh-token'])
     )
     expect(request.headers.get('x-session')).toBe(
       JSON.stringify({ userId: 'user-id', email: 'user@example.org' })
     )
+  })
+
+  it('leaves a transient failure to the next request instead of logging out', async () => {
+    mocks.decryptSession.mockResolvedValueOnce(expiredSession)
+    mocks.renewSession.mockRejectedValueOnce(new Error('database is down'))
+
+    const result = await middlewareAuth(expiredRequest())
+
+    // The session was never proven dead, so nothing may be cleared: a concurrent
+    // request may hold the key that makes it work.
+    expect(result).toEqual({ redirect: null, cookies: [] })
+  })
+
+  it('keeps a concurrent request alive without re-setting the refresh cookie', async () => {
+    mocks.decryptSession.mockResolvedValueOnce(expiredSession)
+    mocks.renewSession.mockResolvedValueOnce({
+      status: 'concurrent',
+      ageMs: 120,
+      tokens: { accessToken: 'concurrent-access-token' },
+    })
+
+    const result = await middlewareAuth(expiredRequest())
+
+    const names = result.cookies.map((cookie) => cookie.name)
+    expect(names).toEqual([SESSION_COOKIE])
+    expect(result.cookies[0].value).toBe('concurrent-access-token')
+  })
+
+  it('clears the cookies of a replayed credential', async () => {
+    mocks.decryptSession.mockResolvedValueOnce(expiredSession)
+    mocks.renewSession.mockResolvedValueOnce({
+      status: 'replayed',
+      ageMs: 300_000,
+    })
+
+    const result = await middlewareAuth(expiredRequest())
+
+    expect(result.redirect).toBeNull()
+    expect(result.cookies).toHaveLength(2)
+  })
+
+  it('clears the cookies when the refresh key is unrecognised', async () => {
+    mocks.decryptSession.mockResolvedValueOnce(expiredSession)
+    mocks.renewSession.mockResolvedValueOnce({ status: 'unrecognised' })
+
+    const result = await middlewareAuth(expiredRequest())
+
+    expect(result.redirect).toBeNull()
+    expect(result.cookies).toHaveLength(2)
   })
 })

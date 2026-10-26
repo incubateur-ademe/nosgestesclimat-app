@@ -30,7 +30,7 @@ export default function ActionPlanLinks({
   return (
     <div className={cn('flex gap-4 overflow-auto', className)}>
       <ButtonLinkServer
-        color="secondary"
+        variant="outlined"
         className={
           isExploreActive ? ACTIVE_LINK_CLASSES : INACTIVE_LINK_CLASSES
         }
@@ -48,7 +48,7 @@ export default function ActionPlanLinks({
       </ButtonLinkServer>
 
       <ButtonLinkServer
-        color="secondary"
+        variant="outlined"
         className={cn(
           'relative pr-13!',
           isPlanActive ? ACTIVE_LINK_CLASSES : INACTIVE_LINK_CLASSES

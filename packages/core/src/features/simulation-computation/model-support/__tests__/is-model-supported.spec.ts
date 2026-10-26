@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import type { Model, ModelRegion } from '../../../simulations/types/model.ts'
+import { CURRENT_MODEL_VERSION } from '../../../models/helpers/model-versions.ts'
+import type { Model, ModelRegion } from '../../../models/types/model.ts'
 import { isModelSupported } from '../is-model-supported.ts'
-import {
-  CURRENT_MODEL_VERSION,
-  PREVIOUS_MODEL_VERSION,
-} from '../model-versions.ts'
 
 const baseModel: Model = {
   region: 'FR',
@@ -25,24 +22,21 @@ describe('isModelSupported', () => {
     expect(isModelSupported({ ...baseModel, locale: 'en' })).toBe(true)
   })
 
-  it('accepts the previous version', () => {
+  it('accepts an arbitrary older version, retrieved on demand', () => {
     expect(
-      isModelSupported({
-        ...baseModel,
-        version: { publishedTag: PREVIOUS_MODEL_VERSION },
-      })
+      isModelSupported({ ...baseModel, version: { publishedTag: '0.0.1' } })
+    ).toBe(true)
+  })
+
+  it('accepts a PR version, retrieved on demand', () => {
+    expect(
+      isModelSupported({ ...baseModel, version: { PRNumber: '42' } })
     ).toBe(true)
   })
 
   it('rejects an unknown region', () => {
     expect(
       isModelSupported({ ...baseModel, region: 'ZZ' as ModelRegion })
-    ).toBe(false)
-  })
-
-  it('rejects an arbitrary older version', () => {
-    expect(
-      isModelSupported({ ...baseModel, version: { publishedTag: '0.0.1' } })
     ).toBe(false)
   })
 })

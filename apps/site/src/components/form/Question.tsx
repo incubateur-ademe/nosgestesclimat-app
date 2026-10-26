@@ -18,7 +18,7 @@ import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useLocale } from '@/hooks/useLocale'
 import { useFormState, useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { AnimatePresence } from 'framer-motion'
 import type { Evaluation } from 'publicodes'
 import { useRef, useState } from 'react'
@@ -97,7 +97,7 @@ export default function Question({
 
   return (
     <>
-      <div className={twMerge('mb-6 flex flex-col items-start', className)}>
+      <div className={cn('mb-6 flex flex-col items-start', className)}>
         <Label
           question={question}
           label={label}
@@ -114,7 +114,7 @@ export default function Question({
         />
         {showInputsLabel ? (
           <Button
-            color="link"
+            variant="link"
             size="xs"
             onClick={() => setIsOpen((prevIsOpen) => !prevIsOpen)}
             className="mb-2">

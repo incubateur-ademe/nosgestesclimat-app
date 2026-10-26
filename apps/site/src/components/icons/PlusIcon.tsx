@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function PlusIcon({ className }: { className?: string }) {
   return (
@@ -8,7 +8,7 @@ export default function PlusIcon({ className }: { className?: string }) {
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge(
+      className={cn(
         'fill-default stroke-default inline-block stroke-[1.5]',
         className
       )}

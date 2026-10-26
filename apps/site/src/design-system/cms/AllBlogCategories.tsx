@@ -2,7 +2,7 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransServer'
 import type { Locale } from '@/i18nConfig'
 import { fetchCategories } from '@/services/cms/fetchCategories'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Badge from '../layout/Badge'
 import ColorLine from '../layout/ColorLine'
 
@@ -17,7 +17,7 @@ export default async function AllBlogCategories({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'relative left-1/2 mb-10 w-[100vw] -translate-x-1/2 overflow-hidden pt-10 pb-10 before:absolute before:-top-8 before:left-1/2 before:z-10 before:h-[100px] before:w-[102vw] before:-translate-x-1/2 before:bg-white',
         className
       )}>

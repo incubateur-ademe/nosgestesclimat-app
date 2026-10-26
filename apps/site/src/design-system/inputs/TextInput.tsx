@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type {
   ChangeEventHandler,
   ForwardedRef,
@@ -81,7 +81,7 @@ export default forwardRef(function TextInput(
         data-testid={`${props['data-testid']}`}
         {...props}
         type={type}
-        className={twMerge(
+        className={cn(
           'w-full max-w-120 p-4 text-base',
           defaultInputStyleClassNames,
           error ? 'border-red-200! bg-red-50! ring-2 ring-red-700!' : '',

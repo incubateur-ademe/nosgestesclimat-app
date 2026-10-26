@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function AnimatedCheckIcon({
   className,
@@ -18,7 +18,7 @@ export default function AnimatedCheckIcon({
       strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={twMerge('inline-block', className)}
+      className={cn('inline-block', className)}
       aria-hidden="true"
       {...props}>
       <style>{`

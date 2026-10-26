@@ -1,3 +1,4 @@
+import type { ModelString } from '@nosgestesclimat/core/features/models/helpers/model-versions'
 import type { UserSimulationJourney } from '@nosgestesclimat/core/features/simulations/types/simulation-progress'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -46,7 +47,7 @@ describe('getUserSimulationJourney', () => {
         currentSimulation: {
           id: 'sim-1',
           progression: 0.5,
-          model: 'FR-fr-1.2.3',
+          model: 'FR-fr-1.2.3' as ModelString,
         },
       }
       serviceMock.getUserSimulationJourney.mockResolvedValue(progress)

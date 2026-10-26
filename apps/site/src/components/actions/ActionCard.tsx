@@ -5,7 +5,7 @@ import type { Theme } from '@/types/themes'
 import type { ActionEventSource } from '@/utils/analytics/trackUniqueEvent'
 import type { AssessmentStatus } from '@nosgestesclimat/core/features/actions/services/get-personalized-actions-catalogue.service'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Trans from '../translation/trans/TransServer'
 import styles from './actionCard/ActionCard.module.css'
 import { rankToEmoji } from './actionCard/rankToEmoji'
@@ -55,7 +55,7 @@ export default async function ActionCard({
   return (
     <article
       {...props}
-      className={twMerge(
+      className={cn(
         `relative flex min-h-38 flex-col gap-6 rounded-lg border border-t-8 bg-white`,
         'translate-y-0 transition-[box-shadow_border-color_transform] duration-300 ease-out',
         'hover:-translate-y-0.5 hover:shadow-sm',
@@ -104,7 +104,7 @@ export default async function ActionCard({
 
       <Link
         href={href}
-        className={twMerge(
+        className={cn(
           'focus-visible:inset-ring-primary-700 absolute -inset-px -top-2 z-10 rounded-lg',
           styles.actionLink
         )}>

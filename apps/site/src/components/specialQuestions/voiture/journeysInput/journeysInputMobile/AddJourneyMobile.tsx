@@ -13,7 +13,7 @@ import type { Journey } from '@/types/journey'
 import type { Dispatch, SetStateAction } from 'react'
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   setJourneys: Dispatch<SetStateAction<Journey[]>>
@@ -29,7 +29,7 @@ export default function AddJourneyMobile({ setJourneys, className }: Props) {
   const [passengers, setPassengers] = useState(1)
 
   return (
-    <tr className={twMerge('border-primary-700 block border-b p-2', className)}>
+    <tr className={cn('border-primary-700 block border-b p-2', className)}>
       <td className="mb-4 block text-sm">
         <SelectInput
           className="w-full text-sm"

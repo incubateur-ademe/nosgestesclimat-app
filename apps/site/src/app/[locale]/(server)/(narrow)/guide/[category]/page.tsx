@@ -55,7 +55,7 @@ export default async function CategoryGuidePage({
 
   return (
     <div className="mx-auto my-4 flex flex-col items-start justify-center">
-      <ButtonLink color="text" href="/guide">
+      <ButtonLink variant="text" href="/guide">
         <span className="mr-2 inline-block">◀</span>
         <Trans>Retour</Trans>
       </ButtonLink>

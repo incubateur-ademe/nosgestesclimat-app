@@ -1,14 +1,14 @@
 import { END_PAGE_PATH } from '@/constants/urls/paths'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import Card from '@/design-system/layout/Card'
 import Title from '@/design-system/layout/Title'
 import Link from '@/design-system/links/Link'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import CarIcon from '../icons/CarIcon'
 import DownArrow from '../icons/DownArrow'
 import FoodIcon from '../icons/FoodIcon'
@@ -25,7 +25,7 @@ export default async function ActionsBlock({ className }: Props) {
   const { t } = await getServerTranslation()
   return (
     <Card
-      className={twMerge(
+      className={cn(
         'group/card focus-within:ring-primary-700 relative shadow-md transition-all duration-200 ease-out focus-within:ring-2 focus-within:ring-offset-3 focus-within:outline-hidden hover:scale-[1.02] hover:shadow-xl',
         className
       )}>
@@ -53,9 +53,9 @@ export default async function ActionsBlock({ className }: Props) {
           </p>
 
           <span
-            className={twMerge(
+            className={cn(
               baseClassNames,
-              colorClassNames.primary,
+              getVariantClassNames('filled', 'primary'),
               sizeClassNames.md,
               'group-hover/card:animate-button-lift pointer-events-none w-full text-base transition-[transform,box-shadow] duration-200 ease-out sm:w-auto'
             )}>

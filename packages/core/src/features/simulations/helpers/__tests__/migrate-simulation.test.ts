@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { CURRENT_MODEL_VERSION } from '../../../simulation-computation/model-support/model-versions.ts'
+import { CURRENT_MODEL_VERSION } from '../../../models/helpers/model-versions.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import { migrateSimulationIfNeeded } from '../migrate-simulation.ts'
 

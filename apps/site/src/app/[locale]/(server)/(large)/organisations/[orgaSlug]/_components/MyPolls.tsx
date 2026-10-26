@@ -92,7 +92,7 @@ export default function MyPolls({ polls }: Props) {
         <Button
           className="mt-6"
           onClick={() => setIsMinified((prevState) => !prevState)}
-          color="link">
+          variant="link">
           {isMinified ? (
             <span>
               + <Trans>Voir tous les tests collectifs</Trans>

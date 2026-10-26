@@ -1,6 +1,6 @@
 import migrationInstructions from '@incubateur-ademe/nosgestesclimat/public/migration.json' with { type: 'json' }
 import { migrateSituation } from '@publicodes/tools/migration'
-import { CURRENT_MODEL_VERSION } from '../../simulation-computation/model-support/model-versions.ts'
+import { CURRENT_MODEL_VERSION } from '../../models/helpers/model-versions.ts'
 import type { Model, Simulation } from '../types/simulation.ts'
 
 /**

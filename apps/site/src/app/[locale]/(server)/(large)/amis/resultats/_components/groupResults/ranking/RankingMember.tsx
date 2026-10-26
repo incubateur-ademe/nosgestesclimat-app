@@ -13,7 +13,7 @@ import type { Group, Participant } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import isMobile from 'is-mobile'
 import { useState, useTransition } from 'react'
 import { getParticipantName } from '../../../../_helpers/getParticipantName'
@@ -112,7 +112,7 @@ export default function RankingMember({
       <div className="flex flex-1 items-center justify-between">
         <div className="mb-0 flex items-center text-sm md:text-base">
           <span
-            className={twMerge(
+            className={cn(
               'mr-2',
               isTopThree ? 'text-lg md:text-2xl' : 'ml-1 text-base md:text-lg',
               textColor ?? ''
@@ -153,7 +153,7 @@ export default function RankingMember({
           <>
             <button
               onClick={() => setIsConfirmationModalOpen(true)}
-              className={twMerge(
+              className={cn(
                 'focus:ring-primary-700 inline-flex h-6 w-6 items-center justify-center p-0! transition-colors focus:ring-2 focus:ring-offset-3 focus:outline-hidden',
                 textColor
               )}
@@ -161,7 +161,7 @@ export default function RankingMember({
                 name: participantName,
               })}>
               <TrashIcon
-                className={twMerge(
+                className={cn(
                   'fill-default w-4',
                   textColor === 'text-white' ? 'fill-white' : 'fill-default'
                 )}

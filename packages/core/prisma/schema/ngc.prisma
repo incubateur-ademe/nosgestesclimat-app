@@ -467,12 +467,18 @@ model VerifiedUser {
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @db.Uuid
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token         String    @unique
+  /// The token this row replaced; it is what tells a concurrent request from a
+  /// replay.
+  previousToken String?   @unique
+  rotatedAt     DateTime?
+  expiresAt     DateTime
+  /// Frozen at issuance: it carries the absolute session ceiling, so nothing
+  /// may extend it.
+  createdAt     DateTime  @default(now())
 
   @@index([userId])
   @@index([expiresAt])

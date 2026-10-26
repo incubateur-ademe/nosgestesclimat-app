@@ -1,26 +1,54 @@
-import type { ButtonSize } from '@/types/values'
+import { cn } from 'cn'
 
-export type ButtonColor =
-  | 'primary'
-  | 'secondary'
-  | 'text'
-  | 'link'
-  | 'success'
-  | 'borderless'
-  | 'red'
+export type ButtonVariant = 'filled' | 'outlined' | 'text' | 'link'
 
-export const colorClassNames: Record<ButtonColor, string> = {
-  primary:
-    'text-white bg-primary-700 border-2 border-primary-700 shadow-xs hover:text-white hover:bg-primary-800 dark:bg-primary-50 dark:hover:bg-primary-100 dark:text-primary-700!',
-  secondary:
-    'border-solid border-primary-700 border-2 text-primary-700 bg-transparent shadow-xs hover:text-primary-700 hover:bg-primary-100 hover:border-primary-700',
-  success:
-    'bg-green-700 text-white border-2 border-green-700 shadow-xs hover:text-white hover:bg-green-800',
-  text: 'text-primary-700 bg-transparent border-2 border-transparent shadow-none hover:bg-primary-200 hover:text-primary-700 hover:border-primary-200',
-  link: 'text-primary-700 bg-transparent border-2 border-transparent shadow-none hover:text-primary-700 underline px-1!',
-  borderless:
-    'bg-primary-100 hover:bg-primary-200 hover:text-primary-800 text-primary-700',
-  red: 'text-white bg-red-700 border-2 border-red-700 shadow-xs hover:text-white hover:bg-red-800',
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+export type ButtonColor = 'primary' | 'red'
+
+type VariantStyles = { primary: string } & Partial<Record<ButtonColor, string>>
+
+const variantClassNames: Record<ButtonVariant, VariantStyles> = {
+  filled: {
+    primary: cn(
+      'text-white bg-primary-700 border-2 border-primary-700 shadow-xs',
+      'hover:text-white hover:bg-primary-800',
+      'dark:bg-primary-100 dark:hover:bg-primary-100 hover:dark:bg-primary-200 hover:dark:border-primary-200 dark:border-primary-100 dark:text-primary-700!'
+    ),
+    red: cn(
+      'text-white bg-red-700 border-2 border-red-700 shadow-xs',
+      'hover:text-white hover:bg-red-800'
+    ),
+  },
+  outlined: {
+    primary: cn(
+      'border-solid border-primary-700 border-2 text-primary-700 bg-transparent shadow-xs',
+      'hover:text-primary-700 hover:bg-primary-100 hover:border-primary-700'
+    ),
+  },
+  text: {
+    primary: cn(
+      'text-primary-700 bg-white border-2 border-white shadow-none',
+      'hover:bg-primary-100 hover:text-primary-700 hover:border-primary-100'
+    ),
+  },
+  link: {
+    primary: cn(
+      'text-primary-700 bg-inherit border-2 border-transparent shadow-none',
+      'hover:text-primary-700 underline px-1!'
+    ),
+    red: cn(
+      'text-red-700 bg-white border-2 border-white shadow-xs',
+      'hover:text-white hover:bg-red-800 underline px-1!'
+    ),
+  },
+}
+
+export function getVariantClassNames(
+  variant: ButtonVariant,
+  color: ButtonColor
+) {
+  return variantClassNames[variant][color] ?? variantClassNames[variant].primary
 }
 
 export const sizeClassNames: Record<ButtonSize, string> = {
@@ -31,15 +59,17 @@ export const sizeClassNames: Record<ButtonSize, string> = {
   xl: 'px-9 py-4 text-xl',
 }
 
-export const loaderColorMap: Record<ButtonColor, 'light' | 'dark'> = {
-  primary: 'light',
-  secondary: 'dark',
-  success: 'light',
-  text: 'dark',
-  link: 'dark',
-  borderless: 'dark',
-  red: 'light',
-}
+export const loaderColorMap: Partial<Record<ButtonVariant, 'light' | 'dark'>> =
+  {
+    filled: 'light',
+    outlined: 'dark',
+    text: 'dark',
+    link: 'dark',
+  }
 
-export const baseClassNames =
-  'transition-colors inline-flex items-center opacity-100! justify-center whitespace-nowrap rounded-full font-bold no-underline aria-disabled:opacity-50 leading-none!'
+export const baseClassNames = cn(
+  'inline-flex items-center justify-center whitespace-nowrap',
+  'rounded-full opacity-100',
+  'font-bold no-underline leading-none',
+  'transition-colors aria-disabled:opacity-50'
+)

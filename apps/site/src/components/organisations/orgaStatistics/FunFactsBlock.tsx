@@ -1,7 +1,7 @@
 'use client'
 
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import FunFactsItem from './funFacts/FunFactsItem'
 
 const defaultFunFactsRules: { [k in keyof Partial<FunFacts>]: DottedName } = {
@@ -20,7 +20,7 @@ export default function FunFactsBlock({
   if (!funFacts) return null
 
   return (
-    <section className={twMerge('flex flex-col justify-center', className)}>
+    <section className={cn('flex flex-col justify-center', className)}>
       <div className="flex flex-row flex-wrap justify-center gap-8 md:gap-16">
         {Object.entries(defaultFunFactsRules).map(
           ([funFactKey, dottedName]) => (

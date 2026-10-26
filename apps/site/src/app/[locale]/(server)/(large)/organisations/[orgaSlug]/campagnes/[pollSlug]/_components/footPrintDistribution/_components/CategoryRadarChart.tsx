@@ -14,7 +14,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   userValues: Record<Categories, number>
@@ -157,7 +157,7 @@ export default function CategoryRadarChart({
   }
 
   return (
-    <div className={twMerge('w-full', className)}>
+    <div className={cn('w-full', className)}>
       <h3 className="mb-6">
         <strong>
           <Trans i18nKey="pollResults.radarChart.title">

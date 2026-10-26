@@ -9,6 +9,7 @@ interface UserBase {
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date
+  lastActivityAt?: Date | null
 }
 
 export interface UnverifiedUser extends UserBase {

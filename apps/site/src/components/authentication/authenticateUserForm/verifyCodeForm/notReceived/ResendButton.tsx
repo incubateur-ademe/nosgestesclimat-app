@@ -29,7 +29,7 @@ export default function ResendButton({ disabled, secondsLeft }: Props) {
   return (
     <div className="flex items-center">
       <Button
-        color="link"
+        variant="link"
         aria-disabled={disabled}
         aria-label={
           disabled ? t('Renvoyer le code, désactivé pendant 30 secondes') : ''

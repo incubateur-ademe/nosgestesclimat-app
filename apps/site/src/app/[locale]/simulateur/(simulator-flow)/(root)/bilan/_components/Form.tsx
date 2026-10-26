@@ -10,7 +10,7 @@ import { useIframe } from '@/hooks/useIframe'
 import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/(root)/bilan/_components/summary/CategoryIllustration'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useEffect } from 'react'
 import { useCompleteSimulation } from '../_hooks/useCompleteSimulation'
 import FunFact from './form/FunFact'
@@ -71,7 +71,7 @@ export default function Form() {
             <FunFact question={currentQuestion} />
 
             <div
-              className={twMerge(
+              className={cn(
                 'mt-auto mb-8 pb-16 md:pb-0',
                 isIframe && 'hidden'
               )}>

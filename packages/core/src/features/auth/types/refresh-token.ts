@@ -5,8 +5,3 @@ export interface CreateRefreshTokenData {
   id?: string
   createdAt?: Date
 }
-
-export interface DeletedToken {
-  id: string
-  userId: string
-}

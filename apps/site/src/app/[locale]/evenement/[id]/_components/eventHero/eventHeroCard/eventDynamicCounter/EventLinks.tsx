@@ -58,7 +58,7 @@ export default async function EventLinks({
         className="w-full text-base lg:text-xl"
         href={secondaryCtaHref}
         size="xl"
-        color="secondary"
+        variant="outlined"
         target="_blank"
         aria-label={t(
           'event.dynamicCounter.secondaryCta.ariaLabel',

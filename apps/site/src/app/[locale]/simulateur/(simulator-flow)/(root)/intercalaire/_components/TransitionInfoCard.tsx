@@ -1,5 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import CurvedArrowSvg from './transitionInfoCard/CurvedArrowSvg'
 import FunFactCard from './transitionInfoCard/FunFactCard'
 
@@ -20,7 +20,7 @@ export default function TransitionInfoCard({
 }: Props) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'w-full rounded-2xl border-2 border-slate-200 p-6 shadow-sm',
         className
       )}>

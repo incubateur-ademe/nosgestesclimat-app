@@ -13,7 +13,3 @@ export const MODELE_URL = `${SERVER_URL}/modele/v1`
 export const USER_URL = `${SERVER_URL}/users/v1`
 
 export const NEWSLETTER_URL = `${SERVER_URL}/newsletters/v1`
-
-export const getPreviewUrl = (PRNumber: string | number) => {
-  return `https://nosgestesclimat-dev.s3.fr-par.scw.cloud/model/${PRNumber}`
-}

@@ -1,7 +1,7 @@
 import pkg from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import { seedActionAssessments } from '../../actions/seeds/action-assessments.seed.ts'
+import type { Model } from '../../models/types/model.ts'
 import { simulationFactory } from '../factories/simulation.factory.ts'
-import type { Model } from '../types/model.ts'
 import {
   getPersonaComputation,
   pickPersonaName,

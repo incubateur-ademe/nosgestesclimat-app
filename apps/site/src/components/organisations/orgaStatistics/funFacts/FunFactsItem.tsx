@@ -2,7 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useRule } from '@/publicodes-state'
 import type { DottedName, FunFacts } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   funFactKey: string
@@ -36,7 +36,7 @@ export default function FunFactsItem({
       <div className="flex items-center justify-center">
         <div>
           <span
-            className={twMerge('text-2xl font-medium', small ? 'text-lg' : '')}>
+            className={cn('text-2xl font-medium', small ? 'text-lg' : '')}>
             {Math.round(itemValue)}
           </span>{' '}
           <span>{funFactKey.includes('percentage') && '%'}</span>{' '}

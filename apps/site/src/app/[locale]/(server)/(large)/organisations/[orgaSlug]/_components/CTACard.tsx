@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react'
 import React from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   overLabel: string | React.ReactNode
@@ -23,7 +23,7 @@ export default function CTACard({
   const Tag = tag ?? 'h2'
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex h-full flex-col rounded-xl bg-white px-8 py-6',
         className
       )}

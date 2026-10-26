@@ -5,7 +5,7 @@ import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { ThermometerSun } from 'lucide-react'
 import { match } from 'ts-pattern'
 import Trans from '../../translation/trans/TransServer'
@@ -79,7 +79,7 @@ export default async function CarbonFootprintHero({
 
   return (
     <Card
-      className={twMerge(
+      className={cn(
         'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:px-11 md:py-7 lg:grid-cols-2 lg:gap-9',
         className
       )}>
@@ -135,7 +135,7 @@ export default async function CarbonFootprintHero({
 
         <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3">
           <p
-            className={twMerge(
+            className={cn(
               'mb-0 inline-flex items-center rounded-lg px-3 py-1.5 text-[0.9rem] font-bold tabular-nums',
               pillClassNames[level]
             )}>

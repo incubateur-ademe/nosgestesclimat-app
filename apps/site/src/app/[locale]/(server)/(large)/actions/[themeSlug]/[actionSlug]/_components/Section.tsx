@@ -1,13 +1,13 @@
 import type { BadgeColor } from '@/design-system/layout/Badge'
 import Badge from '@/design-system/layout/Badge'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 type SectionProps = React.ComponentPropsWithoutRef<'section'>
 
 export function Section({ className, children, ...props }: SectionProps) {
   return (
     <section
-      className={twMerge(
+      className={cn(
         'rounded-2xl border border-slate-200 bg-white p-5 md:p-10',
         className
       )}
@@ -32,7 +32,7 @@ export function SectionTitle({
       tag="h2"
       color={color}
       border={false}
-      className={twMerge('mb-5', className)}
+      className={cn('mb-5', className)}
       {...props}>
       {children}
     </Badge>

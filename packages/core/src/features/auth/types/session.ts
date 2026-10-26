@@ -14,8 +14,8 @@ export interface SessionPayload {
 
 /** Token pair returned when a session is created or rotated. */
 export interface SessionTokens {
-  /** JOSE-encrypted short-lived token (15 min). */
+  /** JOSE-encrypted token, valid for `SESSION_TTL_SECONDS`. */
   accessToken: string
-  /** Opaque long-lived token (6 months), hashed in DB. */
+  /** Opaque token, hashed in DB, valid for `REFRESH_TOKEN_TTL_DAYS`. */
   refreshToken: string
 }

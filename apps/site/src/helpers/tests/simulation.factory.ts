@@ -1,6 +1,7 @@
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { ComputedResultsFootprint } from '@/publicodes-state/types'
 import { faker } from '@faker-js/faker'
+import type { ModelString } from '@nosgestesclimat/core/features/models/helpers/model-versions'
 import { Factory } from 'fishery'
 
 /** `categories` and `subcategories` are keyed by dotted name: only the engine
@@ -34,5 +35,5 @@ export const simulationFactory = SimulationFactory.define(() => ({
     eau: emptyFootprint(),
   },
   progression: 0,
-  model: 'FR-fr-1.2.3',
+  model: 'FR-fr-1.2.3' as ModelString,
 }))

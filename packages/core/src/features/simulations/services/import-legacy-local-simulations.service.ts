@@ -1,6 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
-import { parseModelString } from '../repository/model.mapper.ts'
+import { parseModel } from '../../models/helpers/model-versions.ts'
 import { createManySimulations } from '../repository/simulation.repository.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
@@ -38,9 +38,7 @@ export const importLegacyLocalSimulations = async ({
 
   await createManySimulations(
     simulations.map((simulation) => {
-      const model = simulation.model
-        ? parseModelString(simulation.model)
-        : undefined
+      const model = simulation.model ? parseModel(simulation.model) : undefined
 
       return {
         id: simulation.id,

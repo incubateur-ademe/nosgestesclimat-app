@@ -12,7 +12,7 @@ import type { Journey } from '@/types/journey'
 import type { Dispatch, SetStateAction } from 'react'
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   setJourneys: Dispatch<SetStateAction<Journey[]>>
@@ -28,7 +28,7 @@ export default function AddJourneyDesktop({ setJourneys, className }: Props) {
   const [passengers, setPassengers] = useState(1)
 
   return (
-    <tr className={twMerge('block md:table-row', className)}>
+    <tr className={cn('block md:table-row', className)}>
       <td className="border-primary-700 block border-t py-2 pr-2 text-xs md:table-cell md:pr-2">
         <SelectInput
           aria-labelledby="label-label"

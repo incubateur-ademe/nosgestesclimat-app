@@ -1,5 +1,5 @@
 import { GROUP_URL } from '@/constants/urls/main'
-import { parseModelString } from '@/helpers/server/model/models'
+import { parseModel } from '@/helpers/server/model/models'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -96,7 +96,7 @@ describe('simulation write paths', () => {
         name: 'Alice',
       })
 
-      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
+      expect(parseModel(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
 
@@ -115,7 +115,7 @@ describe('simulation write paths', () => {
         participants: [{ simulation: modellessSimulation() }],
       })
 
-      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
+      expect(parseModel(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
     })
   })
@@ -131,7 +131,7 @@ describe('simulation write paths', () => {
 
       await updateGroupParticipant({ groupId: 'group-id', name: 'Alice' })
 
-      expect(parseModelString(captured.value?.model ?? '')).not.toBeNull()
+      expect(parseModel(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
       expect(captured.value?.progression).toBe(0)
     })

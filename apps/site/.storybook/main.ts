@@ -1,5 +1,5 @@
 import type { StorybookConfig } from '@storybook/nextjs'
-import path from 'node:path'
+import { webpackFinal } from './webpack-config'
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -18,20 +18,6 @@ const config: StorybookConfig = {
     experimentalRSC: true,
   },
   staticDirs: ['../public'],
-  webpackFinal: async (config) => {
-    if (config.module?.rules) {
-      config.module.rules.push({
-        test: /\.ya?ml$/,
-        use: 'yaml-loader',
-      })
-    }
-    // `next/root-params` throws when imported outside the Next compiler.
-    config.resolve = config.resolve ?? {}
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      'next/root-params': path.resolve(__dirname, 'next-root-params-stub.ts'),
-    }
-    return config
-  },
+  webpackFinal,
 }
 export default config

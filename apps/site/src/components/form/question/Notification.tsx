@@ -34,7 +34,7 @@ export default function Notification({ notification }: Props) {
       </div>
       <Button
         size="sm"
-        color="secondary"
+        variant="outlined"
         data-testid="notification-button"
         onClick={() => setValue(false)}>
         <Trans>J'ai compris</Trans>

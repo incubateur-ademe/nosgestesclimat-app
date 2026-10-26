@@ -13,7 +13,7 @@ export default function CloseButton({ organisationSlug }: Props) {
   return (
     <ButtonLink
       href={`/organisations/${organisationSlug}`}
-      color="secondary"
+      variant="outlined"
       aria-label={t(
         'organisations.createPoll.type.closeButton.aria',
         "Abandonner le processus de création de test collectif et revenir à la page d'accueil de votre organisation"

@@ -8,10 +8,14 @@ import type { AppUser } from '../../../auth/types/user-session.ts'
 import { Attributes, TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import { groupFactory } from '../../../groups/factories/group.factory.ts'
+import {
+  CURRENT_MODEL_VERSION,
+  serializeModel,
+} from '../../../models/helpers/model-versions.ts'
+import type { ModelRegion } from '../../../models/types/model.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../../polls/stats/repositories/poll-stats-computations.repository.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
-import { CURRENT_MODEL_VERSION } from '../../../simulation-computation/model-support/model-versions.ts'
 import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
@@ -22,7 +26,6 @@ import {
   ZeroFootprintError,
 } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { serializeModel } from '../../repository/model.mapper.ts'
 import { findSimulationById } from '../../repository/simulation.repository.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { createCompleteSimulation } from '../complete-simulation.service.ts'
@@ -148,12 +151,39 @@ describe('completeSimulation', () => {
     expect(serializeModel(persisted.model)).toBe('FR-fr-9.9.9')
   })
 
+  it.each([
+    ['an outdated published version', '0.9.0'],
+    ['a PR version', 'pr-42'],
+  ])(
+    'programs the computation when the model is %s, retrieved on demand',
+    async (_, version) => {
+      const { completeSimulation } = setup()
+      const user = await userFactory.verified().create()
+      const simulation = await simulationFactory
+        .withModelRegion('FR')
+        .withProgression(0.2)
+        .params({ userId: user.id })
+        .create()
+
+      const result = await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+        model: `FR-fr-${version}`,
+      })
+
+      expect(result).toEqual(expect.objectContaining({ success: true }))
+      expect(await findSimulationComputation(simulation.id)).toEqual(
+        expect.objectContaining({ status: 'pending' })
+      )
+    }
+  )
+
   it('warns about an unsupported model and completes the simulation without programming a computation', async () => {
     const { completeSimulation, logger } = setup()
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
-      .withModelRegion('FR')
-      .withModelVersion({ publishedTag: '0.0.0' })
+      .withModelRegion('ZZ' as ModelRegion)
       .withProgression(0.2)
       .params({ userId: user.id })
       .create()
@@ -163,12 +193,12 @@ describe('completeSimulation', () => {
       simulationId: simulation.id,
       ...payload,
       // The client ran the same unsupported model the simulation persists.
-      model: 'FR-fr-0.0.0',
+      model: 'ZZ-fr-1.0.0',
     })
 
     expect(result).toEqual(expect.objectContaining({ success: true }))
     expect(logger.warn).toHaveBeenCalledWith('Unsupported model', {
-      model: { region: 'FR', locale: 'fr', version: { publishedTag: '0.0.0' } },
+      model: { region: 'ZZ', locale: 'fr', version: { publishedTag: '1.0.0' } },
     })
     expect(await findSimulationComputation(simulation.id)).toBeNull()
   })
