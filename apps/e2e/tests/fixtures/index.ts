@@ -10,3 +10,4 @@ export const test = mergeTests(
 )
 export { expect } from '@playwright/test'
 export type { Locator, Page } from '@playwright/test'
+export { createPage, DEFAULT_FLAGS } from './feature-flags'
