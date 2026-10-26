@@ -20,6 +20,42 @@ Boîte à outils des tests end-to-end (Playwright), extraite de `apps/site`.
   `Preprod *`).
 - `playwright.shared.ts` — réglages communs aux deux configurations.
 
+## Structure
+
+La suite est découpée en deux : une partie **commune** aux deux suites (locale
+et preprod), et une partie **propre à chaque suite**.
+
+### Commun
+
+- `tests/pages/` — classes page object (User, Group, Organisation, Poll,
+  NGCTest, TutorialPage, CookieBanner, UserSpace, FeatureFlags). Sans état,
+  sans fixture : des classes pures qui prennent une `Page` en constructeur.
+- `tests/helpers/` — helpers purs (hydration, clipboard, session,
+  user-mailbox…).
+- `tests/fixtures/` — base commune : `hydrationGuard` (auto), `visibleTestId`
+  (patch `page`), drapeaux par défaut (auto), plus `createPage` et
+  `DEFAULT_FLAGS`.
+
+### Suite locale uniquement
+
+- `tests/local/fixtures.ts` — ré-exporte la base commune, fournit
+  `localVisitorState` (bandeau cookies refusé, pas de session).
+- `tests/features/` — specs locaux : chaque test crée ses données en base via
+  les factories de `@nosgestesclimat/core`, puis se connecte avec
+  `helpers/session`.
+
+### Suite preprod uniquement
+
+- `tests/preprod/fixtures/` — fixtures avec état (user, group, organisation,
+  poll, scolairePoll) qui restaurent depuis l'état enregistré, plus les fixtures
+  page object (ngcTest, tutorialPage, cookieBanner, userSpace), l'option
+  `setup`, le garde static-assets, et les helpers save/restore
+  (`context.ts`).
+- `tests/preprod/state/` — états enregistrés (fichiers JSON `storageState`)
+  écrits par le projet setup.
+- `tests/preprod/setup/` — setup global qui enregistre les états.
+- `tests/preprod/features/` et `tests/preprod/pages/` — specs preprod.
+
 ## Lancer les tests en local
 
 Le workflow `.github/workflows/e2e:local.yaml` est la référence de la
