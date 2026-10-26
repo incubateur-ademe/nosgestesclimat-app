@@ -138,9 +138,7 @@ describe('addLastActivityAtToUser', () => {
 
     await groupFactory.withParticipant({ userId: user.id }).create()
 
-    await organisationFactory
-      .withAdministrator({ userEmail: user.email })
-      .create()
+    await organisationFactory.withAdministrator(user).create()
     await verificationCodeFactory
       .params({ email: user.email, updatedAt: targetDate })
       .create()
@@ -296,7 +294,7 @@ const entitiesRelatedToVerifiedUserTestFactoriesSetup: UserFactorySetup[] = [
         )
       }
       await organisationFactory
-        .withAdministrator({ userEmail: user.email, updatedAt })
+        .withAdministrator({ ...user, updatedAt })
         .create()
     },
   },
