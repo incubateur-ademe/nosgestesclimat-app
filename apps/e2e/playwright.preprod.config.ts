@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 import { firefoxLaunchOptions, sharedConfig } from './playwright.shared'
 import type { FixturesOptions } from './tests/preprod/fixtures/options'
-import { NEW_VISITOR_STATE } from './tests/state'
+import { NEW_VISITOR_STATE } from './tests/preprod/state'
 
 /**
  * Preprod suite (tests/preprod): run against the deployed preprod before each
