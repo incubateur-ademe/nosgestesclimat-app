@@ -72,7 +72,7 @@ export const seedDemoData = async ({
   const organisations = await Promise.all(
     emails.map((email) =>
       organisationFactory
-        .withAdministrator(email)
+        .withAdministrator({ userEmail: email })
         .create({ name: `Organisation de démonstration (${email})` })
     )
   )
