@@ -1,14 +1,8 @@
-import { test as base, type Page } from '@playwright/test'
+import { test as base } from '@playwright/test'
 
-export class CookieBanner {
-  static DISMISS_COOKIE_BANNER = 'cookie-banner-refuse-button'
+import { CookieBanner } from '../pages/cookie-banner'
 
-  constructor(public readonly page: Page) {}
-
-  async dismiss() {
-    await this.page.getByTestId(CookieBanner.DISMISS_COOKIE_BANNER).click()
-  }
-}
+export { CookieBanner } from '../pages/cookie-banner'
 
 interface CookieBannerFixtures {
   cookieBanner: CookieBanner

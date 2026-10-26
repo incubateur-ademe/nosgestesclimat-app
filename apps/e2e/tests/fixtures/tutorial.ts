@@ -1,24 +1,8 @@
-import { test as base, expect, type Page } from '@playwright/test'
-import { START_SIMULATION_PATH } from '../constants'
+import { test as base, expect } from '@playwright/test'
 
-export class TutorialPage {
-  static SKIP_TUTORIAL_BUTTON = 'skip-tutorial-button'
-  static URL = '/simulateur/tutoriel'
+import { TutorialPage } from '../pages/tutorial'
 
-  constructor(public readonly page: Page) {}
-
-  async start() {
-    await this.page.goto(START_SIMULATION_PATH)
-  }
-  async goto() {
-    await this.page.goto(TutorialPage.URL)
-  }
-
-  async skip() {
-    await this.page.getByTestId(TutorialPage.SKIP_TUTORIAL_BUTTON).click()
-    await this.page.waitForURL(new RegExp(`^(?!.*${TutorialPage.URL}).*$`))
-  }
-}
+export { TutorialPage } from '../pages/tutorial'
 
 interface TutorialPageFixtures {
   tutorialPage: TutorialPage
