@@ -3,7 +3,7 @@ import ButtonLink from '@/design-system/buttons/ButtonLink'
 
 export default function CreateOrganisationLink() {
   return (
-    <ButtonLink color="secondary" href="/organisations">
+    <ButtonLink variant="outlined" href="/organisations">
       <Trans>Créer un test collectif</Trans>
     </ButtonLink>
   )

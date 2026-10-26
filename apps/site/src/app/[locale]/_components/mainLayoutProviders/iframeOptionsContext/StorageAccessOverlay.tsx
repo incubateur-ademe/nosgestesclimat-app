@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import Alert from '@/design-system/alerts/alert/Alert'
+import Alert from '@/design-system/alert/Alert'
 import Button from '@/design-system/buttons/Button'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
 import Card from '@/design-system/layout/Card'
@@ -71,7 +71,7 @@ export default function StorageAccessOverlay({
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  color="secondary"
+                  variant="outlined"
                   className="mt-2">
                   <Trans i18nKey="iframe.safari.openInNewTab">
                     Ouvrir le calculateur dans un nouvel onglet

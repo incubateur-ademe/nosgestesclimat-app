@@ -9,7 +9,7 @@
     "url": "https://github.com/incubateur-ademe/nosgestesclimat-app.git"
   },
   "engines": {
-    "node": "24.16"
+    "node": "24.22"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",

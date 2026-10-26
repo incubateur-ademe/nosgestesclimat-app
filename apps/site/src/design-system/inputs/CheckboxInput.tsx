@@ -2,7 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ComponentPropsWithRef, ForwardedRef, ReactNode } from 'react'
 import { forwardRef, useId } from 'react'
 import InputGroup from './InputGroup'
@@ -59,7 +59,7 @@ export default forwardRef(function CheckboxInput(
           name={name}
           id={checkboxId}
           type="checkbox"
-          className={twMerge(
+          className={cn(
             'focus:ring-primary-700 accent-primary-700 cursor-pointer rounded-xl border-2 border-solid border-gray-200 bg-gray-100 text-2xl transition-colors focus:ring-2 focus:ring-offset-3 focus:outline-hidden',
             sizesClassNames[size],
             error ? 'border-red-200! bg-red-50! ring-2 ring-red-700!' : '',
@@ -86,7 +86,7 @@ export default forwardRef(function CheckboxInput(
         <label
           id={`${checkboxId}-label`}
           htmlFor={checkboxId}
-          className={twMerge(
+          className={cn(
             'cursor-pointer text-base',
             error ? 'text-red-700' : 'text-slate-900',
             disabled ? 'cursor-not-allowed opacity-50' : ''

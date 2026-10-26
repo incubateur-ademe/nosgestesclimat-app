@@ -2,7 +2,7 @@ import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
 import Link from '@/design-system/links/Link'
 import { getActionHref } from '@/helpers/actions/getActionHref'
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import ArrowNarrowRightIcon from '../icons/ArrowNarrowRightIcon'
 import Trans from '../translation/trans/TransServer'
 import ActionTracker from './ActionTracker'
@@ -40,7 +40,7 @@ export default async function HighlightedActionCard({
   return (
     <article
       {...props}
-      className={twMerge(
+      className={cn(
         'relative flex flex-col overflow-hidden rounded-lg border border-t-8 bg-white md:flex-row md:border-t md:border-l-8',
         classes.card,
         className

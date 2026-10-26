@@ -26,7 +26,7 @@ export default function HeroSection() {
           </li>
 
           <li>
-            <ButtonLink color="text" href="/organisations/demander-demo">
+            <ButtonLink variant="text" href="/organisations/demander-demo">
               <Trans>Demander une démo</Trans>
             </ButtonLink>
           </li>

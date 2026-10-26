@@ -3,7 +3,7 @@
 import CloseIcon from '@/components/icons/Close'
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import ReactModal from 'react-modal'
@@ -78,14 +78,14 @@ export default function Modal({
       }}
       isOpen={isOpen}
       onRequestClose={!isLoading ? closeDelayed : undefined}
-      className={twMerge(
+      className={cn(
         modalClassName,
         isVisible
           ? 'translate-y-0 opacity-100 md:rounded-xl'
           : 'translate-y-12 opacity-0',
         className
       )}
-      overlayClassName={twMerge(
+      overlayClassName={cn(
         overlayClassName,
         isVisible ? 'opacity-100' : 'opacity-0'
       )}
@@ -109,7 +109,7 @@ export default function Modal({
         <div className="mt-12 flex flex-col-reverse justify-start gap-2 sm:flex-row md:gap-4">
           {hasAbortButton && (
             <Button
-              color="secondary"
+              variant="outlined"
               disabled={isLoading}
               onClick={!isLoading ? closeDelayed : () => {}}>
               <Trans>Annuler</Trans>

@@ -5,7 +5,7 @@ import BarChart from '@/design-system/utils/BarChart'
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   value: string
@@ -41,7 +41,7 @@ export default function VerticalBarChartItem({
 
   return (
     <li
-      className={twMerge(
+      className={cn(
         'flex h-full flex-1 flex-col items-center justify-end gap-2',
         className
       )}

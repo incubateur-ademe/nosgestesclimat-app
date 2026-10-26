@@ -8,7 +8,7 @@ import {
 } from '@/design-system/shadcn/popover'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Link from 'next/link'
 import { useSwitchLanguage } from './languageSwitchButton/useSwitchLanguage'
 
@@ -36,7 +36,7 @@ export default function LanguageSwitchButton({ className }: Props) {
   )
 
   return (
-    <div className={twMerge('max-tiny:mr-1 mr-2', className)}>
+    <div className={cn('max-tiny:mr-1 mr-2', className)}>
       <Popover>
         <PopoverTrigger
           color="secondary"
@@ -50,7 +50,7 @@ export default function LanguageSwitchButton({ className }: Props) {
             {activeLocale.toUpperCase()}
           </span>{' '}
           <ChevronRight
-            className={twMerge(
+            className={cn(
               'ml-1 inline-block w-1.5 rotate-90 transition-transform'
             )}
           />

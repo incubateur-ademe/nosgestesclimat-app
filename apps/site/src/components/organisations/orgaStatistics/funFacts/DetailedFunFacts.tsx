@@ -76,7 +76,7 @@ export default function DetailedFunFacts({
       <div className="mb-8 px-8">
         <Button
           size="sm"
-          color="secondary"
+          variant="outlined"
           onClick={() => {
             trackEvent(captureDownloadFunFactsPlus)
 

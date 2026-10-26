@@ -1,7 +1,7 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ReactNode } from 'react'
 import ImageWithCategory from './ImageWithCategory'
 
@@ -21,7 +21,7 @@ export default function PostThumbnail({
   return (
     <a
       href={href}
-      className={twMerge(
+      className={cn(
         'flex h-full rounded-xl no-underline! duration-300! md:flex-col md:transition-transform md:hover:translate-y-[-6px]',
         className
       )}>

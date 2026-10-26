@@ -1,5 +1,5 @@
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import CarIcon from '../icons/CarIcon'
 import FoodIcon from '../icons/FoodIcon'
 import HousingIcon from '../icons/HousingIcon'
@@ -13,10 +13,7 @@ export default function ThemeIcon({ themeKey }: { themeKey: Theme['key'] }) {
   return (
     <span
       aria-hidden="true"
-      className={twMerge(
-        'size-6 rounded-sm p-1',
-        classesByTheme[themeKey].icon
-      )}>
+      className={cn('size-6 rounded-sm p-1', classesByTheme[themeKey].icon)}>
       {icon}
     </span>
   )

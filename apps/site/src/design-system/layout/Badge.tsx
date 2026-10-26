@@ -3,7 +3,7 @@ import {
   getTextDarkColor,
 } from '@/helpers/getCategoryColorClass'
 import type { PropsWithChildren } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 const colorClassNames = {
   primary: 'border-primary-300 text-primary-700 bg-primary-50',
@@ -48,7 +48,7 @@ export default function Badge({
   return (
     <Tag
       data-testid={dataTestId}
-      className={twMerge(
+      className={cn(
         'inline-block rounded-sm border-2 px-2 leading-none font-black whitespace-nowrap',
         sizeClassNames[size],
         category

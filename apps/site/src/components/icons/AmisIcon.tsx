@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function AmisIcon({ className }: { className?: string }) {
   return (
@@ -7,7 +7,7 @@ export default function AmisIcon({ className }: { className?: string }) {
       height="24"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('stroke-default inline-block', className)}
+      className={cn('stroke-default inline-block', className)}
       aria-hidden="true"
       stroke="none">
       <path

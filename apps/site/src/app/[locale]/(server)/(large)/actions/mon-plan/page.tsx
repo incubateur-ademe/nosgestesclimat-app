@@ -16,7 +16,7 @@ import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { getActionsPlan } from '@/services/actions/get-actions-plan'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { DefaultPageProps } from '@/types'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { redirect } from 'next/navigation'
 import PlannedActionCard from './_components/PlannedActionCard'
 
@@ -105,7 +105,7 @@ export default async function ActionsPlanPage({ params }: DefaultPageProps) {
             {actionsPlan.themes.map((theme) => (
               <section key={theme.id} className="flex flex-col gap-6">
                 <h2
-                  className={twMerge(
+                  className={cn(
                     'mb-0 text-sm/normal font-bold uppercase',
                     classesByTheme[theme.key].header
                   )}>
@@ -124,7 +124,7 @@ export default async function ActionsPlanPage({ params }: DefaultPageProps) {
           </div>
 
           <ButtonLinkServer
-            color="secondary"
+            variant="outlined"
             className="w-full text-sm!"
             href={ACTIONS_SUGGESTED_PATH}>
             <PlusIcon className="stroke-primary-700 mr-2 size-3" />

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from '@/components/Link'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Option {
   label: React.ReactNode | string
@@ -44,7 +44,7 @@ const getFullClassName = ({
   index: number
   options: Option[]
 }) =>
-  twMerge(
+  cn(
     commonClassName,
     'rounded-l-sm flex items-center',
     index === 0 && 'border-l -mr-[1px]',
@@ -63,7 +63,7 @@ export default function Switch({
       <div
         role="group"
         aria-label={ariaLabel}
-        className={twMerge('flex', className)}>
+        className={cn('flex', className)}>
         {options.map(({ label, isSelected, ...props }, index) => (
           <button
             key={`switch-${index}`}
@@ -79,7 +79,7 @@ export default function Switch({
   }
 
   return (
-    <nav aria-label={ariaLabel} className={twMerge('flex', className)}>
+    <nav aria-label={ariaLabel} className={cn('flex', className)}>
       {options.map(({ label, isSelected, ...props }, index) => (
         <Link
           key={`switch-${index}`}

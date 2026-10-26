@@ -1,5 +1,5 @@
 import Separator from '@/design-system/layout/Separator'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ReactNode } from 'react'
 import PlusIcon from '../icons/PlusIcon'
 import Trans from '../translation/trans/TransServer'
@@ -23,7 +23,7 @@ export default function FAQ({
 }) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'relative w-full bg-[#F6F6F5] py-16 md:px-4 md:py-20 lg:px-0',
         className
       )}>

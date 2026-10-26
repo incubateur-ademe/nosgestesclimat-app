@@ -49,7 +49,7 @@ export default async function OrganisationPage({
         </div>
         <ButtonLink
           href={`/organisations/${organisation?.slug}/parametres`}
-          color="text"
+          variant="text"
           data-testid="organisation-page-see-parameters-button"
           className="flex items-center self-start">
           <SettingsIcon className="fill-primary-700 mr-2" />

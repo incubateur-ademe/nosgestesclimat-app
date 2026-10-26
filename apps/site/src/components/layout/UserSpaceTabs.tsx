@@ -17,7 +17,7 @@ import type { TabItem } from '@/design-system/layout/Tabs'
 import Tabs from '@/design-system/layout/Tabs'
 import { useShouldHideIfIframe } from '@/hooks/iframe/useShouldHideIfIframe'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 
 export type UserSpaceTabId = 'results' | 'actions' | 'groups' | 'settings'
 
@@ -43,7 +43,7 @@ export default function UserSpaceTabs({ isAuth, activeTabId }: Props) {
           className="flex flex-col items-center gap-1 md:flex-row"
           data-testid="my-results-tab">
           <BilanIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-6',
               activeTabId === 'results' ? 'fill-primary-600' : 'fill-default'
             )}
@@ -65,7 +65,7 @@ export default function UserSpaceTabs({ isAuth, activeTabId }: Props) {
       label: (
         <span className="flex flex-col items-center gap-1 md:flex-row">
           <ActionsIcon
-            className={twMerge(
+            className={cn(
               'h-6 w-6',
               activeTabId === 'actions' ? 'fill-primary-600' : 'fill-default'
             )}
@@ -92,7 +92,7 @@ export default function UserSpaceTabs({ isAuth, activeTabId }: Props) {
                 className="flex flex-col items-center gap-1 md:flex-row"
                 data-testid="my-groups-tab">
                 <AmisIcon
-                  className={twMerge(
+                  className={cn(
                     'h-6 w-6',
                     activeTabId === 'groups'
                       ? 'stroke-primary-600 fill-primary-600'
@@ -138,7 +138,7 @@ export default function UserSpaceTabs({ isAuth, activeTabId }: Props) {
             label: (
               <span className="flex flex-col items-center gap-1 md:flex-row">
                 <SettingsIcon
-                  className={twMerge(
+                  className={cn(
                     'h-6 w-6',
                     activeTabId === 'settings'
                       ? 'fill-primary-600'

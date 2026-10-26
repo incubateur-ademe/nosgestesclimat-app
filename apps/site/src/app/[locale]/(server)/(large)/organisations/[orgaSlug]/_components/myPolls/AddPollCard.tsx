@@ -18,7 +18,7 @@ export default function AddPollCard({ hasNoPollsYet }: Props) {
         data-testid="add-poll-card"
         href={`/organisations/${orgaSlug as string}/creer-campagne`}
         highlight={!!hasNoPollsYet}
-        color={hasNoPollsYet ? 'primary' : 'secondary'}
+        variant={hasNoPollsYet ? 'filled' : 'outlined'}
         imageSrc="/_static/cms/medium_people_raising_arm_fe915601cd.png"
         imageAlt=""
         label={<Trans>Créer un test collectif</Trans>}

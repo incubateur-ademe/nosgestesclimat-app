@@ -1,5 +1,5 @@
 import React from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function MaxWidthContent({
   children,
@@ -9,7 +9,7 @@ export default function MaxWidthContent({
   className?: string
 }) {
   return (
-    <section className={twMerge('mt-6 w-full', className)}>
+    <section className={cn('mt-6 w-full', className)}>
       <div className="mx-auto max-w-5xl px-6 lg:px-0">{children}</div>
     </section>
   )

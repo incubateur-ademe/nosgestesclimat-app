@@ -7,6 +7,7 @@ import {
   MESSENGER_SHARE_MOBILE_URL,
   WHATSAPP_SHARE_URL,
 } from '@/constants/urls/share'
+import type { ButtonVariant } from '@/design-system/buttons/buttonStyles'
 import Share from '@/design-system/sharing/Share'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { trackEvent } from '@/utils/analytics/trackEvent'
@@ -19,12 +20,12 @@ import WhatsappIcon from '../icons/share/WhatsappIcon'
 export default function ShareSimulationButton({
   url,
   buttonLabel,
-  buttonColor,
+  variant,
   shouldHideTextOnMobile = true,
 }: {
   url: string
   buttonLabel?: string
-  buttonColor?: 'primary' | 'secondary' | 'text' | 'borderless'
+  variant?: ButtonVariant
   shouldHideTextOnMobile?: boolean
 }) {
   const { t } = useClientTranslation()
@@ -35,7 +36,8 @@ export default function ShareSimulationButton({
         trackEvent(captureClickShareSimulationButton)
       }}
       buttonLabel={buttonLabel ?? t('Partager')}
-      buttonColor={buttonColor ?? 'text'}
+      variant={variant ?? 'text'}
+      className="dark"
       shouldHideTextOnMobile={shouldHideTextOnMobile}
       modalTitle={t('Partager le simulateur')}
       modalDescription={t(

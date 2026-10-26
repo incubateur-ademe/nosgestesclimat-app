@@ -2,7 +2,7 @@
 
 import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransClient'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Heading {
   id: string
@@ -32,7 +32,7 @@ export default function Summary({ headings }: { headings: Heading[] }) {
               }}>
               <Link
                 href={`#${heading.id}`}
-                className={twMerge(
+                className={cn(
                   'hover:text-primary text-default block text-sm no-underline transition-colors duration-200',
                   'w-full truncate text-left'
                 )}>

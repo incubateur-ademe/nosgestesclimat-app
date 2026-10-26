@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function ArrowNarrowRightIcon({
   className,
@@ -12,7 +12,7 @@ export default function ArrowNarrowRightIcon({
       viewBox="0 0 14.4 11.2"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('inline-block fill-current', className)}
+      className={cn('inline-block fill-current', className)}
       aria-hidden="true">
       <path
         fillRule="evenodd"

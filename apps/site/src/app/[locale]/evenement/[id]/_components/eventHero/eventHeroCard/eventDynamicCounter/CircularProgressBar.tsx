@@ -1,5 +1,5 @@
 'use client'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import {
   CENTER,
   CIRCUMFERENCE,
@@ -38,7 +38,7 @@ export default function CircularProgressbar({ value, startDelay = 0 }: Props) {
     <svg
       role="img"
       aria-label={`${displayedValue}%`}
-      className={twMerge(
+      className={cn(
         'relative w-full max-w-40',
         // Trigger "bump" animation when crossing 100%
         isOverHundredPercent && 'animate-scale'

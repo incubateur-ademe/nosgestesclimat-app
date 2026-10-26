@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   rank: number
@@ -9,7 +9,7 @@ export default function RankBadge({ rank }: Props) {
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'mx-auto mb-4 flex size-16 items-center justify-center rounded-full text-xl font-medium',
         isFirst
           ? 'bg-secondary-700 text-2xl text-white'

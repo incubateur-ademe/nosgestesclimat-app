@@ -1,6 +1,6 @@
 import DownArrow from '@/components/icons/DownArrow'
 import type { ReactNode } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   highlights: ReactNode[]
@@ -10,7 +10,7 @@ interface Props {
 export default function ColourBlock({ highlights, className }: Props) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'mt-6 flex flex-1 flex-col justify-between rounded-2xl bg-blue-100 px-16 py-20',
         className
       )}>

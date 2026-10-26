@@ -2,7 +2,7 @@
 
 import Trans from '@/components/translation/trans/TransClient'
 import { useEffect, useState } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface SecondsTimerProps {
   duration: number // duration in seconds
@@ -43,7 +43,7 @@ export default function SecondsTimer({
   }
 
   return (
-    <div className={twMerge('text-2xl font-bold', className)} role="timer">
+    <div className={cn('text-2xl font-bold', className)} role="timer">
       {formatTime(timeLeft)} <Trans>seconde</Trans>
       {timeLeft > 1 && 's'}
     </div>

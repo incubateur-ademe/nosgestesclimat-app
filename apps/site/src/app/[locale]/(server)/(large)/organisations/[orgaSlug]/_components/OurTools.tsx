@@ -29,7 +29,7 @@ export default function OurTools() {
             }>
             <ButtonLink
               className="mt-auto w-full justify-center align-bottom"
-              color="secondary"
+              variant="outlined"
               href="https://accelerateur-transition-ecologique-ademe.notion.site/Kit-de-communication-Nos-Gestes-Climat-1156523d57d780fbb2a2dd413aef2681"
               target="_blank"
               aria-label={t(
@@ -62,7 +62,7 @@ export default function OurTools() {
               </Trans>
             }>
             <ButtonLink
-              color="secondary"
+              variant="outlined"
               className="mt-auto w-full justify-center"
               href="https://drive.google.com/drive/folders/1dORmBbDLDG31PLLOblP8Wg5CrrksAfjV"
               target="_blank"
@@ -97,7 +97,7 @@ export default function OurTools() {
             }>
             <ButtonLink
               className="mt-auto w-full justify-center align-bottom"
-              color="secondary"
+              variant="outlined"
               href="https://impactco2.fr/comparateur"
               target="_blank"
               aria-label={t(

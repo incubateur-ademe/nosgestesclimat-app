@@ -4,7 +4,7 @@ import VerticalBarChart from '@/components/charts/VerticalBarChart'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useSortedCategoriesByFootprint } from '@/hooks/useSortedCategoriesByFootprint'
 import { useRule } from '@/publicodes-state'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import CategoryChartItem from './categoriesChart/CategoryChartItem'
 
 interface Props {
@@ -27,7 +27,7 @@ export default function CategoriesChart({ className }: Props) {
   }
 
   return (
-    <VerticalBarChart className={twMerge('md:hidden', className)}>
+    <VerticalBarChart className={cn('md:hidden', className)}>
       {sortedCategories.map((category, index) => (
         <CategoryChartItem
           key={category}

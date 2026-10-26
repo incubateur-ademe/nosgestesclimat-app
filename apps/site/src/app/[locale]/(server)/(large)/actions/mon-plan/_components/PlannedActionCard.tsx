@@ -5,7 +5,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { getActionHref } from '@/helpers/actions/getActionHref'
 import type { Locale } from '@/i18nConfig'
 import type { PersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Link from 'next/link'
 import RemoveFromPlanButton from './RemoveFromPlanButton'
 
@@ -21,7 +21,7 @@ export default async function PlannedActionCard({
 
   return (
     <article
-      className={twMerge(
+      className={cn(
         'relative flex items-center gap-4 rounded-lg border border-l-8 bg-white px-6 py-4',
         'transition-shadow duration-300 ease-out focus-within:shadow-sm hover:shadow-sm',
         classesByTheme[action.theme.key].planCard

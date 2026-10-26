@@ -119,7 +119,7 @@ export default async function Email({
             )}
             additionnalButton={
               <ButtonLink
-                color="secondary"
+                variant="outlined"
                 showLoadingOnClick
                 href={END_PAGE_PATH}
                 prefetch={true}

@@ -9,7 +9,7 @@ import { trackEvent } from '@/utils/analytics/trackEvent'
 export default function MySpaceButton() {
   return (
     <ButtonLink
-      color="secondary"
+      variant="outlined"
       href={CONNEXION_PATH}
       data-testid="my-space-connexion-link"
       className="ph-no-capture"

@@ -17,7 +17,7 @@ import {
   useUser,
 } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function Question({
   question,
@@ -62,7 +62,7 @@ export default function Question({
   return (
     <button
       aria-disabled={isDisabled}
-      className={twMerge(
+      className={cn(
         'relative mb-2 flex w-full flex-col items-start justify-between gap-2 rounded-xl border-2! p-4 text-left font-medium transition-transform md:flex-row md:items-center md:gap-4',
         getBackgroundLightColor(category),
         getTextDarkColor(category),
@@ -88,7 +88,7 @@ export default function Question({
 
         toggleQuestionList()
       }}>
-      <div className={twMerge('text-sm md:w-2/3 md:text-base')}>
+      <div className={cn('text-sm md:w-2/3 md:text-base')}>
         {isDebug ? (
           <>
             {question} ({type}, {missingVariables[question] ?? 0})
@@ -100,7 +100,7 @@ export default function Question({
       {!isMissing && displayValue !== 'mosaic' ? (
         <div className="align-center flex justify-end whitespace-nowrap md:text-lg">
           <div
-            className={twMerge(
+            className={cn(
               'rounded-xl border-2 bg-white px-4 py-2 first-letter:uppercase',
               isMissing ? 'text-gray-300' : 'text-primary-700',
               getBorderColor(category)

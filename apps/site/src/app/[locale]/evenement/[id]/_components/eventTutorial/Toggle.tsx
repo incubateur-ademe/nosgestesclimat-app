@@ -2,7 +2,7 @@
 
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export type Mode = 'organisation' | 'individu'
 
@@ -29,7 +29,7 @@ export default function Toggle({ mode, onChange }: Props) {
           role="tab"
           aria-selected={mode === value}
           onClick={() => onChange(value)}
-          className={twMerge(
+          className={cn(
             'rounded-full px-6 py-3 text-sm font-medium transition-colors',
             mode === value
               ? 'bg-primary-700 text-white shadow-sm'

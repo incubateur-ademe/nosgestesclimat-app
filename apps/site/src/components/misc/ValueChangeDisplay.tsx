@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import { usePathname } from 'next/navigation'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function ValueChangeDisplay({
   className,
@@ -41,7 +41,7 @@ export default function ValueChangeDisplay({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'absolute -top-0.5 right-2 -z-0 w-auto whitespace-nowrap sm:top-1',
         isNegative
           ? 'animate-valuechange-reverse text-green-700 motion-reduce:animate-none'
@@ -59,7 +59,7 @@ export default function ValueChangeDisplay({
         }
       )}>
       <span
-        className={twMerge(
+        className={cn(
           'text-xs font-semibold sm:text-sm',
           size === 'md' ? 'text-base' : ''
         )}>
@@ -67,7 +67,7 @@ export default function ValueChangeDisplay({
         {formattedValue}
       </span>{' '}
       <span
-        className={twMerge(
+        className={cn(
           'text-xs font-normal',
           size === 'md' ? 'text-sm' : ''
         )}>

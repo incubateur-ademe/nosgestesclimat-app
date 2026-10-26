@@ -1,5 +1,5 @@
 'use client'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Link from '../Link'
 import Trans from '../translation/trans/TransClient'
 
@@ -9,7 +9,7 @@ export default function DefaultUnautorizedMessage({
   className?: string
 }) {
   return (
-    <span className={twMerge('block text-sm text-red-800', className)}>
+    <span className={cn('block text-sm text-red-800', className)}>
       <Trans>
         Oups ! Vous n'êtes pas autorisé à accéder à cette page. Si vous pensez
         que c'est une erreur, vous pouvez

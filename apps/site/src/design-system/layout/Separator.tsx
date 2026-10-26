@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 type SeparatorVariant = 'short' | 'full'
 
@@ -13,7 +13,7 @@ export default function Separator({
 }: SeparatorProps) {
   return (
     <div
-      className={twMerge(classNamesByVariant[variant], className)}
+      className={cn(classNamesByVariant[variant], className)}
       {...props}
     />
   )

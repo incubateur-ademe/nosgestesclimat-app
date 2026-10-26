@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import type { JSX } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 const getGridColsClassname = (numberItems: number) => {
   switch (numberItems) {
@@ -49,7 +49,7 @@ export default function WhatDoWeMeasure({
       </h2>
 
       <section
-        className={twMerge(
+        className={cn(
           'mx-auto w-[800px] max-w-full px-4 text-center text-sm md:px-0 md:text-lg',
           shouldDescriptionBeBeforeList ? '' : 'hidden'
         )}>
@@ -64,7 +64,7 @@ export default function WhatDoWeMeasure({
       </section>
 
       <ul
-        className={twMerge(
+        className={cn(
           `order hidden grid-cols-1 gap-5 md:grid md:grid-cols-2 ${getGridColsClassname(listItems?.length ?? 0)}`,
           shouldUseDescriptionMaxWidth ? 'max-w-[800px]' : ''
         )}
@@ -113,7 +113,7 @@ export default function WhatDoWeMeasure({
       </div>
 
       <section
-        className={twMerge(
+        className={cn(
           'mx-auto w-[800px] max-w-full px-4 text-sm md:px-0 md:text-lg',
           shouldDescriptionBeBeforeList ? 'hidden' : ''
         )}>

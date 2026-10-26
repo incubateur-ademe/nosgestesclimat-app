@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { Suspense } from 'react'
 import LanguageSwitchButton from '../translation/LanguageSwitchButton'
 import HideInIframe from './HideInIframe'
@@ -13,7 +13,7 @@ export default function Header({ isSticky = true }: Props) {
   return (
     <header
       id="header-server-container"
-      className={twMerge(
+      className={cn(
         'h-20 items-center bg-white shadow-xs',
         isSticky ? 'sticky top-0 z-300' : ''
       )}>

@@ -2,7 +2,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getTextDarkColor } from '@/helpers/getCategoryColorClass'
 import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function Category({ category }: { category: DottedName }) {
   const { icons, title } = useRule(category)
@@ -10,7 +10,7 @@ export default function Category({ category }: { category: DottedName }) {
   return (
     <div>
       <h1
-        className={twMerge(
+        className={cn(
           'mb-0 text-base font-bold lg:text-lg',
           getTextDarkColor(category)
         )}>

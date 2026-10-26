@@ -10,7 +10,7 @@ import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { cacheLife } from 'next/cache'
 import Link from 'next/link'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import HideInIframe from '../HideInIframe'
 import CookieButton from './CookieButton'
 import WantToActBlock from './WantToActBlock'
@@ -38,7 +38,7 @@ export default async function FooterServer({
       id="footer"
       tabIndex={-1}
       role="contentinfo"
-      className={twMerge(
+      className={cn(
         'relative bg-gray-100 p-4 pb-32! sm:p-8',
         className,
         backgroundColor === 'white' ? 'bg-white' : ''

@@ -1,7 +1,7 @@
 import CheckCircleIcon from '@/components/icons/status/CheckCircleIcon'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { ChangeEventHandler, HTMLAttributes, ReactNode } from 'react'
 import { Controller, type Control, type RegisterOptions } from 'react-hook-form'
 import { defaultInputStyleClassNames } from './TextInput'
@@ -46,7 +46,7 @@ export default function GridRadioInputs({
   const { t } = useClientTranslation()
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex w-full max-w-[30rem] flex-col items-start',
         containerClassName
       )}
@@ -87,7 +87,7 @@ export default function GridRadioInputs({
                     data-testid={`${dataCypressId}-${item.value}`}
                     aria-label={item.ariaLabel}
                     title={`${item.ariaLabel} - ${value === item.value ? t('Sélectionné') : t('Sélectionner cette option')}`}
-                    className={twMerge(
+                    className={cn(
                       'focus-within:ring-primary-700 relative flex cursor-pointer items-center justify-center rounded-xl p-6 text-xl focus-within:ring-2',
                       defaultInputStyleClassNames,
                       'hover:bg-primary-50 hover:border-gray-300 focus:border-slate-300',

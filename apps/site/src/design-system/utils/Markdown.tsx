@@ -1,7 +1,7 @@
 'use client'
 
 import Link from '@/components/Link'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { MarkdownToJSX } from 'markdown-to-jsx'
 import MarkdownToJsx from 'markdown-to-jsx'
 import Image from 'next/image'
@@ -23,7 +23,7 @@ export default function Markdown({
 }: MarkdownProps) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'markdown',
         omitMarginTopOnFirstElement
           ? 'markdown--omit-first-element-margin-top'
@@ -38,7 +38,7 @@ export default function Markdown({
           overrides: {
             blockquote: {
               component: ({ ...props }) => (
-                <p {...props} className={twMerge(props.className, 'mb-2!')} />
+                <p {...props} className={cn(props.className, 'mb-2!')} />
               ),
             },
             a: Link,

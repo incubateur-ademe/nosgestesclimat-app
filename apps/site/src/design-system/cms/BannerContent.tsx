@@ -5,7 +5,7 @@ import CloseIcon from '@/components/icons/Close'
 import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { safeLocalStorage } from '@/utils/browser/safeLocalStorage'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import BannerLink from './banner/BannerLink'
@@ -62,7 +62,7 @@ export const BannerContent = ({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         colorClassNames[color].container,
         'xs:gap-2 relative inline-flex w-full flex-row items-start justify-center gap-1 px-4 py-2 text-sm sm:items-center md:h-12',
         className

@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/nextjs'
+import { webpackFinal } from './webpack-config'
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -17,14 +18,6 @@ const config: StorybookConfig = {
     experimentalRSC: true,
   },
   staticDirs: ['../public'],
-  webpackFinal: async (config) => {
-    if (config.module?.rules) {
-      config.module.rules.push({
-        test: /\.ya?ml$/,
-        use: 'yaml-loader',
-      })
-    }
-    return config
-  },
+  webpackFinal,
 }
 export default config

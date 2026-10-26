@@ -10,10 +10,15 @@ const meta: Meta<typeof ButtonLink> = {
   },
   tags: ['autodocs'],
   argTypes: {
+    variant: {
+      control: 'select',
+      options: ['filled', 'outlined', 'text', 'link'],
+      description: 'The variant of the button link',
+    },
     color: {
       control: 'select',
-      options: ['primary', 'secondary', 'text', 'success'],
-      description: 'The color variant of the button link',
+      options: ['primary', 'red'],
+      description: 'The color of the button link',
     },
     size: {
       control: 'select',
@@ -58,16 +63,16 @@ export const Secondary: Story = {
   args: {
     children: 'Secondary Link',
     href: '#',
-    color: 'secondary',
+    variant: 'outlined',
     size: 'md',
   },
 }
 
-export const Success: Story = {
+export const Red: Story = {
   args: {
-    children: 'Success Link',
+    children: 'Red Link',
     href: '#',
-    color: 'success',
+    color: 'red',
     size: 'md',
   },
 }
@@ -76,7 +81,7 @@ export const Text: Story = {
   args: {
     children: 'Text Link',
     href: '#',
-    color: 'text',
+    variant: 'text',
     size: 'md',
   },
 }
@@ -109,7 +114,7 @@ export const LoadingSecondary: Story = {
   args: {
     children: 'Loading Secondary',
     href: '#',
-    color: 'secondary',
+    variant: 'outlined',
     loading: true,
   },
 }

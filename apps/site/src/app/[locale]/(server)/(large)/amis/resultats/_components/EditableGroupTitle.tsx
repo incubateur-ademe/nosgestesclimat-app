@@ -81,7 +81,7 @@ export default function EditableGroupTitle({
                     onClick={() => {
                       setIsEditingTitle(true)
                     }}
-                    color="secondary"
+                    variant="outlined"
                     data-testid="group-name-edit-button">
                     <PencilIcon className="stroke-primary-700 w-4" />
                   </Button>

@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 type Color = 'green' | 'red' | 'yellow'
 interface Props extends React.PropsWithChildren {
@@ -19,7 +19,7 @@ const getColorClassName = (color: Color) => {
 export default function TiltedBadge({ children, color }: Props) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'inline-block -rotate-6 rounded-full px-2 py-1 font-bold text-white',
         getColorClassName(color)
       )}>

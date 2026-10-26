@@ -228,7 +228,7 @@ export default function AutresQuestions() {
       <ButtonLink
         href="/questions-frequentes"
         size="sm"
-        color="text"
+        variant="text"
         className="px-0 underline">
         <Trans>Consultez la FAQ</Trans>
       </ButtonLink>

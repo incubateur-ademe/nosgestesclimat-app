@@ -38,7 +38,7 @@ export default function CommunicationKit() {
         </p>
 
         <ButtonLink
-          color="secondary"
+          variant="outlined"
           href="https://app.notion.com/p/Kit-RSE-2026-8-temps-forts-pour-agir-25d6523d57d780e28ad1c4cdfc4922d2">
           <Trans i18nKey="poll.results.communicationKit.button">
             Accéder au kit

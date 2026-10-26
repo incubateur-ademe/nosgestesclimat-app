@@ -1,6 +1,6 @@
 import Link from '@/design-system/links/Link'
 import type { ReactNode } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export interface TabItem {
   id: string
@@ -41,7 +41,7 @@ const TabLink = ({
   if (isLocked) {
     return (
       <span
-        className={twMerge(
+        className={cn(
           baseClasses,
           isActive ? activeClasses : '',
           className
@@ -60,7 +60,7 @@ const TabLink = ({
         role="tab"
         aria-selected={isActive}
         aria-current={isActive ? 'page' : undefined}
-        className={twMerge(
+        className={cn(
           baseClasses,
           isActive ? activeClasses : '',
           className
@@ -78,7 +78,7 @@ const TabLink = ({
         role="tab"
         aria-current="page"
         aria-selected
-        className={twMerge(baseClasses, activeClasses, className)}
+        className={cn(baseClasses, activeClasses, className)}
         {...otherProps}
         {...props}>
         {children}
@@ -91,7 +91,7 @@ const TabLink = ({
       role="tab"
       href={href}
       prefetch={prefetch}
-      className={twMerge(baseClasses, className)}
+      className={cn(baseClasses, className)}
       {...otherProps}
       {...props}>
       {children}
@@ -110,18 +110,18 @@ export default function Tabs({
   const borderClasses = hideBorder ? '' : 'border-b-2 border-slate-200'
 
   return (
-    <div className={twMerge(borderClasses, className)} id={containerId}>
+    <div className={cn(borderClasses, className)} id={containerId}>
       <nav aria-label={ariaLabel}>
         <ul
           role={isLocked ? undefined : 'tablist'}
-          className={twMerge(
+          className={cn(
             'flex items-end justify-between md:justify-start',
             isLocked ? 'cursor-not-allowed' : ''
           )}>
           {items.map(({ containerClassName, ...item }) => (
             <li
               key={item.id}
-              className={twMerge(
+              className={cn(
                 'flex-1 translate-y-0.5 md:flex-none',
                 containerClassName
               )}>

@@ -5,11 +5,12 @@ import ShareIcon from '@/components/icons/ShareIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import getIsMobile from 'is-mobile'
 import { type ReactNode, useState } from 'react'
 import Button from '../buttons/Button'
 import ButtonLink from '../buttons/ButtonLink'
+import type { ButtonVariant } from '../buttons/buttonStyles'
 import CopyButton from '../buttons/CopyButton'
 import Modal from '../modals/Modal'
 
@@ -22,7 +23,7 @@ interface ShareItem {
 
 export default function Share({
   onClick,
-  buttonColor,
+  variant,
   className,
   buttonLabel,
   shareItems,
@@ -33,7 +34,7 @@ export default function Share({
   ...props
 }: {
   onClick?: () => void
-  buttonColor?: 'primary' | 'secondary' | 'text' | 'borderless'
+  variant?: ButtonVariant
   className?: string
   buttonLabel: string
   shareItems: ShareItem[]
@@ -51,9 +52,9 @@ export default function Share({
   return (
     <>
       <Button
-        color={buttonColor ?? 'text'}
+        variant={variant ?? 'text'}
         size="sm"
-        className={twMerge(
+        className={cn(
           shouldHideTextOnMobile
             ? 'h-10 w-10 p-0! font-medium lg:w-auto lg:min-w-32 lg:gap-1 lg:px-4! lg:py-2!'
             : 'h-10 w-auto min-w-32 gap-1 px-4! py-2! font-medium',
@@ -66,11 +67,11 @@ export default function Share({
         }}
         aria-label={buttonLabel}>
         <ShareIcon
-          className={twMerge('fill-primary-700 mr-[1px] h-[28px] w-[28px]')}
+          className={cn('fill-primary-700 mr-[1px] h-[28px] w-[28px]')}
         />
 
         <span
-          className={twMerge(
+          className={cn(
             shouldHideTextOnMobile ? 'sr-only lg:not-sr-only!' : 'not-sr-only!'
           )}>
           {buttonLabel}
@@ -97,7 +98,7 @@ export default function Share({
             <li>
               <CopyButton
                 className="max-h-10"
-                color="secondary"
+                variant="outlined"
                 copiedStateText={
                   <span className="flex items-center gap-4 text-sm text-green-700">
                     <CheckIcon className="fill-green-700" />
@@ -118,7 +119,7 @@ export default function Share({
                   <ButtonLink
                     data-testid={`share-button-link-${index}`}
                     className="max-h-10 w-full text-sm!"
-                    color="secondary"
+                    variant="outlined"
                     target="_blank"
                     rel="noopener noreferrer"
                     href={link}>

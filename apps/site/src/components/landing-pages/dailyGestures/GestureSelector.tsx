@@ -6,7 +6,7 @@ import type { GesturesType } from '@/types/landing-page'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useState } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function GestureSelector({
   gestures,
@@ -29,7 +29,7 @@ export default function GestureSelector({
             Object.keys(gestures).map((categoryName: string) => (
               <li key={categoryName}>
                 <button
-                  className={twMerge(
+                  className={cn(
                     baseClassNames,
                     sizeClassNames.xs,
                     'border-primary-100 bg-primary-50 text-primary-800 hover:bg-primary-100 focus:ring-primary-700 my-1 border-2 transition-colors focus:ring-2 focus:ring-offset-3 focus:outline-hidden',

@@ -34,7 +34,7 @@ export default function DeletePollButton() {
 
   return (
     <>
-      <Button color="link" onClick={() => setIsOpen(true)}>
+      <Button variant="link" onClick={() => setIsOpen(true)}>
         <TrashIcon className="fill-primary-700 mr-2 w-4" />
         <Trans>Supprimer ce test collectif</Trans>
       </Button>

@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
 import useRule from '@/publicodes-state/hooks/useRule/useRule'
 import type { Metric } from '@/publicodes-state/types'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 type Sizes = 'md' | 'lg'
 
@@ -37,17 +37,17 @@ export default function TotalFootprintNumber({
 
   return (
     <div
-      className={twMerge('flex flex-col gap-1 md:gap-0', className)}
+      className={cn('flex flex-col gap-1 md:gap-0', className)}
       aria-live="polite"
       data-testid="total-footprint-number">
       <strong
-        className={twMerge(
+        className={cn(
           'block text-lg leading-0! font-black md:text-2xl',
           size === 'lg' && 'text-xl md:text-4xl'
         )}>
         {formatedTotalFootprintValue}{' '}
         <span
-          className={twMerge(
+          className={cn(
             'text-xs font-medium',
             size === 'lg' && 'text-sm md:text-base'
           )}>
@@ -55,7 +55,7 @@ export default function TotalFootprintNumber({
         </span>
       </strong>
       <span
-        className={twMerge(
+        className={cn(
           'block text-xs leading-none font-medium lg:inline lg:text-sm',
           size === 'lg' && 'text-sm md:text-base'
         )}>

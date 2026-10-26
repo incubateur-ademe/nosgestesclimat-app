@@ -4,7 +4,7 @@ import Link from '@/components/Link'
 import Trans from '@/components/translation/trans/TransClient'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { Fragment, type ReactNode } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function Breadcrumbs({
   items,
@@ -26,7 +26,7 @@ export default function Breadcrumbs({
 
   return (
     <section
-      className={twMerge('flex h-[75px] w-full items-center', className)}>
+      className={cn('flex h-[75px] w-full items-center', className)}>
       <nav
         role="navigation"
         id="breadcrumbs-navigation"
@@ -59,7 +59,7 @@ export default function Breadcrumbs({
               }}
               title={`${itemBeforeCurrent.label} - ${t('Visiter cette page')}`}
               aria-current={itemBeforeCurrent.isActive}
-              className={twMerge(
+              className={cn(
                 'text-default hover:text-primary-700 max-w-full text-sm text-ellipsis whitespace-nowrap capitalize hover:underline',
                 linkClassName
               )}
@@ -83,7 +83,7 @@ export default function Breadcrumbs({
                   }}
                   title={`${label} - ${isActive ? t('Page active') : t('Visiter cette page')}`}
                   aria-current={isActive}
-                  className={twMerge(
+                  className={cn(
                     'text-default hover:text-primary-700 max-w-full text-sm text-ellipsis whitespace-nowrap capitalize hover:underline',
                     isActive
                       ? 'text-primary-700 hover:text-primary-700 cursor-default font-bold no-underline hover:no-underline'

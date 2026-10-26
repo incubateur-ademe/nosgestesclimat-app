@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function FacebookIcon({ className }: { className?: string }) {
   return (
@@ -8,7 +8,7 @@ export default function FacebookIcon({ className }: { className?: string }) {
       viewBox="0 0 17 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('inline-block stroke-2', className)}
+      className={cn('inline-block stroke-2', className)}
       aria-hidden="true">
       <g clipPath="url(#clip0_54686_8474)">
         <path

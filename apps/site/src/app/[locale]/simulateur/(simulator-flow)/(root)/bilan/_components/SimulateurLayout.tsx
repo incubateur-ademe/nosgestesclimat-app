@@ -5,7 +5,7 @@ import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useFormState } from '@/publicodes-state'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useCallback, useState } from 'react'
 import Summary from './Summary'
 import SimulateurSkeleton from './skeleton'
@@ -35,7 +35,7 @@ export default function SimulateurLayout({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex min-h-screen flex-1 flex-col',
         isIframe && 'h-auto md:min-h-screen'
       )}>
@@ -50,7 +50,7 @@ export default function SimulateurLayout({
         )}
 
         <div
-          className={twMerge(
+          className={cn(
             'flex flex-1 flex-col md:pt-8',
             isQuestionListOpen && !isDebug ? 'hidden' : 'flex'
           )}>

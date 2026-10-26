@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   groupFootprint: number
@@ -193,7 +193,7 @@ export default function FootprintBarChart({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'flex h-full w-full flex-col items-center justify-center',
         className
       )}>

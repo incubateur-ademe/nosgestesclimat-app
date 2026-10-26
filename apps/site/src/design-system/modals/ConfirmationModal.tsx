@@ -36,7 +36,7 @@ export default function ConfirmationModal({
       <div className="mt-12 flex flex-wrap justify-center gap-4 md:justify-normal">
         <Button
           disabled={disabled || loading}
-          color="secondary"
+          variant="outlined"
           onClick={closeModal}>
           <Trans i18nKey="common.cancel">Annuler</Trans>
         </Button>

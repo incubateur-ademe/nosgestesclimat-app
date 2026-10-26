@@ -8,7 +8,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { getTopThreeAndRestMembers } from '@/helpers/groups/getTopThreeAndRestMembers'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useState } from 'react'
 import RankingMember from './ranking/RankingMember'
 
@@ -54,7 +54,7 @@ export default function Ranking({
       )}
 
       <ul
-        className={twMerge(
+        className={cn(
           'mt-2 rounded-xl px-3 py-4',
           hasOneParticipant
             ? 'bg-primary-50 text-primary-700'

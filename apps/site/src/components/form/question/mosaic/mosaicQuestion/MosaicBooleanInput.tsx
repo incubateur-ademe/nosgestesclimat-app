@@ -6,7 +6,7 @@ import Emoji from '@/design-system/utils/Emoji'
 import { onKeyDownHelper } from '@/helpers/accessibility/onKeyDownHelper'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { motion } from 'framer-motion'
 import { useIsNotApplicableHack } from '../useIsNotApplicableHack'
 
@@ -67,7 +67,7 @@ export default function MosaicBooleanInput({
     <div>
       <label
         data-testid={`${question}-oui-label`}
-        className={twMerge(
+        className={cn(
           `focus-within:ring-primary-700 relative flex h-full items-center gap-2 rounded-xl border! bg-white px-4 py-2 text-left transition-colors focus-within:ring-2 focus-within:ring-offset-2`,
           buttonClassNames[status]
         )}

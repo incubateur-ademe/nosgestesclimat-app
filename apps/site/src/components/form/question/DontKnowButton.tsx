@@ -79,8 +79,8 @@ export default function DontKnowButton({ question }: Props) {
     <div className="mt-4 mb-4 flex flex-col items-start gap-4 md:flex-row">
       <Button
         onClick={handleClick}
-        className="text-sm!"
-        color="borderless"
+        className="dark text-sm!"
+        variant="filled"
         disabled={!isMissing}
         data-testid="skip-question-button"
         aria-label={t(

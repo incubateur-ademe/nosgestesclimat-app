@@ -10,7 +10,7 @@ import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import type { ReactNode } from 'react'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   carbonFootprint: number
@@ -167,7 +167,7 @@ export default async function ObjectiveWithRhythm({
 
   return (
     <div
-      className={twMerge('rounded-lg border border-slate-300 p-6', className)}>
+      className={cn('rounded-lg border border-slate-300 p-6', className)}>
       {shouldDisplayBadge && (
         <div className="mb-2">
           <Badge className="border-none text-base" color="secondary">
@@ -179,8 +179,8 @@ export default async function ObjectiveWithRhythm({
       )}
 
       <div className="flex w-full flex-col gap-4 md:flex-row">
-        <div className={twMerge('flex-1 rounded-lg px-6 py-4', bgClassName)}>
-          <h3 className={twMerge('mb-2 text-2xl font-bold', titleClassName)}>
+        <div className={cn('flex-1 rounded-lg px-6 py-4', bgClassName)}>
+          <h3 className={cn('mb-2 text-2xl font-bold', titleClassName)}>
             {displayValue} {unit}{' '}
             <Trans i18nKey="common.co2eAn">
               CO₂e / an

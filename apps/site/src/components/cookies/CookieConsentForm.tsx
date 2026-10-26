@@ -80,7 +80,7 @@ export default function CookieConsentForm({
                 <li>
                   <Button
                     type="button"
-                    color="secondary"
+                    variant="outlined"
                     onClick={() => {
                       rejectAll()
                     }}

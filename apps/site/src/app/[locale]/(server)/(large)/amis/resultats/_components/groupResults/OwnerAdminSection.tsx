@@ -46,7 +46,7 @@ export default function OwnerAdminSection({ group }: Props) {
               <Button
                 type="button"
                 disabled={pending}
-                color="secondary"
+                variant="outlined"
                 onClick={() => {
                   setIsConfirming(false)
                 }}
@@ -70,7 +70,7 @@ export default function OwnerAdminSection({ group }: Props) {
       {!isConfirming && (
         <Button
           type="button"
-          color="link"
+          variant="link"
           onClick={() => {
             setIsConfirming(true)
           }}

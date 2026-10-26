@@ -17,7 +17,7 @@ export default function WantToActBlock() {
         </Trans>
       </p>
 
-      <ButtonLink color="secondary" href="/gestion-infolettres">
+      <ButtonLink variant="outlined" href="/gestion-infolettres">
         <Trans i18nKey="footer.wantToAct.button">
           Je choisis mes infolettres
         </Trans>

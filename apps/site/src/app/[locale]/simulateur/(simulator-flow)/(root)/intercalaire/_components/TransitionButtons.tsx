@@ -61,7 +61,7 @@ export default function TransitionButtons() {
         disabled={isPending}
         href={SIMULATOR_PATH}
         className="h-full w-14 md:w-auto"
-        color="secondary">
+        variant="outlined">
         <span aria-hidden className="text-xl md:mr-1.5">
           ←
         </span>

@@ -11,7 +11,7 @@ import {
   hasCompletedCurrentSimulation,
   hasCurrentSimulationInProgress,
 } from '@nosgestesclimat/core/features/simulations/helpers/user-simulation-journey'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { Suspense } from 'react'
 import RotatingArrowIcon from '../icons/RotatingArrowIcon'
 import Trans from '../translation/trans/TransServer'
@@ -57,14 +57,14 @@ async function ServerCTAButtons({
 
   return (
     <ContainerTag
-      className={twMerge(
+      className={cn(
         'flex flex-col flex-wrap items-center justify-center gap-2 md:items-start lg:flex-row',
         isButtonList && 'lg:grid lg:grid-cols-2'
       )}>
       <MainButtonContainerTag className="w-full lg:col-span-1 lg:w-auto">
         <ButtonLink
           size="xl"
-          className={twMerge(
+          className={cn(
             'group hover:bg-primary-900 h-16 w-full transition-all duration-300',
             className
           )}
@@ -73,7 +73,7 @@ async function ServerCTAButtons({
           data-testid="main-cta">
           <>
             <span
-              className={twMerge(
+              className={cn(
                 'leading-none',
                 'group-hover:bg-rainbow group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
               )}>
@@ -87,12 +87,12 @@ async function ServerCTAButtons({
         <li className="h-full lg:col-span-1 lg:w-auto">
           <ButtonLink
             size="xl"
-            color="secondary"
+            variant="outlined"
             className="group h-16 px-6"
             data-testid="organisation-link"
             href={ORGANISATION_CREATE_PATH}>
             <span
-              className={twMerge(
+              className={cn(
                 'leading-none',
                 'group-hover:bg-rainbow-dark group-hover:animate-rainbow-fast group-hover:bg-clip-text group-hover:text-transparent motion-reduce:animate-none'
               )}>
@@ -109,7 +109,7 @@ async function ServerCTAButtons({
             data-testid="restart-link"
             className="mt-1 w-full text-base"
             href={START_SIMULATION_PATH}
-            color="link"
+            variant="link"
             size="sm">
             <Trans i18nKey="ctaButtons.retake.label">Repasser le test</Trans>
             <RotatingArrowIcon className="fill-primary-900 ml-3 w-4" />

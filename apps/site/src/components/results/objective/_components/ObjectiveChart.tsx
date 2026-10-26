@@ -4,7 +4,7 @@ import Trans from '@/components/translation/trans/TransClient'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useLocale } from '@/hooks/useLocale'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useObjectiveChart } from './_hooks/useObjectiveChart'
 
@@ -22,7 +22,7 @@ export default function ObjectiveChart({ carbonFootprint, className }: Props) {
   const shouldReduceMotion = useReducedMotion()
   return (
     <div
-      className={twMerge(
+      className={cn(
         'bg-primary-100 mt-8 w-full overflow-visible rounded-xl px-8 pt-12 pb-6',
         className
       )}>
@@ -129,7 +129,7 @@ export default function ObjectiveChart({ carbonFootprint, className }: Props) {
                   )
                 }
                 <div
-                  className={twMerge(
+                  className={cn(
                     'bg-secondary-700 relative z-10 rounded-full',
                     index === 0 ? 'h-5 w-5' : 'h-4 w-4'
                   )}
@@ -137,7 +137,7 @@ export default function ObjectiveChart({ carbonFootprint, className }: Props) {
               </div>
 
               <div
-                className={twMerge(
+                className={cn(
                   'absolute flex w-max flex-col',
                   'bottom-2 left-5 items-start text-left',
                   p.year === 2050 && '-bottom-6'

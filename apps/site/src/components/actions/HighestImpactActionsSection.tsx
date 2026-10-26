@@ -1,5 +1,5 @@
 import type { MaybePersonalizedAction } from '@nosgestesclimat/core/features/actions/types/action'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import { useId } from 'react'
 import Trans from '../translation/trans/TransServer'
 import HighlightedActionCard from './HighlightedActionCard'
@@ -23,7 +23,7 @@ export default function HighestImpactActionsSection({
     <section
       {...props}
       aria-labelledby={headingId}
-      className={twMerge('flex flex-col gap-4', className)}>
+      className={cn('flex flex-col gap-4', className)}>
       <h2
         id={headingId}
         className="mb-0 text-xl/normal font-medium md:text-2xl/normal">

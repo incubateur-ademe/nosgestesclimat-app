@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 const imageClassSize = {
   xs: 'w-6',
@@ -24,18 +24,18 @@ interface Props {
 }
 export default function Logo({ className, size = 'md', unoptimized }: Props) {
   return (
-    <div className={twMerge('flex items-center', className)}>
+    <div className={cn('flex items-center', className)}>
       <Image
         src="/_static/cms/petit_logo_3x_f817f785ce.png"
         alt=""
         width="200"
         height="200"
         unoptimized={unoptimized}
-        className={twMerge('h-auto', imageClassSize[size])}
+        className={cn('h-auto', imageClassSize[size])}
       />
 
       <div
-        className={twMerge(
+        className={cn(
           'text-default origin-left leading-[0.85]! font-extrabold uppercase transition-all duration-500 lg:block',
           textClassSize[size]
         )}>

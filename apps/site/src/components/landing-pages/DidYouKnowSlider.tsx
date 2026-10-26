@@ -7,7 +7,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 // @ts-expect-error package types are wrongly exported
 import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -118,7 +118,7 @@ export default function DidYouKnowSlider({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'bg-heroLightBackground relative pt-16 pb-20',
         className
       )}>
@@ -204,7 +204,7 @@ export default function DidYouKnowSlider({
 
           <Button
             tabIndex={0}
-            color="secondary"
+            variant="outlined"
             title={
               isPlaying ? t('Arrêter le défilement') : t('Lancer le défilement')
             }

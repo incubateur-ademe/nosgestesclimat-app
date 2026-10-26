@@ -2,7 +2,7 @@ import ChoiceInput from '@/components/misc/ChoiceInput'
 import Emoji from '@/design-system/utils/Emoji'
 import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 interface Props {
   question: DottedName
@@ -35,7 +35,7 @@ export default function Choice({
             <>
               {' '}
               <Emoji
-                className={twMerge(
+                className={cn(
                   'inline-flex items-center',
                   isWithinGrid && 'hidden items-center md:inline-flex'
                 )}>

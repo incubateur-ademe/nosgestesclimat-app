@@ -28,7 +28,7 @@ export default function SkipToMainContentLink({
         </p>
         {skipLinksDisplayed.has('main') && (
           <ButtonLink
-            color="secondary"
+            variant="outlined"
             href="#main-content"
             className="focus:ring-primary-700 focus:w-auto focus:ring-2 focus:ring-offset-3 focus:outline-hidden">
             <Trans>Contenu</Trans>
@@ -38,14 +38,14 @@ export default function SkipToMainContentLink({
         {skipLinksDisplayed.has('navigation') && (
           <>
             <ButtonLink
-              color="secondary"
+              variant="outlined"
               href="#header-navigation-desktop"
               className="focus:ring-primary-700 hidden focus:w-auto focus:ring-2 focus:ring-offset-[2px] md:flex">
               <Trans>Menu</Trans>
             </ButtonLink>
 
             <ButtonLink
-              color="secondary"
+              variant="outlined"
               href="#header-navigation-mobile"
               className="focus:ring-primary-700 focus:w-auto focus:ring-2 focus:ring-offset-[2px] md:hidden">
               <Trans>Menu</Trans>
@@ -55,7 +55,7 @@ export default function SkipToMainContentLink({
 
         {skipLinksDisplayed.has('footer') && (
           <ButtonLink
-            color="secondary"
+            variant="outlined"
             href="#footer"
             className="focus:ring-primary-700 focus:w-auto focus:ring-2 focus:ring-offset-3 focus:outline-hidden">
             <Trans>Pied de page</Trans>

@@ -3,13 +3,13 @@ import Trans from '@/components/translation/trans/TransServer'
 import { TUTORIAL_PATH } from '@/constants/urls/paths'
 import {
   baseClassNames,
-  colorClassNames,
+  getVariantClassNames,
   sizeClassNames,
 } from '@/design-system/buttons/buttonStyles'
 import Separator from '@/design-system/layout/Separator'
 import Link from '@/design-system/links/Link'
 import Emoji from '@/design-system/utils/Emoji'
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function InstructionsBanner() {
   return (
@@ -31,18 +31,15 @@ export default function InstructionsBanner() {
         </div>
 
         <p className="mb-4 md:mb-6">
-          <Trans
-            i18nKey="mon-espace.instructions.description.part1">
+          <Trans i18nKey="mon-espace.instructions.description.part1">
             Avant toute chose, nous vous invitons à
           </Trans>{' '}
           <strong>
-            <Trans
-              i18nKey="mon-espace.instructions.description.part2">
+            <Trans i18nKey="mon-espace.instructions.description.part2">
               passer le test
             </Trans>
           </strong>{' '}
-          <Trans
-            i18nKey="mon-espace.instructions.description.part3">
+          <Trans i18nKey="mon-espace.instructions.description.part3">
             pour :
           </Trans>
         </p>
@@ -50,13 +47,11 @@ export default function InstructionsBanner() {
           <li className="flex items-center gap-4">
             <DownArrow className="fill-default h-6 w-6 min-w-6 -rotate-90" />
             <p className="mb-0">
-              <Trans
-                i18nKey="mon-espace.instructions.list.item1.part1">
+              <Trans i18nKey="mon-espace.instructions.list.item1.part1">
                 Retrouver ici
               </Trans>{' '}
               <strong>
-                <Trans
-                  i18nKey="mon-espace.instructions.list.item1.part2">
+                <Trans i18nKey="mon-espace.instructions.list.item1.part2">
                   vos résultats d'empreinte
                 </Trans>
               </strong>
@@ -65,23 +60,19 @@ export default function InstructionsBanner() {
           <li className="flex items-center gap-4">
             <DownArrow className="fill-default h-6 w-6 min-w-6 -rotate-90" />
             <p className="mb-0">
-              <Trans
-                i18nKey="mon-espace.instructions.list.item2.part1">
+              <Trans i18nKey="mon-espace.instructions.list.item2.part1">
                 Découvrir
               </Trans>{' '}
               <strong>
-                <Trans
-                  i18nKey="mon-espace.instructions.list.item2.part2">
+                <Trans i18nKey="mon-espace.instructions.list.item2.part2">
                   vos actions climat personnalisées
                 </Trans>
               </strong>{' '}
-              <Trans
-                i18nKey="mon-espace.instructions.list.item2.part3">
+              <Trans i18nKey="mon-espace.instructions.list.item2.part3">
                 et
               </Trans>{' '}
               <strong>
-                <Trans
-                  i18nKey="mon-espace.instructions.list.item2.part4">
+                <Trans i18nKey="mon-espace.instructions.list.item2.part4">
                   suivre vos progrès
                 </Trans>
               </strong>
@@ -92,23 +83,19 @@ export default function InstructionsBanner() {
             <DownArrow className="fill-default h-6 w-6 min-w-6 -rotate-90" />
             <p className="mb-0">
               <strong>
-                <Trans
-                  i18nKey="mon-espace.instructions.list.item3.part1">
+                <Trans i18nKey="mon-espace.instructions.list.item3.part1">
                   Lancer
                 </Trans>{' '}
               </strong>
-              <Trans
-                i18nKey="mon-espace.instructions.list.item3.part2">
+              <Trans i18nKey="mon-espace.instructions.list.item3.part2">
                 et
               </Trans>{' '}
               <strong>
-                <Trans
-                  i18nKey="mon-espace.instructions.list.item3.part3">
+                <Trans i18nKey="mon-espace.instructions.list.item3.part3">
                   retrouver vos tests collectifs
                 </Trans>
               </strong>{' '}
-              <Trans
-                i18nKey="mon-espace.instructions.list.item3.part4">
+              <Trans i18nKey="mon-espace.instructions.list.item3.part4">
                 (organisations, famille, amis...)
               </Trans>
             </p>
@@ -118,9 +105,9 @@ export default function InstructionsBanner() {
         <div>
           <Link
             href={TUTORIAL_PATH}
-            className={twMerge(
+            className={cn(
               baseClassNames,
-              colorClassNames.primary,
+              getVariantClassNames('filled', 'primary'),
               sizeClassNames.md
             )}
             scroll={false}>

@@ -9,7 +9,7 @@ import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useDebug } from '@/hooks/useDebug'
 import { useFormState } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Question from './summary/Question'
 
 interface Props {
@@ -27,7 +27,7 @@ export default function Summary({
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'my-8 px-4',
         isQuestionListOpen || isDebug ? 'block' : 'hidden'
       )}>
@@ -40,7 +40,7 @@ export default function Summary({
           <Button
             size="xs"
             className="gap-2"
-            color="text"
+            variant="text"
             aria-label={t('Ferme')}
             onClick={() => toggleQuestionList()}>
             <CloseIcon className="fill-primary-700 w-5" />{' '}

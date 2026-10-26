@@ -1,4 +1,4 @@
-import { twMerge } from "cn";
+import { cn } from 'cn'
 
 export default function ShieldIcon({ className }: { className?: string }) {
   return (
@@ -7,7 +7,7 @@ export default function ShieldIcon({ className }: { className?: string }) {
       height="22"
       viewBox="0 0 18 22"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge(
+      className={cn(
         'fill-secondary-700 inline-block stroke-none stroke-2',
         className
       )}

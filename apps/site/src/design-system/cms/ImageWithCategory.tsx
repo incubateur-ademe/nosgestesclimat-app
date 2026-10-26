@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import Badge from '../layout/Badge'
@@ -23,13 +23,13 @@ export default function ImageWithCategory({
   hideBadgeOnMobile?: boolean
 }) {
   return (
-    <div className={twMerge('relative', containerClassName)}>
+    <div className={cn('relative', containerClassName)}>
       <Image
         src={imageSrc ?? null}
         alt={imageAlt ?? ''}
         width={width}
         height={height}
-        className={twMerge(
+        className={cn(
           'h-full w-full rounded-xl object-cover',
           imageClassName
         )}
@@ -37,7 +37,7 @@ export default function ImageWithCategory({
 
       {/* Hidden on mobile */}
       <div
-        className={twMerge(
+        className={cn(
           'absolute top-2 left-2 md:block',
           hideBadgeOnMobile ? 'hidden' : 'block'
         )}>

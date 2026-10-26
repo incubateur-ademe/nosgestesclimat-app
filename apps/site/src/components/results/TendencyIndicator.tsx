@@ -1,6 +1,6 @@
 import { MON_ESPACE_PATH } from '@/constants/urls/paths'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import DownArrow from '../icons/DownArrow'
 import Link from '../Link'
 import Trans from '../translation/trans/TransServer'
@@ -13,7 +13,7 @@ export default function TendencyIndicator({
   return (
     <div className="flex gap-1" data-testid="tendency-indicator">
       <DownArrow
-        className={twMerge(
+        className={cn(
           tendency === 'increase'
             ? '-rotate-135 fill-red-700'
             : '-rotate-45 fill-green-700'

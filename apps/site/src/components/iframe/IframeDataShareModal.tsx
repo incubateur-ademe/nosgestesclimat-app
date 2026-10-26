@@ -128,7 +128,7 @@ export default function IframeDataShareModal({ computedResults }: Props) {
         </div>
         <div className="mt-4 flex gap-4">
           <Button
-            color="secondary"
+            variant="outlined"
             onClick={onReject}
             data-testid="iframe-datashare-refuser">
             {t('Refuser')}

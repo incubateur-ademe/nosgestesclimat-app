@@ -22,7 +22,7 @@ import { getPersonalizedActionDetails } from '@/services/actions/get-personalize
 import type { DefaultPageProps } from '@/types'
 import type { Theme } from '@/types/themes'
 import { toSearchParams } from '@/utils/nextjs/toSearchParams'
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { ActionCommitmentBanner } from './_components/ActionCommitmentBanner'
@@ -140,12 +140,12 @@ export default async function ActionPage({ params, searchParams }: Props) {
         className="mb-10"
       />
       <header
-        className={twMerge(
+        className={cn(
           'mb-10 rounded-2xl border p-5',
           themeClasses.header
         )}>
         <p
-          className={twMerge(
+          className={cn(
             'mb-0 text-sm leading-normal font-bold',
             themeClasses.themeColor
           )}>
@@ -206,7 +206,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
         {action.tips ? (
           <Section
             id={SECTION_ID_I_ACT}
-            className={twMerge('scroll-mt-24', halfWidthSectionClassName)}>
+            className={cn('scroll-mt-24', halfWidthSectionClassName)}>
             <SectionTitle color="yellow">
               <Trans i18nKey="actions.detailPage.sections.act">J'agis</Trans>
             </SectionTitle>
@@ -216,7 +216,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
         {action.financialIncentives ? (
           <Section
             id={SECTION_ID_I_BENEFIT}
-            className={twMerge('scroll-mt-24', halfWidthSectionClassName)}>
+            className={cn('scroll-mt-24', halfWidthSectionClassName)}>
             <SectionTitle color="green">
               <Trans i18nKey="actions.detailPage.sections.incentives">
                 J'y gagne
@@ -244,7 +244,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
         {action.furtherExplore ? (
           <Section
             id={SECTION_ID_FURTHER_READING}
-            className={twMerge(
+            className={cn(
               'scroll-mt-24',
               isThemeSectionDisplayed && 'md:col-span-full'
             )}>

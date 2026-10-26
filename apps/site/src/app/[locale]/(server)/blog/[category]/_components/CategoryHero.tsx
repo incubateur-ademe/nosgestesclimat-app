@@ -1,4 +1,4 @@
-import { twMerge } from 'cn'
+import { cn } from 'cn'
 import CategoryBreadcrumbs from './categoryHero/CategoryBreadcrumbs'
 
 export default function CategoryHero({
@@ -14,7 +14,7 @@ export default function CategoryHero({
 }) {
   return (
     <div
-      className={twMerge(
+      className={cn(
         'bg-heroLightBackground relative mt-12 mb-20 w-full px-4',
         className
       )}>
