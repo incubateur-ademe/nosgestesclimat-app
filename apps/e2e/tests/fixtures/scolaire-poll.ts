@@ -1,6 +1,7 @@
+import { getPlaywrightState } from '../helpers/save-context'
+import { Poll } from '../pages/poll'
 import { ORGANISATION_ADMIN_STATE } from '../state'
 import { test as base } from './organisations'
-import { Poll } from './polls'
 
 const SCOLAIRE_POLL_STATE_KEY = 'poll-scolaire'
 
@@ -15,9 +16,12 @@ const test = base.extend<ScolairePollFixtures>({
   scolairePoll: async ({ browser, organisation, page, storageState }, use) => {
     const useCurrentContext = storageState === ORGANISATION_ADMIN_STATE
     if (useCurrentContext) {
-      return await use(
-        await Poll.fromContext(page, organisation, SCOLAIRE_POLL_STATE_KEY)
-      )
+      const pollData = await getPlaywrightState<{
+        name: string
+        slug?: string
+        inviteLink?: string
+      }>(page, SCOLAIRE_POLL_STATE_KEY)
+      return await use(new Poll(page, organisation, pollData))
     }
 
     const context = await browser.newContext({
@@ -25,9 +29,12 @@ const test = base.extend<ScolairePollFixtures>({
     })
 
     page = await context.newPage()
-    await use(
-      await Poll.fromContext(page, organisation, SCOLAIRE_POLL_STATE_KEY)
-    )
+    const pollData = await getPlaywrightState<{
+      name: string
+      slug?: string
+      inviteLink?: string
+    }>(page, SCOLAIRE_POLL_STATE_KEY)
+    await use(new Poll(page, organisation, pollData))
     await page.context().close()
   },
 })

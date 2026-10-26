@@ -7,6 +7,7 @@ import { Group } from '../../fixtures/groups'
 import { NGCTest } from '../../fixtures/ngc-test'
 import { TutorialPage } from '../../fixtures/tutorial'
 import { User } from '../../fixtures/user'
+import { getPlaywrightState } from '../../helpers/save-context'
 import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../../state'
 
 test.use({ storageState: GROUP_ADMIN_STATE })
@@ -197,13 +198,22 @@ test.describe('A user with a completed test that joined a group', () => {
       lastName: 'Doe',
     })
 
-    const group = await Group.fromContext(
-      await browser
-        .newContext({
-          storageState: GROUP_ADMIN_STATE,
-        })
-        .then((context) => context.newPage())
-    )
+    const adminPage = await browser
+      .newContext({
+        storageState: GROUP_ADMIN_STATE,
+      })
+      .then((context) => context.newPage())
+    const userData = await getPlaywrightState<{
+      firstName: string
+      lastName: string
+      email: string
+    }>(adminPage, 'user')
+    const groupData = await getPlaywrightState<{
+      name: string
+      inviteLink?: string
+      url?: string
+    }>(adminPage, 'group')
+    const group = new Group(adminPage, new User(adminPage, userData), groupData)
 
     await group.joinWithInviteLink(user)
   })

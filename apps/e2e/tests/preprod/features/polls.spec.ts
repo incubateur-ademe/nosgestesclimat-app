@@ -7,6 +7,7 @@ import { Organisation } from '../../fixtures/organisations'
 import { Poll } from '../../fixtures/polls'
 import { TutorialPage } from '../../fixtures/tutorial'
 import { User } from '../../fixtures/user'
+import { getPlaywrightState } from '../../helpers/save-context'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../../state'
 
 test.use({ storageState: ORGANISATION_ADMIN_STATE })
@@ -147,8 +148,26 @@ test.describe('A user with a completed test that joined a poll', () => {
       storageState: ORGANISATION_ADMIN_STATE,
     })
     const adminPage = await adminContext.newPage()
-    const organisation = await Organisation.fromContext(adminPage)
-    const poll = await Poll.fromContext(adminPage, organisation)
+    const userData = await getPlaywrightState<{
+      firstName: string
+      lastName: string
+      email: string
+    }>(adminPage, 'user')
+    const orgData = await getPlaywrightState<{ name: string; slug?: string }>(
+      adminPage,
+      'organisation'
+    )
+    const pollData = await getPlaywrightState<{
+      name: string
+      slug?: string
+      inviteLink?: string
+    }>(adminPage, 'poll')
+    const organisation = new Organisation(
+      adminPage,
+      new User(adminPage, userData),
+      orgData
+    )
+    const poll = new Poll(adminPage, organisation, pollData)
     await adminContext.close()
 
     await page.goto(poll.inviteLink)

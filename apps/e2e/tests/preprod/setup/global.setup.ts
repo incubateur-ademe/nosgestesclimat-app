@@ -1,7 +1,10 @@
 import { expect, test as setup } from '../../fixtures'
 import { Group } from '../../fixtures/groups'
 import { UserSpace } from '../../fixtures/user-account'
-import { saveContext } from '../../helpers/save-context'
+import {
+  saveContext,
+  savePlaywrightState,
+} from '../../helpers/save-context'
 import { BREVO_TEST_TIMEOUT_MS } from '../../mailbox/brevo-mailbox'
 
 import {
@@ -48,7 +51,7 @@ setup(
     // User should be greeted
     await expect(page.getByText('Bienvenue dans votre espace')).toBeInViewport()
 
-    await user.saveInContext()
+    await savePlaywrightState(page, 'user', user.data)
     await saveContext(page, USER_ACCOUNT_STATE)
   }
 )
@@ -69,7 +72,8 @@ setup(
     await group.create()
     await group.copyInviteLink()
 
-    await group.saveInContext()
+    await savePlaywrightState(page, 'user', group.admin.data)
+    await savePlaywrightState(page, 'group', group.data)
     await saveContext(page, GROUP_ADMIN_STATE)
   }
 )
@@ -85,8 +89,9 @@ setup(
     await poll.create()
     await poll.copyInviteLink()
 
-    await organisation.saveInContext()
-    await poll.saveInContext()
+    await savePlaywrightState(page, 'user', organisation.admin.data)
+    await savePlaywrightState(page, 'organisation', organisation.data)
+    await savePlaywrightState(page, 'poll', poll.data)
 
     // @TODO: uncomment when re-enabling mode scolaire
     // Create a second poll in scolaire mode for youth tutorial testing
@@ -94,7 +99,7 @@ setup(
     // await page.goto(scolairePoll.createUrl)
     // await scolairePoll.create('scolaire')
     // await scolairePoll.copyInviteLink()
-    // await scolairePoll.saveInContext('poll-scolaire')
+    // await savePlaywrightState(page, 'poll-scolaire', scolairePoll.data)
 
     await saveContext(page, ORGANISATION_ADMIN_STATE)
   }

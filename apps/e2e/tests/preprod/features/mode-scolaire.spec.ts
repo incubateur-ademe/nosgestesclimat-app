@@ -5,6 +5,8 @@ import { createPage } from '../../fixtures/feature-flags'
 import { NGCTest } from '../../fixtures/ngc-test'
 import { Organisation } from '../../fixtures/organisations'
 import { Poll } from '../../fixtures/polls'
+import { User } from '../../fixtures/user'
+import { getPlaywrightState } from '../../helpers/save-context'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../../state'
 
 test.use({ storageState: NEW_VISITOR_STATE })
@@ -39,12 +41,26 @@ test.describe.skip('scolaire mode', () => {
       })
       const adminPage = await adminContext.newPage()
 
-      const organisation = await Organisation.fromContext(adminPage)
-      const scolairePoll = await Poll.fromContext(
+      const userData = await getPlaywrightState<{
+        firstName: string
+        lastName: string
+        email: string
+      }>(adminPage, 'user')
+      const orgData = await getPlaywrightState<{ name: string; slug?: string }>(
         adminPage,
-        organisation,
-        'poll-scolaire'
+        'organisation'
       )
+      const pollData = await getPlaywrightState<{
+        name: string
+        slug?: string
+        inviteLink?: string
+      }>(adminPage, 'poll-scolaire')
+      const organisation = new Organisation(
+        adminPage,
+        new User(adminPage, userData),
+        orgData
+      )
+      const scolairePoll = new Poll(adminPage, organisation, pollData)
       await adminContext.close()
 
       await page.goto(scolairePoll.inviteLink)
