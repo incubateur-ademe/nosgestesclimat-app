@@ -9,12 +9,12 @@ export default function ImpactCardBadge({
   type: ImpactCardType
   className: string
 }) {
-  const { classNames, label } = getBadgeProperties(type)
+  const { classNames: badgeClassNames, label } = getBadgeProperties(type)
   return (
     <div
       className={cn(
         'mb-2 rounded-md border px-1 py-0.5 text-xs',
-        classNames,
+        badgeClassNames,
         className
       )}>
       {label}
