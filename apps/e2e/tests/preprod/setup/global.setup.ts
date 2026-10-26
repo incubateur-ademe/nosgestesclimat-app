@@ -1,10 +1,13 @@
-import { expect, test as setup } from '../../fixtures'
-import { Group } from '../../fixtures/groups'
-import { UserSpace } from '../../fixtures/user-account'
+import { expect, test as setup } from '../fixtures'
+import { Group } from '../../pages/group'
+import { UserSpace } from '../../pages/user-space'
 import {
   saveContext,
-  savePlaywrightState,
-} from '../../helpers/save-context'
+  saveGroup,
+  saveOrganisation,
+  savePoll,
+  saveUser,
+} from '../fixtures/context'
 import { BREVO_TEST_TIMEOUT_MS } from '../../mailbox/brevo-mailbox'
 
 import {
@@ -13,7 +16,7 @@ import {
   NEW_VISITOR_STATE,
   ORGANISATION_ADMIN_STATE,
   USER_ACCOUNT_STATE,
-} from '../../state'
+} from '../state'
 
 setup.setTimeout(
   process.env.E2E_MAILBOX === 'brevo' ? BREVO_TEST_TIMEOUT_MS : 120_000
@@ -51,7 +54,7 @@ setup(
     // User should be greeted
     await expect(page.getByText('Bienvenue dans votre espace')).toBeInViewport()
 
-    await savePlaywrightState(page, 'user', user.data)
+    await saveUser(page, user)
     await saveContext(page, USER_ACCOUNT_STATE)
   }
 )
@@ -72,8 +75,7 @@ setup(
     await group.create()
     await group.copyInviteLink()
 
-    await savePlaywrightState(page, 'user', group.admin.data)
-    await savePlaywrightState(page, 'group', group.data)
+    await saveGroup(page, group)
     await saveContext(page, GROUP_ADMIN_STATE)
   }
 )
@@ -89,9 +91,8 @@ setup(
     await poll.create()
     await poll.copyInviteLink()
 
-    await savePlaywrightState(page, 'user', organisation.admin.data)
-    await savePlaywrightState(page, 'organisation', organisation.data)
-    await savePlaywrightState(page, 'poll', poll.data)
+    await saveOrganisation(page, organisation)
+    await savePoll(page, poll)
 
     // @TODO: uncomment when re-enabling mode scolaire
     // Create a second poll in scolaire mode for youth tutorial testing

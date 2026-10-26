@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 import { firefoxLaunchOptions, sharedConfig } from './playwright.shared'
-import type { FixturesOptions } from './tests/fixtures/options'
+import type { FixturesOptions } from './tests/preprod/fixtures/options'
 import { NEW_VISITOR_STATE } from './tests/state'
 
 /**

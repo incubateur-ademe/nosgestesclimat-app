@@ -1,7 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test'
 import dotenv from 'dotenv'
-import type { FixturesOptions } from './tests/fixtures/options'
 import { BREVO_TEST_TIMEOUT_MS } from './tests/mailbox/brevo-mailbox'
+import type { FixturesOptions } from './tests/preprod/fixtures/options'
 
 dotenv.config({ quiet: true })
 

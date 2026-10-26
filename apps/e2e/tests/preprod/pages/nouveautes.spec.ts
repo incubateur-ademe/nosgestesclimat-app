@@ -1,4 +1,4 @@
-import { expect, test } from '../../fixtures'
+import { expect, test } from '../fixtures'
 
 test('displays at least one news title', async ({ page }) => {
   await page.goto('/nouveautes')

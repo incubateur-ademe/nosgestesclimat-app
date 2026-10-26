@@ -1,10 +1,9 @@
-import { getPlaywrightState } from '../helpers/save-context'
-import { Poll } from '../pages/poll'
+import { Poll } from '../../pages/poll'
 import { ORGANISATION_ADMIN_STATE } from '../state'
+import { restorePoll } from './context'
+import { test as base } from './organisation'
 
-import { test as base } from './organisations'
-
-export { Poll } from '../pages/poll'
+export { Poll } from '../../pages/poll'
 
 interface PollPageFixtures {
   poll: Poll
@@ -18,12 +17,7 @@ const test = base.extend<PollPageFixtures>({
 
     const useCurrentContext = storageState === ORGANISATION_ADMIN_STATE
     if (useCurrentContext) {
-      const pollData = await getPlaywrightState<{
-        name: string
-        slug?: string
-        inviteLink?: string
-      }>(page, 'poll')
-      return await use(new Poll(page, organisation, pollData))
+      return await use(await restorePoll(page, organisation))
     }
 
     const context = await browser.newContext({
@@ -31,12 +25,7 @@ const test = base.extend<PollPageFixtures>({
     })
 
     page = await context.newPage()
-    const pollData = await getPlaywrightState<{
-      name: string
-      slug?: string
-      inviteLink?: string
-    }>(page, 'poll')
-    await use(new Poll(page, organisation, pollData))
+    await use(await restorePoll(page, organisation))
     await page.context().close()
   },
 })
