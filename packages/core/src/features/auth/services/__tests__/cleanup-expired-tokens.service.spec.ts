@@ -3,7 +3,7 @@ import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { refreshTokenFactory } from '../../factories/refresh-token.factory.ts'
-import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
+import { findAllRefreshTokenByUserId } from '../../repositories/refresh-token.repository.ts'
 import { cleanupExpiredTokens } from '../cleanup-expired-tokens.service.ts'
 
 let userId: string
@@ -24,7 +24,7 @@ describe('cleanupExpiredTokens', () => {
 
     await cleanupExpiredTokens()
 
-    const remaining = await findAllByUserId(userId)
+    const remaining = await findAllRefreshTokenByUserId(userId)
     expect(remaining).toHaveLength(1)
     expect(remaining[0].id).toBe(valid.id)
   })
@@ -32,7 +32,7 @@ describe('cleanupExpiredTokens', () => {
   it('does nothing when there are no tokens', async () => {
     await cleanupExpiredTokens()
 
-    const remaining = await findAllByUserId(userId)
+    const remaining = await findAllRefreshTokenByUserId(userId)
     expect(remaining).toHaveLength(0)
   })
 })

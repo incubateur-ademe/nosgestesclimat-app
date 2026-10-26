@@ -238,12 +238,6 @@ export async function softDeleteUser(
     WHERE o_a.id = organisationAdmin.id
     `
 
-  await session.organisationAdministrator.deleteMany({
-    where: {
-      id: userId,
-    },
-  })
-
   await session.verifiedUser.deleteMany({
     where: {
       id: userId,

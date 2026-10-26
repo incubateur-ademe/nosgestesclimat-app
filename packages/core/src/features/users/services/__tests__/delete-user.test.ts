@@ -28,7 +28,7 @@ describe('deleteUser', () => {
   it('should delete the verified user, the organisation administrator and the refresh tokens linked to the user deleted', async () => {
     const user = await userFactory.verified().create()
 
-    await organisationFactory.withAdministrator(user.email).create()
+    await organisationFactory.withAdministrator(user).create()
 
     await refreshTokenFactory
       .params({
