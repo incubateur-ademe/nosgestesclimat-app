@@ -29,8 +29,8 @@ export default function ImpactMatrixPage() {
       </div>
 
       <ul className="align-items-stretch grid grid-cols-1 items-stretch gap-4 pb-28 sm:grid-cols-2 lg:grid-cols-3">
-        {impactMatrixData.map((item, index) => (
-          <ImpactCard {...item} key={`impact-matrix-item-${index}`} />
+        {impactMatrixData.map((item) => (
+          <ImpactCard {...item} key={`impact-matrix-item-${item.id}`} />
         ))}
       </ul>
     </>

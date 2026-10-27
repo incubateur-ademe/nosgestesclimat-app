@@ -3,6 +3,7 @@ import type { ImpactMatrixItem } from '../_types/type'
 
 export const impactMatrixData: ImpactMatrixItem[] = [
   {
+    id: 'utilisable',
     type: 'usage',
     title: <Trans i18nKey="impact_matrix.items.first.title">Utilisable</Trans>,
     description: (
@@ -20,6 +21,7 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     ),
   },
   {
+    id: 'utilisé',
     type: 'usage',
     title: <Trans i18nKey="impact_matrix.items.second.title">Utilisé</Trans>,
     description: (
@@ -40,6 +42,7 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     ),
   },
   {
+    id: 'utile',
     type: 'impact',
     title: <Trans i18nKey="impact_matrix.items.third.title">Utile</Trans>,
     description: (
@@ -65,6 +68,7 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     ),
   },
   {
+    id: 'impactant',
     type: 'impact',
     title: <Trans i18nKey="impact_matrix.items.fourth.title">Impactant</Trans>,
     description: (
@@ -81,6 +85,7 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     ),
   },
   {
+    id: 'efficient',
     type: 'efficiency',
     title: <Trans i18nKey="impact_matrix.items.fifth.title">Efficient</Trans>,
     description: (
