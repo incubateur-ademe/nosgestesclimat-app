@@ -33,7 +33,7 @@ export default async function Email({
     <>
       <Title
         data-testid="tutoriel-title"
-        className="mt-6 text-lg md:mt-10 md:text-2xl"
+        className="mt-6 mb-2 text-lg md:mt-10 md:text-2xl"
         title={
           hasContest ? (
             isSchoolMode ? (
@@ -55,49 +55,46 @@ export default async function Email({
             </Trans>
           )
         }
-        subtitle={
-          <>
-            {hasContest ? (
-              <span>
-                {isSchoolMode ? (
-                  <Trans
-                    values={{ organisationName }}
-                    i18nKey="tutorial.email.contest.youth">
-                    Vérifie ton e-mail pour le tirage au sort du jeu concours{' '}
-                    <strong>{'{{organisationName}}'}</strong>. Tes résultats
-                    d’empreinte carbone seront également conservés dans un
-                    espace personnel sur Nos Gestes Climat.
-                  </Trans>
-                ) : (
-                  <Trans
-                    values={{ organisationName }}
-                    i18nKey="tutorial.email.contest.default">
-                    Veuillez vérifier votre adresse e-mail pour le tirage au
-                    sort du jeu concours{' '}
-                    <strong>{'{{organisationName}}'}</strong>. Vos résultats
-                    d’empreinte carbone seront également conservés dans un
-                    espace personnel sur Nos Gestes Climat.
-                  </Trans>
-                )}
-              </span>
-            ) : isSchoolMode ? (
-              <Trans i18nKey="tutorial.email.subtitle.youth">
-                Pour conserver tes résultats et les retrouver à l'avenir dans{' '}
-                <strong>ton espace personnel</strong>
+      />
+      <p className="text-slate-500">
+        {hasContest ? (
+          <span>
+            {isSchoolMode ? (
+              <Trans
+                values={{ organisationName }}
+                i18nKey="tutorial.email.contest.youth">
+                Vérifie ton e-mail pour le tirage au sort du jeu concours{' '}
+                <strong>{'{{organisationName}}'}</strong>. Tes résultats
+                d’empreinte carbone seront également conservés dans un espace
+                personnel sur Nos Gestes Climat.
               </Trans>
             ) : (
-              <Trans i18nKey="tutorial.email.subtitle.default">
-                Pour conserver vos résultats et les retrouver à l'avenir dans{' '}
-                <strong>votre espace personnel</strong>
+              <Trans
+                values={{ organisationName }}
+                i18nKey="tutorial.email.contest.default">
+                Veuillez vérifier votre adresse e-mail pour le tirage au sort du
+                jeu concours <strong>{'{{organisationName}}'}</strong>. Vos
+                résultats d’empreinte carbone seront également conservés dans un
+                espace personnel sur Nos Gestes Climat.
               </Trans>
             )}
+          </span>
+        ) : isSchoolMode ? (
+          <Trans i18nKey="tutorial.email.subtitle.youth">
+            Pour conserver tes résultats et les retrouver à l'avenir dans{' '}
+            <strong>ton espace personnel</strong>
+          </Trans>
+        ) : (
+          <Trans i18nKey="tutorial.email.subtitle.default">
+            Pour conserver vos résultats et les retrouver à l'avenir dans{' '}
+            <strong>votre espace personnel</strong>
+          </Trans>
+        )}
 
-            <span className="text-secondary-700 ml-2 inline-block font-bold italic">
-              <Trans i18nKey="common.optional">facultatif</Trans>
-            </span>
-          </>
-        }
-      />
+        <span className="text-secondary-700 ml-2 inline-block font-bold italic">
+          <Trans i18nKey="common.optional">facultatif</Trans>
+        </span>
+      </p>
       <UserProvider userSession={user} simulation={currentSimulation}>
         <QueryClientProviderWrapper>
           <AuthenticateUserForm

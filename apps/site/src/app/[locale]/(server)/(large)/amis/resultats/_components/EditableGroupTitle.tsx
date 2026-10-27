@@ -65,33 +65,37 @@ export default function EditableGroupTitle({
             data-testid="group-edit-input-name"
           />
         ) : (
-          <Title
-            data-testid="group-name"
-            className="text-xl md:text-2xl"
-            title={
-              <span className="flex items-center justify-between">
-                <span>
-                  <Emoji>{group?.emoji}</Emoji> <span>{group?.name}</span>
-                </span>
+          <>
+            <Title
+              data-testid="group-name"
+              className="mb-2 text-xl md:text-2xl"
+              title={
+                <span className="flex items-center justify-between">
+                  <span>
+                    <Emoji>{group.emoji}</Emoji> <span>{group.name}</span>
+                  </span>
 
-                {isOwner ? (
-                  <Button
-                    className="h-12 w-12 p-1!"
-                    aria-label={t('Modifier le nom du groupe')}
-                    onClick={() => {
-                      setIsEditingTitle(true)
-                    }}
-                    variant="outlined"
-                    data-testid="group-name-edit-button">
-                    <PencilIcon className="stroke-primary-700 w-4" />
-                  </Button>
-                ) : null}
-              </span>
-            }
-            subtitle={t('Créé par {{name}}', {
-              name: isOwner ? vousWord : group?.administrator?.name,
-            })}
-          />
+                  {isOwner ? (
+                    <Button
+                      className="h-12 w-12 p-1!"
+                      aria-label={t('Modifier le nom du groupe')}
+                      onClick={() => {
+                        setIsEditingTitle(true)
+                      }}
+                      variant="outlined"
+                      data-testid="group-name-edit-button">
+                      <PencilIcon className="stroke-primary-700 w-4" />
+                    </Button>
+                  ) : null}
+                </span>
+              }
+            />
+            <p className="text-slate-500">
+              {t('Créé par {{name}}', {
+                name: isOwner ? vousWord : group.administrator.name,
+              })}
+            </p>
+          </>
         )}
       </div>
     </>

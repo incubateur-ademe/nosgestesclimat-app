@@ -23,15 +23,17 @@ export default async function DemanderDemoPage() {
                 Demander une démo
               </Trans>
             }
-            subtitle={
-              <Trans i18nKey="organisations.demanderDemo.subtitle">
-                Réservez un créneau pour assister à une démonstration de notre
-                fonctionnalité dédiée aux organisations (entreprises,
-                associations, écoles…) et vous permettre de diffuser le test de
-                Nos Gestes Climat à votre audience.
-              </Trans>
-            }
+            className="mb-2"
           />
+          <p className="text-slate-500">
+            {' '}
+            <Trans i18nKey="organisations.demanderDemo.subtitle">
+              Réservez un créneau pour assister à une démonstration de notre
+              fonctionnalité dédiée aux organisations (entreprises,
+              associations, écoles…) et vous permettre de diffuser le test de
+              Nos Gestes Climat à votre audience.
+            </Trans>
+          </p>
           <div className="w-full max-w-full overflow-visible">
             <iframe
               loading="lazy"

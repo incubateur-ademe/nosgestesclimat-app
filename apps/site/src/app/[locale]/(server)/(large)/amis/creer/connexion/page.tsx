@@ -37,10 +37,11 @@ export default async function GroupConnexionPage() {
 
       <StepsDisplay currentStep={1} />
 
-      <Title
-        title={t("Créer un groupe d'amis")}
-        subtitle={t('Invitez vos proches à passer le test')}
-      />
+      <Title title={t("Créer un groupe d'amis")} className="mb-2" />
+
+      <p className="text-slate-500">
+        {t('Invitez vos proches à passer le test')}
+      </p>
 
       <QueryClientProviderWrapper>
         <UserProvider userSession={userSession}>

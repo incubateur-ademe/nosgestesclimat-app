@@ -11,7 +11,6 @@ const meta: Meta<typeof Title> = {
   tags: ['autodocs'],
   argTypes: {
     title: { control: 'text', description: 'Le titre principal' },
-    subtitle: { control: 'text', description: 'Le sous-titre' },
     tag: {
       control: 'select',
       options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -33,7 +32,6 @@ export const Default: Story = {
 export const WithSubtitle: Story = {
   args: {
     title: 'Titre avec un sous-titre',
-    subtitle: 'Un sous-titre pour donner plus de contexte.',
   },
 }
 
