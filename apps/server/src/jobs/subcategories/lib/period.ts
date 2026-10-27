@@ -2,7 +2,7 @@
  * Exported period: resolves bounds from `--period` or `--start-date` /
  * `--end-date`.
  *
- * `Simulation.date` is a `timestamp without time zone`: naive bounds
+ * `Simulation.createdAt` is a `timestamp without time zone`: naive bounds
  * (`YYYY-MM-DD HH:MM:SS`) are compared as-is, with no timezone conversion.
  */
 

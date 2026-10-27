@@ -1,102 +1,114 @@
-# Export des sous catégories
+# Sub-category export
 
-Calcule les **sous catégories** pour les simulations stockées en base, et les
-exporte en CSV dans le bucket Scaleway.
+Computes the **sub-categories** of the simulations stored in the database and
+exports them as CSV to the Scaleway bucket.
 
-Le format du CSV (séparateur `;`, virgule décimale) est celui attendu par les
-outils d'analyse des postes (Ravijen, page de fin, import PostHog).
+The CSV format (`;` separator, decimal comma) is the one the post analysis tools
+expect (Ravijen, end page, PostHog import).
 
-## Lancer un mois
+## Running a month
 
 ```sh
-# Sur Scalingo (le code doit être déployé sur l'app)
+# On Scalingo (the code must be deployed on the app)
 scalingo --app nosgestesclimat-preprod run --detached \
   "npm run jobs:exportSubcategories -- --period 2026-01"
 
-# Suivre l'exécution (remplacer one-off-XXXX par l'identifiant affiché)
+# Follow the run (replace one-off-XXXX with the printed id)
 scalingo --app nosgestesclimat-preprod logs --filter one-off-XXXX
 ```
 
-> ⚠️ La CLI Scalingo (< 1.51) n'arrive pas à s'attacher aux one-offs :
-> `run` sans `--detached` échoue avec `exit status 1` alors que le conteneur
-> démarre. Utiliser `--detached` puis `logs --filter`.
+> ⚠️ The Scalingo CLI (< 1.51) cannot attach to one-offs: `run` without
+> `--detached` fails with `exit status 1` while the container does start. Use
+> `--detached`, then `logs --filter`.
 
-Un worker one-off est tué après **1 h sans écriture sur stdout** : le job écrit
-un heartbeat toutes les 5 min, et la progression de chaque lot.
+A one-off worker is killed after **1 hour without stdout output**: the job
+prints a heartbeat every 5 minutes, plus the progression of every batch.
 
-| Option                        | Défaut  | Rôle                                                                 |
-| ----------------------------- | ------- | -------------------------------------------------------------------- |
-| `-p`, `--period`              | —       | Mois à exporter (`YYYY-MM`)                                          |
-| `--start-date` / `--end-date` | —       | Période explicite (`--end-date` incluse)                             |
-| `-b`, `--batch`               | `1000`  | Taille des lots (~20 s par lot)                                      |
-| `-s`, `--schema`              | `ngc`   | Schéma Postgres                                                      |
-| `-f`, `--from`                | `auto`  | Reprise depuis le checkpoint du bucket, ou `0` pour repartir de zéro |
-| `--no-upload`                 | —       | Écrit en local seulement (debug)                                     |
-| `--sample-per-version`        | —       | **Pré-vol** : au plus N simulations par version                      |
-| `--sample-mode`               | `first` | Pré-vol : `first`, `spread` (réparti) ou `random`                    |
-| `--sample-seed`               | `0`     | Pré-vol, mode `random` : graine                                      |
-| `--versions`                  | —       | Pré-vol : restreindre à certaines versions                           |
-| `-v`, `--verbose`             | —       | Détail par simulation                                                |
+| Option                        | Default | Role                                                      |
+| ----------------------------- | ------- | --------------------------------------------------------- |
+| `-p`, `--period`              | —       | Month to export (`YYYY-MM`)                               |
+| `--start-date` / `--end-date` | —       | Explicit period (`--end-date` included)                   |
+| `-b`, `--batch`               | `1000`  | Batch size (~20 s per batch)                              |
+| `-s`, `--schema`              | `ngc`   | Postgres schema                                           |
+| `-f`, `--from`                | `auto`  | Resume from the bucket checkpoint, or `0` to start over   |
+| `--no-upload`                 | —       | Write locally only (debug)                                |
+| `--sample-per-version`        | —       | **Pre-flight**: at most N simulations per version         |
+| `--sample-mode`               | `first` | Pre-flight: `first`, `spread` (evenly spaced) or `random` |
+| `--sample-seed`               | `0`     | Pre-flight, `random` mode: draw seed                      |
+| `--versions`                  | —       | Pre-flight: restrict to some versions                     |
+| `-v`, `--verbose`             | —       | Per-simulation detail                                     |
 
-## Sorties
+## Outputs
 
 ```
-ngc/export-subcategories/<période>/sous-categories-<période>.csv
-ngc/export-subcategories/<période>/sous-categories-<période>.csv.checkpoint.json
+ngc/export-subcategories/<period>/sous-categories-<period>.csv
+ngc/export-subcategories/<period>/sous-categories-<period>.csv.checkpoint.json
 ngc/export-subcategories/_model-cache/<version>.json
 ```
 
-Le CSV et le checkpoint sont envoyés tous les 25 lots et en fin de run : un run
-interrompu reprend au lot suivant avec `--from auto` (défaut). Le cache des
-règles de modèle évite de retélécharger les tarballs npm en cas de reprise.
+The CSV and the checkpoint are uploaded every 25 batches and at the end of the
+run: an interrupted run resumes at the next batch with `--from auto` (default).
+The model rules cache avoids downloading the npm tarballs again on resume.
 
-## Pré-vol avant un run complet
+## Pre-flight before a full run
 
-Sur une longue période, valider d'abord la compatibilité des règles sur un
-échantillon :
+On a long period, validate the rule compatibility on a sample first:
 
 ```sh
 scalingo --app nosgestesclimat-preprod run --detached \
   "npm run jobs:exportSubcategories -- --period 2026-01 --sample-per-version 50 --sample-mode spread"
 ```
 
-Le rapport final donne, par version de modèle : nombre de simulations en base,
-taille de l'échantillon, lignes écrites, incohérentes, erreurs, ignorées et jeu
-de règles appliqué. Un CSV d'échantillon n'est **pas** exhaustif : il sert au
-diagnostic, pas à l'analyse.
+The final report gives, per model version: number of simulations in the
+database, sample size, lines written, incoherent, errors, skipped, and the rules
+set applied. A sample CSV is **not** exhaustive: it is for diagnosis, not for
+analysis.
 
-## Règles de sous catégories
+## Sub-category rules
 
-Elles vivent dans [`rules/`](./rules) et **font foi** :
+They live in [`rules/`](./rules) and are the **source of truth**:
 
-| Fichier                            | Rôle                                                          |
-| ---------------------------------- | ------------------------------------------------------------- |
-| `subcategories.yaml`               | fichier de base, définit les colonnes du CSV                  |
-| `subcategories.before-4.16.0.yaml` | petit déjeuner (profil → composants), électricité du logement |
-| `subcategories.before-4.10.1.yaml` | électricité via `consommation totale collectif`               |
-| `subcategories.before-4.10.0.yaml` | chauffage sans `mode`, gabarit voiture `berline`              |
-| `subcategories.before-4.9.1.yaml`  | `services sociétaux` non ventilables par branche NAF          |
+| File                               | Role                                                    |
+| ---------------------------------- | ------------------------------------------------------- |
+| `subcategories.yaml`               | base file, defines the CSV columns                      |
+| `subcategories.before-4.16.0.yaml` | breakfast (profile → components), household electricity |
+| `subcategories.before-4.10.1.yaml` | electricity through `consommation totale collectif`     |
+| `subcategories.before-4.10.0.yaml` | heating without `mode`, `berline` car template          |
+| `subcategories.before-4.9.1.yaml`  | `services sociétaux` not splittable by NAF branch       |
 
-Le catalogue [`lib/rules.ts`](./lib/rules.ts) associe chaque plage de versions
-aux fichiers à fusionner (plancher : **4.6.0**). Une variante ne doit que
-**redéfinir** des règles existantes : le job refuse de démarrer si elle en
-ajoute, car les colonnes du CSV en dépendraient. Il refuse aussi de démarrer si
-un fichier référencé n'existe pas — `getModelFromSource` ignore silencieusement
-un fichier absent, une variante renommée serait sinon perdue sans erreur.
+The [`lib/rules.ts`](./lib/rules.ts) catalogue maps each version range to the
+files to merge (floor: **4.6.0**). A variant may only **override** existing
+rules: the job refuses to start if one adds a rule, because the CSV columns
+would depend on it. It also refuses to start if a referenced file is missing —
+`getModelFromSource` silently ignores an absent file, so a renamed variant would
+otherwise be lost without an error.
 
-## Détails d'implémentation
+## Implementation notes
 
-- **Connexion** : `psql` (présent dans l'image) avec
-  `SCALINGO_POSTGRESQL_URL`. `DATABASE_URL` contient `connection_limit`, un
-  paramètre Prisma que libpq refuse — l'URL est nettoyée si nécessaire.
-- **Règles du modèle** : téléchargées depuis npm version par version
-  (`lib/model-rules.ts`), avec 4 tentatives et repli sur le cache bucket. Un
-  `ECONNRESET` isolé ne fait pas perdre de simulation.
-- **Mémoire** : ~45 Mo de RSS par moteur Publicodes, mis en cache par version
-  sans éviction. Sur un mois (≤ 9 versions en pratique) on reste sous ~500 Mo ;
-  pour une période longue, lancer mois par mois. Taille **L** suffisante.
-- **Débit mesuré** : ~23 ms par simulation, soit ~40 min pour un mois de prod
-  (100 k simulations) et ~8 h pour une année.
+- **Period column**: the period, the keyset pagination and the `date` column of
+  the CSV all use `createdAt`. It is the only indexed column
+  (`Simulation_createdAt_idx`) and the only one never rewritten (`updatedAt`
+  changes on every autosave, and moving a simulation to another month would
+  change what an export means). `Simulation.date` is **not** read: it is set by
+  the browser without validation, and measured on the 2026 insertions it is
+  unreliable — 1.8 % of March rows fall on another day than their `createdAt`,
+  up to 2.8 years earlier (a tab left open), and 2 252 rows have a `date` in the
+  future, including year 2038 (32-bit epoch overflow). The column name `date` is
+  kept because downstream tools rely on it.
+- **Connection**: `psql` (provided by the image) with
+  `SCALINGO_POSTGRESQL_URL`. `DATABASE_URL` carries `connection_limit`, a Prisma
+  parameter libpq rejects — the URL is cleaned when needed. Every value reaching
+  SQL is bound as a psql variable (`-v`, `:'name'` / `:"name"`), never
+  concatenated; the password is passed through `PGPASSWORD` so it does not show
+  in `ps`.
+- **Model rules**: downloaded from npm version by version
+  (`lib/model-rules.ts`), with 4 attempts and a bucket cache fallback. An
+  isolated `ECONNRESET` does not lose a simulation.
+- **Memory**: ~45 MB RSS per Publicodes engine, cached per version without
+  eviction. Over a month (≤ 9 versions in practice) this stays below ~500 MB; on
+  a long period, run month by month. Size **L** is enough.
+- **Measured throughput**: ~23 ms per simulation, i.e. ~40 min for a production
+  month (100 k simulations) and ~8 h for a year.
 
 ## Tests
 
@@ -104,5 +116,5 @@ un fichier absent, une variante renommée serait sinon perdue sans erreur.
 npx vitest run src/jobs/subcategories
 ```
 
-Les tests couvrent la résolution de période, le nettoyage d'URL, les clés S3, le
-catalogue de versions et l'intégrité des fichiers de règles.
+The tests cover period resolution, URL cleaning, S3 keys, the version catalogue
+and the integrity of the rules files.

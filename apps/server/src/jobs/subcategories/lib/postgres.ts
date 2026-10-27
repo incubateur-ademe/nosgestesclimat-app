@@ -14,7 +14,11 @@ import { execFileSync } from 'node:child_process'
 
 export type Simulation = {
   id: string
-  date: string
+  /**
+   * Insertion timestamp: the indexed column, used for paging and exported as
+   * the `date` column of the CSV.
+   */
+  createdAt: string
   model: string
   progression: number
   situation: Record<string, unknown>
@@ -64,40 +68,81 @@ export const resolveDatabaseUrl = (
 
 const MAX_BUFFER = 1024 * 1024 * 200
 
-/** Runs a query and returns the JSON aggregated by `json_agg`. */
-export const queryJson = <T>({
-  url,
-  schema,
-  query,
-}: {
+type QueryVariables = Record<string, string | number | null | undefined>
+
+/**
+ * Removes the password from a connection URL so it is not exposed in the
+ * process arguments (`ps` shows them to every user of the host). It is passed
+ * to psql through `PGPASSWORD` instead.
+ */
+const splitPassword = (
   url: string
-  schema: string
-  query: string
-}): T => {
-  const stdout = execFileSync(
-    'psql',
-    [
-      url,
-      '-v',
-      'ON_ERROR_STOP=1',
-      '-t',
-      '-A',
-      '-c',
-      query.replaceAll('$schema', schema),
-    ],
-    { maxBuffer: MAX_BUFFER, encoding: 'utf8' }
-  )
-  return JSON.parse(stdout) as T
+): { url: string; password: string | null } => {
+  try {
+    const parsed = new URL(url)
+    if (!parsed.password) return { url, password: null }
+    const password = decodeURIComponent(parsed.password)
+    parsed.password = ''
+    return { url: parsed.toString(), password }
+  } catch {
+    return { url, password: null }
+  }
 }
 
 /**
- * A batch of simulations ordered by `date` (then `id`). Keyset pagination stays
- * stable even if simulations are inserted while the run is in progress.
+ * Runs a query and returns the JSON aggregated by `json_agg`.
+ *
+ * Values are bound as psql variables: `:'name'` is rendered by psql as a
+ * properly quoted string literal, `:"name"` as a quoted identifier. An
+ * apostrophe or a double quote in a value can therefore not break out of SQL.
+ *
+ * The query goes through stdin, not `-c`: psql only expands variables when it
+ * reads from stdin or a file.
+ */
+export const queryJson = <T>({
+  url,
+  query,
+  variables = {},
+}: {
+  url: string
+  query: string
+  variables?: QueryVariables
+}): T => {
+  const { url: safeUrl, password } = splitPassword(url)
+  const args = [safeUrl, '-v', 'ON_ERROR_STOP=1', '-t', '-A']
+  for (const [name, value] of Object.entries(variables)) {
+    if (value == null) continue
+    args.push('-v', `${name}=${value}`)
+  }
+
+  const stdout = execFileSync('psql', args, {
+    input: query,
+    maxBuffer: MAX_BUFFER,
+    encoding: 'utf8',
+    env: password ? { ...process.env, PGPASSWORD: password } : process.env,
+  })
+  return JSON.parse(stdout) as T
+}
+
+const assertInteger = (name: string, value: number): number => {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`${name} must be an integer >= 1, got ${value}`)
+  }
+  return value
+}
+
+/**
+ * A batch of simulations ordered by `createdAt` (then `id`).
+ *
+ * Everything goes through `createdAt`: it is the only indexed column
+ * (`Simulation_createdAt_idx`) and the only one never rewritten, unlike
+ * `updatedAt`. `Simulation.date` is not read at all — it is set by the browser
+ * without validation, so it can be backdated by years or overflow to 2038.
  */
 export const fetchSimulationBatch = ({
   url,
   schema,
-  lastDate,
+  lastCreatedAt,
   lastId,
   startDate,
   endDate,
@@ -105,32 +150,38 @@ export const fetchSimulationBatch = ({
 }: {
   url: string
   schema: string
-  lastDate: string | null
+  lastCreatedAt: string | null
   lastId: string | null
   startDate: string | null
   endDate: string | null
   limit: number
 }): Simulation[] => {
-  const conditions: string[] = []
-  if (lastDate && lastId) {
-    conditions.push(`(date, id) > (timestamp '${lastDate}', '${lastId}'::uuid)`)
-  } else if (startDate) {
-    conditions.push(`date >= timestamp '${startDate}'`)
-  }
-  if (endDate) conditions.push(`date < timestamp '${endDate}'`)
-
-  const where = conditions.length > 0 ? `where ${conditions.join(' and ')}` : ''
+  const cursor =
+    lastCreatedAt && lastId
+      ? `("createdAt", id) > (:'lastCreatedAt'::timestamp, :'lastId'::uuid)`
+      : startDate
+        ? `"createdAt" >= :'startDate'::timestamp`
+        : 'true'
+  const upper = endDate ? `and "createdAt" < :'endDate'::timestamp` : ''
 
   return queryJson<Simulation[]>({
     url,
-    schema,
+    variables: {
+      schema,
+      lastCreatedAt,
+      lastId,
+      startDate,
+      endDate,
+      limit: assertInteger('--batch', limit),
+    },
     query: `
+      /* sql */
       select coalesce(json_agg(t), '[]') from (
-        select id, date, model, progression, situation
-        from $schema."Simulation"
-        ${where}
-        order by date, id
-        limit ${limit}
+        select id, "createdAt", model, progression, situation
+        from :"schema"."Simulation"
+        where ${cursor} ${upper}
+        order by "createdAt", id
+        limit :'limit'::int
       ) t;
     `,
   })
@@ -148,7 +199,7 @@ export const fetchSampledSimulations = ({
   perVersion,
   sampleMode,
   sampleSeed,
-  versionSql,
+  versionExpression,
   versionFilter,
 }: {
   url: string
@@ -158,15 +209,17 @@ export const fetchSampledSimulations = ({
   perVersion: number
   sampleMode: 'first' | 'spread' | 'random'
   sampleSeed: string
-  versionSql: string
+  /** Internal SQL expression (see `SQL_VERSION`), never built from input. */
+  versionExpression: string
   versionFilter: string[] | null
 }): Simulation[] => {
   const conditions: string[] = []
-  if (startDate) conditions.push(`s.date >= timestamp '${startDate}'`)
-  if (endDate) conditions.push(`s.date < timestamp '${endDate}'`)
-  if (versionFilter != null) {
-    const list = versionFilter.map((version) => `'${version}'`).join(', ')
-    conditions.push(`${versionSql} in (${list})`)
+  if (startDate) conditions.push(`s."createdAt" >= :'startDate'::timestamp`)
+  if (endDate) conditions.push(`s."createdAt" < :'endDate'::timestamp`)
+  if (versionFilter != null && versionFilter.length > 0) {
+    conditions.push(
+      `${versionExpression} = any(string_to_array(:'versionFilter', ','))`
+    )
   }
   const where = conditions.length > 0 ? `where ${conditions.join(' and ')}` : ''
 
@@ -175,16 +228,16 @@ export const fetchSampledSimulations = ({
     // One point per chronological slice: `ntile` splits the version into
     // `perVersion` buckets, and the first simulation of each is kept.
     inner = `
-      select id, date, model, progression, situation from (
-        select id, date, model, progression, situation,
-          row_number() over (partition by version, bucket order by date, id) as rn
+      select id, "createdAt", model, progression, situation from (
+        select id, "createdAt", model, progression, situation,
+          row_number() over (partition by version, bucket order by "createdAt", id) as rn
         from (
-          select s.id, s.date, s.model, s.progression, s.situation,
-            ${versionSql} as version,
-            ntile(${perVersion}) over (
-              partition by ${versionSql} order by s.date, s.id
+          select s.id, s."createdAt", s.model, s.progression, s.situation,
+            ${versionExpression} as version,
+            ntile(:'perVersion'::int) over (
+              partition by ${versionExpression} order by s."createdAt", s.id
             ) as bucket
-          from $schema."Simulation" s
+          from :"schema"."Simulation" s
           ${where}
         ) bucketed
       ) ranked
@@ -194,35 +247,45 @@ export const fetchSampledSimulations = ({
     // Reproducible draw without `setseed()` (which would apply to the whole
     // session): the order depends on `md5(id + seed)`.
     inner = `
-      select id, date, model, progression, situation
+      select id, "createdAt", model, progression, situation
       from (
-        select s.id, s.date, s.model, s.progression, s.situation,
+        select s.id, s."createdAt", s.model, s.progression, s.situation,
           row_number() over (
-            partition by ${versionSql}
-            order by md5(s.id::text || '${sampleSeed.replaceAll("'", "''")}')
+            partition by ${versionExpression}
+            order by md5(s.id::text || :'sampleSeed')
           ) as rn
-        from $schema."Simulation" s
+        from :"schema"."Simulation" s
         ${where}
       ) ranked
-      where rn <= ${perVersion}
+      where rn <= :'perVersion'::int
     `
   } else {
     inner = `
-      select id, date, model, progression, situation
+      select id, "createdAt", model, progression, situation
       from (
-        select s.id, s.date, s.model, s.progression, s.situation,
-          row_number() over (partition by ${versionSql} order by s.date, s.id) as rn
-        from $schema."Simulation" s
+        select s.id, s."createdAt", s.model, s.progression, s.situation,
+          row_number() over (partition by ${versionExpression} order by s."createdAt", s.id) as rn
+        from :"schema"."Simulation" s
         ${where}
       ) ranked
-      where rn <= ${perVersion}
+      where rn <= :'perVersion'::int
     `
   }
 
   return queryJson<Simulation[]>({
     url,
-    schema,
-    query: `select coalesce(json_agg(t), '[]') from (${inner} order by date, id) t;`,
+    variables: {
+      schema,
+      startDate,
+      endDate,
+      perVersion: assertInteger('--sample-per-version', perVersion),
+      sampleSeed,
+      versionFilter: versionFilter?.join(',') ?? '',
+    },
+    query: `
+      /* sql */
+      select coalesce(json_agg(t), '[]') from (${inner} order by "createdAt", id) t;
+    `,
   })
 }
 
@@ -232,33 +295,41 @@ export const fetchVersionCounts = ({
   schema,
   startDate,
   endDate,
-  versionSql,
+  versionExpression,
   versionFilter,
 }: {
   url: string
   schema: string
   startDate: string | null
   endDate: string | null
-  versionSql: string
+  /** Internal SQL expression (see `SQL_VERSION`), never built from input. */
+  versionExpression: string
   versionFilter: string[] | null
 }): { version: string; count: number; models: number }[] => {
   const conditions: string[] = []
-  if (startDate) conditions.push(`s.date >= timestamp '${startDate}'`)
-  if (endDate) conditions.push(`s.date < timestamp '${endDate}'`)
-  if (versionFilter != null) {
-    const list = versionFilter.map((version) => `'${version}'`).join(', ')
-    conditions.push(`${versionSql} in (${list})`)
+  if (startDate) conditions.push(`s."createdAt" >= :'startDate'::timestamp`)
+  if (endDate) conditions.push(`s."createdAt" < :'endDate'::timestamp`)
+  if (versionFilter != null && versionFilter.length > 0) {
+    conditions.push(
+      `${versionExpression} = any(string_to_array(:'versionFilter', ','))`
+    )
   }
   const where = conditions.length > 0 ? `where ${conditions.join(' and ')}` : ''
 
   return queryJson({
     url,
-    schema,
+    variables: {
+      schema,
+      startDate,
+      endDate,
+      versionFilter: versionFilter?.join(',') ?? '',
+    },
     query: `
+      /* sql */
       select coalesce(json_agg(t), '[]') from (
-        select ${versionSql} as version, count(*)::int as count,
+        select ${versionExpression} as version, count(*)::int as count,
           count(distinct s.model)::int as models
-        from $schema."Simulation" s
+        from :"schema"."Simulation" s
         ${where}
         group by 1
         order by 1

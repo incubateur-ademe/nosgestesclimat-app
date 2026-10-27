@@ -214,7 +214,7 @@ type Skipped = { id: string; model: string; reason: string }
 type Failed = { id: string; model: string; message: string }
 
 type Checkpoint = {
-  lastDate: string | null
+  lastCreatedAt: string | null
   lastId: string | null
   processed: number
   written: number
@@ -360,6 +360,11 @@ type Row = {
  * Computes the CSV line of a simulation, or `null` if the version is
  * unsupported. The version is the one of the simulation's model, pre-release
  * included: it selects both the sub-category rules set and the npm model rules.
+ *
+ * The `date` column carries `createdAt` (the server insertion timestamp), not
+ * `Simulation.date`: the latter is set by the browser without validation, so it
+ * can be backdated by years or overflow to 2038. The column name is kept as-is
+ * because downstream tools rely on it.
  */
 const computeRow = async (
   simulation: Simulation,
@@ -385,7 +390,7 @@ const computeRow = async (
   return {
     line: [
       csvEscape(simulation.id),
-      csvEscape(simulation.date),
+      csvEscape(simulation.createdAt),
       csvEscape(simulation.progression),
       csvEscape(formatNumber(total)),
       String(subcategoriesTotal === total),
@@ -470,7 +475,7 @@ const processBatch = async (
           model: simulation.model,
           reason: `no sub-category rules for ${version}`,
         })
-        state.lastDate = simulation.date
+        state.lastCreatedAt = simulation.createdAt
         state.lastId = simulation.id
         continue
       }
@@ -488,7 +493,7 @@ const processBatch = async (
       lines.push(row.line)
       state.written++
       stats.written++
-      state.lastDate = simulation.date
+      state.lastCreatedAt = simulation.createdAt
       state.lastId = simulation.id
       consecutiveErrors = 0
 
@@ -506,7 +511,7 @@ const processBatch = async (
           model: simulation.model,
           reason: error.message,
         })
-        state.lastDate = simulation.date
+        state.lastCreatedAt = simulation.createdAt
         state.lastId = simulation.id
         continue
       }
@@ -692,14 +697,16 @@ const main = async (): Promise<void> => {
       if (existingCsv != null) await writeFile(csvPath, existingCsv)
       console.log(
         `♻️  Resuming: ${checkpoint.written} simulations already written${
-          checkpoint.lastDate ? `, last date ${checkpoint.lastDate}` : ''
+          checkpoint.lastCreatedAt
+            ? `, last createdAt ${checkpoint.lastCreatedAt}`
+            : ''
         }`
       )
     }
   }
 
   const state: Checkpoint = checkpoint ?? {
-    lastDate: null,
+    lastCreatedAt: null,
     lastId: null,
     processed: 0,
     written: 0,
@@ -763,7 +770,7 @@ const main = async (): Promise<void> => {
         perVersion: samplePerVersion,
         sampleMode,
         sampleSeed,
-        versionSql: SQL_VERSION,
+        versionExpression: SQL_VERSION,
         versionFilter,
       })
       const lines = await processBatch(simulations, state)
@@ -776,7 +783,7 @@ const main = async (): Promise<void> => {
         const simulations = fetchSimulationBatch({
           url,
           schema,
-          lastDate: state.lastDate,
+          lastCreatedAt: state.lastCreatedAt,
           lastId: state.lastId,
           startDate,
           endDate,
