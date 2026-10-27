@@ -16,7 +16,7 @@ import {
   findUserById,
 } from '../../repositories/users.repository.ts'
 import type { User } from '../../types/user.ts'
-import { deleteUser } from '../delete-user.ts'
+import { deleteUser } from '../delete-user.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn().mockResolvedValue(success())
