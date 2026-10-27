@@ -36,14 +36,11 @@ export default async function CreatePollPage({
       </div>
 
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
-        <Title
-          title={
-            <Trans i18nKey="collectiveTest.title">
-              Choisissez un nom pour votre test collectif
-            </Trans>
-          }
-          size="lg"
-        />
+        <Title size="lg">
+          <Trans i18nKey="collectiveTest.title">
+            Choisissez un nom pour votre test collectif
+          </Trans>
+        </Title>
 
         <p className="mb-2">
           <Trans i18nKey="collectiveTest.text1">

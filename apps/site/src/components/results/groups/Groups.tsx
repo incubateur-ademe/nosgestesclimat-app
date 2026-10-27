@@ -19,14 +19,11 @@ interface Props {
 export default function Groups({ groups }: Props) {
   return (
     <>
-      <Title
-        tag="h2"
-        title={
-          <Trans i18nKey="mon-espace.groups.title">
-            Mes tests collectifs "Amis" et "Famille"
-          </Trans>
-        }
-      />
+      <Title tag="h2">
+        <Trans i18nKey="mon-espace.groups.title">
+          Mes tests collectifs "Amis" et "Famille"
+        </Trans>
+      </Title>
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:justify-between md:gap-8">
         <div className="flex-1">
           <GroupContent groups={groups} />

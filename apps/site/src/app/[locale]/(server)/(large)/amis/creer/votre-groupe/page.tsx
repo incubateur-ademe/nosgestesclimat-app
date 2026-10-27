@@ -1,8 +1,8 @@
 import StepsDisplay from '@/components/groups/StepsDisplay'
+import Trans from '@/components/translation/trans/TransServer'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
 import GoBackButton from '@/design-system/inputs/GoBackButton'
 import Title from '@/design-system/layout/Title'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { getCommonMetadata } from '@/helpers/metadata/getCommonMetadata'
 import { throwNextError } from '@/helpers/server/error'
@@ -30,7 +30,6 @@ export default async function GroupNamePage({
   const lastSimulation = await throwNextError(() =>
     getLastCompletedSimulation()
   )
-  const { t } = await getServerTranslation()
 
   return (
     <div className="pb-8">
@@ -38,9 +37,11 @@ export default async function GroupNamePage({
 
       {Boolean(showStep) && <StepsDisplay currentStep={2} />}
 
-      <Title title={t("Créer un groupe d'amis")} className="mb-2" />
+      <Title className="mb-2">
+        <Trans>Créer un groupe d'amis</Trans>
+      </Title>
       <p className="text-slate-500">
-        {t('Invitez vos proches à passer le test')}
+        <Trans>Invitez vos proches à passer le test</Trans>
       </p>
       <NameForm lastSimulation={lastSimulation} />
     </div>

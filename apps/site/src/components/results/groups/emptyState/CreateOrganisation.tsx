@@ -8,14 +8,11 @@ import Title from '@/design-system/layout/Title'
 export default function CreateOrganisation() {
   return (
     <div className="mt-12 mb-16">
-      <Title
-        title={
-          <Trans i18nKey="mon-espace.groups.organisation.create.title">
-            Mobiliser mon organisation
-          </Trans>
-        }
-        tag="h2"
-      />
+      <Title tag="h2">
+        <Trans i18nKey="mon-espace.groups.organisation.create.title">
+          Mobiliser mon organisation
+        </Trans>
+      </Title>
 
       <div className="mb-4 max-w-3xl" data-testid="create-organisation">
         <Baseline />

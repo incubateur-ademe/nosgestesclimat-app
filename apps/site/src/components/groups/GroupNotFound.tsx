@@ -8,9 +8,9 @@ import Trans from '../translation/trans/TransClient'
 export default function GroupNotFound() {
   return (
     <div className="flex flex-col items-start">
-      <Title
-        title={<Trans>Oups ! Nous n'avons pas trouvé votre groupe</Trans>}
-      />
+      <Title>
+        <Trans>Oups ! Nous n'avons pas trouvé votre groupe</Trans>
+      </Title>
 
       <p className="mt-2 mb-8">
         <Trans>Ce groupe n'existe pas ou a été supprimé.</Trans>

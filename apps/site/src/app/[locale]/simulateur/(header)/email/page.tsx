@@ -33,29 +33,25 @@ export default async function Email({
     <>
       <Title
         data-testid="tutoriel-title"
-        className="mt-6 mb-2 text-lg md:mt-10 md:text-2xl"
-        title={
-          hasContest ? (
-            isSchoolMode ? (
-              <Trans i18nKey="tutorial.email.title.youthContest">
-                Ton adresse e-mail pour le tirage au sort
-              </Trans>
-            ) : (
-              <Trans i18nKey="tutorial.email.title.defaultContest">
-                Votre adresse e-mail pour le tirage au sort
-              </Trans>
-            )
-          ) : isSchoolMode ? (
-            <Trans i18nKey="tutorial.email.title.youth">
-              Ton adresse e-mail
+        className="mt-6 mb-2 text-lg md:mt-10 md:text-2xl">
+        {hasContest ? (
+          isSchoolMode ? (
+            <Trans i18nKey="tutorial.email.title.youthContest">
+              Ton adresse e-mail pour le tirage au sort
             </Trans>
           ) : (
-            <Trans i18nKey="tutorial.email.title.default">
-              Votre adresse e-mail
+            <Trans i18nKey="tutorial.email.title.defaultContest">
+              Votre adresse e-mail pour le tirage au sort
             </Trans>
           )
-        }
-      />
+        ) : isSchoolMode ? (
+          <Trans i18nKey="tutorial.email.title.youth">Ton adresse e-mail</Trans>
+        ) : (
+          <Trans i18nKey="tutorial.email.title.default">
+            Votre adresse e-mail
+          </Trans>
+        )}
+      </Title>
       <p className="text-slate-500">
         {hasContest ? (
           <span>

@@ -71,14 +71,12 @@ export default function ParametresPage() {
       />
 
       <MaxWidthContent className="pb-8">
-        <Title
-          title={
-            <span>
-              <Trans>Paramètres de</Trans>{' '}
-              <span className="text-secondary-700">{poll.name}</span>
-            </span>
-          }
-        />
+        <Title>
+          <span>
+            <Trans>Paramètres de</Trans>{' '}
+            <span className="text-secondary-700">{poll.name}</span>
+          </span>
+        </Title>
 
         {isErrorUpdate && <DefaultSubmitErrorMessage />}
 

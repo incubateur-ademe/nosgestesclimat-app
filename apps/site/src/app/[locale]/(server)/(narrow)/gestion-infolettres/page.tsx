@@ -1,7 +1,7 @@
 import NewsletterForm from '@/app/[locale]/(server)/(narrow)/gestion-infolettres/_components/NewsletterForm'
+import Trans from '@/components/translation/trans/TransServer'
 import { MON_ESPACE_SETTINGS_PATH } from '@/constants/urls/paths'
 import Title from '@/design-system/layout/Title'
-import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getNewsletters } from '@/helpers/server/model/newsletter'
 import type { Locale } from '@/i18nConfig'
 import { redirect } from 'next/navigation'
@@ -29,17 +29,15 @@ export default async function NewsletterManagementPage({
     redirect(`${MON_ESPACE_SETTINGS_PATH}#infolettres`)
   }
   const { locale } = await params
-  const { t } = await getServerTranslation()
   const newsletters = await getNewsletters({ locale })
 
   return (
     <div className="mb-12">
-      <Title
-        title={t(
-          'newsletterManagement.title',
-          'Sélectionnez les infolettres qui vous intéressent'
-        )}
-      />
+      <Title>
+        <Trans i18nKey="newsletterManagement.title">
+          Sélectionnez les infolettres qui vous intéressent
+        </Trans>
+      </Title>
 
       <NewsletterForm newsletters={newsletters} />
     </div>

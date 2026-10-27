@@ -9,15 +9,11 @@ export default function EmptyState() {
     <>
       <div className="mt-6 flex gap-8">
         <section>
-          <Title
-            tag="h2"
-            className="mb-4 text-2xl font-medium md:text-3xl"
-            title={
-              <Trans i18nKey="mon-espace.groups.empty.title">
-                Invitez votre entourage à calculer leur empreinte
-              </Trans>
-            }
-          />
+          <Title tag="h2" className="mb-4 text-2xl font-medium md:text-3xl">
+            <Trans i18nKey="mon-espace.groups.empty.title">
+              Invitez votre entourage à calculer leur empreinte
+            </Trans>
+          </Title>
           <p className="mb-6">
             <strong>
               <Trans i18nKey="mon-espace.groups.empty.description1">

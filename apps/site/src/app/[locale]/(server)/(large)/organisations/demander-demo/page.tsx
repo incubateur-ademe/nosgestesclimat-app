@@ -17,16 +17,12 @@ export default async function DemanderDemoPage() {
       />
       <section className="w-full bg-white">
         <div className="mx-auto max-w-5xl py-10">
-          <Title
-            title={
-              <Trans i18nKey="organisations.demanderDemo.title">
-                Demander une démo
-              </Trans>
-            }
-            className="mb-2"
-          />
+          <Title className="mb-2">
+            <Trans i18nKey="organisations.demanderDemo.title">
+              Demander une démo
+            </Trans>
+          </Title>
           <p className="text-slate-500">
-            {' '}
             <Trans i18nKey="organisations.demanderDemo.subtitle">
               Réservez un créneau pour assister à une démonstration de notre
               fonctionnalité dédiée aux organisations (entreprises,

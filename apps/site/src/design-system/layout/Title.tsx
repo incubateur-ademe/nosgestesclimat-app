@@ -1,13 +1,9 @@
 import { cn } from 'cn'
-import type { HTMLAttributes, JSX, PropsWithChildren } from 'react'
+import type { HTMLAttributes, PropsWithChildren } from 'react'
 
 type Sizes = 'xl' | 'lg' | 'md'
 
-export interface TitleProps extends Omit<
-  HTMLAttributes<HTMLHeadingElement>,
-  'title'
-> {
-  title?: string | JSX.Element
+export interface TitleProps extends HTMLAttributes<HTMLHeadingElement> {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   size?: Sizes
 }
@@ -19,7 +15,6 @@ export const titleSizesClassNames: Record<Sizes, string> = {
 }
 
 export default function Title({
-  title,
   tag = 'h1',
   className = '',
   children,
@@ -29,7 +24,7 @@ export default function Title({
   const Tag = tag
   return (
     <Tag className={cn(titleSizesClassNames[size], className)} {...props}>
-      {title ?? children}
+      {children}
     </Tag>
   )
 }

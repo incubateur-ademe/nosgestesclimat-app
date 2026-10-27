@@ -27,7 +27,7 @@ export default function EventHero({
   return (
     <div className="mb-16 flex flex-col gap-6 md:flex-row md:gap-16">
       <div className="flex-1">
-        <Title className="mb-6 text-5xl leading-10 font-bold tracking-tight md:text-6xl! md:leading-16">
+        <Title className="text-5xl leading-10 font-bold tracking-tight md:text-6xl! md:leading-16">
           <Trans i18nKey="event.hero.title.part1">L'impact est plus fort</Trans>
           <br />
           <span className="text-primary-600 leading-10! md:leading-16!">

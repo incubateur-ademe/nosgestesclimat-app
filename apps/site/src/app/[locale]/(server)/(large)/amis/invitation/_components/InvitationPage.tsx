@@ -17,17 +17,16 @@ export default async function InvitationPage({
 
   return (
     <div className="p-4 md:p-8">
-      <Title
-        title={
-          <Trans>
-            {group.administrator.name} vous a invité à rejoindre le groupe{' '}
-            <span className="text-violet-900">{group.name}</span>
-          </Trans>
-        }
-        className="mb-2"
-      />
+      <Title className="mb-2">
+        <Trans>
+          {group.administrator.name} vous a invité à rejoindre le groupe{' '}
+          <span className="text-violet-900">{group.name}</span>
+        </Trans>
+      </Title>
       <p className="text-slate-500">
-        {t("Comparez vos résultats avec votre famille ou un groupe d'amis.")}
+        <Trans>
+          Comparez vos résultats avec votre famille ou un groupe d'amis.
+        </Trans>
       </p>
 
       <InvitationForm group={group} currentSimulation={currentSimulation} />

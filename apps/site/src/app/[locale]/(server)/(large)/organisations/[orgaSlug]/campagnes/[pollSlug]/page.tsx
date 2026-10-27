@@ -42,10 +42,9 @@ export default async function CampagnePage({
       />
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
         <div className="flex flex-col items-start justify-between sm:flex-row md:items-center">
-          <Title
-            title={<span className="text-primary-700">{poll.name}</span>}
-            className="mb-2"
-          />
+          <Title className="mb-2">
+            <span className="text-primary-700">{poll.name}</span>
+          </Title>
           <p className="text-slate-500">
             <span>
               <Trans>Test collectif créé par</Trans>{' '}

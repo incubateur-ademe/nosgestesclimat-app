@@ -12,7 +12,9 @@ export default function OurTools() {
 
   return (
     <section>
-      <Title tag="h2" title={<Trans>Nos outils</Trans>} />
+      <Title tag="h2">
+        <Trans>Nos outils</Trans>
+      </Title>
 
       <ul className="col-span-1 mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         <li className="flex">
