@@ -1,11 +1,7 @@
 import { t } from '@/helpers/metadata/fakeMetadataT'
 import { useAlternateLanguagePaths } from '@/hooks/useAlternateLanguagePaths'
-import i18nConfig, {
-  LOCALE_EN_KEY,
-  LOCALE_FR_KEY,
-  type Locale,
-} from '@/i18nConfig'
-import { useCurrentLocale } from 'next-i18n-router/client'
+import { useLocale } from '@/hooks/useLocale'
+import { LOCALE_EN_KEY, LOCALE_FR_KEY, type Locale } from '@/i18nConfig'
 import { useMemo } from 'react'
 
 interface Language {
@@ -19,7 +15,12 @@ export function useSwitchLanguage(): {
   activeLocale: Locale
   inactiveLocale: Locale
 } | null {
-  const currentLocale = useCurrentLocale(i18nConfig)! as Locale
+  // Derive the locale from the route params (useParams), not from the
+  // NEXT_LOCALE cookie. The cookie is read by `useCurrentLocale` on the
+  // client only — the server has no `document` — so a stale cookie (e.g.
+  // still set to the previous locale during a redirect) makes the first
+  // client render disagree with the server HTML: a hydration mismatch
+  const currentLocale = useLocale()
   const alternatePaths = useAlternateLanguagePaths()
 
   // Preserve search params ; also slugs may differ per locale (e.g. action detail pages)
