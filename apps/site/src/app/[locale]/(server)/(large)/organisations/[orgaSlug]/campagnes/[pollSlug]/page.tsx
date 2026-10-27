@@ -44,17 +44,17 @@ export default async function CampagnePage({
         <div className="flex flex-col items-start justify-between sm:flex-row md:items-center">
           <Title
             title={<span className="text-primary-700">{poll.name}</span>}
-            subtitle={
-              <span>
-                <Trans>Test collectif créé par</Trans>{' '}
-                <strong className="text-primary-700">
-                  {poll.organisation.name}
-                </strong>
-                <Trans>, le</Trans> {dayjs(poll.createdAt).format('DD/MM/YYYY')}
-              </span>
-            }
+            className="mb-2"
           />
-
+          <p className="text-slate-500">
+            <span>
+              <Trans>Test collectif créé par</Trans>{' '}
+              <strong className="text-primary-700">
+                {poll.organisation.name}
+              </strong>
+              <Trans>, le</Trans> {dayjs(poll.createdAt).format('DD/MM/YYYY')}
+            </span>
+          </p>
           {isAdmin && (
             <div>
               <ButtonLinkServer

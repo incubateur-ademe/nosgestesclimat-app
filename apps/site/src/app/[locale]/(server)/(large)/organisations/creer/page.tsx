@@ -36,8 +36,11 @@ export default async function CreationPage() {
                 test collectif
               </Trans>
             }
-            subtitle={<Trans>Plus que quelques petites questions</Trans>}
+            className="mb-2"
           />
+          <p className="text-slate-500">
+            <Trans>Plus que quelques petites questions</Trans>
+          </p>
 
           <CreationForm />
         </div>

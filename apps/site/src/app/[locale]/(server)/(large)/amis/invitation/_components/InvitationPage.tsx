@@ -24,10 +24,11 @@ export default async function InvitationPage({
             <span className="text-violet-900">{group.name}</span>
           </Trans>
         }
-        subtitle={t(
-          "Comparez vos résultats avec votre famille ou un groupe d'amis."
-        )}
+        className="mb-2"
       />
+      <p className="text-slate-500">
+        {t("Comparez vos résultats avec votre famille ou un groupe d'amis.")}
+      </p>
 
       <InvitationForm group={group} currentSimulation={currentSimulation} />
 
