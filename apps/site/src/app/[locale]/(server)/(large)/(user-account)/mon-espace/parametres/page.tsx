@@ -1,6 +1,6 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import UserSpaceTabs from '@/components/layout/UserSpaceTabs'
-import Trans from '@/components/translation/trans/TransServer'
+import TransServer from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import { throwNextError } from '@/helpers/server/error'
@@ -13,6 +13,7 @@ import { requireAuthUser } from '@/services/auth/require-auth-user'
 import { getRegion, setRegion } from '@/services/users/region'
 import type { DefaultPageProps } from '@/types'
 import type { Metadata } from 'next'
+import DeleteAccount from './_components/DeleteAccount'
 import Localisation from './_components/Localisation'
 import NewsletterSettings from './_components/NewsletterSettings'
 import UserEmail from './_components/UserEmail'
@@ -55,7 +56,9 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
         <Title
           title={
             <span>
-              <Trans i18nKey="mon-espace.settings.title">Paramètres</Trans>
+              <TransServer i18nKey="mon-espace.settings.title">
+                Paramètres
+              </TransServer>
             </span>
           }
           className="mb-0"
@@ -63,21 +66,25 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
       </div>
 
       <section aria-labelledby="user-info-title" className="mb-10">
-        <h2 id="user-info-title" className="mb-4">
-          <Trans i18nKey="mon-espace.settings.userInfos.title">
-            Mes informations
-          </Trans>
-        </h2>
+        <div className="flex flex-col md:flex-row md:justify-between">
+          <h2 id="user-info-title" className="mb-4">
+            <TransServer i18nKey="mon-espace.settings.userInfos.title">
+              Mes informations
+            </TransServer>
+          </h2>
 
-        <div className="flex max-w-[720px] flex-col gap-8">
+          <DeleteAccount />
+        </div>
+
+        <div className="flex max-w-180 flex-col gap-8">
           <QueryClientProviderWrapper>
             <UserEmail user={user} />
           </QueryClientProviderWrapper>
 
           <h2 className="mt-8">
-            <Trans i18nKey="settings.newsletters.title">
+            <TransServer i18nKey="settings.newsletters.title">
               Inscription à nos contenus
-            </Trans>
+            </TransServer>
           </h2>
           <NewsletterSettings {...{ newsletters, subscriptions }} />
         </div>
