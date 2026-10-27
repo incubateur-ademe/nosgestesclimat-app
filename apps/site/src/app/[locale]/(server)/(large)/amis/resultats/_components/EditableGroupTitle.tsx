@@ -68,28 +68,26 @@ export default function EditableGroupTitle({
           <>
             <Title
               data-testid="group-name"
-              className="mb-2 text-xl md:text-2xl"
-              title={
-                <span className="flex items-center justify-between">
-                  <span>
-                    <Emoji>{group.emoji}</Emoji> <span>{group.name}</span>
-                  </span>
-
-                  {isOwner ? (
-                    <Button
-                      className="h-12 w-12 p-1!"
-                      aria-label={t('Modifier le nom du groupe')}
-                      onClick={() => {
-                        setIsEditingTitle(true)
-                      }}
-                      variant="outlined"
-                      data-testid="group-name-edit-button">
-                      <PencilIcon className="stroke-primary-700 w-4" />
-                    </Button>
-                  ) : null}
+              className="mb-2 text-xl md:text-2xl">
+              <span className="flex items-center justify-between">
+                <span>
+                  <Emoji>{group.emoji}</Emoji> <span>{group.name}</span>
                 </span>
-              }
-            />
+
+                {isOwner ? (
+                  <Button
+                    className="h-12 w-12 p-1!"
+                    aria-label={t('Modifier le nom du groupe')}
+                    onClick={() => {
+                      setIsEditingTitle(true)
+                    }}
+                    variant="outlined"
+                    data-testid="group-name-edit-button">
+                    <PencilIcon className="stroke-primary-700 w-4" />
+                  </Button>
+                ) : null}
+              </span>
+            </Title>
             <p className="text-slate-500">
               {t('Créé par {{name}}', {
                 name: isOwner ? vousWord : group.administrator.name,

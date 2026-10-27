@@ -1,6 +1,7 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import StepsDisplay from '@/components/groups/StepsDisplay'
+import Trans from '@/components/translation/trans/TransServer'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
 import { captureAmisCreationConnexionComplete } from '@/constants/tracking/trackers'
 import GoBackButton from '@/design-system/inputs/GoBackButton'
@@ -37,10 +38,12 @@ export default async function GroupConnexionPage() {
 
       <StepsDisplay currentStep={1} />
 
-      <Title title={t("Créer un groupe d'amis")} className="mb-2" />
+      <Title className="mb-2">
+        <Trans>Créer un groupe d'amis</Trans>
+      </Title>
 
       <p className="text-slate-500">
-        {t('Invitez vos proches à passer le test')}
+        <Trans>Invitez vos proches à passer le test</Trans>
       </p>
 
       <QueryClientProviderWrapper>

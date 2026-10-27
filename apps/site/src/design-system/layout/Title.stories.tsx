@@ -10,7 +10,6 @@ const meta: Meta<typeof Title> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    title: { control: 'text', description: 'Le titre principal' },
     tag: {
       control: 'select',
       options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -25,19 +24,19 @@ type Story = StoryObj<typeof Title>
 
 export const Default: Story = {
   args: {
-    title: 'Ceci est un titre',
+    children: 'Ceci est un titre',
   },
 }
 
 export const WithSubtitle: Story = {
   args: {
-    title: 'Titre avec un sous-titre',
+    children: 'Titre avec un sous-titre',
   },
 }
 
 export const AsH2: Story = {
   args: {
-    title: 'Titre de niveau 2',
+    children: 'Titre de niveau 2',
     tag: 'h2',
   },
 }
@@ -54,7 +53,7 @@ export const WithChildren: Story = {
 
 export const CustomClass: Story = {
   args: {
-    title: 'Titre avec style personnalisé',
+    children: 'Titre avec style personnalisé',
     className: 'text-blue-600 italic',
   },
 }

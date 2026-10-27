@@ -28,16 +28,12 @@ export default async function CreationPage() {
 
       <section className="w-full bg-white">
         <div className="mx-auto flex max-w-5xl flex-col gap-6 px-0">
-          <Title
-            size="lg"
-            title={
-              <Trans>
-                Créez une organisation afin de diffuser un ou plusieurs liens de
-                test collectif
-              </Trans>
-            }
-            className="mb-2"
-          />
+          <Title size="lg" className="mb-2">
+            <Trans>
+              Créez une organisation afin de diffuser un ou plusieurs liens de
+              test collectif
+            </Trans>
+          </Title>
           <p className="text-slate-500">
             <Trans>Plus que quelques petites questions</Trans>
           </p>

@@ -15,14 +15,11 @@ export default function OrganisationComponent({
         <CreateOrganisation />
       ) : (
         <>
-          <Title
-            tag="h2"
-            title={
-              <Trans i18nKey="mon-espace.organisations.title">
-                Mes organisations
-              </Trans>
-            }
-          />
+          <Title tag="h2">
+            <Trans i18nKey="mon-espace.organisations.title">
+              Mes organisations
+            </Trans>
+          </Title>
           <PollsList organisation={organisation} />
         </>
       )}

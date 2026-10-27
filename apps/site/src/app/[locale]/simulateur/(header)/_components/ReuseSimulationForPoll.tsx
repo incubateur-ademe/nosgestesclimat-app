@@ -38,16 +38,14 @@ export default async function ReuseSimulationForPoll({
     <Card className="mt-10 items-start rounded-2xl border-slate-100 p-8 shadow-md">
       <Title
         data-testid="reuse-simulation-banner-title"
-        className="text-lg font-bold md:text-xl"
-        title={
-          <span className="flex items-center">
-            <Trans i18nKey="reuseSimulationForPoll.title">
-              Vous avez déjà réalisé un calcul d’empreinte sur notre site
-            </Trans>{' '}
-            <Emoji className="ml-1">👏</Emoji>
-          </span>
-        }
-      />
+        className="text-lg font-bold md:text-xl">
+        <span className="flex items-center">
+          <Trans i18nKey="reuseSimulationForPoll.title">
+            Vous avez déjà réalisé un calcul d’empreinte sur notre site
+          </Trans>{' '}
+          <Emoji className="ml-1">👏</Emoji>
+        </span>
+      </Title>
 
       <div className="border-primary-100 bg-primary-100 mb-8 w-lg max-w-full rounded-lg border px-5 py-4">
         <p className="mb-2 text-sm">

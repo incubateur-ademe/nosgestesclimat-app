@@ -48,7 +48,7 @@ export default async function Connexion({ searchParams }: DefaultPageProps) {
           mode={SIGNUP_MODE}
         />
 
-        <Title className="order-0" title={labels.title} />
+        <Title className="order-0">{labels.title}</Title>
 
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>

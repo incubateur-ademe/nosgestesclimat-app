@@ -6,11 +6,9 @@ import { impactMatrixData } from './_constants/impactMatrixData'
 export default function ImpactMatrixPage() {
   return (
     <>
-      <Title
-        tag="h1"
-        className="text-3xl/normal! font-medium"
-        title={<Trans i18nKey="impact_matrix.title">Matrice d'impact</Trans>}
-      />
+      <Title tag="h1" className="text-3xl/normal! font-medium">
+        <Trans i18nKey="impact_matrix.title">Matrice d'impact</Trans>
+      </Title>
 
       <div className="w-3xl max-w-full">
         <Trans i18nKey="impact_matrix.description">
