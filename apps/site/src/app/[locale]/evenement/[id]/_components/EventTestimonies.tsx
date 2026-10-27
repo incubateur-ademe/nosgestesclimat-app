@@ -12,9 +12,7 @@ interface Props {
 export default function EventTestimonies({ testimonies }: Props) {
   return (
     <section className="my-16 flex flex-col">
-      <Title
-        hasSeparator={false}
-        className="text-secondary-700 text-center text-sm! leading-5 font-bold tracking-wide uppercase">
+      <Title className="text-secondary-700 text-center text-sm! leading-5 font-bold tracking-wide uppercase">
         <Trans i18nKey="event.testimonies.title">Témoignages</Trans>
       </Title>
 
