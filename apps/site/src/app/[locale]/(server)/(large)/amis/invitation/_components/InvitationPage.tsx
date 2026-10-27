@@ -1,4 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import type { Group } from '@/types/groups'
@@ -20,11 +21,11 @@ export default function InvitationPage({
           <span className="text-violet-900">{group.name}</span>
         </Trans>
       </Title>
-      <p className="text-slate-500">
+      <Subtitle>
         <Trans>
           Comparez vos résultats avec votre famille ou un groupe d'amis.
         </Trans>
-      </p>
+      </Subtitle>
 
       <InvitationForm group={group} currentSimulation={currentSimulation} />
 

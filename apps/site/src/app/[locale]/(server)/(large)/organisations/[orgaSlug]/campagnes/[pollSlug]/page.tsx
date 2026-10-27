@@ -3,6 +3,7 @@ import OrganisationFilAriane from '@/components/layout/FilAriane'
 import PollStatistics from '@/components/organisations/PollStatistics'
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getPollResult } from '@/services/polls/get-poll-result'
@@ -45,7 +46,7 @@ export default async function CampagnePage({
           <Title className="mb-2">
             <span className="text-primary-700">{poll.name}</span>
           </Title>
-          <p className="text-slate-500">
+          <Subtitle>
             <span>
               <Trans>Test collectif créé par</Trans>{' '}
               <strong className="text-primary-700">
@@ -53,7 +54,7 @@ export default async function CampagnePage({
               </strong>
               <Trans>, le</Trans> {dayjs(poll.createdAt).format('DD/MM/YYYY')}
             </span>
-          </p>
+          </Subtitle>
           {isAdmin && (
             <div>
               <ButtonLinkServer

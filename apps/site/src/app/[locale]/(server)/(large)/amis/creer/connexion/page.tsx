@@ -5,6 +5,7 @@ import Trans from '@/components/translation/trans/TransServer'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
 import { captureAmisCreationConnexionComplete } from '@/constants/tracking/trackers'
 import GoBackButton from '@/design-system/inputs/GoBackButton'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -42,9 +43,9 @@ export default async function GroupConnexionPage() {
         <Trans>Créer un groupe d'amis</Trans>
       </Title>
 
-      <p className="text-slate-500">
+      <Subtitle>
         <Trans>Invitez vos proches à passer le test</Trans>
-      </p>
+      </Subtitle>
 
       <QueryClientProviderWrapper>
         <UserProvider userSession={userSession}>

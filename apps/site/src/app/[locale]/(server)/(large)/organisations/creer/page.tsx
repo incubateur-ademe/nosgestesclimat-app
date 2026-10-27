@@ -1,5 +1,6 @@
 import OrganisationFilAriane from '@/components/layout/FilAriane'
 import Trans from '@/components/translation/trans/TransServer'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
@@ -34,9 +35,9 @@ export default async function CreationPage() {
               test collectif
             </Trans>
           </Title>
-          <p className="text-slate-500">
+          <Subtitle>
             <Trans>Plus que quelques petites questions</Trans>
-          </p>
+          </Subtitle>
 
           <CreationForm />
         </div>

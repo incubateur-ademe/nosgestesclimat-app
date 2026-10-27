@@ -3,7 +3,7 @@ import AuthenticateUserForm from '@/components/authentication/AuthenticateUserFo
 import Trans from '@/components/translation/trans/TransServer'
 import { EMAIL_SIMULATOR_PATH, END_PAGE_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import Title from '@/design-system/layout/Title'
+import Subtitle from '@/design-system/layout/Subtitle'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { UserProvider } from '@/publicodes-state'
 import { getUserSession } from '@/services/auth/get-user-session'
@@ -31,7 +31,7 @@ export default async function Email({
 
   return (
     <>
-      <Title
+      <h1
         data-testid="tutoriel-title"
         className="mt-6 mb-2 text-lg md:mt-10 md:text-2xl">
         {hasContest ? (
@@ -51,8 +51,8 @@ export default async function Email({
             Votre adresse e-mail
           </Trans>
         )}
-      </Title>
-      <p className="text-slate-500">
+      </h1>
+      <Subtitle>
         {hasContest ? (
           <span>
             {isSchoolMode ? (
@@ -90,7 +90,7 @@ export default async function Email({
         <span className="text-secondary-700 ml-2 inline-block font-bold italic">
           <Trans i18nKey="common.optional">facultatif</Trans>
         </span>
-      </p>
+      </Subtitle>
       <UserProvider userSession={user} simulation={currentSimulation}>
         <QueryClientProviderWrapper>
           <AuthenticateUserForm
