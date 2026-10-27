@@ -4,7 +4,7 @@ import PencilIcon from '@/components/icons/PencilIcon'
 
 import Button from '@/design-system/buttons/Button'
 import InlineTextInput from '@/design-system/inputs/InlineTextInput'
-import Title from '@/design-system/layout/Title'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Emoji from '@/design-system/utils/Emoji'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import logger from '@/logger/logger.browser'
@@ -66,9 +66,7 @@ export default function EditableGroupTitle({
           />
         ) : (
           <>
-            <Title
-              data-testid="group-name"
-              className="mb-2 text-xl md:text-2xl">
+            <h1 data-testid="group-name" className="mb-2 text-xl md:text-2xl">
               <span className="flex items-center justify-between">
                 <span>
                   <Emoji>{group.emoji}</Emoji> <span>{group.name}</span>
@@ -87,12 +85,12 @@ export default function EditableGroupTitle({
                   </Button>
                 ) : null}
               </span>
-            </Title>
-            <p className="text-slate-500">
+            </h1>
+            <Subtitle>
               {t('Créé par {{name}}', {
                 name: isOwner ? vousWord : group.administrator.name,
               })}
-            </p>
+            </Subtitle>
           </>
         )}
       </div>

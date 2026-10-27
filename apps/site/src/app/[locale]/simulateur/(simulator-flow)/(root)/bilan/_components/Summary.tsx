@@ -4,7 +4,6 @@ import CloseIcon from '@/components/icons/Close'
 import ContentLarge from '@/components/layout/ContentLarge'
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
-import Title from '@/design-system/layout/Title'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useDebug } from '@/hooks/useDebug'
 import { useFormState } from '@/publicodes-state'
@@ -33,9 +32,9 @@ export default function Summary({
       )}>
       <ContentLarge>
         <div className="flex items-start justify-between">
-          <Title tag="h2" className="mb-4 text-lg md:text-xl">
+          <h2 className="mb-4 text-lg md:text-xl">
             <Trans>Toutes les questions</Trans>
-          </Title>
+          </h2>
 
           <Button
             size="xs"
