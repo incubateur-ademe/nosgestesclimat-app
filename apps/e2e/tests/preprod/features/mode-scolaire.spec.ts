@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import { EMAIL_PAGE_PATH } from '../../constants'
 import { createPage } from '../../fixtures/feature-flags'
-import { NGCTest } from '../../pages/ngc-test'
+import { NGCTest } from '../../page-objects/ngc-test'
 import { expect, test } from '../fixtures'
 import { restoreOrganisation, restorePoll } from '../fixtures/context'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'

@@ -1,7 +1,7 @@
 import { test as base, type Browser, type Page } from '@playwright/test'
 
 import type { DefaultFlagValues } from '@site/services/feature-flags/flags'
-import { FeatureFlags } from '../pages/feature-flags'
+import { FeatureFlags } from '../page-objects/feature-flags'
 import { patchGetByTestId } from './visible-testid'
 
 // Type-only import of the site's flag contract (see tsconfig `@site/*`): the
@@ -12,8 +12,6 @@ export const DEFAULT_FLAGS = {
   'abc-test-action-card': 'control',
   'ab-test-global-footprint-display': 'control',
 } satisfies DefaultFlagValues
-
-export { FeatureFlags } from '../pages/feature-flags'
 
 export async function createPage(browser: Browser): Promise<Page> {
   const page = await browser.newPage()

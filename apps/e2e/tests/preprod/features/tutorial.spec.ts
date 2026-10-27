@@ -1,4 +1,4 @@
-import { TutorialPage } from '../../pages/tutorial'
+import { TutorialPage } from '../../page-objects/tutorial'
 import { expect, test } from '../fixtures'
 
 test('should be displayed when coming from the home', async ({ page }) => {

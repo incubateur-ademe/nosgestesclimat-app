@@ -1,9 +1,7 @@
-import { Poll } from '../../pages/poll'
+import { Poll } from '../../page-objects/poll'
 import { ORGANISATION_ADMIN_STATE } from '../state'
 import { restorePoll } from './context'
 import { test as base } from './organisation'
-
-export { Poll } from '../../pages/poll'
 
 interface PollPageFixtures {
   poll: Poll

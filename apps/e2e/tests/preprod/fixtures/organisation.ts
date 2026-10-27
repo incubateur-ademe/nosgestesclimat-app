@@ -1,9 +1,7 @@
-import { Organisation } from '../../pages/organisation'
+import { Organisation } from '../../page-objects/organisation'
 import { ORGANISATION_ADMIN_STATE } from '../state'
 import { restoreOrganisation } from './context'
 import { test as base, expect } from './user'
-
-export { Organisation } from '../../pages/organisation'
 
 interface OrganisationPageFixtures {
   organisation: Organisation

@@ -1,8 +1,6 @@
-import type { User } from '../../pages/user'
+import type { User } from '../../page-objects/user'
 import { restoreUser } from './context'
 import { test as base, expect } from './options'
-
-export { User } from '../../pages/user'
 
 interface UserFixtures {
   user: User
