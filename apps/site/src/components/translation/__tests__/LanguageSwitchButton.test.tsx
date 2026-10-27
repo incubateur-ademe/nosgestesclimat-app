@@ -1,8 +1,8 @@
 import LanguageSwitchButton from '@/components/translation/LanguageSwitchButton'
 import { renderWithWrapper } from '@/helpers/tests/wrapper'
+import { useLocale } from '@/hooks/useLocale'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useCurrentLocale } from 'next-i18n-router/client'
 import type { AnchorHTMLAttributes, ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -34,6 +34,11 @@ vi.mock('@/hooks/useAlternateLanguagePaths', () => ({
   useAlternateLanguagePaths: vi.fn(() => ({ fr: '/fr', en: '/en' })),
 }))
 
+// The locale is normally derived from the route params
+vi.mock('@/hooks/useLocale', () => ({
+  useLocale: vi.fn(() => 'fr'),
+}))
+
 vi.mock('@/constants/tracking/posthogTrackers', () => ({
   captureClickLanguage: ({ locale }: { locale: string }) => ({ locale }),
 }))
@@ -46,6 +51,7 @@ vi.mock('@/utils/analytics/trackEvent', () => ({
 describe('LanguageSwitchButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(useLocale).mockReturnValue('fr')
   })
 
   it('renders a trigger showing the current language (defaults to FR)', () => {
@@ -62,10 +68,10 @@ describe('LanguageSwitchButton', () => {
 
     // Clicking a language link navigates to the other locale's URL, then the
     // i18n router provides the new locale. Navigation is prevented in tests
-    // (mocked next/link, static useCurrentLocale), so we simulate landing on
+    // (mocked next/link, static useLocale), so we simulate landing on
     // the new page: update the mocked locale and remount the component.
     let locale: 'fr' | 'en' = 'fr'
-    vi.mocked(useCurrentLocale).mockImplementation(() => locale)
+    vi.mocked(useLocale).mockImplementation(() => locale)
 
     let view = renderWithWrapper(<LanguageSwitchButton />)
     const trigger = () => screen.getByTestId('language-switch-button')
@@ -95,7 +101,7 @@ describe('LanguageSwitchButton', () => {
   })
 
   it('shows the English language as current when the locale is en', () => {
-    vi.mocked(useCurrentLocale).mockReturnValueOnce('en')
+    vi.mocked(useLocale).mockReturnValueOnce('en')
 
     renderWithWrapper(<LanguageSwitchButton />)
 
