@@ -6,15 +6,14 @@ async function deleteUserData(userId: string, isDryMode: boolean) {
   if (isDryMode) {
     try {
       const user = await getUser({ userId })
-
       if (!user) throw new Error('Dry mode enabled: an error happened')
 
       console.log(`Dry mode enabled: user ${userId} found`)
       console.log(`Dry mode enabled: user ${userId} not deleted`)
-      return
     } catch (error: unknown) {
       console.log('Dry mode enabled: an error happened ', error)
     }
+    return
   }
   console.log(`Dry mode disabled: will try and delete data for user ${userId}`)
   try {
