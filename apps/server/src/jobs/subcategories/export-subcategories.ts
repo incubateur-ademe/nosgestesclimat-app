@@ -28,7 +28,11 @@ import Engine from 'publicodes'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { DELIMITER, csvEscape, formatNumber } from './lib/csv.ts'
-import { fetchModelRules, type ModelRules } from './lib/model-rules.ts'
+import {
+  ModelRulesNotFoundError,
+  fetchModelRules,
+  type ModelRules,
+} from './lib/model-rules.ts'
 import { resolvePeriod } from './lib/period.ts'
 import {
   fetchSampledSimulations,
@@ -38,15 +42,14 @@ import {
 } from './lib/postgres.ts'
 import {
   RULES_SETS,
-  SQL_RELEASE_VERSION,
+  SQL_VERSION,
   compareVersions,
   findExtraRules,
+  findMissingRuleFiles,
   getBaseRules,
-  getReleaseVersion,
   getSubcategoryRules,
   getVersionFromModel,
   isEmptyRule,
-  isPublishedVersion,
   rulesSetLabel,
 } from './lib/rules.ts'
 import {
@@ -170,13 +173,6 @@ const versionFilter = versionsArg
       .split(',')
       .map((version) => version.trim())
       .filter(Boolean)
-      .map((version) => {
-        const release = getReleaseVersion(version)
-        if (release == null) {
-          throw new Error(`Invalid version in --versions: "${version}".`)
-        }
-        return release
-      })
   : null
 
 if (versionFilter != null && samplePerVersion == null) {
@@ -319,7 +315,15 @@ const roundToTenth = (value: number): number => {
 
 const baseRules = getBaseRules()
 
-// Guard: a variant adding a rule would change the columns.
+// Guard: a missing or column-adding variant would silently change the output.
+const missingRules = findMissingRuleFiles()
+if (missingRules.length > 0) {
+  throw new Error(
+    `Rules files referenced by RULES_SETS are missing:\n${missingRules
+      .map((file) => `   ${file}`)
+      .join('\n')}`
+  )
+}
 const extraRules = findExtraRules(baseRules)
 if (extraRules.length > 0) {
   throw new Error(
@@ -352,7 +356,11 @@ type Row = {
   subcategoriesTotal: number
 }
 
-/** Computes the CSV line of a simulation, or `null` if the version is unsupported. */
+/**
+ * Computes the CSV line of a simulation, or `null` if the version is
+ * unsupported. The version is the one of the simulation's model, pre-release
+ * included: it selects both the sub-category rules set and the npm model rules.
+ */
 const computeRow = async (
   simulation: Simulation,
   version: string
@@ -398,7 +406,6 @@ type Stats = {
   errors: number
   skipped: number
   firstError: string | null
-  rulesVersion: string | null
 }
 
 const statsByModel = new Map<string, Stats>()
@@ -413,7 +420,6 @@ const statsFor = (model: string): Stats => {
       errors: 0,
       skipped: 0,
       firstError: null,
-      rulesVersion: null,
     }
     statsByModel.set(model, stats)
   }
@@ -453,21 +459,7 @@ const processBatch = async (
     const stats = statsFor(simulation.model)
     stats.sampled++
 
-    const rawVersion = getVersionFromModel(simulation.model)
-    if (!isPublishedVersion(rawVersion)) {
-      stats.skipped++
-      state.skipped.push({
-        id: simulation.id,
-        model: simulation.model,
-        reason: 'version not published on npm',
-      })
-      state.lastDate = simulation.date
-      state.lastId = simulation.id
-      continue
-    }
-
-    const version = getReleaseVersion(rawVersion) as string
-    stats.rulesVersion = version
+    const version = getVersionFromModel(simulation.model)
 
     try {
       const row = await computeRow(simulation, version)
@@ -476,7 +468,7 @@ const processBatch = async (
         state.skipped.push({
           id: simulation.id,
           model: simulation.model,
-          reason: 'unsupported version',
+          reason: `no sub-category rules for ${version}`,
         })
         state.lastDate = simulation.date
         state.lastId = simulation.id
@@ -487,7 +479,7 @@ const processBatch = async (
         stats.incoherent++
         state.incoherent.push({
           id: simulation.id,
-          version: rawVersion,
+          version,
           total: row.total,
           subcategoriesTotal: row.subcategoriesTotal,
         })
@@ -507,6 +499,18 @@ const processBatch = async (
         )
       }
     } catch (error) {
+      if (error instanceof ModelRulesNotFoundError) {
+        stats.skipped++
+        state.skipped.push({
+          id: simulation.id,
+          model: simulation.model,
+          reason: error.message,
+        })
+        state.lastDate = simulation.date
+        state.lastId = simulation.id
+        continue
+      }
+
       stats.errors++
       const message = error instanceof Error ? error.message : String(error)
       stats.firstError ??= message
@@ -545,7 +549,7 @@ const printTable = (
 const printVersionReport = (): void => {
   const groups = new Map<string, Record<string, number>>()
   for (const [model, stats] of statsByModel) {
-    const version = stats.rulesVersion ?? getVersionFromModel(model)
+    const version = getVersionFromModel(model)
     const group = groups.get(version) ?? {
       models: 0,
       sampled: 0,
@@ -759,7 +763,7 @@ const main = async (): Promise<void> => {
         perVersion: samplePerVersion,
         sampleMode,
         sampleSeed,
-        releaseVersionSql: SQL_RELEASE_VERSION,
+        versionSql: SQL_VERSION,
         versionFilter,
       })
       const lines = await processBatch(simulations, state)

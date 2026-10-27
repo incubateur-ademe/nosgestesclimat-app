@@ -148,7 +148,7 @@ export const fetchSampledSimulations = ({
   perVersion,
   sampleMode,
   sampleSeed,
-  releaseVersionSql,
+  versionSql,
   versionFilter,
 }: {
   url: string
@@ -158,7 +158,7 @@ export const fetchSampledSimulations = ({
   perVersion: number
   sampleMode: 'first' | 'spread' | 'random'
   sampleSeed: string
-  releaseVersionSql: string
+  versionSql: string
   versionFilter: string[] | null
 }): Simulation[] => {
   const conditions: string[] = []
@@ -166,7 +166,7 @@ export const fetchSampledSimulations = ({
   if (endDate) conditions.push(`s.date < timestamp '${endDate}'`)
   if (versionFilter != null) {
     const list = versionFilter.map((version) => `'${version}'`).join(', ')
-    conditions.push(`${releaseVersionSql} in (${list})`)
+    conditions.push(`${versionSql} in (${list})`)
   }
   const where = conditions.length > 0 ? `where ${conditions.join(' and ')}` : ''
 
@@ -180,9 +180,9 @@ export const fetchSampledSimulations = ({
           row_number() over (partition by version, bucket order by date, id) as rn
         from (
           select s.id, s.date, s.model, s.progression, s.situation,
-            ${releaseVersionSql} as version,
+            ${versionSql} as version,
             ntile(${perVersion}) over (
-              partition by ${releaseVersionSql} order by s.date, s.id
+              partition by ${versionSql} order by s.date, s.id
             ) as bucket
           from $schema."Simulation" s
           ${where}
@@ -198,7 +198,7 @@ export const fetchSampledSimulations = ({
       from (
         select s.id, s.date, s.model, s.progression, s.situation,
           row_number() over (
-            partition by ${releaseVersionSql}
+            partition by ${versionSql}
             order by md5(s.id::text || '${sampleSeed.replaceAll("'", "''")}')
           ) as rn
         from $schema."Simulation" s
@@ -211,7 +211,7 @@ export const fetchSampledSimulations = ({
       select id, date, model, progression, situation
       from (
         select s.id, s.date, s.model, s.progression, s.situation,
-          row_number() over (partition by ${releaseVersionSql} order by s.date, s.id) as rn
+          row_number() over (partition by ${versionSql} order by s.date, s.id) as rn
         from $schema."Simulation" s
         ${where}
       ) ranked
@@ -232,14 +232,14 @@ export const fetchVersionCounts = ({
   schema,
   startDate,
   endDate,
-  releaseVersionSql,
+  versionSql,
   versionFilter,
 }: {
   url: string
   schema: string
   startDate: string | null
   endDate: string | null
-  releaseVersionSql: string
+  versionSql: string
   versionFilter: string[] | null
 }): { version: string; count: number; models: number }[] => {
   const conditions: string[] = []
@@ -247,7 +247,7 @@ export const fetchVersionCounts = ({
   if (endDate) conditions.push(`s.date < timestamp '${endDate}'`)
   if (versionFilter != null) {
     const list = versionFilter.map((version) => `'${version}'`).join(', ')
-    conditions.push(`${releaseVersionSql} in (${list})`)
+    conditions.push(`${versionSql} in (${list})`)
   }
   const where = conditions.length > 0 ? `where ${conditions.join(' and ')}` : ''
 
@@ -256,7 +256,7 @@ export const fetchVersionCounts = ({
     schema,
     query: `
       select coalesce(json_agg(t), '[]') from (
-        select ${releaseVersionSql} as version, count(*)::int as count,
+        select ${versionSql} as version, count(*)::int as count,
           count(distinct s.model)::int as models
         from $schema."Simulation" s
         ${where}

@@ -80,7 +80,9 @@ Elles vivent dans [`rules/`](./rules) et **font foi** :
 Le catalogue [`lib/rules.ts`](./lib/rules.ts) associe chaque plage de versions
 aux fichiers à fusionner (plancher : **4.6.0**). Une variante ne doit que
 **redéfinir** des règles existantes : le job refuse de démarrer si elle en
-ajoute, car les colonnes du CSV en dépendraient.
+ajoute, car les colonnes du CSV en dépendraient. Il refuse aussi de démarrer si
+un fichier référencé n'existe pas — `getModelFromSource` ignore silencieusement
+un fichier absent, une variante renommée serait sinon perdue sans erreur.
 
 ## Détails d'implémentation
 

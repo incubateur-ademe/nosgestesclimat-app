@@ -32,6 +32,16 @@ export type ModelRules = Record<string, unknown>
 
 const memoryCache = new Map<string, ModelRules>()
 
+/** Versions npm answered 404 for: definitive, and not retried per simulation. */
+const notOnNpm = new Set<string>()
+
+export class ModelRulesNotFoundError extends Error {
+  constructor(version: string) {
+    super(`model rules for ${version} are not published on npm`)
+    this.name = 'ModelRulesNotFoundError'
+  }
+}
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /** S3 key of the rules cache of a version, shared across periods. */
@@ -89,6 +99,9 @@ export const fetchModelRules = async (
 ): Promise<ModelRules> => {
   const cached = memoryCache.get(version)
   if (cached) return cached
+  if (notOnNpm.has(version)) {
+    throw new ModelRulesNotFoundError(version)
+  }
 
   // Bucket cache: needed to resume (the container is ephemeral). Disabled with
   // `--no-upload`: locally we want to reach neither S3 nor the full config.
@@ -128,8 +141,11 @@ export const fetchModelRules = async (
     } catch (error) {
       lastError = error
       const message = error instanceof Error ? error.message : String(error)
-      const definitive = /: 404$/.test(message)
-      if (definitive || attempt === attempts) break
+      if (/: 404$/.test(message)) {
+        notOnNpm.add(version)
+        break
+      }
+      if (attempt === attempts) break
       const delay = 500 * 2 ** (attempt - 1)
       console.warn(
         `⚠️  npm ${version}: ${message} — retrying in ${delay} ms (${attempt}/${attempts})`
@@ -138,5 +154,6 @@ export const fetchModelRules = async (
     }
   }
 
+  if (notOnNpm.has(version)) throw new ModelRulesNotFoundError(version)
   throw lastError
 }

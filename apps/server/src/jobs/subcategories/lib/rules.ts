@@ -12,6 +12,7 @@
  */
 
 import { getModelFromSource } from '@publicodes/tools/compilation'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 /** Base file: it defines the structure (and therefore the CSV columns). */
@@ -75,18 +76,47 @@ export const RULES_SETS: RulesSet[] = [
   },
 ]
 
-/** Compares two `X.Y.Z` versions. */
+/**
+ * `X`, `Y` and `Z` of a version, ignoring any pre-release suffix
+ * (`Number('0-rc')` would be `NaN` and silently match nothing).
+ */
+const numericParts = (version: string) =>
+  String(version)
+    .split('.')
+    .slice(0, 3)
+    .map((part) => Number.parseInt(part, 10) || 0)
+
+const preReleaseOf = (version: string): string | null => {
+  const match = /^\d+\.\d+\.\d+-(.+)$/.exec(String(version))
+  return match ? match[1] : null
+}
+
+/**
+ * Orders two versions the way npm does: a pre-release comes before its release
+ * (`4.13.0-rc.2` < `4.13.0`), and two pre-releases compare by suffix.
+ */
 export const compareVersions = (a: string, b: string): number => {
-  const pa = String(a).split('.').map(Number)
-  const pb = String(b).split('.').map(Number)
+  const pa = numericParts(a)
+  const pb = numericParts(b)
   for (let i = 0; i < 3; i++) {
     const x = pa[i] ?? 0
     const y = pb[i] ?? 0
     if (x !== y) return x - y
   }
-  return 0
+
+  const sa = preReleaseOf(a)
+  const sb = preReleaseOf(b)
+  if (sa === sb) return 0
+  if (sa == null) return 1
+  if (sb == null) return -1
+  return sa < sb ? -1 : 1
 }
 
+/**
+ * A pre-release belongs to the era *before* its release: `4.16.0-rc.1` was
+ * published while the model still had the pre-4.16.0 breakfast, so it must not
+ * inherit the rules of 4.16.0.
+ */
 const isVersionInRange = (version: string, set: RulesSet): boolean =>
   compareVersions(version, set.min) >= 0 &&
   (set.maxExclusive == null || compareVersions(version, set.maxExclusive) < 0)
@@ -96,34 +126,25 @@ export const getRulesSet = (version: string): RulesSet | null =>
   RULES_SETS.find((set) => isVersionInRange(version, set)) ?? null
 
 /**
- * A model version is `X.Y.Z`, optionally suffixed with a pre-release
- * (`4.13.0-rc.2`). Pre-releases are mapped to their published version:
- * `4.13.0-rc.2` → `4.13.0`.
- *
- * `pr-2824` (ephemeral `pkg-pr-new` packages, not on the npm registry) has no
- * published version and stays ignored.
+ * A model version is `X.Y.Z`, optionally followed by a pre-release
+ * (`4.13.0-rc.2`). `pr-2824` (ephemeral `pkg-pr-new` packages, not on the npm
+ * registry) is not a version.
  */
-const RELEASE_VERSION_RE = /^(\d+\.\d+\.\d+)(?:-\w[\w.]*)?$/
+const VERSION_RE = /^\d+\.\d+\.\d+(?:-\w[\w.]*)?$/
 
-export const getReleaseVersion = (version: string): string | null => {
-  const match = RELEASE_VERSION_RE.exec(String(version))
-  return match ? match[1] : null
-}
+/** True when the `model` field carries a version, pre-release included. */
+export const isVersionString = (version: string): boolean =>
+  VERSION_RE.test(String(version))
 
-export const isPublishedVersion = (version: string): boolean =>
-  getReleaseVersion(version) != null
-
-/** Extracts the model version from the `model` field (e.g. `FR-fr-4.17.0`). */
+/**
+ * Extracts the model version from the `model` field, pre-release included:
+ * `FR-fr-4.17.0` → `4.17.0`, `FR-fr-4.13.0-rc.2` → `4.13.0-rc.2`.
+ */
 export const getVersionFromModel = (model: string): string =>
   model.split('-').slice(2).join('-')
 
-/**
- * SQL equivalent of `getReleaseVersion`, applied to `s.model`:
- * `FR-fr-4.13.0-rc.2` → `4.13.0`, `FR-fr-4.17.3` → `4.17.3`,
- * `FR-fr-pr-2808` → `pr-2808`.
- */
+/** SQL equivalent of `getVersionFromModel`, applied to `s.model`. */
 export const SQL_VERSION = `substring(s.model from '^[^-]+-[^-]+-(.*)$')`
-export const SQL_RELEASE_VERSION = `regexp_replace(${SQL_VERSION}, '-[A-Za-z].*$', '')`
 
 /** Loads and merges the files of a rules set. */
 const loadFiles = (files: string[]): Record<string, unknown> =>
@@ -166,6 +187,16 @@ export const isEmptyRule = (rule: unknown): boolean => {
 }
 
 /**
+ * Files referenced by `RULES_SETS` that are missing on disk. `getModelFromSource`
+ * silently returns an empty model for a missing file, so a renamed variant would
+ * otherwise be skipped without any error.
+ */
+export const findMissingRuleFiles = (): string[] =>
+  [...new Set(RULES_SETS.flatMap((set) => set.files))].filter(
+    (file) => !existsSync(rulesPath(file))
+  )
+
+/**
  * Checks that no variant introduces a rule absent from the base file. Without
  * this guard the CSV columns would vary between model versions. Returns the
  * offending files (empty when all is well).
@@ -187,7 +218,7 @@ export const findExtraRules = (baseRules: Record<string, unknown>) => {
 
 /** Readable label of the rules set applied to a version. */
 export const rulesSetLabel = (version: string): string => {
-  if (!isPublishedVersion(version)) return 'not on npm'
+  if (!isVersionString(version)) return 'not a version'
   const set = getRulesSet(version)
   if (!set) return 'UNSUPPORTED'
   if (set.files.length === 1) return 'base'
