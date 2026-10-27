@@ -27,9 +27,10 @@ et preprod), et une partie **propre à chaque suite**.
 
 ### Commun
 
-- `tests/pages/` — classes page object (User, Group, Organisation, Poll,
-  NGCTest, TutorialPage, CookieBanner, UserSpace, FeatureFlags). Sans état,
-  sans fixture : des classes pures qui prennent une `Page` en constructeur.
+- `tests/page-objects/` — classes page object (User, Group, Organisation,
+  Poll, NGCTest, TutorialPage, CookieBanner, UserSpace, FeatureFlags). Sans
+  état, sans fixture : des classes pures qui prennent une `Page` en
+  constructeur.
 - `tests/helpers/` — helpers purs (hydration, clipboard, session,
   user-mailbox…).
 - `tests/fixtures/` — base commune : `hydrationGuard` (auto), `visibleTestId`

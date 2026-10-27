@@ -1,9 +1,7 @@
-import { Group } from '../../pages/group'
+import { Group } from '../../page-objects/group'
 import { GROUP_ADMIN_STATE } from '../state'
 import { restoreGroup } from './context'
 import { test as base, expect } from './user'
-
-export { Group } from '../../pages/group'
 
 interface GroupPageFixtures {
   group: Group

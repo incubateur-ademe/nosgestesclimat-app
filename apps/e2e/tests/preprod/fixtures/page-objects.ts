@@ -1,15 +1,11 @@
 import { mergeTests } from '@playwright/test'
 
-import { CookieBanner } from '../../pages/cookie-banner'
-import { NGCTest } from '../../pages/ngc-test'
-import { TutorialPage } from '../../pages/tutorial'
-import { UserSpace } from '../../pages/user-space'
+import { CookieBanner } from '../../page-objects/cookie-banner'
+import { NGCTest } from '../../page-objects/ngc-test'
+import { TutorialPage } from '../../page-objects/tutorial'
+import { UserSpace } from '../../page-objects/user-space'
 import { test as base, expect } from './user'
 
-export { CookieBanner } from '../../pages/cookie-banner'
-export { NGCTest } from '../../pages/ngc-test'
-export { TutorialPage } from '../../pages/tutorial'
-export { UserSpace } from '../../pages/user-space'
 export { expect }
 
 const tutorialTest = base.extend<{ tutorialPage: TutorialPage }>({

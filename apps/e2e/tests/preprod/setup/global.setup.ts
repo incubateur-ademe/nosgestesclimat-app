@@ -1,6 +1,6 @@
 import { expect, test as setup } from '../fixtures'
-import { Group } from '../../pages/group'
-import { UserSpace } from '../../pages/user-space'
+import { Group } from '../../page-objects/group'
+import { UserSpace } from '../../page-objects/user-space'
 import {
   saveContext,
   saveGroup,

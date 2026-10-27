@@ -1,4 +1,4 @@
-import type { Poll } from '../../pages/poll'
+import type { Poll } from '../../page-objects/poll'
 import { ORGANISATION_ADMIN_STATE } from '../state'
 import { restorePoll } from './context'
 import { test as base } from './organisation'

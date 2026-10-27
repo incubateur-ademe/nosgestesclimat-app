@@ -1,10 +1,10 @@
 import type { Page } from '@playwright/test'
 import path from 'path'
 
-import { Group } from '../../pages/group'
-import { Organisation } from '../../pages/organisation'
-import { Poll } from '../../pages/poll'
-import { User } from '../../pages/user'
+import { Group } from '../../page-objects/group'
+import { Organisation } from '../../page-objects/organisation'
+import { Poll } from '../../page-objects/poll'
+import { User } from '../../page-objects/user'
 
 const E2E_TEST_DATA_KEY = 'e2e-test-data'
 
