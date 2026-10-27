@@ -3,7 +3,7 @@ import type { TransPropsWithInterpolation } from '@/types/translation'
 import type { ReactElement } from 'react'
 import { Trans as TransReactI18n } from 'react-i18next/TransWithoutContext'
 
-export default async function Trans({
+export default async function TransServer({
   children,
   i18nKey,
   values,

@@ -5,7 +5,7 @@ import type { TransPropsWithInterpolation } from '@/types/translation'
 import { type ReactElement } from 'react'
 import { Trans as TransReactI18n } from 'react-i18next'
 
-export default function Trans({
+export default function TransClient({
   children,
   i18nKey,
   values,
