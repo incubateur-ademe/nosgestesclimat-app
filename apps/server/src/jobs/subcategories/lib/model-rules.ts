@@ -1,16 +1,14 @@
 /**
- * Règles du modèle pour une version publiée, récupérées depuis npm.
+ * Model rules for a published version, fetched from npm.
  *
- * Le paquet `@incubateur-ademe/nosgestesclimat` publié sur npm contient
- * `nosgestesclimat.model.json` : les règles du modèle compilé, version par
- * version. C'est la seule source fiable pour recalculer une simulation de 2026
- * avec les règles de *son* époque (le paquet installé ne contient que la
- * version courante).
+ * The published `@incubateur-ademe/nosgestesclimat` package ships
+ * `nosgestesclimat.model.json`, i.e. the compiled model rules. It is the only
+ * reliable way to replay a 2026 simulation with the rules of *its* time: the
+ * installed package only holds the current version.
  *
- * Le tarball est décompressé en mémoire (`zlib`) puis lu avec `tar`, présent
- * dans l'image Scalingo. Les règles obtenues sont mises en cache dans le
- * bucket : un run repris après interruption ne retélécharge pas les versions
- * déjà récupérées.
+ * The tarball is decompressed in memory (`zlib`) and read with `tar`, which the
+ * Scalingo image provides. The rules are cached in the bucket so a resumed run
+ * does not download them again.
  */
 
 import { execFileSync } from 'node:child_process'
@@ -36,25 +34,22 @@ const memoryCache = new Map<string, ModelRules>()
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-/**
- * Clé S3 du cache des règles d'une version, partagée entre les périodes : un
- * mois déjà traité ne retélécharge rien.
- */
+/** S3 key of the rules cache of a version, shared across periods. */
 const cacheKey = (version: string) =>
   buildKey('_model-cache', `${version}.json`)
 
 /**
- * Télécharge le tarball npm d'une version et en extrait `MODEL_FILE`.
+ * Downloads the npm tarball of a version and extracts `MODEL_FILE`.
  *
- * `tar -xO` écrit le fichier sur stdout : pas besoin de le déposer sur disque.
- * Les 404 (version non publiée) sont définitifs et ne sont pas réessayés.
+ * `tar -xO` writes to stdout, so nothing is left on disk. 404s (unpublished
+ * version) are final and not retried.
  */
 const downloadFromNpm = async (version: string): Promise<ModelRules> => {
   const url = `${REGISTRY_URL}-${version}.tgz`
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(
-      `Impossible de télécharger le tarball npm depuis ${url}: ${response.status}`
+      `Cannot download the npm tarball from ${url}: ${response.status}`
     )
   }
 
@@ -75,7 +70,7 @@ const downloadFromNpm = async (version: string): Promise<ModelRules> => {
     return JSON.parse(stdout) as ModelRules
   } catch (error) {
     throw new Error(
-      `Lecture de ${MODEL_FILE} impossible dans le tarball ${version}: ${
+      `Cannot read ${MODEL_FILE} from tarball ${version}: ${
         error instanceof Error ? error.message : String(error)
       }`
     )
@@ -85,8 +80,8 @@ const downloadFromNpm = async (version: string): Promise<ModelRules> => {
 }
 
 /**
- * Règles du modèle d'une version publiée, avec cache mémoire, cache bucket et
- * 4 tentatives (un `ECONNRESET` isolé ne doit pas faire perdre de simulation).
+ * Model rules of a published version, with a memory cache, a bucket cache and 4
+ * attempts (an isolated `ECONNRESET` must not lose a simulation).
  */
 export const fetchModelRules = async (
   version: string,
@@ -95,9 +90,8 @@ export const fetchModelRules = async (
   const cached = memoryCache.get(version)
   if (cached) return cached
 
-  // Cache bucket : indispensable en cas de reprise (le conteneur est éphémère).
-  // Désactivé avec `--no-upload` : en local, on ne veut joindre ni S3 ni la
-  // configuration complète du serveur.
+  // Bucket cache: needed to resume (the container is ephemeral). Disabled with
+  // `--no-upload`: locally we want to reach neither S3 nor the full config.
   const key = cacheKey(version)
   if (upload) {
     try {
@@ -109,7 +103,7 @@ export const fetchModelRules = async (
       }
     } catch (error) {
       console.warn(
-        `⚠️  ${describeStorageError('lecture', key, error)} — repli sur npm.`
+        `⚠️  ${describeStorageError('read', key, error)} — falling back to npm.`
       )
     }
   }
@@ -125,9 +119,9 @@ export const fetchModelRules = async (
         try {
           await uploadText(key, JSON.stringify(rules), 'application/json')
         } catch (error) {
-          // Le run peut continuer : seul le cache est manquant, donc une
-          // éventuelle reprise retéléchargera cette version depuis npm.
-          console.warn(`⚠️  ${describeStorageError('écriture', key, error)}`)
+          // The run can go on: only the cache is missing, so a resumed run will
+          // download this version from npm again.
+          console.warn(`⚠️  ${describeStorageError('write', key, error)}`)
         }
       }
       return rules
@@ -138,7 +132,7 @@ export const fetchModelRules = async (
       if (definitive || attempt === attempts) break
       const delay = 500 * 2 ** (attempt - 1)
       console.warn(
-        `⚠️  npm ${version} : ${message} — nouvelle tentative dans ${delay} ms (${attempt}/${attempts})`
+        `⚠️  npm ${version}: ${message} — retrying in ${delay} ms (${attempt}/${attempts})`
       )
       await sleep(delay)
     }

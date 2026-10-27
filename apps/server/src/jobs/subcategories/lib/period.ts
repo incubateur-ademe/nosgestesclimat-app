@@ -1,15 +1,15 @@
 /**
- * Période exportée : résolution des bornes à partir de `--period` ou de
- * `--start-date` / `--end-date`.
+ * Exported period: resolves bounds from `--period` or `--start-date` /
+ * `--end-date`.
  *
- * `Simulation.date` est un `timestamp without time zone` : les bornes naïves
- * (`YYYY-MM-DD HH:MM:SS`) sont comparées directement, sans conversion de fuseau.
+ * `Simulation.date` is a `timestamp without time zone`: naive bounds
+ * (`YYYY-MM-DD HH:MM:SS`) are compared as-is, with no timezone conversion.
  */
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 const PERIOD_RE = /^\d{4}-\d{2}$/
 
-/** Vrai si la date `YYYY-MM-DD` existe réellement (rejette 2026-02-30). */
+/** True if the `YYYY-MM-DD` date really exists (rejects 2026-02-30). */
 export const isValidDateOnly = (value: string): boolean => {
   if (!DATE_RE.test(value)) return false
   const [y, m, d] = value.split('-').map(Number)
@@ -24,11 +24,12 @@ export const isValidDateOnly = (value: string): boolean => {
 export type Period = { period: string; startDate: string; endDate: string }
 
 /**
- * Résout la période exportée.
+ * Resolves the exported period.
  *
- * - `--period YYYY-MM` couvre le mois entier (borne haute = 1er du mois suivant) ;
- * - `--end-date` est **incluse** : la borne haute est le lendemain à minuit ;
- * - sans `--end-date`, la période court jusqu'au début du mois suivant.
+ * - `--period YYYY-MM` covers the whole month (upper bound = first day of the
+ *   next month);
+ * - `--end-date` is **inclusive**: the upper bound is the next midnight;
+ * - without `--end-date`, the period runs until the first day of the next month.
  */
 export const resolvePeriod = ({
   period,
@@ -40,21 +41,21 @@ export const resolvePeriod = ({
   endDate?: string | null
 }): Period => {
   if (period != null && !PERIOD_RE.test(period)) {
-    throw new Error(`--period invalide : "${period}" (attendu YYYY-MM).`)
+    throw new Error(`invalid --period: "${period}" (expected YYYY-MM).`)
   }
 
   const startArg = startDate ?? (period ? `${period}-01` : null)
   if (startArg == null) {
-    throw new Error('Indiquer --period YYYY-MM (ou --start-date).')
+    throw new Error('missing --period YYYY-MM (or --start-date).')
   }
   if (!isValidDateOnly(startArg)) {
-    throw new Error(`--start-date invalide : "${startArg}".`)
+    throw new Error(`invalid --start-date: "${startArg}".`)
   }
 
   let endExclusive: string
   if (endDate != null) {
     if (!isValidDateOnly(endDate)) {
-      throw new Error(`--end-date invalide : "${endDate}".`)
+      throw new Error(`invalid --end-date: "${endDate}".`)
     }
     const next = new Date(`${endDate}T00:00:00Z`)
     next.setUTCDate(next.getUTCDate() + 1)

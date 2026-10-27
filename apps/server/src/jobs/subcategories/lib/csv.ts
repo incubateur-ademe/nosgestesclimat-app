@@ -1,16 +1,13 @@
 /**
- * Format du CSV de sous catégories : séparateur `;`, convention française
- * (virgule décimale), échappement RFC 4180.
- *
- * C'est le format attendu par les outils d'analyse des postes
- * (Ravijen, page de fin, import PostHog) : ne pas le faire évoluer sans eux.
+ * CSV format of the sub-category export: `;` separator, French decimal comma,
+ * RFC 4180 escaping. Downstream analysis tools depend on it: do not change it.
  */
 
 import { formatValue } from 'publicodes'
 
 export const DELIMITER = ';'
 
-/** Échappe une valeur pour un CSV au format RFC 4180. */
+/** Escapes a value for an RFC 4180 CSV. */
 export const csvEscape = (value: unknown): string => {
   const str = value == null ? '' : String(value)
   const needsQuotes = str.includes(DELIMITER) || /["\n\r]/.test(str)
@@ -18,10 +15,9 @@ export const csvEscape = (value: unknown): string => {
 }
 
 /**
- * Formate un nombre via `formatValue` de Publicodes (convention française).
- *
- * Publicodes groupe les milliers avec une espace fine insécable (`U+202F`), ce
- * qui rendrait la valeur ininterprétable par un tableur : on la retire.
+ * Formats a number with Publicodes `formatValue` (French convention).
+ * Publicodes groups thousands with a narrow no-break space (`U+202F`) that
+ * spreadsheets cannot parse, so it is stripped.
  */
 export const formatNumber = (value: number): string =>
   formatValue(value, { language: 'fr', precision: 1 }).replace(

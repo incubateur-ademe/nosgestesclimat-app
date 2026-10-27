@@ -1,26 +1,20 @@
 #!/usr/bin/env node
 /**
- * Export des sous catégories pour les simulations stockées en base, en CSV vers
- * le bucket Scaleway.
+ * Exports the sub-categories of the simulations stored in the database, as CSV
+ * to the Scaleway bucket.
  *
- *   - les règles de sous catégories vivent dans `./rules` et font foi (le paquet
- *     npm `@incubateur-ademe/nosgestesclimat` ne les publie pas) ;
- *   - les règles du modèle de chaque version sont téléchargées depuis npm, avec
- *     un cache dans le bucket (voir `lib/model-rules.ts`) ;
- *   - la connexion passe par `psql` avec `SCALINGO_POSTGRESQL_URL` (les
- *     paramètres Prisma de `DATABASE_URL` cassent libpq) ;
- *   - le CSV et le checkpoint sont envoyés dans le bucket régulièrement
- *     (conteneur one-off éphémère), ce qui permet de reprendre un run ;
- *   - un heartbeat est écrit sur stdout toutes les 5 min : Scalingo tue un
- *     one-off après 1 h **sans écriture** sur stdout.
+ * - the sub-category rules live in `./rules` and are the source of truth (the
+ *   npm package `@incubateur-ademe/nosgestesclimat` does not publish them);
+ * - the model rules of each version are downloaded from npm and cached in the
+ *   bucket (see `lib/model-rules.ts`);
+ * - the connection goes through `psql` with `SCALINGO_POSTGRESQL_URL` (the
+ *   Prisma parameters of `DATABASE_URL` break libpq);
+ * - the CSV and the checkpoint are uploaded regularly (the one-off container is
+ *   ephemeral), which makes an interrupted run resumable;
+ * - a heartbeat is printed every 5 minutes: Scalingo kills a one-off after 1
+ *   hour **without stdout output**.
  *
- * Pour chaque simulation :
- *   1. on résout les règles de sous catégories de sa version (`RULES_SETS`) ;
- *   2. on instancie un moteur Publicodes (mis en cache par version) ;
- *   3. on applique la situation et on évalue chaque règle de sous catégories ;
- *   4. on vérifie que `bilan . sous catégories` égale `bilan` au dixième.
- *
- * Usage (depuis apps/server) :
+ * Usage (from apps/server):
  *   npm run jobs:exportSubcategories -- --period 2026-01
  *   npm run jobs:exportSubcategories -- --period 2026-01 --sample-per-version 50
  *   npm run jobs:exportSubcategories -- --period 2026-01 --from 0 --no-upload
@@ -68,64 +62,63 @@ const SUB_CATEGORIES_ROOT = 'bilan . sous catégories'
 
 const argv = yargs(hideBin(process.argv))
   .version(false)
-  .usage('Export des sous catégories vers le bucket\n\nUsage: $0 [options]')
+  .usage('Export sub-categories to the bucket\n\nUsage: $0 [options]')
   .option('period', {
     alias: 'p',
     type: 'string',
-    description:
-      'Mois à exporter (YYYY-MM). Définit --start-date et --end-date',
+    description: 'Month to export (YYYY-MM). Sets --start-date and --end-date',
   })
   .option('start-date', {
     type: 'string',
-    description: "Début de la période (inclus), 'YYYY-MM-DD'",
+    description: "Period start (included), 'YYYY-MM-DD'",
   })
   .option('end-date', {
     type: 'string',
-    description: "Fin de la période ('YYYY-MM-DD' incluse)",
+    description: "Period end ('YYYY-MM-DD', included)",
   })
   .option('batch', {
     alias: 'b',
     type: 'number',
     default: 1000,
-    description: 'Taille des lots (1000 ≈ 20 Mo de situations, ~20 s par lot)',
+    description: 'Batch size (1000 ≈ 20 MB of situations, ~20 s per batch)',
   })
   .option('schema', {
     alias: 's',
     type: 'string',
     default: 'ngc',
-    description: 'Schéma Postgres',
+    description: 'Postgres schema',
   })
   .option('from', {
     alias: 'f',
     type: 'string',
     default: 'auto',
     description:
-      "Reprise : 'auto' (checkpoint du bucket) ou '0' / 'all' (repart de zéro)",
+      "Resume: 'auto' (checkpoint from the bucket) or '0' / 'all' (start over)",
   })
   .option('sample-per-version', {
     type: 'number',
     description:
-      'Pré-vol : au plus N simulations par version (CSV non exhaustif)',
+      'Pre-flight: at most N simulations per version (non-exhaustive CSV)',
   })
   .option('sample-mode', {
     type: 'string',
     choices: ['first', 'spread', 'random'] as const,
     default: 'first',
-    description: 'Pré-vol : first | spread | random',
+    description: 'Pre-flight: first | spread | random',
   })
   .option('sample-seed', {
     type: 'string',
     default: '0',
-    description: 'Pré-vol, mode random : graine du tirage',
+    description: 'Pre-flight, random mode: draw seed',
   })
   .option('versions', {
     type: 'string',
-    description: 'Pré-vol : versions à tester, séparées par des virgules',
+    description: 'Pre-flight: versions to test, comma separated',
   })
   .option('upload', {
     type: 'boolean',
     default: true,
-    description: 'Envoyer le CSV et le checkpoint dans le bucket',
+    description: 'Upload the CSV and the checkpoint to the bucket',
   })
   .option('verbose', {
     alias: 'v',
@@ -149,7 +142,7 @@ const {
   from: fromArg,
 } = argv
 
-/// ---------------------- Période ----------------------
+/// ---------------------- Period ----------------------
 
 const {
   period: periodLabel,
@@ -161,13 +154,13 @@ const {
   endDate: argv.endDate,
 })
 
-/// ---------------------- Validation des options ----------------------
+/// ---------------------- Option validation ----------------------
 
 if (
   samplePerVersionArg != null &&
   (!Number.isInteger(samplePerVersionArg) || samplePerVersionArg < 1)
 ) {
-  throw new Error('--sample-per-version doit être un entier >= 1.')
+  throw new Error('--sample-per-version must be an integer >= 1.')
 }
 
 const samplePerVersion = samplePerVersionArg ?? null
@@ -180,7 +173,7 @@ const versionFilter = versionsArg
       .map((version) => {
         const release = getReleaseVersion(version)
         if (release == null) {
-          throw new Error(`Version invalide dans --versions : "${version}".`)
+          throw new Error(`Invalid version in --versions: "${version}".`)
         }
         return release
       })
@@ -188,7 +181,7 @@ const versionFilter = versionsArg
 
 if (versionFilter != null && samplePerVersion == null) {
   throw new Error(
-    "--versions n'a de sens qu'avec --sample-per-version (sinon toute la période est exportée)."
+    '--versions only makes sense with --sample-per-version (otherwise the whole period is exported).'
   )
 }
 
@@ -197,7 +190,7 @@ const sampleMode = (sampleModeArg ?? 'first') as SampleMode
 
 const resume = String(fromArg).trim().toLowerCase() === 'auto'
 
-/// ---------------------- Sorties ----------------------
+/// ---------------------- Outputs ----------------------
 
 const csvFilename = `sous-categories-${periodLabel}${
   samplePerVersion != null ? '-echantillon' : ''
@@ -206,11 +199,9 @@ const csvKey = buildKey(periodLabel, csvFilename)
 const checkpointKey = `${csvKey}.checkpoint.json`
 
 /**
- * Répertoire de travail du run.
- *
- * `mkdtemp` crée un dossier **unique** avec les permissions `0700` : écrire
- * directement dans `os.tmpdir()` avec un nom prévisible exposerait le CSV (qui
- * contient des situations de simulations) à tout autre processus de la machine
+ * Working directory of the run. `mkdtemp` creates a unique `0700` directory:
+ * writing a predictable name in `os.tmpdir()` would expose the CSV
+ * (simulation situations) to any other process of the machine
  * (`js/insecure-temporary-file`).
  */
 const workDir = mkdtempSync(path.join(tmpdir(), 'ngc-subcategories-'))
@@ -220,8 +211,8 @@ const checkpointPath = `${csvPath}.checkpoint.json`
 type Incoherent = {
   id: string
   version: string
-  bilan: number
-  bilanSubcategories: number
+  total: number
+  subcategoriesTotal: number
 }
 type Skipped = { id: string; model: string; reason: string }
 type Failed = { id: string; model: string; message: string }
@@ -246,7 +237,7 @@ type Checkpoint = {
 
 const rulesSetKey = JSON.stringify(RULES_SETS)
 
-/** Garde-fou : ne jamais reprendre un checkpoint produit avec d'autres options. */
+/** Guard: never resume from a checkpoint produced with other options. */
 const assertCheckpointCompatible = (checkpoint: Checkpoint): void => {
   const diffs: string[] = []
   if (checkpoint.startDate !== startDate) diffs.push('startDate')
@@ -264,18 +255,17 @@ const assertCheckpointCompatible = (checkpoint: Checkpoint): void => {
 
   if (diffs.length > 0) {
     throw new Error(
-      `Le checkpoint ${checkpointKey} a été produit avec d'autres paramètres (${diffs.join(', ')}). ` +
-        `Utiliser --from 0 pour repartir de zéro, ou une autre période.`
+      `Checkpoint ${checkpointKey} was produced with different parameters (${diffs.join(', ')}). ` +
+        `Use --from 0 to start over, or another period.`
     )
   }
 }
 
-/// ---------------------- Moteurs ----------------------
+/// ---------------------- Engines ----------------------
 
 /**
- * Options identiques à celles de l'app : évite les avertissements liés aux
- * références circulaires et aux situations partielles (une situation de
- * simulation n'est jamais complète).
+ * Same options as the app: avoids cyclic reference warnings and partial
+ * situation errors (a simulation situation is never complete).
  */
 const engineOptions = {
   logger: { log: () => {}, warn: () => {}, error: () => {} },
@@ -291,7 +281,7 @@ const engineOptions = {
 const engineCache = new Map<string, Engine>()
 const modelRulesCache = new Map<string, ModelRules>()
 
-/** Instancie (et met en cache) un moteur par version de modèle. */
+/** Instantiates (and caches) one engine per model version. */
 const getEngine = async (
   version: string,
   subcategoryRules: Record<string, unknown>
@@ -305,36 +295,36 @@ const getEngine = async (
     modelRulesCache.set(version, modelRules)
   }
 
-  // `modelRules` vient d'un JSON non typé : Publicodes valide la structure dans
-  // son parseur, le cast ne fait que satisfaire TypeScript.
+  // `modelRules` comes from untyped JSON: Publicodes validates the structure in
+  // its parser, the cast only satisfies TypeScript.
   const rules = { ...modelRules, ...subcategoryRules } as never
   const engine = new Engine(rules, engineOptions)
   engineCache.set(version, engine)
   return engine
 }
 
-/// ---------------------- Valeurs ----------------------
+/// ---------------------- Values ----------------------
 
-/** Une évaluation indéfinie vaut 0 (cellule vide interdite dans le CSV). */
+/** An undefined evaluation is 0 (empty cells are not allowed in the CSV). */
 const toNumber = (nodeValue: unknown): number =>
   typeof nodeValue === 'number' && Number.isFinite(nodeValue) ? nodeValue : 0
 
-/** Arrondit au dixième et normalise `-0`. */
+/** Rounds to the tenth and normalises `-0`. */
 const roundToTenth = (value: number): number => {
   const rounded = Math.round(value * 10) / 10
   return rounded === 0 ? 0 : rounded
 }
 
-/// ---------------------- Colonnes ----------------------
+/// ---------------------- Columns ----------------------
 
 const baseRules = getBaseRules()
 
-// Garde-fou : une variante qui ajoute une règle ferait varier les colonnes.
+// Guard: a variant adding a rule would change the columns.
 const extraRules = findExtraRules(baseRules)
 if (extraRules.length > 0) {
   throw new Error(
-    `Des fichiers de variante introduisent des règles absentes du fichier de base :\n${extraRules
-      .map(({ file, extra }) => `   ${file} : ${extra.join(', ')}`)
+    `Some variant files introduce rules absent from the base file:\n${extraRules
+      .map(({ file, extra }) => `   ${file}: ${extra.join(', ')}`)
       .join('\n')}`
   )
 }
@@ -353,16 +343,16 @@ const header = [
   ...subcategories.map(csvEscape),
 ]
 
-/// ---------------------- Calcul d'une simulation ----------------------
+/// ---------------------- Computing one simulation ----------------------
 
 type Row = {
   line: string
   isCoherent: boolean
-  bilanRounded: number
-  bilanSubcategoriesRounded: number
+  total: number
+  subcategoriesTotal: number
 }
 
-/** Calcule la ligne CSV d'une simulation, ou `null` si version non supportée. */
+/** Computes the CSV line of a simulation, or `null` if the version is unsupported. */
 const computeRow = async (
   simulation: Simulation,
   version: string
@@ -373,12 +363,10 @@ const computeRow = async (
   const engine = await getEngine(version, rules)
   engine.setSituation(simulation.situation as never)
 
-  const bilan = toNumber(engine.evaluate('bilan').nodeValue)
-  const bilanSubcategories = toNumber(
-    engine.evaluate(SUB_CATEGORIES_ROOT).nodeValue
+  const total = roundToTenth(toNumber(engine.evaluate('bilan').nodeValue))
+  const subcategoriesTotal = roundToTenth(
+    toNumber(engine.evaluate(SUB_CATEGORIES_ROOT).nodeValue)
   )
-  const bilanRounded = roundToTenth(bilan)
-  const bilanSubcategoriesRounded = roundToTenth(bilanSubcategories)
 
   const cells = subcategories.map((name) =>
     csvEscape(
@@ -391,17 +379,17 @@ const computeRow = async (
       csvEscape(simulation.id),
       csvEscape(simulation.date),
       csvEscape(simulation.progression),
-      csvEscape(formatNumber(bilanRounded)),
-      String(bilanSubcategoriesRounded === bilanRounded),
+      csvEscape(formatNumber(total)),
+      String(subcategoriesTotal === total),
       ...cells,
     ].join(DELIMITER),
-    isCoherent: bilanSubcategoriesRounded === bilanRounded,
-    bilanRounded,
-    bilanSubcategoriesRounded,
+    isCoherent: subcategoriesTotal === total,
+    total,
+    subcategoriesTotal,
   }
 }
 
-/// ---------------------- Statistiques ----------------------
+/// ---------------------- Statistics ----------------------
 
 type Stats = {
   sampled: number
@@ -432,24 +420,34 @@ const statsFor = (model: string): Stats => {
   return stats
 }
 
-/// ---------------------- Traitement d'un lot ----------------------
+/// ---------------------- Processing a batch ----------------------
 
 /**
- * Traite un lot et renvoie les lignes CSV produites.
+ * Number of consecutive failures after which the run aborts. A systemic failure
+ * (bucket policy, network, missing npm package) fails every simulation, and
+ * without this guard the whole period would be burned in seconds with nothing
+ * written.
+ */
+const MAX_CONSECUTIVE_ERRORS = 20
+
+/**
+ * Processes a batch and returns the CSV lines produced. Deliberately
+ * sequential: each simulation reuses the Publicodes engine of its version, and
+ * `setSituation` mutates it (no parallelisation without one engine per
+ * simulation).
  *
- * Séquentiel volontairement : chaque simulation réutilise le moteur Publicodes
- * de sa version, et `setSituation` mute ce moteur (pas de parallélisation
- * possible sans un moteur par simulation).
+ * The cursor only moves on success or deliberate skip: when the run aborts, the
+ * checkpoint of the bucket is still the previous one, so the whole batch is
+ * replayed instead of losing the failed simulations.
  */
 const processBatch = async (
   simulations: Simulation[],
   state: Checkpoint
 ): Promise<string[]> => {
   const lines: string[] = []
+  let consecutiveErrors = 0
 
   for (const simulation of simulations) {
-    state.lastDate = simulation.date
-    state.lastId = simulation.id
     state.processed++
 
     const stats = statsFor(simulation.model)
@@ -461,8 +459,10 @@ const processBatch = async (
       state.skipped.push({
         id: simulation.id,
         model: simulation.model,
-        reason: 'version non publiée (npm)',
+        reason: 'version not published on npm',
       })
+      state.lastDate = simulation.date
+      state.lastId = simulation.id
       continue
     }
 
@@ -476,8 +476,10 @@ const processBatch = async (
         state.skipped.push({
           id: simulation.id,
           model: simulation.model,
-          reason: 'version non supportée',
+          reason: 'unsupported version',
         })
+        state.lastDate = simulation.date
+        state.lastId = simulation.id
         continue
       }
 
@@ -486,19 +488,22 @@ const processBatch = async (
         state.incoherent.push({
           id: simulation.id,
           version: rawVersion,
-          bilan: row.bilanRounded,
-          bilanSubcategories: row.bilanSubcategoriesRounded,
+          total: row.total,
+          subcategoriesTotal: row.subcategoriesTotal,
         })
       }
 
       lines.push(row.line)
       state.written++
       stats.written++
+      state.lastDate = simulation.date
+      state.lastId = simulation.id
+      consecutiveErrors = 0
 
       if (verbose) {
         console.log(
           `${row.isCoherent ? '✔' : '✘'} ${simulation.id} (${simulation.model}) ` +
-            `bilan=${row.bilanRounded} sous-catégories=${row.bilanSubcategoriesRounded}`
+            `bilan=${row.total} subcategories=${row.subcategoriesTotal}`
         )
       }
     } catch (error) {
@@ -507,13 +512,22 @@ const processBatch = async (
       stats.firstError ??= message
       state.errors.push({ id: simulation.id, model: simulation.model, message })
       console.error(`\n✘ ${simulation.id} (${simulation.model}): ${message}`)
+      consecutiveErrors++
+
+      if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+        throw new Error(
+          `Aborting: ${consecutiveErrors} consecutive failures (last one on ${version}: ${message}).\n` +
+            `Nothing is lost: the checkpoint still points to the last successful batch.\n` +
+            `Fix the cause, then rerun the same command (resumes automatically).`
+        )
+      }
     }
   }
 
   return lines
 }
 
-/// ---------------------- Rapport ----------------------
+/// ---------------------- Report ----------------------
 
 const printTable = (
   rows: Record<string, string | number>[],
@@ -553,7 +567,7 @@ const printVersionReport = (): void => {
     groups.set(version, group)
   }
 
-  // Versions listées mais sans aucune simulation sur la période.
+  // Versions listed but with no simulation at all over the period.
   for (const version of versionFilter ?? []) {
     if (!groups.has(version)) {
       groups.set(version, {
@@ -575,68 +589,72 @@ const printVersionReport = (): void => {
       rules: rulesSetLabel(version),
     }))
 
-  console.log('\n📊 Compatibilité par version :')
+  console.log('\n📊 Compatibility per version:')
   printTable(rows, [
     ['version', 'version'],
-    ['models', 'modèles'],
-    ['sampled', 'échantillon'],
-    ['written', 'écrites'],
-    ['incoherent', 'incohérentes'],
-    ['errors', 'erreurs'],
-    ['skipped', 'ignorées'],
-    ['rules', 'règles'],
+    ['models', 'models'],
+    ['sampled', 'sampled'],
+    ['written', 'written'],
+    ['incoherent', 'incoherent'],
+    ['errors', 'errors'],
+    ['skipped', 'skipped'],
+    ['rules', 'rules'],
   ])
 }
 
-const report = (state: Checkpoint): void => {
+const report = (state: Checkpoint, resumed: boolean): void => {
   console.log('\n')
-  console.log(`✅ ${state.written} simulations écrites`)
-  console.log(`   période : ${state.startDate} → ${state.endDate}`)
-  console.log(`   ${subcategories.length} colonnes de sous catégories`)
+  console.log(`✅ ${state.written} simulations written`)
+  console.log(`   period: ${state.startDate} → ${state.endDate}`)
+  console.log(`   ${subcategories.length} sub-category columns`)
 
   if (samplePerVersion != null) printVersionReport()
+
+  const cumulative = resumed ? ' (cumulative since the last --from 0)' : ''
 
   if (state.skipped.length > 0) {
     const byReason = new Map<string, number>()
     for (const { reason } of state.skipped) {
       byReason.set(reason, (byReason.get(reason) ?? 0) + 1)
     }
-    console.log(`\n⏭  ${state.skipped.length} simulations ignorées :`)
+    console.log(
+      `\n⏭  ${state.skipped.length} simulations skipped${cumulative}:`
+    )
     for (const [reason, count] of byReason) {
-      console.log(`   ${reason} : ${count}`)
+      console.log(`   ${reason}: ${count}`)
     }
   }
 
   if (state.errors.length > 0) {
-    console.log(`\n✘ ${state.errors.length} simulations en erreur :`)
+    console.log(`\n✘ ${state.errors.length} simulations failed${cumulative}:`)
     for (const { id, model, message } of state.errors.slice(0, 20)) {
       console.log(`   ${id} (${model}): ${message}`)
     }
     if (state.errors.length > 20) {
-      console.log(`   … et ${state.errors.length - 20} autre(s)`)
+      console.log(`   … and ${state.errors.length - 20} more`)
     }
   }
 
   if (state.incoherent.length === 0) {
     console.log(
-      '\n✔ "bilan . sous catégories" égale "bilan" (au dixième) pour toutes les simulations'
+      '\n✔ "bilan . sous catégories" equals "bilan" (to the tenth) for every simulation'
     )
   } else {
     console.log(
-      `\n⚠️  ${state.incoherent.length} simulations flaguées (bilan ≠ sous catégories) :`
+      `\n⚠️  ${state.incoherent.length} simulations flagged (bilan ≠ sub-categories):`
     )
     for (const {
       id,
       version,
-      bilan,
-      bilanSubcategories,
+      total,
+      subcategoriesTotal,
     } of state.incoherent.slice(0, 20)) {
       console.log(
-        `   ${id} (${version}): bilan=${bilan} sous-catégories=${bilanSubcategories}`
+        `   ${id} (${version}): bilan=${total} subcategories=${subcategoriesTotal}`
       )
     }
     if (state.incoherent.length > 20) {
-      console.log(`   … et ${state.incoherent.length - 20} autre(s)`)
+      console.log(`   … and ${state.incoherent.length - 20} more`)
     }
   }
 }
@@ -646,21 +664,20 @@ const report = (state: Checkpoint): void => {
 const main = async (): Promise<void> => {
   const url = resolveDatabaseUrl()
 
-  console.log(`➡️  Export des sous catégories ${periodLabel}`)
-  console.log(`➡️  Période : ${startDate} → ${endDate} (borne haute exclue)`)
-  console.log(`➡️  ${subcategories.length} règles de sous catégories`)
-  console.log(`➡️  Sortie : ${csvKey}`)
-  console.log(`➡️  Fichier local : ${csvPath}`)
+  console.log(`➡️  Exporting sub-categories ${periodLabel}`)
+  console.log(`➡️  Period: ${startDate} → ${endDate} (upper bound excluded)`)
+  console.log(`➡️  ${subcategories.length} sub-category rules`)
+  console.log(`➡️  Output: ${csvKey}`)
+  console.log(`➡️  Local file: ${csvPath}`)
   if (samplePerVersion != null) {
     console.log(
-      `➡️  Pré-vol : au plus ${samplePerVersion} simulation(s) par version (${sampleMode})`
+      `➡️  Pre-flight: at most ${samplePerVersion} simulation(s) per version (${sampleMode})`
     )
   }
 
-  // Reprise : le checkpoint et le CSV vivent dans le bucket.
-  //
-  // Désactivée en mode pré-vol : l'échantillon est calculé en une seule requête,
-  // « reprendre » rejouerait tout le tirage et dupliquerait les lignes.
+  // Resume: the checkpoint and the CSV live in the bucket. Disabled in
+  // pre-flight mode: the sample is computed in a single query, so "resuming"
+  // would replay the whole draw and duplicate lines.
   let checkpoint: Checkpoint | null = null
   if (resume && upload && samplePerVersion == null) {
     const raw = await downloadText(checkpointKey)
@@ -670,8 +687,8 @@ const main = async (): Promise<void> => {
       const existingCsv = await downloadText(csvKey)
       if (existingCsv != null) await writeFile(csvPath, existingCsv)
       console.log(
-        `♻️  Reprise : ${checkpoint.written} simulations déjà écrites${
-          checkpoint.lastDate ? `, dernière date ${checkpoint.lastDate}` : ''
+        `♻️  Resuming: ${checkpoint.written} simulations already written${
+          checkpoint.lastDate ? `, last date ${checkpoint.lastDate}` : ''
         }`
       )
     }
@@ -697,25 +714,23 @@ const main = async (): Promise<void> => {
 
   if (!checkpoint) {
     await writeFile(csvPath, `${header.join(DELIMITER)}\n`)
-    console.log('➡️  Démarrage depuis le début')
+    console.log('➡️  Starting from the beginning')
   }
 
-  // Heartbeat : Scalingo tue un one-off après 1 h sans écriture stdout.
+  // Heartbeat: Scalingo kills a one-off after 1 hour without stdout output.
   const heartbeat = setInterval(
     () => {
       console.log(
-        `⏳ ${state.written} simulations écrites (${state.processed} traitées)`
+        `⏳ ${state.written} simulations written (${state.processed} processed)`
       )
     },
     5 * 60 * 1000
   )
 
   /**
-   * Envoie le CSV et le checkpoint dans le bucket.
-   *
-   * Contrairement au cache des règles, un échec ici est **fatal** : sans envoi,
-   * le travail est perdu avec le conteneur one-off. On enveloppe l'erreur pour
-   * donner l'opération et la clé, plutôt que la trace brute du SDK AWS.
+   * Uploads the CSV and the checkpoint to the bucket. Unlike the rules cache, a
+   * failure here is **fatal**: without the upload the work is lost with the
+   * one-off container.
    */
   const flush = async (): Promise<void> => {
     if (!upload) return
@@ -727,7 +742,7 @@ const main = async (): Promise<void> => {
         'application/json'
       )
     } catch (error) {
-      throw new Error(describeStorageError('écriture', csvKey, error))
+      throw new Error(describeStorageError('write', csvKey, error))
     }
   }
 
@@ -735,7 +750,7 @@ const main = async (): Promise<void> => {
 
   try {
     if (samplePerVersion != null) {
-      // Pré-vol : un seul lot, l'échantillon par version.
+      // Pre-flight: a single batch, the sample per version.
       const simulations = fetchSampledSimulations({
         url,
         schema,
@@ -767,12 +782,12 @@ const main = async (): Promise<void> => {
 
         const lines = await processBatch(simulations, state)
 
-        // Le CSV du lot est écrit en premier, puis le checkpoint : en cas de
-        // crash entre les deux, on peut au pire retraiter un lot.
+        // The CSV of the batch is written first, then the checkpoint: on a
+        // crash between the two, we can at worst reprocess one batch.
         if (lines.length > 0) await appendFile(csvPath, `${lines.join('\n')}\n`)
         state.updatedAt = new Date().toISOString()
         await writeFile(checkpointPath, JSON.stringify(state, null, 2))
-        process.stdout.write(`\r   ${state.written} simulations écrites`)
+        process.stdout.write(`\r   ${state.written} simulations written`)
 
         if (++batchesSinceUpload >= UPLOAD_EVERY) {
           await flush()
@@ -789,24 +804,23 @@ const main = async (): Promise<void> => {
   await writeFile(checkpointPath, JSON.stringify(state, null, 2))
   if (upload) await flush()
 
-  report(state)
+  report(state, checkpoint != null)
 
-  // Le CSV est dans le bucket : le répertoire de travail ne sert plus à rien.
-  // Avec `--no-upload`, on le conserve (c'est la sortie du run) et on indique
-  // où il se trouve.
+  // The CSV is in the bucket: the working directory is no longer needed. With
+  // `--no-upload` it is kept (it is the run output) and its path is printed.
   if (upload) {
     await rm(workDir, { recursive: true, force: true })
   } else {
-    console.log(`\nFichier conservé : ${csvPath}`)
+    console.log(`\nFile kept: ${csvPath}`)
   }
 
   if (state.errors.length > 0) process.exitCode = 1
 }
 
 main().catch((error) => {
-  // Un run interrompu laisse un répertoire privé derrière lui : on le supprime
-  // pour ne pas accumuler les CSV (situations de simulations) sur le disque.
-  // Version synchrone : `process.exit()` devancerait un `rm` asynchrone.
+  // An interrupted run leaves a private directory behind: remove it so the CSVs
+  // (simulation situations) do not pile up on disk. Synchronous on purpose:
+  // `process.exit()` would outrun an async `rm`.
   rmSync(workDir, { recursive: true, force: true })
   console.error(error)
   process.exit(1)

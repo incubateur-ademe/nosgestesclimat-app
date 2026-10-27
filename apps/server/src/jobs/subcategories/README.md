@@ -5,7 +5,6 @@ exporte en CSV dans le bucket Scaleway.
 
 Le format du CSV (séparateur `;`, virgule décimale) est celui attendu par les
 outils d'analyse des postes (Ravijen, page de fin, import PostHog).
-de fin) et `csvToPosthog.mjs`.
 
 ## Lancer un mois
 
@@ -70,13 +69,13 @@ diagnostic, pas à l'analyse.
 
 Elles vivent dans [`rules/`](./rules) et **font foi** :
 
-| Fichier                           | Rôle                                                          |
-| --------------------------------- | ------------------------------------------------------------- |
-| `subcategories.yaml`              | fichier de base, définit les colonnes du CSV                  |
-| `subcategories.avant-4.16.0.yaml` | petit déjeuner (profil → composants), électricité du logement |
-| `subcategories.avant-4.10.1.yaml` | électricité via `consommation totale collectif`               |
-| `subcategories.avant-4.10.0.yaml` | chauffage sans `mode`, gabarit voiture `berline`              |
-| `subcategories.avant-4.9.1.yaml`  | `services sociétaux` non ventilables par branche NAF          |
+| Fichier                            | Rôle                                                          |
+| ---------------------------------- | ------------------------------------------------------------- |
+| `subcategories.yaml`               | fichier de base, définit les colonnes du CSV                  |
+| `subcategories.before-4.16.0.yaml` | petit déjeuner (profil → composants), électricité du logement |
+| `subcategories.before-4.10.1.yaml` | électricité via `consommation totale collectif`               |
+| `subcategories.before-4.10.0.yaml` | chauffage sans `mode`, gabarit voiture `berline`              |
+| `subcategories.before-4.9.1.yaml`  | `services sociétaux` non ventilables par branche NAF          |
 
 Le catalogue [`lib/rules.ts`](./lib/rules.ts) associe chaque plage de versions
 aux fichiers à fusionner (plancher : **4.6.0**). Une variante ne doit que
@@ -91,8 +90,9 @@ ajoute, car les colonnes du CSV en dépendraient.
 - **Règles du modèle** : téléchargées depuis npm version par version
   (`lib/model-rules.ts`), avec 4 tentatives et repli sur le cache bucket. Un
   `ECONNRESET` isolé ne fait pas perdre de simulation.
-- **Mémoire** : ~400 Mo de RSS, sans fuite (les moteurs Publicodes sont mis en
-  cache par version). Utiliser un one-off de taille **L**.
+- **Mémoire** : ~45 Mo de RSS par moteur Publicodes, mis en cache par version
+  sans éviction. Sur un mois (≤ 9 versions en pratique) on reste sous ~500 Mo ;
+  pour une période longue, lancer mois par mois. Taille **L** suffisante.
 - **Débit mesuré** : ~23 ms par simulation, soit ~40 min pour un mois de prod
   (100 k simulations) et ~8 h pour une année.
 

@@ -1,7 +1,7 @@
 # Sous catégories — variante pour les modèles ANTÉRIEURS à 4.10.0.
 #
 # ⚠️ Ce fichier ne contient que les règles qui diffèrent des fichiers de base,
-# `subcategories.avant-4.16.0.yaml` et `subcategories.avant-4.10.1.yaml`. Il est
+# `subcategories.before-4.16.0.yaml` et `subcategories.before-4.10.1.yaml`. Il est
 # fusionné par-dessus : les règles absentes d'ici sont reprises telles quelles.
 #
 # ## Pourquoi cette variante
@@ -32,7 +32,7 @@
 #     `moyenne` vaut 0. La somme des six énergies égale `empreinte totale`.
 #
 # L'électricité de chauffage n'est pas concernée : elle est déjà incluse dans
-# `logement . électricité` (cf. `subcategories.avant-4.10.1.yaml`).
+# `logement . électricité` (cf. `subcategories.before-4.10.1.yaml`).
 
 bilan . sous catégories . logement . chauffage . moyenne:
   formule:
@@ -85,7 +85,7 @@ bilan . sous catégories . logement . chauffage . bouteille gaz:
 
 # ## Photovoltaïque
 #
-# `subcategories.avant-4.16.0.yaml` réécrit `photovoltaique` en testant
+# `subcategories.before-4.16.0.yaml` réécrit `photovoltaique` en testant
 # `logement . chauffage . mode` (pour choisir entre `consommation totale` et
 # `consommation totale hors individuel`), règle absente avant 4.10.0.
 #

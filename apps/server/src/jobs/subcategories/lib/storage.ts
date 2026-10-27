@@ -1,15 +1,13 @@
 /**
- * Stockage des exports de sous catégories dans le bucket Scaleway.
+ * Storage of the sub-category exports in the Scaleway bucket.
  *
- * Préfixe : `ngc/export-subcategories/<période>/` (`rootPath` = `ngc`).
+ * The Scalingo one-off container is ephemeral: the CSV and the checkpoint are
+ * written locally during the run and uploaded regularly, which is what makes an
+ * interrupted run resumable.
  *
- * Le conteneur one-off Scalingo est éphémère : le CSV et le checkpoint sont
- * écrits en local pendant le run, puis envoyés au bucket régulièrement. C'est
- * ce qui permet de reprendre un run interrompu.
- *
- * Le client S3 est chargé **paresseusement** : `config.ts` valide tout
- * l'environnement du serveur à l'import, ce qui empêcherait de lancer le job en
- * local avec `--no-upload` et un environnement partiel.
+ * The S3 client is loaded **lazily**: `config.ts` validates the whole server
+ * environment on import, which would prevent running the job locally with
+ * `--no-upload` and a partial environment.
  */
 
 import type { S3Client } from '@aws-sdk/client-s3'
@@ -32,10 +30,8 @@ const getContext = (): Promise<StorageContext> => {
 }
 
 /**
- * Clé S3 d'un fichier du job : `ngc/export-subcategories/<période>/<fichier>`.
- *
- * Toute clé du job doit passer par ici : la politique du bucket restreint les
- * accès à `ngc/*`, une clé hors de ce préfixe est refusée.
+ * S3 key of a job file. Every key of the job must go through here: the bucket
+ * policy restricts access to `ngc/*`.
  */
 export const buildKey = (period: string, filename: string): string =>
   ['ngc', EXPORT_ROOT_PATH, period, filename].filter(Boolean).join('/')
@@ -53,10 +49,10 @@ const isNotFound = (error: unknown): boolean => {
 }
 
 /**
- * Sans la permission `s3:ListBucket`, S3 répond **403 Access Denied** (et non
- * 404) à la lecture d'un objet absent : impossible de distinguer « absent » de
- * « interdit ». Pour le cache des règles — dont l'absence est le cas normal au
- * premier run — on traite donc 403 comme une absence.
+ * Without the `s3:ListBucket` permission, S3 answers **403 Access Denied** (not
+ * 404) when reading a missing object, so "absent" and "forbidden" cannot be
+ * told apart. For the rules cache — where absence is the normal case on the
+ * first run — 403 is therefore treated as absent.
  */
 const isAbsent = (error: unknown): boolean => {
   const name = (error as { name?: string } | null)?.name
@@ -65,19 +61,19 @@ const isAbsent = (error: unknown): boolean => {
   return isNotFound(error) || name === 'AccessDenied' || status === 403
 }
 
-/** Message d'erreur lisible, avec l'opération et la clé concernées. */
+/** Human-readable error message, with the failed operation and key. */
 export const describeStorageError = (
-  operation: 'lecture' | 'écriture',
+  operation: 'read' | 'write',
   key: string,
   error: unknown
 ): string => {
   const message = error instanceof Error ? error.message : String(error)
   const status = (error as { $metadata?: { httpStatusCode?: number } } | null)
     ?.$metadata?.httpStatusCode
-  return `${operation} S3 impossible (${key}${status ? `, HTTP ${status}` : ''}) : ${message}`
+  return `S3 ${operation} failed (${key}${status ? `, HTTP ${status}` : ''}): ${message}`
 }
 
-/** Télécharge un fichier du bucket, ou `null` s'il n'existe pas. */
+/** Downloads a file from the bucket, or `null` if it does not exist. */
 export const downloadText = async (key: string): Promise<string | null> => {
   const { client, bucket } = await getContext()
   const { GetObjectCommand } = await import('@aws-sdk/client-s3')
@@ -92,7 +88,7 @@ export const downloadText = async (key: string): Promise<string | null> => {
   }
 }
 
-/** Envoie un contenu texte dans le bucket. */
+/** Uploads a text body to the bucket. */
 export const uploadText = async (
   key: string,
   body: string,

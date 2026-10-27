@@ -1,13 +1,13 @@
 /**
- * Accès Postgres pour l'export des sous catégories.
+ * Postgres access for the sub-category export.
  *
- * On passe par `psql` (présent dans l'image Scalingo) plutôt que par le client
- * Prisma : la pagination « keyset » et l'agrégation JSON sont plus lisibles en
- * SQL brut, et cela évite de dépendre du schéma Prisma pour un job d'analyse.
+ * We go through `psql` (provided by the Scalingo image) rather than the Prisma
+ * client: keyset pagination and JSON aggregation read better in raw SQL, and it
+ * avoids depending on the Prisma schema for an analysis job.
  *
- * ⚠️ `DATABASE_URL` contient des paramètres destinés à Prisma
- * (`connection_limit`) que libpq refuse. On nettoie l'URL avant de la passer à
- * `psql`, et on préfère `SCALINGO_POSTGRESQL_URL` quand elle existe.
+ * `DATABASE_URL` carries Prisma-only parameters (`connection_limit`) that libpq
+ * rejects, hence `sanitizeDatabaseUrl`. `SCALINGO_POSTGRESQL_URL` is preferred
+ * when available.
  */
 
 import { execFileSync } from 'node:child_process'
@@ -20,7 +20,7 @@ export type Simulation = {
   situation: Record<string, unknown>
 }
 
-/** Paramètres d'URL que libpq comprend (le reste est retiré). */
+/** URL parameters libpq understands (the rest is dropped). */
 const LIBPQ_PARAMS = new Set([
   'sslmode',
   'connect_timeout',
@@ -32,11 +32,11 @@ const LIBPQ_PARAMS = new Set([
 ])
 
 /**
- * Nettoie une URL de connexion pour libpq.
+ * Cleans a connection URL for libpq.
  *
- * `DATABASE_URL` est construite pour Prisma : `?sslmode=require&connection_limit=5`.
- * `psql` échoue sur `connection_limit` (« invalid URI query parameter »). On ne
- * garde donc que les paramètres connus de libpq.
+ * `DATABASE_URL` is built for Prisma: `?sslmode=require&connection_limit=5`.
+ * `psql` fails on `connection_limit` ("invalid URI query parameter"), so only
+ * parameters known to libpq are kept.
  */
 export const sanitizeDatabaseUrl = (raw: string): string => {
   const url = new URL(raw)
@@ -49,8 +49,8 @@ export const sanitizeDatabaseUrl = (raw: string): string => {
 }
 
 /**
- * URL retenue pour `psql` : `SCALINGO_POSTGRESQL_URL` de préférence (déjà au
- * format libpq), sinon `DATABASE_URL` nettoyée.
+ * URL used for `psql`: `SCALINGO_POSTGRESQL_URL` first (already in libpq form),
+ * otherwise a cleaned `DATABASE_URL`.
  */
 export const resolveDatabaseUrl = (
   env: NodeJS.ProcessEnv = process.env
@@ -58,13 +58,13 @@ export const resolveDatabaseUrl = (
   if (env.SCALINGO_POSTGRESQL_URL) return env.SCALINGO_POSTGRESQL_URL
   if (env.DATABASE_URL) return sanitizeDatabaseUrl(env.DATABASE_URL)
   throw new Error(
-    'Aucune URL Postgres : ni SCALINGO_POSTGRESQL_URL ni DATABASE_URL.'
+    'No Postgres URL: neither SCALINGO_POSTGRESQL_URL nor DATABASE_URL.'
   )
 }
 
 const MAX_BUFFER = 1024 * 1024 * 200
 
-/** Exécute une requête et renvoie le JSON agrégé par `json_agg`. */
+/** Runs a query and returns the JSON aggregated by `json_agg`. */
 export const queryJson = <T>({
   url,
   schema,
@@ -91,8 +91,8 @@ export const queryJson = <T>({
 }
 
 /**
- * Lot de simulations, triées par `date` (puis `id`). La pagination « keyset »
- * reste stable même si des simulations sont insérées pendant l'exécution.
+ * A batch of simulations ordered by `date` (then `id`). Keyset pagination stays
+ * stable even if simulations are inserted while the run is in progress.
  */
 export const fetchSimulationBatch = ({
   url,
@@ -137,9 +137,8 @@ export const fetchSimulationBatch = ({
 }
 
 /**
- * Au plus `perVersion` simulations par version de modèle. Une version couvre
- * plusieurs modèles (`FR-fr-…`, `BE-fr-…`) : l'échantillon est pris sur la
- * version, pas sur chaque modèle.
+ * At most `perVersion` simulations per model version. A version spans several
+ * models (`FR-fr-…`, `BE-fr-…`): the sample is taken per version, not per model.
  */
 export const fetchSampledSimulations = ({
   url,
@@ -173,8 +172,8 @@ export const fetchSampledSimulations = ({
 
   let inner: string
   if (sampleMode === 'spread') {
-    // Un point par tranche chronologique : `ntile` découpe la version en
-    // `perVersion` paquets, on garde la première simulation de chacun.
+    // One point per chronological slice: `ntile` splits the version into
+    // `perVersion` buckets, and the first simulation of each is kept.
     inner = `
       select id, date, model, progression, situation from (
         select id, date, model, progression, situation,
@@ -192,8 +191,8 @@ export const fetchSampledSimulations = ({
       where rn = 1
     `
   } else if (sampleMode === 'random') {
-    // Tirage reproductible sans `setseed()` (qui s'appliquerait à toute la
-    // session) : l'ordre dépend de `md5(id + graine)`.
+    // Reproducible draw without `setseed()` (which would apply to the whole
+    // session): the order depends on `md5(id + seed)`.
     inner = `
       select id, date, model, progression, situation
       from (
@@ -227,7 +226,7 @@ export const fetchSampledSimulations = ({
   })
 }
 
-/** Nombre total de simulations par version, pour situer l'échantillon. */
+/** Total number of simulations per version, to size the sample. */
 export const fetchVersionCounts = ({
   url,
   schema,

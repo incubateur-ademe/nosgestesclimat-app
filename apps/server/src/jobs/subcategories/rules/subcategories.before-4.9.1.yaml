@@ -1,8 +1,8 @@
 # Sous catégories — variante pour les modèles ANTÉRIEURS à 4.9.1.
 #
 # ⚠️ Ce fichier ne contient que les règles qui diffèrent des fichiers de base,
-# `subcategories.avant-4.16.0.yaml`, `subcategories.avant-4.10.1.yaml` et
-# `subcategories.avant-4.10.0.yaml`. Il est fusionné par-dessus.
+# `subcategories.before-4.16.0.yaml`, `subcategories.before-4.10.1.yaml` et
+# `subcategories.before-4.10.0.yaml`. Il est fusionné par-dessus.
 #
 # ## Pourquoi cette variante
 #
