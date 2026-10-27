@@ -17,10 +17,6 @@ const meta: Meta<typeof Title> = {
       options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
       description: 'La balise HTML à utiliser pour le titre',
     },
-    hasSeparator: {
-      control: 'boolean',
-      description: 'Afficher un séparateur sous le titre',
-    },
     className: { control: 'text', description: 'Classes CSS additionnelles' },
   },
 }
@@ -45,13 +41,6 @@ export const AsH2: Story = {
   args: {
     title: 'Titre de niveau 2',
     tag: 'h2',
-  },
-}
-
-export const WithoutSeparator: Story = {
-  args: {
-    title: 'Titre sans séparateur',
-    hasSeparator: false,
   },
 }
 

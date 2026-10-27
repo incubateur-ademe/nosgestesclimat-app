@@ -37,7 +37,6 @@ export default async function CreationPage() {
               </Trans>
             }
             subtitle={<Trans>Plus que quelques petites questions</Trans>}
-            hasSeparator={false}
           />
 
           <CreationForm />

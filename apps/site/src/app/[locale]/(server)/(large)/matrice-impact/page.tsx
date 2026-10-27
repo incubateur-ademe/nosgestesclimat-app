@@ -8,7 +8,6 @@ export default function ImpactMatrixPage() {
     <>
       <Title
         tag="h1"
-        hasSeparator={false}
         className="text-3xl/normal! font-medium"
         title={<Trans i18nKey="impact_matrix.title">Matrice d'impact</Trans>}
       />

@@ -12,7 +12,7 @@ export default function Objective({ carbonFootprint }: Props) {
   return (
     <div className="flex flex-col">
       <div className="-order-1 md:order-0 md:mb-6">
-        <Title size="lg" tag="h2" hasSeparator={false}>
+        <Title size="lg" tag="h2">
           <Trans i18nKey="results.objective.title">
             Objectif national :{' '}
             <span className="text-secondary-700">2t de CO₂e</span> par personne

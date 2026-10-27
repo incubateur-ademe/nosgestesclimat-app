@@ -1,6 +1,5 @@
 import { cn } from 'cn'
 import type { HTMLAttributes, JSX, PropsWithChildren } from 'react'
-import Separator from './Separator'
 
 type Sizes = 'xl' | 'lg' | 'md'
 
@@ -11,7 +10,6 @@ export interface TitleProps extends Omit<
   title?: string | JSX.Element
   subtitle?: string | JSX.Element
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  hasSeparator?: boolean
   containerClassName?: string
   size?: Sizes
 }
@@ -26,7 +24,6 @@ export default function Title({
   title,
   subtitle,
   tag = 'h1',
-  hasSeparator = true,
   className = '',
   containerClassName,
   children,
@@ -36,16 +33,13 @@ export default function Title({
   const Tag = tag
   return (
     <div className={cn('relative', containerClassName)}>
-      <div className={hasSeparator ? 'mb-6' : ''}>
-        <Tag
-          className={cn('mb-2', titleSizesClassNames[size], className)}
-          {...props}>
-          {title ?? children}
-        </Tag>
+      <Tag
+        className={cn('mb-2', titleSizesClassNames[size], className)}
+        {...props}>
+        {title ?? children}
+      </Tag>
 
-        {subtitle && <p className="mb-0 text-slate-500">{subtitle}</p>}
-      </div>
-      {hasSeparator ? <Separator className="mt-0 mb-6" /> : null}
+      {subtitle && <p className="mb-0 text-slate-500">{subtitle}</p>}
     </div>
   )
 }

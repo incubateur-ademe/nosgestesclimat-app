@@ -38,16 +38,13 @@ export default async function EventPodium({
         </Trans>
       </p>
 
-      <Title hasSeparator={false} size="xl" className="mb-12 text-center">
+      <Title size="xl" className="mb-12 text-center">
         <Trans i18nKey="event.podium.subtitle">
           Le podium de la mobilisation
         </Trans>
       </Title>
 
-      <EventTabs
-        filter={activeCategoryFilter}
-        params={params}
-      />
+      <EventTabs filter={activeCategoryFilter} params={params} />
 
       <PodiumVisual
         // Trigger animation on each change
