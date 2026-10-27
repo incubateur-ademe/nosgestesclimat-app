@@ -55,7 +55,12 @@ import {
   isPublishedVersion,
   rulesSetLabel,
 } from './lib/rules.ts'
-import { buildKey, downloadText, uploadText } from './lib/storage.ts'
+import {
+  buildKey,
+  describeStorageError,
+  downloadText,
+  uploadText,
+} from './lib/storage.ts'
 
 const SUB_CATEGORIES_ROOT = 'bilan . sous catégories'
 
@@ -705,14 +710,25 @@ const main = async (): Promise<void> => {
     5 * 60 * 1000
   )
 
+  /**
+   * Envoie le CSV et le checkpoint dans le bucket.
+   *
+   * Contrairement au cache des règles, un échec ici est **fatal** : sans envoi,
+   * le travail est perdu avec le conteneur one-off. On enveloppe l'erreur pour
+   * donner l'opération et la clé, plutôt que la trace brute du SDK AWS.
+   */
   const flush = async (): Promise<void> => {
     if (!upload) return
-    await uploadText(csvKey, await readFile(csvPath, 'utf8'))
-    await uploadText(
-      checkpointKey,
-      JSON.stringify(state, null, 2),
-      'application/json'
-    )
+    try {
+      await uploadText(csvKey, await readFile(csvPath, 'utf8'))
+      await uploadText(
+        checkpointKey,
+        JSON.stringify(state, null, 2),
+        'application/json'
+      )
+    } catch (error) {
+      throw new Error(describeStorageError('écriture', csvKey, error))
+    }
   }
 
   const UPLOAD_EVERY = 25

@@ -18,7 +18,12 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { gunzipSync } from 'node:zlib'
-import { downloadText, uploadText } from './storage.ts'
+import {
+  buildKey,
+  describeStorageError,
+  downloadText,
+  uploadText,
+} from './storage.ts'
 
 const REGISTRY_URL =
   'https://registry.npmjs.org/@incubateur-ademe/nosgestesclimat/-/nosgestesclimat'
@@ -31,9 +36,12 @@ const memoryCache = new Map<string, ModelRules>()
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-/** Clé S3 du cache des règles d'une version. */
+/**
+ * Clé S3 du cache des règles d'une version, partagée entre les périodes : un
+ * mois déjà traité ne retélécharge rien.
+ */
 const cacheKey = (version: string) =>
-  `export-subcategories/_model-cache/${version}.json`
+  buildKey('_model-cache', `${version}.json`)
 
 /**
  * Télécharge le tarball npm d'une version et en extrait `MODEL_FILE`.
@@ -92,11 +100,17 @@ export const fetchModelRules = async (
   // configuration complète du serveur.
   const key = cacheKey(version)
   if (upload) {
-    const fromBucket = await downloadText(key)
-    if (fromBucket != null) {
-      const rules = JSON.parse(fromBucket) as ModelRules
-      memoryCache.set(version, rules)
-      return rules
+    try {
+      const fromBucket = await downloadText(key)
+      if (fromBucket != null) {
+        const rules = JSON.parse(fromBucket) as ModelRules
+        memoryCache.set(version, rules)
+        return rules
+      }
+    } catch (error) {
+      console.warn(
+        `⚠️  ${describeStorageError('lecture', key, error)} — repli sur npm.`
+      )
     }
   }
 
@@ -108,7 +122,13 @@ export const fetchModelRules = async (
       memoryCache.set(version, rules)
 
       if (upload) {
-        await uploadText(key, JSON.stringify(rules), 'application/json')
+        try {
+          await uploadText(key, JSON.stringify(rules), 'application/json')
+        } catch (error) {
+          // Le run peut continuer : seul le cache est manquant, donc une
+          // éventuelle reprise retéléchargera cette version depuis npm.
+          console.warn(`⚠️  ${describeStorageError('écriture', key, error)}`)
+        }
       }
       return rules
     } catch (error) {

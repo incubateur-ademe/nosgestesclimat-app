@@ -78,6 +78,12 @@ describe('buildKey', () => {
     )
   })
 
+  it('range le cache des règles sous le préfixe ngc/ (exigé par la politique du bucket)', () => {
+    expect(buildKey('_model-cache', '4.17.3.json')).toBe(
+      'ngc/export-subcategories/_model-cache/4.17.3.json'
+    )
+  })
+
   it('ignore un nom de fichier vide', () => {
     expect(buildKey('2026-01', '')).toBe('ngc/export-subcategories/2026-01')
   })
