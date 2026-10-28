@@ -65,7 +65,9 @@ export default async function FAQPage({
       />
       <div className="flex flex-wrap gap-8 pb-8 md:flex-nowrap">
         <div className="mt-8">
-          <Title title={t('Questions fréquentes')} />
+          <Title>
+            <Trans>Questions fréquentes</Trans>
+          </Title>
 
           <Scroller />
 

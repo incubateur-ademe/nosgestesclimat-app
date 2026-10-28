@@ -26,7 +26,7 @@ export default async function SaveResultsBlock({
 
   return (
     <HideInIframe hideIfNotFrenchRegion>
-      <Title tag="h2" hasSeparator={false} size="lg" className="mb-8">
+      <Title tag="h2" size="lg" className="mb-8">
         <Trans i18nKey="results.saveResults.title">
           Retrouvez facilement vos résultats{' '}
         </Trans>
@@ -40,7 +40,6 @@ export default async function SaveResultsBlock({
             <Title
               tag="h3"
               size="md"
-              hasSeparator={false}
               id="save-results-block-title"
               className="mb-4 font-bold! text-white">
               {user?.isAuth ? (

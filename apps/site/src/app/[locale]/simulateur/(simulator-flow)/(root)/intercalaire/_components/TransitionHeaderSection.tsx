@@ -33,7 +33,7 @@ export default function TransitionHeaderSection({
   const { remainingCategories } = useFormState()
   if (remainingCategories === 0) {
     return (
-      <Title tag="h1" hasSeparator={false} className="text-primary-600">
+      <Title tag="h1" className="text-primary-600">
         <Trans i18nKey="simulator.intercalaire.title.last">
           Bravo, tu as répondu à toutes les questions
         </Trans>{' '}
@@ -44,10 +44,7 @@ export default function TransitionHeaderSection({
 
   return (
     <>
-      <Title
-        tag="h1"
-        hasSeparator={false}
-        className="text-primary-600 font-medium">
+      <Title tag="h1" className="text-primary-600 font-medium">
         <Trans
           values={{ category: getCategoryString(previousCategory!, t) }}
           i18nKey="simulator.intercalaire.title.default">

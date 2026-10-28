@@ -10,7 +10,7 @@ export default async function WaterActions() {
 
   return (
     <div className="mb-12">
-      <Title hasSeparator={false} tag="h2" size="lg">
+      <Title tag="h2" size="lg">
         <Trans i18nKey="endPage.waterActions.title">Comment agir ?</Trans>
       </Title>
 

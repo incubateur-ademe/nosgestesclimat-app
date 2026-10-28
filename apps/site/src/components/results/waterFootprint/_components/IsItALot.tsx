@@ -4,7 +4,7 @@ import Title from '@/design-system/layout/Title'
 export default function IsItALot() {
   return (
     <section className="mb-12 w-lg max-w-full">
-      <Title tag="h2" hasSeparator={false} size="lg">
+      <Title tag="h2" size="lg">
         <Trans i18nKey="eau.resultats.isItALot.title">
           Est-ce que c'est beaucoup ?
         </Trans>

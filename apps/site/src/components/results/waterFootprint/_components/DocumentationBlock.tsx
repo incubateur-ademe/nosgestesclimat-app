@@ -5,7 +5,7 @@ import Title from '@/design-system/layout/Title'
 export default function DocumentationBlock() {
   return (
     <div>
-      <Title tag="h2" size="lg" hasSeparator={false}>
+      <Title tag="h2" size="lg">
         <Trans i18nKey="simulation.eau.documentation.title">
           Comment est calculée votre empreinte ?
         </Trans>

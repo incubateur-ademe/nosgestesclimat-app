@@ -1,5 +1,6 @@
 import OrganisationFilAriane from '@/components/layout/FilAriane'
 import Trans from '@/components/translation/trans/TransServer'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getUserOrganisation } from '@/helpers/server/model/organisations'
@@ -28,17 +29,15 @@ export default async function CreationPage() {
 
       <section className="w-full bg-white">
         <div className="mx-auto flex max-w-5xl flex-col gap-6 px-0">
-          <Title
-            size="lg"
-            title={
-              <Trans>
-                Créez une organisation afin de diffuser un ou plusieurs liens de
-                test collectif
-              </Trans>
-            }
-            subtitle={<Trans>Plus que quelques petites questions</Trans>}
-            hasSeparator={false}
-          />
+          <Title size="lg" className="mb-2">
+            <Trans>
+              Créez une organisation afin de diffuser un ou plusieurs liens de
+              test collectif
+            </Trans>
+          </Title>
+          <Subtitle>
+            <Trans>Plus que quelques petites questions</Trans>
+          </Subtitle>
 
           <CreationForm />
         </div>

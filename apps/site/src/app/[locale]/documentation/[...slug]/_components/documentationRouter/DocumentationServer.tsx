@@ -22,12 +22,11 @@ interface Props {
 export default function DocumentationServer({ rule, rules, ruleName }: Props) {
   return (
     <>
-      <Title
-        title={`${rule.icônes ?? ''} ${capitalizeString(
+      <Title data-testid="documentation-title">
+        {`${rule.icônes ?? ''} ${capitalizeString(
           getRuleTitle({ ...rule, dottedName: ruleName })
         )}`}
-        data-testid="documentation-title"
-      />
+      </Title>
 
       {rule.question && <QuestionSection rule={rule} />}
 

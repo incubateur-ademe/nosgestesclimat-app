@@ -6,7 +6,7 @@ import Title from '@/design-system/layout/Title'
 export default function ClimateAndWater() {
   return (
     <div className="mb-12">
-      <Title hasSeparator={false} size="lg">
+      <Title size="lg">
         <Trans i18nKey="simulation.eau.climateAndWater.title">
           Eau, climat, même combat ?
         </Trans>

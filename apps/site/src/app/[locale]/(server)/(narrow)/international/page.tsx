@@ -30,9 +30,9 @@ export default async function International() {
       <Container maxWidth="3xl" className="pt-8 pb-12">
         <div className="flex items-start justify-between gap-4">
           <div className="text-center md:text-left">
-            <Title
-              title={t('Le calculateur d’empreinte climat international')}
-            />
+            <Title>
+              <Trans>Le calculateur d’empreinte climat international</Trans>
+            </Title>
 
             <Image
               src="/_static/cms/medium_international_illustration_b4030014c1.jpeg"

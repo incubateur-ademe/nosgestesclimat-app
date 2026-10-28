@@ -10,16 +10,10 @@ const meta: Meta<typeof Title> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    title: { control: 'text', description: 'Le titre principal' },
-    subtitle: { control: 'text', description: 'Le sous-titre' },
     tag: {
       control: 'select',
       options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
       description: 'La balise HTML à utiliser pour le titre',
-    },
-    hasSeparator: {
-      control: 'boolean',
-      description: 'Afficher un séparateur sous le titre',
     },
     className: { control: 'text', description: 'Classes CSS additionnelles' },
   },
@@ -30,28 +24,20 @@ type Story = StoryObj<typeof Title>
 
 export const Default: Story = {
   args: {
-    title: 'Ceci est un titre',
+    children: 'Ceci est un titre',
   },
 }
 
 export const WithSubtitle: Story = {
   args: {
-    title: 'Titre avec un sous-titre',
-    subtitle: 'Un sous-titre pour donner plus de contexte.',
+    children: 'Titre avec un sous-titre',
   },
 }
 
 export const AsH2: Story = {
   args: {
-    title: 'Titre de niveau 2',
+    children: 'Titre de niveau 2',
     tag: 'h2',
-  },
-}
-
-export const WithoutSeparator: Story = {
-  args: {
-    title: 'Titre sans séparateur',
-    hasSeparator: false,
   },
 }
 
@@ -67,7 +53,7 @@ export const WithChildren: Story = {
 
 export const CustomClass: Story = {
   args: {
-    title: 'Titre avec style personnalisé',
+    children: 'Titre avec style personnalisé',
     className: 'text-blue-600 italic',
   },
 }

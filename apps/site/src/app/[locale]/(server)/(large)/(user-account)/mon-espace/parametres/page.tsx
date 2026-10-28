@@ -52,14 +52,9 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
       <UserSpaceTabs isAuth activeTabId="settings" />
 
       <div className="mb-6 flex w-full items-start justify-between">
-        <Title
-          title={
-            <span>
-              <Trans i18nKey="mon-espace.settings.title">Paramètres</Trans>
-            </span>
-          }
-          className="mb-0"
-        />
+        <Title className="mb-0">
+          <Trans i18nKey="mon-espace.settings.title">Paramètres</Trans>
+        </Title>
       </div>
 
       <section aria-labelledby="user-info-title" className="mb-10">
