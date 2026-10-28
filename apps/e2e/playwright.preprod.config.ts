@@ -12,6 +12,13 @@ export default defineConfig<FixturesOptions>({
   testDir: './tests/preprod',
   // Labels every test of this suite in the reports.
   tag: '@preprod',
+  /* Wait for the site before running tests. */
+  webServer: {
+    command: 'pnpm -F @nosgestesclimat/site dev:e2e',
+    url: process.env.NEXT_PUBLIC_SITE_URL,
+    reuseExistingServer: true,
+    timeout: 120 * 1000,
+  },
   projects: [
     {
       name: 'Preprod setup',
