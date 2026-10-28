@@ -1239,7 +1239,7 @@ entries:
   common.authentication.verifyEmail: Vérifier mon adresse e-mail
   common.optional: facultatif
   common.skip: Passer
-  tutorial.email.contest.default: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.default: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <1>{{organisationName}}</1>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.contest.youth: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.subtitle.default: Pour conserver vos résultats et les retrouver à l'avenir dans <2>votre espace personnel</2>
   tutorial.email.subtitle.youth: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
@@ -1523,3 +1523,5 @@ entries:
   impact_matrix.items.third.description: '<0><0>Appréciation de l’utilité de l’outil par les utilisateurs ayant terminé le test (déclaratif*) :</0><1></1><2>83%</2> : NGC leur a fait prendre conscience de leur impact<4></4><5>81%</5> : NGC leur a donné envie d’agir<7></7><8>66%</8> : NGC les a aidés à identifier des actions concrètes pour réduire</0><1><0>Net Promoter Score (S1 2026) :</0> 35</1>'
   impact_matrix.items.third.title: Utile
   impact_matrix.title: Matrice d'impact
+  stats.iframe.description: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.
+  stats.iframe.title: Statistiques publiques du site Nos Gestes Climat.
