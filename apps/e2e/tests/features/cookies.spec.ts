@@ -1,3 +1,4 @@
+import { gotoRetryOnAbort } from '../helpers/navigation'
 import { expect, test } from '../local/fixtures'
 
 test.use({ storageState: { cookies: [], origins: [] } })
@@ -70,7 +71,7 @@ test.describe('Cookie Consent Management', () => {
     await page.getByTestId('cookie-banner-accept-button').click()
 
     // Go to Privacy Policy
-    await page.goto('/politique-de-confidentialite')
+    await gotoRetryOnAbort(page, '/politique-de-confidentialite')
 
     // Click check box
     const checkbox = page.getByTestId('posthog-tracking-checkbox')
