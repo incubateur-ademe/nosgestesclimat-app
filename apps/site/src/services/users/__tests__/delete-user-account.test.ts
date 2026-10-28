@@ -1,31 +1,9 @@
 import { getUserSession } from '@/services/auth/get-user-session'
+import { logout } from '@/services/auth/logout'
 import { faker } from '@faker-js/faker'
 import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
 import { describe, it, vi } from 'vitest'
 import { deleteUserAccount } from '../delete-user-account'
-
-vi.mock('@/services/auth/get-user-session', () => ({
-  getUserSession: vi.fn(),
-}))
-
-const redirectMock = vi.hoisted(() => vi.fn())
-
-vi.mock('next/navigation', () => ({
-  unauthorized: () => {
-    throw new Error('UNAUTHORIZED')
-  },
-  forbidden: () => {
-    throw new Error('FORBIDDEN')
-  },
-  redirect: redirectMock,
-}))
-
-vi.mock(
-  '@nosgestesclimat/core/features/users/services/delete-user.service',
-  () => ({
-    deleteUser: vi.fn(),
-  })
-)
 
 describe('deleteUserAccount', () => {
   beforeEach(() => {
@@ -47,7 +25,24 @@ describe('deleteUserAccount', () => {
 
     await expect(deleteUserAccount()).rejects.toThrow('FORBIDDEN')
   })
-  it('should redirect to the home page in case of success', async () => {
+  it('should logout after a successful account deletion', async () => {
+    vi.mocked(getUserSession).mockResolvedValue({
+      id: faker.string.uuid(),
+      isAuth: true,
+      email: faker.internet.email(),
+    })
+    vi.mocked(deleteUser).mockImplementation(
+      async () => await Promise.resolve(undefined)
+    )
+    vi.mocked(logout).mockImplementation(
+      async () => await Promise.resolve(undefined)
+    )
+
+    await expect(deleteUserAccount()).rejects.toThrow('REDIRECT:/')
+
+    expect(logoutMock).toHaveBeenCalledTimes(1)
+  })
+  it('should redirect to the home page after a successful account deletion', async () => {
     vi.mocked(getUserSession).mockResolvedValue({
       id: faker.string.uuid(),
       isAuth: true,
@@ -62,7 +57,7 @@ describe('deleteUserAccount', () => {
     expect(redirectMock).toHaveBeenCalledTimes(1)
     expect(redirectMock).toHaveBeenCalledWith('/')
   })
-  it('should panic in case of a server error', async () => {
+  it('should propagate the error in case of a server error', async () => {
     vi.mocked(getUserSession).mockResolvedValue({
       id: faker.string.uuid(),
       isAuth: true,
@@ -75,3 +70,30 @@ describe('deleteUserAccount', () => {
     await expect(deleteUserAccount()).rejects.toThrow('Boom')
   })
 })
+
+vi.mock('@/services/auth/get-user-session', () => ({
+  getUserSession: vi.fn(),
+}))
+
+const redirectMock = vi.hoisted(() => vi.fn())
+vi.mock('next/navigation', () => ({
+  unauthorized: () => {
+    throw new Error('UNAUTHORIZED')
+  },
+  forbidden: () => {
+    throw new Error('FORBIDDEN')
+  },
+  redirect: redirectMock,
+}))
+
+vi.mock(
+  '@nosgestesclimat/core/features/users/services/delete-user.service',
+  () => ({
+    deleteUser: vi.fn(),
+  })
+)
+
+const logoutMock = vi.hoisted(() => vi.fn())
+vi.mock('@/services/auth/logout', () => ({
+  logout: logoutMock,
+}))
