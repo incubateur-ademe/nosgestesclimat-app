@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,7 +24,7 @@ export default function DeleteAccount() {
           onClick={() => trackEvent(clickDeleteUserAccountButton)}
           variant="outlined"
           color="red">
-          <TrashIcon className="stroke-red-700" />
+          <TrashIcon className="mr-2 size-5" />
           <TransClient i18nKey="mon-espace.settings.delete.button">
             Supprimer mon compte
           </TransClient>
@@ -38,15 +37,18 @@ export default function DeleteAccount() {
               Suppression du compte
             </TransClient>
           </DialogTitle>
-          <DialogDescription>
-            <TransClient i18nKey="mon-espace.settings.delete.button">
+          <p className="mb-2">
+            <TransClient i18nKey="mon-espace.settings.delete.dialog.description1">
               Cette action supprimera définitivement votre compte ainsi que
               l'ensemble de vos données associées : résultats, groupes,
               organisation.
-              <br />
+            </TransClient>
+          </p>
+          <p>
+            <TransClient i18nKey="mon-espace.settings.delete.dialog.description2">
               <strong>Cette action est irréversible.</strong>
             </TransClient>
-          </DialogDescription>
+          </p>
           <DialogFooter>
             <Button onClick={deleteUserAccount} color="red" loading={isPending}>
               <TransClient i18nKey="mon-espace.settings.delete.dialog.confirm">
