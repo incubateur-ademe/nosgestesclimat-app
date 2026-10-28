@@ -44,8 +44,7 @@ export default function StatsContent() {
           Consultez notre{' '}
           <InlineLink href="/matrice-impact">matrice d'impact</InlineLink> afin
           de prendre connaissance de{' '}
-          <strong>nos indicateurs d’usage et d’impact</strong> auprès de nos
-          usagères et usagers.
+          <strong>nos indicateurs d’usage et d’impact</strong>.
         </TransClient>
       </p>
     </div>
