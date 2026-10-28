@@ -66,6 +66,7 @@ function DialogContent({
           'data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
           'fixed top-1/2 left-1/2 grid w-full max-w-[calc(100%-2rem)]',
           '-translate-x-1/2 -translate-y-1/2',
+          'flex flex-col',
           'gap-4 rounded-xl p-8 text-sm ring-1 duration-100 outline-none sm:max-w-lg',
           className
         )}
@@ -73,7 +74,7 @@ function DialogContent({
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <button className="absolute top-8 right-8 flex size-6 items-center justify-center">
+            <button className="absolute top-4 right-4 flex size-6 items-center justify-center">
               <XIcon />
               <span className="sr-only">
                 <TransClient i18nKey="common.close">Fermer</TransClient>
@@ -90,7 +91,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn('flex flex-col', className)}
+      className={cn('flex w-full flex-col', className)}
       {...props}
     />
   )
@@ -127,7 +128,9 @@ function DialogFooter({
 function DialogTitle({
   className,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
+}: React.ComponentProps<typeof DialogPrimitive.Title> & {
+  isShowingCancelButton?: boolean
+}) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"

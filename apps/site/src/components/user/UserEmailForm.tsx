@@ -5,7 +5,13 @@ import VerifyCodeForm from '@/components/authentication/authenticateUserForm/Ver
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
-import Modal from '@/design-system/modals/Modal'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from '@/design-system/shadcn/dialog'
 import { useUpdateUserSettings } from '@/hooks/settings/useUpdateUserSettings'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { formatEmail } from '@/utils/format/formatEmail'
@@ -116,19 +122,33 @@ function UserEmailFormContent({
         onSubmit={handleSubmit(createCodeIfEmailChanged)}
         className="flex w-full flex-col items-start gap-4">
         {showVerificationModal && pendingEmail && (
-          <Modal
-            ariaLabel={t(
-              'organisations.emailVerificationModal.title',
-              "Fenêtre modale de confirmation d'e-mail"
-            )}
-            isOpen
-            closeModal={() => {
-              reset()
-              onCloseVerification()
-            }}
-            hasAbortCross={false}>
-            <VerifyCodeForm />
-          </Modal>
+          <Dialog
+            open
+            onOpenChange={(open) => {
+              if (!open) {
+                reset()
+                onCloseVerification()
+              }
+            }}>
+            <DialogContent
+              aria-label={t(
+                'organisations.emailVerificationModal.title',
+                "Fenêtre modale de confirmation d'e-mail"
+              )}
+              showCloseButton={false}>
+              <DialogHeader>
+                <VerifyCodeForm />
+              </DialogHeader>
+
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outlined">
+                    <Trans i18nKey="common.cancel">Annuler</Trans>
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
 
         <TextInput
@@ -144,7 +164,7 @@ function UserEmailFormContent({
             role="status"
             aria-live="polite"
             aria-atomic="true"
-            className="mt-4 mb-4 text-green-700">
+            className="mb-0 text-green-700">
             <Trans>Vos informations ont bien été mises à jour.</Trans>
           </p>
         )}
@@ -153,7 +173,7 @@ function UserEmailFormContent({
           <Button
             data-testid="submit-button"
             type="submit"
-            className="mt-6 gap-2 self-start">
+            className="gap-2 self-start">
             {submitLabel ? (
               <span data-testid="custom-submit-label">{submitLabel}</span>
             ) : (

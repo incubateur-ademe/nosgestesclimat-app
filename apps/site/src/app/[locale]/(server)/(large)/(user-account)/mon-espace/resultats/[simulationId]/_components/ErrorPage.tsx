@@ -1,5 +1,4 @@
 import CarbonFootprintResults from '@/components/results/carbonFootprint/CarbonFootprintResults'
-import { modalClassName } from '@/design-system/modals/Modal'
 import type { Locale } from '@/i18nConfig'
 import type { ComputedResults } from '@/publicodes-state/types'
 import type { PropsWithChildren } from 'react'
@@ -39,7 +38,9 @@ export default function ErrorPage({
         className={
           'fixed top-0 right-0 bottom-0 left-0 z-10000 flex flex-col overflow-auto bg-black/50 backdrop-blur-sm transition-opacity duration-500'
         }>
-        <dialog open className={modalClassName}>
+        <dialog
+          open
+          className="relative mx-auto mt-auto w-[40rem] max-w-[90vw] rounded-t-xl bg-white p-6 pt-10 transition-all duration-300 ease-out md:my-8 md:rounded-xl">
           {children}
         </dialog>
       </div>
