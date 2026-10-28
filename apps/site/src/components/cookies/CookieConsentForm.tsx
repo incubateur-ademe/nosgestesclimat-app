@@ -68,7 +68,7 @@ export default function CookieConsentForm({
                     className="text-base font-medium text-gray-900"
                     data-testid="preferences-text">
                     <Trans i18nKey="cookies.management.preferences">
-                      Préférences pour tous les services.{' '}
+                      Préférences pour tous les services.
                     </Trans>
                   </span>
                   <InlineLink

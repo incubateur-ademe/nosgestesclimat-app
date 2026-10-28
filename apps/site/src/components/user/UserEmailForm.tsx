@@ -7,7 +7,6 @@ import Button from '@/design-system/buttons/Button'
 import TextInput from '@/design-system/inputs/TextInput'
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -140,13 +139,7 @@ function UserEmailFormContent({
                 <VerifyCodeForm />
               </DialogHeader>
 
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outlined">
-                    <Trans i18nKey="common.cancel">Annuler</Trans>
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
+              <DialogFooter showCancelButton />
             </DialogContent>
           </Dialog>
         )}

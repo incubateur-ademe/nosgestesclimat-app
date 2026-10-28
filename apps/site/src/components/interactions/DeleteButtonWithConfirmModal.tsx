@@ -5,7 +5,6 @@ import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -73,7 +72,7 @@ export function DeleteButtonWithConfirmModal({
           )}
         </DialogHeader>
 
-        <DialogFooter>
+        <DialogFooter showCancelButton>
           <Button
             disabled={isPending}
             onClick={handleDeleteAction}
@@ -84,12 +83,6 @@ export function DeleteButtonWithConfirmModal({
               Confirmer la suppression
             </Trans>
           </Button>
-
-          <DialogClose asChild>
-            <Button variant="outlined" disabled={isPending}>
-              <Trans i18nKey="common.cancel">Annuler</Trans>
-            </Button>
-          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
