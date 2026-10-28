@@ -1751,8 +1751,8 @@ entries:
   common.authentication.verifyEmail.lock: Vérifier mon adresse e-mail
   tutorial.email.contest.youth: Check your email for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be saved in a personal account on Nos Gestes Climat.
   tutorial.email.contest.youth.lock: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
-  tutorial.email.contest.default: Please check your email address for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
-  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.default: Please check your email address for the prize draw <1>{{organisationName}}</1>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <1>{{organisationName}}</1>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
@@ -2341,3 +2341,7 @@ entries:
   impact_matrix.title.lock: Matrice d'impact
   impact_matrix.items.fourth.description: '<0><0>Proportion of post-test users who took action to reduce their carbon footprint (self-reported*): 37 per cent</0> of users report having taken new steps to reduce their carbon footprint after completing the NGC test</0>'
   impact_matrix.items.fourth.description.lock: '<0><0>Taux de passage à l’action des utilisateurs post test pour réduire leur empreinte (déclaratif*) : 37%</0> des utilisateurs déclarent avoir mis en place de nouvelles actions pour réduire leur empreinte après avoir fait le test NGC</0>'
+  stats.iframe.title: Public statistics from the Nos Gestes Climat website.
+  stats.iframe.title.lock: Statistiques publiques du site Nos Gestes Climat.
+  stats.iframe.description: This dashboard displays website traffic statistics, including the number of visits, completed simulations and actions viewed. It also includes statistics on the use of the Organisations mode, such as the number of organisations created and the number of participants.
+  stats.iframe.description.lock: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.
