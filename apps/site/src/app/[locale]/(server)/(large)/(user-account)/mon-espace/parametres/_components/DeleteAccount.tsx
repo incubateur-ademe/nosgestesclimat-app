@@ -1,5 +1,5 @@
 'use client'
-import TransClient from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransClient'
 import { clickDeleteUserAccountButton } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import {
@@ -25,41 +25,41 @@ export default function DeleteAccount() {
           variant="outlined"
           color="red">
           <TrashIcon className="mr-2 size-5" />
-          <TransClient i18nKey="mon-espace.settings.delete.button">
+          <Trans i18nKey="mon-espace.settings.delete.button">
             Supprimer mon compte
-          </TransClient>
+          </Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <TransClient i18nKey="mon-espace.settings.delete.dialog.title">
+            <Trans i18nKey="mon-espace.settings.delete.dialog.title">
               Suppression du compte
-            </TransClient>
+            </Trans>
           </DialogTitle>
           <p className="mb-2">
-            <TransClient i18nKey="mon-espace.settings.delete.dialog.description1">
+            <Trans i18nKey="mon-espace.settings.delete.dialog.description1">
               Cette action supprimera définitivement votre compte ainsi que
               l'ensemble de vos données associées : résultats, groupes,
               organisation.
-            </TransClient>
+            </Trans>
           </p>
           <p>
-            <TransClient i18nKey="mon-espace.settings.delete.dialog.description2">
+            <Trans i18nKey="mon-espace.settings.delete.dialog.description2">
               <strong>Cette action est irréversible.</strong>
-            </TransClient>
+            </Trans>
           </p>
           <DialogFooter>
             <Button onClick={deleteUserAccount} color="red" loading={isPending}>
-              <TransClient i18nKey="mon-espace.settings.delete.dialog.confirm">
+              <Trans i18nKey="mon-espace.settings.delete.dialog.confirm">
                 Confirmer la suppression
-              </TransClient>
+              </Trans>
             </Button>
             <DialogClose asChild>
               <Button variant="outlined">
-                <TransClient i18nKey="mon-espace.settings.delete.dialog.cancel">
+                <Trans i18nKey="mon-espace.settings.delete.dialog.cancel">
                   Annuler
-                </TransClient>
+                </Trans>
               </Button>
             </DialogClose>
           </DialogFooter>

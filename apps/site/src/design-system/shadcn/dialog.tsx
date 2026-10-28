@@ -2,7 +2,7 @@ import { cn } from 'cn'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import * as React from 'react'
 
-import TransClient from '@/components/translation/trans/TransClient'
+import Trans from '@/components/translation/trans/TransClient'
 import { XIcon } from 'lucide-react'
 import Button from '../buttons/Button'
 
@@ -77,7 +77,7 @@ function DialogContent({
             <button className="absolute top-4 right-4 flex size-6 items-center justify-center">
               <XIcon />
               <span className="sr-only">
-                <TransClient i18nKey="common.close">Fermer</TransClient>
+                <Trans i18nKey="common.close">Fermer</Trans>
               </span>
             </button>
           </DialogPrimitive.Close>
@@ -117,7 +117,7 @@ function DialogFooter({
       {showCancelButton && (
         <DialogPrimitive.Close asChild>
           <Button variant="outlined">
-            <TransClient i18nKey="common.cancel">Annuler</TransClient>
+            <Trans i18nKey="common.cancel">Annuler</Trans>
           </Button>
         </DialogPrimitive.Close>
       )}
