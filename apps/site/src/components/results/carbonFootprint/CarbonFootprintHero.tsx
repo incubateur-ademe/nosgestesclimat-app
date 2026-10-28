@@ -11,11 +11,11 @@ import { match } from 'ts-pattern'
 import Trans from '../../translation/trans/TransServer'
 import FootprintInfoPopover from '../FootprintInfoPopover'
 import TendencyIndicator from '../TendencyIndicator'
-import FootprintComparisonChart from './FootprintComparisonChart'
 import {
   getFootprintComparison,
   type FootprintComparisonLevel,
 } from './footprintComparison'
+import FootprintComparisonChart from './FootprintComparisonChart'
 
 interface Props {
   value: number
@@ -83,76 +83,81 @@ export default async function CarbonFootprintHero({
         'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:px-11 md:py-7 lg:grid-cols-2 lg:gap-9',
         className
       )}>
-      <div className="flex w-full flex-col items-start">
-        <h1 className="-mb-2 text-lg leading-tight font-bold">
-          <Trans i18nKey="results.footprintBlock.carbone.title">
-            Votre empreinte carbone
-          </Trans>
-        </h1>
+      <div className="flex w-full flex-col items-start gap-6">
+        <div className="flex flex-col items-start">
+          <h1 className="mb-0 text-lg leading-tight font-bold">
+            <Trans i18nKey="results.footprintBlock.carbone.title">
+              Votre empreinte carbone
+            </Trans>
+          </h1>
 
-        <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1">
-          <p className="text-primary-700 mb-0 text-[clamp(3.6rem,6vw,4.5rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
-            {formattedValue}
-          </p>
-
-          <div className="flex items-start gap-1.5 whitespace-nowrap">
-            <p className="text-primary-700 mb-0 text-[1.1rem]">
-              {unit}&nbsp;
-              <Trans i18nKey="results.footprintBlock.carbone.unitSuffix">
-                de CO₂e&nbsp;/&nbsp;an
-              </Trans>
+          {/* The big figure's line box overflows its glyphs, mostly below the
+            baseline: the negative margins bring the title and the pill
+            visually as close to it as they are to each other. */}
+          <div className="-mt-2 -mb-2 flex items-baseline-last gap-x-2.5 gap-y-1 md:flex-wrap md:gap-x-3.5">
+            <p className="text-primary-700 mb-0 text-[clamp(3.6rem,6vw,4.5rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
+              {formattedValue}
             </p>
 
-            <FootprintInfoPopover
-              className="md:relative md:-top-6"
-              label={infoTitle}
-              title={infoTitle}>
-              <p className="mb-0">
-                <Trans i18nKey="results.footprintBlock.carbone.info.definition">
-                  Le CO₂e (équivalent CO₂) regroupe tous les gaz à effet de
-                  serre que vous émettez, notamment via vos déplacements, votre
-                  alimentation, votre logement et votre consommation.
+            <div className="flex min-w-0 items-baseline-last gap-1.5 md:whitespace-nowrap">
+              <p className="text-primary-700 mb-0 text-sm md:text-[1.1rem]">
+                {unit}&nbsp;
+                <Trans i18nKey="results.footprintBlock.carbone.unitSuffix">
+                  de CO₂e&nbsp;/&nbsp;an
                 </Trans>
               </p>
 
-              <div className="bg-secondary-50 text-secondary-900 flex gap-3 rounded-xl p-3 text-sm">
-                <ThermometerSun
-                  aria-hidden="true"
-                  className="text-secondary-700 mt-0.5 size-5 shrink-0"
-                />
-
+              <FootprintInfoPopover
+                className="relative -top-4 md:-top-6"
+                label={infoTitle}
+                title={infoTitle}>
                 <p className="mb-0">
-                  <Trans i18nKey="results.footprintBlock.carbone.info.impact">
-                    Ces gaz retiennent la chaleur dans l’atmosphère : plus ils
-                    s’accumulent, plus le climat se dérègle, avec des canicules,
-                    sécheresses et inondations plus fréquentes.
+                  <Trans i18nKey="results.footprintBlock.carbone.info.definition">
+                    Le CO₂e (équivalent CO₂) regroupe tous les gaz à effet de
+                    serre que vous émettez, notamment via vos déplacements,
+                    votre alimentation, votre logement et votre consommation.
                   </Trans>
                 </p>
-              </div>
-            </FootprintInfoPopover>
+
+                <div className="bg-secondary-50 text-secondary-900 flex gap-3 rounded-xl p-3 text-sm">
+                  <ThermometerSun
+                    aria-hidden="true"
+                    className="text-secondary-700 mt-0.5 size-5 shrink-0"
+                  />
+
+                  <p className="mb-0">
+                    <Trans i18nKey="results.footprintBlock.carbone.info.impact">
+                      Ces gaz retiennent la chaleur dans l’atmosphère : plus ils
+                      s’accumulent, plus le climat se dérègle, avec des
+                      canicules, sécheresses et inondations plus fréquentes.
+                    </Trans>
+                  </p>
+                </div>
+              </FootprintInfoPopover>
+            </div>
           </div>
-        </div>
 
-        <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <p
-            className={cn(
-              'mb-0 inline-flex items-center rounded-lg px-3 py-1.5 text-[0.9rem] font-bold tabular-nums',
-              pillClassNames[level]
-            )}>
-            {comparisonLabel}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <p
+              className={cn(
+                'mb-0 inline-flex items-center rounded-lg px-3 py-1.5 text-[0.9rem] font-bold tabular-nums',
+                pillClassNames[level]
+              )}>
+              {comparisonLabel}
+            </p>
 
-          {tendency && <TendencyIndicator tendency={tendency} />}
+            {tendency && <TendencyIndicator tendency={tendency} />}
+          </div>
         </div>
 
         <FootprintComparisonChart
           value={value}
           orientation="horizontal"
-          className="mb-6 lg:hidden"
+          className="lg:hidden"
           describedById="footprint-average-legend"
         />
 
-        <p className="mb-6 max-w-[46ch] leading-normal text-slate-600">
+        <p className="mb-0 max-w-[46ch] leading-normal text-slate-600">
           {match(level)
             .with('above', () => (
               <Trans i18nKey="results.footprintBlock.carbone.message.above">
@@ -185,23 +190,30 @@ export default async function CarbonFootprintHero({
             .exhaustive()}
         </p>
 
-        <ButtonLink href={ACTIONS_SUGGESTED_PATH} color="primary" size="md">
-          <Trans i18nKey="results.footprintBlock.actionsBlock.link">
-            Découvrir mes actions
-          </Trans>
+        <div className="flex w-full flex-col items-start gap-3">
+          <ButtonLink
+            href={ACTIONS_SUGGESTED_PATH}
+            color="primary"
+            size="md"
+            className="w-full md:w-auto">
+            <Trans i18nKey="results.footprintBlock.actionsBlock.link">
+              Découvrir mes actions
+            </Trans>
 
-          <span aria-hidden="true" className="ml-2">
-            →
-          </span>
-        </ButtonLink>
+            <span aria-hidden="true" className="ml-2">
+              →
+            </span>
+          </ButtonLink>
 
-        <p
-          id="footprint-average-legend"
-          className="mt-3 mb-0 text-sm text-slate-600">
-          <Trans i18nKey="results.footprintBlock.carbone.legend">
-            * Moyenne de nos utilisateurs (plus de 600 000 simulations par an).
-          </Trans>
-        </p>
+          <p
+            id="footprint-average-legend"
+            className="mb-0 text-sm text-slate-600">
+            <Trans i18nKey="results.footprintBlock.carbone.legend">
+              * Moyenne de nos utilisateurs (plus de 600 000 simulations par
+              an).
+            </Trans>
+          </p>
+        </div>
       </div>
 
       <FootprintComparisonChart
