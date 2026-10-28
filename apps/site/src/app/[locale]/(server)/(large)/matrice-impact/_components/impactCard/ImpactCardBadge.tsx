@@ -1,4 +1,5 @@
 import Trans from '@/components/translation/trans/TransServer'
+import Badge, { type BadgeColor } from '@/design-system/layout/Badge'
 import { cn } from 'cn'
 import type { ImpactCardType } from '../../_types/type'
 
@@ -9,25 +10,25 @@ export default function ImpactCardBadge({
   type: ImpactCardType
   className: string
 }) {
-  const { classNames: badgeClassNames, label } = getBadgeProperties(type)
+  const { color, label } = getBadgeProperties(type)
   return (
-    <div
-      className={cn(
-        'mb-2 rounded-md border px-1 py-0.5 text-xs',
-        badgeClassNames,
-        className
-      )}>
+    <Badge
+      color={color}
+      className={cn('mb-2 rounded-md border px-1 py-0.5 text-xs', className)}>
       {label}
-    </div>
+    </Badge>
   )
 }
 
-function getBadgeProperties(type: ImpactCardType) {
-  const classesByType = {
-    usage: 'border-secondary-700 bg-secondary-50 text-secondary-700',
-    impact: 'border-primary-700 bg-primary-50 text-primary-700',
-    efficiency: 'border-green-700 bg-green-50 text-green-700',
-  }
+function getBadgeProperties(type: ImpactCardType): {
+  color: Extract<BadgeColor, 'primary' | 'secondary' | 'green'>
+  label: React.ReactNode
+} {
+  const typeColorMap = {
+    usage: 'secondary',
+    impact: 'primary',
+    efficiency: 'green',
+  } as const
   const labelsByType = {
     usage: <Trans i18nKey="impact_matrix.badge.usage">Usage</Trans>,
     impact: <Trans i18nKey="impact_matrix.badge.impact">Impact</Trans>,
@@ -36,7 +37,7 @@ function getBadgeProperties(type: ImpactCardType) {
     ),
   }
   return {
-    classNames: classesByType[type],
+    color: typeColorMap[type],
     label: labelsByType[type],
   }
 }
