@@ -39,12 +39,4 @@ export const sharedConfig: PlaywrightTestConfig<FixturesOptions> = {
   reporter: process.env.CI
     ? [['blob'], ['line']]
     : [['line'], ['html', { outputFolder: 'playwright-report' }]],
-  /* Wait for the site before running tests. Locally it starts the dev server;
-     in CI it reuses the one launched by .github/scripts/e2e-stack.sh. */
-  webServer: {
-    command: 'pnpm -F @nosgestesclimat/site dev:e2e',
-    url: process.env.NEXT_PUBLIC_SITE_URL,
-    reuseExistingServer: true,
-    timeout: 120 * 1000,
-  },
 }

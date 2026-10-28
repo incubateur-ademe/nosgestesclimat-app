@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test'
 import { TEST_EMAIL_DOMAIN } from '../constants'
 import { createPage } from '../fixtures'
 import { signIn } from '../helpers/session'
-import { test as base, expect } from '../local/fixtures'
+import { test as base, expect, resetDatabase } from '../local/fixtures'
 import { Group } from '../page-objects/group'
 import { NGCTest } from '../page-objects/ngc-test'
 import { TutorialPage } from '../page-objects/tutorial'
@@ -293,6 +293,9 @@ test.describe('A user with a completed test that joined a group', () => {
   const test = joinedTest
 
   test.describe.configure({ mode: 'default' })
+  // The per-test reset would wipe the data seeded in beforeAll: the database
+  // is emptied once, there. The tests run in order on a single worker.
+  test.use({ resetDatabase: false })
 
   test.beforeAll(async ({ browser }) => {
     // Completing the whole test and joining a group takes well over the 30s
@@ -300,12 +303,14 @@ test.describe('A user with a completed test that joined a group', () => {
     // test.setTimeout() does not raise the hook budget.
     test.setTimeout(120_000)
 
+    await resetDatabase()
+
     page = await createPage(browser)
     await new NGCTest(page).skipAll()
     await expect(page).toHaveURL('/fin')
 
     const user = new User(page, {
-      email: 'test@example.com',
+      email: faker.internet.email({ provider: TEST_EMAIL_DOMAIN }),
       firstName: 'John',
       lastName: 'Doe',
     })

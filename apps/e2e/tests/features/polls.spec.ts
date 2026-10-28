@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test'
 import { EMAIL_PAGE_PATH } from '../constants'
 import { createPage } from '../fixtures'
 import { signIn } from '../helpers/session'
-import { test as base, expect } from '../local/fixtures'
+import { test as base, expect, resetDatabase } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
 import { Organisation } from '../page-objects/organisation'
 import { Poll } from '../page-objects/poll'
@@ -252,12 +252,17 @@ test.describe('A user with a completed test that joined a poll', () => {
   const test = joinedTest
 
   test.describe.configure({ mode: 'default' })
+  // The per-test reset would wipe the data seeded in beforeAll: the database
+  // is emptied once, there. The tests run in order on a single worker.
+  test.use({ resetDatabase: false })
 
   test.beforeAll(async ({ browser }) => {
     // Skipping the whole test in the hook can exceed the 30s default hook
     // timeout on a loaded environment; the describe-level test.setTimeout()
     // does not raise the hook budget.
     test.setTimeout(120_000)
+
+    await resetDatabase()
 
     page = await createPage(browser)
 

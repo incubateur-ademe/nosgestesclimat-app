@@ -1,7 +1,13 @@
+import { mergeTests } from '@playwright/test'
 import { COOKIE_CONSENT_STORAGE_KEY } from '../constants'
+import { test as sharedTest } from '../fixtures'
+import { test as databaseTest } from './database'
 
-export { expect, test } from '../fixtures'
+/** Shared fixtures, plus the per-test reset of the worker's database. */
+export const test = mergeTests(sharedTest, databaseTest)
+export { expect } from '../fixtures'
 export type { Locator, Page } from '../fixtures'
+export { resetDatabase } from './database'
 
 /**
  * Local suite: cookie banner dismissed, no session. Built in place rather than

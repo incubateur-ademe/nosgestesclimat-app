@@ -39,8 +39,13 @@ et preprod), et une partie **propre à chaque suite**.
 
 ### Suite locale uniquement
 
-- `tests/local/fixtures.ts` — ré-exporte la base commune, fournit
-  `localVisitorState` (bandeau cookies refusé, pas de session).
+- `stack/` — orchestration des stacks par worker (bases, copies du build,
+  processus), lancée par le `globalSetup` de `playwright.config.ts`.
+  `stack/worker-env.ts` pointe chaque worker sur sa base et son site.
+- `tests/local/fixtures.ts` — la base commune, plus le reset de la base du
+  worker avant chaque test (`tests/local/database.ts`, option
+  `resetDatabase`), et `localVisitorState` (bandeau cookies refusé, pas de
+  session).
 - `tests/features/` — specs locaux : chaque test crée ses données en base via
   les factories de `@nosgestesclimat/core`, puis se connecte avec
   `helpers/session`.
@@ -59,53 +64,77 @@ et preprod), et une partie **propre à chaque suite**.
 
 ## Lancer les tests en local
 
-Le workflow `.github/workflows/e2e:local.yaml` est la référence de la
-stack complète (postgres, redis, mock, serveur API, site, worker). En local,
-reproduisez-la sans Docker :
+Chaque worker Playwright a sa propre stack : une base
+`ngc_e2e_<i>`, un serveur API (port `3200+i`), un site (port `3100+i`) et un
+worker du site. Le `globalSetup` de la suite locale (`stack/global-setup.ts`)
+les prépare et les démarre, puis les arrête en fin de run :
 
-> ⚠️ Les étapes 1 (mock) et 2 (serveur) sont des **processus qui restent
-> actifs** : lancez chacun dans un terminal dédié et gardez-les ouverts pendant
-> les tests. Sans le mock, la lecture des emails échoue avec un
-> `TypeError: fetch failed`.
+- il migre la base modèle `ngc_e2e_template`, puis recrée chaque
+  `ngc_e2e_<i>` à partir d'elle ;
+- il copie le build du site (`apps/site/.next`) dans
+  `apps/site/.next-e2e-<i>`, en y remplaçant les URL inlinées au build
+  (`localhost:3000` → `localhost:310i`, `localhost:3001` → `localhost:320i`).
+  Une copie déjà patchée pour le même build est réutilisée ;
+- avant chaque test, la base du worker est vidée : rien n'est seedé, chaque
+  test crée ses données (actions comprises) avec les factories de core.
 
-1. Démarrez le mock (port 3002) :
+Le mock (port 3002) est démarré par Playwright et partagé entre les workers.
+Les logs sont écrits dans `apps/e2e/logs/` : `<app>-<i>.log` pour les stacks,
+`mock.log` pour le mock. Un processus qui s'arrête en cours de route met fin
+au run, sans relance : c'est une erreur à corriger, son log en donne la cause.
 
-   ```bash
-   pnpm -F @nosgestesclimat/e2e mock
-   ```
+Prérequis : Postgres et Redis en local.
 
-2. Démarrez le serveur API en mode mock (Brevo/Connect/… redirigés vers le
-   mock) :
-
-   ```bash
-   pnpm -F @nosgestesclimat/server dev:e2e
-   ```
-
-3. Configurez l'adaptateur mailbox, dans `apps/e2e/.env` (copie de
-   `.env.template`) :
+1. Configurez `apps/e2e/.env` (copie de `.env.template`) :
 
    ```env
    E2E_MAILBOX=stub
    E2E_MAILBOX_URL=http://localhost:3002
-   ```
-
-   Pour la suite locale, ajoutez aussi la base et la clé de session **du site
-   testé** (mêmes valeurs que `apps/site/.env`) :
-
-   ```env
-   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ngc
+   E2E_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
    SESSION_ENCRYPTION_KEY=…
    ```
 
-4. Lancez les tests (le serveur de dev du site est démarré automatiquement,
-   avec `apps/site/.env.e2e` préchargé) :
+   `E2E_DATABASE_URL` est l'URL d'administration de l'instance Postgres : les
+   bases e2e sont créées à côté. `SESSION_ENCRYPTION_KEY` doit être la même que
+   celle du site (`apps/site/.env`).
+
+   > ⚠️ Si votre `.env` date d'avant les stacks par worker, retirez-en
+   > `DATABASE_URL` et `NEXT_PUBLIC_SITE_URL` : ils sont désormais dérivés pour
+   > chaque worker. Une base autre que `ngc_e2e_<i>` n'est de toute façon jamais
+   > vidée (le reset vérifie la base courante).
+
+2. Buildez le site, une fois par changement du site (il migre aussi la base
+   modèle, que le build interroge) :
 
    ```bash
-   pnpm -F @nosgestesclimat/e2e test:e2e
+   pnpm -F @nosgestesclimat/e2e build:site
+   ```
+
+3. Lancez les tests :
+
+   ```bash
+   pnpm -F @nosgestesclimat/e2e test:e2e --project=Chrome
    # ou l'interface Playwright :
    pnpm -F @nosgestesclimat/e2e test:ui
+   ```
 
-   # Suite preprod :
+   Le nombre de workers (donc de stacks) vaut 3 par défaut : `E2E_WORKERS` ou
+   `--workers` le changent.
+
+   Pour itérer sur le site sans rebuild, `E2E_SITE_MODE=dev` lance une seule
+   stack, avec `next dev` sur le port 3100. Il utilise `.next` comme votre
+   `pnpm dev` : arrêtez celui-ci avant de lancer les tests.
+
+   ```bash
+   E2E_SITE_MODE=dev pnpm -F @nosgestesclimat/e2e test:e2e --project=Chrome
+   ```
+
+   Si un run précédent a été tué, ses processus peuvent encore occuper les
+   ports : le `globalSetup` les signale, arrêtez-les avant de relancer.
+
+4. Suite preprod (avec `NEXT_PUBLIC_SITE_URL` pointant sur la preprod) :
+
+   ```bash
    pnpm -F @nosgestesclimat/e2e test:e2e:preprod --project="Preprod Chrome"
    pnpm -F @nosgestesclimat/e2e test:ui:preprod
    ```
