@@ -1,3 +1,4 @@
+import { gotoRetryOnAbort } from '../../helpers/navigation'
 import { expect, test } from '../fixtures'
 
 test.describe('Locale persistence via cookie', () => {
@@ -7,7 +8,7 @@ test.describe('Locale persistence via cookie', () => {
     await page.goto('/fr')
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
 
-    await page.goto('/en')
+    await gotoRetryOnAbort(page, '/en')
     await expect(page).toHaveURL(/\/en/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   })
@@ -19,7 +20,7 @@ test.describe('Locale persistence via cookie', () => {
     await expect(page).toHaveURL(/\/en/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
-    await page.goto('/fr')
+    await gotoRetryOnAbort(page, '/fr')
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
   })
 })
