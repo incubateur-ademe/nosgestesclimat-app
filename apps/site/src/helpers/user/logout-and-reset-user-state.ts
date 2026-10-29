@@ -22,6 +22,10 @@ export async function logoutAndResetUserState({
   try {
     await logout()
   } finally {
+    // Server-action redirects become soft RSC navigations that can replay the per-session
+    // prefetched App Shell (header still showing the logged-in user) from the
+    // client Router Cache. A full-document navigation forces a real request with
+    // the freshly-cleared cookies, so the proxy serves a logged-out header.
     window.location.assign('/')
   }
 }

@@ -83,18 +83,14 @@ function useCompletionEffect(
           userId: authenticatedUserId,
           cookieState,
         })
-        const destination = await options.onComplete?.({
+        await options.onComplete?.({
           email: authenticatedEmail,
           userId: authenticatedUserId,
         })
 
-        const pathname =
-          options.redirectPathname ??
-          (typeof destination === 'string' ? destination : undefined)
-
-        // A new document request is required for the proxy to derive the session.
-        if (pathname) {
-          window.location.assign(pathname)
+        if (options.redirectPathname) {
+          // A new document request is required for the proxy to derive the session.
+          window.location.assign(options.redirectPathname)
         }
       } catch (error) {
         logger.error(toError(error))
