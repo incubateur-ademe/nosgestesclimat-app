@@ -50,5 +50,5 @@ if (isMain) {
     throw new Error('No userId received via the parameters')
   }
 
-  deleteUserData(userId ?? '', !!dry)
+  deleteUserData(userId, !!dry)
 }
