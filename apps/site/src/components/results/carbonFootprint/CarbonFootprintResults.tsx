@@ -5,13 +5,11 @@ import type { ComputedResults } from '@/publicodes-state/types'
 import type { Tendency } from '@nosgestesclimat/core/features/simulations/services/get-simulation-result.service'
 import Trans from '../../translation/trans/TransServer'
 import ActionsBlock from '../ActionsBlock'
-import FootprintBlock from '../FootprintBlock'
 import FootprintDetail from '../FootprintDetail'
 import GroupThankYouBlock from '../GroupThankYouBlock'
 import Objective from '../objective/Objective'
 import SaveResultsBlock from '../SaveResultsBlock'
 import CarbonFootprintHero from './CarbonFootprintHero'
-import CarbonFootprintHeroSwitch from './CarbonFootprintHeroSwitch'
 
 interface Props {
   computedResults: ComputedResults
@@ -20,8 +18,6 @@ interface Props {
   tendency?: Tendency
   hasPreviousSimulation?: boolean
   group?: GroupDisplayInfo | null
-  /** Whether to take part in the hero display A/B test (dummy results, e.g. error page backdrop, must not) */
-  enableHeroTest?: boolean
 }
 
 export default function CarbonFootprintResults({
@@ -31,43 +27,14 @@ export default function CarbonFootprintResults({
   tendency,
   hasPreviousSimulation = false,
   group,
-  enableHeroTest = false,
 }: Props) {
-  const currentHero = (
-    <FootprintBlock
-      className="mb-8 md:mb-12"
-      tendency={tendency}
-      value={computedResults.carbone.bilan}
-      title={
-        <Trans i18nKey="simulation.carbone.title">
-          Vos émissions annuelles :
-        </Trans>
-      }
-      metric="carbone"
-      unitSuffix={
-        <Trans i18nKey="common.co2eAn.title">
-          CO₂e&nbsp;/&nbsp;an
-        </Trans>
-      }
-    />
-  )
-
   return (
     <>
-      {enableHeroTest ? (
-        <CarbonFootprintHeroSwitch
-          control={currentHero}
-          test={
-            <CarbonFootprintHero
-              className="mb-8 md:mb-12"
-              value={computedResults.carbone.bilan}
-              tendency={tendency}
-            />
-          }
-        />
-      ) : (
-        currentHero
-      )}
+      <CarbonFootprintHero
+        className="mb-8 md:mb-12"
+        value={computedResults.carbone.bilan}
+        tendency={tendency}
+      />
 
       <FootprintDetail
         computedResults={computedResults}
@@ -78,15 +45,11 @@ export default function CarbonFootprintResults({
       {group && <GroupThankYouBlock group={group} />}
 
       {!hideSaveBlock && (
-        <SaveResultsBlock
-          hasPreviousSimulation={hasPreviousSimulation}
-        />
+        <SaveResultsBlock hasPreviousSimulation={hasPreviousSimulation} />
       )}
 
       <HideInIframe>
-        <Objective
-          carbonFootprint={computedResults.carbone.bilan}
-        />
+        <Objective carbonFootprint={computedResults.carbone.bilan} />
       </HideInIframe>
 
       <p className="text-primary-600 mx-auto mb-12 w-2xl max-w-full text-center">

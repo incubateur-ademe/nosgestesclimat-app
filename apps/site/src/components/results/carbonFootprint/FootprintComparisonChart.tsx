@@ -3,8 +3,10 @@ import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import type { Locale } from '@/i18nConfig'
 import { cn } from 'cn'
+import { Target, TrendingDown } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import Trans from '../../translation/trans/TransServer'
+import FootprintInfoPopover from '../FootprintInfoPopover'
 import { THIRD_OBJECTIVE } from '../objective/_constants/objectives'
 import {
   AVERAGE_FOOTPRINT_KG,
@@ -26,6 +28,8 @@ interface Bar {
   key: string
   name: ReactNode
   nameClassName: string
+  /** Popover explaining the bar, next to its name */
+  info?: ReactNode
   percent: number
   /** Where the value sits along the bar, when it differs from its length */
   valuePercent?: number
@@ -99,6 +103,11 @@ export default async function FootprintComparisonChart({
     }
   )
 
+  const objectiveInfoTitle = t(
+    'results.footprintBlock.carbone.objective.info.title',
+    'Pourquoi viser 2 tonnes ?'
+  )
+
   // Just under the average, the footprint value would sit on the dashed line:
   // it goes above it instead, level with the average value
   const isFootprintValueOnAverageLine =
@@ -143,6 +152,44 @@ export default async function FootprintComparisonChart({
         </Trans>
       ),
       nameClassName: 'text-slate-600',
+      info: (
+        <FootprintInfoPopover
+          className="ml-0.5 inline-flex size-5 align-middle [&_svg]:size-4.5"
+          label={objectiveInfoTitle}
+          title={objectiveInfoTitle}
+          icon={<Target aria-hidden="true" className="size-5" />}
+          // On desktop the chart sits on the right of the card: the popover
+          // opens on its left, hanging down from the button so that it leaves
+          // the bars visible
+          {...(orientation === 'vertical' && {
+            side: 'left',
+            alignOffset: -16,
+            withArrow: true,
+          })}>
+          <p className="mb-0">
+            <Trans i18nKey="results.footprintBlock.carbone.objective.info.definition">
+              C’est l’empreinte carbone maximale par personne et par an qui
+              permettrait de respecter l’Accord de Paris, en limitant le
+              réchauffement bien en dessous de 2 °C d’ici 2050.
+            </Trans>
+          </p>
+
+          <div className="bg-secondary-50 text-secondary-900 flex gap-3 rounded-xl p-3 text-sm">
+            <TrendingDown
+              aria-hidden="true"
+              className="text-secondary-700 mt-0.5 size-5 shrink-0"
+            />
+
+            <p className="mb-0">
+              <Trans i18nKey="results.footprintBlock.carbone.objective.info.challenge">
+                C’est environ 4 fois moins que la moyenne française actuelle :
+                un vrai défi, mais atteignable en combinant efforts personnels
+                et transformations de la société.
+              </Trans>
+            </p>
+          </div>
+        </FootprintInfoPopover>
+      ),
       percent: percents.objective,
       value: formatTons(THIRD_OBJECTIVE.value, locale, t),
       valueClassName: 'text-primary-800',
@@ -155,7 +202,7 @@ export default async function FootprintComparisonChart({
   if (orientation === 'horizontal') {
     return (
       <div
-        role="img"
+        role="group"
         aria-label={ariaLabel}
         aria-describedby={describedById}
         className={cn(
@@ -167,10 +214,12 @@ export default async function FootprintComparisonChart({
             <span
               className={cn('col-start-1', bar.nameClassName)}
               style={{ gridRowStart: index + 1 }}>
-              {bar.name}
+              <span aria-hidden="true">{bar.name}</span>
+              {bar.info}
             </span>
 
             <div
+              aria-hidden="true"
               className="col-start-2 flex h-7 items-center gap-2"
               style={{ gridRowStart: index + 1 }}>
               <div
@@ -197,7 +246,9 @@ export default async function FootprintComparisonChart({
         ))}
 
         {/* Spans all bars to mark the average level */}
-        <div className="relative col-start-2 row-span-3 row-start-1 -my-1 self-stretch">
+        <div
+          aria-hidden="true"
+          className="relative col-start-2 row-span-3 row-start-1 -my-1 self-stretch">
           <div
             className={cn(
               'border-primary-300 absolute inset-y-0 border-l-2 border-dashed',
@@ -215,12 +266,12 @@ export default async function FootprintComparisonChart({
 
   return (
     <div
-      role="img"
+      role="group"
       aria-label={ariaLabel}
       aria-describedby={describedById}
       className={cn('mx-auto w-98 text-sm', className)}>
       {/* The top margin leaves room for the value above the tallest bar */}
-      <div className="relative mt-9 h-52">
+      <div aria-hidden="true" className="relative mt-9 h-52">
         <div
           className={cn(
             'border-primary-300 absolute right-0 left-16 border-t-2 border-dashed',
@@ -284,7 +335,8 @@ export default async function FootprintComparisonChart({
           <span
             key={bar.key}
             className={cn('w-22 text-center', bar.nameClassName)}>
-            {bar.name}
+            <span aria-hidden="true">{bar.name}</span>
+            {bar.info}
           </span>
         ))}
       </div>
