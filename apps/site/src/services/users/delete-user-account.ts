@@ -1,18 +1,26 @@
 'use server'
+import logger from '@/logger/logger.server'
 import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
 import { forbidden, unauthorized } from 'next/navigation'
 import { getUserSession } from '../auth/get-user-session'
 
 export async function deleteUserAccount() {
-  const session = await getUserSession()
+  return logger.withSpan(
+    'site.action.deleteUserAccount',
+    async ({ logger }) => {
+      const session = await getUserSession()
 
-  if (!session) {
-    unauthorized()
-  }
+      if (!session) {
+        unauthorized()
+      }
 
-  if (!session.isAuth) {
-    forbidden()
-  }
+      if (!session.isAuth) {
+        forbidden()
+      }
 
-  await deleteUser(session.id)
+      logger.info('Deleting user account', { userId: session.id })
+
+      await deleteUser(session.id)
+    }
+  )()
 }

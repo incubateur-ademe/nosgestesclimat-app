@@ -1,3 +1,4 @@
+import { serverLoggerMock } from '@/helpers/tests/mockLogger'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { faker } from '@faker-js/faker'
 import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
@@ -52,6 +53,8 @@ describe('deleteUserAccount', () => {
 vi.mock('@/services/auth/get-user-session', () => ({
   getUserSession: vi.fn(),
 }))
+
+vi.mock('@/logger/logger.server', () => ({ default: serverLoggerMock }))
 
 vi.mock('next/navigation', () => ({
   unauthorized: () => {
