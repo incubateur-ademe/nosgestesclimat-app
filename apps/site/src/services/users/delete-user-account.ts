@@ -1,8 +1,7 @@
 'use server'
 import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
-import { forbidden, redirect, unauthorized } from 'next/navigation'
+import { forbidden, unauthorized } from 'next/navigation'
 import { getUserSession } from '../auth/get-user-session'
-import { logout } from '../auth/logout'
 
 export async function deleteUserAccount() {
   const session = await getUserSession()
@@ -16,8 +15,4 @@ export async function deleteUserAccount() {
   }
 
   await deleteUser(session.id)
-
-  await logout()
-
-  redirect('/')
 }

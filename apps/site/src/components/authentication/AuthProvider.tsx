@@ -10,7 +10,7 @@ import { useAuthEffects } from './_hooks/useAuthEffects'
 import { usePersistentAuthPhase } from './_hooks/usePersistentAuthPhase'
 import type {
   AuthPhase,
-  AuthenticatedUser,
+  OnAuthComplete,
   Tracker,
   VerifyStrategy,
 } from './types'
@@ -42,7 +42,7 @@ interface AuthProviderProps {
   verify: VerifyStrategy
   mode?: AuthenticationMode
   redirectPathname?: string
-  onComplete?: (user: AuthenticatedUser) => void | Promise<void>
+  onComplete?: OnAuthComplete
   tracker?: Tracker
 }
 

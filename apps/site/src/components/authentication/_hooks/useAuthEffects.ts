@@ -9,13 +9,12 @@ import _logger from '@/logger/logger.browser'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
 import type {
   AuthEvent,
   AuthPhase,
-  AuthenticatedUser,
+  OnAuthComplete,
   Tracker,
   VerifyStrategy,
 } from '../types'
@@ -59,12 +58,11 @@ function useVerifyEffect(
 function useCompletionEffect(
   state: AuthPhase,
   options: {
-    onComplete?: (user: AuthenticatedUser) => void | Promise<void>
+    onComplete?: OnAuthComplete
     redirectPathname?: string
     tracker?: Tracker
   }
 ) {
-  const router = useRouter()
   const { cookieState } = useCookieManagement()
   const authenticatedUserId =
     state.phase === 'authenticated' ? state.userId : null
@@ -85,13 +83,18 @@ function useCompletionEffect(
           userId: authenticatedUserId,
           cookieState,
         })
-        await options.onComplete?.({
+        const destination = await options.onComplete?.({
           email: authenticatedEmail,
           userId: authenticatedUserId,
         })
 
-        if (options.redirectPathname) {
-          router.push(options.redirectPathname)
+        const pathname =
+          options.redirectPathname ??
+          (typeof destination === 'string' ? destination : undefined)
+
+        // A new document request is required for the proxy to derive the session.
+        if (pathname) {
+          window.location.assign(pathname)
         }
       } catch (error) {
         logger.error(toError(error))
@@ -105,7 +108,6 @@ function useCompletionEffect(
     cookieState,
     options.onComplete,
     options.redirectPathname,
-    router,
   ])
 }
 
@@ -113,7 +115,7 @@ interface UseAuthEffectsOptions {
   state: AuthPhase
   dispatch: Dispatch<AuthEvent>
   verify: VerifyStrategy
-  onComplete?: (user: AuthenticatedUser) => void | Promise<void>
+  onComplete?: OnAuthComplete
   redirectPathname?: string
   tracker?: Tracker
 }

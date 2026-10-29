@@ -7,16 +7,12 @@ import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { refreshTokenFactory } from '../../../auth/factories/refresh-token.factory.ts'
 import { verificationCodeFactory } from '../../../auth/factories/verification-code.factory.ts'
 import { findAllRefreshTokenByUserId } from '../../../auth/repositories/refresh-token.repository.ts'
-import { createSession } from '../../../auth/services/create-session.service.ts'
 import { createLogin } from '../../../auth/services/login.service.ts'
+import { groupFactory } from '../../../groups/factories/group.factory.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
-import {
-  createOrUpdateUser,
-  findUserById,
-} from '../../repositories/users.repository.ts'
-import type { User } from '../../types/user.ts'
+import { findUserById } from '../../repositories/users.repository.ts'
 import { deleteUser } from '../delete-user.service.ts'
 
 const logger = createTestLogger()
@@ -37,162 +33,96 @@ describe('deleteUser', () => {
     await emptyDatabase(prisma)
   })
 
-  it('should set a deletedAt property to a deleted user', async () => {
-    const user = await userFactory.verified().create()
-
-    await deleteUser(user.id)
-
-    const userFromDB = await prisma.user.findFirst({
-      where: {
-        id: user.id,
-      },
-    })
-
-    expect(userFromDB?.deletedAt).toBeDefined()
-  })
-
-  it('should delete the verified user, the organisation administrator and the refresh tokens linked to the user deleted', async () => {
-    const user = await userFactory.verified().create()
+  it('marks the user as deleted and keeps their entities', async () => {
+    const user = await userFactory
+      .verified()
+      .create({ name: faker.person.fullName() })
+    const { email } = user
     await organisationFactory.withAdministrator(user).create()
-    await refreshTokenFactory
-      .params({
-        userId: user.id,
-      })
-      .create()
+    await refreshTokenFactory.params({ userId: user.id }).create()
+    await simulationFactory.params({ userId: user.id }).completed().create()
+    await groupFactory.withAdministrator(user.id).create()
+    await groupFactory.withParticipant({ userId: user.id }).create()
+    const simulationCount = await prisma.simulation.count({
+      where: { userId: user.id },
+    })
 
     await deleteUser(user.id)
 
-    const verifiedUserFromDB = await prisma.verifiedUser.findFirst({
-      where: {
-        id: user.id,
-      },
+    const deletedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
     })
-    const organisationAdministratorFromDB =
+    expect(deletedUser).toMatchObject({
+      deletedAt: expect.any(Date),
+      email: null,
+      name: null,
+    })
+    expect(await findUserById(user.id)).toBeNull()
+    expect(
+      await prisma.verifiedUser.findFirst({ where: { id: user.id } })
+    ).toBeNull()
+    expect(
       await prisma.organisationAdministrator.findFirst({
-        where: {
-          id: user.id,
-        },
+        where: { userEmail: email },
       })
-    const refreshTokens = await findAllRefreshTokenByUserId(user.id)
-
-    expect(verifiedUserFromDB).toBeNull()
-    expect(organisationAdministratorFromDB).toBeNull()
-    expect(refreshTokens).toEqual([])
+    ).toBeNull()
+    expect(await findAllRefreshTokenByUserId(user.id)).toEqual([])
+    expect(await prisma.simulation.count({ where: { userId: user.id } })).toBe(
+      simulationCount
+    )
+    expect(
+      await prisma.groupAdministrator.count({ where: { userId: user.id } })
+    ).toBe(1)
+    expect(
+      await prisma.groupParticipant.count({ where: { userId: user.id } })
+    ).toBe(1)
   })
 
-  it("should unlink the deleted user's simulations", async () => {
-    const user = await userFactory.verified().create()
+  it('starts a new identity when a deleted account signs up with the same email', async () => {
+    const deletedUser = await userFactory
+      .verified()
+      .create({ name: faker.person.fullName() })
+    const { email } = deletedUser
+    await groupFactory.withAdministrator(deletedUser.id).create()
+    await groupFactory.withParticipant({ userId: deletedUser.id }).create()
 
-    await simulationFactory.params({ userId: user.id }).completed().create()
-    await simulationFactory.params({ userId: user.id }).completed().create()
-    await simulationFactory.params({ userId: user.id }).completed().create()
+    await deleteUser(deletedUser.id)
 
-    await expect(
-      prisma.simulation.findMany({
-        where: {
-          userId: user.id,
-        },
-      })
-    ).resolves.toHaveLength(3)
-
-    await deleteUser(user.id)
-
-    await expect(
-      prisma.simulation.findMany({
-        where: {
-          userId: user.id,
-        },
-      })
-    ).resolves.toHaveLength(0)
-  })
-
-  it('should delete a logged in user, leading to a new verified user creation if the user signs up', async () => {
-    const user = await userFactory.create()
-    const userWithoutDates = getUserWithoutDates(user)
-    const userEmail = faker.internet.email()
-
-    // First sign-in before user account deletion
-    const verifiedUser1 = await createOrUpdateUser({
-      ...userWithoutDates,
-      email: userEmail,
-      type: 'verified',
-    })
-    const verificationCode1 = await verificationCodeFactory.create({
-      email: verifiedUser1.email,
-    })
-    const result1 = await login({
-      email: verifiedUser1.email,
-      code: verificationCode1.code,
-      locale: 'fr',
-      intent: 'create-account',
-    })
-    const sessionCreationResult1 = await createSession(verifiedUser1.id)
-
-    expect.assert(result1.success)
-    expect(sessionCreationResult1).toHaveProperty('accessToken')
-    expect(sessionCreationResult1).toHaveProperty('refreshToken')
-
-    const refreshTokensBeforeDeletion = await findAllRefreshTokenByUserId(
-      verifiedUser1.id
-    )
-    expect(refreshTokensBeforeDeletion).toHaveLength(1)
-
-    await deleteUser(user.id)
-
-    const refreshTokensAfterDeletion = await findAllRefreshTokenByUserId(
-      verifiedUser1.id
-    )
-    expect(refreshTokensAfterDeletion).toHaveLength(0)
-
-    // Second sign-in after deletion
-    const verifiedUser2 = await createOrUpdateUser({
-      ...user,
-      email: userEmail,
-      type: 'verified',
-    })
-    const verificationCode2 = await verificationCodeFactory.create({
-      email: verifiedUser2.email,
-    })
-    const result2 = await login({
-      email: verifiedUser2.email,
-      code: verificationCode2.code,
+    const verificationCode = await verificationCodeFactory.create({ email })
+    const result = await login({
+      email,
+      code: verificationCode.code,
       locale: 'fr',
       intent: 'create-account',
     })
 
-    expect.assert(result2.success)
-
-    const verifiedUser2FromDB = await prisma.verifiedUser.findUniqueOrThrow({
-      where: { email: userEmail },
-    })
-
-    expect(verifiedUser2FromDB?.createdAt.getTime()).toBeGreaterThan(
-      verifiedUser1?.createdAt.getTime()
-    )
+    expect.assert(result.success)
+    expect(result.data.mode).toBe('signUp')
+    expect(result.data.user.id).not.toBe(deletedUser.id)
+    expect(result.data.user.name).toBeNull()
+    expect(
+      await prisma.groupAdministrator.count({
+        where: { userId: result.data.user.id },
+      })
+    ).toBe(0)
+    expect(
+      await prisma.groupAdministrator.count({
+        where: { userId: deletedUser.id },
+      })
+    ).toBe(1)
+    expect(
+      await prisma.groupParticipant.count({
+        where: { userId: result.data.user.id },
+      })
+    ).toBe(0)
+    expect(
+      await prisma.groupParticipant.count({
+        where: { userId: deletedUser.id },
+      })
+    ).toBe(1)
   })
 
-  it('should fail silently when trying to delete an unexisting user', async () => {
+  it('fails silently when deleting an unknown user', async () => {
     await expect(deleteUser(faker.string.uuid())).resolves.toBeUndefined()
   })
-
-  it('should succeed when trying to delete an unverified user', async () => {
-    const user = await userFactory.create()
-
-    await expect(deleteUser(user.id)).resolves.toBeUndefined()
-
-    const userFromDB = await findUserById(user.id)
-    expect(userFromDB?.deletedAt).toBeDefined()
-  })
 })
-
-function getUserWithoutDates(
-  user: User
-): Omit<User, 'createdAt' | 'updatedAt'> {
-  const {
-    createdAt: _createdAt,
-    updatedAt: _updatedAt,
-    ...userWithoutDates
-  } = user
-
-  return userWithoutDates
-}
