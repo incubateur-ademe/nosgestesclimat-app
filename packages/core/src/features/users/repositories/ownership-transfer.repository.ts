@@ -236,8 +236,9 @@ export const transferOwnershipToUser = async (
 }
 
 /**
- * Transfers simulations (and group participations) from a specific anonymous
- * user to a verified user, identified directly by their previous userId.
+ * Transfers simulations, action choices and group participations from a
+ * specific anonymous user to a verified user, identified directly by their
+ * previous userId.
  *
  * Unlike `transferOwnershipToUser`, this function does not rely on email
  * matching — it uses the explicit previousUserId, which makes it safe for
@@ -285,6 +286,29 @@ export const transferSimulationsFromUser = async (
   })
 
   await session.groupParticipant.updateMany({
+    where: { userId: previousUserId },
+    data: { userId },
+  })
+
+  // `ActionChoice.userId` is ON DELETE RESTRICT: the anonymous user's choices
+  // must be moved before its row is deleted, or the deletion fails and the
+  // whole login with it. A choice the account already holds wins, as for group
+  // participations.
+  const targetActionIds = await session.actionChoice
+    .findMany({
+      where: { userId },
+      select: { actionId: true },
+    })
+    .then((choices) => new Set(choices.map(({ actionId }) => actionId)))
+
+  await session.actionChoice.deleteMany({
+    where: {
+      userId: previousUserId,
+      actionId: { in: Array.from(targetActionIds) },
+    },
+  })
+
+  await session.actionChoice.updateMany({
     where: { userId: previousUserId },
     data: { userId },
   })

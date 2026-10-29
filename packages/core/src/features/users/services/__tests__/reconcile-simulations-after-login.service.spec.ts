@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
+import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { createReconcileSimulationsAfterLogin } from '../reconcile-simulations-after-login.service.ts'
@@ -26,6 +27,20 @@ const createGroupParticipant = ({
     select: { userId: true },
   })
 
+const createActionChoice = ({
+  userId,
+  actionId,
+  type = 'committed',
+}: {
+  userId: string
+  actionId: string
+  type?: 'committed' | 'rejected'
+}) =>
+  prisma.actionChoice.create({
+    data: { userId, actionId, type },
+    select: { userId: true, actionId: true, type: true },
+  })
+
 const logger = createTestLogger()
 
 describe('reconcileSimulationsAfterLogin', () => {
@@ -35,11 +50,13 @@ describe('reconcileSimulationsAfterLogin', () => {
       prisma.simulationPoll.deleteMany(),
       prisma.groupParticipant.deleteMany(),
       prisma.groupAdministrator.deleteMany(),
+      prisma.actionChoice.deleteMany(),
       prisma.simulation.deleteMany(),
     ])
     await Promise.all([
       prisma.verifiedUser.deleteMany(),
       prisma.group.deleteMany(),
+      prisma.action.deleteMany(),
       prisma.user.deleteMany(),
     ])
   })
@@ -124,6 +141,65 @@ describe('reconcileSimulationsAfterLogin', () => {
       expect(
         await prisma.user.findUnique({ where: { id: anonymousUser.id } })
       ).toBeNull()
+    })
+  })
+
+  describe('Given the anonymous user has action choices', () => {
+    it('transfers the anonymous action choices to the verified user', async () => {
+      const verifiedUser = await userFactory.verified().create()
+      const anonymousUser = await userFactory.create()
+      const action = await actionFactory.create()
+
+      await createActionChoice({
+        userId: anonymousUser.id,
+        actionId: action.id,
+      })
+
+      await createReconcileSimulationsAfterLogin({ logger })({
+        userId: verifiedUser.id,
+        previousUserId: anonymousUser.id,
+      })
+
+      expect(
+        await prisma.actionChoice.findMany({
+          where: { userId: verifiedUser.id },
+          select: { actionId: true, type: true },
+        })
+      ).toEqual([{ actionId: action.id, type: 'committed' }])
+      expect(
+        await prisma.user.findUnique({ where: { id: anonymousUser.id } })
+      ).toBeNull()
+    })
+
+    it('keeps the verified account choice when both users chose the same action', async () => {
+      const verifiedUser = await userFactory.verified().create()
+      const anonymousUser = await userFactory.create()
+      const action = await actionFactory.create()
+
+      await Promise.all([
+        createActionChoice({
+          userId: verifiedUser.id,
+          actionId: action.id,
+          type: 'rejected',
+        }),
+        createActionChoice({
+          userId: anonymousUser.id,
+          actionId: action.id,
+          type: 'committed',
+        }),
+      ])
+
+      await createReconcileSimulationsAfterLogin({ logger })({
+        userId: verifiedUser.id,
+        previousUserId: anonymousUser.id,
+      })
+
+      expect(
+        await prisma.actionChoice.findMany({
+          where: { userId: verifiedUser.id },
+          select: { actionId: true, type: true },
+        })
+      ).toEqual([{ actionId: action.id, type: 'rejected' }])
     })
   })
 
