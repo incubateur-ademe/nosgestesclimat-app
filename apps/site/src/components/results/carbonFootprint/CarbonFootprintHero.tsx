@@ -115,9 +115,11 @@ export default async function CarbonFootprintHero({
                 title={infoTitle}>
                 <p className="mb-0">
                   <Trans i18nKey="results.footprintBlock.carbone.info.definition">
-                    Le CO₂e (équivalent CO₂) regroupe tous les gaz à effet de
-                    serre que vous émettez, notamment via vos déplacements,
-                    votre alimentation, votre logement et votre consommation.
+                    Le CO₂e (équivalent CO₂) est une unité de mesure harmonisée
+                    permettant de regrouper tous les gaz à effet de serre
+                    (dioxyde de carbone, méthane, protoxyde d’azote, etc.) qui
+                    sont émis via nos modes de vie et les services sociétaux
+                    dont nous bénéficions.
                   </Trans>
                 </p>
 
@@ -173,20 +175,21 @@ export default async function CarbonFootprintHero({
             .with('close', () => (
               <Trans i18nKey="results.footprintBlock.carbone.message.close">
                 <strong className="text-default">
-                  Votre empreinte ressemble à celle de millions de Français.
+                  Votre empreinte carbone est proche de celle de millions
+                  d’utilisateurs.
                 </strong>{' '}
-                Ensemble, nous pouvons faire baisser notre moyenne : trouvez
-                votre première action, et embarquez vos proches.
+                Ensemble, nous pouvons encore limiter les émissions de gaz à
+                effet de serre. Consultez nos propositions d’actions et
+                embarquez vos proches.
               </Trans>
             ))
             .with('below', () => (
               <Trans i18nKey="results.footprintBlock.carbone.message.below">
                 <strong className="text-default">
-                  Bravo, vous montrez la voie !
+                  Bravo, vous montrez que c’est possible !
                 </strong>{' '}
                 Votre empreinte tire notre moyenne vers le bas. Continuez sur
-                votre lancée, et embarquez vos proches en leur montrant
-                l’exemple !
+                votre lancée, et embarquez vos proches !
               </Trans>
             ))
             .exhaustive()}
@@ -198,8 +201,8 @@ export default async function CarbonFootprintHero({
             color="primary"
             size="md"
             className="w-full md:w-auto">
-            <Trans i18nKey="results.footprintBlock.actionsBlock.link">
-              Découvrir mes actions
+            <Trans i18nKey="results.footprintBlock.carbone.reduceLink">
+              Réduire mes émissions
             </Trans>
 
             <span aria-hidden="true" className="ml-2">
