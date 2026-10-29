@@ -5,7 +5,7 @@ import { forbidden, unauthorized } from 'next/navigation'
 import { getUserSession } from '../auth/get-user-session'
 
 export async function deleteUserAccount() {
-  return logger.withSpan(
+  return await logger.withSpan(
     'site.action.deleteUserAccount',
     async ({ logger }) => {
       const session = await getUserSession()
