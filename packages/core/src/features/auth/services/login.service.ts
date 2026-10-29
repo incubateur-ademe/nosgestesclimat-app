@@ -94,6 +94,7 @@ export function createLogin({
           sessionUserId ? findUserById(sessionUserId, { session }) : null,
         ])
 
+        // Guard preventing manipulating deleted user accounts
         const sessionUser = rawSessionUser?.deletedAt ? null : rawSessionUser
 
         // The two identities the decision below is made for: each of its lines

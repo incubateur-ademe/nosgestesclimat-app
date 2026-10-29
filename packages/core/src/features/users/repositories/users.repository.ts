@@ -147,6 +147,7 @@ export async function createOrUpdateUser(
       id: user.id,
     },
     select: {
+      deletedAt: true,
       verifiedUsers: {
         select: {
           email: true,
@@ -154,6 +155,10 @@ export async function createOrUpdateUser(
       },
     },
   })
+
+  if (existingUser?.deletedAt) {
+    throw new Error(`Cannot update soft-deleted user ${user.id}`)
+  }
 
   const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email
 
@@ -239,8 +244,8 @@ export async function softDeleteUser(
     },
     data: {
       deletedAt: new Date(),
-      email: undefined,
-      name: undefined,
+      email: null,
+      name: null,
     },
   })
 }
