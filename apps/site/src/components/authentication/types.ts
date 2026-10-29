@@ -61,6 +61,10 @@ export interface AuthenticatedUser {
   userId: string
 }
 
+export type OnAuthComplete = (
+  user: AuthenticatedUser
+) => void | string | Promise<void | string>
+
 export type Tracker = PosthogEvent
 
 export type VerifyStrategy = (
