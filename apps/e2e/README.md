@@ -132,6 +132,14 @@ Prérequis : Postgres et Redis en local.
    Si un run précédent a été tué, ses processus peuvent encore occuper les
    ports : le `globalSetup` les signale, arrêtez-les avant de relancer.
 
+   Faker est seedé avant chaque test : la seed figure en annotation dans le
+   rapport HTML, et dans les logs quand le test échoue. `FAKER_SEED` rejoue un
+   test avec les mêmes données :
+
+   ```bash
+   FAKER_SEED=123456 pnpm -F @nosgestesclimat/e2e test:e2e --project=Chrome -g "nom du test"
+   ```
+
 4. Suite preprod (avec `NEXT_PUBLIC_SITE_URL` pointant sur la preprod) :
 
    ```bash
