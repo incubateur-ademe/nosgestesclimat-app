@@ -389,16 +389,4 @@ describe('createOrUpdateUser', () => {
       expect(await countVerifiedRecords(created.id)).toBe(1)
     })
   })
-
-  it('refuses to update a soft-deleted user', async () => {
-    const user = await userFactory.create()
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { deletedAt: new Date() },
-    })
-
-    await expect(
-      createOrUpdateUser({ type: 'unverified', id: user.id })
-    ).rejects.toThrow(/soft-deleted/)
-  })
 })

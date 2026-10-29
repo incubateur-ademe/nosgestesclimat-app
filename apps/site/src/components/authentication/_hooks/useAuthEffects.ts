@@ -9,12 +9,13 @@ import _logger from '@/logger/logger.browser'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
+import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
 import type {
   AuthEvent,
   AuthPhase,
-  OnAuthComplete,
+  AuthenticatedUser,
   Tracker,
   VerifyStrategy,
 } from '../types'
@@ -58,11 +59,12 @@ function useVerifyEffect(
 function useCompletionEffect(
   state: AuthPhase,
   options: {
-    onComplete?: OnAuthComplete
+    onComplete?: (user: AuthenticatedUser) => void | Promise<void>
     redirectPathname?: string
     tracker?: Tracker
   }
 ) {
+  const router = useRouter()
   const { cookieState } = useCookieManagement()
   const authenticatedUserId =
     state.phase === 'authenticated' ? state.userId : null
@@ -83,18 +85,13 @@ function useCompletionEffect(
           userId: authenticatedUserId,
           cookieState,
         })
-        const destination = await options.onComplete?.({
+        await options.onComplete?.({
           email: authenticatedEmail,
           userId: authenticatedUserId,
         })
 
-        const pathname =
-          options.redirectPathname ??
-          (typeof destination === 'string' ? destination : undefined)
-
-        // A new document request is required for the proxy to derive the session.
-        if (pathname) {
-          window.location.assign(pathname)
+        if (options.redirectPathname) {
+          router.push(options.redirectPathname)
         }
       } catch (error) {
         logger.error(toError(error))
@@ -108,6 +105,7 @@ function useCompletionEffect(
     cookieState,
     options.onComplete,
     options.redirectPathname,
+    router,
   ])
 }
 
@@ -115,7 +113,7 @@ interface UseAuthEffectsOptions {
   state: AuthPhase
   dispatch: Dispatch<AuthEvent>
   verify: VerifyStrategy
-  onComplete?: OnAuthComplete
+  onComplete?: (user: AuthenticatedUser) => void | Promise<void>
   redirectPathname?: string
   tracker?: Tracker
 }

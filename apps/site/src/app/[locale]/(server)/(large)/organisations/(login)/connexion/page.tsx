@@ -11,17 +11,18 @@ import { getUserOrganisation } from '@/helpers/server/model/organisations'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { redirect } from 'next/navigation'
 
-async function getRedirectPathAfterLogin(): Promise<string> {
+async function redirectAfterLogin() {
   'use server'
   const organisation = await getUserOrganisation()
-  return organisation
-    ? `/organisations/${organisation.slug}`
-    : '/organisations/creer'
+  if (!organisation) {
+    redirect('/organisations/creer')
+  }
+  redirect(`/organisations/${organisation.slug}`)
 }
 
 export default async function Page() {
   if ((await getUserSession())?.isAuth) {
-    redirect(await getRedirectPathAfterLogin())
+    await redirectAfterLogin()
   }
 
   const { t } = await getServerTranslation()
@@ -60,7 +61,7 @@ export default async function Page() {
             />
             <AuthenticateUserForm
               intent="create-organisation"
-              onComplete={getRedirectPathAfterLogin}
+              onComplete={redirectAfterLogin}
               tracker={captureOrganisationsLoginComplete}
             />
           </div>

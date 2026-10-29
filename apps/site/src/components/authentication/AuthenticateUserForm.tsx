@@ -11,7 +11,7 @@ import { useLogin } from './_hooks/useLogin'
 import SendVerificationCodeForm from './authenticateUserForm/SendVerificationCodeForm'
 import VerifyCodeForm from './authenticateUserForm/VerifyCodeForm'
 import { AuthProvider, useAuth } from './AuthProvider'
-import type { OnAuthComplete, Tracker } from './types'
+import type { AuthenticatedUser, Tracker } from './types'
 
 interface Props {
   buttonLabel?: string | ReactNode
@@ -20,7 +20,7 @@ interface Props {
   mode?: AuthenticationMode
   redirectPathname?: string
   additionnalButton?: ReactNode
-  onComplete?: OnAuthComplete
+  onComplete?: (user: AuthenticatedUser) => void | Promise<void>
   required?: boolean
   tracker?: Tracker
   isVerticalLayout?: boolean

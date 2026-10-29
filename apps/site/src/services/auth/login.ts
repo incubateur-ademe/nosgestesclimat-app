@@ -18,8 +18,8 @@ import { maskEmail } from '@nosgestesclimat/core/lib/pii'
 import { failure, success, type Result } from '@nosgestesclimat/core/lib/result'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { validatePayload } from '@nosgestesclimat/core/lib/validate-payload'
+import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
-import { revalidateBasePathForLocales } from './_helpers/revalidate-base-path-for-locales'
 import { createAppSession } from './create-app-session'
 import { getUserSession } from './get-user-session'
 
@@ -120,7 +120,7 @@ export const login = logger.withSpan(
       }
       await createAppSession(user.id, email)
 
-      revalidateBasePathForLocales()
+      revalidatePath('/', 'layout')
 
       return success({ userId: user.id })
     } catch (error) {
