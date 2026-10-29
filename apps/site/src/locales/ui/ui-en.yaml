@@ -2311,3 +2311,21 @@ entries:
   actions.abandonCommitment.success.lock: Action retirée de votre plan
   actions.abandonCommitment.undo: Undo
   actions.abandonCommitment.undo.lock: Annuler
+  errors.generic_error: An error has occurred. Please try again.
+  errors.generic_error.lock: Une erreur s'est produite, veuillez réessayer.
+  my_space.account_deletion: Your account has been successfully deleted.
+  my_space.account_deletion.lock: Votre compte a été supprimé avec succès.
+  mon-espace.settings.delete.dialog.confirm: Confirm deletion
+  mon-espace.settings.delete.dialog.confirm.lock: Confirmer la suppression
+  mon-espace.settings.delete.dialog.cancel: Cancel
+  mon-espace.settings.delete.dialog.cancel.lock: Annuler
+  mon-espace.settings.delete.button: Delete my account
+  mon-espace.settings.delete.button.lock: Supprimer mon compte
+  mon-espace.settings.delete.dialog.description1: 'This action will permanently delete your account and all associated data: results, groups and organisation.'
+  mon-espace.settings.delete.dialog.description1.lock: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : résultats, groupes, organisation."
+  common.close: Close
+  common.close.lock: Fermer
+  mon-espace.settings.delete.dialog.title: Deleting an account
+  mon-espace.settings.delete.dialog.title.lock: Suppression du compte
+  mon-espace.settings.delete.dialog.description2: <0>This action cannot be undone.</0>
+  mon-espace.settings.delete.dialog.description2.lock: <0>Cette action est irréversible.</0>

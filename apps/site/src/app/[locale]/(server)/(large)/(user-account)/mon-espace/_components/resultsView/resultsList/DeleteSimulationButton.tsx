@@ -3,7 +3,14 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
-import Modal from '@/design-system/modals/Modal'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from '@/design-system/shadcn/dialog'
 import { useState, useTransition } from 'react'
 
 interface Props {
@@ -34,44 +41,50 @@ export function DeleteButtonWithConfirmModal({
   }
 
   return (
-    <>
-      <Button
-        onClick={() => setIsModalOpen(true)}
-        variant="link"
-        color="red"
-        className="font-normal">
-        <Trans i18nKey="mySpace.resultList.item.delete.mainButton.label">
-          Supprimer
-        </Trans>
-      </Button>
+    <Dialog
+      open={isModalOpen}
+      onOpenChange={(open) => {
+        if (!isPending) {
+          setIsModalOpen(open)
+        }
+      }}>
+      <DialogTrigger asChild>
+        <Button variant="link" color="red" className="font-normal">
+          <Trans i18nKey="mySpace.resultList.item.delete.mainButton.label">
+            Supprimer
+          </Trans>
+        </Button>
+      </DialogTrigger>
 
-      <Modal
-        isOpen={isModalOpen}
-        closeModal={() => setIsModalOpen(false)}
-        isLoading={isPending}
-        buttons={[
-          <Button
-            disabled={isPending}
-            onClick={handleDeleteAction}
-            key="submit"
-            color="red">
+      <DialogContent>
+        <DialogHeader>
+          {children}
+
+          {isError && (
+            <p className="mt-2 text-red-700">
+              <Trans i18nKey="mySpace.resultList.item.delete.modal.error">
+                Une erreur s'est produite au moment de supprimer cet élément.
+                Veuillez réessayer.
+              </Trans>
+            </p>
+          )}
+        </DialogHeader>
+
+        <DialogFooter>
+          <Button disabled={isPending} onClick={handleDeleteAction} color="red">
             {isPending && <Loader color="light" className="mr-2" />}
             <Trans i18nKey="mySpace.resultList.item.delete.modal.confirm">
               Confirmer la suppression
             </Trans>
-          </Button>,
-        ]}>
-        {children}
+          </Button>
 
-        {isError && (
-          <p className="mt-2 text-red-700">
-            <Trans i18nKey="mySpace.resultList.item.delete.modal.error">
-              Une erreur s'est produite au moment de supprimer cet élément.
-              Veuillez réessayer.
-            </Trans>
-          </p>
-        )}
-      </Modal>
-    </>
+          <DialogClose asChild>
+            <Button variant="outlined" disabled={isPending}>
+              <Trans i18nKey="common.cancel">Annuler</Trans>
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

@@ -1508,3 +1508,12 @@ entries:
   actions.myPlanPage.empty.title: Ajoutez des actions à votre sélection
   actions.abandonCommitment.success: Action retirée de votre plan
   actions.abandonCommitment.undo: Annuler
+  errors.generic_error: Une erreur s'est produite, veuillez réessayer.
+  my_space.account_deletion: Votre compte a été supprimé avec succès.
+  common.close: Fermer
+  mon-espace.settings.delete.button: Supprimer mon compte
+  mon-espace.settings.delete.dialog.cancel: Annuler
+  mon-espace.settings.delete.dialog.confirm: Confirmer la suppression
+  mon-espace.settings.delete.dialog.description1: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : résultats, groupes, organisation."
+  mon-espace.settings.delete.dialog.description2: <0>Cette action est irréversible.</0>
+  mon-espace.settings.delete.dialog.title: Suppression du compte

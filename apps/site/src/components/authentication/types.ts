@@ -61,6 +61,14 @@ export interface AuthenticatedUser {
   userId: string
 }
 
+export type OnAuthComplete = (user: AuthenticatedUser) => void | Promise<void>
+
+export type RedirectResolver = (
+  user: AuthenticatedUser
+) => string | void | Promise<string | void>
+
+export type RedirectTarget = string | RedirectResolver
+
 export type Tracker = PosthogEvent
 
 export type VerifyStrategy = (

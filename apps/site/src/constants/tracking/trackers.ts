@@ -203,3 +203,11 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
     googleTagCookie: cookieState?.googleTag,
   },
 })
+
+export const clickDeleteUserAccountButton = {
+  eventName: 'Click delete user account',
+}
+
+export const clickConfirmUserAccountDeletionButton = {
+  eventName: 'Click confirm user account deletion',
+}
