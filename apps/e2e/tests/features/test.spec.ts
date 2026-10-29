@@ -1,8 +1,17 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
 import type { Locator, Page } from '@playwright/test'
-import { expect, test } from '../fixtures'
-import type { NGCTest } from '../fixtures/ngc-test'
 import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
+import { test as base, expect } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
+
+// The local suite has no page-object fixtures: NGCTest is stateless and takes
+// the page, so it is instantiated inline. The default context is a fresh new
+// visitor (localVisitorState: cookie banner dismissed, no session).
+const test = base.extend<{ ngcTest: NGCTest }>({
+  ngcTest: async ({ page }, use) => {
+    await use(new NGCTest(page))
+  },
+})
 
 test.setTimeout(250_000)
 for (const persona of Object.values(personas)) {

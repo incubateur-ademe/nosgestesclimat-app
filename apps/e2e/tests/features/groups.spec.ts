@@ -1,17 +1,125 @@
 import { faker } from '@faker-js/faker'
+import { groupFactory } from '@nosgestesclimat/core/features/groups/factories/group.factory'
+import { userFactory } from '@nosgestesclimat/core/features/users/factories/user.factory'
 import type { Page } from '@playwright/test'
 import { TEST_EMAIL_DOMAIN } from '../constants'
-import { expect, test } from '../fixtures'
-import { createPage } from '../fixtures/feature-flags'
-import { Group } from '../fixtures/groups'
-import { NGCTest } from '../fixtures/ngc-test'
-import { TutorialPage } from '../fixtures/tutorial'
-import { User } from '../fixtures/user'
-import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../state'
+import { createPage } from '../fixtures'
+import { signIn } from '../helpers/session'
+import { test as base, expect, resetDatabase } from '../local/fixtures'
+import { Group } from '../page-objects/group'
+import { NGCTest } from '../page-objects/ngc-test'
+import { TutorialPage } from '../page-objects/tutorial'
+import { User } from '../page-objects/user'
+import { UserSpace } from '../page-objects/user-space'
 
-test.use({ storageState: GROUP_ADMIN_STATE })
+/**
+ * Seeds a group in the e2e database, with its administrator: a verified user
+ * who administrates the group and participates in it (with a completed
+ * simulation). The administrator's stored name is the given first name alone,
+ * because the invitation page and the ranking render it verbatim.
+ *
+ * Returns the seeded administrator and the Group page object, with the site
+ * routes derived from the seeded group. Signing the administrator in is left
+ * to the caller: the « new user » describe reuses this helper without signing
+ * in.
+ */
+async function seedGroupWithAdmin(page: Page) {
+  const firstName = faker.person.firstName()
+  const lastName = faker.person.lastName()
+  const admin = await userFactory.verified().create({ name: firstName })
+  const seededGroup = await groupFactory
+    .withAdministrator(admin.id)
+    .withParticipant({ userId: admin.id })
+    .create()
+  const user = new User(page, {
+    firstName,
+    lastName,
+    email: admin.email,
+  })
+  const group = new Group(page, user, {
+    name: seededGroup.name,
+    url: `/amis/resultats?groupId=${seededGroup.id}`,
+    inviteLink: `/amis/invitation?groupId=${seededGroup.id}`,
+  })
+  return { admin, user, group }
+}
+
+// The local suite has no page-object fixtures: NGCTest and TutorialPage are
+// stateless and take the page, so they are instantiated through fixtures here.
+const test = base.extend<{ ngcTest: NGCTest; tutorialPage: TutorialPage }>({
+  ngcTest: async ({ page }, use) => {
+    await use(new NGCTest(page))
+  },
+  tutorialPage: async ({ page }, use) => {
+    await use(new TutorialPage(page))
+  },
+})
+
+interface GroupAdmin {
+  user: User
+  group: Group
+}
+
+/**
+ * Group administrator context, seeded in the e2e database and signed in
+ * through helpers/session (no verification code flow): a verified user who
+ * administrates and participates in a seeded group.
+ */
+const adminTest = test.extend<{
+  groupAdmin: GroupAdmin
+  user: User
+  userSpace: UserSpace
+  group: Group
+}>({
+  groupAdmin: async ({ page }, use) => {
+    const { admin, user, group } = await seedGroupWithAdmin(page)
+    await signIn(page.context(), admin)
+    await use({ user, group })
+  },
+  user: async ({ groupAdmin }, use) => {
+    await use(groupAdmin.user)
+  },
+  userSpace: async ({ page, groupAdmin }, use) => {
+    await use(new UserSpace(page, groupAdmin.user))
+  },
+  group: async ({ groupAdmin }, use) => {
+    await use(groupAdmin.group)
+  },
+})
+
+/**
+ * New visitor context: the default context is already a fresh new visitor
+ * (localVisitorState: cookie banner dismissed, no session), so only the group
+ * has to be seeded — without signing anyone in.
+ */
+const newcomerTest = test.extend<{ group: Group; user: User }>({
+  group: async ({ page }, use) => {
+    const { group } = await seedGroupWithAdmin(page)
+    await use(group)
+  },
+  user: async ({ page }, use) => {
+    await use(new User(page))
+  },
+})
+
+let page: Page
+let seededGroup: Group
+
+/**
+ * The tests of the last describe share one page, seeded once in beforeAll: the
+ * `group` fixture exposes the group seeded there.
+ */
+const joinedTest = test.extend<{ group: Group }>({
+  group: async ({}, use) => {
+    await use(seededGroup)
+  },
+})
 
 test.describe('A group admin', () => {
+  // The tests run signed in as the seeded group administrator: alias the
+  // extended test type to keep the usual `test(...)` declaration shape.
+  const test = adminTest
+
   test('can go to its group from its user account', async ({
     userSpace,
     page,
@@ -57,6 +165,9 @@ test.describe('A group admin', () => {
 })
 
 test.describe('The group result page, when accessed by an admin', () => {
+  // Same alias as above: the tests run signed in as the seeded administrator.
+  const test = adminTest
+
   test.beforeEach(async ({ group, page }) => {
     await page.goto(group.url)
   })
@@ -93,7 +204,7 @@ test.describe('The group result page, when accessed by an admin', () => {
 })
 
 test.describe('A new user', () => {
-  test.use({ storageState: NEW_VISITOR_STATE })
+  const test = newcomerTest
 
   test('is redirected to the invite screen if it goes to the result page', async ({
     group,
@@ -176,36 +287,38 @@ test.describe('A new user', () => {
 })
 
 test.describe('A user with a completed test that joined a group', () => {
-  test.use({ storageState: NEW_VISITOR_STATE })
+  // The tests share one page, seeded once in beforeAll (a fresh visitor who
+  // completed the test and joined the group): alias the extended test type
+  // whose `group` fixture exposes the group seeded there.
+  const test = joinedTest
 
   test.describe.configure({ mode: 'default' })
-  let page: Page
+  // The per-test reset would wipe the data seeded in beforeAll: the database
+  // is emptied once, there. The tests run in order on a single worker.
+  test.use({ resetDatabase: false })
 
   test.beforeAll(async ({ browser }) => {
     // Completing the whole test and joining a group takes well over the 30s
-    // default hook timeout on a loaded preprod; the describe-level
+    // default hook timeout on a loaded environment; the describe-level
     // test.setTimeout() does not raise the hook budget.
     test.setTimeout(120_000)
+
+    await resetDatabase()
 
     page = await createPage(browser)
     await new NGCTest(page).skipAll()
     await expect(page).toHaveURL('/fin')
 
     const user = new User(page, {
-      email: 'test@example.com',
+      email: faker.internet.email({ provider: TEST_EMAIL_DOMAIN }),
       firstName: 'John',
       lastName: 'Doe',
     })
 
-    const group = await Group.fromContext(
-      await browser
-        .newContext({
-          storageState: GROUP_ADMIN_STATE,
-        })
-        .then((context) => context.newPage())
-    )
+    // Seed the group (administrator included) in the e2e database.
+    seededGroup = (await seedGroupWithAdmin(page)).group
 
-    await group.joinWithInviteLink(user)
+    await seededGroup.joinWithInviteLink(user)
   })
 
   test.afterAll(async () => {

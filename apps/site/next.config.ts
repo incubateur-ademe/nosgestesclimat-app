@@ -27,6 +27,8 @@ const browserEnv = {
 }
 
 const nextConfig = withMDX({
+  // The e2e stacks (apps/e2e/stack) serve one patched copy of the build each.
+  distDir: process.env.NEXT_DIST_DIR ?? '.next',
   env: browserEnv,
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   reactStrictMode: true,

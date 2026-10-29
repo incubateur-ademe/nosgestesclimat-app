@@ -1,17 +1,131 @@
+import { organisationFactory } from '@nosgestesclimat/core/features/organisations/factories/organisation.factory'
+import { pollFactory } from '@nosgestesclimat/core/features/polls/factories/poll.factory'
+import { userFactory } from '@nosgestesclimat/core/features/users/factories/user.factory'
 import type { Page } from '@playwright/test'
 import { EMAIL_PAGE_PATH } from '../constants'
-import { expect, test } from '../fixtures'
-import { createPage } from '../fixtures/feature-flags'
-import { NGCTest } from '../fixtures/ngc-test'
-import { Organisation } from '../fixtures/organisations'
-import { Poll } from '../fixtures/polls'
-import { TutorialPage } from '../fixtures/tutorial'
-import { User } from '../fixtures/user'
-import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
+import { createPage } from '../fixtures'
+import { signIn } from '../helpers/session'
+import { test as base, expect, resetDatabase } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
+import { Organisation } from '../page-objects/organisation'
+import { Poll } from '../page-objects/poll'
+import { TutorialPage } from '../page-objects/tutorial'
+import { User } from '../page-objects/user'
 
-test.use({ storageState: ORGANISATION_ADMIN_STATE })
+/**
+ * Seeds an organisation and one of its polls in the e2e database, with a
+ * verified user administrating the organisation.
+ *
+ * Returns the seeded administrator and the page objects, with the site routes
+ * derived from the seeded entities (the poll invite link is the site's
+ * campagne route, which resolves a poll by id or slug). Signing the
+ * administrator in is left to the caller: the « new user » describe reuses
+ * this helper without signing in.
+ */
+async function seedPollWithOrganisation(page: Page) {
+  const admin = await userFactory.verified().create()
+  const seededOrganisation = await organisationFactory
+    .withAdministrator({ userEmail: admin.email })
+    .create()
+  const seededPoll = await pollFactory
+    .withOrganisation(seededOrganisation)
+    .create()
+  const [firstName = '', ...lastNames] = admin.name?.split(' ') ?? []
+  const organisation = new Organisation(
+    page,
+    new User(page, {
+      firstName,
+      lastName: lastNames.join(' '),
+      email: admin.email,
+    }),
+    { name: seededOrganisation.name, slug: seededOrganisation.slug }
+  )
+  const poll = new Poll(page, organisation, {
+    name: seededPoll.name,
+    slug: seededPoll.slug,
+    inviteLink: `/simulateur/campagne/${seededPoll.id}`,
+  })
+  return { admin, organisation, poll }
+}
+
+// The local suite has no page-object fixtures: NGCTest and TutorialPage are
+// stateless and take the page, so they are instantiated through fixtures here.
+const test = base.extend<{ ngcTest: NGCTest; tutorialPage: TutorialPage }>({
+  ngcTest: async ({ page }, use) => {
+    await use(new NGCTest(page))
+  },
+  tutorialPage: async ({ page }, use) => {
+    await use(new TutorialPage(page))
+  },
+})
+
+interface PollContext {
+  organisation: Organisation
+  poll: Poll
+}
+
+/**
+ * Organisation administrator context, seeded in the e2e database and signed
+ * in through helpers/session (no verification code flow).
+ */
+const adminTest = test.extend<{
+  pollContext: PollContext
+  organisation: Organisation
+  poll: Poll
+}>({
+  pollContext: async ({ page }, use) => {
+    const { admin, organisation, poll } = await seedPollWithOrganisation(page)
+    await signIn(page.context(), admin)
+    await use({ organisation, poll })
+  },
+  organisation: async ({ pollContext }, use) => {
+    await use(pollContext.organisation)
+  },
+  poll: async ({ pollContext }, use) => {
+    await use(pollContext.poll)
+  },
+})
+
+/**
+ * New visitor context: the default context is already a fresh new visitor
+ * (localVisitorState: cookie banner dismissed, no session), so only the
+ * organisation and the poll have to be seeded — without signing anyone in.
+ */
+const newcomerTest = test.extend<{
+  pollContext: PollContext
+  organisation: Organisation
+  poll: Poll
+}>({
+  pollContext: async ({ page }, use) => {
+    const { organisation, poll } = await seedPollWithOrganisation(page)
+    await use({ organisation, poll })
+  },
+  organisation: async ({ pollContext }, use) => {
+    await use(pollContext.organisation)
+  },
+  poll: async ({ pollContext }, use) => {
+    await use(pollContext.poll)
+  },
+})
+
+let page: Page
+let seededPoll: Poll
+
+/**
+ * The tests of the last describe share one page, seeded once in beforeAll: the
+ * `poll` fixture exposes the poll seeded there.
+ */
+const joinedTest = test.extend<{ poll: Poll }>({
+  poll: async ({}, use) => {
+    await use(seededPoll)
+  },
+})
 
 test.describe('A poll admin', () => {
+  // The tests run signed in as the seeded organisation administrator: alias
+  // the extended test type to keep the usual `test(...)` declaration shape.
+  const test = adminTest
+
   test('can go to its poll from the organisation dashboard', async ({
     page,
     organisation,
@@ -47,6 +161,9 @@ test.describe('A poll admin', () => {
 })
 
 test.describe('The poll dashboard page, when accessed by an admin', () => {
+  // Same alias as above: the tests run signed in as the seeded administrator.
+  const test = adminTest
+
   test.beforeEach(async ({ poll, page }) => {
     await page.goto(poll.url)
   })
@@ -85,7 +202,7 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
 })
 
 test.describe('A new user', () => {
-  test.use({ storageState: NEW_VISITOR_STATE })
+  const test = newcomerTest
 
   test('can join a poll via the invite link and reach the tutorial', async ({
     poll,
@@ -129,29 +246,30 @@ test.describe('A new user', () => {
 })
 
 test.describe('A user with a completed test that joined a poll', () => {
-  test.use({ storageState: NEW_VISITOR_STATE })
+  // The tests share one page, seeded once in beforeAll (a fresh visitor who
+  // completed the test through the poll invite link): alias the extended test
+  // type whose `poll` fixture exposes the poll seeded there.
+  const test = joinedTest
 
   test.describe.configure({ mode: 'default' })
-
-  let page: Page
+  // The per-test reset would wipe the data seeded in beforeAll: the database
+  // is emptied once, there. The tests run in order on a single worker.
+  test.use({ resetDatabase: false })
 
   test.beforeAll(async ({ browser }) => {
     // Skipping the whole test in the hook can exceed the 30s default hook
-    // timeout on a loaded preprod; the describe-level test.setTimeout() does
-    // not raise the hook budget.
+    // timeout on a loaded environment; the describe-level test.setTimeout()
+    // does not raise the hook budget.
     test.setTimeout(120_000)
+
+    await resetDatabase()
 
     page = await createPage(browser)
 
-    const adminContext = await browser.newContext({
-      storageState: ORGANISATION_ADMIN_STATE,
-    })
-    const adminPage = await adminContext.newPage()
-    const organisation = await Organisation.fromContext(adminPage)
-    const poll = await Poll.fromContext(adminPage, organisation)
-    await adminContext.close()
+    // Seed the organisation and the poll in the e2e database.
+    seededPoll = (await seedPollWithOrganisation(page)).poll
 
-    await page.goto(poll.inviteLink)
+    await page.goto(seededPoll.inviteLink)
     const tutorialPage = new TutorialPage(page)
     await tutorialPage.skip()
 

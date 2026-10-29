@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "mock": "node --experimental-strip-types mock/server.ts",
+    "build:site": "node --experimental-strip-types stack/build-site.ts",
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
+    "test:e2e:preprod": "playwright test -c playwright.preprod.config.ts",
+    "test:ui:preprod": "playwright test -c playwright.preprod.config.ts --ui",
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{js,ts,mjs,md,json}\""
@@ -20,7 +23,9 @@
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",
     "@playwright/test": "^1.62.1",
+    "@types/pg": "^8.20.0",
     "dotenv": "^17.3.1",
+    "pg": "^8.20.0",
     "playwright": "^1.62.1",
     "typescript": "5.9.3"
   }

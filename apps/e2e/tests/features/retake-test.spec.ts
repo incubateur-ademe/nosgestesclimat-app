@@ -1,5 +1,12 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
-import { expect, test } from '../fixtures'
+import { test as base, expect } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
+
+const test = base.extend<{ ngcTest: NGCTest }>({
+  ngcTest: async ({ page }, use) => {
+    await use(new NGCTest(page))
+  },
+})
 
 test.setTimeout(250_000)
 

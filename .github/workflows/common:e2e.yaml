@@ -22,7 +22,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready --health-interval 5s
+          --health-cmd "pg_isready -U postgres -d ngc" --health-interval 5s
           --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v6
@@ -41,7 +41,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
           CMS_URL: ${{ vars.CMS_URL }}
           CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
-          # Shared with the runtime (see e2e-stack) so sessions decrypt.
+          # Shared with the runtime (see apps/e2e/stack) so sessions decrypt.
           SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
         run: |
           # NEXT_PUBLIC_* and encryption keys come from .github/e2e-local.env.
@@ -78,9 +78,10 @@ jobs:
           - project: Firefox
             browser: firefox
 
-    # Local stack, no devcontainer: postgres and redis run as native GitHub
-    # Actions services; the mock server, API server, site and worker run as
-    # background processes on the runner. Playwright browsers stay on the host.
+    # Local stacks, no devcontainer: postgres and redis run as native GitHub
+    # Actions services. Playwright starts the mock server, then its globalSetup
+    # (apps/e2e/stack) one database, API server, site and worker per worker.
+    # Playwright browsers stay on the host.
     services:
       postgres:
         image: postgres:15
@@ -91,7 +92,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready --health-interval 5s
+          --health-cmd "pg_isready -U postgres -d ngc" --health-interval 5s
           --health-timeout 5s --health-retries 5
       redis:
         image: redis:7
@@ -109,31 +110,24 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
 
-      # The `global setup` Playwright project runs in Desktop Chrome.
-      - name: Install Chromium for state generation
-        if: matrix.browser != 'chromium'
-        working-directory: apps/e2e
-        run: pnpm playwright install chromium
-
       - name: Download build
         uses: actions/download-artifact@v6
         with:
           name: next-build
           path: apps/site/.next
 
-      - name: Start e2e stack
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ngc
-          REDIS_URL: redis://localhost:6379
-          CMS_URL: ${{ vars.CMS_URL }}
-          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
-          SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
-        run: bash .github/scripts/e2e-stack.sh
-
       - name: Run E2E tests (${{ matrix.project }})
         working-directory: apps/e2e
         env:
-          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          # Postgres instance of the per-worker databases (ngc_e2e_<i>, created
+          # by globalSetup), which the tests seed with core factories/services.
+          E2E_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          REDIS_URL: redis://localhost:6379
+          CMS_URL: ${{ vars.CMS_URL }}
+          CMS_TOKEN: ${{ secrets.CMS_TOKEN }}
+          # Shared by the stacks and the tests, which sign in by issuing a
+          # session the site must be able to decrypt.
+          SESSION_ENCRYPTION_KEY: ${{ secrets.E2E_SESSION_KEY }}
           E2E_MAILBOX: stub
           E2E_MAILBOX_URL: http://localhost:3002
           CI: 'true'
@@ -152,11 +146,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: e2e-logs-${{ matrix.project }}
-          path: |
-            mock.log
-            server.log
-            site.log
-            worker.log
+          path: apps/e2e/logs/
           retention-days: 7
 
   merge-reports:

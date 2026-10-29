@@ -1,18 +1,71 @@
 import { faker } from '@faker-js/faker'
+import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
+import type { Simulation } from '@nosgestesclimat/core/features/simulations/types/simulation'
+import { userFactory } from '@nosgestesclimat/core/features/users/factories/user.factory'
+import type { VerifiedUser } from '@nosgestesclimat/core/features/users/types/user'
 import { START_SIMULATION_PATH, TEST_EMAIL_DOMAIN } from '../constants'
-import { expect, test } from '../fixtures'
+import { signIn } from '../helpers/session'
 import { UserMailbox } from '../helpers/user-mailbox'
-import {
-  GROUP_ADMIN_STATE,
-  NEW_VISITOR_STATE,
-  USER_ACCOUNT_STATE,
-} from '../state'
+import { test as base, expect } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
 
-test.use({ storageState: USER_ACCOUNT_STATE })
+/**
+ * The users are seeded in the e2e database with the core factories and signed
+ * in through helpers/session; the default context stays a fresh new visitor
+ * (localVisitorState), so the login flow runs unauthenticated.
+ *
+ * `ngcTest` is instantiated inline, and each signed-in describe aliases its
+ * extended test type (whose sign-in fixture is automatic) to `test`, so the
+ * tests are declared the usual way.
+ */
+const test = base.extend<{
+  ngcTest: NGCTest
+  /** A verified user seeded in the e2e database, not signed in. */
+  user: VerifiedUser
+}>({
+  ngcTest: async ({ page }, use) => {
+    await use(new NGCTest(page))
+  },
+  user: async ({}, use) => {
+    await use(await userFactory.verified().create())
+  },
+})
+
+/** Test type whose context is signed in as a freshly seeded verified user. */
+const signedInTest = test.extend<{ signedInUser: VerifiedUser }>({
+  signedInUser: [
+    async ({ context }, use) => {
+      const user = await userFactory.verified().create()
+      await signIn(context, user)
+      await use(user)
+    },
+    { auto: true },
+  ],
+})
+
+interface SignedInUserWithSimulation {
+  user: VerifiedUser
+  simulation: Simulation
+}
+
+/** Test type signed in as a verified user owning one completed simulation. */
+const simulationDeletionTest = signedInTest.extend<{
+  signedInUserWithSimulation: SignedInUserWithSimulation
+}>({
+  signedInUserWithSimulation: [
+    async ({ signedInUser }, use) => {
+      const simulation = await simulationFactory
+        .completed()
+        .params({ userId: signedInUser.id })
+        .withValidComputedResults()
+        .create()
+      await use({ user: signedInUser, simulation })
+    },
+    { auto: true },
+  ],
+})
 
 test.describe('Login - invalid verification code', () => {
-  test.use({ storageState: NEW_VISITOR_STATE })
-
   test('should display error when entering a wrong code', async ({
     page,
     user,
@@ -37,6 +90,10 @@ test.describe('Login - invalid verification code', () => {
 })
 
 test.describe.fixme('Logout', () => {
+  // The tests below run signed in: alias the extended test type to keep the
+  // usual `test(...)` declaration shape.
+  const test = signedInTest
+
   test('should log out and redirect to homepage', async ({ page }) => {
     await page.goto('/mon-espace')
     await expect(page.getByTestId('my-results-tab')).toBeVisible()
@@ -60,6 +117,9 @@ test.describe.fixme('Logout', () => {
 })
 
 test.describe.fixme('Email change', () => {
+  // Same alias as above: the test runs signed in as a seeded verified user.
+  const test = signedInTest
+
   test('can change email from personal space', async ({ page }) => {
     const newEmail = faker.internet.email({
       provider: TEST_EMAIL_DOMAIN,
@@ -92,7 +152,10 @@ test.describe.fixme('Email change', () => {
 })
 
 test.describe('Simulation deletion', () => {
-  test.use({ storageState: GROUP_ADMIN_STATE })
+  // The test runs signed in as a verified user owning one completed
+  // simulation (seeded below through the auto fixture).
+  const test = simulationDeletionTest
+
   test.setTimeout(120_000)
 
   test('can delete a simulation from personal space', async ({

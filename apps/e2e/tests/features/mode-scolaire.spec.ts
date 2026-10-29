@@ -1,13 +1,100 @@
+import { organisationFactory } from '@nosgestesclimat/core/features/organisations/factories/organisation.factory'
+import { pollFactory } from '@nosgestesclimat/core/features/polls/factories/poll.factory'
+import type { Poll as PollEntity } from '@nosgestesclimat/core/features/polls/types/poll'
+import { userFactory } from '@nosgestesclimat/core/features/users/factories/user.factory'
+import type { VerifiedUser } from '@nosgestesclimat/core/features/users/types/user'
+import type { Organisation as OrganisationEntity } from '@nosgestesclimat/core/prisma/generated/client'
 import type { Page } from '@playwright/test'
 import { EMAIL_PAGE_PATH } from '../constants'
-import { expect, test } from '../fixtures'
-import { createPage } from '../fixtures/feature-flags'
-import { NGCTest } from '../fixtures/ngc-test'
-import { Organisation } from '../fixtures/organisations'
-import { Poll } from '../fixtures/polls'
-import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
+import { createPage } from '../fixtures'
+import { signIn } from '../helpers/session'
+import { test as base, expect } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
+import { Organisation } from '../page-objects/organisation'
+import { Poll } from '../page-objects/poll'
+import { User } from '../page-objects/user'
 
-test.use({ storageState: NEW_VISITOR_STATE })
+/**
+ * Organisation administrator context, seeded in the e2e database: a verified
+ * user and the organisation they administrate, signed in through
+ * helpers/session (no verification code flow).
+ *
+ * The entities are exposed as seeded, and the site routes are derived from
+ * them.
+ */
+interface OrganisationAdmin {
+  admin: VerifiedUser
+  organisation: OrganisationEntity
+}
+
+interface ScolaireModeFixtures {
+  organisationAdmin: OrganisationAdmin
+  poll: Poll
+  /** Poll in scolaire mode, for the youth tutorial flow. */
+  scolairePoll: Poll
+}
+
+/**
+ * Organisation page object for a seeded organisation: the page objects are
+ * stateless, they derive the site routes (organisation dashboard, poll
+ * dashboard) from the seeded entity's data.
+ */
+const organisationPageObject = (
+  page: Page,
+  { admin, organisation }: OrganisationAdmin
+) => {
+  const [firstName = '', ...lastNames] = admin.name?.split(' ') ?? []
+  return new Organisation(
+    page,
+    new User(page, {
+      firstName,
+      lastName: lastNames.join(' '),
+      email: admin.email,
+    }),
+    { name: organisation.name, slug: organisation.slug }
+  )
+}
+
+/**
+ * Poll page object for a poll seeded in the e2e database: the invite link is
+ * the site's campagne route, which resolves a poll by id or slug.
+ */
+const pollPageObject = (
+  page: Page,
+  organisationAdmin: OrganisationAdmin,
+  poll: PollEntity
+) =>
+  new Poll(page, organisationPageObject(page, organisationAdmin), {
+    name: poll.name,
+    slug: poll.slug,
+    inviteLink: `/simulateur/campagne/${poll.id}`,
+  })
+
+const test = base.extend<ScolaireModeFixtures>({
+  organisationAdmin: async ({ context }, use) => {
+    const admin = await userFactory.verified().create()
+    const organisation = await organisationFactory
+      .withAdministrator({ userEmail: admin.email })
+      .create()
+    await signIn(context, admin)
+    await use({ admin, organisation })
+  },
+
+  poll: async ({ page, organisationAdmin }, use) => {
+    const poll = await pollFactory
+      .withOrganisation(organisationAdmin.organisation)
+      .create()
+    await use(pollPageObject(page, organisationAdmin, poll))
+  },
+
+  scolairePoll: async ({ page, organisationAdmin }, use) => {
+    const poll = await pollFactory
+      .withOrganisation(organisationAdmin.organisation)
+      .scolaire()
+      .create()
+    await use(pollPageObject(page, organisationAdmin, poll))
+  },
+})
 
 // @TODO: re-enable (replace `describe.skip` with `describe`) once the scolaire
 // mode is back.
@@ -27,25 +114,12 @@ test.describe.skip('scolaire mode', () => {
   test.describe('When a user completes the test via the scolaire poll invite link', () => {
     let page: Page
 
-    test.beforeAll(async ({ browser }) => {
+    test.beforeAll(async ({ browser, scolairePoll }) => {
       // Creating the organisation/poll and completing the whole youth test on a
       // loaded preprod is closer to the previous 60s budget than we'd like.
       test.setTimeout(120_000)
 
       page = await createPage(browser)
-
-      const adminContext = await browser.newContext({
-        storageState: ORGANISATION_ADMIN_STATE,
-      })
-      const adminPage = await adminContext.newPage()
-
-      const organisation = await Organisation.fromContext(adminPage)
-      const scolairePoll = await Poll.fromContext(
-        adminPage,
-        organisation,
-        'poll-scolaire'
-      )
-      await adminContext.close()
 
       await page.goto(scolairePoll.inviteLink)
       await page.getByTestId('youth-tutorial-start-button').click()

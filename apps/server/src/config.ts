@@ -208,8 +208,9 @@ const up = (str: string) => new URLPattern(str) // improves readability of confi
 const ALLOWED_ORIGINS_BY_APP_ENV: Record<AppEnv, URLPattern[]> = {
   development: [up('http://localhost:3000'), up('https://localhost:3000')],
   test: [up('https://nosgestesclimat.test')],
-  // The e2e stack (apps/e2e) serves the site from localhost:3000.
-  e2e: [up('http://localhost:3000'), up('https://localhost:3000')],
+  // The e2e stacks (apps/e2e/stack) serve one site per Playwright worker, each
+  // on its own localhost port. The unset port matches any, redirects included.
+  e2e: [new URLPattern({ protocol: 'http', hostname: 'localhost' })],
   preproduction: [up('https://preprod.nosgestesclimat.fr')],
   review: [up('https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io')],
   production: [up('https://nosgestesclimat.fr')],

@@ -1,5 +1,19 @@
-import { expect, test } from '../fixtures'
-import { TutorialPage } from '../fixtures/tutorial'
+import { test as base, expect } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
+import { TutorialPage } from '../page-objects/tutorial'
+
+// The local suite has no page-object fixtures: TutorialPage and NGCTest are
+// stateless and take the page, so they are instantiated inline. The default
+// context is a fresh new visitor (localVisitorState: cookie banner dismissed,
+// no session).
+const test = base.extend<{ tutorialPage: TutorialPage; ngcTest: NGCTest }>({
+  tutorialPage: async ({ page }, use) => {
+    await use(new TutorialPage(page))
+  },
+  ngcTest: async ({ page, tutorialPage }, use) => {
+    await use(new NGCTest(page, tutorialPage))
+  },
+})
 
 test('should be displayed when coming from the home', async ({ page }) => {
   await page.goto('/')

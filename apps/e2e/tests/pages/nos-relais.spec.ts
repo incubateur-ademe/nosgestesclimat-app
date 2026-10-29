@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures'
+import { expect, test } from '../local/fixtures'
 
 test('should render without breaking the app', async ({ page }) => {
   await page.goto('/nos-relais')

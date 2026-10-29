@@ -1,4 +1,5 @@
-import { expect, test } from '../fixtures'
+import { gotoRetryOnAbort } from '../helpers/navigation'
+import { expect, test } from '../local/fixtures'
 
 test.describe('Locale persistence via cookie', () => {
   test('should switch to English locale after visiting /fr and navigating to /en', async ({
@@ -7,7 +8,7 @@ test.describe('Locale persistence via cookie', () => {
     await page.goto('/fr')
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
 
-    await page.goto('/en')
+    await gotoRetryOnAbort(page, '/en')
     await expect(page).toHaveURL(/\/en/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
   })
@@ -19,7 +20,7 @@ test.describe('Locale persistence via cookie', () => {
     await expect(page).toHaveURL(/\/en/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 
-    await page.goto('/fr')
+    await gotoRetryOnAbort(page, '/fr')
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
   })
 })
