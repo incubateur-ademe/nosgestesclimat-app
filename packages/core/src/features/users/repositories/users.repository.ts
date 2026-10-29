@@ -53,6 +53,7 @@ export const findUserById = async (
   const row = await session.user.findUnique({
     where: {
       id,
+      deletedAt: null,
     },
     select: userSelect,
   })
@@ -82,7 +83,7 @@ export const findUserLastActivityAt = async (
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<Date | null> => {
   const row = await session.user.findUnique({
-    where: { id: userId },
+    where: { id: userId, deletedAt: null },
     select: { lastActivityAt: true },
   })
 
@@ -98,6 +99,7 @@ export const findVerifiedUserByEmail = async (
 ): Promise<VerifiedUser | null> => {
   const row = await session.user.findFirst({
     where: {
+      deletedAt: null,
       verifiedUsers: {
         some: {
           email,
@@ -231,21 +233,14 @@ export async function softDeleteUser(
     },
   })
 
-  await session.simulation.updateMany({
-    where: {
-      userId,
-    },
-    data: {
-      userId: null,
-    },
-  })
-
   await session.user.updateMany({
     where: {
       id: userId,
     },
     data: {
       deletedAt: new Date(),
+      email: undefined,
+      name: undefined,
     },
   })
 }
