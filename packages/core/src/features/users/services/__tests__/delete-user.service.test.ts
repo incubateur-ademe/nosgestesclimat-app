@@ -10,6 +10,7 @@ import { findAllRefreshTokenByUserId } from '../../../auth/repositories/refresh-
 import { createSession } from '../../../auth/services/create-session.service.ts'
 import { createLogin } from '../../../auth/services/login.service.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
+import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import {
   createOrUpdateUser,
@@ -77,6 +78,32 @@ describe('deleteUser', () => {
     expect(verifiedUserFromDB).toBeNull()
     expect(organisationAdministratorFromDB).toBeNull()
     expect(refreshTokens).toEqual([])
+  })
+
+  it("should unlink the deleted user's simulations", async () => {
+    const user = await userFactory.verified().create()
+
+    await simulationFactory.params({ userId: user.id }).completed().create()
+    await simulationFactory.params({ userId: user.id }).completed().create()
+    await simulationFactory.params({ userId: user.id }).completed().create()
+
+    await expect(
+      prisma.simulation.findMany({
+        where: {
+          userId: user.id,
+        },
+      })
+    ).resolves.toHaveLength(3)
+
+    await deleteUser(user.id)
+
+    await expect(
+      prisma.simulation.findMany({
+        where: {
+          userId: user.id,
+        },
+      })
+    ).resolves.toHaveLength(0)
   })
 
   it('should delete a logged in user, leading to a new verified user creation if the user signs up', async () => {
