@@ -106,7 +106,7 @@ test.describe('Actions plan', () => {
 
       await expect(actionsCatalogue.basketItems()).toHaveCount(0)
       await expect(actionsCatalogue.basket()).toContainText(
-        'Votre sélection est vide.'
+        'Votre sélection est vide'
       )
       await expect(actionsCatalogue.disabledSavePlanButton()).toBeDisabled()
       await expect(actionsCatalogue.disabledSavePlanButton()).toHaveText(
