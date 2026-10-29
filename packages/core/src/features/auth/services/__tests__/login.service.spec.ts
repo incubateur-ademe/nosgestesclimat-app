@@ -394,6 +394,29 @@ describe('login', () => {
       })
     })
 
+    describe('And the session userId belongs to a deleted user', () => {
+      it('signs the user up with a fresh id', async () => {
+        const deletedUser = await userFactory.create()
+        await prisma.user.update({
+          where: { id: deletedUser.id },
+          data: { deletedAt: new Date() },
+        })
+        const verificationCode = await verificationCodeFactory.create()
+
+        const result = await login({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          intent: 'create-account',
+          sessionUserId: deletedUser.id,
+        })
+
+        expect.assert(result.success)
+        expect(result.data.mode).toBe('signUp')
+        expect(result.data.user.id).not.toBe(deletedUser.id)
+      })
+    })
+
     describe('And the session userId belongs to an unverified user', () => {
       it('signs the user up, reusing the session userId as the account id', async () => {
         const unverifiedUser = await userFactory.create()

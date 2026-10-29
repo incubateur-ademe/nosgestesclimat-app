@@ -14,6 +14,7 @@ const unverifiedUserSelect = {
   name: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
 } as const
 
 const userSelect = {
@@ -52,6 +53,7 @@ export const findUserById = async (
   const row = await session.user.findUnique({
     where: {
       id,
+      deletedAt: null,
     },
     select: userSelect,
   })
@@ -81,7 +83,7 @@ export const findUserLastActivityAt = async (
   { session = prisma }: { session?: Transaction } = {}
 ): Promise<Date | null> => {
   const row = await session.user.findUnique({
-    where: { id: userId },
+    where: { id: userId, deletedAt: null },
     select: { lastActivityAt: true },
   })
 
@@ -97,6 +99,7 @@ export const findVerifiedUserByEmail = async (
 ): Promise<VerifiedUser | null> => {
   const row = await session.user.findFirst({
     where: {
+      deletedAt: null,
       verifiedUsers: {
         some: {
           email,
@@ -144,6 +147,7 @@ export async function createOrUpdateUser(
       id: user.id,
     },
     select: {
+      deletedAt: true,
       verifiedUsers: {
         select: {
           email: true,
@@ -151,6 +155,10 @@ export async function createOrUpdateUser(
       },
     },
   })
+
+  if (existingUser?.deletedAt) {
+    throw new Error(`Cannot update soft-deleted user ${user.id}`)
+  }
 
   const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email
 
@@ -214,4 +222,30 @@ export async function createOrUpdateUser(
       })
 
   return mapUser(row)
+}
+
+export async function softDeleteUser(
+  userId: string,
+  { session }: { session: Transaction }
+) {
+  await session.organisationAdministrator.deleteMany({
+    where: { user: { is: { id: userId } } },
+  })
+
+  await session.verifiedUser.deleteMany({
+    where: {
+      id: userId,
+    },
+  })
+
+  await session.user.updateMany({
+    where: {
+      id: userId,
+    },
+    data: {
+      deletedAt: new Date(),
+      email: null,
+      name: null,
+    },
+  })
 }

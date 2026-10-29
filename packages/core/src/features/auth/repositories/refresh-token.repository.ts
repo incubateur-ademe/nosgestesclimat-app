@@ -1,4 +1,5 @@
 import { failure, success, type Result } from '../../../lib/result.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import { isPrismaErrorNotFound } from '../../../prisma/utils.ts'
 import { RefreshTokenNotFoundError } from '../errors/refresh-token.error.ts'
@@ -58,8 +59,11 @@ export function findByPreviousToken(hashedToken: string): Promise<{
   })
 }
 
-export async function deleteAllForUserId(userId: string): Promise<void> {
-  await prisma.refreshToken.deleteMany({ where: { userId } })
+export async function deleteAllRefreshTokensForUserId(
+  userId: string,
+  { session = prisma }: { session?: Transaction }
+): Promise<void> {
+  await session.refreshToken.deleteMany({ where: { userId } })
 }
 
 export async function deleteAllExpired(
@@ -70,7 +74,7 @@ export async function deleteAllExpired(
   })
 }
 
-export function findAllByUserId(
+export function findAllRefreshTokenByUserId(
   userId: string
 ): Promise<{ id: string; token: string; expiresAt: Date }[]> {
   return prisma.refreshToken.findMany({

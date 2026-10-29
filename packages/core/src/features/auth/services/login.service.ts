@@ -89,10 +89,13 @@ export function createLogin({
         )
         if (!claimedCode.success) return claimedCode
 
-        const [existingVerifiedUser, sessionUser] = await Promise.all([
+        const [existingVerifiedUser, rawSessionUser] = await Promise.all([
           findVerifiedUserByEmail({ email }, { session }),
           sessionUserId ? findUserById(sessionUserId, { session }) : null,
         ])
+
+        // Guard preventing manipulating deleted user accounts
+        const sessionUser = rawSessionUser?.deletedAt ? null : rawSessionUser
 
         // The two identities the decision below is made for: each of its lines
         // carries them, flattened as `ngc.sessionUser.email`.
