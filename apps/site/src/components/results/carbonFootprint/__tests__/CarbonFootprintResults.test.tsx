@@ -1,18 +1,9 @@
 import type { GroupDisplayInfo } from '@/helpers/server/model/utils/getGroupDisplayInfo'
 import type { ComputedResults } from '@/publicodes-state/types'
 import { render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import CarbonFootprintResults from '../CarbonFootprintResults'
 
-const useFeatureFlagMock = vi.hoisted(() => vi.fn())
-
-vi.mock('@/hooks/useFeatureFlag', () => ({
-  useFeatureFlag: useFeatureFlagMock,
-}))
-
-vi.mock('@/components/results/FootprintBlock', () => ({
-  default: () => <p>current section</p>,
-}))
 vi.mock('@/components/results/carbonFootprint/CarbonFootprintHero', () => ({
   default: () => <p>new section</p>,
 }))
@@ -42,47 +33,26 @@ const friendsGroup: GroupDisplayInfo = {
 }
 
 describe('CarbonFootprintResults', () => {
-  beforeEach(() => {
-    useFeatureFlagMock.mockReset()
-    useFeatureFlagMock.mockReturnValue('test-new-footprint-display')
-  })
-
-  it('keeps the current section, without reading the flag, by default', () => {
+  it('shows the new footprint section', () => {
     render(
       <CarbonFootprintResults computedResults={computedResults} locale="fr" />
     )
 
-    expect(screen.getByText('current section')).toBeInTheDocument()
-    expect(useFeatureFlagMock).not.toHaveBeenCalled()
-  })
-
-  it('takes part in the footprint display test when enabled', () => {
-    render(
-      <CarbonFootprintResults
-        computedResults={computedResults}
-        locale="fr"
-        enableHeroTest
-      />
-    )
-
     expect(screen.getByText('new section')).toBeInTheDocument()
-    expect(useFeatureFlagMock).toHaveBeenCalled()
   })
 
   it.each([
     ['a friends group', friendsGroup],
     ['an organisation campaign', organisationCampaign],
-  ])('takes part in the test for participants of %s', (_, group) => {
+  ])('shows the new footprint section to participants of %s', (_, group) => {
     render(
       <CarbonFootprintResults
         computedResults={computedResults}
         locale="fr"
         group={group}
-        enableHeroTest
       />
     )
 
     expect(screen.getByText('new section')).toBeInTheDocument()
-    expect(useFeatureFlagMock).toHaveBeenCalled()
   })
 })

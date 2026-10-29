@@ -95,7 +95,9 @@ export default async function CarbonFootprintHero({
             baseline: the negative margins bring the title and the pill
             visually as close to it as they are to each other. */}
           <div className="-mt-2 -mb-2 flex items-baseline-last gap-x-2.5 gap-y-1 md:flex-wrap md:gap-x-3.5">
-            <p className="text-primary-700 mb-0 text-[clamp(3.6rem,6vw,4.5rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
+            <p
+              data-testid="carbon-footprint-value"
+              className="text-primary-700 mb-0 text-[clamp(3.6rem,6vw,4.5rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
               {formattedValue}
             </p>
 
