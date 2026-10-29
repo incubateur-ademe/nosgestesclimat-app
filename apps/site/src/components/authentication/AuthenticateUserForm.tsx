@@ -11,15 +11,17 @@ import { useLogin } from './_hooks/useLogin'
 import SendVerificationCodeForm from './authenticateUserForm/SendVerificationCodeForm'
 import VerifyCodeForm from './authenticateUserForm/VerifyCodeForm'
 import { AuthProvider, useAuth } from './AuthProvider'
-import type { OnAuthComplete, Tracker } from './types'
+import type { OnAuthComplete, RedirectTarget, Tracker } from './types'
 
 interface Props {
   buttonLabel?: string | ReactNode
   buttonColor?: ButtonColor
   inputLabel?: ReactNode | string
   mode?: AuthenticationMode
-  redirectPathname?: string
+  /** Path to navigate to once authenticated, or a Server Action resolving it. */
+  redirectTo?: RedirectTarget
   additionnalButton?: ReactNode
+  /** Side effects run once authenticated. Navigation belongs to `redirectTo`. */
   onComplete?: OnAuthComplete
   required?: boolean
   tracker?: Tracker
@@ -35,7 +37,7 @@ export default function AuthenticateUserForm({
   buttonColor = 'primary',
   additionnalButton,
   inputLabel,
-  redirectPathname,
+  redirectTo,
   mode,
   onComplete,
   required = true,
@@ -56,7 +58,7 @@ export default function AuthenticateUserForm({
     <AuthProvider
       verify={verify}
       mode={mode}
-      redirectPathname={redirectPathname}
+      redirectTo={redirectTo}
       onComplete={onComplete}
       tracker={tracker}>
       <AuthenticateUserFormContent

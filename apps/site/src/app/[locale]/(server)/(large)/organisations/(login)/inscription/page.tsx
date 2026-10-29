@@ -8,11 +8,12 @@ import Separator from '@/design-system/layout/Separator'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
 import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
-import { getUserOrganisation } from '@/helpers/server/model/organisations'
 import type { Locale } from '@/i18nConfig'
 import { getUserSession } from '@/services/auth/get-user-session'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+
+import { getRedirectPathAfterLogin } from '../_action/getRedirectPathAfterLoginAction'
 
 export async function generateMetadata({
   params,
@@ -25,14 +26,6 @@ export async function generateMetadata({
       canonical: '/organisations/inscription',
     }),
   }
-}
-
-async function getRedirectPathAfterLogin(): Promise<string> {
-  'use server'
-  const organisation = await getUserOrganisation()
-  return organisation
-    ? `/organisations/${organisation.slug}`
-    : '/organisations/creer'
 }
 
 /* global PageProps */
@@ -77,7 +70,7 @@ export default async function Page() {
             />
             <AuthenticateUserForm
               intent="create-organisation"
-              onComplete={getRedirectPathAfterLogin}
+              redirectTo={getRedirectPathAfterLogin}
               tracker={captureOrganisationsLoginComplete}
               buttonLabel={t(
                 'organisations.inscription.cta',

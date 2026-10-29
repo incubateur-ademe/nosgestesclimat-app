@@ -58,7 +58,7 @@ export default async function Connexion({ searchParams }: DefaultPageProps) {
             <AuthenticateUserForm
               intent="create-account"
               mode="signIn"
-              redirectPathname={redirectPathname}
+              redirectTo={redirectPathname}
               tracker={captureLoginComplete}
               buttonLabel={labels.buttonLabel}
             />

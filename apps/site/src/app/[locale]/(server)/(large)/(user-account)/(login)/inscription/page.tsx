@@ -59,7 +59,7 @@ export default async function Connexion({ searchParams }: DefaultPageProps) {
               intent="create-account"
               mode="signUp"
               buttonLabel={labels.buttonLabel}
-              redirectPathname={redirectPathname}
+              redirectTo={redirectPathname}
               tracker={captureSignupComplete}
             />
           </UserProvider>

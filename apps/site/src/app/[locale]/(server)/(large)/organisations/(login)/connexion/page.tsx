@@ -6,18 +6,10 @@ import { SIGNIN_MODE } from '@/constants/authentication/modes'
 import { captureOrganisationsLoginComplete } from '@/constants/tracking/trackers'
 import Separator from '@/design-system/layout/Separator'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
-
-import { getUserOrganisation } from '@/helpers/server/model/organisations'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { redirect } from 'next/navigation'
 
-async function getRedirectPathAfterLogin(): Promise<string> {
-  'use server'
-  const organisation = await getUserOrganisation()
-  return organisation
-    ? `/organisations/${organisation.slug}`
-    : '/organisations/creer'
-}
+import { getRedirectPathAfterLogin } from '../_action/getRedirectPathAfterLoginAction'
 
 export default async function Page() {
   if ((await getUserSession())?.isAuth) {
@@ -60,7 +52,7 @@ export default async function Page() {
             />
             <AuthenticateUserForm
               intent="create-organisation"
-              onComplete={getRedirectPathAfterLogin}
+              redirectTo={getRedirectPathAfterLogin}
               tracker={captureOrganisationsLoginComplete}
             />
           </div>

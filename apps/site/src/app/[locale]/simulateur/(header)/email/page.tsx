@@ -127,7 +127,7 @@ export default async function Email({
                 <Trans i18nKey="common.skip">Passer</Trans>
               </ButtonLink>
             }
-            redirectPathname={
+            redirectTo={
               hasContest
                 ? `${EMAIL_SIMULATOR_PATH}?confirm=true`
                 : END_PAGE_PATH

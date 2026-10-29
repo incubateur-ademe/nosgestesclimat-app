@@ -15,6 +15,7 @@ import type {
   AuthEvent,
   AuthPhase,
   OnAuthComplete,
+  RedirectTarget,
   Tracker,
   VerifyStrategy,
 } from '../types'
@@ -59,7 +60,7 @@ function useCompletionEffect(
   state: AuthPhase,
   options: {
     onComplete?: OnAuthComplete
-    redirectPathname?: string
+    redirectTo?: RedirectTarget
     tracker?: Tracker
   }
 ) {
@@ -88,9 +89,17 @@ function useCompletionEffect(
           userId: authenticatedUserId,
         })
 
-        if (options.redirectPathname) {
+        const destination =
+          typeof options.redirectTo === 'function'
+            ? await options.redirectTo({
+                email: authenticatedEmail,
+                userId: authenticatedUserId,
+              })
+            : options.redirectTo
+
+        if (destination) {
           // A new document request is required for the proxy to derive the session.
-          window.location.assign(options.redirectPathname)
+          window.location.assign(destination)
         }
       } catch (error) {
         logger.error(toError(error))
@@ -103,7 +112,7 @@ function useCompletionEffect(
     options.tracker,
     cookieState,
     options.onComplete,
-    options.redirectPathname,
+    options.redirectTo,
   ])
 }
 
@@ -112,7 +121,7 @@ interface UseAuthEffectsOptions {
   dispatch: Dispatch<AuthEvent>
   verify: VerifyStrategy
   onComplete?: OnAuthComplete
-  redirectPathname?: string
+  redirectTo?: RedirectTarget
   tracker?: Tracker
 }
 
@@ -121,9 +130,9 @@ export function useAuthEffects({
   dispatch,
   verify,
   onComplete,
-  redirectPathname,
+  redirectTo,
   tracker,
 }: UseAuthEffectsOptions) {
   useVerifyEffect(state, dispatch, verify)
-  useCompletionEffect(state, { onComplete, redirectPathname, tracker })
+  useCompletionEffect(state, { onComplete, redirectTo, tracker })
 }
