@@ -231,6 +231,15 @@ export async function softDeleteUser(
     },
   })
 
+  await session.simulation.updateMany({
+    where: {
+      userId,
+    },
+    data: {
+      userId: null,
+    },
+  })
+
   await session.user.updateMany({
     where: {
       id: userId,
