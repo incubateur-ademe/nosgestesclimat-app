@@ -5,7 +5,6 @@ import ShareIcon from '@/components/icons/ShareIcon'
 import CheckIcon from '@/components/icons/status/CheckIcon'
 import Trans from '@/components/translation/trans/TransClient'
 import { cn } from 'cn'
-import getIsMobile from 'is-mobile'
 import { type ReactNode, useState } from 'react'
 import Button from '../buttons/Button'
 import ButtonLink from '../buttons/ButtonLink'
@@ -48,8 +47,6 @@ export default function Share({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const isMobile = getIsMobile()
-
   return (
     <>
       <Button
@@ -67,9 +64,7 @@ export default function Share({
           setIsModalOpen(true)
         }}
         aria-label={buttonLabel}>
-        <ShareIcon
-          className={cn('fill-primary-700 mr-[1px] h-[28px] w-[28px]')}
-        />
+        <ShareIcon className={cn('fill-primary-700 mr-px h-7 w-7')} />
 
         <span
           className={cn(
@@ -117,24 +112,24 @@ export default function Share({
                 </CopyButton>
               </li>
 
-              {shareItems.map(({ label, icon, link, mobileOnly }, index) =>
-                mobileOnly && !isMobile ? null : (
-                  <li key={link} className="w-full">
-                    <ButtonLink
-                      data-testid={`share-button-link-${index}`}
-                      className="max-h-10 w-full text-sm!"
-                      variant="outlined"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={link}>
-                      <span className="flex items-center gap-2">
-                        {label}
-                        {icon}
-                      </span>
-                    </ButtonLink>
-                  </li>
-                )
-              )}
+              {shareItems.map(({ label, icon, link, mobileOnly }, index) => (
+                <li
+                  key={link}
+                  className={cn('w-full', mobileOnly && 'block md:hidden')}>
+                  <ButtonLink
+                    data-testid={`share-button-link-${index}`}
+                    className="max-h-10 w-full text-sm!"
+                    variant="outlined"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={link}>
+                    <span className="flex items-center gap-2">
+                      {label}
+                      {icon}
+                    </span>
+                  </ButtonLink>
+                </li>
+              ))}
             </ul>
           </DialogContent>
         </Dialog>
