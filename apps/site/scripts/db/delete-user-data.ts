@@ -1,7 +1,7 @@
 import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
 import { getUser } from '@nosgestesclimat/core/features/users/services/get-user.service'
 import { parseArgs } from 'node:util'
-import _logger from '../src/logger.ts'
+import _logger from '../../../server/src/logger'
 
 async function deleteUserData(userId: string, isDryMode: boolean) {
   const logger = _logger.child({
