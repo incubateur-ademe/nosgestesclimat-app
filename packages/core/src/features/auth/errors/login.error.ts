@@ -1,4 +1,5 @@
 import { DomainError } from '../../../lib/errors.ts'
+import type { UserAlreadyDeletedError } from '../../users/errors/user-already-deleted.ts'
 
 export class InvalidVerificationCodeError extends DomainError<'invalid_verification_code'> {
   constructor() {
@@ -6,4 +7,4 @@ export class InvalidVerificationCodeError extends DomainError<'invalid_verificat
   }
 }
 
-export type LoginError = InvalidVerificationCodeError
+export type LoginError = InvalidVerificationCodeError | UserAlreadyDeletedError
