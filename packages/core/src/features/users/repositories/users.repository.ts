@@ -1,5 +1,7 @@
+import { failure, type Failure } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
+import { UserAlreadyDeletedError } from '../errors/user-already-deleted.ts'
 import type {
   NewUser,
   NewVerifiedUser,
@@ -133,15 +135,15 @@ export const findVerifiedUserByEmail = async (
 export async function createOrUpdateUser(
   user: NewVerifiedUser | VerifiedUser,
   options?: { session?: Transaction }
-): Promise<VerifiedUser>
+): Promise<VerifiedUser | Failure<UserAlreadyDeletedError>>
 export async function createOrUpdateUser(
   user: NewUser | User,
   options?: { session?: Transaction }
-): Promise<User>
+): Promise<User | Failure<UserAlreadyDeletedError>>
 export async function createOrUpdateUser(
   user: NewUser | User,
   { session = prisma }: { session?: Transaction } = {}
-): Promise<User> {
+): Promise<User | Failure<UserAlreadyDeletedError>> {
   const existingUser = await session.user.findUnique({
     where: {
       id: user.id,
@@ -157,7 +159,12 @@ export async function createOrUpdateUser(
   })
 
   if (existingUser?.deletedAt) {
-    throw new Error(`Cannot update soft-deleted user ${user.id}`)
+    return failure(
+      new UserAlreadyDeletedError({
+        message: `Cannot update soft-deleted user ${user.id}`,
+        userId: user.id,
+      })
+    )
   }
 
   const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email

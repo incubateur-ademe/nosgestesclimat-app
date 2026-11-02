@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { UserAlreadyDeletedError } from '../../errors/user-already-deleted.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import {
   createOrUpdateUser,
@@ -397,8 +398,11 @@ describe('createOrUpdateUser', () => {
       data: { deletedAt: new Date() },
     })
 
-    await expect(
-      createOrUpdateUser({ type: 'unverified', id: user.id })
-    ).rejects.toThrow(/soft-deleted/)
+    const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
+
+    expect(result.success).toBe(false)
+    expect(!result.success && result.error).toBeInstanceOf(
+      UserAlreadyDeletedError
+    )
   })
 })
