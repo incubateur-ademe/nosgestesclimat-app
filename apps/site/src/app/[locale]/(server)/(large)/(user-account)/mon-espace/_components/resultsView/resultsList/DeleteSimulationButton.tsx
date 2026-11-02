@@ -41,13 +41,7 @@ export function DeleteButtonWithConfirmModal({
   }
 
   return (
-    <Dialog
-      open={isModalOpen}
-      onOpenChange={(open) => {
-        if (!isPending) {
-          setIsModalOpen(open)
-        }
-      }}>
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogTrigger asChild>
         <Button variant="link" color="red" className="font-normal">
           <Trans i18nKey="mySpace.resultList.item.delete.mainButton.label">

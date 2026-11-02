@@ -13,7 +13,7 @@ import { organisationFactory } from '../../../organisations/factories/organisati
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { findUserById } from '../../repositories/users.repository.ts'
-import { deleteUser } from '../delete-user.service.ts'
+import { createDeleteUser } from '../delete-user.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn().mockResolvedValue(success())
@@ -21,6 +21,8 @@ const addOrUpdateContact = vi.fn().mockResolvedValue(success())
 const origin = 'https://nosgestesclimat.test'
 
 describe('deleteUser', () => {
+  const deleteUser = createDeleteUser({ logger })
+
   const login = createLogin({
     logger,
     sendEmail,

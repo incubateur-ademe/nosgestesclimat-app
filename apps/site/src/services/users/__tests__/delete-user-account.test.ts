@@ -1,9 +1,10 @@
 import { serverLoggerMock } from '@/helpers/tests/mockLogger'
 import { getUserSession } from '@/services/auth/get-user-session'
 import { faker } from '@faker-js/faker'
-import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
 import { describe, it, vi } from 'vitest'
 import { deleteUserAccount } from '../delete-user-account'
+
+const { deleteUserMock } = vi.hoisted(() => ({ deleteUserMock: vi.fn() }))
 
 describe('deleteUserAccount', () => {
   beforeEach(() => {
@@ -29,12 +30,10 @@ describe('deleteUserAccount', () => {
       isAuth: true,
       email: faker.internet.email(),
     })
-    vi.mocked(deleteUser).mockImplementation(
-      async () => await Promise.resolve(undefined)
-    )
+    deleteUserMock.mockResolvedValueOnce(undefined)
 
     await expect(deleteUserAccount()).resolves.toBeUndefined()
-    expect(deleteUser).toHaveBeenCalledWith(userId)
+    expect(deleteUserMock).toHaveBeenCalledWith(userId)
   })
   it('should propagate the error in case of a server error', async () => {
     vi.mocked(getUserSession).mockResolvedValue({
@@ -42,9 +41,7 @@ describe('deleteUserAccount', () => {
       isAuth: true,
       email: faker.internet.email(),
     })
-    vi.mocked(deleteUser).mockImplementation(() => {
-      throw new Error('Boom')
-    })
+    deleteUserMock.mockRejectedValueOnce(new Error('Boom'))
 
     await expect(deleteUserAccount()).rejects.toThrow('Boom')
   })
@@ -68,6 +65,6 @@ vi.mock('next/navigation', () => ({
 vi.mock(
   '@nosgestesclimat/core/features/users/services/delete-user.service',
   () => ({
-    deleteUser: vi.fn(),
+    createDeleteUser: vi.fn(() => deleteUserMock),
   })
 )
