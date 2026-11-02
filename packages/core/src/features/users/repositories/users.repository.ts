@@ -233,7 +233,7 @@ export async function createOrUpdateUser(
 
 export async function softDeleteUser(
   userId: string,
-  { session }: { session: Transaction }
+  { session }?: { session: Transaction } = { session: prisma }
 ) {
   await session.organisationAdministrator.deleteMany({
     where: { user: { is: { id: userId } } },

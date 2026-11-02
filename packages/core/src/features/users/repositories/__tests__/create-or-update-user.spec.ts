@@ -8,6 +8,7 @@ import {
   createOrUpdateUser,
   findUserById,
   findVerifiedUserByEmail,
+  softDeleteUser,
 } from '../users.repository.ts'
 
 const generateEmail = () => faker.internet.email().toLocaleLowerCase()
@@ -393,10 +394,8 @@ describe('createOrUpdateUser', () => {
 
   it('refuses to update a soft-deleted user', async () => {
     const user = await userFactory.create()
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { deletedAt: new Date() },
-    })
+
+    await softDeleteUser(user.id)
 
     const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
 
