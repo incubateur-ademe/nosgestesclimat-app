@@ -198,7 +198,7 @@ describe('login', () => {
       verifiedUser.id,
       'User@Example.com'
     )
-    expect(mocks.revalidatePath).toHaveBeenCalledWith('/', 'layout')
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/')
 
     expect(result).toEqual(success({ userId: verifiedUser.id }))
   })
@@ -228,7 +228,7 @@ describe('login', () => {
       verifiedUser.id,
       'user@example.com'
     )
-    expect(mocks.revalidatePath).toHaveBeenCalledWith('/', 'layout')
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/')
 
     expect(result).toEqual(success({ userId: verifiedUser.id }))
   })
