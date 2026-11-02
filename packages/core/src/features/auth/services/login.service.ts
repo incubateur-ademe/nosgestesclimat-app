@@ -89,13 +89,10 @@ export function createLogin({
         )
         if (!claimedCode.success) return claimedCode
 
-        const [existingVerifiedUser, rawSessionUser] = await Promise.all([
+        const [existingVerifiedUser, sessionUser] = await Promise.all([
           findVerifiedUserByEmail({ email }, { session }),
           sessionUserId ? findUserById(sessionUserId, { session }) : null,
         ])
-
-        // Guard preventing manipulating deleted user accounts
-        const sessionUser = rawSessionUser?.deletedAt ? null : rawSessionUser
 
         // The two identities the decision below is made for: each of its lines
         // carries them, flattened as `ngc.sessionUser.email`.
@@ -152,7 +149,7 @@ export function createLogin({
         // attached. Every other session (none, unfound, or already verified)
         // starts a fresh identity: a verified session user belongs to another
         // account, and reusing its id would map one id to several accounts.
-        const newUser = await createOrUpdateUser(
+        const result = await createOrUpdateUser(
           {
             type: 'verified',
             id:
@@ -164,15 +161,19 @@ export function createLogin({
           { session }
         )
 
+        if (!result.success) {
+          return result
+        }
+
         if (sessionUser?.type === 'verified') {
           decisionLogger.warn(
             'Sign-up with a fresh identity: the session user belongs to another verified account',
-            { signedUpUserId: newUser.id }
+            { signedUpUserId: result.data.id }
           )
         }
 
         return success({
-          user: newUser,
+          user: result.data,
           mode: 'signUp' as const,
           reconcileUserId: undefined,
         })

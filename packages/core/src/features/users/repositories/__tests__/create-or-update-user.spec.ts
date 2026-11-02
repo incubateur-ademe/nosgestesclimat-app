@@ -2,11 +2,13 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { UserAlreadyDeletedError } from '../../errors/user-already-deleted.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import {
   createOrUpdateUser,
   findUserById,
   findVerifiedUserByEmail,
+  softDeleteUser,
 } from '../users.repository.ts'
 
 const generateEmail = () => faker.internet.email().toLocaleLowerCase()
@@ -46,17 +48,21 @@ describe('createOrUpdateUser', () => {
     it('creates a bare unverified user, without a verified record', async () => {
       const id = faker.string.uuid()
 
-      const user = await createOrUpdateUser({ type: 'unverified', id })
+      const result = await createOrUpdateUser({ type: 'unverified', id })
 
-      expect(user).toEqual({
-        type: 'unverified',
-        id,
-        name: null,
-        email: null,
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
+      expect.assert(result.success)
+      expect(result).toEqual({
+        success: true,
+        data: {
+          type: 'unverified',
+          id,
+          name: null,
+          email: null,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        },
       })
-      expect(await findUserById(id)).toEqual(user)
+      expect(await findUserById(id)).toEqual(result.data)
       expect(await readUserEmailColumn(id)).toBeNull()
       expect(await countVerifiedRecords(id)).toBe(0)
     })
@@ -83,7 +89,7 @@ describe('createOrUpdateUser', () => {
       const telephone = faker.phone.number()
       const position = faker.person.jobTitle()
 
-      const user = await createOrUpdateUser({
+      const result = await createOrUpdateUser({
         type: 'verified',
         id,
         email,
@@ -93,19 +99,23 @@ describe('createOrUpdateUser', () => {
         optedInForCommunications: true,
       })
 
-      expect(user).toEqual({
-        type: 'verified',
-        id,
-        name,
-        email,
-        telephone,
-        position,
-        optedInForCommunications: true,
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
+      expect.assert(result.success)
+      expect(result).toEqual({
+        success: true,
+        data: {
+          type: 'verified',
+          id,
+          name,
+          email,
+          telephone,
+          position,
+          optedInForCommunications: true,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        },
       })
-      expect(await findUserById(id)).toEqual(user)
-      expect(await findVerifiedUserByEmail({ email })).toEqual(user)
+      expect(await findUserById(id)).toEqual(result.data)
+      expect(await findVerifiedUserByEmail({ email })).toEqual(result.data)
       expect(await countVerifiedRecords(id)).toBe(1)
       expect(await readUserEmailColumn(id)).toBe(email)
     })
@@ -114,18 +124,22 @@ describe('createOrUpdateUser', () => {
       const id = faker.string.uuid()
       const email = generateEmail()
 
-      const user = await createOrUpdateUser({ type: 'verified', id, email })
+      const result = await createOrUpdateUser({ type: 'verified', id, email })
 
-      expect(user).toMatchObject({
-        type: 'verified',
-        id,
-        email,
-        name: null,
-        telephone: null,
-        position: null,
-        optedInForCommunications: false,
+      expect.assert(result.success)
+      expect(result).toMatchObject({
+        data: {
+          type: 'verified',
+          id,
+          email,
+          name: null,
+          telephone: null,
+          position: null,
+          optedInForCommunications: false,
+        },
+        success: true,
       })
-      expect(await findVerifiedUserByEmail({ email })).toEqual(user)
+      expect(await findVerifiedUserByEmail({ email })).toEqual(result.data)
       expect(await readUserEmailColumn(id)).toBe(email)
     })
   })
@@ -392,13 +406,14 @@ describe('createOrUpdateUser', () => {
 
   it('refuses to update a soft-deleted user', async () => {
     const user = await userFactory.create()
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { deletedAt: new Date() },
-    })
 
-    await expect(
-      createOrUpdateUser({ type: 'unverified', id: user.id })
-    ).rejects.toThrow(/soft-deleted/)
+    await softDeleteUser(user.id)
+
+    const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
+
+    expect.assert(!result.success)
+    expect(!result.success && result.error).toBeInstanceOf(
+      UserAlreadyDeletedError
+    )
   })
 })
