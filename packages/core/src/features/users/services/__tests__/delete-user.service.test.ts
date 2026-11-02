@@ -8,19 +8,23 @@ import { refreshTokenFactory } from '../../../auth/factories/refresh-token.facto
 import { verificationCodeFactory } from '../../../auth/factories/verification-code.factory.ts'
 import { findAllRefreshTokenByUserId } from '../../../auth/repositories/refresh-token.repository.ts'
 import { createLogin } from '../../../auth/services/login.service.ts'
+import { createBrevoClient } from '../../../emails/brevo/client.ts'
+import { Attributes } from '../../../emails/email.constant.ts'
 import { groupFactory } from '../../../groups/factories/group.factory.ts'
 import { organisationFactory } from '../../../organisations/factories/organisation.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { findUserById } from '../../repositories/users.repository.ts'
-import { deleteUser } from '../delete-user.service.ts'
+import { createDeleteUser } from '../delete-user.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn().mockResolvedValue(success())
 const addOrUpdateContact = vi.fn().mockResolvedValue(success())
+const resetUserProperties = vi.fn().mockResolvedValue(success())
 const origin = 'https://nosgestesclimat.test'
 
 describe('deleteUser', () => {
+  const deleteUser = createDeleteUser({ resetUserProperties })
   const login = createLogin({
     logger,
     sendEmail,
@@ -31,6 +35,8 @@ describe('deleteUser', () => {
 
   afterEach(async () => {
     await emptyDatabase(prisma)
+    resetUserProperties.mockClear()
+    vi.unstubAllGlobals()
   })
 
   it('marks the user as deleted and keeps their entities', async () => {
@@ -76,6 +82,48 @@ describe('deleteUser', () => {
     expect(
       await prisma.groupParticipant.count({ where: { userId: user.id } })
     ).toBe(1)
+  })
+
+  it('clears the Brevo attributes of the deleted account', async () => {
+    const user = await userFactory.verified().create()
+
+    await deleteUser(user.id)
+
+    expect(resetUserProperties).toHaveBeenCalledExactlyOnceWith({
+      email: user.email,
+    })
+  })
+
+  it('sends every known Brevo attribute as null for the deleted account', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const brevoClient = createBrevoClient({
+      url: 'https://brevo.test',
+      apiKey: 'test-api-key',
+    })
+    const deleteUserWithBrevo = createDeleteUser({
+      resetUserProperties: brevoClient.resetUserProperties,
+    })
+
+    const user = await userFactory.verified().create()
+
+    await deleteUserWithBrevo(user.id)
+
+    expect(fetchMock).toHaveBeenCalledOnce()
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+
+    expect(url).toBe(
+      `https://brevo.test/v3/contacts/${encodeURIComponent(user.email)}`
+    )
+    expect(init.method).toBe('PUT')
+    // A null value is how Brevo clears an attribute, whatever its type.
+    expect(JSON.parse(init.body as string)).toEqual({
+      attributes: Object.fromEntries(
+        Object.values(Attributes).map((attribute) => [attribute, null])
+      ),
+    })
   })
 
   it('starts a new identity when a deleted account signs up with the same email', async () => {
@@ -124,5 +172,6 @@ describe('deleteUser', () => {
 
   it('fails silently when deleting an unknown user', async () => {
     await expect(deleteUser(faker.string.uuid())).resolves.toBeUndefined()
+    expect(resetUserProperties).not.toHaveBeenCalled()
   })
 })

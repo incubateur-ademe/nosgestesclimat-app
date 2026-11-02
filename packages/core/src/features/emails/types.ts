@@ -20,3 +20,7 @@ export type AddOrUpdateContact = (params: {
   attributes: ContactAttributes
   listIds?: ListIds[]
 }) => Promise<Result<void, EmailRequestError>>
+
+export type ResetUserProperties = (params: {
+  email: string
+}) => Promise<Result<void, EmailRequestError>>

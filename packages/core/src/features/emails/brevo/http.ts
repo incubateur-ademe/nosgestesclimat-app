@@ -19,7 +19,8 @@ const isRetryableError = (error: unknown) =>
   (error instanceof Error &&
     (error.name === 'TimeoutError' || error.name === 'AbortError'))
 
-export const createPost =
+const createRequest =
+  (method: 'POST' | 'PUT') =>
   ({ url, apiKey }: BrevoConfig) =>
   async (
     path: string,
@@ -36,7 +37,7 @@ export const createPost =
 
       try {
         response = await fetch(endpoint, {
-          method: 'POST',
+          method,
           headers: {
             'api-key': apiKey,
             'content-type': 'application/json',
@@ -77,3 +78,7 @@ export const createPost =
       )
     }
   }
+
+export const createPost = createRequest('POST')
+
+export const createPut = createRequest('PUT')
