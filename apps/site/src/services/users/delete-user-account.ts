@@ -3,6 +3,7 @@ import logger from '@/logger/logger.server'
 import { createDeleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
 import { forbidden, unauthorized } from 'next/navigation'
 import { getUserSession } from '../auth/get-user-session'
+import { logout } from '../auth/logout'
 
 export async function deleteUserAccount() {
   return await logger.withSpan(
@@ -21,6 +22,8 @@ export async function deleteUserAccount() {
       const deleteUser = createDeleteUser({ logger })
 
       await deleteUser(session.id)
+
+      await logout()
     }
   )()
 }
