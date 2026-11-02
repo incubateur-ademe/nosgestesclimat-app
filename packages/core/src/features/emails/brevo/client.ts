@@ -1,10 +1,5 @@
-import { Attributes } from '../email.constant.ts'
-import type {
-  AddOrUpdateContact,
-  ResetUserProperties,
-  SendEmail,
-} from '../types.ts'
-import { createPost, createPut } from './http.ts'
+import type { AddOrUpdateContact, SendEmail } from '../types.ts'
+import { createPost } from './http.ts'
 import type { BrevoConfig } from './types.ts'
 
 export const createBrevoClient = (
@@ -12,10 +7,8 @@ export const createBrevoClient = (
 ): {
   sendEmail: SendEmail
   addOrUpdateContact: AddOrUpdateContact
-  resetUserProperties: ResetUserProperties
 } => {
   const post = createPost(config)
-  const put = createPut(config)
 
   const sendEmail: SendEmail = ({ email, templateId, params }) =>
     post(
@@ -53,17 +46,8 @@ export const createBrevoClient = (
       updateEnabled: true,
     })
 
-  const resetUserProperties: ResetUserProperties = ({ email }) =>
-    put(`/v3/contacts/${encodeURIComponent(email)}`, {
-      // Brevo clears an attribute value when it is set to null.
-      attributes: Object.fromEntries(
-        Object.values(Attributes).map((attribute) => [attribute, null])
-      ),
-    })
-
   return {
     sendEmail,
     addOrUpdateContact,
-    resetUserProperties,
   }
 }
