@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
+import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
+import { commitToAction } from '../../../actions/services/commit-to-action.service.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { createReconcileSimulationsAfterLogin } from '../reconcile-simulations-after-login.service.ts'
@@ -27,38 +29,12 @@ const createGroupParticipant = ({
     select: { userId: true },
   })
 
-const createActionChoice = ({
-  userId,
-  actionId,
-  type = 'committed',
-}: {
-  userId: string
-  actionId: string
-  type?: 'committed' | 'rejected'
-}) =>
-  prisma.actionChoice.create({
-    data: { userId, actionId, type },
-    select: { userId: true, actionId: true, type: true },
-  })
-
 const logger = createTestLogger()
 
 describe('reconcileSimulationsAfterLogin', () => {
   afterEach(async () => {
     vi.clearAllMocks()
-    await Promise.all([
-      prisma.simulationPoll.deleteMany(),
-      prisma.groupParticipant.deleteMany(),
-      prisma.groupAdministrator.deleteMany(),
-      prisma.actionChoice.deleteMany(),
-      prisma.simulation.deleteMany(),
-    ])
-    await Promise.all([
-      prisma.verifiedUser.deleteMany(),
-      prisma.group.deleteMany(),
-      prisma.action.deleteMany(),
-      prisma.user.deleteMany(),
-    ])
+    await emptyDatabase(prisma)
   })
 
   describe('Given the session userId is already the verified user id', () => {
@@ -70,7 +46,7 @@ describe('reconcileSimulationsAfterLogin', () => {
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: user.id,
-        previousUserId: user.id,
+        preExistingUserId: user.id,
       })
 
       const simulations = await prisma.simulation.findMany({
@@ -90,7 +66,7 @@ describe('reconcileSimulationsAfterLogin', () => {
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: user.id,
-        previousUserId: faker.string.uuid(),
+        preExistingUserId: faker.string.uuid(),
       })
 
       expect(
@@ -112,7 +88,7 @@ describe('reconcileSimulationsAfterLogin', () => {
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
-        previousUserId: anonymousUser.id,
+        preExistingUserId: anonymousUser.id,
       })
 
       const simulations = await prisma.simulation.findMany({
@@ -130,7 +106,7 @@ describe('reconcileSimulationsAfterLogin', () => {
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
-        previousUserId: anonymousUser.id,
+        preExistingUserId: anonymousUser.id,
       })
 
       expect(
@@ -150,14 +126,14 @@ describe('reconcileSimulationsAfterLogin', () => {
       const anonymousUser = await userFactory.create()
       const action = await actionFactory.create()
 
-      await createActionChoice({
+      await commitToAction({
         userId: anonymousUser.id,
         actionId: action.id,
       })
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
-        previousUserId: anonymousUser.id,
+        preExistingUserId: anonymousUser.id,
       })
 
       expect(
@@ -177,21 +153,19 @@ describe('reconcileSimulationsAfterLogin', () => {
       const action = await actionFactory.create()
 
       await Promise.all([
-        createActionChoice({
+        commitToAction({
           userId: verifiedUser.id,
           actionId: action.id,
-          type: 'rejected',
         }),
-        createActionChoice({
+        commitToAction({
           userId: anonymousUser.id,
           actionId: action.id,
-          type: 'committed',
         }),
       ])
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
-        previousUserId: anonymousUser.id,
+        preExistingUserId: anonymousUser.id,
       })
 
       expect(
@@ -199,7 +173,7 @@ describe('reconcileSimulationsAfterLogin', () => {
           where: { userId: verifiedUser.id },
           select: { actionId: true, type: true },
         })
-      ).toEqual([{ actionId: action.id, type: 'rejected' }])
+      ).toEqual([{ actionId: action.id, type: 'committed' }])
     })
   })
 
@@ -219,7 +193,7 @@ describe('reconcileSimulationsAfterLogin', () => {
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
-        previousUserId: anonymousUser.id,
+        preExistingUserId: anonymousUser.id,
       })
 
       const participants = await prisma.groupParticipant.findMany({
@@ -255,7 +229,7 @@ describe('reconcileSimulationsAfterLogin', () => {
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
-        previousUserId: anonymousUser.id,
+        preExistingUserId: anonymousUser.id,
       })
 
       const participants = await prisma.groupParticipant.findMany({

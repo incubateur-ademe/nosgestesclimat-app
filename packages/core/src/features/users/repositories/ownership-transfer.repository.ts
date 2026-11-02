@@ -245,19 +245,19 @@ export const transferOwnershipToUser = async (
  * the signIn login path where the anonymous user may not have an email set.
  */
 export const transferSimulationsFromUser = async (
-  { userId, previousUserId }: { userId: string; previousUserId: string },
+  { userId, preExistingUserId }: { userId: string; preExistingUserId: string },
   { session }: { session: Transaction }
 ) => {
-  if (previousUserId === userId) {
+  if (preExistingUserId === userId) {
     return
   }
 
-  const previousUser = await session.user.findUnique({
-    where: { id: previousUserId },
+  const preExistingUser = await session.user.findUnique({
+    where: { id: preExistingUserId },
     select: { id: true },
   })
 
-  if (!previousUser) {
+  if (!preExistingUser) {
     return
   }
 
@@ -271,7 +271,7 @@ export const transferSimulationsFromUser = async (
         (participants) => new Set(participants.map(({ groupId }) => groupId))
       ),
     session.simulation.updateMany({
-      where: { userId: previousUserId },
+      where: { userId: preExistingUserId },
       data: {
         userId,
       },
@@ -280,13 +280,13 @@ export const transferSimulationsFromUser = async (
 
   await session.groupParticipant.deleteMany({
     where: {
-      userId: previousUserId,
+      userId: preExistingUserId,
       groupId: { in: Array.from(targetGroupIds) },
     },
   })
 
   await session.groupParticipant.updateMany({
-    where: { userId: previousUserId },
+    where: { userId: preExistingUserId },
     data: { userId },
   })
 
@@ -303,17 +303,17 @@ export const transferSimulationsFromUser = async (
 
   await session.actionChoice.deleteMany({
     where: {
-      userId: previousUserId,
+      userId: preExistingUserId,
       actionId: { in: Array.from(targetActionIds) },
     },
   })
 
   await session.actionChoice.updateMany({
-    where: { userId: previousUserId },
+    where: { userId: preExistingUserId },
     data: { userId },
   })
 
   await session.user.deleteMany({
-    where: { id: previousUserId },
+    where: { id: preExistingUserId },
   })
 }
