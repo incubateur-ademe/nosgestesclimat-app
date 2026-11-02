@@ -7,15 +7,7 @@
  * the only reliable source for those rows.
  */
 
-import { execFileSync } from 'node:child_process'
-
 const MODEL_PACKAGE = '@incubateur-ademe/nosgestesclimat'
-const PACKAGE_FILES = [
-  'package.json',
-  'apps/site/package.json',
-  'apps/server/package.json',
-  'packages/core/package.json',
-]
 // A literal NUL cannot be passed as part of an execFile argument.
 const COMMIT_MARKER = '@@MODEL_PACKAGE_COMMIT@@'
 const VERSION_RE = /\d+\.\d+\.\d+(?:-[\w.]+)?/
@@ -25,6 +17,41 @@ export type PackageVersionHistoryEntry = {
   date: string
   version: string
 }
+
+/**
+ * Snapshot generated from the git history of the model dependency.
+ *
+ * One-off containers do not contain `.git`, so the job cannot inspect the
+ * repository at runtime. Keep this table in sync when the model dependency
+ * is upgraded. The dates are the first day on which the version was declared
+ * by the application.
+ */
+export const PACKAGE_VERSION_HISTORY: PackageVersionHistoryEntry[] = [
+  { date: '2026-01-08', version: '4.7.0' },
+  { date: '2026-01-20', version: '4.8.1' },
+  { date: '2026-02-12', version: '4.9.0' },
+  { date: '2026-02-19', version: '4.9.1' },
+  { date: '2026-03-18', version: '4.10.0' },
+  { date: '2026-03-31', version: '4.10.1' },
+  { date: '2026-04-01', version: '4.10.2' },
+  { date: '2026-04-14', version: '4.10.3' },
+  { date: '2026-04-21', version: '4.10.5' },
+  { date: '2026-05-22', version: '4.12.2' },
+  { date: '2026-05-27', version: '4.12.4' },
+  { date: '2026-06-04', version: '4.13.0-rc.2' },
+  { date: '2026-06-29', version: '4.13.1' },
+  { date: '2026-07-09', version: '4.14.0' },
+  { date: '2026-08-03', version: '4.14.1' },
+  { date: '2026-08-04', version: '4.14.2' },
+  { date: '2026-08-20', version: '4.14.5' },
+  { date: '2026-08-25', version: '4.15.0' },
+  { date: '2026-08-27', version: '4.15.1' },
+  { date: '2026-09-02', version: '4.16.1' },
+  { date: '2026-09-22', version: '4.17.0' },
+  { date: '2026-09-28', version: '4.17.1' },
+  { date: '2026-10-07', version: '4.17.2' },
+  { date: '2026-10-15', version: '4.17.3' },
+]
 
 /**
  * Extracts the model version from an added dependency line in a git patch.
@@ -59,55 +86,6 @@ export const parsePackageVersionHistory = (
   return entries
 }
 
-const gitRoot = (): string => {
-  try {
-    return execFileSync('git', ['rev-parse', '--show-toplevel'], {
-      encoding: 'utf8',
-    }).trim()
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    throw new Error(
-      `Cannot resolve a 0.0.0 model version: git repository is unavailable (${message}).`
-    )
-  }
-}
-
-/**
- * Reads the model dependency changes in the package.json history.
- *
- * The history is loaded once because a month can contain many `0.0.0`
- * simulations.
- */
-export const loadPackageVersionHistory = (): PackageVersionHistoryEntry[] => {
-  const root = gitRoot()
-  try {
-    const log = execFileSync(
-      'git',
-      [
-        'log',
-        '--reverse',
-        '--date=iso-strict',
-        `--format=${COMMIT_MARKER}%H%x09%cI`,
-        '-p',
-        `-G"${MODEL_PACKAGE}"`,
-        '--',
-        ...PACKAGE_FILES,
-      ],
-      { cwd: root, encoding: 'utf8', maxBuffer: 2 * 1024 * 1024 }
-    )
-    const history = parsePackageVersionHistory(log)
-    if (history.length === 0) {
-      throw new Error(
-        `no "${MODEL_PACKAGE}" dependency change was found in package.json history`
-      )
-    }
-    return history.sort((a, b) => a.date.localeCompare(b.date))
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    throw new Error(`Cannot read package.json git history: ${message}`)
-  }
-}
-
 const dateOnly = (value: string): string => value.slice(0, 10)
 
 /**
@@ -131,9 +109,9 @@ export const resolvePackageVersionAtDate = (
 
 let packageVersionHistory: PackageVersionHistoryEntry[] | null = null
 
-/** Resolves a version using the cached package.json git history. */
+/** Resolves a version using the cached package.json history snapshot. */
 export const resolvePackageVersion = (simulationDate: string): string => {
-  packageVersionHistory ??= loadPackageVersionHistory()
+  packageVersionHistory ??= PACKAGE_VERSION_HISTORY
   const version = resolvePackageVersionAtDate(
     simulationDate,
     packageVersionHistory

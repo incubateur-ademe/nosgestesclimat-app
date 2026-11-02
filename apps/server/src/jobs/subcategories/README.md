@@ -105,8 +105,10 @@ otherwise be lost without an error.
   (`lib/model-rules.ts`), with 4 attempts and a bucket cache fallback. An
   isolated `ECONNRESET` does not lose a simulation.
 - **Legacy `0.0.0` models**: when a simulation has `0.0.0`, the job resolves
-  the model package version from the dated git history of `package.json`.
-  Therefore the job must run from a checkout containing that history.
+  the model package version from the versioned snapshot of the dated git
+  history of `package.json` (`lib/model-version-history.ts`). One-off
+  containers do not contain `.git`, so the snapshot must be updated when the
+  model dependency is upgraded.
 - **Memory**: ~45 MB RSS per Publicodes engine, cached per version without
   eviction. Over a month (≤ 9 versions in practice) this stays below ~500 MB; on
   a long period, run month by month. Size **L** is enough.

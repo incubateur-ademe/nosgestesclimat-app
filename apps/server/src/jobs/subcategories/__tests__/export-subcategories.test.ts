@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  PACKAGE_VERSION_HISTORY,
   parseModelPackageVersion,
   parsePackageVersionHistory,
   resolvePackageVersionAtDate,
@@ -133,6 +134,24 @@ describe('getVersionFromModel', () => {
       expect(resolvePackageVersionAtDate('2026-02-01', history)).toBeNull()
       expect(resolvePackageVersionAtDate('2026-03-15', history)).toBe('4.9.1')
       expect(resolvePackageVersionAtDate('2026-04-02', history)).toBe('4.10.0')
+    })
+
+    it('resolves February simulations without a git checkout', () => {
+      expect(
+        resolvePackageVersionAtDate('2026-02-01', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.8.1')
+      expect(
+        resolvePackageVersionAtDate('2026-02-15', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.9.0')
+      expect(
+        resolvePackageVersionAtDate('2026-02-20', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.9.1')
+      expect(
+        resolvePackageVersionAtDate('2026-03-30', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.10.0')
+      expect(
+        resolvePackageVersionAtDate('2026-03-31', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.10.1')
     })
   })
 })
