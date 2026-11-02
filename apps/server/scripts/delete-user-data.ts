@@ -1,16 +1,20 @@
 import { deleteUser } from '@nosgestesclimat/core/features/users/services/delete-user.service'
 import { getUser } from '@nosgestesclimat/core/features/users/services/get-user.service'
 import { parseArgs } from 'node:util'
-import logger from '../src/logger.ts'
+import _logger from '../src/logger.ts'
 
 async function deleteUserData(userId: string, isDryMode: boolean) {
+  const logger = _logger.child({
+    scope: 'action.scripts.delete_user_data',
+    userId,
+  })
   if (isDryMode) {
     try {
       const user = await getUser({ userId })
       if (!user) throw new Error('Dry mode enabled: an error happened')
 
-      logger.info('Dry mode enabled: user found', { userId })
-      logger.info('Dry mode enabled: user not deleted', { userId })
+      logger.info('Dry mode enabled: user found')
+      logger.info('Dry mode enabled: user not deleted')
     } catch (error: unknown) {
       logger.error('Dry mode enabled: an error happened ', error)
     }
@@ -21,7 +25,7 @@ async function deleteUserData(userId: string, isDryMode: boolean) {
   })
   try {
     await deleteUser(userId)
-    logger.info('Dry mode disabled: user deleted', { userId })
+    logger.info('Dry mode disabled: user deleted')
   } catch (error) {
     logger.error(
       'Dry mode disabled: an error happened when trying to delete user',
