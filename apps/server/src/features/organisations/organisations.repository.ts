@@ -12,7 +12,6 @@ import {
   defaultPollSelection,
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
-import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import type { PaginationQuery } from '../../core/pagination.ts'
 import type { PartialVerifiedUser } from '../../core/types/user.ts'
 import { createOrUpdateUser } from '../users/users.repository.ts'
@@ -152,7 +151,7 @@ export const createOrganisationAndAdministrator = async (
   { id, email }: PartialVerifiedUser,
   { session }: { session: Session }
 ) => {
-  const administratorResult = await createOrUpdateUser(
+  const administrator = await createOrUpdateUser(
     {
       type: 'verified',
       id,
@@ -164,12 +163,6 @@ export const createOrganisationAndAdministrator = async (
     },
     { session }
   )
-
-  if (!administratorResult.success) {
-    throw new ForbiddenException('Forbidden ! User account has been deleted.')
-  }
-
-  const administrator = administratorResult.data
 
   const slug = await findUniqueOrganisationSlug(name, {
     session,
@@ -237,7 +230,7 @@ export const updateAdministratorOrganisation = async (
       },
     ] = administrators
 
-    const administratorResult = await createOrUpdateUser(
+    administrator = await createOrUpdateUser(
       {
         type: 'verified',
         id: user.id,
@@ -249,12 +242,6 @@ export const updateAdministratorOrganisation = async (
       },
       { session }
     )
-
-    if (!administratorResult.success) {
-      throw new ForbiddenException('Forbidden ! User account has been deleted.')
-    }
-
-    administrator = administratorResult.data
 
     if (email) {
       user.email = email

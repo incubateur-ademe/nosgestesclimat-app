@@ -130,7 +130,7 @@ export const updateUserAndContact = async ({
 
       // A verified account is updated as one aggregate: the user together
       // with its verified record, the email being the record's final email.
-      const userResult = await createOrUpdateUser(
+      const user = await createOrUpdateUser(
         verifiedUser
           ? {
               type: 'verified',
@@ -146,14 +146,8 @@ export const updateUserAndContact = async ({
         { session }
       )
 
-      if (!userResult.success) {
-        throw new ForbiddenException(
-          'Forbidden ! User account has been deleted.'
-        )
-      }
-
       return {
-        user: userResult.data,
+        user,
         verified,
         nextEmail,
         previousEmail,
