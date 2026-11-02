@@ -33,6 +33,7 @@ import {
   fetchModelRules,
   type ModelRules,
 } from './lib/model-rules.ts'
+import { resolvePackageVersion } from './lib/model-version-history.ts'
 import { resolvePeriod } from './lib/period.ts'
 import {
   fetchSampledSimulations,
@@ -358,8 +359,9 @@ type Row = {
 
 /**
  * Computes the CSV line of a simulation, or `null` if the version is
- * unsupported. The version is the one of the simulation's model, pre-release
- * included: it selects both the sub-category rules set and the npm model rules.
+ * unsupported. The version selects both the sub-category rules set and the
+ * npm model rules. For legacy `0.0.0` simulations, it has already been
+ * resolved from the package.json git history by the caller.
  *
  * The `date` column carries `createdAt` (the server insertion timestamp), not
  * `Simulation.date`: the latter is set by the browser without validation, so it
@@ -405,6 +407,7 @@ const computeRow = async (
 /// ---------------------- Statistics ----------------------
 
 type Stats = {
+  version: string
   sampled: number
   written: number
   incoherent: number
@@ -415,10 +418,12 @@ type Stats = {
 
 const statsByModel = new Map<string, Stats>()
 
-const statsFor = (model: string): Stats => {
-  let stats = statsByModel.get(model)
+const statsFor = (model: string, version: string): Stats => {
+  const key = `${model}\0${version}`
+  let stats = statsByModel.get(key)
   if (!stats) {
     stats = {
+      version,
       sampled: 0,
       written: 0,
       incoherent: 0,
@@ -426,7 +431,7 @@ const statsFor = (model: string): Stats => {
       skipped: 0,
       firstError: null,
     }
-    statsByModel.set(model, stats)
+    statsByModel.set(key, stats)
   }
   return stats
 }
@@ -461,10 +466,13 @@ const processBatch = async (
   for (const simulation of simulations) {
     state.processed++
 
-    const stats = statsFor(simulation.model)
+    const storedVersion = getVersionFromModel(simulation.model)
+    const version =
+      storedVersion === '0.0.0'
+        ? resolvePackageVersion(simulation.createdAt)
+        : storedVersion
+    const stats = statsFor(simulation.model, version)
     stats.sampled++
-
-    const version = getVersionFromModel(simulation.model)
 
     try {
       const row = await computeRow(simulation, version)
@@ -553,8 +561,8 @@ const printTable = (
 
 const printVersionReport = (): void => {
   const groups = new Map<string, Record<string, number>>()
-  for (const [model, stats] of statsByModel) {
-    const version = getVersionFromModel(model)
+  for (const stats of statsByModel.values()) {
+    const { version } = stats
     const group = groups.get(version) ?? {
       models: 0,
       sampled: 0,
