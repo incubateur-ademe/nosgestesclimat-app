@@ -34,13 +34,10 @@ reproduisez-la sans Docker :
    pnpm -F @nosgestesclimat/server dev:e2e
    ```
 
-3. Configurez l'adaptateur mailbox, dans `apps/e2e/.env` (copie de
-   `.env.template`) :
-
-   ```env
-   E2E_MAILBOX=stub
-   E2E_MAILBOX_URL=http://localhost:3002
-   ```
+3. Rien à configurer pour la boîte mail : sans `E2E_MAILBOX_MAILISK_NAMESPACE`,
+   la suite lit le mock local (`E2E_MAILBOX_STUB_URL`,
+   `http://localhost:3002` par défaut). Les variables sont listées dans
+   `.env.template`.
 
 4. Lancez les tests (le serveur de dev du site est démarré automatiquement,
    avec `apps/site/.env.e2e` préchargé) :
@@ -55,6 +52,9 @@ reproduisez-la sans Docker :
 
 - `common:e2e.yaml` — exécute la suite sur une stack locale à chaque PR.
 - `common:deploy.yaml` (job `e2e-preprod`) — exécute la même suite contre la
-  preprod (mailbox Brevo) avant le déploiement en production. La lecture des
-  logs Brevo passe par un FGP en lecture seule : le var GitHub
-  `FGP_BREVO_READONLY_URL` et le secret `FGP_BREVO_READONLY_TOKEN`.
+  preprod (mailbox Mailisk) avant le déploiement en production. Les emails de
+  test vont dans la namespace Mailisk : la variable GitHub
+  `E2E_MAILBOX_MAILISK_NAMESPACE` (le domaine des adresses est
+  `<namespace>.mailisk.net`) et le secret `E2E_MAILBOX_MAILISK_API_KEY`.
+  `createMailboxAdapter` choisit la boîte sur la présence de cette namespace :
+  posée, Mailisk ; absente, le stub local.
