@@ -2167,7 +2167,7 @@ entries:
   actions.plan.header.title.lock: Construisez votre plan d'action
   actions.plan.header.description: These actions are tailored to your answers in the test. Choose the ones that seem achievable to you and add them to your action plan!
   actions.plan.header.description.lock: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
-  actions.plan.otherActions.title: All your shares, by category
+  actions.plan.otherActions.title: All your actions, by category
   actions.plan.otherActions.title.lock: Toutes vos actions, par catégorie
   actions.plan.links.exploreActions: Explore actions
   actions.plan.links.exploreActions.lock: Explorer les actions
@@ -2185,8 +2185,8 @@ entries:
   actions.basket.saveButton.label.lock: Sauvegarder mon plan d'action
   actions.components.actionCard.highlighted.addedButton.ariaLabel: Added; click again to remove the action from your plan
   actions.components.actionCard.highlighted.addedButton.ariaLabel.lock: Ajouté, cliquer à nouveau pour retirer l'action de votre plan
-  actions.basket.informativeBlock.content: Your selection is empty. Browse the categories to add actions that you can implement.
-  actions.basket.informativeBlock.content.lock: Votre sélection est vide. Parcourez les catégories pour ajouter des actions que vous pourrez mettre en place.
+  actions.basket.informativeBlock.content: Your selection is empty
+  actions.basket.informativeBlock.content.lock: Votre sélection est vide
   actions.plan.links.myActionPlan: My action plan
   actions.plan.links.myActionPlan.lock: Mon plan d'action
   actions.seeActionPlanLink.mobile.label.firstLine: View my action plan
@@ -2233,7 +2233,7 @@ entries:
   results.footprintBlock.carbone.message.close.lock: '<0>Votre empreinte ressemble à celle de millions de Français.</0> Ensemble, nous pouvons faire baisser notre moyenne : trouvez votre première action, et embarquez vos proches.'
   results.footprintBlock.carbone.title: Your carbon footprint
   results.footprintBlock.carbone.title.lock: Votre empreinte carbone
-  results.footprintBlock.carbone.unitSuffix: of CO₂e per year
+  results.footprintBlock.carbone.unitSuffix: of CO₂e per year
   results.footprintBlock.carbone.unitSuffix.lock: de CO₂e / an
   results.footprintBlock.carbone.comparison.equal: Equal to the average*
   results.footprintBlock.carbone.comparison.equal.lock: Égal à la moyenne*

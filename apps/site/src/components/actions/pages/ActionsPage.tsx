@@ -83,7 +83,7 @@ export default function ActionsPage({
             />
           )}
 
-          <h2 className="mb-0 text-2xl/normal font-bold md:text-3xl/normal">
+          <h2 className="mb-0 text-xl/normal font-medium md:text-2xl/normal">
             {otherActionsTitle ?? (
               <Trans i18nKey="actions.components.themeSections.testWhiteBackground.title">
                 Voici d’autres actions qui vous aideront à réduire votre

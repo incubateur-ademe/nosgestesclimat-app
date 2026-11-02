@@ -41,8 +41,7 @@ export default function ChosenActionsList({
   return (
     <p className="bg-secondary-50 mb-20 rounded-lg p-5 text-sm text-slate-600">
       <Trans i18nKey="actions.basket.informativeBlock.content">
-        Votre sélection est vide. Parcourez les catégories pour ajouter des
-        actions que vous pourrez mettre en place.
+        Votre sélection est vide
       </Trans>
     </p>
   )

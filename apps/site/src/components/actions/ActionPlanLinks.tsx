@@ -31,9 +31,10 @@ export default function ActionPlanLinks({
     <div className={cn('flex gap-4 overflow-auto', className)}>
       <ButtonLinkServer
         variant="outlined"
-        className={
+        className={cn(
+          'font-normal',
           isExploreActive ? ACTIVE_LINK_CLASSES : INACTIVE_LINK_CLASSES
-        }
+        )}
         aria-current={isExploreActive ? 'page' : undefined}
         href={ACTIONS_SUGGESTED_PATH}>
         <FileWithMagnifierIcon
@@ -50,7 +51,7 @@ export default function ActionPlanLinks({
       <ButtonLinkServer
         variant="outlined"
         className={cn(
-          'relative pr-13!',
+          'relative pr-13! font-normal',
           isPlanActive ? ACTIVE_LINK_CLASSES : INACTIVE_LINK_CLASSES
         )}
         aria-current={isPlanActive ? 'page' : undefined}
