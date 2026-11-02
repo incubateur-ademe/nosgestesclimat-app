@@ -1,6 +1,6 @@
 import Trans from '@/components/translation/trans/TransClient'
 import { clickConfirmUserAccountDeletionButton } from '@/constants/tracking/trackers'
-import { logoutAndResetUserState } from '@/helpers/user/logout-and-reset-user-state'
+import { resetLocalUserStateAndIdentity } from '@/helpers/user/reset-local-user-state-and-identity'
 import browserLogger from '@/logger/logger.browser'
 import { useUser } from '@/publicodes-state'
 import { deleteUserAccount } from '@/services/users/delete-user-account'
@@ -23,11 +23,11 @@ export function useDeleteUserAccount() {
     startTransition(async () => {
       try {
         await deleteUserAccount()
-        await logoutAndResetUserState({
-          setUser,
-          setSimulation,
-        })
+        resetLocalUserStateAndIdentity({ setUser, setSimulation })
       } catch (error) {
+        if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+          return
+        }
         logger.warn(toError(error))
         toast.error(
           <Trans i18nKey="errors.generic_error">

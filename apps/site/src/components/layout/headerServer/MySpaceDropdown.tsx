@@ -12,18 +12,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/design-system/shadcn/dropdown-menu'
-import { logoutAndResetUserState } from '@/helpers/user/logout-and-reset-user-state'
+import { resetLocalUserStateAndIdentity } from '@/helpers/user/reset-local-user-state-and-identity'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
+import browserLogger from '@/logger/logger.browser'
 import { useUser } from '@/publicodes-state'
+import { logout } from '@/services/auth/logout'
+import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { cn } from 'cn'
 import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 const MAX_EMAIL_LENGTH = 20
 
 interface Props {
   email: string
 }
+
+const logger = browserLogger.child({
+  scope: 'site.interaction.logout',
+})
 
 const commonItemClassNames =
   'hover:bg-primary-50! transitions-colors active:bg-primary-200! text-sm px-4 py-2 focus-visible:ring-primary-700! focus-visible:ring-2! focus-visible:ring-offset-2!'
@@ -40,10 +48,23 @@ export default function MySpaceDropdown({ email }: Props) {
   const handleLogout = async () => {
     setIsPopoverOpen(false)
 
-    await logoutAndResetUserState({
-      setUser,
-      setSimulation,
-    })
+    try {
+      await logout()
+      resetLocalUserStateAndIdentity({
+        setUser,
+        setSimulation,
+      })
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+        return
+      }
+      logger.warn(toError(error))
+      toast.error(
+        <Trans i18nKey="errors.generic_error">
+          Une erreur s'est produite, veuillez réessayer.
+        </Trans>
+      )
+    }
   }
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
