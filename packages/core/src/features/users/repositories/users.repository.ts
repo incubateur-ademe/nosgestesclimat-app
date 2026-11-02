@@ -1,5 +1,7 @@
+import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
+import { UserAlreadyDeletedError } from '../errors/user-already-deleted.ts'
 import type {
   NewUser,
   NewVerifiedUser,
@@ -133,15 +135,15 @@ export const findVerifiedUserByEmail = async (
 export async function createOrUpdateUser(
   user: NewVerifiedUser | VerifiedUser,
   options?: { session?: Transaction }
-): Promise<VerifiedUser>
+): Promise<Result<VerifiedUser, UserAlreadyDeletedError>>
 export async function createOrUpdateUser(
   user: NewUser | User,
   options?: { session?: Transaction }
-): Promise<User>
+): Promise<Result<User, UserAlreadyDeletedError>>
 export async function createOrUpdateUser(
   user: NewUser | User,
   { session = prisma }: { session?: Transaction } = {}
-): Promise<User> {
+): Promise<Result<User, UserAlreadyDeletedError>> {
   const existingUser = await session.user.findUnique({
     where: {
       id: user.id,
@@ -157,7 +159,12 @@ export async function createOrUpdateUser(
   })
 
   if (existingUser?.deletedAt) {
-    throw new Error(`Cannot update soft-deleted user ${user.id}`)
+    return failure(
+      new UserAlreadyDeletedError({
+        message: `Cannot update soft-deleted user ${user.id}`,
+        userId: user.id,
+      })
+    )
   }
 
   const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email
@@ -221,23 +228,23 @@ export async function createOrUpdateUser(
         select: userSelect,
       })
 
-  return mapUser(row)
+  return success(mapUser(row))
 }
 
-export async function softDeleteUser(
-  userId: string,
-  { session }: { session: Transaction }
-) {
+type Options = {
+  session: Transaction
+}
+export async function softDeleteUser(userId: string, options?: Options) {
+  const { session } = options ?? { session: prisma }
+
   await session.organisationAdministrator.deleteMany({
     where: { user: { is: { id: userId } } },
   })
-
   await session.verifiedUser.deleteMany({
     where: {
       id: userId,
     },
   })
-
   await session.user.updateMany({
     where: {
       id: userId,

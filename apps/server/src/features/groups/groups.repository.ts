@@ -5,6 +5,7 @@ import {
   simulationSelectionWithPolls,
 } from '../../adapters/prisma/selection.ts'
 import type { Session } from '../../adapters/prisma/transaction.ts'
+import { ForbiddenException } from '../../core/errors/ForbiddenException.ts'
 import type { PartialUser } from '../../core/types/user.ts'
 import { createParticipantSimulation } from '../simulations/simulations.repository.ts'
 import { createOrUpdateUser } from '../users/users.repository.ts'
@@ -33,12 +34,18 @@ export const createGroupAndUser = async (
   // upsert administrator. The middleware only forwards an email for a
   // verified account, so the email is persisted as the aggregate's verified
   // record.
-  const administrator = await createOrUpdateUser(
+  const administratorResult = await createOrUpdateUser(
     email
       ? { type: 'verified', id: userId, email, name }
       : { type: 'unverified', id: userId, name },
     { session }
   )
+
+  if (!administratorResult.success) {
+    throw new ForbiddenException('Forbidden ! User account has been deleted.')
+  }
+
+  const administrator = administratorResult.data
 
   const [participantDto] = participants || []
 
