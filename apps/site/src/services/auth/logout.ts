@@ -2,8 +2,9 @@
 
 import { deleteSessionCookies } from '@/helpers/server/cookie/auth.cookie'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
+import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
-import { revalidateBasePathForLocales } from './_helpers/revalidate-base-path-for-locales'
+import { redirect } from 'next/navigation'
 import { getUserSession } from './get-user-session'
 
 /**
@@ -26,5 +27,7 @@ export async function logout(): Promise<void> {
   for (const cookie of deleteSessionCookies()) {
     cookieStore.delete({ name: cookie.name, ...cookie.options })
   }
-  revalidateBasePathForLocales()
+
+  revalidatePath('/')
+  redirect('/')
 }
