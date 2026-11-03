@@ -230,15 +230,10 @@ export async function createOrUpdateUser(
   return success(mapUser(row))
 }
 
-type Options = {
-  session: Transaction
-}
-export async function softDeleteUser(userId: string, options?: Options) {
-  const { session } = options ?? { session: prisma }
-
-  await session.organisationAdministrator.deleteMany({
-    where: { user: { is: { id: userId } } },
-  })
+export const deleteUser = async (
+  userId: string,
+  { session = prisma }: { session?: Transaction } = {}
+) => {
   await session.verifiedUser.deleteMany({
     where: {
       id: userId,
