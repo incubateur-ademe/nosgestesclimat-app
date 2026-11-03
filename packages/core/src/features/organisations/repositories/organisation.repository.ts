@@ -1,3 +1,4 @@
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 
 /**
@@ -16,3 +17,13 @@ export const findOrganisationAdministrator = async ({
     where: { userEmail, organisation: { slug: organisationSlug } },
     select: { id: true },
   })
+
+/** Removes the administrations that point at the user's verified email. */
+export const deleteOrganisationAdministrationsForUser = async (
+  { userId }: { userId: string },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<void> => {
+  await session.organisationAdministrator.deleteMany({
+    where: { user: { is: { id: userId } } },
+  })
+}

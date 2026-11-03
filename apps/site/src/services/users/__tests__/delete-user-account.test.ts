@@ -4,8 +4,8 @@ import { faker } from '@faker-js/faker'
 import { describe, it, vi } from 'vitest'
 import { deleteUserAccount } from '../delete-user-account'
 
-const { deleteUserMock, logoutMock } = vi.hoisted(() => ({
-  deleteUserMock: vi.fn(),
+const { eraseUserMock, logoutMock } = vi.hoisted(() => ({
+  eraseUserMock: vi.fn(),
   logoutMock: vi.fn(),
 }))
 
@@ -33,10 +33,10 @@ describe('deleteUserAccount', () => {
       isAuth: true,
       email: faker.internet.email(),
     })
-    deleteUserMock.mockResolvedValueOnce(undefined)
+    eraseUserMock.mockResolvedValueOnce(undefined)
 
     await expect(deleteUserAccount()).resolves.toBeUndefined()
-    expect(deleteUserMock).toHaveBeenCalledWith(userId)
+    expect(eraseUserMock).toHaveBeenCalledWith(userId)
     expect(logoutMock).toHaveBeenCalledOnce()
   })
   it('should propagate the error in case of a server error', async () => {
@@ -45,7 +45,7 @@ describe('deleteUserAccount', () => {
       isAuth: true,
       email: faker.internet.email(),
     })
-    deleteUserMock.mockRejectedValueOnce(new Error('Boom'))
+    eraseUserMock.mockRejectedValueOnce(new Error('Boom'))
 
     await expect(deleteUserAccount()).rejects.toThrow('Boom')
     expect(logoutMock).not.toHaveBeenCalled()
@@ -72,8 +72,6 @@ vi.mock('next/navigation', () => ({
 }))
 
 vi.mock(
-  '@nosgestesclimat/core/features/users/services/delete-user.service',
-  () => ({
-    createDeleteUser: vi.fn(() => deleteUserMock),
-  })
+  '@nosgestesclimat/core/features/users/services/erase-user.service',
+  () => ({ eraseUser: eraseUserMock })
 )

@@ -3,7 +3,17 @@ import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import type { UnverifiedUser, VerifiedUser } from '../types/user.ts'
 
-class UserFactory extends Factory<UnverifiedUser> {
+/** Written by sessions rather than at registration: a test sets it to place an
+ * account on the activity clock. */
+type WithLastActivity = { lastActivityAt: Date | null }
+
+/** Set by the erasure rather than at registration: a test sets it to start from
+ * an erased account. */
+type WithDeletedAt = { deletedAt: Date | null }
+
+class UserFactory extends Factory<
+  UnverifiedUser & WithLastActivity & WithDeletedAt
+> {
   /** Returns a factory that persists a User with a linked VerifiedUser record. */
   verified() {
     return verifiedUserFactory
@@ -12,6 +22,11 @@ class UserFactory extends Factory<UnverifiedUser> {
   /** Explicit unverified (the default). Returns the factory itself. */
   unverified() {
     return this
+  }
+
+  /** Returns a factory that persists an erased account. */
+  erased() {
+    return this.params({ deletedAt: new Date(), name: null })
   }
 }
 
@@ -25,6 +40,7 @@ export const userFactory = UserFactory.define(({ onCreate }) => {
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
         lastActivityAt: data.lastActivityAt,
+        deletedAt: data.deletedAt,
       },
     })
     return data
@@ -37,46 +53,50 @@ export const userFactory = UserFactory.define(({ onCreate }) => {
   }
 })
 
-const verifiedUserFactory = Factory.define<VerifiedUser>(({ onCreate }) => {
-  onCreate(async (data) => {
-    await prisma.user.create({
-      data: {
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        lastActivityAt: data.lastActivityAt,
-      },
+const verifiedUserFactory = Factory.define<VerifiedUser & WithLastActivity>(
+  ({ onCreate }) => {
+    onCreate(async (data) => {
+      await prisma.user.create({
+        data: {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+          lastActivityAt: data.lastActivityAt,
+        },
+      })
+      await prisma.verifiedUser.create({
+        data: {
+          email: data.email,
+          id: data.id,
+          name: data.name,
+          telephone: data.telephone,
+          position: data.position,
+          optedInForCommunications: data.optedInForCommunications,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        },
+      })
+      return data
     })
-    await prisma.verifiedUser.create({
-      data: {
-        email: data.email,
-        id: data.id,
-        name: data.name,
-        telephone: data.telephone,
-        position: data.position,
-        optedInForCommunications: data.optedInForCommunications,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-      },
-    })
-    return data
-  })
 
-  return {
-    type: 'verified' as const,
-    ...userBase(),
-    email: faker.internet.email().toLocaleLowerCase(),
-    telephone: faker.helpers.maybe(() => faker.phone.number()) ?? null,
-    position: faker.helpers.maybe(() => faker.person.jobTitle()) ?? null,
-    optedInForCommunications: faker.datatype.boolean(),
+    return {
+      type: 'verified' as const,
+      ...userBase(),
+      email: faker.internet.email().toLocaleLowerCase(),
+      telephone: faker.helpers.maybe(() => faker.phone.number()) ?? null,
+      position: faker.helpers.maybe(() => faker.person.jobTitle()) ?? null,
+      optedInForCommunications: faker.datatype.boolean(),
+    }
   }
-})
+)
 
 const userBase = () => ({
   id: faker.string.uuid(),
   name: faker.helpers.maybe(() => faker.person.fullName()) ?? null,
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
+  lastActivityAt: null as Date | null,
+  deletedAt: null as Date | null,
 })

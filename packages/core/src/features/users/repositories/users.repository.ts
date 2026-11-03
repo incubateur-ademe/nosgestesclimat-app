@@ -1,7 +1,7 @@
 import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import { UserAlreadyDeletedError } from '../errors/user-already-deleted.ts'
+import { UserDeletedError } from '../errors/user-deleted.error.ts'
 import type {
   NewUser,
   NewVerifiedUser,
@@ -16,7 +16,6 @@ const unverifiedUserSelect = {
   name: true,
   createdAt: true,
   updatedAt: true,
-  deletedAt: true,
 } as const
 
 const userSelect = {
@@ -135,15 +134,15 @@ export const findVerifiedUserByEmail = async (
 export async function createOrUpdateUser(
   user: NewVerifiedUser | VerifiedUser,
   options?: { session?: Transaction }
-): Promise<Result<VerifiedUser, UserAlreadyDeletedError>>
+): Promise<Result<VerifiedUser, UserDeletedError>>
 export async function createOrUpdateUser(
   user: NewUser | User,
   options?: { session?: Transaction }
-): Promise<Result<User, UserAlreadyDeletedError>>
+): Promise<Result<User, UserDeletedError>>
 export async function createOrUpdateUser(
   user: NewUser | User,
   { session = prisma }: { session?: Transaction } = {}
-): Promise<Result<User, UserAlreadyDeletedError>> {
+): Promise<Result<User, UserDeletedError>> {
   const existingUser = await session.user.findUnique({
     where: {
       id: user.id,
@@ -160,8 +159,8 @@ export async function createOrUpdateUser(
 
   if (existingUser?.deletedAt) {
     return failure(
-      new UserAlreadyDeletedError({
-        message: `Cannot update soft-deleted user ${user.id}`,
+      new UserDeletedError({
+        message: `Cannot update soft-deleted user`,
         userId: user.id,
       })
     )
@@ -231,15 +230,10 @@ export async function createOrUpdateUser(
   return success(mapUser(row))
 }
 
-type Options = {
-  session: Transaction
-}
-export async function softDeleteUser(userId: string, options?: Options) {
-  const { session } = options ?? { session: prisma }
-
-  await session.organisationAdministrator.deleteMany({
-    where: { user: { is: { id: userId } } },
-  })
+export const deleteUser = async (
+  userId: string,
+  { session = prisma }: { session?: Transaction } = {}
+) => {
   await session.verifiedUser.deleteMany({
     where: {
       id: userId,

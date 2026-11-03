@@ -12,11 +12,7 @@ import { mapComputedResultsToContactAttributes } from '../../../simulations/emai
 import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import {
-  findUserById,
-  findVerifiedUserByEmail,
-  softDeleteUser,
-} from '../../../users/repositories/users.repository.ts'
+import { findVerifiedUserByEmail } from '../../../users/repositories/users.repository.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
 import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
 import { findValidVerificationCode } from '../../repositories/verification-codes.repository.ts'
@@ -280,7 +276,7 @@ describe('login', () => {
         })
         expect(vi.mocked(reconcileSimulationsAfterLogin)).toHaveBeenCalledWith({
           userId: verifiedUser.id,
-          previousUserId: unverifiedUser.id,
+          preExistingUserId: unverifiedUser.id,
         })
         // The sign-in branch reconciles only: it never runs the legacy
         // users merge.
@@ -330,11 +326,10 @@ describe('login', () => {
       })
     })
 
-    describe('And the session userId belongs to a deleted user', () => {
-      it('signs the user in as if there were no session user, without reconciling the deleted account', async () => {
+    describe('And the session userId belongs to an erased user', () => {
+      it('signs the user in as if there were no session user, without reconciling the erased account', async () => {
         const verifiedUser = await userFactory.verified().create()
-        const deletedUser = await userFactory.create()
-        await softDeleteUser(deletedUser.id)
+        const erasedUser = await userFactory.erased().create()
         const verificationCode = await verificationCodeFactory.create({
           email: verifiedUser.email,
         })
@@ -344,7 +339,7 @@ describe('login', () => {
           code: verificationCode.code,
           locale: 'fr',
           intent: 'create-account',
-          sessionUserId: deletedUser.id,
+          sessionUserId: erasedUser.id,
         })
 
         expect.assert(result.success)
@@ -352,7 +347,7 @@ describe('login', () => {
           id: verifiedUser.id,
           email: verifiedUser.email,
         })
-        // The lookup filters deleted accounts out: the decision is made with
+        // The lookup filters erased accounts out: the decision is made with
         // no session user at all.
         expect(logger.child).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -362,7 +357,7 @@ describe('login', () => {
             sessionUser: undefined,
           })
         )
-        // The deleted user is unverified: had it been read as the session
+        // The erased user is unverified: had it been read as the session
         // user, its data would have been reconciled into the signed-in one.
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
         expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
@@ -437,10 +432,9 @@ describe('login', () => {
       })
     })
 
-    describe('And the session userId belongs to a deleted user', () => {
+    describe('And the session userId belongs to an erased user', () => {
       it('signs the user up with a fresh id', async () => {
-        const deletedUser = await userFactory.create()
-        await softDeleteUser(deletedUser.id)
+        const erasedUser = await userFactory.erased().create()
         const verificationCode = await verificationCodeFactory.create()
 
         const result = await login({
@@ -448,34 +442,12 @@ describe('login', () => {
           code: verificationCode.code,
           locale: 'fr',
           intent: 'create-account',
-          sessionUserId: deletedUser.id,
+          sessionUserId: erasedUser.id,
         })
 
         expect.assert(result.success)
         expect(result.data.mode).toBe('signUp')
-        expect(result.data.user.id).not.toBe(deletedUser.id)
-      })
-
-      it('sees no session user at all: the user lookup filters the deleted account out', async () => {
-        const deletedUser = await userFactory.create()
-        await softDeleteUser(deletedUser.id)
-        const verificationCode = await verificationCodeFactory.create()
-
-        const result = await login({
-          email: verificationCode.email,
-          code: verificationCode.code,
-          locale: 'fr',
-          intent: 'create-account',
-          sessionUserId: deletedUser.id,
-        })
-
-        expect.assert(result.success)
-        await expect(
-          findUserById(deletedUser.id, { session: prisma })
-        ).resolves.toBeNull()
-        await expect(
-          findVerifiedUserByEmail({ email: verificationCode.email })
-        ).resolves.toBeDefined()
+        expect(result.data.user.id).not.toBe(erasedUser.id)
       })
     })
 

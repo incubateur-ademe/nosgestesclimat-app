@@ -36,6 +36,16 @@ describe('getUser', () => {
 
     const result = await getUser({ userId: user.id })
 
-    expect(result).toEqual({ ...user, type: 'verified' })
+    expect(result).toEqual({
+      type: 'verified',
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      telephone: user.telephone,
+      position: user.position,
+      optedInForCommunications: user.optedInForCommunications,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    })
   })
 })

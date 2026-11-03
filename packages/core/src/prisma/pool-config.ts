@@ -36,7 +36,7 @@ const DEFAULT_STATEMENT_TIMEOUT_MS = 0
  * default, which turns a saturated pool into requests held until the proxy
  * cuts them off.
  */
-const ACQUIRE_TIMEOUT_MS = 5_000
+const ACQUIRE_TIMEOUT_MS = 15_000
 
 /**
  * An unusable value falls back to the default rather than crashing the

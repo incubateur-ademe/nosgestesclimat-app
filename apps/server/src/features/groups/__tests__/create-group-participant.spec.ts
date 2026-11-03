@@ -195,6 +195,8 @@ describe('Given a NGC user', () => {
             email: null,
             lastActivityAt: null,
             deletedAt: null,
+            retentionNoticeSentAt: null,
+            finalNoticeSentAt: null,
           },
           simulationId: payload.simulation.id,
           createdAt: expect.any(Date),
