@@ -78,7 +78,7 @@ describe('eraseContact', () => {
   it('unlinks every list that is not a newsletter', async () => {
     const fetchMock = mockFetch({ status: 200, body: contact }, { status: 204 })
 
-    await client.eraseContact({ email: 'jane@example.com' })
+    await client.eraseContact({ email: contact.attributes['EMAIL'] })
 
     const { body } = requestOf(fetchMock, 1)
     expect(body.unlinkListIds).toEqual([
