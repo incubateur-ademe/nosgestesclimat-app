@@ -239,27 +239,28 @@ export const transferOwnershipToUser = async (
 }
 
 /**
- * Transfers simulations (and group participations) from a specific anonymous
- * user to a verified user, identified directly by their previous userId.
+ * Transfers simulations, action choices and group participations from a
+ * specific anonymous user to a verified user, identified directly by their
+ * previous userId.
  *
  * Unlike `transferOwnershipToUser`, this function does not rely on email
  * matching — it uses the explicit previousUserId, which makes it safe for
  * the signIn login path where the anonymous user may not have an email set.
  */
 export const transferSimulationsFromUser = async (
-  { userId, previousUserId }: { userId: string; previousUserId: string },
+  { userId, preExistingUserId }: { userId: string; preExistingUserId: string },
   { session }: { session: Transaction }
 ) => {
-  if (previousUserId === userId) {
+  if (preExistingUserId === userId) {
     return
   }
 
-  const previousUser = await session.user.findUnique({
-    where: { id: previousUserId, deletedAt: null },
+  const preExistingUser = await session.user.findUnique({
+    where: { id: preExistingUserId, deletedAt: null },
     select: { id: true },
   })
 
-  if (!previousUser) {
+  if (!preExistingUser) {
     return
   }
 
@@ -273,7 +274,7 @@ export const transferSimulationsFromUser = async (
         (participants) => new Set(participants.map(({ groupId }) => groupId))
       ),
     session.simulation.updateMany({
-      where: { userId: previousUserId },
+      where: { userId: preExistingUserId },
       data: {
         userId,
       },
@@ -282,17 +283,40 @@ export const transferSimulationsFromUser = async (
 
   await session.groupParticipant.deleteMany({
     where: {
-      userId: previousUserId,
+      userId: preExistingUserId,
       groupId: { in: Array.from(targetGroupIds) },
     },
   })
 
   await session.groupParticipant.updateMany({
-    where: { userId: previousUserId },
+    where: { userId: preExistingUserId },
+    data: { userId },
+  })
+
+  // `ActionChoice.userId` is ON DELETE RESTRICT: the anonymous user's choices
+  // must be moved before its row is deleted, or the deletion fails and the
+  // whole login with it. A choice the account already holds wins, as for group
+  // participations.
+  const targetActionIds = await session.actionChoice
+    .findMany({
+      where: { userId },
+      select: { actionId: true },
+    })
+    .then((choices) => new Set(choices.map(({ actionId }) => actionId)))
+
+  await session.actionChoice.deleteMany({
+    where: {
+      userId: preExistingUserId,
+      actionId: { in: Array.from(targetActionIds) },
+    },
+  })
+
+  await session.actionChoice.updateMany({
+    where: { userId: preExistingUserId },
     data: { userId },
   })
 
   await session.user.deleteMany({
-    where: { id: previousUserId, deletedAt: null },
+    where: { id: preExistingUserId, deletedAt: null },
   })
 }

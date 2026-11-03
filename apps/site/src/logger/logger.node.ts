@@ -14,8 +14,8 @@ import { context, SpanStatusCode, trace } from '@opentelemetry/api'
 import pino, { type Logger as PinoLogger } from 'pino'
 
 import { emitLogRecord } from '../observability/log-bridge.ts'
+import { appTracer } from '../observability/otel.ts'
 import { toSpanAttributes } from '../observability/otlp-attributes.ts'
-import { appTracer } from '../observability/setup.ts'
 import {
   captureProperties,
   exceptionAttributes,

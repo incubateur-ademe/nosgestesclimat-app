@@ -1,6 +1,6 @@
 import type { EmailRecord, MailboxAdapter } from './types'
 
-const mailboxUrl = process.env.E2E_MAILBOX_URL ?? 'http://localhost:3002'
+const mailboxUrl = process.env.E2E_MAILBOX_STUB_URL ?? 'http://localhost:3002'
 
 interface StoredEmail {
   params?: Record<string, unknown>

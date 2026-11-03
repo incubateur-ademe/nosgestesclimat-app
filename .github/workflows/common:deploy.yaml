@@ -75,9 +75,8 @@ jobs:
 
       - name: Run E2E tests (${{ matrix.project }})
         env:
-          E2E_MAILBOX: brevo
-          FGP_BREVO_READONLY_URL: ${{ vars.FGP_BREVO_READONLY_URL }}
-          FGP_BREVO_READONLY_TOKEN: ${{ secrets.FGP_BREVO_READONLY_TOKEN }}
+          E2E_MAILBOX_MAILISK_API_KEY: ${{ secrets.E2E_MAILBOX_MAILISK_API_KEY }}
+          E2E_MAILBOX_MAILISK_NAMESPACE: ${{ vars.E2E_MAILBOX_MAILISK_NAMESPACE }}
         run: pnpm playwright test --project="${{ matrix.project }}"
 
       - name: Upload blob report

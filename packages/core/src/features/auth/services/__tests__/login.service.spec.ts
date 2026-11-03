@@ -280,7 +280,7 @@ describe('login', () => {
         })
         expect(vi.mocked(reconcileSimulationsAfterLogin)).toHaveBeenCalledWith({
           userId: verifiedUser.id,
-          previousUserId: unverifiedUser.id,
+          preExistingUserId: unverifiedUser.id,
         })
         // The sign-in branch reconciles only: it never runs the legacy
         // users merge.

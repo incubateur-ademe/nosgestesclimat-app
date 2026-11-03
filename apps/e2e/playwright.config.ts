@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 import dotenv from 'dotenv'
 import type { FixturesOptions } from './tests/fixtures/options'
-import { BREVO_TEST_TIMEOUT_MS } from './tests/mailbox/brevo-mailbox'
 import { NEW_VISITOR_STATE } from './tests/state'
 
 dotenv.config({ quiet: true })
@@ -21,9 +20,7 @@ export default defineConfig<FixturesOptions>({
     actionTimeout: 10_000,
     navigationTimeout: 20_000,
   },
-  // La lecture du code de vérification par Brevo impose de patienter (cf.
-  // tests/mailbox/brevo-mailbox.ts) : timeout élargi dans ce cas seulement.
-  timeout: process.env.E2E_MAILBOX === 'brevo' ? BREVO_TEST_TIMEOUT_MS : 60_000,
+  timeout: 60_000,
   expect: {
     timeout: 10_000,
   },
