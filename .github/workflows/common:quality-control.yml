@@ -65,7 +65,12 @@ jobs:
       # anywhere on its import graph stops it from starting. Nothing else in
       # CI loads that graph.
       - name: Load the worker's sources under strip-only TypeScript
-        run: pnpm --filter "...[origin/main]" --if-present run check:worker
+        run: |
+          set -a
+          source .github/e2e-local.env
+          source apps/site/.env.e2e
+          set +a
+          pnpm --filter "...[origin/main]" --if-present run check:worker
 
       - name: Run unit and integration tests
         run: pnpm --filter "...[origin/main]" test
