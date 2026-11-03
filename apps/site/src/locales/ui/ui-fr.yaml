@@ -605,7 +605,7 @@ entries:
   cookies.management.accept: Accepter
   cookies.management.acceptAll: Tout accepter
   cookies.management.confirm: Confirmer mes choix
-  cookies.management.preferences: 'Préférences pour tous les services. '
+  cookies.management.preferences: Préférences pour tous les services.
   cookies.management.privacyLink: Données personnelles et cookies
   cookies.management.refuse: Refuser
   cookies.management.rejectAll: Tout refuser

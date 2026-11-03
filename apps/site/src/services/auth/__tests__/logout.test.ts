@@ -1,3 +1,4 @@
+import i18nConfig from '@/i18nConfig'
 import { faker } from '@faker-js/faker'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { logout } from '../logout'
@@ -8,7 +9,6 @@ const mocks = vi.hoisted(() => ({
   deleteSessionCookies: vi.fn(),
   cookieDelete: vi.fn(),
   revalidatePath: vi.fn(),
-  redirect: vi.fn(),
 }))
 
 describe('logout', () => {
@@ -20,7 +20,7 @@ describe('logout', () => {
     ])
   })
 
-  it('revokes the sessions, clears the cookies and redirects', async () => {
+  it('revokes the sessions, clears the cookies and revalidates every locale', async () => {
     const sessionId = faker.string.uuid()
     mocks.getUserSession.mockResolvedValue({ id: sessionId, isAuth: true })
 
@@ -37,18 +37,18 @@ describe('logout', () => {
       path: '/',
       maxAge: 0,
     })
-    expect(mocks.revalidatePath).toHaveBeenCalledWith('/')
-    expect(mocks.redirect).toHaveBeenCalledWith('/')
+    for (const locale of i18nConfig.locales) {
+      expect(mocks.revalidatePath).toHaveBeenCalledWith(`/${locale}`, 'layout')
+    }
   })
 
-  it('still clears the cookies and redirects without a session', async () => {
+  it('still clears the cookies without a session', async () => {
     mocks.getUserSession.mockResolvedValue(null)
 
     await logout()
 
     expect(mocks.revokeAllSessions).not.toHaveBeenCalled()
     expect(mocks.cookieDelete).toHaveBeenCalledTimes(2)
-    expect(mocks.redirect).toHaveBeenCalledWith('/')
   })
 })
 
@@ -70,5 +70,3 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidatePath }))
-
-vi.mock('next/navigation', () => ({ redirect: mocks.redirect }))

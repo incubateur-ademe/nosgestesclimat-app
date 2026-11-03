@@ -42,6 +42,10 @@ setup(
     // User should be redirected to the user space
     await expect(page).toHaveURL(new RegExp(UserSpace.URL))
 
+    // The header belongs to the App Shell, rendered from the session: a soft
+    // navigation replaying a cached shell would still show the logged-out link.
+    await expect(page.getByTestId('my-space-button')).toBeVisible()
+
     // User should be greeted
     await expect(page.getByText('Bienvenue dans votre espace')).toBeInViewport()
 

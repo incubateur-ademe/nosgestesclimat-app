@@ -36,7 +36,7 @@ test.describe('Login - invalid verification code', () => {
   })
 })
 
-test.describe.fixme('Logout', () => {
+test.describe('Logout', () => {
   test('should log out and redirect to homepage', async ({ page }) => {
     await page.goto('/mon-espace')
     await expect(page.getByTestId('my-results-tab')).toBeVisible()
@@ -46,6 +46,10 @@ test.describe.fixme('Logout', () => {
     await page.getByTestId('my-space-logout-button').click()
 
     await expect(page).toHaveURL('/')
+
+    // The header belongs to the App Shell, rendered from the session: a soft
+    // navigation replaying a cached shell would still show the logged-in menu.
+    await expect(page.getByTestId('my-space-connexion-link')).toBeVisible()
 
     // After logout, the personal space must redirect to the login page. This
     // redirect is served through the PPR/RSC stream (the unauthorized

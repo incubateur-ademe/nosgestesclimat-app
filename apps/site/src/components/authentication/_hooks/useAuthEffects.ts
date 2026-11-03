@@ -91,10 +91,7 @@ function useCompletionEffect(
 
         const destination =
           typeof options.redirectTo === 'function'
-            ? await options.redirectTo({
-                email: authenticatedEmail,
-                userId: authenticatedUserId,
-              })
+            ? await options.redirectTo()
             : options.redirectTo
 
         if (destination) {

@@ -629,8 +629,8 @@ entries:
   cookies.management.privacyLink.lock: Données personnelles et cookies
   cookies.management.confirm: Confirm my choices
   cookies.management.confirm.lock: Confirmer mes choix
-  cookies.management.preferences: 'Preferences for all services. '
-  cookies.management.preferences.lock: 'Préférences pour tous les services. '
+  cookies.management.preferences: Preferences for all services.
+  cookies.management.preferences.lock: Préférences pour tous les services.
   cookies.banner.description: We use cookies to improve your experience and our services, measure our audience and manage our campaign budget.
   cookies.banner.description.lock: Nous utilisons des cookies pour améliorer votre expérience, nos services, mesurer l'audience et piloter notre budget de campagnes.
   cookies.banner.title: At Nos Gestes Climat, your privacy counts

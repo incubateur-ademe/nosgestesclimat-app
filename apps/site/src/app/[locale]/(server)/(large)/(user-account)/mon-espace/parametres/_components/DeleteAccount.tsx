@@ -1,6 +1,5 @@
 'use client'
 import Trans from '@/components/translation/trans/TransClient'
-import { clickDeleteUserAccountButton } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import {
   Dialog,
@@ -11,19 +10,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/design-system/shadcn/dialog'
-import { trackEvent } from '@/utils/analytics/trackEvent'
 import { TrashIcon } from 'lucide-react'
-import { useDeleteUserAccount } from '../_hooks/useDeleteUserAccount'
+import { useEraseUserAccount } from '../_hooks/useEraseUserAccount'
 
 export default function DeleteAccount() {
-  const { deleteUserAccount, isPending } = useDeleteUserAccount()
+  const { eraseUserAccount, isPending } = useEraseUserAccount()
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          onClick={() => trackEvent(clickDeleteUserAccountButton)}
-          variant="outlined"
-          color="red">
+        <Button variant="outlined" color="red">
           <TrashIcon className="mr-2 size-5" />
           <Trans i18nKey="mon-espace.settings.delete.button">
             Supprimer mon compte
@@ -50,7 +45,7 @@ export default function DeleteAccount() {
             </Trans>
           </p>
           <DialogFooter>
-            <Button onClick={deleteUserAccount} color="red" loading={isPending}>
+            <Button onClick={eraseUserAccount} color="red" loading={isPending}>
               <Trans i18nKey="mon-espace.settings.delete.dialog.confirm">
                 Confirmer la suppression
               </Trans>
