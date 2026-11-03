@@ -187,6 +187,32 @@ export const fetchSimulationBatch = ({
   })
 }
 
+/** Fetches a bounded set of simulations by their IDs for a skipped-only retry. */
+export const fetchSimulationsByIds = ({
+  url,
+  schema,
+  ids,
+}: {
+  url: string
+  schema: string
+  ids: string[]
+}): Simulation[] => {
+  if (ids.length === 0) return []
+
+  return queryJson<Simulation[]>({
+    url,
+    variables: { schema, ids: ids.join(',') },
+    query: `
+      /* sql */
+      select coalesce(json_agg(t order by "createdAt", id), '[]') from (
+        select id, "createdAt", model, progression, situation
+        from :"schema"."Simulation"
+        where id = any(string_to_array(:'ids', ',')::uuid[])
+      ) t;
+    `,
+  })
+}
+
 /**
  * At most `perVersion` simulations per model version. A version spans several
  * models (`FR-fr-…`, `BE-fr-…`): the sample is taken per version, not per model.

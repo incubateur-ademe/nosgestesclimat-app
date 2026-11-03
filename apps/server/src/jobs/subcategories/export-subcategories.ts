@@ -38,6 +38,7 @@ import { resolvePeriod } from './lib/period.ts'
 import {
   fetchSampledSimulations,
   fetchSimulationBatch,
+  fetchSimulationsByIds,
   resolveDatabaseUrl,
   type Simulation,
 } from './lib/postgres.ts'
@@ -119,6 +120,12 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     description: 'Pre-flight: versions to test, comma separated',
   })
+  .option('retry-skipped', {
+    type: 'boolean',
+    default: false,
+    description:
+      'Recompute only simulations listed as skipped in the existing checkpoint',
+  })
   .option('upload', {
     type: 'boolean',
     default: true,
@@ -144,6 +151,7 @@ const {
   sampleSeed,
   versions: versionsArg,
   from: fromArg,
+  retrySkipped,
 } = argv
 
 /// ---------------------- Period ----------------------
@@ -168,6 +176,15 @@ if (
 }
 
 const samplePerVersion = samplePerVersionArg ?? null
+
+if (retrySkipped && samplePerVersion != null) {
+  throw new Error(
+    '--retry-skipped cannot be combined with --sample-per-version.'
+  )
+}
+if (retrySkipped && !upload) {
+  throw new Error('--retry-skipped requires uploads to access the checkpoint.')
+}
 
 const versionFilter = versionsArg
   ? String(versionsArg)
@@ -458,7 +475,11 @@ const MAX_CONSECUTIVE_ERRORS = 20
  */
 const processBatch = async (
   simulations: Simulation[],
-  state: Checkpoint
+  state: Checkpoint,
+  {
+    advanceCursor = true,
+    successfulIds,
+  }: { advanceCursor?: boolean; successfulIds?: string[] } = {}
 ): Promise<string[]> => {
   const lines: string[] = []
   let consecutiveErrors = 0
@@ -483,8 +504,10 @@ const processBatch = async (
           model: simulation.model,
           reason: `no sub-category rules for ${version}`,
         })
-        state.lastCreatedAt = simulation.createdAt
-        state.lastId = simulation.id
+        if (advanceCursor) {
+          state.lastCreatedAt = simulation.createdAt
+          state.lastId = simulation.id
+        }
         continue
       }
 
@@ -499,10 +522,13 @@ const processBatch = async (
       }
 
       lines.push(row.line)
+      successfulIds?.push(simulation.id)
       state.written++
       stats.written++
-      state.lastCreatedAt = simulation.createdAt
-      state.lastId = simulation.id
+      if (advanceCursor) {
+        state.lastCreatedAt = simulation.createdAt
+        state.lastId = simulation.id
+      }
       consecutiveErrors = 0
 
       if (verbose) {
@@ -519,8 +545,10 @@ const processBatch = async (
           model: simulation.model,
           reason: error.message,
         })
-        state.lastCreatedAt = simulation.createdAt
-        state.lastId = simulation.id
+        if (advanceCursor) {
+          state.lastCreatedAt = simulation.createdAt
+          state.lastId = simulation.id
+        }
         continue
       }
 
@@ -692,17 +720,22 @@ const main = async (): Promise<void> => {
     )
   }
 
-  // Resume: the checkpoint and the CSV live in the bucket. Disabled in
-  // pre-flight mode: the sample is computed in a single query, so "resuming"
-  // would replay the whole draw and duplicate lines.
+  // Resume: the checkpoint and the CSV live in the bucket. A skipped-only
+  // retry also requires both files, but does not use the cursor.
   let checkpoint: Checkpoint | null = null
-  if (resume && upload && samplePerVersion == null) {
+  if ((resume || retrySkipped) && upload && samplePerVersion == null) {
     const raw = await downloadText(checkpointKey)
     if (raw) {
       checkpoint = JSON.parse(raw) as Checkpoint
       assertCheckpointCompatible(checkpoint)
       const existingCsv = await downloadText(csvKey)
-      if (existingCsv != null) await writeFile(csvPath, existingCsv)
+      if (existingCsv == null) {
+        throw new Error(
+          `Checkpoint ${checkpointKey} exists but CSV ${csvKey} is missing. ` +
+            'Run the regular export with --from 0 before retrying skipped simulations.'
+        )
+      }
+      await writeFile(csvPath, existingCsv)
       console.log(
         `♻️  Resuming: ${checkpoint.written} simulations already written${
           checkpoint.lastCreatedAt
@@ -711,6 +744,12 @@ const main = async (): Promise<void> => {
         }`
       )
     }
+  }
+
+  if (retrySkipped && checkpoint == null) {
+    throw new Error(
+      `No checkpoint found at ${checkpointKey}. Run the regular export first.`
+    )
   }
 
   const state: Checkpoint = checkpoint ?? {
@@ -768,7 +807,50 @@ const main = async (): Promise<void> => {
   const UPLOAD_EVERY = 25
 
   try {
-    if (samplePerVersion != null) {
+    if (retrySkipped) {
+      const skipped = checkpoint?.skipped ?? []
+      const remainingSkipped = [...skipped]
+      const RETRY_BATCH_SIZE = 1000
+
+      for (
+        let offset = 0;
+        offset < skipped.length;
+        offset += RETRY_BATCH_SIZE
+      ) {
+        const simulations = fetchSimulationsByIds({
+          url,
+          schema,
+          ids: skipped
+            .slice(offset, offset + RETRY_BATCH_SIZE)
+            .map(({ id }) => id),
+        })
+        const successfulIds: string[] = []
+        state.skipped = []
+        const lines = await processBatch(simulations, state, {
+          advanceCursor: false,
+          successfulIds,
+        })
+
+        for (const id of successfulIds) {
+          const index = remainingSkipped.findIndex(
+            (skippedSimulation) => skippedSimulation.id === id
+          )
+          if (index >= 0) remainingSkipped.splice(index, 1)
+        }
+
+        if (lines.length > 0) await appendFile(csvPath, `${lines.join('\n')}\n`)
+        state.skipped = remainingSkipped
+        state.updatedAt = new Date().toISOString()
+        await writeFile(checkpointPath, JSON.stringify(state, null, 2))
+        await flush()
+        console.log(
+          `   Retried ${Math.min(offset + RETRY_BATCH_SIZE, skipped.length)}/${skipped.length} skipped simulations`
+        )
+      }
+      if (skipped.length === 0) {
+        console.log('➡️  No skipped simulations in the checkpoint')
+      }
+    } else if (samplePerVersion != null) {
       // Pre-flight: a single batch, the sample per version.
       const simulations = fetchSampledSimulations({
         url,
