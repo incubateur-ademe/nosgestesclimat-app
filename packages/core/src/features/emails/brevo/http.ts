@@ -1,4 +1,4 @@
-import { failure, success } from '../../../lib/result.ts'
+import { failure, success, type Result } from '../../../lib/result.ts'
 import { EmailRequestError } from '../errors.ts'
 import type { BrevoConfig, RequestOptions } from './types.ts'
 
@@ -19,16 +19,18 @@ const isRetryableError = (error: unknown) =>
   (error instanceof Error &&
     (error.name === 'TimeoutError' || error.name === 'AbortError'))
 
-export const createPost =
+const createRequest =
+  (method: 'GET' | 'POST' | 'PUT') =>
   ({ url, apiKey }: BrevoConfig) =>
   async (
     path: string,
-    body: unknown,
+    body?: unknown,
     {
       timeout = DEFAULT_TIMEOUT,
       retries = DEFAULT_RETRIES,
+      tolerateStatuses = [],
     }: RequestOptions = {}
-  ) => {
+  ): Promise<Result<Response, EmailRequestError>> => {
     const endpoint = `${url.replace(/\/$/, '')}${path}`
 
     for (let attempt = 0; ; attempt++) {
@@ -36,12 +38,12 @@ export const createPost =
 
       try {
         response = await fetch(endpoint, {
-          method: 'POST',
+          method,
           headers: {
             'api-key': apiKey,
             'content-type': 'application/json',
           },
-          body: JSON.stringify(body),
+          body: body === undefined ? undefined : JSON.stringify(body),
           // Each attempt gets a fresh timeout, like axios-retry shouldResetTimeout.
           signal: AbortSignal.timeout(timeout),
         })
@@ -58,8 +60,8 @@ export const createPost =
         )
       }
 
-      if (response.ok) {
-        return success()
+      if (response.ok || tolerateStatuses.includes(response.status)) {
+        return success(response)
       }
 
       const responseBody = await response.text()
@@ -77,3 +79,38 @@ export const createPost =
       )
     }
   }
+
+const getRequest = createRequest('GET')
+
+export const createGet = (config: BrevoConfig) => {
+  const request = getRequest(config)
+
+  return (path: string, options?: RequestOptions) =>
+    request(path, undefined, options)
+}
+
+const createVoidRequest = (method: 'POST' | 'PUT') => {
+  const request = createRequest(method)
+
+  return (config: BrevoConfig) =>
+    async (
+      path: string,
+      body: unknown,
+      options?: RequestOptions
+    ): Promise<Result<void, EmailRequestError>> => {
+      const result = await request(config)(path, body, options)
+
+      if (!result.success) {
+        return result
+      }
+
+      // Nothing reads the body: draining it releases the connection.
+      await result.data.text()
+
+      return success()
+    }
+}
+
+export const createPost = createVoidRequest('POST')
+
+export const createPut = createVoidRequest('PUT')
