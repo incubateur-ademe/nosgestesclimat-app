@@ -150,38 +150,46 @@ export function createLogin({
         // attached. Every other session (none, unfound, or already verified)
         // starts a fresh identity: a verified session user belongs to another
         // account, and reusing its id would map one id to several accounts.
-        const signUpAt = (id: string) =>
-          createOrUpdateUser({ type: 'verified', id, email }, { session })
-
-        const signedUp = await signUpAt(
-          sessionUser?.type === 'unverified' ? sessionUser.id : randomUUID()
+        const signUpResult = await createOrUpdateUser(
+          {
+            type: 'verified',
+            id:
+              sessionUser?.type === 'unverified'
+                ? sessionUser.id
+                : randomUUID(),
+            email,
+          },
+          { session }
         )
 
-        let newUser: VerifiedUser
-        if (signedUp.success) {
-          newUser = signedUp.data
+        let signedUpUser: VerifiedUser
+        if (signUpResult.success) {
+          signedUpUser = signUpResult.data
         } else {
-          // An erasure committed between the session user's read and this
+          // Race condition : an erasure committed between the session user's read and this
           // write leaves nothing to convert: the account is already stripped,
           // so the sign-up starts a fresh identity, as for a session user not
           // found.
-          invariant(signedUp.error.code === 'user_deleted')
+          invariant(signUpResult.error.code === 'user_deleted')
 
-          const fresh = await signUpAt(randomUUID())
+          const freshSignUpResult = await createOrUpdateUser(
+            { type: 'verified', id: randomUUID(), email },
+            { session }
+          )
           // A fresh id has no row to be erased: the create branch cannot fail.
-          invariant(fresh.success)
-          newUser = fresh.data
+          invariant(freshSignUpResult.success)
+          signedUpUser = freshSignUpResult.data
         }
 
         if (sessionUser?.type === 'verified') {
           decisionLogger.warn(
             'Sign-up with a fresh identity: the session user belongs to another verified account',
-            { signedUpUserId: newUser.id }
+            { signedUpUserId: signedUpUser.id }
           )
         }
 
         return success({
-          user: newUser,
+          user: signedUpUser,
           mode: 'signUp' as const,
           reconcileUserId: undefined,
         })

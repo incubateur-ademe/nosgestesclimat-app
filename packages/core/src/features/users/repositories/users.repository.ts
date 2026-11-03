@@ -160,7 +160,7 @@ export async function createOrUpdateUser(
   if (existingUser?.deletedAt) {
     return failure(
       new UserDeletedError({
-        message: `Cannot update soft-deleted user ${user.id}`,
+        message: `Cannot update soft-deleted user`,
         userId: user.id,
       })
     )
