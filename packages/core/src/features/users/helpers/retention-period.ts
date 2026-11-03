@@ -24,6 +24,13 @@ export const finalNoticeActivityDateCutoff = (now: Date) =>
       FINAL_NOTICE_LEAD_DAYS * DAY_MS
   )
 
+/** An account last active before this instant is due erasure. */
+export const erasureActivityDateCutoff = (now: Date) =>
+  shiftDateByNumberOfMonths({
+    date: now,
+    months: -RETENTION_PERIOD_MONTHS,
+  })
+
 /** When the account is erased, if it stays idle. */
 export const erasureDate = (lastActivityAt: Date) =>
   shiftDateByNumberOfMonths({

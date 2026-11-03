@@ -1,14 +1,17 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import {
+  erasureActivityDateCutoff,
   finalNoticeActivityDateCutoff,
   retentionNoticeActivityDateCutoff,
 } from '../helpers/retention-period.ts'
 import type {
+  ErasureCandidate,
   RetentionNoticeCandidate,
   RetentionNoticeStamp,
 } from '../types/retention.ts'
 import {
+  mapErasureCandidate,
   mapRetentionNoticeCandidate,
   type RetentionNoticeRow,
 } from './retention.mapper.ts'
@@ -55,6 +58,23 @@ export const findAccountsDueForFinalNotice = async (
   `
 
   return rows.map(mapRetentionNoticeCandidate)
+}
+
+/** Reads the accounts past the retention period that still hold a verified record. */
+export const findAccountsDueForErasure = async (
+  { now }: { now: Date },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<ErasureCandidate[]> => {
+  const rows = await session.user.findMany({
+    where: {
+      lastActivityAt: { lte: erasureActivityDateCutoff(now) },
+      deletedAt: null,
+      verifiedUsers: { some: {} },
+    },
+    select: { id: true },
+  })
+
+  return rows.map(mapErasureCandidate)
 }
 
 /** Writes the notice stamps of an account. */
