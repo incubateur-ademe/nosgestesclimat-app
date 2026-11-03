@@ -8,7 +8,6 @@ import {
   createOrUpdateUser,
   findUserById,
   findVerifiedUserByEmail,
-  softDeleteUser,
 } from '../users.repository.ts'
 
 const generateEmail = () => faker.internet.email().toLocaleLowerCase()
@@ -396,9 +395,7 @@ describe('createOrUpdateUser', () => {
   })
 
   it('refuses to update a soft-deleted user', async () => {
-    const user = await userFactory.create()
-
-    await softDeleteUser(user.id)
+    const user = await userFactory.erased().create()
 
     const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
 

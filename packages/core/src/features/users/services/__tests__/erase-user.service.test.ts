@@ -13,14 +13,14 @@ import { organisationFactory } from '../../../organisations/factories/organisati
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { findUserById } from '../../repositories/users.repository.ts'
-import { deleteUser } from '../delete-user.service.ts'
+import { eraseUser } from '../erase-user.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn().mockResolvedValue(success())
 const addOrUpdateContact = vi.fn().mockResolvedValue(success())
 const origin = 'https://nosgestesclimat.test'
 
-describe('deleteUser', () => {
+describe('eraseUser', () => {
   const login = createLogin({
     logger,
     sendEmail,
@@ -47,7 +47,7 @@ describe('deleteUser', () => {
       where: { userId: user.id },
     })
 
-    await deleteUser(user.id)
+    await eraseUser(user.id)
 
     const deletedUser = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },
@@ -86,7 +86,7 @@ describe('deleteUser', () => {
     await groupFactory.withAdministrator(deletedUser.id).create()
     await groupFactory.withParticipant({ userId: deletedUser.id }).create()
 
-    await deleteUser(deletedUser.id)
+    await eraseUser(deletedUser.id)
 
     const verificationCode = await verificationCodeFactory.create({ email })
     const result = await login({
@@ -123,6 +123,6 @@ describe('deleteUser', () => {
   })
 
   it('fails silently when deleting an unknown user', async () => {
-    await expect(deleteUser(faker.string.uuid())).resolves.toBeUndefined()
+    await expect(eraseUser(faker.string.uuid())).resolves.toBeUndefined()
   })
 })

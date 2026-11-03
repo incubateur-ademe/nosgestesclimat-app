@@ -15,7 +15,6 @@ import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
   findUserById,
   findVerifiedUserByEmail,
-  softDeleteUser,
 } from '../../../users/repositories/users.repository.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
 import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
@@ -333,8 +332,7 @@ describe('login', () => {
     describe('And the session userId belongs to a deleted user', () => {
       it('signs the user in as if there were no session user, without reconciling the deleted account', async () => {
         const verifiedUser = await userFactory.verified().create()
-        const deletedUser = await userFactory.create()
-        await softDeleteUser(deletedUser.id)
+        const deletedUser = await userFactory.erased().create()
         const verificationCode = await verificationCodeFactory.create({
           email: verifiedUser.email,
         })
@@ -439,8 +437,7 @@ describe('login', () => {
 
     describe('And the session userId belongs to a deleted user', () => {
       it('signs the user up with a fresh id', async () => {
-        const deletedUser = await userFactory.create()
-        await softDeleteUser(deletedUser.id)
+        const deletedUser = await userFactory.erased().create()
         const verificationCode = await verificationCodeFactory.create()
 
         const result = await login({
@@ -457,8 +454,7 @@ describe('login', () => {
       })
 
       it('sees no session user at all: the user lookup filters the deleted account out', async () => {
-        const deletedUser = await userFactory.create()
-        await softDeleteUser(deletedUser.id)
+        const deletedUser = await userFactory.erased().create()
         const verificationCode = await verificationCodeFactory.create()
 
         const result = await login({
