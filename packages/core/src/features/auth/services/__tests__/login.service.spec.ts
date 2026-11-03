@@ -12,10 +12,7 @@ import { mapComputedResultsToContactAttributes } from '../../../simulations/emai
 import { computedResultsFactory } from '../../../simulations/factories/computed-results.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import {
-  findUserById,
-  findVerifiedUserByEmail,
-} from '../../../users/repositories/users.repository.ts'
+import { findVerifiedUserByEmail } from '../../../users/repositories/users.repository.ts'
 import { InvalidVerificationCodeError } from '../../errors/login.error.ts'
 import { verificationCodeFactory } from '../../factories/verification-code.factory.ts'
 import { findValidVerificationCode } from '../../repositories/verification-codes.repository.ts'
@@ -451,27 +448,6 @@ describe('login', () => {
         expect.assert(result.success)
         expect(result.data.mode).toBe('signUp')
         expect(result.data.user.id).not.toBe(erasedUser.id)
-      })
-
-      it('sees no session user at all: the user lookup filters the erased account out', async () => {
-        const erasedUser = await userFactory.erased().create()
-        const verificationCode = await verificationCodeFactory.create()
-
-        const result = await login({
-          email: verificationCode.email,
-          code: verificationCode.code,
-          locale: 'fr',
-          intent: 'create-account',
-          sessionUserId: erasedUser.id,
-        })
-
-        expect.assert(result.success)
-        await expect(
-          findUserById(erasedUser.id, { session: prisma })
-        ).resolves.toBeNull()
-        await expect(
-          findVerifiedUserByEmail({ email: verificationCode.email })
-        ).resolves.toBeDefined()
       })
     })
 

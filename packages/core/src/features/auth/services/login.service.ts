@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
 import type { BackgroundTaskRunner } from '../../../lib/background-task-runner.ts'
+import { invariant } from '../../../lib/invariant.ts'
 import { maskEmail } from '../../../lib/pii.ts'
 import type { Result } from '../../../lib/result.ts'
 import { success } from '../../../lib/result.ts'
@@ -149,31 +150,32 @@ export function createLogin({
         // attached. Every other session (none, unfound, or already verified)
         // starts a fresh identity: a verified session user belongs to another
         // account, and reusing its id would map one id to several accounts.
-        const result = await createOrUpdateUser(
-          {
-            type: 'verified',
-            id:
-              sessionUser?.type === 'unverified'
-                ? sessionUser.id
-                : randomUUID(),
-            email,
-          },
-          { session }
-        )
+        const signUpAt = (id: string) =>
+          createOrUpdateUser({ type: 'verified', id, email }, { session })
 
-        if (!result.success) {
-          return result
-        }
+        const converted =
+          sessionUser?.type === 'unverified'
+            ? await signUpAt(sessionUser.id)
+            : undefined
+
+        // An erasure committed between the session user's read and this write
+        // leaves nothing to convert: the account is already stripped, and the
+        // sign-up starts a fresh identity, as for a session user not found.
+        const signedUp =
+          converted?.success === true ? converted : await signUpAt(randomUUID())
+
+        // A fresh id has no row to be erased: the create branch cannot fail.
+        invariant(signedUp.success)
 
         if (sessionUser?.type === 'verified') {
           decisionLogger.warn(
             'Sign-up with a fresh identity: the session user belongs to another verified account',
-            { signedUpUserId: result.data.id }
+            { signedUpUserId: signedUp.data.id }
           )
         }
 
         return success({
-          user: result.data,
+          user: signedUp.data,
           mode: 'signUp' as const,
           reconcileUserId: undefined,
         })
