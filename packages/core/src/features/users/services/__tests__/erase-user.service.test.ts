@@ -33,7 +33,7 @@ describe('eraseUser', () => {
     await emptyDatabase(prisma)
   })
 
-  it('marks the user as deleted and keeps their entities', async () => {
+  it('erases the account and keeps its entities', async () => {
     const user = await userFactory
       .verified()
       .create({ name: faker.person.fullName() })
@@ -49,10 +49,10 @@ describe('eraseUser', () => {
 
     await eraseUser(user.id)
 
-    const deletedUser = await prisma.user.findUniqueOrThrow({
+    const erasedUser = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },
     })
-    expect(deletedUser).toMatchObject({
+    expect(erasedUser).toMatchObject({
       deletedAt: expect.any(Date),
       email: null,
       name: null,
@@ -78,15 +78,15 @@ describe('eraseUser', () => {
     ).toBe(1)
   })
 
-  it('starts a new identity when a deleted account signs up with the same email', async () => {
-    const deletedUser = await userFactory
+  it('starts a new identity when an erased account signs up with the same email', async () => {
+    const erasedUser = await userFactory
       .verified()
       .create({ name: faker.person.fullName() })
-    const { email } = deletedUser
-    await groupFactory.withAdministrator(deletedUser.id).create()
-    await groupFactory.withParticipant({ userId: deletedUser.id }).create()
+    const { email } = erasedUser
+    await groupFactory.withAdministrator(erasedUser.id).create()
+    await groupFactory.withParticipant({ userId: erasedUser.id }).create()
 
-    await eraseUser(deletedUser.id)
+    await eraseUser(erasedUser.id)
 
     const verificationCode = await verificationCodeFactory.create({ email })
     const result = await login({
@@ -98,7 +98,7 @@ describe('eraseUser', () => {
 
     expect.assert(result.success)
     expect(result.data.mode).toBe('signUp')
-    expect(result.data.user.id).not.toBe(deletedUser.id)
+    expect(result.data.user.id).not.toBe(erasedUser.id)
     expect(result.data.user.name).toBeNull()
     expect(
       await prisma.groupAdministrator.count({
@@ -107,7 +107,7 @@ describe('eraseUser', () => {
     ).toBe(0)
     expect(
       await prisma.groupAdministrator.count({
-        where: { userId: deletedUser.id },
+        where: { userId: erasedUser.id },
       })
     ).toBe(1)
     expect(
@@ -117,12 +117,12 @@ describe('eraseUser', () => {
     ).toBe(0)
     expect(
       await prisma.groupParticipant.count({
-        where: { userId: deletedUser.id },
+        where: { userId: erasedUser.id },
       })
     ).toBe(1)
   })
 
-  it('fails silently when deleting an unknown user', async () => {
+  it('fails silently when erasing an unknown user', async () => {
     await expect(eraseUser(faker.string.uuid())).resolves.toBeUndefined()
   })
 })

@@ -394,7 +394,7 @@ describe('createOrUpdateUser', () => {
     })
   })
 
-  it('refuses to update a soft-deleted user', async () => {
+  it('refuses to update an erased user', async () => {
     const user = await userFactory.erased().create()
 
     const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
