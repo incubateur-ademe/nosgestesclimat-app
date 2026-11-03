@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
-import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
+import { findAllRefreshTokenByUserId } from '../../repositories/refresh-token.repository.ts'
 import { createSession } from '../create-session.service.ts'
 import { revokeAllSessions } from '../revoke-all-sessions.service.ts'
 
@@ -28,8 +28,8 @@ describe('revokeAllSessions', () => {
 
     await revokeAllSessions(userId)
 
-    const user1Tokens = await findAllByUserId(userId)
-    const user2Tokens = await findAllByUserId(otherUserId)
+    const user1Tokens = await findAllRefreshTokenByUserId(userId)
+    const user2Tokens = await findAllRefreshTokenByUserId(otherUserId)
 
     expect(user1Tokens).toHaveLength(0)
     expect(user2Tokens).toHaveLength(1)
@@ -40,8 +40,8 @@ describe('revokeAllSessions', () => {
 
     await revokeAllSessions(userId)
 
-    const userTokens = await findAllByUserId(userId)
-    const otherTokens = await findAllByUserId(otherUserId)
+    const userTokens = await findAllRefreshTokenByUserId(userId)
+    const otherTokens = await findAllRefreshTokenByUserId(otherUserId)
 
     expect(userTokens).toHaveLength(0)
     expect(otherTokens).toHaveLength(1)

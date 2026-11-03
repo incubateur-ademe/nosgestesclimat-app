@@ -194,6 +194,7 @@ describe('Given a NGC user', () => {
             updatedAt: expect.any(Date),
             email: null,
             lastActivityAt: null,
+            deletedAt: null,
             retentionNoticeSentAt: null,
             finalNoticeSentAt: null,
           },

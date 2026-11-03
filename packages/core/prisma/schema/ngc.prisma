@@ -413,37 +413,26 @@ model Survey {
 }
 
 model User {
-  id             String               @id @db.Uuid
-  name           String?
-  email          String?
-  administrator  GroupAdministrator[]
-  member         GroupParticipant[]
-  simulations    Simulation[]
-  refreshTokens  RefreshToken[]
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  id                    String               @id @db.Uuid
+  name                  String?
+  email                 String?
+  administrator         GroupAdministrator[]
+  member                GroupParticipant[]
+  simulations           Simulation[]
+  refreshTokens         RefreshToken[]
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
   /// Set when a session is issued to a verified account.
-  lastActivityAt DateTime?
+  lastActivityAt        DateTime?            @db.Timestamptz(3)
+  deletedAt             DateTime?            @db.Timestamptz(3)
   /// Stamped by the retention sweep as it warns the account. A stamp older than
   /// `lastActivityAt` belongs to a previous inactivity period.
-  retentionNoticeSentAt DateTime? @db.Timestamptz(3)
-  finalNoticeSentAt     DateTime? @db.Timestamptz(3)
-  verifiedUsers  VerifiedUser[]
-  actionChoices  ActionChoice[]
+  retentionNoticeSentAt DateTime?            @db.Timestamptz(3)
+  finalNoticeSentAt     DateTime?            @db.Timestamptz(3)
+  verifiedUsers         VerifiedUser[]
+  actionChoices         ActionChoice[]
 
   @@index([lastActivityAt])
-  @@schema("ngc")
-}
-
-enum AgeRange {
-  under_18
-  age_18_24
-  age_25_34
-  age_35_49
-  age_50_64
-  over_65
-  undisclosed
-
   @@schema("ngc")
 }
 

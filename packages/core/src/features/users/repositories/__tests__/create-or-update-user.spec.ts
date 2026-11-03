@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { UserDeletedError } from '../../errors/user-deleted.error.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import {
   createOrUpdateUser,
@@ -46,9 +47,10 @@ describe('createOrUpdateUser', () => {
     it('creates a bare unverified user, without a verified record', async () => {
       const id = faker.string.uuid()
 
-      const user = await createOrUpdateUser({ type: 'unverified', id })
+      const result = await createOrUpdateUser({ type: 'unverified', id })
 
-      expect(user).toEqual({
+      expect.assert(result.success)
+      expect(result.data).toEqual({
         type: 'unverified',
         id,
         name: null,
@@ -56,7 +58,7 @@ describe('createOrUpdateUser', () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       })
-      expect(await findUserById(id)).toEqual(user)
+      expect(await findUserById(id)).toEqual(result.data)
       expect(await readUserEmailColumn(id)).toBeNull()
       expect(await countVerifiedRecords(id)).toBe(0)
     })
@@ -83,7 +85,7 @@ describe('createOrUpdateUser', () => {
       const telephone = faker.phone.number()
       const position = faker.person.jobTitle()
 
-      const user = await createOrUpdateUser({
+      const result = await createOrUpdateUser({
         type: 'verified',
         id,
         email,
@@ -93,7 +95,8 @@ describe('createOrUpdateUser', () => {
         optedInForCommunications: true,
       })
 
-      expect(user).toEqual({
+      expect.assert(result.success)
+      expect(result.data).toEqual({
         type: 'verified',
         id,
         name,
@@ -104,8 +107,8 @@ describe('createOrUpdateUser', () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       })
-      expect(await findUserById(id)).toEqual(user)
-      expect(await findVerifiedUserByEmail({ email })).toEqual(user)
+      expect(await findUserById(id)).toEqual(result.data)
+      expect(await findVerifiedUserByEmail({ email })).toEqual(result.data)
       expect(await countVerifiedRecords(id)).toBe(1)
       expect(await readUserEmailColumn(id)).toBe(email)
     })
@@ -114,9 +117,10 @@ describe('createOrUpdateUser', () => {
       const id = faker.string.uuid()
       const email = generateEmail()
 
-      const user = await createOrUpdateUser({ type: 'verified', id, email })
+      const result = await createOrUpdateUser({ type: 'verified', id, email })
 
-      expect(user).toMatchObject({
+      expect.assert(result.success)
+      expect(result.data).toMatchObject({
         type: 'verified',
         id,
         email,
@@ -125,7 +129,7 @@ describe('createOrUpdateUser', () => {
         position: null,
         optedInForCommunications: false,
       })
-      expect(await findVerifiedUserByEmail({ email })).toEqual(user)
+      expect(await findVerifiedUserByEmail({ email })).toEqual(result.data)
       expect(await readUserEmailColumn(id)).toBe(email)
     })
   })
@@ -388,5 +392,14 @@ describe('createOrUpdateUser', () => {
       })
       expect(await countVerifiedRecords(created.id)).toBe(1)
     })
+  })
+
+  it('refuses to update an erased user', async () => {
+    const user = await userFactory.erased().create()
+
+    const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
+
+    expect.assert(!result.success)
+    expect(result.error).toBeInstanceOf(UserDeletedError)
   })
 })

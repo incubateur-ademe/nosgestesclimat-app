@@ -325,6 +325,44 @@ describe('login', () => {
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
       })
     })
+
+    describe('And the session userId belongs to an erased user', () => {
+      it('signs the user in as if there were no session user, without reconciling the erased account', async () => {
+        const verifiedUser = await userFactory.verified().create()
+        const erasedUser = await userFactory.erased().create()
+        const verificationCode = await verificationCodeFactory.create({
+          email: verifiedUser.email,
+        })
+
+        const result = await login({
+          email: verifiedUser.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          intent: 'create-account',
+          sessionUserId: erasedUser.id,
+        })
+
+        expect.assert(result.success)
+        expect(result.data.user).toMatchObject({
+          id: verifiedUser.id,
+          email: verifiedUser.email,
+        })
+        // The lookup filters erased accounts out: the decision is made with
+        // no session user at all.
+        expect(logger.child).toHaveBeenCalledWith(
+          expect.objectContaining({
+            existingVerifiedUser: expect.objectContaining({
+              id: verifiedUser.id,
+            }),
+            sessionUser: undefined,
+          })
+        )
+        // The erased user is unverified: had it been read as the session
+        // user, its data would have been reconciled into the signed-in one.
+        expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
+        expect(vi.mocked(syncUserData)).not.toHaveBeenCalled()
+      })
+    })
   })
 
   describe('Given no verified account exists for the email', () => {
@@ -391,6 +429,25 @@ describe('login', () => {
         // The unfound session user leaves nothing to reconcile.
         expect(vi.mocked(syncUserData)).toHaveBeenCalledTimes(1)
         expect(vi.mocked(reconcileSimulationsAfterLogin)).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('And the session userId belongs to an erased user', () => {
+      it('signs the user up with a fresh id', async () => {
+        const erasedUser = await userFactory.erased().create()
+        const verificationCode = await verificationCodeFactory.create()
+
+        const result = await login({
+          email: verificationCode.email,
+          code: verificationCode.code,
+          locale: 'fr',
+          intent: 'create-account',
+          sessionUserId: erasedUser.id,
+        })
+
+        expect.assert(result.success)
+        expect(result.data.mode).toBe('signUp')
+        expect(result.data.user.id).not.toBe(erasedUser.id)
       })
     })
 

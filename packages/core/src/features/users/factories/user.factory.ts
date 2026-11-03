@@ -7,7 +7,13 @@ import type { UnverifiedUser, VerifiedUser } from '../types/user.ts'
  * account on the activity clock. */
 type WithLastActivity = { lastActivityAt: Date | null }
 
-class UserFactory extends Factory<UnverifiedUser & WithLastActivity> {
+/** Set by the erasure rather than at registration: a test sets it to start from
+ * an erased account. */
+type WithDeletedAt = { deletedAt: Date | null }
+
+class UserFactory extends Factory<
+  UnverifiedUser & WithLastActivity & WithDeletedAt
+> {
   /** Returns a factory that persists a User with a linked VerifiedUser record. */
   verified() {
     return verifiedUserFactory
@@ -16,6 +22,11 @@ class UserFactory extends Factory<UnverifiedUser & WithLastActivity> {
   /** Explicit unverified (the default). Returns the factory itself. */
   unverified() {
     return this
+  }
+
+  /** Returns a factory that persists an erased account. */
+  erased() {
+    return this.params({ deletedAt: new Date(), name: null })
   }
 }
 
@@ -29,6 +40,7 @@ export const userFactory = UserFactory.define(({ onCreate }) => {
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
         lastActivityAt: data.lastActivityAt,
+        deletedAt: data.deletedAt,
       },
     })
     return data
@@ -86,4 +98,5 @@ const userBase = () => ({
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
   lastActivityAt: null as Date | null,
+  deletedAt: null as Date | null,
 })
