@@ -153,29 +153,35 @@ export function createLogin({
         const signUpAt = (id: string) =>
           createOrUpdateUser({ type: 'verified', id, email }, { session })
 
-        const converted =
-          sessionUser?.type === 'unverified'
-            ? await signUpAt(sessionUser.id)
-            : undefined
+        const signedUp = await signUpAt(
+          sessionUser?.type === 'unverified' ? sessionUser.id : randomUUID()
+        )
 
-        // An erasure committed between the session user's read and this write
-        // leaves nothing to convert: the account is already stripped, and the
-        // sign-up starts a fresh identity, as for a session user not found.
-        const signedUp =
-          converted?.success === true ? converted : await signUpAt(randomUUID())
+        let newUser: VerifiedUser
+        if (signedUp.success) {
+          newUser = signedUp.data
+        } else {
+          // An erasure committed between the session user's read and this
+          // write leaves nothing to convert: the account is already stripped,
+          // so the sign-up starts a fresh identity, as for a session user not
+          // found.
+          invariant(signedUp.error.code === 'user_deleted')
 
-        // A fresh id has no row to be erased: the create branch cannot fail.
-        invariant(signedUp.success)
+          const fresh = await signUpAt(randomUUID())
+          // A fresh id has no row to be erased: the create branch cannot fail.
+          invariant(fresh.success)
+          newUser = fresh.data
+        }
 
         if (sessionUser?.type === 'verified') {
           decisionLogger.warn(
             'Sign-up with a fresh identity: the session user belongs to another verified account',
-            { signedUpUserId: signedUp.data.id }
+            { signedUpUserId: newUser.id }
           )
         }
 
         return success({
-          user: signedUp.data,
+          user: newUser,
           mode: 'signUp' as const,
           reconcileUserId: undefined,
         })
