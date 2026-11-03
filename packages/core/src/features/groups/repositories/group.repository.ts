@@ -1,3 +1,4 @@
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { Group } from '../types/group.ts'
 import { toGroup } from './group.mapper.ts'
@@ -36,4 +37,22 @@ export const findManyGroupsBySimulationId = async ({
     select: { group: { select: groupSelect } },
   })
   return groupParticipants.map((gp) => toGroup(gp.group))
+}
+
+/** Deletes the groups the user administers; their participants go with them. */
+export const deleteGroupsAdministeredByUser = async (
+  { userId }: { userId: string },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<void> => {
+  await session.group.deleteMany({
+    where: { administrator: { is: { userId } } },
+  })
+}
+
+/** Removes the user from the groups they only take part in. */
+export const deleteGroupParticipationsForUser = async (
+  { userId }: { userId: string },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<void> => {
+  await session.groupParticipant.deleteMany({ where: { userId } })
 }
