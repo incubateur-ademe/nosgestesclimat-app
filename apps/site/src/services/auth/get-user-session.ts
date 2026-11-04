@@ -5,7 +5,6 @@ import type {
   AuthUser,
 } from '@nosgestesclimat/core/features/auth/types/user-session'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import * as Sentry from '@sentry/nextjs'
 import { headers } from 'next/headers'
 import { cache } from 'react'
 
@@ -40,7 +39,6 @@ export const getUserSession = cache(
       }
       // The PostHog link is the proxy's job (`middlewareIdentity`): this
       // service only resolves who the caller is.
-      Sentry.setUser(user)
       return user
     }
 
@@ -48,7 +46,6 @@ export const getUserSession = cache(
       id: userId,
       isAuth: false,
     }
-    Sentry.setUser(user)
     return user
   })
 )

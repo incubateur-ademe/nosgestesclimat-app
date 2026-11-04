@@ -5,9 +5,8 @@ import { posthogClient } from '../services/tracking/posthogServer.ts'
 import { currentRequestIdentity } from './request-identity.ts'
 
 /**
- * The PostHog half of the server-side capture: the same errors Sentry gets,
- * filed under the person the request was identified as, and carrying the line
- * they were reported with.
+ * The server-side capture: the error filed under the person the request was
+ * identified as, carrying the line it was reported with.
  */
 export function captureToPostHog(error: Error, line?: LogMeta): void {
   // The request's trace, which is what the log bridge reads too: an error

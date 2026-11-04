@@ -1,6 +1,5 @@
 import type { OtelAttributes } from '@nosgestesclimat/core/features/logger/index'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import * as Sentry from '@sentry/nextjs'
 import type { Instrumentation } from 'next'
 
 export async function register() {
@@ -18,8 +17,8 @@ export async function register() {
 
     // Validates the server environment — the file throws on a missing or
     // malformed variable — and hands the observability settings over: this
-    // provider is the one Sentry and pino read their trace context from, so it
-    // must be registered before anything instrumented is imported.
+    // provider is the one pino reads its trace context from, so it must be
+    // registered before anything instrumented is imported.
     const {
       NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: token,
       POSTHOG_OTLP_ENDPOINT: endpoint,
@@ -29,7 +28,6 @@ export async function register() {
     if (token && endpoint) {
       initOtel('web-server', version, { token, endpoint })
     }
-    await import('../sentry.server.config')
     const { posthogClient } = await import('@/services/tracking/posthogServer')
 
     async function shutdown() {
@@ -53,7 +51,6 @@ export async function register() {
     async function crash(error: Error) {
       logger.fatal(error)
       await Promise.allSettled([
-        Sentry.flush(2_000),
         shutdownOtel(),
         // `fatal` queued the exception to PostHog just above: without this
         // flush, the crash — the one failure nobody gets to retry — is the one
@@ -77,8 +74,7 @@ export async function register() {
 }
 
 /** Catches errors no boundary controlled. The logger is the only capture
- * path: Sentry's own `captureRequestError` would file the same error twice.
- * HTTP attributes follow OTel semconv so one filter spans nginx logs and
+ * path. HTTP attributes follow OTel semconv so one filter spans nginx logs and
  * traces. */
 export const onRequestError: Instrumentation.onRequestError = async (
   error,

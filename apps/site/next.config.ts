@@ -3,12 +3,10 @@ import { version } from './package.json'
 
 import createMDX from '@next/mdx'
 import { withPostHogConfig } from '@posthog/nextjs-config'
-import { SentryBuildOptions, withSentryConfig } from '@sentry/nextjs'
 
 import redirects from './config/redirects.js'
 
 import { remoteImagesPatterns } from './config/remoteImagesPatterns'
-import { APP_ENV } from './src/env/app-env'
 // The build validates the server contract like the server does: the same
 // primitives (`requiredInProduction`, the one error shape), and a variable the
 // upload needs is missing exactly where the build runs.
@@ -108,47 +106,22 @@ const nextConfig = withMDX({
 // One release everywhere: the deployed commit SHA, the same string as
 // `service.version` — the deploy env already records the environment.
 const releaseName = process.env.SOURCE_VERSION ?? version
-const sentryConfig: SentryBuildOptions = {
-  // Suppresses source map uploading logs during dev build
-  silent: APP_ENV !== 'production',
-  org: 'incubateur-ademe',
-  project: 'nosgestesclimat-nextjs',
-  release: {
-    name: releaseName,
-    setCommits: {
-      auto: true,
-    },
-    deploy: {
-      env: APP_ENV,
-    },
-  },
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-
-  // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: APP_ENV !== 'development',
-  telemetry: false,
-}
 
 /** Source maps uploaded to PostHog at build time, then stripped from the
  * output. Serving them live would break on rotating chunk names and publish
  * sources. Skipped locally where there is nothing to symbolicate. */
-const configWithSourceMaps =
-  env.POSTHOG_PERSONAL_API_KEY && env.POSTHOG_PROJECT_ID
-    ? withPostHogConfig(nextConfig, {
-        personalApiKey: env.POSTHOG_PERSONAL_API_KEY,
-        projectId: env.POSTHOG_PROJECT_ID,
-        // The project is on the EU instance; the package defaults to the US one.
-        host: 'https://eu.posthog.com',
-        sourcemaps: {
-          // The CLI needs a name and a version, and the deploy environment has
-          // no git metadata to derive them from: the version is the commit, the
-          // name keeps one release timeline across the environments.
-          releaseName: 'nosgestesclimat-site',
-          releaseVersion: releaseName,
-        },
-      })
-    : nextConfig
-
-export default process.env.NODE_ENV === 'production'
-  ? withSentryConfig(configWithSourceMaps, sentryConfig)
-  : configWithSourceMaps
+export default env.POSTHOG_PERSONAL_API_KEY && env.POSTHOG_PROJECT_ID
+  ? withPostHogConfig(nextConfig, {
+      personalApiKey: env.POSTHOG_PERSONAL_API_KEY,
+      projectId: env.POSTHOG_PROJECT_ID,
+      // The project is on the EU instance; the package defaults to the US one.
+      host: 'https://eu.posthog.com',
+      sourcemaps: {
+        // The CLI needs a name and a version, and the deploy environment has
+        // no git metadata to derive them from: the version is the commit, the
+        // name keeps one release timeline across the environments.
+        releaseName: 'nosgestesclimat-site',
+        releaseVersion: releaseName,
+      },
+    })
+  : nextConfig
