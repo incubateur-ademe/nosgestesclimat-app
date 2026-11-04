@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   deleteSessionCookies: vi.fn(),
   cookieDelete: vi.fn(),
   revalidatePath: vi.fn(),
+  redirect: vi.fn(),
 }))
 
 describe('logout', () => {
@@ -40,6 +41,7 @@ describe('logout', () => {
     for (const locale of i18nConfig.locales) {
       expect(mocks.revalidatePath).toHaveBeenCalledWith(`/${locale}`, 'layout')
     }
+    expect(mocks.redirect).toHaveBeenCalledWith('/')
   })
 
   it('still clears the cookies without a session', async () => {
@@ -70,3 +72,5 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidatePath }))
+
+vi.mock('next/navigation', () => ({ redirect: mocks.redirect }))

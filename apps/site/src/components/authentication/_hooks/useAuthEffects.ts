@@ -9,6 +9,7 @@ import _logger from '@/logger/logger.browser'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { safeSessionStorage } from '@/utils/browser/safeSessionStorage'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
+import { useRouter } from 'next/navigation'
 
 import { UnknownCodeError } from '../errors'
 import type {
@@ -64,6 +65,7 @@ function useCompletionEffect(
     tracker?: Tracker
   }
 ) {
+  const router = useRouter()
   const { cookieState } = useCookieManagement()
   const authenticatedUserId =
     state.phase === 'authenticated' ? state.userId : null
@@ -95,8 +97,8 @@ function useCompletionEffect(
             : options.redirectTo
 
         if (destination) {
-          // A new document request is required for the proxy to derive the session.
-          window.location.assign(destination)
+          router.push(destination)
+          router.refresh()
         }
       } catch (error) {
         logger.error(toError(error))
@@ -110,6 +112,7 @@ function useCompletionEffect(
     cookieState,
     options.onComplete,
     options.redirectTo,
+    router,
   ])
 }
 

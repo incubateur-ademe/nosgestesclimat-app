@@ -4,9 +4,8 @@ import { faker } from '@faker-js/faker'
 import { describe, it, vi } from 'vitest'
 import { eraseUserAccount } from '../erase-user-account'
 
-const { eraseUserMock, logoutMock } = vi.hoisted(() => ({
+const { eraseUserMock } = vi.hoisted(() => ({
   eraseUserMock: vi.fn(),
-  logoutMock: vi.fn(),
 }))
 
 describe('eraseUserAccount', () => {
@@ -37,7 +36,6 @@ describe('eraseUserAccount', () => {
 
     await expect(eraseUserAccount()).resolves.toBeUndefined()
     expect(eraseUserMock).toHaveBeenCalledWith(userId)
-    expect(logoutMock).toHaveBeenCalledOnce()
   })
   it('should propagate the error in case of a server error', async () => {
     vi.mocked(getUserSession).mockResolvedValue({
@@ -48,7 +46,6 @@ describe('eraseUserAccount', () => {
     eraseUserMock.mockRejectedValueOnce(new Error('Boom'))
 
     await expect(eraseUserAccount()).rejects.toThrow('Boom')
-    expect(logoutMock).not.toHaveBeenCalled()
   })
 })
 
@@ -57,10 +54,6 @@ vi.mock('@/services/auth/get-user-session', () => ({
 }))
 
 vi.mock('@/logger/logger.server', () => ({ default: serverLoggerMock }))
-
-vi.mock('@/services/auth/logout', () => ({
-  logout: logoutMock,
-}))
 
 vi.mock('next/navigation', () => ({
   unauthorized: () => {

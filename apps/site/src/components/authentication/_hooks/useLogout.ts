@@ -9,7 +9,7 @@ import { useCallback } from 'react'
 
 const posthog = new PostHog()
 
-/** Drops the local user, ends the server session, then reloads the document. */
+/** Drops the local user, then ends the server session: the action redirects home. */
 export function useLogout() {
   const { setUser, setSimulation } = useUser()
 
@@ -22,9 +22,5 @@ export function useLogout() {
     posthog.resetIdentity()
 
     await logout()
-
-    // A full-document navigation forces a request carrying the cleared cookies,
-    // so the proxy serves a logged-out header.
-    window.location.assign('/')
   }, [setUser, setSimulation])
 }
