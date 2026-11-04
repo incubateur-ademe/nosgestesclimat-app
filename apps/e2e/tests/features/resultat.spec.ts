@@ -1,6 +1,5 @@
 import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { expect, test } from '../fixtures'
-import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
 import { COMPLETED_TEST_STATE, USER_ACCOUNT_STATE } from '../state'
 
 test.beforeEach(async ({ page }) => {
@@ -25,7 +24,8 @@ test.describe('Given a user that completed a test without an account', () => {
   })
 
   test('should display the carbon footprint', async ({ page }) => {
-    const carbonFootprintElem = getCarbonFootprintElem(page)
+    // The results hero shows the figure and its unit in separate elements
+    const carbonFootprintElem = page.getByTestId('carbon-footprint-value')
     await expect(carbonFootprintElem).toBeInViewport()
 
     const carbonFootprintResult = parseFloat(
