@@ -1,22 +1,18 @@
 import 'server-only'
 
-import { captureException } from '@sentry/nextjs'
 import { unstable_rethrow } from 'next/navigation'
 
 import { env } from '@/env/server'
 import { captureToPostHog } from '@/observability/error-capture'
 import { createLogger } from './logger.node'
 
-/** Site server logger: Sentry captures + Next control flow. Shared with the
- * worker via `logger.node.ts`; both sinks receive the same attributes. */
+/** Site server logger: PostHog capture + Next control flow. Shared with the
+ * worker via `logger.node.ts`. */
 const logger = createLogger({
   service: 'web-server',
   verbosity: env.NEXT_PUBLIC_LOG_VERBOSITY,
   pretty: env.LOG_PRETTY,
-  onCapture: (error, line) => {
-    captureException(error, { extra: line })
-    captureToPostHog(error, line)
-  },
+  onCapture: captureToPostHog,
   rethrowControlFlow: unstable_rethrow,
 })
 

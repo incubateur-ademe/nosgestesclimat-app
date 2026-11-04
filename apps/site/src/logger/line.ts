@@ -69,9 +69,9 @@ function carriedAttributes(error: Error): LogMeta {
 
 /** OTel semconv exception attributes for a log record. `exception.type` is the
  * error's `code` (stable across minification), not the class name. No stack:
- * Sentry owns it, and a stack per line is volume paid twice. PostHog reads
- * span attributes, not events — without these a failed trace shows status but
- * not cause. */
+ * Error Tracking carries it, and a stack per line is volume paid twice. PostHog
+ * reads span attributes, not events — without these a failed trace shows status
+ * but not cause. */
 export function exceptionAttributes(error: Error): LogMeta {
   return {
     [EXCEPTION_TYPE]: error instanceof ErrorWithCode ? error.code : error.name,

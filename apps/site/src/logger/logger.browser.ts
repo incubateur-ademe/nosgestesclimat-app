@@ -6,7 +6,6 @@ import type {
 } from '@nosgestesclimat/core/features/logger/index'
 import { spanDecorator } from '@nosgestesclimat/core/features/logger/with-span'
 import { ErrorWithCode } from '@nosgestesclimat/core/lib/errors'
-import { captureException } from '@sentry/nextjs'
 import posthog, { type LogAttributes } from 'posthog-js'
 
 import { APP_ENV } from '../env/app-env.ts'
@@ -55,10 +54,9 @@ const RANK: Record<LogLevel, number> = {
   fatal: 60,
 }
 
-/** Sends a failure to both sinks with its line. Inside the logger so nothing
- * reports without a line. */
+/** Sends a failure to Error Tracking with its line. Inside the logger so
+ * nothing reports without a line. */
 function capture(error: Error, line: LogMeta): void {
-  captureException(error, { extra: line })
   posthog.captureException(error, line)
 }
 

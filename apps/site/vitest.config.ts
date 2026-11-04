@@ -21,7 +21,6 @@ export default defineConfig({
       // the contract in its required mode.
       NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: 'phc_test',
       NEXT_PUBLIC_POSTHOG_HOST: 'https://eu.i.posthog.com',
-      NEXT_PUBLIC_SENTRY_DSN: 'https://sentry.test/1',
     },
     css: true,
     exclude: ['**/node_modules/**', '**/e2e/**', '**/.next/**'],

@@ -66,8 +66,6 @@
     "@prisma/instrumentation": "^7.10.0",
     "@publicodes/react-ui": "^1.10.0",
     "@radix-ui/themes": "^3.3.0",
-    "@sentry/nextjs": "^10.46.0",
-    "@sentry/node": "^10.48.0",
     "@shadcn/react": "^0.3.0",
     "@splidejs/react-splide": "^0.7.12",
     "@storybook/react": "^10.3.3",

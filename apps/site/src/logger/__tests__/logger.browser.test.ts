@@ -7,25 +7,20 @@ import type {
 import type { Logger as PosthogLogger } from 'posthog-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { posthogLogger, posthogCaptureException, sentryCaptureException } =
-  vi.hoisted(() => ({
-    posthogLogger: {
-      trace: vi.fn(),
-      debug: vi.fn(),
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      fatal: vi.fn(),
-    },
-    posthogCaptureException: vi.fn(),
-    sentryCaptureException: vi.fn(),
-  }))
+const { posthogLogger, posthogCaptureException } = vi.hoisted(() => ({
+  posthogLogger: {
+    trace: vi.fn(),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    fatal: vi.fn(),
+  },
+  posthogCaptureException: vi.fn(),
+}))
 
 vi.mock('posthog-js', () => ({
   default: { logger: posthogLogger, captureException: posthogCaptureException },
-}))
-vi.mock('@sentry/nextjs', () => ({
-  captureException: sentryCaptureException,
 }))
 
 import clientLogger, {
@@ -116,7 +111,7 @@ describe('createBrowserLogger', () => {
 
     expect(console.error).not.toHaveBeenCalled()
     expect(posthogLogger.error).not.toHaveBeenCalled()
-    expect(sentryCaptureException).not.toHaveBeenCalled()
+    expect(posthogCaptureException).not.toHaveBeenCalled()
   })
 
   it('merges child bindings into every following line', () => {
@@ -136,12 +131,8 @@ describe('createBrowserLogger', () => {
       'exception.type': 'Error',
       'exception.message': 'engine blew up',
     })
-    // The capture is the logger's own: Sentry keeps the stack, PostHog Error
-    // Tracking the volume. It cannot be called without its line, and both sinks
-    // read it minus the rendering `$exception_list` carries on its own.
-    expect(sentryCaptureException).toHaveBeenCalledWith(error, {
-      extra: { 'http.route': '/fin/eau' },
-    })
+    // The capture is the logger's own: it cannot be called without its line,
+    // and it reads it minus the rendering `$exception_list` carries on its own.
     expect(posthogCaptureException).toHaveBeenCalledWith(error, {
       'http.route': '/fin/eau',
     })
@@ -151,12 +142,11 @@ describe('createBrowserLogger', () => {
     logger.warn(new Error('slow'))
     logger.error(new Error('reported'))
 
-    expect(sentryCaptureException).toHaveBeenCalledTimes(1)
-    expect(sentryCaptureException).toHaveBeenCalledWith(
+    expect(posthogCaptureException).toHaveBeenCalledTimes(1)
+    expect(posthogCaptureException).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'reported' }),
       expect.anything()
     )
-    expect(posthogCaptureException).toHaveBeenCalledTimes(1)
   })
 
   it('binds the scope for the body of `openSpan`, which has no span here', async () => {
@@ -209,7 +199,7 @@ describe('createBrowserLogger', () => {
     expect(thrown).toMatchObject({ logMessage: 'engine blew up' })
     expect(console.error).not.toHaveBeenCalled()
     expect(posthogLogger.error).not.toHaveBeenCalled()
-    expect(sentryCaptureException).not.toHaveBeenCalled()
+    expect(posthogCaptureException).not.toHaveBeenCalled()
   })
 
   it('carries the fields of an error as attributes, not in its message', () => {

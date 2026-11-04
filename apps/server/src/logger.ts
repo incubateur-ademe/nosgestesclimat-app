@@ -1,26 +1,8 @@
 import type { Logger as CoreLogger } from '@nosgestesclimat/core/features/logger/index'
 import { spanDecorator } from '@nosgestesclimat/core/features/logger/with-span'
 import winston from 'winston'
-import SentryTransport from 'winston-transport-sentry-node'
-import { config } from './config.ts'
 
 const { combine, timestamp, json, errors } = winston.format
-
-const transports: winston.transport[] = [new winston.transports.Console()]
-
-if (config.thirdParty.sentry.dsn) {
-  transports.push(
-    new SentryTransport.default({
-      sentry: {
-        dsn: config.thirdParty.sentry.dsn,
-        tracesSampleRate: 0.1,
-        sampleRate: 0.1,
-        debug: false,
-      },
-      level: 'error',
-    })
-  )
-}
 
 export const redactBody = <T = unknown>(body: T) => {
   if (typeof body === 'object' && !!body) {
@@ -43,7 +25,7 @@ export const redactBody = <T = unknown>(body: T) => {
 
 /**
  * Flattens an error into log metadata. `message` and `stack` are picked up by
- * winston (and forwarded to Sentry) while the rest of the metadata is kept.
+ * winston while the rest of the metadata is kept.
  */
 export const errorMeta = (err: unknown) =>
   err instanceof Error
@@ -56,7 +38,7 @@ const logger = winston.createLogger({
     service: 'server',
   },
   format: combine(timestamp(), json(), errors({ stack: true })),
-  transports,
+  transports: [new winston.transports.Console()],
 })
 
 /**

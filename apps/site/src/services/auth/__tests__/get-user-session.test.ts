@@ -4,7 +4,6 @@ import {
   SimpleSpanProcessor,
 } from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
-import * as Sentry from '@sentry/nextjs'
 import {
   afterAll,
   beforeAll,
@@ -65,11 +64,6 @@ describe('getUserSession', () => {
     // The PostHog link is the proxy's job (`middlewareIdentity`): this only
     // resolves who the caller is.
     await expect(getUserSession()).resolves.toEqual({
-      id: userId,
-      email: 'alice@example.com',
-      isAuth: true,
-    })
-    expect(Sentry.setUser).toHaveBeenCalledWith({
       id: userId,
       email: 'alice@example.com',
       isAuth: true,
