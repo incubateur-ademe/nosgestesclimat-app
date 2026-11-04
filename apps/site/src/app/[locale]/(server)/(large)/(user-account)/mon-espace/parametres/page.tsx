@@ -52,7 +52,7 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
     <div className="flex flex-col">
       <UserSpaceTabs isAuth activeTabId="settings" />
 
-      <div className="mb-6 flex w-full items-start justify-between">
+      <div className="mb-6">
         <Title
           title={
             <span>
@@ -66,15 +66,11 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
       </div>
 
       <section aria-labelledby="user-info-title" className="mb-10">
-        <div className="flex flex-col md:flex-row md:justify-between">
-          <h2 id="user-info-title" className="mb-4">
-            <TransServer i18nKey="mon-espace.settings.userInfos.title">
-              Mes informations
-            </TransServer>
-          </h2>
-
-          <DeleteAccount />
-        </div>
+        <h2 id="user-info-title" className="mb-4">
+          <TransServer i18nKey="mon-espace.settings.userInfos.title">
+            Mes informations
+          </TransServer>
+        </h2>
 
         <div className="flex max-w-180 flex-col gap-8">
           <QueryClientProviderWrapper>
@@ -97,6 +93,10 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
             region={regionData.current}
           />
         ) : null}
+      </section>
+
+      <section className="mt-10 border-t border-slate-200 pt-6">
+        <DeleteAccount />
       </section>
     </div>
   )

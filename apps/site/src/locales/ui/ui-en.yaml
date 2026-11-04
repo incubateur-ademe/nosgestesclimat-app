@@ -2329,3 +2329,5 @@ entries:
   mon-espace.settings.delete.dialog.title.lock: Suppression du compte
   mon-espace.settings.delete.dialog.description2: <0>This action cannot be undone.</0>
   mon-espace.settings.delete.dialog.description2.lock: <0>Cette action est irréversible.</0>
+  mon-espace.settings.delete.success: Your personal space has been successfully deleted
+  mon-espace.settings.delete.success.lock: Votre espace personnel a bien été supprimé
