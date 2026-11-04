@@ -20,6 +20,8 @@ describe('eraseUser', () => {
     let userId: string
     let email: string
     let simulationCount: number
+    let administeredGroupId: string
+    let joinedGroupId: string
 
     beforeEach(async () => {
       const user = await userFactory
@@ -28,11 +30,29 @@ describe('eraseUser', () => {
       userId = user.id
       email = user.email
 
+      const otherUser = await userFactory.verified().create()
+
       await organisationFactory.withAdministrator(user).create()
       await refreshTokenFactory.params({ userId }).create()
       await simulationFactory.params({ userId }).completed().create()
-      await groupFactory.withAdministrator(userId).create()
-      await groupFactory.withParticipant({ userId }).create()
+
+      // A group the user runs: creating one makes its administrator a
+      // participant too, and someone else took part in it.
+      administeredGroupId = (
+        await groupFactory
+          .withAdministrator(userId)
+          .withParticipant({ userId })
+          .withParticipant({ userId: otherUser.id })
+          .create()
+      ).id
+
+      // A group the user joined, run by someone else.
+      joinedGroupId = (
+        await groupFactory
+          .withAdministrator(otherUser.id)
+          .withParticipant({ userId })
+          .create()
+      ).id
 
       simulationCount = await prisma.simulation.count({ where: { userId } })
 
@@ -69,14 +89,33 @@ describe('eraseUser', () => {
       expect(await findAllRefreshTokenByUserId(userId)).toEqual([])
     })
 
-    it('keeps the statistical trace: the simulations and the group memberships', async () => {
+    it('deletes the groups the user administers, participants included', async () => {
+      expect(
+        await prisma.group.findUnique({ where: { id: administeredGroupId } })
+      ).toBeNull()
+      expect(
+        await prisma.groupParticipant.count({
+          where: { groupId: administeredGroupId },
+        })
+      ).toBe(0)
+      expect(
+        await prisma.groupAdministrator.count({
+          where: { groupId: administeredGroupId },
+        })
+      ).toBe(0)
+    })
+
+    it('removes the user from the groups they joined, keeping those groups', async () => {
+      expect(
+        await prisma.group.findUnique({ where: { id: joinedGroupId } })
+      ).not.toBeNull()
+      expect(await prisma.groupParticipant.count({ where: { userId } })).toBe(0)
+    })
+
+    it('keeps the statistical trace: the simulations', async () => {
       expect(await prisma.simulation.count({ where: { userId } })).toBe(
         simulationCount
       )
-      expect(await prisma.groupAdministrator.count({ where: { userId } })).toBe(
-        1
-      )
-      expect(await prisma.groupParticipant.count({ where: { userId } })).toBe(1)
     })
   })
 
