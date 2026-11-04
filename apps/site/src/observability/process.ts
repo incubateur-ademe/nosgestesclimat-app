@@ -1,8 +1,6 @@
 import type { LogMeta } from '@nosgestesclimat/core/features/logger/index'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import * as Sentry from '@sentry/node'
 
-import { APP_ENV } from '../env/app-env.ts'
 import { readServerEnv } from '../env/server-contract.ts'
 import { createLogger } from '../logger/logger.node.ts'
 import { posthogClient } from '../services/tracking/posthogServer.ts'
@@ -22,27 +20,21 @@ export function wireProcessObservability(service: string) {
   // Handlers first, then the client they report with: both are in place before
   // the contract is read, which is what may fail.
   reportStartupFailures(service)
-  initSentryClient(process.env.NEXT_PUBLIC_SENTRY_DSN)
 
   initProcessObservability(service)
 
   return { captureException, flushObservability }
 }
 
-/** An issue in Sentry, an event in PostHog. */
+/** An issue in PostHog Error Tracking. */
 export function captureException(error: Error, line: LogMeta): void {
-  Sentry.captureException(error, { extra: line })
   captureToPostHog(error, line)
 }
 
 /** Sends what the reporters hold and closes the PostHog client, which only
  * queues. A reporter that never started resolves on its own. */
 export async function flushObservability(): Promise<void> {
-  await Promise.allSettled([
-    Sentry.flush(2_000),
-    posthogClient.shutdown(),
-    shutdownOtel(),
-  ])
+  await Promise.allSettled([posthogClient.shutdown(), shutdownOtel()])
 }
 
 /** Covers a process that dies before its own wiring is up — a missing variable,
@@ -74,16 +66,4 @@ function initProcessObservability(service: string): void {
   if (token && endpoint) {
     initOtel(service, version, { token, endpoint })
   }
-}
-
-function initSentryClient(dsn: string | undefined): void {
-  Sentry.init({
-    dsn,
-    environment: APP_ENV,
-    sampleRate: 1,
-    // Traces live in PostHog, and a process reads them from the provider its
-    // observability wiring registers: Sentry must not install one of its own.
-    skipOpenTelemetrySetup: true,
-    tracesSampleRate: 0,
-  })
 }

@@ -97,14 +97,6 @@ vi.mock('uuid', () => ({
   v4: vi.fn(() => faker.string.uuid()),
 }))
 
-// Mock Sentry
-vi.mock('@sentry/nextjs', () => ({
-  captureException: vi.fn(),
-  captureMessage: vi.fn(),
-  setExtra: vi.fn(),
-  setUser: vi.fn(),
-}))
-
 // Mock next/font/local to avoid file-system reads in jsdom
 vi.mock('@/app/[locale]/marianne', () => ({
   marianne: { className: 'font-marianne' },

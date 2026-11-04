@@ -68,10 +68,6 @@ const ScalewaySchema = v.strictObject({
   rootPath: v.optional(v.string(), 'ngc'),
 })
 
-const SentrySchema = v.strictObject({
-  dsn: v.optional(v.string()),
-})
-
 const NotionSchema = v.strictObject({
   apiKey: v.string(),
   actionDatabaseId: v.string(),
@@ -89,7 +85,6 @@ const ThirdPartySchema = v.strictObject({
   notion: NotionSchema,
   posthog: PosthogSchema,
   scaleway: ScalewaySchema,
-  sentry: SentrySchema,
 })
 
 const ConfigSchema = v.pipe(
@@ -145,7 +140,6 @@ const {
     SCALEWAY_ENDPOINT,
     SCALEWAY_REGION,
     SCALEWAY_ROOT_PATH,
-    SENTRY_DSN,
     SERVER_URL,
   },
 } = process
@@ -196,9 +190,6 @@ export const config = v.parse(ConfigSchema, {
       endpoint: SCALEWAY_ENDPOINT,
       region: SCALEWAY_REGION,
       rootPath: SCALEWAY_ROOT_PATH,
-    },
-    sentry: {
-      dsn: SENTRY_DSN,
     },
   },
 })

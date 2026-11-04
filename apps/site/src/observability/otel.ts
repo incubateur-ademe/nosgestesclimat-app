@@ -61,7 +61,7 @@ export function initOtel(
     // (`production`, `preprod`): one filter then covers the three runtimes.
     'deployment.environment.name': APP_ENV,
     // One release everywhere: the deployed commit SHA, the same string as the
-    // Sentry release and the browser `serviceVersion`. No env suffix — the
+    // source-map release and the browser `serviceVersion`. No env suffix — the
     // environment has its own key. Absent in local dev, which deploys nothing:
     // a stale value would be worse than none.
     ...(sourceVersion ? { 'service.version': sourceVersion } : {}),

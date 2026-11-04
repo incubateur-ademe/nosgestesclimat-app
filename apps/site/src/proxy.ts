@@ -7,6 +7,7 @@ import {
   clearSessionHeader,
   setSessionHeaderFromCookie,
 } from '@/helpers/server/proxy/session-header'
+import { middlewareStripEmail } from '@/helpers/server/proxy/strip-email.middleware'
 import i18nConfig from '@/i18nConfig'
 import { i18nRouter } from 'next-i18n-router'
 import { type NextRequest, NextResponse } from 'next/server'
@@ -40,6 +41,9 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   // Phase 1 — Interceptors
+  const email = middlewareStripEmail(request)
+  if (email.redirect) return email.redirect
+
   const ff = middlewareFeatureFlags(request)
   if (ff.redirect) return ff.redirect
 

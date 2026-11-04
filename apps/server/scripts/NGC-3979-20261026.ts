@@ -1,3 +1,4 @@
+import { retentionNoticeActivityDateCutoff } from '@nosgestesclimat/core/features/users/helpers/retention-period'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { parseArgs } from 'node:util'
 
@@ -92,7 +93,10 @@ export async function addLastActivityAtToUser(props?: Props) {
       ),
       updated_users AS (
         UPDATE ngc."User" u
-           SET "lastActivityAt" = m_r.date
+           -- Clamped to the start of the notice window: an account already past
+           -- the erasure threshold enters the sweep there instead of jumping
+           -- straight to the final notice.
+           SET "lastActivityAt" = GREATEST(m_r.date, $4::timestamptz)
           FROM most_recent_user_update_selection m_r
          WHERE u.id = m_r.user_id
           -- Prevent update if dry mode is enabled
@@ -106,7 +110,8 @@ export async function addLastActivityAtToUser(props?: Props) {
     `,
       cursor,
       batchSize,
-      isDry
+      isDry,
+      retentionNoticeActivityDateCutoff(new Date())
     )
 
     const batch: BatchResult | undefined = batches[0]
