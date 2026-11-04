@@ -40,13 +40,16 @@ const stackEnv = (overrides: Record<string, string>): NodeJS.ProcessEnv => ({
 })
 
 const isPortInUse = (port: number) =>
-  new Promise<boolean>((resolve) => {
+  new Promise<boolean>((resolve, reject) => {
     const socket = connect({ port, host: 'localhost' })
     socket.once('connect', () => {
       socket.destroy()
       resolve(true)
     })
-    socket.once('error', () => resolve(false))
+    socket.once('error', (error: NodeJS.ErrnoException) => {
+      if (error.code === 'ECONNREFUSED') resolve(false)
+      else reject(error)
+    })
   })
 
 /**

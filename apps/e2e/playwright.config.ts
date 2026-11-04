@@ -1,6 +1,6 @@
 // Must stay the first import: it points the process at its worker's stack
 // before anything below reads the environment.
-import './stack/worker-env.ts'
+import './stack/playwright-worker-env.ts'
 
 import { defineConfig, devices } from '@playwright/test'
 import { firefoxLaunchOptions, sharedConfig } from './playwright.shared'

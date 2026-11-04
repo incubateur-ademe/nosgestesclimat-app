@@ -41,7 +41,8 @@ et preprod), et une partie **propre à chaque suite**.
 
 - `stack/` — orchestration des stacks par worker (bases, copies du build,
   processus), lancée par le `globalSetup` de `playwright.config.ts`.
-  `stack/worker-env.ts` pointe chaque worker sur sa base et son site.
+  `stack/playwright-worker-env.ts` pointe chaque worker sur sa base et son
+  site.
 - `tests/local/fixtures.ts` — la base commune, plus le reset de la base du
   worker avant chaque test (`tests/local/database.ts`, option
   `resetDatabase`), et `localVisitorState` (bandeau cookies refusé, pas de

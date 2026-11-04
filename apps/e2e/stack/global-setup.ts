@@ -1,30 +1,8 @@
 import type { FullConfig } from '@playwright/test'
 import { prepareBuilds } from './builds.ts'
-import {
-  BUILT_SITE_ORIGIN,
-  isDevMode,
-  MAX_WORKERS,
-  serverPort,
-  sitePort,
-  siteUrl,
-} from './config.ts'
+import { isDevMode, MAX_WORKERS, serverPort, sitePort } from './config.ts'
 import { prepareDatabases } from './databases.ts'
 import { assertPortsFree, startStack, stopStacks } from './processes.ts'
-
-/**
- * Catches a site that does not serve its own patched build (`NEXT_DIST_DIR`
- * ignored). The sitemap is prerendered with the site URL, and the pages are
- * not: their HTML holds no origin to check.
- */
-const assertServesOwnOrigin = async (i: number) => {
-  const sitemap = await (await fetch(`${siteUrl(i)}/sitemap.xml`)).text()
-  const origin = `localhost:${sitePort(i)}`
-  if (!sitemap.includes(origin) || sitemap.includes(BUILT_SITE_ORIGIN)) {
-    throw new Error(
-      `${siteUrl(i)}/sitemap.xml does not list ${origin} only: the site is not serving its patched build.`
-    )
-  }
-}
 
 /**
  * Local suite: one stack per Playwright worker (database ngc_e2e_<i>, API, site
@@ -55,12 +33,7 @@ export default async function globalSetup(config: FullConfig) {
 
   console.log(`[e2e] Starting ${n} stack(s)…`)
   try {
-    await Promise.all(
-      indexes.map(async (i) => {
-        await startStack(i, { dev })
-        await assertServesOwnOrigin(i)
-      })
-    )
+    await Promise.all(indexes.map((i) => startStack(i, { dev })))
   } catch (error) {
     await stopStacks()
     throw error

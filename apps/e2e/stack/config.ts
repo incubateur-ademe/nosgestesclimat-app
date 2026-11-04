@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url'
  * Names, ports and paths of the per-worker e2e stacks: Playwright worker `i`
  * gets its own database, site, API and site worker.
  *
- * Imported by playwright.config.ts (through worker-env.ts) and by the Node
- * scripts of this folder, so it only depends on Node built-ins.
+ * Imported by playwright.config.ts (through playwright-worker-env.ts) and by
+ * the Node scripts of this folder, so it only depends on Node built-ins.
  */
 
 export const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
