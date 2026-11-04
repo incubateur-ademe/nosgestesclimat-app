@@ -74,7 +74,7 @@ const test = base.extend<ScolaireModeFixtures>({
   organisationAdmin: async ({ context }, use) => {
     const admin = await userFactory.verified().create()
     const organisation = await organisationFactory
-      .withAdministrator({ userEmail: admin.email })
+      .withAdministrator(admin)
       .create()
     await signIn(context, admin)
     await use({ admin, organisation })

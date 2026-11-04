@@ -25,7 +25,7 @@ import { User } from '../page-objects/user'
 async function seedPollWithOrganisation(page: Page) {
   const admin = await userFactory.verified().create()
   const seededOrganisation = await organisationFactory
-    .withAdministrator({ userEmail: admin.email })
+    .withAdministrator(admin)
     .create()
   const seededPoll = await pollFactory
     .withOrganisation(seededOrganisation)
