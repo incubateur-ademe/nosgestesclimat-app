@@ -4,6 +4,7 @@ import {
   UnknownCodeError,
 } from '@/components/authentication/errors'
 import { serverLoggerMock } from '@/helpers/tests/mockLogger'
+import i18nConfig from '@/i18nConfig'
 import { InvalidVerificationCodeError } from '@nosgestesclimat/core/features/auth/errors/login.error'
 import { failure, success } from '@nosgestesclimat/core/lib/result'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -198,7 +199,9 @@ describe('login', () => {
       verifiedUser.id,
       'User@Example.com'
     )
-    expect(mocks.revalidatePath).toHaveBeenCalledWith('/')
+    for (const locale of i18nConfig.locales) {
+      expect(mocks.revalidatePath).toHaveBeenCalledWith(`/${locale}`, 'layout')
+    }
 
     expect(result).toEqual(success({ userId: verifiedUser.id }))
   })
@@ -228,7 +231,9 @@ describe('login', () => {
       verifiedUser.id,
       'user@example.com'
     )
-    expect(mocks.revalidatePath).toHaveBeenCalledWith('/')
+    for (const locale of i18nConfig.locales) {
+      expect(mocks.revalidatePath).toHaveBeenCalledWith(`/${locale}`, 'layout')
+    }
 
     expect(result).toEqual(success({ userId: verifiedUser.id }))
   })

@@ -1,10 +1,9 @@
 'use server'
 
 import { deleteSessionCookies } from '@/helpers/server/cookie/auth.cookie'
-import i18nConfig from '@/i18nConfig'
 import { revokeAllSessions } from '@nosgestesclimat/core/features/auth/services/revoke-all-sessions.service'
-import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
+import { revalidateBasePathForLocales } from './_helpers/revalidate-base-path-for-locales'
 import { getUserSession } from './get-user-session'
 
 /**
@@ -22,9 +21,5 @@ export async function logout(): Promise<void> {
     cookieStore.delete({ name: cookie.name, ...cookie.options })
   }
 
-  // The i18n middleware rewrites the locale-less URL, so route tags are keyed
-  // on /fr, /en, ...
-  for (const locale of i18nConfig.locales) {
-    revalidatePath(`/${locale}`, 'layout')
-  }
+  revalidateBasePathForLocales()
 }
