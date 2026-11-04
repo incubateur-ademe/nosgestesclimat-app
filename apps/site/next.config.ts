@@ -85,6 +85,7 @@ const nextConfig = withMDX({
     },
   },
   cacheComponents: true,
+  agentRules: false,
   experimental: {
     optimizePackageImports: ['@incubateur-ademe/nosgestesclimat'],
     webpackBuildWorker: true,

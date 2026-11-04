@@ -629,8 +629,8 @@ entries:
   cookies.management.privacyLink.lock: Données personnelles et cookies
   cookies.management.confirm: Confirm my choices
   cookies.management.confirm.lock: Confirmer mes choix
-  cookies.management.preferences: 'Preferences for all services. '
-  cookies.management.preferences.lock: 'Préférences pour tous les services. '
+  cookies.management.preferences: Preferences for all services.
+  cookies.management.preferences.lock: Préférences pour tous les services.
   cookies.banner.description: We use cookies to improve your experience and our services, measure our audience and manage our campaign budget.
   cookies.banner.description.lock: Nous utilisons des cookies pour améliorer votre expérience, nos services, mesurer l'audience et piloter notre budget de campagnes.
   cookies.banner.title: At Nos Gestes Climat, your privacy counts
@@ -2311,3 +2311,23 @@ entries:
   actions.abandonCommitment.success.lock: Action retirée de votre plan
   actions.abandonCommitment.undo: Undo
   actions.abandonCommitment.undo.lock: Annuler
+  errors.generic_error: An error has occurred. Please try again.
+  errors.generic_error.lock: Une erreur s'est produite, veuillez réessayer.
+  my_space.account_deletion: Your account has been successfully deleted.
+  my_space.account_deletion.lock: Votre compte a été supprimé avec succès.
+  mon-espace.settings.delete.dialog.confirm: Confirm deletion
+  mon-espace.settings.delete.dialog.confirm.lock: Confirmer la suppression
+  mon-espace.settings.delete.dialog.cancel: Cancel
+  mon-espace.settings.delete.dialog.cancel.lock: Annuler
+  mon-espace.settings.delete.button: Delete my account
+  mon-espace.settings.delete.button.lock: Supprimer mon compte
+  mon-espace.settings.delete.dialog.description1: 'This action will permanently delete your account and all associated data: your results and the groups you have created.'
+  mon-espace.settings.delete.dialog.description1.lock: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : vos résultats et vos groupes créés."
+  common.close: Close
+  common.close.lock: Fermer
+  mon-espace.settings.delete.dialog.title: Deleting an account
+  mon-espace.settings.delete.dialog.title.lock: Suppression du compte
+  mon-espace.settings.delete.dialog.description2: <0>This action cannot be undone.</0>
+  mon-espace.settings.delete.dialog.description2.lock: <0>Cette action est irréversible.</0>
+  mon-espace.settings.delete.success: Your personal space has been successfully deleted
+  mon-espace.settings.delete.success.lock: Votre espace personnel a bien été supprimé

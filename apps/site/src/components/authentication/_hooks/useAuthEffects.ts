@@ -15,7 +15,8 @@ import { UnknownCodeError } from '../errors'
 import type {
   AuthEvent,
   AuthPhase,
-  AuthenticatedUser,
+  OnAuthComplete,
+  RedirectTarget,
   Tracker,
   VerifyStrategy,
 } from '../types'
@@ -59,8 +60,8 @@ function useVerifyEffect(
 function useCompletionEffect(
   state: AuthPhase,
   options: {
-    onComplete?: (user: AuthenticatedUser) => void | Promise<void>
-    redirectPathname?: string
+    onComplete?: OnAuthComplete
+    redirectTo?: RedirectTarget
     tracker?: Tracker
   }
 ) {
@@ -90,8 +91,14 @@ function useCompletionEffect(
           userId: authenticatedUserId,
         })
 
-        if (options.redirectPathname) {
-          router.push(options.redirectPathname)
+        const destination =
+          typeof options.redirectTo === 'function'
+            ? await options.redirectTo()
+            : options.redirectTo
+
+        if (destination) {
+          router.push(destination)
+          router.refresh()
         }
       } catch (error) {
         logger.error(toError(error))
@@ -104,7 +111,7 @@ function useCompletionEffect(
     options.tracker,
     cookieState,
     options.onComplete,
-    options.redirectPathname,
+    options.redirectTo,
     router,
   ])
 }
@@ -113,8 +120,8 @@ interface UseAuthEffectsOptions {
   state: AuthPhase
   dispatch: Dispatch<AuthEvent>
   verify: VerifyStrategy
-  onComplete?: (user: AuthenticatedUser) => void | Promise<void>
-  redirectPathname?: string
+  onComplete?: OnAuthComplete
+  redirectTo?: RedirectTarget
   tracker?: Tracker
 }
 
@@ -123,9 +130,9 @@ export function useAuthEffects({
   dispatch,
   verify,
   onComplete,
-  redirectPathname,
+  redirectTo,
   tracker,
 }: UseAuthEffectsOptions) {
   useVerifyEffect(state, dispatch, verify)
-  useCompletionEffect(state, { onComplete, redirectPathname, tracker })
+  useCompletionEffect(state, { onComplete, redirectTo, tracker })
 }

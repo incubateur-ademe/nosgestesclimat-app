@@ -46,7 +46,7 @@ export default async function GroupConnexionPage() {
         <UserProvider userSession={userSession}>
           <AuthenticateUserForm
             intent="create-group"
-            redirectPathname={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
+            redirectTo={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
             buttonLabel={t('auth.verifyemail', 'Vérifier mon adresse email')}
             tracker={captureAmisCreationConnexionComplete}
           />

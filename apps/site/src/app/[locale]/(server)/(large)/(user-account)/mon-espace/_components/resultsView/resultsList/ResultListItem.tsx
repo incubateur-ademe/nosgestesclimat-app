@@ -21,8 +21,8 @@ export async function ResultListItem({ simulation, buttons = null }: Props) {
   const { t } = await getServerTranslation()
 
   return (
-    <article className="flex flex-col items-baseline gap-2 rounded-lg border border-slate-200 px-6 py-4 md:flex-row">
-      <div className="flex flex-col items-baseline gap-1 sm:flex-row md:w-105">
+    <article className="flex w-full flex-col items-baseline gap-2 rounded-lg border border-slate-200 px-6 py-4 md:flex-row">
+      <div className="flex flex-col items-baseline gap-1 sm:flex-row md:w-105 md:max-w-full">
         <h1 className="mb-0 text-base md:text-lg">
           {t('mon-espace.resultsList.result.title', 'Le {{date}} :', {
             date: new Date(simulation.date).toLocaleDateString(locale, {

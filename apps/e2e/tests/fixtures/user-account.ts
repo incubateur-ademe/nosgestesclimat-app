@@ -12,11 +12,6 @@ export class UserSpace {
   async goto() {
     await this.page.goto(UserSpace.URL)
   }
-
-  async fromHeader() {
-    await this.page.getByTestId('my-space-button').click()
-    await this.page.getByTestId('my-space-link').click()
-  }
 }
 
 interface UserSpaceFixtures {

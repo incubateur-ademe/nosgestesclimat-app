@@ -605,7 +605,7 @@ entries:
   cookies.management.accept: Accepter
   cookies.management.acceptAll: Tout accepter
   cookies.management.confirm: Confirmer mes choix
-  cookies.management.preferences: 'Préférences pour tous les services. '
+  cookies.management.preferences: Préférences pour tous les services.
   cookies.management.privacyLink: Données personnelles et cookies
   cookies.management.refuse: Refuser
   cookies.management.rejectAll: Tout refuser
@@ -1508,3 +1508,13 @@ entries:
   actions.myPlanPage.empty.title: Ajoutez des actions à votre sélection
   actions.abandonCommitment.success: Action retirée de votre plan
   actions.abandonCommitment.undo: Annuler
+  errors.generic_error: Une erreur s'est produite, veuillez réessayer.
+  my_space.account_deletion: Votre compte a été supprimé avec succès.
+  common.close: Fermer
+  mon-espace.settings.delete.button: Supprimer mon compte
+  mon-espace.settings.delete.dialog.cancel: Annuler
+  mon-espace.settings.delete.dialog.confirm: Confirmer la suppression
+  mon-espace.settings.delete.dialog.description1: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : vos résultats et vos groupes créés."
+  mon-espace.settings.delete.dialog.description2: <0>Cette action est irréversible.</0>
+  mon-espace.settings.delete.dialog.title: Suppression du compte
+  mon-espace.settings.delete.success: Votre espace personnel a bien été supprimé
