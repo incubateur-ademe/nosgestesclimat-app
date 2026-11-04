@@ -4,7 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { identifyRequest } from '@/observability/request-identity'
 
-import { middlewareIdentity } from '../identity.middleware'
+import {
+  middlewareIdentity,
+  middlewarePosthogSession,
+} from '../identity.middleware'
 
 vi.mock('@/observability/request-identity', () => ({
   identifyRequest: vi.fn(),
@@ -77,5 +80,24 @@ describe('middlewareIdentity', () => {
       distinctId: undefined,
       sessionId: undefined,
     })
+  })
+})
+
+describe('middlewarePosthogSession', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('stamps only the session id, before auth has run', () => {
+    middlewarePosthogSession(
+      request({
+        'x-session': JSON.stringify({ userId: 'user-1', email: 'a@b.c' }),
+        'x-posthog-session-id': 'replay-9',
+      })
+    )
+
+    // No `x-session` reading here: the distinct id is `middlewareIdentity`'s
+    // job, once auth has set the header.
+    expect(identified).toHaveBeenCalledWith({ sessionId: 'replay-9' })
   })
 })

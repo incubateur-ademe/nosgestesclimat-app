@@ -2,13 +2,27 @@ import { identifyRequest } from '@/observability/request-identity'
 import type { SessionPayload } from '@nosgestesclimat/core/features/auth/types/session'
 import { type NextRequest } from 'next/server'
 
-/** Reads the `x-session` header set by `middlewareAuth` and attributes the
- * request to its PostHog user/session. `distinctId` for verified users only
- * (unverified would open ghost profiles); `sessionId` always. */
+/** The PostHog session id nginx read from the visitor's cookie. */
+function posthogSessionId(request: NextRequest): string | undefined {
+  return request.headers.get('x-posthog-session-id') ?? undefined
+}
+
+/** Attributes the request to its PostHog session, the one recordings are
+ * filed under. Called ahead of `middlewareAuth` so the interceptors' own logs
+ * already carry the session id; `middlewareIdentity` later re-stamps the same
+ * trace with the complete identity (the store entry is replaced, not merged). */
+export function middlewarePosthogSession(request: NextRequest): void {
+  identifyRequest({ sessionId: posthogSessionId(request) })
+}
+
+/** Attributes the request to its PostHog user and session: `distinctId` for
+ * verified users only (unverified would open ghost profiles), plus the
+ * `sessionId` again because the trace's identity is replaced, not merged.
+ * Reads the `x-session` header set by `middlewareAuth`. */
 export function middlewareIdentity(request: NextRequest): void {
   identifyRequest({
     distinctId: verifiedUserId(request),
-    sessionId: request.headers.get('x-posthog-session-id') ?? undefined,
+    sessionId: posthogSessionId(request),
   })
 }
 
