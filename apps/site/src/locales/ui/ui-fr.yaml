@@ -1514,7 +1514,7 @@ entries:
   mon-espace.settings.delete.button: Supprimer mon compte
   mon-espace.settings.delete.dialog.cancel: Annuler
   mon-espace.settings.delete.dialog.confirm: Confirmer la suppression
-  mon-espace.settings.delete.dialog.description1: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : résultats, groupes, organisation."
+  mon-espace.settings.delete.dialog.description1: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : vos résultats et vos groupes créés."
   mon-espace.settings.delete.dialog.description2: <0>Cette action est irréversible.</0>
   mon-espace.settings.delete.dialog.title: Suppression du compte
   mon-espace.settings.delete.success: Votre espace personnel a bien été supprimé

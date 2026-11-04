@@ -35,8 +35,8 @@ export default function DeleteAccount() {
           <p className="mb-2">
             <Trans i18nKey="mon-espace.settings.delete.dialog.description1">
               Cette action supprimera définitivement votre compte ainsi que
-              l'ensemble de vos données associées : résultats, groupes,
-              organisation.
+              l'ensemble de vos données associées : vos résultats et vos groupes
+              créés.
             </Trans>
           </p>
           <p>

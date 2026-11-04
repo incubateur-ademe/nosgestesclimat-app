@@ -2321,8 +2321,8 @@ entries:
   mon-espace.settings.delete.dialog.cancel.lock: Annuler
   mon-espace.settings.delete.button: Delete my account
   mon-espace.settings.delete.button.lock: Supprimer mon compte
-  mon-espace.settings.delete.dialog.description1: 'This action will permanently delete your account and all associated data: results, groups and organisation.'
-  mon-espace.settings.delete.dialog.description1.lock: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : résultats, groupes, organisation."
+  mon-espace.settings.delete.dialog.description1: 'This action will permanently delete your account and all associated data: your results and the groups you have created.'
+  mon-espace.settings.delete.dialog.description1.lock: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : vos résultats et vos groupes créés."
   common.close: Close
   common.close.lock: Fermer
   mon-espace.settings.delete.dialog.title: Deleting an account
