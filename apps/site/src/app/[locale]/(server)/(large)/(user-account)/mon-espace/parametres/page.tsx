@@ -95,9 +95,9 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
         ) : null}
       </section>
 
-      <section className="mt-10 border-t border-slate-200 pt-6">
+      <div className="mt-10 border-t border-slate-200 pt-6 pb-10">
         <DeleteAccount />
-      </section>
+      </div>
     </div>
   )
 }
