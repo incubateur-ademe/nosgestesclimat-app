@@ -1,6 +1,9 @@
 import { middlewareAuth } from '@/helpers/server/proxy/auth.middleware'
 import { middlewareFeatureFlags } from '@/helpers/server/proxy/feature-flags.middleware'
-import { middlewareIdentity } from '@/helpers/server/proxy/identity.middleware'
+import {
+  middlewareIdentity,
+  middlewarePosthogSession,
+} from '@/helpers/server/proxy/identity.middleware'
 import { middlewareMigrateLegacySessions } from '@/helpers/server/proxy/migrate-legacy-sessions.middleware'
 import { middlewareRegion } from '@/helpers/server/proxy/region.middleware'
 import {
@@ -40,9 +43,15 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     return NextResponse.next({ request: { headers: request.headers } })
   }
 
+  // Stamped ahead of the interceptors so their own logs (the auth renewal
+  // ones included) already carry the PostHog session id. No `x-session` exists
+  // yet; the `middlewareIdentity` call below re-stamps the full identity.
+  middlewarePosthogSession(request)
+
   // Phase 1 — Interceptors
   const email = middlewareStripEmail(request)
   if (email.redirect) return email.redirect
+
 
   const ff = middlewareFeatureFlags(request)
   if (ff.redirect) return ff.redirect
