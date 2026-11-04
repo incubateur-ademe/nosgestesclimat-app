@@ -5,12 +5,13 @@ import { groupFactory } from '@nosgestesclimat/core/features/groups/factories/gr
 import { organisationFactory } from '@nosgestesclimat/core/features/organisations/factories/organisation.factory'
 import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
 import { userFactory } from '@nosgestesclimat/core/features/users/factories/user.factory'
+import { retentionNoticeActivityDateCutoff } from '@nosgestesclimat/core/features/users/helpers/retention-period'
 import type { User } from '@nosgestesclimat/core/features/users/types/user'
 import { prisma } from '@nosgestesclimat/core/prisma/client'
 import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
 import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { afterEach, describe, expect, it } from 'vitest'
-import { addLastActivityAtToUser } from '../add-last-activity-at-to-user.ts'
+import { addLastActivityAtToUser } from '../NGC-3979-20261026.ts'
 
 interface UserFactorySetup {
   entity: string
@@ -182,6 +183,35 @@ describe('addLastActivityAtToUser', () => {
     })
 
     expect(userFromDB?.lastActivityAt).toEqual(userUpdatedAt)
+  })
+
+  it('should clamp an activity date already past the erasure threshold to the start of the notice window', async () => {
+    const ancientDate = faker.date.past({ years: 5 })
+
+    const user = await userFactory
+      .verified()
+      .params({ updatedAt: ancientDate })
+      .create()
+
+    await simulationFactory
+      .params({ updatedAt: ancientDate, userId: user.id })
+      .create()
+
+    const cutoffBefore = retentionNoticeActivityDateCutoff(new Date())
+    await addLastActivityAtToUser({ dry: false })
+    const cutoffAfter = retentionNoticeActivityDateCutoff(new Date())
+
+    const userFromDB = await prisma.user.findFirst({
+      where: { id: user.id },
+    })
+
+    expect(userFromDB?.lastActivityAt).not.toEqual(ancientDate)
+    expect(userFromDB?.lastActivityAt?.getTime()).toBeGreaterThanOrEqual(
+      cutoffBefore.getTime()
+    )
+    expect(userFromDB?.lastActivityAt?.getTime()).toBeLessThanOrEqual(
+      cutoffAfter.getTime()
+    )
   })
 
   it('should process every candidate across multiple batches', async () => {

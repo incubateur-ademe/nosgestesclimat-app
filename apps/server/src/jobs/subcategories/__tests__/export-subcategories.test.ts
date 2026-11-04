@@ -1,4 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import {
+  PACKAGE_VERSION_HISTORY,
+  parseModelPackageVersion,
+  parsePackageVersionHistory,
+  resolvePackageVersionAtDate,
+} from '../lib/model-version-history.ts'
 import { isValidDateOnly, resolvePeriod } from '../lib/period.ts'
 import { sanitizeDatabaseUrl } from '../lib/postgres.ts'
 import {
@@ -98,6 +104,55 @@ describe('getVersionFromModel', () => {
     expect(getVersionFromModel('FR-fr-4.17.3')).toBe('4.17.3')
     expect(getVersionFromModel('FR-fr-4.13.0-rc.2')).toBe('4.13.0-rc.2')
     expect(getVersionFromModel('BE-fr-4.10.5')).toBe('4.10.5')
+  })
+
+  describe('model package version history', () => {
+    it('extracts exact and ranged dependency versions', () => {
+      expect(
+        parseModelPackageVersion(
+          '+    "@incubateur-ademe/nosgestesclimat": "4.9.1",'
+        )
+      ).toBe('4.9.1')
+      expect(
+        parseModelPackageVersion(
+          '+    "@incubateur-ademe/nosgestesclimat": "^4.6.0",'
+        )
+      ).toBe('4.6.0')
+      expect(parseModelPackageVersion('+    "publicodes": "1.0.0",')).toBeNull()
+    })
+
+    it('resolves the latest package version on the simulation date', () => {
+      const history = parsePackageVersionHistory(
+        [
+          '@@MODEL_PACKAGE_COMMIT@@a1\t2026-02-19T10:00:00+01:00',
+          '+    "@incubateur-ademe/nosgestesclimat": "4.9.1",',
+          '@@MODEL_PACKAGE_COMMIT@@a2\t2026-04-02T10:00:00+02:00',
+          '+    "@incubateur-ademe/nosgestesclimat": "4.10.0",',
+        ].join('\n')
+      )
+
+      expect(resolvePackageVersionAtDate('2026-02-01', history)).toBeNull()
+      expect(resolvePackageVersionAtDate('2026-03-15', history)).toBe('4.9.1')
+      expect(resolvePackageVersionAtDate('2026-04-02', history)).toBe('4.10.0')
+    })
+
+    it('resolves February simulations without a git checkout', () => {
+      expect(
+        resolvePackageVersionAtDate('2026-02-01', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.8.1')
+      expect(
+        resolvePackageVersionAtDate('2026-02-15', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.9.0')
+      expect(
+        resolvePackageVersionAtDate('2026-02-20', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.9.1')
+      expect(
+        resolvePackageVersionAtDate('2026-03-30', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.10.0')
+      expect(
+        resolvePackageVersionAtDate('2026-03-31', PACKAGE_VERSION_HISTORY)
+      ).toBe('4.10.1')
+    })
   })
 })
 

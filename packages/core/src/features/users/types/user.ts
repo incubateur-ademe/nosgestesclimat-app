@@ -8,7 +8,6 @@ interface UserBase {
   name: string | null
   createdAt: Date
   updatedAt: Date
-  deletedAt?: Date
   lastActivityAt?: Date | null
 }
 

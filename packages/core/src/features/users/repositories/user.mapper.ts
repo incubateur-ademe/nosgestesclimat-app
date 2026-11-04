@@ -5,7 +5,6 @@ export type UserBaseRow = {
   name: string | null
   createdAt: Date
   updatedAt: Date
-  deletedAt?: Date | null
 }
 
 export type VerifiedUserRelation = {
@@ -31,7 +30,6 @@ export const mapUnverifiedUser = (row: UserBaseRow): UnverifiedUser => ({
   email: null, // user's table email field is deprecated
   createdAt: row.createdAt,
   updatedAt: row.updatedAt,
-  deletedAt: row.deletedAt ?? undefined,
 })
 
 /**

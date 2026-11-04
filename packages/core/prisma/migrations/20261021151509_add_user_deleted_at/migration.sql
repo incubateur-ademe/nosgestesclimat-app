@@ -1,3 +1,2 @@
 -- AlterTable
-ALTER TABLE "ngc"."User" ADD COLUMN     "deletedAt" TIMESTAMP(3),
-ALTER COLUMN "lastActivityAt" SET DATA TYPE TIMESTAMP(3);
+ALTER TABLE "ngc"."User" ADD COLUMN     "deletedAt" TIMESTAMPTZ(3);

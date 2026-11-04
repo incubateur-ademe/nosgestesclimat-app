@@ -322,7 +322,9 @@ Trois écarts au routage strict, alignés sur la
   l'identifiant lu côté navigateur, les cookies de session NGC n'ont pas à
   transiter vers un tiers.
 - Vérification TLS active sur les trois `location` — `/revp/static/` sert du JS
-  exécuté par les navigateurs.
+  exécuté par les navigateurs — avec `proxy_ssl_verify_depth 5` : le défaut (1)
+  refuse une chaîne à deux intermédiaires, comme celle d'`eu-assets`
+  (`YE2` → `Root YE`).
 - `client_max_body_size 64M` sur `/revp/` : les enregistrements de session
   PostHog montent à 64 Mo, contre 1 Mo par défaut.
 

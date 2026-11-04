@@ -16,13 +16,13 @@ export const createReconcileSimulationsAfterLogin = ({
     'core.service.reconcileSimulationsAfterLogin',
     async ({
       userId,
-      previousUserId,
+      preExistingUserId,
     }: {
       userId: string
-      previousUserId: string
+      preExistingUserId: string
     }) => {
       await transaction((session) =>
-        transferSimulationsFromUser({ userId, previousUserId }, { session })
+        transferSimulationsFromUser({ userId, preExistingUserId }, { session })
       )
     }
   )

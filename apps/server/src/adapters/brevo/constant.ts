@@ -1,8 +1,8 @@
-import { ListIds } from '@nosgestesclimat/core/features/emails/email.constant'
 import { StatusCodes } from 'http-status-codes'
 import type { ValueOf } from '../../types/types.ts'
 
 export {
+  AllNewsletters,
   Attributes,
   ListIds,
   TemplateIds,
@@ -12,15 +12,6 @@ export {
   type GroupTemplateId,
   type TemplateId,
 } from '@nosgestesclimat/core/features/emails/email.constant'
-
-export const AllNewsletters = [
-  ListIds.MAIN_NEWSLETTER,
-  ListIds.LOGEMENT_NEWSLETTER,
-  ListIds.TRANSPORT_NEWSLETTER,
-  ListIds.CONSO_NEWSLETTER,
-  ListIds.ALIMENTATION_NEWSLETTER,
-  ListIds.CITOYENS_NEWSLETTER,
-] as const
 
 export const ClientErrors = {
   BAD_REQUEST: {

@@ -2,13 +2,12 @@ import { faker } from '@faker-js/faker'
 import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
-import { UserAlreadyDeletedError } from '../../errors/user-already-deleted.ts'
+import { UserDeletedError } from '../../errors/user-deleted.error.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import {
   createOrUpdateUser,
   findUserById,
   findVerifiedUserByEmail,
-  softDeleteUser,
 } from '../users.repository.ts'
 
 const generateEmail = () => faker.internet.email().toLocaleLowerCase()
@@ -51,16 +50,13 @@ describe('createOrUpdateUser', () => {
       const result = await createOrUpdateUser({ type: 'unverified', id })
 
       expect.assert(result.success)
-      expect(result).toEqual({
-        success: true,
-        data: {
-          type: 'unverified',
-          id,
-          name: null,
-          email: null,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-        },
+      expect(result.data).toEqual({
+        type: 'unverified',
+        id,
+        name: null,
+        email: null,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       })
       expect(await findUserById(id)).toEqual(result.data)
       expect(await readUserEmailColumn(id)).toBeNull()
@@ -100,19 +96,16 @@ describe('createOrUpdateUser', () => {
       })
 
       expect.assert(result.success)
-      expect(result).toEqual({
-        success: true,
-        data: {
-          type: 'verified',
-          id,
-          name,
-          email,
-          telephone,
-          position,
-          optedInForCommunications: true,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-        },
+      expect(result.data).toEqual({
+        type: 'verified',
+        id,
+        name,
+        email,
+        telephone,
+        position,
+        optedInForCommunications: true,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       })
       expect(await findUserById(id)).toEqual(result.data)
       expect(await findVerifiedUserByEmail({ email })).toEqual(result.data)
@@ -127,17 +120,14 @@ describe('createOrUpdateUser', () => {
       const result = await createOrUpdateUser({ type: 'verified', id, email })
 
       expect.assert(result.success)
-      expect(result).toMatchObject({
-        data: {
-          type: 'verified',
-          id,
-          email,
-          name: null,
-          telephone: null,
-          position: null,
-          optedInForCommunications: false,
-        },
-        success: true,
+      expect(result.data).toMatchObject({
+        type: 'verified',
+        id,
+        email,
+        name: null,
+        telephone: null,
+        position: null,
+        optedInForCommunications: false,
       })
       expect(await findVerifiedUserByEmail({ email })).toEqual(result.data)
       expect(await readUserEmailColumn(id)).toBe(email)
@@ -404,16 +394,12 @@ describe('createOrUpdateUser', () => {
     })
   })
 
-  it('refuses to update a soft-deleted user', async () => {
-    const user = await userFactory.create()
-
-    await softDeleteUser(user.id)
+  it('refuses to update an erased user', async () => {
+    const user = await userFactory.erased().create()
 
     const result = await createOrUpdateUser({ type: 'unverified', id: user.id })
 
     expect.assert(!result.success)
-    expect(!result.success && result.error).toBeInstanceOf(
-      UserAlreadyDeletedError
-    )
+    expect(result.error).toBeInstanceOf(UserDeletedError)
   })
 })
