@@ -22,8 +22,6 @@ const retentionSweep = createRunRetentionSweep({ logger, sendEmail })
 
 const main = async () => {
   try {
-    // Dry by default: the notices announce an erasure that does not exist yet
-    // (NGC-3981), and a mistake in the activity rule is a mass email.
     const { values } = parseArgs({
       args: process.argv.slice(2),
       options: { dry: { type: 'boolean', default: true } },

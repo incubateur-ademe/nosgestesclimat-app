@@ -13,3 +13,7 @@ export type RetentionNoticeCandidate = {
   lastActivityAt: Date
   locale: ISOSupportedLanguage
 }
+
+export type ErasureCandidate = {
+  userId: string
+}

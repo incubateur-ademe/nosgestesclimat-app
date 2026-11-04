@@ -7,6 +7,7 @@ import { TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
 import type { SendEmail } from '../../../emails/types.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
+import { ErasureWithoutFinalNoticeError } from '../../errors/erasure-without-final-notice.error.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { createRunRetentionSweep } from '../run-retention-sweep.service.ts'
 
@@ -36,6 +37,13 @@ const oneDayTooRecentForTheNoticeDate = new Date('2025-01-16T06:00:00.000Z')
 
 /** The run that first finds an account due the final notice. */
 const finalNoticeFirstDueDate = new Date('2026-12-08T06:00:00.000Z')
+
+/** Exactly 24 months idle: the day erasure falls due. */
+const erasureDueDate = new Date('2024-10-15T06:00:00.000Z')
+/** One day newer, so one day short of erasure. */
+const oneDayTooRecentForErasureDate = new Date('2024-10-16T06:00:00.000Z')
+/** 24 months after `finalNoticeDueDate`: the account it belongs to is due erasure. */
+const erasureDueAfterFinalNoticeDate = new Date('2026-10-20T06:00:00.000Z')
 
 describe('runRetentionSweep', () => {
   beforeEach(() => {
@@ -335,9 +343,12 @@ describe('runRetentionSweep', () => {
         selected: {
           'retention-notice': 1,
           'final-notice': 0,
+          erasure: 0,
         },
         sent: 0,
         failed: 0,
+        erased: 0,
+        erasureFailed: 0,
       })
       expect(logger.debug).toHaveBeenCalledWith('Retention notices selected', {
         stage: 'retention-notice',
@@ -374,9 +385,12 @@ describe('runRetentionSweep', () => {
         selected: {
           'retention-notice': 2,
           'final-notice': 0,
+          erasure: 0,
         },
         sent: 1,
         failed: 1,
+        erased: 0,
+        erasureFailed: 0,
       })
       expect(await noticeStamps(passing.id)).toEqual({
         retentionNoticeSentAt: now,
@@ -432,6 +446,132 @@ describe('runRetentionSweep', () => {
       })
     })
   })
+
+  describe('Given an account past the retention period', () => {
+    it('erases the account and its verified record', async () => {
+      const account = await seedAccount({ lastActivityAt: erasureDueDate })
+
+      await runSweep()
+
+      expect(await erasureStamp(account.id)).toBeInstanceOf(Date)
+      expect(await verifiedRecord(account.id)).toBeNull()
+    })
+
+    it('leaves an account one day short of the period alone', async () => {
+      const account = await seedAccount({
+        lastActivityAt: oneDayTooRecentForErasureDate,
+      })
+
+      await runSweep()
+
+      expect(await erasureStamp(account.id)).toBeNull()
+      expect(await verifiedRecord(account.id)).not.toBeNull()
+    })
+
+    it('never erases an account whose activity date is unknown', async () => {
+      const account = await seedAccount({ lastActivityAt: null })
+
+      await runSweep()
+
+      expect(await verifiedRecord(account.id)).not.toBeNull()
+    })
+
+    it('skips an account already carrying an erasure date', async () => {
+      // The erasure deletes the verified record in the same transaction, so the
+      // pair only survives an interrupted run: the sweep must not read it as a
+      // live account.
+      const account = await userFactory
+        .verified()
+        .params({ lastActivityAt: erasureDueDate })
+        .erased()
+        .create()
+
+      await runSweep()
+
+      expect(await verifiedRecord(account.id)).not.toBeNull()
+    })
+
+    it('reports the erasure', async () => {
+      const account = await seedAccount({ lastActivityAt: erasureDueDate })
+
+      await runSweep()
+
+      expect(logger.debug).toHaveBeenCalledWith(
+        'Accounts due for erasure selected',
+        { userIds: [account.id] }
+      )
+      expect(logger.info).toHaveBeenCalledWith('Retention sweep finished', {
+        dryRun: false,
+        selected: {
+          'retention-notice': 0,
+          'final-notice': 0,
+          erasure: 1,
+        },
+        sent: 0,
+        failed: 0,
+        erased: 1,
+        erasureFailed: 0,
+      })
+    })
+  })
+
+  describe('Given an account erased without its final notice', () => {
+    it('erases it without warning it, and reports the missing notice', async () => {
+      const account = await seedAccount({ lastActivityAt: erasureDueDate })
+
+      await runSweep()
+
+      // It is past the final-notice window too: without the filter, the notice
+      // would warn it of a deletion this run performs.
+      expect(sendEmail).not.toHaveBeenCalled()
+      expect(await erasureStamp(account.id)).toBeInstanceOf(Date)
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.any(ErasureWithoutFinalNoticeError),
+        { userIds: [account.id] }
+      )
+    })
+
+    it('reports nothing when the final notice went out for this period', async () => {
+      const account = await seedAccount({ lastActivityAt: finalNoticeDueDate })
+
+      await runSweep()
+      expect(sendEmail).toHaveBeenCalledTimes(1)
+
+      await runSweep({ now: erasureDueAfterFinalNoticeDate })
+
+      expect(await erasureStamp(account.id)).toBeInstanceOf(Date)
+      expect(logger.error).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Given a dry run past the retention period', () => {
+    it('reports the account it would erase without erasing it', async () => {
+      const account = await seedAccount({ lastActivityAt: erasureDueDate })
+
+      await runSweep({ dryRun: true })
+
+      expect(await erasureStamp(account.id)).toBeNull()
+      expect(await verifiedRecord(account.id)).not.toBeNull()
+      // The anomaly belongs to the selection, not the erasure: a rehearsal
+      // reports it before the run that acts on it.
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.any(ErasureWithoutFinalNoticeError),
+        { userIds: [account.id] }
+      )
+      expect(logger.info).toHaveBeenCalledWith('Retention sweep finished', {
+        dryRun: true,
+        selected: {
+          'retention-notice': 0,
+          'final-notice': 0,
+          erasure: 1,
+        },
+        sent: 0,
+        failed: 0,
+        erased: 0,
+        erasureFailed: 0,
+      })
+    })
+  })
 })
 
 const seedAccount = ({ lastActivityAt }: { lastActivityAt: Date | null }) =>
@@ -465,3 +605,14 @@ const noticeStamps = (userId: string) =>
     where: { id: userId },
     select: { retentionNoticeSentAt: true, finalNoticeSentAt: true },
   })
+
+const erasureStamp = async (userId: string) =>
+  (
+    await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { deletedAt: true },
+    })
+  ).deletedAt
+
+const verifiedRecord = (userId: string) =>
+  prisma.verifiedUser.findFirst({ where: { id: userId } })
