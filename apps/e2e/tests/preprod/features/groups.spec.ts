@@ -1,49 +1,49 @@
-import { faker } from '@faker-js/faker'
 import type { Page } from '@playwright/test'
-import { TEST_EMAIL_DOMAIN } from '../../constants'
 import { createPage } from '../../fixtures/feature-flags'
+import { generateGroupName, generateUser } from '../../helpers/test-data'
+import { EmailVerification } from '../../page-objects/email-verification'
 import { Group } from '../../page-objects/group'
 import { NGCTest } from '../../page-objects/ngc-test'
 import { TutorialPage } from '../../page-objects/tutorial'
-import { User } from '../../page-objects/user'
+import { UserSpace } from '../../page-objects/user-space'
 import { expect, test } from '../fixtures'
-import { restoreGroup } from '../fixtures/context'
+import { restoreFromState, restoreGroup } from '../fixtures/context'
 import { GROUP_ADMIN_STATE, NEW_VISITOR_STATE } from '../state'
 
 test.use({ storageState: GROUP_ADMIN_STATE })
 
 test.describe('A group admin', () => {
-  test('can go to its group from its user account', async ({
-    userSpace,
-    page,
-    group,
-  }) => {
-    await userSpace.goto()
-    await group.goFromGroupTabs(page)
+  test('can go to its group from its user account', async ({ page, group }) => {
+    await new UserSpace(page).goto()
+    await new Group(page).goFromGroupTabs(group.name)
   })
 
   test.describe('can create a new group and delete it', () => {
-    let newGroup: Group
+    let newGroupName: string
 
     test.beforeEach(async ({ page, user }) => {
-      newGroup = new Group(page, user)
+      newGroupName = generateGroupName()
       await page.goto(Group.CREATION_URL)
       await page.waitForTimeout(500)
-      await newGroup.create()
+      await new Group(page).create({
+        name: newGroupName,
+        ownerName: user.firstName,
+      })
     })
 
     test('and change its name', async ({ page }) => {
-      await newGroup.changeName()
+      newGroupName = generateGroupName()
+      await new Group(page).changeName(newGroupName)
       await expect(
-        page.getByTestId('group-name').getByText(newGroup.name)
+        page.getByTestId('group-name').getByText(newGroupName)
       ).toBeVisible()
     })
 
     test.afterEach(async ({ page }) => {
-      await newGroup.delete()
+      await new Group(page).delete()
       await expect(page).toHaveURL('/mon-espace/groupes')
       await expect(
-        page.getByText(newGroup.name).filter({ visible: true })
+        page.getByText(newGroupName).filter({ visible: true })
       ).toHaveCount(0)
     })
   })
@@ -67,10 +67,10 @@ test.describe('The group result page, when accessed by an admin', () => {
   })
 
   test('has an invite link that can be copied with good utm', async ({
-    group,
+    page,
     baseURL,
   }) => {
-    const clipboardContent = await group.copyInviteLink()
+    const clipboardContent = await new Group(page).copyInviteLink()
     expect(clipboardContent).toMatch(new RegExp(`^${baseURL}`))
     expect(clipboardContent).toMatch(/utm_medium=sharelink/)
     expect(clipboardContent).toMatch(/utm_source=NGC/)
@@ -109,21 +109,22 @@ test.describe('A new user', () => {
   })
 
   test('can join a group', async ({ group, user, page }) => {
-    await group.joinWithInviteLink(user)
+    await new Group(page).joinWithInviteLink(group.inviteLink, user.firstName)
     await expect(page).toHaveURL(new RegExp(TutorialPage.URL))
   })
 
   test('can leave its email after completing the test', async ({
     page,
-    ngcTest,
-    tutorialPage,
     group,
   }) => {
-    const user = new User(page)
-    await group.joinWithInviteLink(user)
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
+
+    const user = generateUser()
+    await new Group(page).joinWithInviteLink(group.inviteLink, user.firstName)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
-    await user.fillEmailAndCompleteVerification()
+    await new EmailVerification(page).complete(user.email)
     await expect(page).toHaveURL('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(group.url)
@@ -131,12 +132,13 @@ test.describe('A new user', () => {
 
   test('can skip leaving its email after completing the test', async ({
     page,
-    ngcTest,
-    tutorialPage,
     user,
     group,
   }) => {
-    await group.joinWithInviteLink(user)
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
+
+    await new Group(page).joinWithInviteLink(group.inviteLink, user.firstName)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
     await page.getByTestId('skip-email-button').click()
@@ -147,31 +149,24 @@ test.describe('A new user', () => {
 
   test('sees its first name in the group ranking after joining', async ({
     page,
-    ngcTest,
-    tutorialPage,
     group,
   }) => {
-    const participantName = faker.person.firstName()
-    const user = new User(page, {
-      firstName: participantName,
-      lastName: faker.person.lastName(),
-      email: faker.internet.email({
-        provider: TEST_EMAIL_DOMAIN,
-        firstName: participantName,
-      }),
-    })
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
 
-    await group.joinWithInviteLink(user)
+    const user = generateUser()
+
+    await new Group(page).joinWithInviteLink(group.inviteLink, user.firstName)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
-    await user.fillEmailAndCompleteVerification()
+    await new EmailVerification(page).complete(user.email)
     await expect(page).toHaveURL('/fin')
 
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(group.url)
 
     await expect(
-      page.getByTestId('participant-name').filter({ hasText: participantName })
+      page.getByTestId('participant-name').filter({ hasText: user.firstName })
     ).toBeVisible()
   })
 })
@@ -192,20 +187,13 @@ test.describe('A user with a completed test that joined a group', () => {
     await new NGCTest(page).skipAll()
     await expect(page).toHaveURL('/fin')
 
-    const user = new User(page, {
-      email: 'test@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-    })
+    const group = await restoreFromState(
+      browser,
+      GROUP_ADMIN_STATE,
+      restoreGroup
+    )
 
-    const adminPage = await browser
-      .newContext({
-        storageState: GROUP_ADMIN_STATE,
-      })
-      .then((context) => context.newPage())
-    const group = await restoreGroup(adminPage)
-
-    await group.joinWithInviteLink(user)
+    await new Group(page).joinWithInviteLink(group.inviteLink, 'John')
   })
 
   test.afterAll(async () => {
@@ -234,7 +222,7 @@ test.describe('A user with a completed test that joined a group', () => {
 
   test('can see the group in the « mes groupes » tab', async ({ group }) => {
     await page.goto('/fin')
-    await group.goFromGroupTabs(page)
+    await new Group(page).goFromGroupTabs(group.name)
     await expect(page).toHaveURL(group.url)
     await expect(page.getByTestId('group-name')).toContainText(group.name)
   })
@@ -249,7 +237,7 @@ test.describe('A user with a completed test that joined a group', () => {
 
   test('can leave a group', async ({ group }) => {
     await expect(page.getByTestId('button-leave-group')).toBeVisible()
-    await group.leave(page)
+    await new Group(page).leave()
     await page.goto('/fin')
     await page.getByTestId('my-groups-tab').click()
     await expect(

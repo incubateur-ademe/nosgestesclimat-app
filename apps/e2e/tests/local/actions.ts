@@ -7,8 +7,6 @@ import {
   type SeededActionsCatalogue,
 } from '../helpers/actions'
 import { signIn } from '../helpers/session'
-import { ActionDetail } from '../page-objects/action-detail'
-import { ActionsCatalogue } from '../page-objects/actions-catalogue'
 import { test as base } from './fixtures'
 
 export { expect } from './fixtures'
@@ -25,8 +23,6 @@ interface AssessedUserOptions {
  * is seeded in the e2e database before each test.
  */
 export const test = base.extend<{
-  actionsCatalogue: ActionsCatalogue
-  actionDetail: ActionDetail
   /** The seeded action catalogue, keyed as CATALOGUE_ACTIONS. */
   catalogue: SeededActionsCatalogue
   /**
@@ -39,12 +35,6 @@ export const test = base.extend<{
     options?: AssessedUserOptions
   ) => Promise<{ id: string; email: string | null }>
 }>({
-  actionsCatalogue: async ({ page }, use) => {
-    await use(new ActionsCatalogue(page))
-  },
-  actionDetail: async ({ page }, use) => {
-    await use(new ActionDetail(page))
-  },
   catalogue: [
     async ({}, use) => {
       await use(await seedActionsCatalogue())

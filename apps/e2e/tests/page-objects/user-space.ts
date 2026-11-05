@@ -1,14 +1,9 @@
 import type { Page } from '@playwright/test'
 
-import type { User } from './user'
-
 export class UserSpace {
   static URL = '/mon-espace'
 
-  constructor(
-    public readonly page: Page,
-    public readonly user: User
-  ) {}
+  constructor(public readonly page: Page) {}
 
   async goto() {
     await this.page.goto(UserSpace.URL)

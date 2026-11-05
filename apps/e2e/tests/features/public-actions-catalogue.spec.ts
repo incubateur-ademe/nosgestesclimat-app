@@ -11,6 +11,7 @@ import {
   type CatalogueActionKey,
 } from '../helpers/actions'
 import { expect, test } from '../local/actions'
+import { ActionDetail } from '../page-objects/action-detail'
 import { ActionsCatalogue } from '../page-objects/actions-catalogue'
 
 /**
@@ -73,9 +74,10 @@ const titlesOf = (keys: readonly CatalogueActionKey[]) =>
 test.describe('Public actions catalogue', () => {
   test('an anonymous visitor browses the catalogue and reads an action, without any personalized impact', async ({
     page,
-    actionsCatalogue,
-    actionDetail,
   }) => {
+    const actionsCatalogue = new ActionsCatalogue(page)
+    const actionDetail = new ActionDetail(page)
+
     const highlightedAction = CATALOGUE_ACTIONS.reduireViande
 
     await test.step('As an anonymous visitor, I browse every action of the public catalogue', async () => {

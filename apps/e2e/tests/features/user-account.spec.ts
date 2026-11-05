@@ -14,18 +14,13 @@ import { NGCTest } from '../page-objects/ngc-test'
  * in through helpers/session; the default context stays a fresh new visitor
  * (localVisitorState), so the login flow runs unauthenticated.
  *
- * `ngcTest` is instantiated inline, and each signed-in describe aliases its
- * extended test type (whose sign-in fixture is automatic) to `test`, so the
- * tests are declared the usual way.
+ * Each signed-in describe aliases its extended test type (whose sign-in fixture
+ * is automatic) to `test`, so the tests are declared the usual way.
  */
 const test = base.extend<{
-  ngcTest: NGCTest
   /** A verified user seeded in the e2e database, not signed in. */
   user: VerifiedUser
 }>({
-  ngcTest: async ({ page }, use) => {
-    await use(new NGCTest(page))
-  },
   user: async ({}, use) => {
     await use(await userFactory.verified().create())
   },
@@ -158,10 +153,9 @@ test.describe('Simulation deletion', () => {
 
   test.setTimeout(120_000)
 
-  test('can delete a simulation from personal space', async ({
-    page,
-    ngcTest,
-  }) => {
+  test('can delete a simulation from personal space', async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await page.goto(START_SIMULATION_PATH)
     await ngcTest.skipAllQuestions()
 

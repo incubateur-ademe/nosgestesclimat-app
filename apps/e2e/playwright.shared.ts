@@ -1,6 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test'
 import dotenv from 'dotenv'
-import type { FixturesOptions } from './tests/preprod/fixtures/options'
 
 dotenv.config({ quiet: true })
 
@@ -18,7 +17,7 @@ export const firefoxLaunchOptions = {
  *
  * See https://playwright.dev/docs/test-configuration.
  */
-export const sharedConfig: PlaywrightTestConfig<FixturesOptions> = {
+export const sharedConfig: PlaywrightTestConfig = {
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 3 : undefined,

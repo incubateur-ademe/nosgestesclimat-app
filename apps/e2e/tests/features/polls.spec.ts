@@ -5,77 +5,66 @@ import type { Page } from '@playwright/test'
 import { EMAIL_PAGE_PATH } from '../constants'
 import { createPage } from '../fixtures'
 import { signIn } from '../helpers/session'
-import { test as base, expect, resetDatabase } from '../local/fixtures'
+import { generatePollName, generateUser } from '../helpers/test-data'
+import { expect, resetDatabase, test } from '../local/fixtures'
+import { EmailVerification } from '../page-objects/email-verification'
 import { NGCTest } from '../page-objects/ngc-test'
 import { Organisation } from '../page-objects/organisation'
 import { Poll } from '../page-objects/poll'
 import { TutorialPage } from '../page-objects/tutorial'
-import { User } from '../page-objects/user'
 
 /**
  * Seeds an organisation and one of its polls in the e2e database, with a
  * verified user administrating the organisation.
  *
- * Returns the seeded administrator and the page objects, with the site routes
- * derived from the seeded entities (the poll invite link is the site's
- * campagne route, which resolves a poll by id or slug). Signing the
- * administrator in is left to the caller: the « new user » describe reuses
- * this helper without signing in.
+ * Returns the seeded administrator and the entities' data, with the site routes
+ * derived from them (the poll invite link is the site's campagne route, which
+ * resolves a poll by id or slug). Signing the administrator in is left to the
+ * caller: the « new user » describe reuses this helper without signing in.
  */
-async function seedPollWithOrganisation(page: Page) {
+async function seedPollWithOrganisation() {
   const admin = await userFactory.verified().create()
-  const seededOrganisation = await organisationFactory
+  const organisation = await organisationFactory
     .withAdministrator(admin)
     .create()
-  const seededPoll = await pollFactory
-    .withOrganisation(seededOrganisation)
-    .create()
-  const [firstName = '', ...lastNames] = admin.name?.split(' ') ?? []
-  const organisation = new Organisation(
-    page,
-    new User(page, {
-      firstName,
-      lastName: lastNames.join(' '),
-      email: admin.email,
-    }),
-    { name: seededOrganisation.name, slug: seededOrganisation.slug }
-  )
-  const poll = new Poll(page, organisation, {
-    name: seededPoll.name,
-    slug: seededPoll.slug,
-    inviteLink: `/simulateur/campagne/${seededPoll.id}`,
-  })
-  return { admin, organisation, poll }
+  const poll = await pollFactory.withOrganisation(organisation).create()
+  return {
+    admin,
+    organisation: {
+      name: organisation.name,
+      slug: organisation.slug,
+      url: Organisation.url(organisation.slug),
+    },
+    poll: {
+      name: poll.name,
+      url: Poll.url(organisation.slug, poll.slug),
+      inviteLink: `/simulateur/campagne/${poll.id}`,
+    },
+  }
 }
 
-// The local suite has no page-object fixtures: NGCTest and TutorialPage are
-// stateless and take the page, so they are instantiated through fixtures here.
-const test = base.extend<{ ngcTest: NGCTest; tutorialPage: TutorialPage }>({
-  ngcTest: async ({ page }, use) => {
-    await use(new NGCTest(page))
-  },
-  tutorialPage: async ({ page }, use) => {
-    await use(new TutorialPage(page))
-  },
-})
+type SeededPoll = Awaited<ReturnType<typeof seedPollWithOrganisation>>['poll']
+type SeededOrganisation = Awaited<
+  ReturnType<typeof seedPollWithOrganisation>
+>['organisation']
 
 interface PollContext {
-  organisation: Organisation
-  poll: Poll
+  organisation: SeededOrganisation
+  poll: SeededPoll
 }
 
 /**
  * Organisation administrator context, seeded in the e2e database and signed
  * in through helpers/session (no verification code flow).
  */
-const adminTest = test.extend<{
-  pollContext: PollContext
-  organisation: Organisation
-  poll: Poll
-}>({
-  pollContext: async ({ page }, use) => {
-    const { admin, organisation, poll } = await seedPollWithOrganisation(page)
-    await signIn(page.context(), admin)
+const adminTest = test.extend<
+  PollContext & {
+    pollContext: PollContext
+  }
+>({
+  pollContext: async ({ context }, use) => {
+    const { admin, organisation, poll } = await seedPollWithOrganisation()
+    await signIn(context, admin)
     await use({ organisation, poll })
   },
   organisation: async ({ pollContext }, use) => {
@@ -91,13 +80,13 @@ const adminTest = test.extend<{
  * (localVisitorState: cookie banner dismissed, no session), so only the
  * organisation and the poll have to be seeded — without signing anyone in.
  */
-const newcomerTest = test.extend<{
-  pollContext: PollContext
-  organisation: Organisation
-  poll: Poll
-}>({
-  pollContext: async ({ page }, use) => {
-    const { organisation, poll } = await seedPollWithOrganisation(page)
+const newcomerTest = test.extend<
+  PollContext & {
+    pollContext: PollContext
+  }
+>({
+  pollContext: async ({}, use) => {
+    const { organisation, poll } = await seedPollWithOrganisation()
     await use({ organisation, poll })
   },
   organisation: async ({ pollContext }, use) => {
@@ -105,19 +94,6 @@ const newcomerTest = test.extend<{
   },
   poll: async ({ pollContext }, use) => {
     await use(pollContext.poll)
-  },
-})
-
-let page: Page
-let seededPoll: Poll
-
-/**
- * The tests of the last describe share one page, seeded once in beforeAll: the
- * `poll` fixture exposes the poll seeded there.
- */
-const joinedTest = test.extend<{ poll: Poll }>({
-  poll: async ({}, use) => {
-    await use(seededPoll)
   },
 })
 
@@ -139,24 +115,32 @@ test.describe('A poll admin', () => {
     await expect(page).toHaveURL(poll.url)
   })
 
-  test.describe('can create a new poll and delete it', () => {
-    let newPoll: Poll
+  test('can create a new poll and delete it', async ({
+    page,
+    organisation,
+  }) => {
+    const name = generatePollName()
+    await page.goto(Poll.createUrl(organisation.slug))
+    const slug = await new Poll(page).create(name)
+    const url = Poll.url(organisation.slug, slug)
 
-    test.beforeEach(async ({ page, organisation }) => {
-      newPoll = new Poll(page, organisation)
-      await page.goto(newPoll.createUrl)
-      await newPoll.create()
-    })
+    await expect(page).toHaveURL(url)
+    await expect(
+      page.getByRole('heading', { name, level: 1, exact: true })
+    ).toBeVisible()
 
-    test.afterEach(async ({ page, organisation }) => {
-      await page.goto(`${newPoll.url}/parametres`)
-      await page.getByText('Supprimer cette campagne').click()
-      await page.getByText('Confirmer').click()
-      await expect(page).toHaveURL(organisation.url)
-      await expect(
-        page.getByRole('heading', { name: newPoll.name, level: 3, exact: true })
-      ).toBeHidden()
-    })
+    await page.goto(`${url}/parametres`)
+    await page
+      .getByRole('button', { name: 'Supprimer ce test collectif', exact: true })
+      .click()
+    // Not a role locator: react-modal sets aria-hidden on its app element, the
+    // body here, which hides the modal from the accessibility tree.
+    await page.getByText('Confirmer', { exact: true }).click()
+
+    await expect(page).toHaveURL(organisation.url)
+    await expect(
+      page.getByRole('heading', { name, level: 3, exact: true })
+    ).toBeHidden()
   })
 })
 
@@ -175,10 +159,10 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
   })
 
   test('has an invite link that can be copied with good utm', async ({
-    poll,
+    page,
     baseURL,
   }) => {
-    const clipboardContent = await poll.copyInviteLink()
+    const clipboardContent = await new Poll(page).copyInviteLink()
     expect(clipboardContent).toMatch(new RegExp(`^${baseURL}`))
     expect(clipboardContent).toMatch(/utm_medium=sharelink/)
     expect(clipboardContent).toMatch(/utm_source=NGC/)
@@ -216,26 +200,28 @@ test.describe('A new user', () => {
 
   test('can leave its email after completing the test via poll invite', async ({
     page,
-    ngcTest,
-    tutorialPage,
     poll,
   }) => {
-    const user = new User(page)
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
+
+    const user = generateUser()
     await page.goto(poll.inviteLink)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
     await expect(page).toHaveURL('/simulateur/email')
-    await user.fillEmailAndCompleteVerification()
+    await new EmailVerification(page).complete(user.email)
 
     await expect(page).toHaveURL(/\/fin/)
   })
 
   test('can skip leaving its email after completing the test via poll invite', async ({
     page,
-    ngcTest,
-    tutorialPage,
     poll,
   }) => {
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
+
     await page.goto(poll.inviteLink)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
@@ -246,10 +232,10 @@ test.describe('A new user', () => {
 })
 
 test.describe('A user with a completed test that joined a poll', () => {
-  // The tests share one page, seeded once in beforeAll (a fresh visitor who
-  // completed the test through the poll invite link): alias the extended test
-  // type whose `poll` fixture exposes the poll seeded there.
-  const test = joinedTest
+  // The tests share one page and one poll, seeded once in beforeAll (a fresh
+  // visitor who completed the test through the poll invite link).
+  let page: Page
+  let poll: SeededPoll
 
   test.describe.configure({ mode: 'default' })
   // The per-test reset would wipe the data seeded in beforeAll: the database
@@ -267,9 +253,9 @@ test.describe('A user with a completed test that joined a poll', () => {
     page = await createPage(browser)
 
     // Seed the organisation and the poll in the e2e database.
-    seededPoll = (await seedPollWithOrganisation(page)).poll
+    poll = (await seedPollWithOrganisation()).poll
 
-    await page.goto(seededPoll.inviteLink)
+    await page.goto(poll.inviteLink)
     const tutorialPage = new TutorialPage(page)
     await tutorialPage.skip()
 
@@ -300,13 +286,13 @@ test.describe('A user with a completed test that joined a poll', () => {
     await expect(page.getByTestId('poll-confirmation-block')).toBeVisible()
   })
 
-  test('can access the poll dashboard from the end page', async ({ poll }) => {
+  test('can access the poll dashboard from the end page', async () => {
     await page.goto('/fin')
     await page.getByTestId('see-group-result-button').click()
     await expect(page).toHaveURL(poll.url)
   })
 
-  test('cannot redo the test with the invite link', async ({ poll }) => {
+  test('cannot redo the test with the invite link', async () => {
     await page.goto(poll.inviteLink)
     await expect(page).toHaveURL(/\/simulateur\/campagne\//)
     await expect(page.getByTestId('skip-tutorial-button')).toBeHidden()

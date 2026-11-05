@@ -1,3 +1,4 @@
+import { UserSpace } from '../../page-objects/user-space'
 import { expect, test } from '../fixtures'
 import { ORGANISATION_ADMIN_STATE } from '../state'
 
@@ -5,9 +6,10 @@ test.use({ storageState: ORGANISATION_ADMIN_STATE })
 
 test('can access the organisation dashboard from the user account', async ({
   page,
-  userSpace,
   organisation,
 }) => {
+  const userSpace = new UserSpace(page)
+
   await userSpace.goto()
   await page.getByTestId('my-groups-tab').click()
   await page.getByRole('link', { name: organisation.name }).click()
@@ -30,7 +32,7 @@ test.describe('The dashboard', () => {
   test('welcomes the admin', async ({ page, organisation }) => {
     await expect(
       page.getByRole('heading', {
-        name: `Bienvenue ${organisation.admin.fullName}`,
+        name: `Bienvenue ${organisation.admin.firstName} ${organisation.admin.lastName}`,
         level: 1,
       })
     ).toBeVisible()

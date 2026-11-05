@@ -3,7 +3,11 @@ import { EMAIL_PAGE_PATH } from '../../constants'
 import { createPage } from '../../fixtures/feature-flags'
 import { NGCTest } from '../../page-objects/ngc-test'
 import { expect, test } from '../fixtures'
-import { restoreOrganisation, restorePoll } from '../fixtures/context'
+import {
+  restoreFromState,
+  restoreOrganisation,
+  restorePoll,
+} from '../fixtures/context'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
 
 test.use({ storageState: NEW_VISITOR_STATE })
@@ -33,18 +37,16 @@ test.describe.skip('scolaire mode', () => {
 
       page = await createPage(browser)
 
-      const adminContext = await browser.newContext({
-        storageState: ORGANISATION_ADMIN_STATE,
-      })
-      const adminPage = await adminContext.newPage()
-
-      const organisation = await restoreOrganisation(adminPage)
-      const scolairePoll = await restorePoll(
-        adminPage,
-        organisation,
-        'poll-scolaire'
+      const scolairePoll = await restoreFromState(
+        browser,
+        ORGANISATION_ADMIN_STATE,
+        async (adminPage) =>
+          await restorePoll(
+            adminPage,
+            await restoreOrganisation(adminPage),
+            'poll-scolaire'
+          )
       )
-      await adminContext.close()
 
       await page.goto(scolairePoll.inviteLink)
       await page.getByTestId('youth-tutorial-start-button').click()

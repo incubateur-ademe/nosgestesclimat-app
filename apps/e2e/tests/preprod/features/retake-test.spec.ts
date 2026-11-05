@@ -1,4 +1,5 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
+import { NGCTest } from '../../page-objects/ngc-test'
 import { expect, test } from '../fixtures'
 
 test.setTimeout(250_000)
@@ -7,9 +8,10 @@ const persona = Object.values(personas)[0]
 
 test.describe('Given a user that completed a test', () => {
   test('« Repasser le test » should start a brand new simulation', async ({
-    ngcTest,
     page,
   }) => {
+    const ngcTest = new NGCTest(page)
+
     // Given a first completed simulation
     await ngcTest.start()
     await page.waitForURL(/question=/)

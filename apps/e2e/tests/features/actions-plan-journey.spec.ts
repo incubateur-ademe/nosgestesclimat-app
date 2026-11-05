@@ -3,12 +3,13 @@ import {
   CATALOGUE_ACTIONS,
   type CatalogueActionKey,
 } from '../helpers/actions'
-import { test as base, expect } from '../local/actions'
+import { generateUser } from '../helpers/test-data'
+import { expect, test } from '../local/actions'
 import { ActionDetail } from '../page-objects/action-detail'
 import { ActionsCatalogue } from '../page-objects/actions-catalogue'
 import { ActionsPlan } from '../page-objects/actions-plan'
+import { EmailVerification } from '../page-objects/email-verification'
 import { NGCTest } from '../page-objects/ngc-test'
-import { User } from '../page-objects/user'
 
 /**
  * The whole flow, from the home page to the saved plan, with the real test and
@@ -22,18 +23,6 @@ import { User } from '../page-objects/user'
  * (localVisitorState): the scenario starts anonymous and creates its account
  * along the way.
  */
-const test = base.extend<{
-  ngcTest: NGCTest
-  actionsPlan: ActionsPlan
-}>({
-  ngcTest: async ({ page }, use) => {
-    await use(new NGCTest(page))
-  },
-  actionsPlan: async ({ page }, use) => {
-    await use(new ActionsPlan(page))
-  },
-})
-
 /** The actions of the plan saved when creating the account. */
 const SAVED_PLAN_ACTIONS = [
   'reduireViande',
@@ -45,11 +34,12 @@ test.setTimeout(120_000)
 
 test('a visitor completes the test, builds an action plan from their personalized catalogue, then saves it by creating an account', async ({
   page,
-  ngcTest,
-  actionsCatalogue,
-  actionDetail,
-  actionsPlan,
 }) => {
+  const ngcTest = new NGCTest(page)
+  const actionsCatalogue = new ActionsCatalogue(page)
+  const actionDetail = new ActionDetail(page)
+  const actionsPlan = new ActionsPlan(page)
+
   await test.step('As a visitor, I complete a simulation from the home page', async () => {
     await page.goto('/')
     await page.getByTestId('main-cta').first().click()
@@ -157,7 +147,7 @@ test('a visitor completes the test, builds an action plan from their personalize
 
   // The account I create to save my plan: a unique email, verified with the
   // code sent to the stub mailbox
-  const user = new User(page)
+  const user = generateUser()
 
   await test.step('I save my plan by creating an account', async () => {
     await actionsCatalogue.savePlanLink().click()
@@ -166,7 +156,7 @@ test('a visitor completes the test, builds an action plan from their personalize
     await page.getByRole('tab', { name: 'Créer un compte' }).click()
     await expect(page).toHaveURL(/\/inscription\?from=build-action-plan$/)
 
-    await user.fillEmailAndCompleteVerification()
+    await new EmailVerification(page).complete(user.email)
 
     await expect(page).toHaveURL(ActionsPlan.URL)
     await expect(actionsPlan.title()).toBeVisible()

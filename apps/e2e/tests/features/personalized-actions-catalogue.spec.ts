@@ -38,8 +38,9 @@ test.describe('Personalized actions catalogue', () => {
     test('it suggests the actions that apply to me, with an empty selection', async ({
       page,
       signInAssessedUser,
-      actionsCatalogue,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       await signInAssessedUser()
       await page.goto(ActionsCatalogue.PERSONALIZED_URL)
       await expect(actionsCatalogue.personalizedTitle()).toBeVisible()
@@ -86,8 +87,9 @@ test.describe('Personalized actions catalogue', () => {
     test('I add a highlighted action: both of its cards read « Ajouté », and it joins my selection', async ({
       page,
       signInAssessedUser,
-      actionsCatalogue,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       await signInAssessedUser()
       await page.goto(ActionsCatalogue.PERSONALIZED_URL)
 
@@ -116,8 +118,9 @@ test.describe('Personalized actions catalogue', () => {
     test('I add an action from its theme section, whose impact cannot be quantified', async ({
       page,
       signInAssessedUser,
-      actionsCatalogue,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       await signInAssessedUser()
       await page.goto(ActionsCatalogue.PERSONALIZED_URL)
 
@@ -141,15 +144,15 @@ test.describe('Personalized actions catalogue', () => {
         'reduireBoissonsSucrees',
       ] as const satisfies readonly CatalogueActionKey[]
 
-      test.beforeEach(
-        async ({ page, signInAssessedUser, actionsCatalogue }) => {
-          await signInAssessedUser({ plan: SELECTION })
-          await page.goto(ActionsCatalogue.PERSONALIZED_URL)
-          await expect(actionsCatalogue.basketItems()).toHaveCount(
-            SELECTION.length
-          )
-        }
-      )
+      test.beforeEach(async ({ page, signInAssessedUser }) => {
+        const actionsCatalogue = new ActionsCatalogue(page)
+
+        await signInAssessedUser({ plan: SELECTION })
+        await page.goto(ActionsCatalogue.PERSONALIZED_URL)
+        await expect(actionsCatalogue.basketItems()).toHaveCount(
+          SELECTION.length
+        )
+      })
 
       /**
        * The removal is notified with a way to undo it (left unused here), and
@@ -178,9 +181,9 @@ test.describe('Personalized actions catalogue', () => {
         await expect(actionsCatalogue.myPlanLink()).toContainText('1')
       }
 
-      test('I remove an action from my selection', async ({
-        actionsCatalogue,
-      }) => {
+      test('I remove an action from my selection', async ({ page }) => {
+        const actionsCatalogue = new ActionsCatalogue(page)
+
         await actionsCatalogue
           .removeFromBasketButton(
             CATALOGUE_ACTIONS.reduireBoissonsSucrees.title
@@ -193,9 +196,9 @@ test.describe('Personalized actions catalogue', () => {
         ).toBeVisible()
       })
 
-      test('I remove an action from a highlighted card', async ({
-        actionsCatalogue,
-      }) => {
+      test('I remove an action from a highlighted card', async ({ page }) => {
+        const actionsCatalogue = new ActionsCatalogue(page)
+
         const card = actionsCatalogue.highlightedCard(
           CATALOGUE_ACTIONS.reduireViande.title
         )
@@ -215,9 +218,9 @@ test.describe('Personalized actions catalogue', () => {
         ).toHaveText(TOP_ACTION_TITLES)
       })
 
-      test('I remove an action from a theme card', async ({
-        actionsCatalogue,
-      }) => {
+      test('I remove an action from a theme card', async ({ page }) => {
+        const actionsCatalogue = new ActionsCatalogue(page)
+
         const { title, theme } = CATALOGUE_ACTIONS.reduireBoissonsSucrees
         await actionsCatalogue
           .addedButton(actionsCatalogue.themeCard(theme.title, title))
@@ -238,15 +241,19 @@ test.describe('Personalized actions catalogue', () => {
       'vacancesEnTrain',
     ] as const satisfies readonly CatalogueActionKey[]
 
-    test.beforeEach(async ({ page, signInAssessedUser, actionsCatalogue }) => {
+    test.beforeEach(async ({ page, signInAssessedUser }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       await signInAssessedUser({ verified: true, plan: SAVED_PLAN })
       await page.goto(ActionsCatalogue.PERSONALIZED_URL)
       await expect(actionsCatalogue.personalizedTitle()).toBeVisible()
     })
 
     test('it sits in my space, with my saved plan as my selection', async ({
-      actionsCatalogue,
+      page,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       const mySpaceTabs = actionsCatalogue.mySpaceTabs()
       await expect(
         mySpaceTabs.getByRole('tab', { name: "J'agis" })
@@ -301,9 +308,9 @@ test.describe('Personalized actions catalogue', () => {
       )
     })
 
-    test('I add another action next to my saved plan', async ({
-      actionsCatalogue,
-    }) => {
+    test('I add another action next to my saved plan', async ({ page }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       const { title, theme } = CATALOGUE_ACTIONS.engagementAssociatif
       const card = actionsCatalogue.themeCard(theme.title, title)
       await actionsCatalogue.addButton(card).click()

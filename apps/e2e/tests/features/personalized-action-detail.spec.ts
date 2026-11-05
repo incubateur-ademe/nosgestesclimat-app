@@ -13,17 +13,20 @@ test.describe('Personalized action detail', () => {
   const action = CATALOGUE_ACTIONS.vacancesEnTrain
   const ecoconduite = CATALOGUE_ACTIONS.ecoconduite
 
-  test.beforeEach(async ({ page, signInAssessedUser, actionDetail }) => {
+  test.beforeEach(async ({ page, signInAssessedUser }) => {
+    const actionDetail = new ActionDetail(page)
+
     await signInAssessedUser()
     await page.goto(ActionDetail.url(action, 'mes-suggestions'))
     await expect(actionDetail.title()).toHaveText(action.title)
   })
 
   test('it shows an action applying to me, whose impact cannot be quantified', async ({
-    actionsCatalogue,
-    actionDetail,
     page,
   }) => {
+    const actionsCatalogue = new ActionsCatalogue(page)
+    const actionDetail = new ActionDetail(page)
+
     await expect(actionDetail.header()).toContainText(action.theme.title)
 
     // The « Je comprends l'enjeu » section is always there, its text varies
@@ -48,9 +51,11 @@ test.describe('Personalized action detail', () => {
   })
 
   test('the other actions of its theme are personalized too', async ({
-    actionsCatalogue,
-    actionDetail,
+    page,
   }) => {
+    const actionsCatalogue = new ActionsCatalogue(page)
+    const actionDetail = new ActionDetail(page)
+
     // The most impactful first, with its impact
     await expect(
       actionDetail.otherThemeActionCards().first().getByRole('heading')
@@ -65,11 +70,10 @@ test.describe('Personalized action detail', () => {
     ).toHaveCount(0)
   })
 
-  test('I add the action to my plan', async ({
-    page,
-    actionsCatalogue,
-    actionDetail,
-  }) => {
+  test('I add the action to my plan', async ({ page }) => {
+    const actionsCatalogue = new ActionsCatalogue(page)
+    const actionDetail = new ActionDetail(page)
+
     await actionDetail.commitmentButton().click()
 
     // The banner's button reads « Ajouté », and the commitment is notified

@@ -1,24 +1,14 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
 import type { Locator, Page } from '@playwright/test'
 import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
-import { test as base, expect } from '../local/fixtures'
+import { expect, test } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
-
-// The local suite has no page-object fixtures: NGCTest is stateless and takes
-// the page, so it is instantiated inline. The default context is a fresh new
-// visitor (localVisitorState: cookie banner dismissed, no session).
-const test = base.extend<{ ngcTest: NGCTest }>({
-  ngcTest: async ({ page }, use) => {
-    await use(new NGCTest(page))
-  },
-})
 
 test.setTimeout(250_000)
 for (const persona of Object.values(personas)) {
-  test(`It should work for persona « ${persona.nom} »`, async ({
-    ngcTest,
-    page,
-  }) => {
+  test(`It should work for persona « ${persona.nom} »`, async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await ngcTest.start()
     await ngcTest.answerTest(persona.situation)
     await expect(page).toHaveURL(/\/fin/)
@@ -26,7 +16,9 @@ for (const persona of Object.values(personas)) {
 }
 
 test.describe('It should be possible to deselect an answer', () => {
-  test(`for boolean`, async ({ ngcTest, page }) => {
+  test(`for boolean`, async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await testDeselectAnswer(
       ngcTest,
       page,
@@ -35,7 +27,9 @@ test.describe('It should be possible to deselect an answer', () => {
     )
   })
 
-  test(`for multiple answer`, async ({ ngcTest, page }) => {
+  test(`for multiple answer`, async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await testDeselectAnswer(
       ngcTest,
       page,
@@ -44,7 +38,9 @@ test.describe('It should be possible to deselect an answer', () => {
     )
   })
 
-  test(`for mosaic`, async ({ ngcTest, page }) => {
+  test(`for mosaic`, async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await testDeselectAnswer(
       ngcTest,
       page,

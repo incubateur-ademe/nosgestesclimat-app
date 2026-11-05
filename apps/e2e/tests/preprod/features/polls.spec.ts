@@ -1,12 +1,17 @@
 import type { Page } from '@playwright/test'
 import { EMAIL_PAGE_PATH } from '../../constants'
 import { createPage } from '../../fixtures/feature-flags'
+import { generatePollName, generateUser } from '../../helpers/test-data'
+import { EmailVerification } from '../../page-objects/email-verification'
 import { NGCTest } from '../../page-objects/ngc-test'
 import { Poll } from '../../page-objects/poll'
 import { TutorialPage } from '../../page-objects/tutorial'
-import { User } from '../../page-objects/user'
 import { expect, test } from '../fixtures'
-import { restoreOrganisation, restorePoll } from '../fixtures/context'
+import {
+  restoreFromState,
+  restoreOrganisation,
+  restorePoll,
+} from '../fixtures/context'
 import { NEW_VISITOR_STATE, ORGANISATION_ADMIN_STATE } from '../state'
 
 test.use({ storageState: ORGANISATION_ADMIN_STATE })
@@ -25,24 +30,32 @@ test.describe('A poll admin', () => {
     await expect(page).toHaveURL(poll.url)
   })
 
-  test.describe('can create a new poll and delete it', () => {
-    let newPoll: Poll
+  test('can create a new poll and delete it', async ({
+    page,
+    organisation,
+  }) => {
+    const name = generatePollName()
+    await page.goto(Poll.createUrl(organisation.slug))
+    const slug = await new Poll(page).create(name)
+    const url = Poll.url(organisation.slug, slug)
 
-    test.beforeEach(async ({ page, organisation }) => {
-      newPoll = new Poll(page, organisation)
-      await page.goto(newPoll.createUrl)
-      await newPoll.create()
-    })
+    await expect(page).toHaveURL(url)
+    await expect(
+      page.getByRole('heading', { name, level: 1, exact: true })
+    ).toBeVisible()
 
-    test.afterEach(async ({ page, organisation }) => {
-      await page.goto(`${newPoll.url}/parametres`)
-      await page.getByText('Supprimer cette campagne').click()
-      await page.getByText('Confirmer').click()
-      await expect(page).toHaveURL(organisation.url)
-      await expect(
-        page.getByRole('heading', { name: newPoll.name, level: 3, exact: true })
-      ).toBeHidden()
-    })
+    await page.goto(`${url}/parametres`)
+    await page
+      .getByRole('button', { name: 'Supprimer ce test collectif', exact: true })
+      .click()
+    // Not a role locator: react-modal sets aria-hidden on its app element, the
+    // body here, which hides the modal from the accessibility tree.
+    await page.getByText('Confirmer', { exact: true }).click()
+
+    await expect(page).toHaveURL(organisation.url)
+    await expect(
+      page.getByRole('heading', { name, level: 3, exact: true })
+    ).toBeHidden()
   })
 })
 
@@ -58,10 +71,10 @@ test.describe('The poll dashboard page, when accessed by an admin', () => {
   })
 
   test('has an invite link that can be copied with good utm', async ({
-    poll,
+    page,
     baseURL,
   }) => {
-    const clipboardContent = await poll.copyInviteLink()
+    const clipboardContent = await new Poll(page).copyInviteLink()
     expect(clipboardContent).toMatch(new RegExp(`^${baseURL}`))
     expect(clipboardContent).toMatch(/utm_medium=sharelink/)
     expect(clipboardContent).toMatch(/utm_source=NGC/)
@@ -99,26 +112,28 @@ test.describe('A new user', () => {
 
   test('can leave its email after completing the test via poll invite', async ({
     page,
-    ngcTest,
-    tutorialPage,
     poll,
   }) => {
-    const user = new User(page)
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
+
+    const user = generateUser()
     await page.goto(poll.inviteLink)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
     await expect(page).toHaveURL('/simulateur/email')
-    await user.fillEmailAndCompleteVerification()
+    await new EmailVerification(page).complete(user.email)
 
     await expect(page).toHaveURL(/\/fin/)
   })
 
   test('can skip leaving its email after completing the test via poll invite', async ({
     page,
-    ngcTest,
-    tutorialPage,
     poll,
   }) => {
+    const ngcTest = new NGCTest(page)
+    const tutorialPage = new TutorialPage(page)
+
     await page.goto(poll.inviteLink)
     await tutorialPage.skip()
     await ngcTest.skipAllQuestions()
@@ -143,13 +158,12 @@ test.describe('A user with a completed test that joined a poll', () => {
 
     page = await createPage(browser)
 
-    const adminContext = await browser.newContext({
-      storageState: ORGANISATION_ADMIN_STATE,
-    })
-    const adminPage = await adminContext.newPage()
-    const organisation = await restoreOrganisation(adminPage)
-    const poll = await restorePoll(adminPage, organisation)
-    await adminContext.close()
+    const poll = await restoreFromState(
+      browser,
+      ORGANISATION_ADMIN_STATE,
+      async (adminPage) =>
+        await restorePoll(adminPage, await restoreOrganisation(adminPage))
+    )
 
     await page.goto(poll.inviteLink)
     const tutorialPage = new TutorialPage(page)

@@ -1,5 +1,6 @@
 import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import { getCarbonFootprintElem } from '../../helpers/carbon-footprint'
+import { NGCTest } from '../../page-objects/ngc-test'
 import { expect, test } from '../fixtures'
 import { COMPLETED_TEST_STATE, USER_ACCOUNT_STATE } from '../state'
 
@@ -63,8 +64,9 @@ test.describe('Given an authenticated user that completed the test twice with di
 
   test('should display a tendency indicator on the result page', async ({
     page,
-    ngcTest,
   }) => {
+    const ngcTest = new NGCTest(page)
+
     await expect(page).toHaveURL(/\/fin/)
 
     // 2. Restart and do a second simulation with different answers

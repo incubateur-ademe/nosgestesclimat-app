@@ -1,66 +1,43 @@
-import { faker } from '@faker-js/faker'
-import { TemplateIds } from '@nosgestesclimat/core/features/emails/email.constant'
 import { expect, type Page } from '@playwright/test'
-
-import type { User } from './user'
-
-interface Data {
-  name: string
-  slug?: string
-}
 
 export class Organisation {
   static CONNEXION_URL = '/organisations/connexion'
   static CREATION_URL = '/organisations/creer'
-  constructor(
-    public readonly page: Page,
-    public admin: User,
-    private _data: Data = {
-      name: faker.company.name(),
-    }
-  ) {}
 
-  get data(): Data {
-    return this._data
+  static url(slug: string) {
+    return `/organisations/${slug}`
   }
 
-  get name() {
-    return this.data.name
+  static parametersUrl(slug: string) {
+    return `${Organisation.url(slug)}/parametres`
   }
 
-  get url() {
-    return `/organisations/${this.data.slug}`
-  }
+  constructor(public readonly page: Page) {}
 
-  get parametersUrl() {
-    return `/organisations/${this.data.slug}/parametres`
-  }
-
-  async expectCreationConfirmationEmail() {
-    const confirmationEmail = await this.admin.mailbox.lookup(
-      TemplateIds.fr.ORGANISATION_CREATED
-    )
-    expect(confirmationEmail).toBeDefined()
-  }
-
-  async create() {
+  /** Fills the creation form and returns the slug of the created organisation. */
+  async create({
+    name,
+    administrator,
+  }: {
+    name: string
+    administrator: { firstName: string; lastName: string }
+  }) {
     await expect(this.page).toHaveURL(Organisation.CREATION_URL)
 
-    await this.page.getByTestId('organisation-name-input').fill(this.data.name)
+    await this.page.getByTestId('organisation-name-input').fill(name)
     await this.page
       .getByTestId('organisation-administrator-first-name-input')
-      .fill(this.admin.firstName)
+      .fill(administrator.firstName)
 
     await this.page
       .getByTestId('organisation-administrator-last-name-input')
-      .fill(this.admin.lastName)
+      .fill(administrator.lastName)
 
     await this.page.getByTestId('create-organisation-button').click()
 
-    // Retrieve the organization slug
     const orgaUrl = /\/organisations\/([a-z0-9-]*)\/.*/
     await expect(this.page).toHaveURL(orgaUrl)
-    this.data.slug = orgaUrl.exec(this.page.url())![1]
+    return orgaUrl.exec(this.page.url())![1]
   }
 
   async goFromLandingPage() {

@@ -27,12 +27,14 @@ et preprod), et une partie **propre à chaque suite**.
 
 ### Commun
 
-- `tests/page-objects/` — classes page object (User, Group, Organisation,
-  Poll, NGCTest, TutorialPage, CookieBanner, UserSpace, FeatureFlags). Sans
-  état, sans fixture : des classes pures qui prennent une `Page` en
-  constructeur.
+- `tests/page-objects/` — classes page object. Elles ne décrivent que les
+  interactions avec les pages : sans état ni données générées, elles prennent
+  une `Page` en constructeur et leurs données en paramètres. Les tests les
+  instancient directement (`new NGCTest(page)`), sans fixture.
 - `tests/helpers/` — helpers purs (hydration, clipboard, session,
-  user-mailbox…).
+  user-mailbox…), dont `test-data.ts`, qui génère les données
+  saisies dans les formulaires (utilisateur, noms de groupe, d'organisation et
+  de campagne).
 - `tests/fixtures/` — base commune : `hydrationGuard` (auto), `visibleTestId`
   (patch `page`), drapeaux par défaut (auto), plus `createPage` et
   `DEFAULT_FLAGS`.
@@ -53,11 +55,7 @@ et preprod), et une partie **propre à chaque suite**.
 
 ### Suite preprod uniquement
 
-- `tests/preprod/fixtures/` — fixtures avec état (user, group, organisation,
-  poll, scolairePoll) qui restaurent depuis l'état enregistré, plus les fixtures
-  page object (ngcTest, tutorialPage, cookieBanner, userSpace), l'option
-  `setup`, le garde static-assets, et les helpers save/restore
-  (`context.ts`).
+- `tests/preprod/fixtures/` — fixtures de données qui restaurent depuis l'état enregistré, le garde static-assets, et les helpers save/restore (`context.ts`).
 - `tests/preprod/state/` — états enregistrés (fichiers JSON `storageState`)
   écrits par le projet setup.
 - `tests/preprod/setup/` — setup global qui enregistre les états.

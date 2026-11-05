@@ -1,51 +1,21 @@
-import { faker } from '@faker-js/faker'
 import { expect, type Page } from '@playwright/test'
 
 import { copyAndReadClipboard } from '../helpers/clipboard'
-import type { User } from './user'
 
-function generateName() {
-  return `${faker.word.adjective()} ${faker.word.noun()}`
-}
-
-interface Data {
-  name: string
-  inviteLink?: string
-  url?: string
-}
 export class Group {
   static CREATION_URL = '/amis/creer'
 
-  constructor(
-    public readonly page: Page,
-    public admin: User,
-    public readonly data: Data = {
-      name: generateName(),
-    }
-  ) {}
+  constructor(public readonly page: Page) {}
 
-  get name() {
-    return this.data.name
-  }
-
-  get url() {
-    return this.data.url!
-  }
-
-  get inviteLink() {
-    return this.data.inviteLink!
-  }
-
-  async create() {
-    await this.page
-      .getByTestId('group-input-owner-name')
-      .fill(this.admin.firstName)
-    await this.page.getByTestId('group-name').fill(this.name)
+  /** Fills the creation form and returns the URL of the created group. */
+  async create({ name, ownerName }: { name: string; ownerName: string }) {
+    await this.page.getByTestId('group-input-owner-name').fill(ownerName)
+    await this.page.getByTestId('group-name').fill(name)
     await this.page.getByTestId(`group-select-emoji-🍒`).click()
     await this.page.getByTestId('button-validate-create-group').click()
 
     await expect(this.page).toHaveURL(/groupId=.*/)
-    this.data.url = this.page.url()
+    return this.page.url()
   }
 
   async delete() {
@@ -53,39 +23,37 @@ export class Group {
     await this.page.getByTestId('button-confirm-delete-group').click()
   }
 
-  async changeName() {
-    const newName = generateName()
+  async changeName(newName: string) {
     await this.page.getByTestId('group-name-edit-button').click()
     await this.page.getByTestId('group-edit-input-name').fill(newName)
     await this.page.getByTestId('button-inline-input').click()
     await expect(this.page.getByTestId('group-name')).toContainText(newName)
-    this.data.name = newName
   }
 
-  async joinWithInviteLink(user: User) {
-    await user.page.goto(this.inviteLink)
-    await user.page.getByTestId('member-name').fill(user.firstName)
-    await user.page.getByTestId('button-join-group').click()
+  async joinWithInviteLink(inviteLink: string, memberName: string) {
+    await this.page.goto(inviteLink)
+    await this.page.getByTestId('member-name').fill(memberName)
+    await this.page.getByTestId('button-join-group').click()
   }
 
-  async leave(page: Page) {
-    await page.getByTestId('button-leave-group').click()
-    await expect(page.getByTestId('button-confirm-leave-group')).toBeVisible()
-    await page.getByTestId('button-confirm-leave-group').click()
+  async leave() {
+    await this.page.getByTestId('button-leave-group').click()
+    await expect(
+      this.page.getByTestId('button-confirm-leave-group')
+    ).toBeVisible()
+    await this.page.getByTestId('button-confirm-leave-group').click()
   }
 
   async copyInviteLink() {
-    const clipboardContent = await copyAndReadClipboard({
+    return await copyAndReadClipboard({
       page: this.page,
       copyAction: () => this.page.getByTestId('invite-button').click(),
     })
-    this.data.inviteLink = clipboardContent
-    return clipboardContent
   }
 
-  async goFromGroupTabs(page: Page) {
-    await page.getByTestId('my-groups-tab').click()
-    await page.waitForTimeout(500)
-    await page.getByText(this.name).filter({ visible: true }).click()
+  async goFromGroupTabs(name: string) {
+    await this.page.getByTestId('my-groups-tab').click()
+    await this.page.waitForTimeout(500)
+    await this.page.getByText(name).filter({ visible: true }).click()
   }
 }

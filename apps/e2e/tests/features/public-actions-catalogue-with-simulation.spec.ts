@@ -17,9 +17,10 @@ test.describe('Public actions catalogue', () => {
 
   test('a visitor who completed the test browses the public catalogue, opens an action personalized to its simulation, then goes back', async ({
     page,
-    actionsCatalogue,
-    actionDetail,
   }) => {
+    const actionsCatalogue = new ActionsCatalogue(page)
+    const actionDetail = new ActionDetail(page)
+
     const viande = CATALOGUE_ACTIONS.reduireViande
 
     await test.step('I visit the public actions catalogue', async () => {

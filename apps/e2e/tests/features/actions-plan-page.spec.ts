@@ -1,5 +1,5 @@
 import { CATALOGUE_ACTIONS, type CatalogueActionKey } from '../helpers/actions'
-import { test as base, expect } from '../local/actions'
+import { expect, test } from '../local/actions'
 import { ActionDetail } from '../page-objects/action-detail'
 import { ActionsCatalogue } from '../page-objects/actions-catalogue'
 import { ActionsPlan } from '../page-objects/actions-plan'
@@ -8,11 +8,6 @@ import { ActionsPlan } from '../page-objects/actions-plan'
  * The plan page (/actions/mon-plan) of a user whose simulation is seeded and
  * assessed (SEEDED_ASSESSMENTS).
  */
-const test = base.extend<{ actionsPlan: ActionsPlan }>({
-  actionsPlan: async ({ page }, use) => {
-    await use(new ActionsPlan(page))
-  },
-})
 
 /** One action per theme. */
 const PLAN = [
@@ -68,7 +63,9 @@ test.describe('Actions plan page', () => {
   test.describe('As a verified user', () => {
     let email: string | null
 
-    test.beforeEach(async ({ page, signInAssessedUser, actionsPlan }) => {
+    test.beforeEach(async ({ page, signInAssessedUser }) => {
+      const actionsPlan = new ActionsPlan(page)
+
       ;({ email } = await signInAssessedUser({ verified: true, plan: PLAN }))
       await page.goto(ActionsPlan.URL)
       await expect(actionsPlan.title()).toBeVisible()
@@ -76,8 +73,9 @@ test.describe('Actions plan page', () => {
 
     test('it sits in my space, with my plan as the current page', async ({
       page,
-      actionsCatalogue,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       await expect(
         page.getByRole('button', {
           name: `Mon espace (${email}), ouvrir le menu`,
@@ -103,9 +101,11 @@ test.describe('Actions plan page', () => {
     })
 
     test('it lists my actions by theme, each with its impact, a way to remove it and a link to its detail page', async ({
-      actionsCatalogue,
-      actionsPlan,
+      page,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+      const actionsPlan = new ActionsPlan(page)
+
       await expect(actionsPlan.summary()).toHaveText(
         'Vous avez ajouté 4 actions à votre plan.'
       )
@@ -136,9 +136,10 @@ test.describe('Actions plan page', () => {
 
     test('a tile leads to the detail page of its action, which leads back to my plan', async ({
       page,
-      actionDetail,
-      actionsPlan,
     }) => {
+      const actionDetail = new ActionDetail(page)
+      const actionsPlan = new ActionsPlan(page)
+
       const action = CATALOGUE_ACTIONS.engagementAssociatif
       await actionsPlan.detailLink(action.title).click()
 
@@ -152,10 +153,9 @@ test.describe('Actions plan page', () => {
       await expect(actionsPlan.tile(action.title)).toBeVisible()
     })
 
-    test('it leads to my personalized catalogue', async ({
-      page,
-      actionsCatalogue,
-    }) => {
+    test('it leads to my personalized catalogue', async ({ page }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+
       await actionsCatalogue.exploreActionsLink().click()
 
       await expect(page).toHaveURL(
@@ -166,9 +166,10 @@ test.describe('Actions plan page', () => {
 
     test('I remove an action: my plan updates in place, and the removal is saved', async ({
       page,
-      actionsCatalogue,
-      actionsPlan,
     }) => {
+      const actionsCatalogue = new ActionsCatalogue(page)
+      const actionsPlan = new ActionsPlan(page)
+
       const removed = CATALOGUE_ACTIONS.reduireViande
       const kept = PLAN.filter((key) => key !== 'reduireViande')
 

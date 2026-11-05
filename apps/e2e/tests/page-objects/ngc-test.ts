@@ -5,10 +5,11 @@ import type { Page } from '@playwright/test'
 import { TutorialPage } from './tutorial'
 
 export class NGCTest {
-  constructor(
-    public readonly page: Page,
-    public readonly tutorialPage: TutorialPage = new TutorialPage(page)
-  ) {}
+  public readonly tutorialPage: TutorialPage
+
+  constructor(public readonly page: Page) {
+    this.tutorialPage = new TutorialPage(page)
+  }
 
   async start() {
     await this.tutorialPage.start()

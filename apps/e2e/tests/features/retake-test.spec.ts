@@ -7,13 +7,9 @@ import { test as base, expect } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
 
 const test = base.extend<{
-  ngcTest: NGCTest
   /** An anonymous user seeded in the e2e database and signed in. */
   user: UnverifiedUser
 }>({
-  ngcTest: async ({ page }, use) => {
-    await use(new NGCTest(page))
-  },
   user: [
     async ({ context }, use) => {
       const user = await userFactory.unverified().create()
@@ -30,10 +26,11 @@ const persona = Object.values(personas)[0]
 
 test.describe('Given a user that completed a test', () => {
   test('« Repasser le test » should start a brand new simulation', async ({
-    ngcTest,
     page,
     user,
   }) => {
+    const ngcTest = new NGCTest(page)
+
     // The first question of a fresh test, read from a test start that is
     // never answered: running a whole test through the UI is what makes this
     // suite slow, so the completed simulation below is seeded instead.

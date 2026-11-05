@@ -1,19 +1,6 @@
-import { test as base, expect } from '../local/fixtures'
+import { expect, test } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
 import { TutorialPage } from '../page-objects/tutorial'
-
-// The local suite has no page-object fixtures: TutorialPage and NGCTest are
-// stateless and take the page, so they are instantiated inline. The default
-// context is a fresh new visitor (localVisitorState: cookie banner dismissed,
-// no session).
-const test = base.extend<{ tutorialPage: TutorialPage; ngcTest: NGCTest }>({
-  tutorialPage: async ({ page }, use) => {
-    await use(new TutorialPage(page))
-  },
-  ngcTest: async ({ page, tutorialPage }, use) => {
-    await use(new NGCTest(page, tutorialPage))
-  },
-})
 
 test('should be displayed when coming from the home', async ({ page }) => {
   await page.goto('/')
@@ -23,15 +10,18 @@ test('should be displayed when coming from the home', async ({ page }) => {
 
 test('should start test when clicking on the start button', async ({
   page,
-  tutorialPage,
 }) => {
+  const tutorialPage = new TutorialPage(page)
+
   await tutorialPage.start()
   await tutorialPage.skip()
   await expect(page).toHaveURL(/\/simulateur\/bilan/)
 })
 
 test.describe('when a user starts to answer test', () => {
-  test.beforeEach(async ({ page, ngcTest }) => {
+  test.beforeEach(async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await ngcTest.start()
     await page.waitForURL(/\/simulateur\/bilan/)
     await ngcTest.skipButton().click()
@@ -44,31 +34,36 @@ test.describe('when a user starts to answer test', () => {
 
   test('it should not be displayed if the user continue the test', async ({
     page,
-    tutorialPage,
   }) => {
+    const tutorialPage = new TutorialPage(page)
+
     await tutorialPage.goto()
     await expect(page).toHaveURL(/\/simulateur\/bilan/)
   })
 
   test('it should be displayed when the user restart a new test', async ({
     page,
-    tutorialPage,
   }) => {
+    const tutorialPage = new TutorialPage(page)
+
     await tutorialPage.start()
     await expect(page).toHaveURL(/\/simulateur\/bilan/)
   })
 })
 
 test.describe('when a user completes a test', () => {
-  test.beforeEach(async ({ page, ngcTest }) => {
+  test.beforeEach(async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await ngcTest.skipAll()
     await page.waitForURL('/fin')
   })
 
   test('it should redirect to the fin page when accessed directly', async ({
     page,
-    tutorialPage,
   }) => {
+    const tutorialPage = new TutorialPage(page)
+
     await tutorialPage.goto()
     await expect(page).toHaveURL(/\/fin/)
   })

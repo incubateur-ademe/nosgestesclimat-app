@@ -1,6 +1,17 @@
-import { expect, test as setup } from '../fixtures'
+import {
+  generateGroupName,
+  generateOrganisationName,
+  generatePollName,
+  generateUser,
+} from '../../helpers/test-data'
+import { CookieBanner } from '../../page-objects/cookie-banner'
+import { EmailVerification } from '../../page-objects/email-verification'
 import { Group } from '../../page-objects/group'
+import { NGCTest } from '../../page-objects/ngc-test'
+import { Organisation } from '../../page-objects/organisation'
+import { Poll } from '../../page-objects/poll'
 import { UserSpace } from '../../page-objects/user-space'
+import { expect, test as setup } from '../fixtures'
 import {
   saveContext,
   saveGroup,
@@ -19,86 +30,104 @@ import {
 
 setup.setTimeout(120_000)
 
-setup('new visitor', async ({ page, cookieBanner }) => {
+setup('new visitor', async ({ page }) => {
   // We go to the blog to not create a userId from the start
   await page.goto('/blog')
-  await cookieBanner.dismiss()
+  await new CookieBanner(page).dismiss()
   // Delete anon session cookie
   await page.context().clearCookies()
   await saveContext(page, NEW_VISITOR_STATE)
 })
 
-setup('complete test', async ({ page, ngcTest, cookieBanner }) => {
+setup('complete test', async ({ page }) => {
   await page.goto('/')
-  await cookieBanner.dismiss()
-  await ngcTest.skipAll()
+  await new CookieBanner(page).dismiss()
+  await new NGCTest(page).skipAll()
   await page.waitForURL(/\/fin/)
   await saveContext(page, COMPLETED_TEST_STATE)
 })
 
-setup(
-  'complete test and save its simulation',
-  async ({ page, ngcTest, cookieBanner, user }) => {
-    await page.goto('/')
-    await cookieBanner.dismiss()
-    await ngcTest.skipAll()
-    await page.waitForURL(/\/fin/)
-    await user.fillEmailAndCompleteVerification()
+setup('complete test and save its simulation', async ({ page }) => {
+  const user = generateUser()
 
-    // User should be redirected to the user space
-    await expect(page).toHaveURL(new RegExp(UserSpace.URL))
+  await page.goto('/')
+  await new CookieBanner(page).dismiss()
+  await new NGCTest(page).skipAll()
+  await page.waitForURL(/\/fin/)
+  await new EmailVerification(page).complete(user.email)
 
-    // User should be greeted
-    await expect(page.getByText('Bienvenue dans votre espace')).toBeInViewport()
+  // User should be redirected to the user space
+  await expect(page).toHaveURL(new RegExp(UserSpace.URL))
 
-    await saveUser(page, user)
-    await saveContext(page, USER_ACCOUNT_STATE)
-  }
-)
+  // User should be greeted
+  await expect(page.getByText('Bienvenue dans votre espace')).toBeInViewport()
 
-setup(
-  'complete test and create group',
-  async ({ page, group, ngcTest, cookieBanner }) => {
-    await page.goto('/')
-    await cookieBanner.dismiss()
-    await ngcTest.skipAll()
-    await page.waitForURL(/\/fin/)
+  await saveUser(page, user)
+  await saveContext(page, USER_ACCOUNT_STATE)
+})
 
-    await page.getByTestId('my-groups-tab').click()
-    await page.getByTestId('create-group-button').click()
+setup('complete test and create group', async ({ page }) => {
+  const admin = generateUser()
+  const name = generateGroupName()
+  const group = new Group(page)
 
-    await expect(page).toHaveURL(new RegExp(Group.CREATION_URL))
-    await group.admin.fillEmailAndCompleteVerification()
-    await group.create()
-    await group.copyInviteLink()
+  await page.goto('/')
+  await new CookieBanner(page).dismiss()
+  await new NGCTest(page).skipAll()
+  await page.waitForURL(/\/fin/)
 
-    await saveGroup(page, group)
-    await saveContext(page, GROUP_ADMIN_STATE)
-  }
-)
+  await page.getByTestId('my-groups-tab').click()
+  await page.getByTestId('create-group-button').click()
 
-setup(
-  'create an organisation with a poll',
-  async ({ page, organisation, poll, cookieBanner }) => {
-    await page.goto('/')
-    await cookieBanner.dismiss()
-    await organisation.goFromLandingPage()
-    await organisation.admin.fillEmailAndCompleteVerification()
-    await organisation.create()
-    await poll.create()
-    await poll.copyInviteLink()
+  await expect(page).toHaveURL(new RegExp(Group.CREATION_URL))
+  await new EmailVerification(page).complete(admin.email)
+  const url = await group.create({ name, ownerName: admin.firstName })
+  const inviteLink = await group.copyInviteLink()
 
-    await saveOrganisation(page, organisation)
-    await savePoll(page, poll)
+  await saveGroup(page, { name, url, inviteLink }, admin)
+  await saveContext(page, GROUP_ADMIN_STATE)
+})
 
-    // @TODO: uncomment when re-enabling mode scolaire
-    // Create a second poll in scolaire mode for youth tutorial testing
-    // const scolairePoll = new Poll(page, organisation)
-    // await page.goto(scolairePoll.createUrl)
-    // await scolairePoll.create('scolaire')
-    // await scolairePoll.copyInviteLink()
-    // await savePlaywrightState(page, 'poll-scolaire', scolairePoll.data)
+setup('create an organisation with a poll', async ({ page }) => {
+  const admin = generateUser()
+  const organisationName = generateOrganisationName()
+  const pollName = generatePollName()
+  const organisation = new Organisation(page)
+  const poll = new Poll(page)
 
-    await saveContext(page, ORGANISATION_ADMIN_STATE)
-  }
-)
+  await page.goto('/')
+  await new CookieBanner(page).dismiss()
+  await organisation.goFromLandingPage()
+  await new EmailVerification(page).complete(admin.email)
+  const organisationSlug = await organisation.create({
+    name: organisationName,
+    administrator: admin,
+  })
+  const pollSlug = await poll.create(pollName)
+  const inviteLink = await poll.copyInviteLink()
+
+  await saveOrganisation(
+    page,
+    { name: organisationName, slug: organisationSlug },
+    admin
+  )
+  await savePoll(page, { name: pollName, slug: pollSlug, inviteLink })
+
+  // @TODO: uncomment when re-enabling mode scolaire
+  // Create a second poll in scolaire mode for youth tutorial testing
+  // const scolairePollName = generatePollName()
+  // await page.goto(Poll.createUrl(organisationSlug))
+  // const scolairePollSlug = await poll.create(scolairePollName, 'scolaire')
+  // const scolaireInviteLink = await poll.copyInviteLink()
+  // await savePoll(
+  //   page,
+  //   {
+  //     name: scolairePollName,
+  //     slug: scolairePollSlug,
+  //     inviteLink: scolaireInviteLink,
+  //   },
+  //   'poll-scolaire'
+  // )
+
+  await saveContext(page, ORGANISATION_ADMIN_STATE)
+})

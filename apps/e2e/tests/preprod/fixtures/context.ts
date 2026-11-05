@@ -1,10 +1,9 @@
-import type { Page } from '@playwright/test'
+import type { Browser, Page } from '@playwright/test'
 import path from 'path'
 
-import { Group } from '../../page-objects/group'
+import type { UserData } from '../../helpers/test-data'
 import { Organisation } from '../../page-objects/organisation'
 import { Poll } from '../../page-objects/poll'
-import { User } from '../../page-objects/user'
 
 const E2E_TEST_DATA_KEY = 'e2e-test-data'
 
@@ -39,76 +38,128 @@ export function saveContext(page: Page, statePath: string) {
   })
 }
 
-interface UserData {
-  firstName: string
-  lastName: string
-  email: string
-}
-
-interface GroupData {
+interface SavedGroup {
   name: string
-  inviteLink?: string
-  url?: string
+  url: string
+  inviteLink: string
 }
 
-interface OrganisationData {
+interface SavedOrganisation {
   name: string
-  slug?: string
+  slug: string
 }
 
-interface PollData {
+interface SavedPoll {
   name: string
-  slug?: string
-  inviteLink?: string
+  slug: string
+  inviteLink: string
 }
 
-export async function saveUser(page: Page, user: User): Promise<void> {
-  await savePlaywrightState(page, 'user', user.data)
+export interface RestoredGroup extends SavedGroup {
+  admin: UserData
 }
 
-export async function saveGroup(page: Page, group: Group): Promise<void> {
-  await saveUser(page, group.admin)
-  await savePlaywrightState(page, 'group', group.data)
+export interface RestoredOrganisation extends SavedOrganisation {
+  admin: UserData
+  url: string
+  parametersUrl: string
+}
+
+export interface RestoredPoll extends SavedPoll {
+  url: string
+  createUrl: string
+}
+
+async function requirePlaywrightState<T>(page: Page, key: string): Promise<T> {
+  const state = await getPlaywrightState<T>(page, key)
+  if (!state) {
+    throw new Error(
+      `No "${key}" saved in this storage state: did the preprod setup project run?`
+    )
+  }
+  return state
+}
+
+export async function saveUser(page: Page, user: UserData): Promise<void> {
+  await savePlaywrightState(page, 'user', user)
+}
+
+export async function saveGroup(
+  page: Page,
+  group: SavedGroup,
+  admin: UserData
+): Promise<void> {
+  await saveUser(page, admin)
+  await savePlaywrightState(page, 'group', group)
 }
 
 export async function saveOrganisation(
   page: Page,
-  organisation: Organisation
+  organisation: SavedOrganisation,
+  admin: UserData
 ): Promise<void> {
-  await saveUser(page, organisation.admin)
-  await savePlaywrightState(page, 'organisation', organisation.data)
+  await saveUser(page, admin)
+  await savePlaywrightState(page, 'organisation', organisation)
 }
 
 export async function savePoll(
   page: Page,
-  poll: Poll,
+  poll: SavedPoll,
   key = 'poll'
 ): Promise<void> {
-  await savePlaywrightState(page, key, poll.data)
+  await savePlaywrightState(page, key, poll)
 }
 
-export async function restoreUser(page: Page): Promise<User> {
-  const data = await getPlaywrightState<UserData>(page, 'user')
-  return new User(page, data)
+/** The user saved in the page's storage state: a new visitor has none. */
+export async function restoreUser(page: Page): Promise<UserData | undefined> {
+  return await getPlaywrightState<UserData>(page, 'user')
 }
 
-export async function restoreGroup(page: Page): Promise<Group> {
-  const admin = await restoreUser(page)
-  const data = await getPlaywrightState<GroupData>(page, 'group')
-  return new Group(page, admin, data)
+export async function restoreGroup(page: Page): Promise<RestoredGroup> {
+  return {
+    ...(await requirePlaywrightState<SavedGroup>(page, 'group')),
+    admin: await requirePlaywrightState<UserData>(page, 'user'),
+  }
 }
 
-export async function restoreOrganisation(page: Page): Promise<Organisation> {
-  const admin = await restoreUser(page)
-  const data = await getPlaywrightState<OrganisationData>(page, 'organisation')
-  return new Organisation(page, admin, data)
+export async function restoreOrganisation(
+  page: Page
+): Promise<RestoredOrganisation> {
+  const organisation = await requirePlaywrightState<SavedOrganisation>(
+    page,
+    'organisation'
+  )
+  return {
+    ...organisation,
+    admin: await requirePlaywrightState<UserData>(page, 'user'),
+    url: Organisation.url(organisation.slug),
+    parametersUrl: Organisation.parametersUrl(organisation.slug),
+  }
 }
 
 export async function restorePoll(
   page: Page,
-  organisation: Organisation,
+  organisation: RestoredOrganisation,
   key = 'poll'
-): Promise<Poll> {
-  const data = await getPlaywrightState<PollData>(page, key)
-  return new Poll(page, organisation, data)
+): Promise<RestoredPoll> {
+  const poll = await requirePlaywrightState<SavedPoll>(page, key)
+  return {
+    ...poll,
+    url: Poll.url(organisation.slug, poll.slug),
+    createUrl: Poll.createUrl(organisation.slug),
+  }
+}
+
+/** Reads data saved in another storage state than the one of the current test. */
+export async function restoreFromState<T>(
+  browser: Browser,
+  statePath: string,
+  restore: (page: Page) => Promise<T>
+): Promise<T> {
+  const context = await browser.newContext({ storageState: statePath })
+  try {
+    return await restore(await context.newPage())
+  } finally {
+    await context.close()
+  }
 }

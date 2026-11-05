@@ -10,9 +10,7 @@ import { createPage } from '../fixtures'
 import { signIn } from '../helpers/session'
 import { test as base, expect } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
-import { Organisation } from '../page-objects/organisation'
 import { Poll } from '../page-objects/poll'
-import { User } from '../page-objects/user'
 
 /**
  * Organisation administrator context, seeded in the e2e database: a verified
@@ -27,48 +25,26 @@ interface OrganisationAdmin {
   organisation: OrganisationEntity
 }
 
+/**
+ * The site routes of a poll seeded in the e2e database: the invite link is the
+ * site's campagne route, which resolves a poll by id or slug.
+ */
+const seededPollRoutes = (
+  { organisation }: OrganisationAdmin,
+  poll: PollEntity
+) => ({
+  url: Poll.url(organisation.slug, poll.slug),
+  inviteLink: `/simulateur/campagne/${poll.id}`,
+})
+
+type SeededPollRoutes = ReturnType<typeof seededPollRoutes>
+
 interface ScolaireModeFixtures {
   organisationAdmin: OrganisationAdmin
-  poll: Poll
+  poll: SeededPollRoutes
   /** Poll in scolaire mode, for the youth tutorial flow. */
-  scolairePoll: Poll
+  scolairePoll: SeededPollRoutes
 }
-
-/**
- * Organisation page object for a seeded organisation: the page objects are
- * stateless, they derive the site routes (organisation dashboard, poll
- * dashboard) from the seeded entity's data.
- */
-const organisationPageObject = (
-  page: Page,
-  { admin, organisation }: OrganisationAdmin
-) => {
-  const [firstName = '', ...lastNames] = admin.name?.split(' ') ?? []
-  return new Organisation(
-    page,
-    new User(page, {
-      firstName,
-      lastName: lastNames.join(' '),
-      email: admin.email,
-    }),
-    { name: organisation.name, slug: organisation.slug }
-  )
-}
-
-/**
- * Poll page object for a poll seeded in the e2e database: the invite link is
- * the site's campagne route, which resolves a poll by id or slug.
- */
-const pollPageObject = (
-  page: Page,
-  organisationAdmin: OrganisationAdmin,
-  poll: PollEntity
-) =>
-  new Poll(page, organisationPageObject(page, organisationAdmin), {
-    name: poll.name,
-    slug: poll.slug,
-    inviteLink: `/simulateur/campagne/${poll.id}`,
-  })
 
 const test = base.extend<ScolaireModeFixtures>({
   organisationAdmin: async ({ context }, use) => {
@@ -80,19 +56,19 @@ const test = base.extend<ScolaireModeFixtures>({
     await use({ admin, organisation })
   },
 
-  poll: async ({ page, organisationAdmin }, use) => {
+  poll: async ({ organisationAdmin }, use) => {
     const poll = await pollFactory
       .withOrganisation(organisationAdmin.organisation)
       .create()
-    await use(pollPageObject(page, organisationAdmin, poll))
+    await use(seededPollRoutes(organisationAdmin, poll))
   },
 
-  scolairePoll: async ({ page, organisationAdmin }, use) => {
+  scolairePoll: async ({ organisationAdmin }, use) => {
     const poll = await pollFactory
       .withOrganisation(organisationAdmin.organisation)
       .scolaire()
       .create()
-    await use(pollPageObject(page, organisationAdmin, poll))
+    await use(seededPollRoutes(organisationAdmin, poll))
   },
 })
 

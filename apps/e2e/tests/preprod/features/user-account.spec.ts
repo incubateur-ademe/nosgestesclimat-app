@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { START_SIMULATION_PATH, TEST_EMAIL_DOMAIN } from '../../constants'
 import { UserMailbox } from '../../helpers/user-mailbox'
+import { NGCTest } from '../../page-objects/ngc-test'
 import { expect, test } from '../fixtures'
 import {
   GROUP_ADMIN_STATE,
@@ -95,10 +96,9 @@ test.describe('Simulation deletion', () => {
   test.use({ storageState: GROUP_ADMIN_STATE })
   test.setTimeout(120_000)
 
-  test('can delete a simulation from personal space', async ({
-    page,
-    ngcTest,
-  }) => {
+  test('can delete a simulation from personal space', async ({ page }) => {
+    const ngcTest = new NGCTest(page)
+
     await page.goto(START_SIMULATION_PATH)
     await ngcTest.skipAllQuestions()
 

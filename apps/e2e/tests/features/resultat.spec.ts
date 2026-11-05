@@ -116,12 +116,8 @@ base.describe(
      * to /fin.
      */
     const test = base.extend<{
-      ngcTest: NGCTest
       authenticatedUserWithCompletedTest: AuthenticatedUserWithCompletedTest
     }>({
-      ngcTest: async ({ page }, use) => {
-        await use(new NGCTest(page))
-      },
       authenticatedUserWithCompletedTest: [
         async ({ context }, use) => {
           const user = await userFactory.verified().create()
@@ -149,8 +145,9 @@ base.describe(
 
     test('should display a tendency indicator on the result page', async ({
       page,
-      ngcTest,
     }) => {
+      const ngcTest = new NGCTest(page)
+
       await expect(page).toHaveURL(/\/fin/)
 
       // 2. Restart and do a second simulation with different answers

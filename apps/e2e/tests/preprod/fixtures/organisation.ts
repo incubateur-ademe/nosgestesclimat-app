@@ -1,30 +1,26 @@
-import { Organisation } from '../../page-objects/organisation'
+import { test as base, expect } from '@playwright/test'
 import { ORGANISATION_ADMIN_STATE } from '../state'
-import { restoreOrganisation } from './context'
-import { test as base, expect } from './user'
+import {
+  restoreFromState,
+  restoreOrganisation,
+  type RestoredOrganisation,
+} from './context'
 
-interface OrganisationPageFixtures {
-  organisation: Organisation
+interface OrganisationFixtures {
+  organisation: RestoredOrganisation
 }
 
-const test = base.extend<OrganisationPageFixtures>({
-  organisation: async ({ browser, user, setup, page, storageState }, use) => {
-    if (setup) {
-      return await use(new Organisation(page, user))
-    }
-
-    const useCurrentContext = storageState === ORGANISATION_ADMIN_STATE
-    if (useCurrentContext) {
-      return await use(await restoreOrganisation(page))
-    }
-
-    const context = await browser.newContext({
-      storageState: ORGANISATION_ADMIN_STATE,
-    })
-
-    page = await context.newPage()
-    await use(await restoreOrganisation(page))
-    await page.context().close()
+const test = base.extend<OrganisationFixtures>({
+  organisation: async ({ browser, page, storageState }, use) => {
+    await use(
+      storageState === ORGANISATION_ADMIN_STATE
+        ? await restoreOrganisation(page)
+        : await restoreFromState(
+            browser,
+            ORGANISATION_ADMIN_STATE,
+            restoreOrganisation
+          )
+    )
   },
 })
 
