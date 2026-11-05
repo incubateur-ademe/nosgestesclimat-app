@@ -47,3 +47,26 @@ jobs:
           name: preprod-blob-report-${{ matrix.project }}
           path: apps/e2e/blob-report
           retention-days: 1
+
+  # Which of the emails reached the inbox? Local parts and dates only: subjects
+  # hold the verification codes, and these logs are public.
+  mailisk-inbox:
+    name: Mailisk inbox
+    needs: e2e-preprod
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    environment:
+      name: Test E2E
+      deployment: false
+    steps:
+      - name: List received emails
+        env:
+          API_KEY: ${{ secrets.E2E_MAILBOX_MAILISK_API_KEY }}
+          NAMESPACE: ${{ vars.E2E_MAILBOX_MAILISK_NAMESPACE }}
+        run: |
+          from=$(( $(date +%s) - 4 * 3600 ))
+          status=$(curl -s -o inbox.json -w '%{http_code}' -H "X-Api-Key: $API_KEY" \
+            "https://api.mailisk.com/api/emails/$NAMESPACE/inbox?limit=100&from_timestamp=$from")
+          echo "HTTP $status"
+          jq -r '"total_count: \(.total_count)", "keys: \(keys)"' inbox.json
+          jq -r '.data[]? | "\(.received_date) \([.to[]?.address | split("@")[0]] | join(","))"' inbox.json | sort
