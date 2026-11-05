@@ -3,11 +3,17 @@ import type { Page } from '@playwright/test'
 /**
  * Navigates to `url`, retrying when Firefox aborts the navigation.
  *
- * Every page fires requests after its load event (the layout calls a server
- * action on mount, links are prefetched…). Firefox aborts a navigation that
- * races such an in-flight request — `page.goto` then fails with
- * NS_BINDING_ABORTED under parallel load. The aborted navigation has already
- * canceled the page's pending requests, so a retry goes through.
+ * On a first visit, the server action every page calls on mount also saves the
+ * region cookie, so Next.js refetches the page. A `page.goto` cancels that
+ * refetch and Next.js falls back to `location.replace`. Firefox lets this
+ * page-initiated navigation cancel the pending `page.goto`, which then fails
+ * with NS_BINDING_ABORTED; Chromium ignores it. The cookie is saved by then, so
+ * the retry triggers no refetch.
+ *
+ * Known Firefox behaviour, which Playwright will not work around:
+ * - https://bugzilla.mozilla.org/show_bug.cgi?id=1263100
+ *   (its title mentions `beforeunload`, but any script navigation does this)
+ * - https://github.com/microsoft/playwright/issues/20749
  */
 export async function gotoRetryOnAbort(page: Page, url: string, attempts = 3) {
   for (let attempt = 1; ; attempt++) {
