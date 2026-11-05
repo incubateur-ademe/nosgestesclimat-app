@@ -5,9 +5,11 @@ import {
   societalServices,
   transport,
 } from '@nosgestesclimat/core/features/actions/data/themes/index'
+import { actionAssessmentFactory } from '@nosgestesclimat/core/features/actions/factories/action-assessment.factory'
 import { actionFactory } from '@nosgestesclimat/core/features/actions/factories/action.factory'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
 import type { ThemeRow } from '@nosgestesclimat/core/features/actions/types/theme'
+import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
 
 interface CatalogueActionDefinition {
   /** `meta.id` of the model rule assessing the action. */
@@ -166,6 +168,65 @@ export const ASSESSMENT_WITH_MODEL_DEFAULTS = {
     'reduireViandeRouge',
   ],
 } as const satisfies Record<string, readonly CatalogueActionKey[]>
+
+/**
+ * How `seedAssessedSimulation` assesses the catalogue, as the site worker would
+ * have: applicable or not (undefined: unknown), with an impact in kg when it is
+ * quantifiable. Independent from the installed model, unlike
+ * ASSESSMENT_WITH_MODEL_DEFAULTS.
+ */
+export const SEEDED_ASSESSMENTS: Record<
+  CatalogueActionKey,
+  { applicable?: boolean; impact?: number }
+> = {
+  reduireViande: { applicable: true, impact: 655 },
+  ecoconduite: { applicable: true, impact: 245 },
+  faireDurerSesObjets: { applicable: true, impact: 116 },
+  reduireBoissonsSucrees: { applicable: true, impact: 36 },
+  valoriserDechets: { applicable: true, impact: 11 },
+  vacancesEnTrain: { applicable: true },
+  achatReconditionne: { applicable: true },
+  engagementAssociatif: { applicable: true },
+  eviterDeperditionsChaleur: { applicable: true },
+  consommationHeuresCreuses: { applicable: true },
+  limiterAvion: {},
+  petitsTrajetsSansVoiture: {},
+  locationVoiture: { applicable: false },
+  reduireViandeRouge: { applicable: false },
+}
+
+/**
+ * Seeds a completed simulation for the user, whose computation is completed and
+ * whose actions are assessed (SEEDED_ASSESSMENTS): the simulation is not run
+ * through the UI, and the site worker has nothing left to compute.
+ */
+export async function seedAssessedSimulation(
+  catalogue: SeededActionsCatalogue,
+  userId: string
+) {
+  const simulation = await simulationFactory
+    .completed()
+    .params({ userId })
+    .withValidComputedResults()
+    .withCompletedComputation()
+    .create()
+
+  await Promise.all(
+    Object.entries(SEEDED_ASSESSMENTS).map(([key, { applicable, impact }]) => {
+      const factory =
+        applicable === true
+          ? actionAssessmentFactory.applicable({ impact })
+          : applicable === false
+            ? actionAssessmentFactory.inapplicable()
+            : actionAssessmentFactory.unknownApplicability()
+
+      return factory.create({
+        simulationId: simulation.id,
+        actionId: catalogue[key as CatalogueActionKey].id,
+      })
+    })
+  )
+}
 
 /**
  * Seeds the published action catalogue (CATALOGUE_ACTIONS) in the e2e

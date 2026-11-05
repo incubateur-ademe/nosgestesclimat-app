@@ -11,6 +11,14 @@ import type { Page } from '@playwright/test'
 export class ActionDetail {
   constructor(public readonly page: Page) {}
 
+  /** The page of an action opened from a page of the site (`from`). */
+  static url(
+    { slug, theme }: { slug: string; theme: { slug: string } },
+    from: 'index' | 'mes-suggestions' | 'mon-plan'
+  ) {
+    return `/actions/${theme.slug}/${slug}?from=${from}`
+  }
+
   /** « ← Retour »: back to the page named by the `from` search param. */
   goBackLink() {
     return this.page.getByRole('link', { name: '← Retour', exact: true })
