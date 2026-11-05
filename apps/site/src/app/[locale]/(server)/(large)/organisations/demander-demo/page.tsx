@@ -1,5 +1,6 @@
 import OrganisationFilAriane from '@/components/layout/FilAriane'
 import Trans from '@/components/translation/trans/TransServer'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 
@@ -17,21 +18,19 @@ export default async function DemanderDemoPage() {
       />
       <section className="w-full bg-white">
         <div className="mx-auto max-w-5xl py-10">
-          <Title
-            title={
-              <Trans i18nKey="organisations.demanderDemo.title">
-                Demander une démo
-              </Trans>
-            }
-            subtitle={
-              <Trans i18nKey="organisations.demanderDemo.subtitle">
-                Réservez un créneau pour assister à une démonstration de notre
-                fonctionnalité dédiée aux organisations (entreprises,
-                associations, écoles…) et vous permettre de diffuser le test de
-                Nos Gestes Climat à votre audience.
-              </Trans>
-            }
-          />
+          <Title className="mb-2">
+            <Trans i18nKey="organisations.demanderDemo.title">
+              Demander une démo
+            </Trans>
+          </Title>
+          <Subtitle>
+            <Trans i18nKey="organisations.demanderDemo.subtitle">
+              Réservez un créneau pour assister à une démonstration de notre
+              fonctionnalité dédiée aux organisations (entreprises,
+              associations, écoles…) et vous permettre de diffuser le test de
+              Nos Gestes Climat à votre audience.
+            </Trans>
+          </Subtitle>
           <div className="w-full max-w-full overflow-visible">
             <iframe
               loading="lazy"

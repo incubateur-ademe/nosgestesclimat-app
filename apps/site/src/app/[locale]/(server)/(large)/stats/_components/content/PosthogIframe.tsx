@@ -23,7 +23,7 @@ export default function PosthogIframe({
   const [hasError, setHasError] = useState(false)
 
   return (
-    <div className="iframe-container">
+    <div className="rounded-xl bg-[#F3F4F0] px-4">
       {!isIFrameLoaded && !hasError && (
         <div
           className="flex items-center justify-center rounded-lg border border-gray-200 p-8"
@@ -64,7 +64,7 @@ export default function PosthogIframe({
         // Fix height for mobile
         height={height}
         sandbox="allow-scripts allow-same-origin allow-popups"
-        className="rounded-xl border-none"
+        className="border-none"
         aria-describedby={description ? `${id}-description` : undefined}
         onLoad={() => setIsIFrameLoaded(true)}
         onError={() => setHasError(true)}
