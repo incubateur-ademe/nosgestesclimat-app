@@ -111,6 +111,9 @@ test.describe('Personalized actions catalogue', () => {
         /Jusqu.à .+CO2e \/ an/
       )
       await expect(actionsCatalogue.basketItems()).toHaveCount(1)
+      await expect(actionsCatalogue.basket()).toContainText(
+        '1 action dans votre sélection'
+      )
       await expect(actionsCatalogue.savePlanLink()).toBeVisible()
       await expect(actionsCatalogue.myPlanLink()).toContainText('1')
     })
