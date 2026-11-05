@@ -169,7 +169,7 @@ const startSiteWorker = (i: number) =>
   start(
     'worker',
     i,
-    ['-F', '@nosgestesclimat/site', 'start:worker'],
+    ['-F', '@nosgestesclimat/site', 'start:worker:e2e'],
     siteEnv(i)
   )
 
