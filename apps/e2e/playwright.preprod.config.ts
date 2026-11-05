@@ -1,16 +1,18 @@
 import { defineConfig, devices } from '@playwright/test'
 import { firefoxLaunchOptions, sharedConfig } from './playwright.shared'
-import { NEW_VISITOR_STATE } from './tests/preprod/state'
 
 /**
- * Preprod suite (tests/preprod): run against the deployed preprod before each
- * production deploy.
+ * Preprod suite (tests/preprod): the critical journeys, run against the deployed
+ * preprod before each production deploy. Each test starts as a new visitor: no
+ * setup project, no recorded state.
  */
 export default defineConfig({
   ...sharedConfig,
   testDir: './tests/preprod',
   // Labels every test of this suite in the reports.
   tag: '@preprod',
+  // Full journeys, each with a whole simulation and often an email to read.
+  timeout: 120_000,
   /* Wait for the site before running tests. */
   webServer: {
     command: 'pnpm -F @nosgestesclimat/site dev:e2e',
@@ -20,26 +22,15 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'Preprod setup',
-      testMatch: /global\.setup\.ts/,
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-    },
-    {
       name: 'Preprod Chrome',
-      dependencies: ['Preprod setup'],
       use: {
         ...devices['Desktop Chrome HiDPI'],
-        storageState: NEW_VISITOR_STATE,
       },
     },
     {
       name: 'Preprod Firefox',
-      dependencies: ['Preprod setup'],
       use: {
         ...devices['Desktop Firefox'],
-        storageState: NEW_VISITOR_STATE,
         launchOptions: firefoxLaunchOptions,
       },
     },
@@ -48,10 +39,8 @@ export default defineConfig({
     // We'll see if we can reenable later, once there is less sync logic on test...
     // {
     //   name: 'Preprod Mobile Safari',
-    //   dependencies: ['Preprod setup'],
     //   use: {
     //     ...devices['iPhone 12'],
-    //     storageState: NEW_VISITOR_STATE,
     //   },
     // },
   ],

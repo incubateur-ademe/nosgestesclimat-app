@@ -39,11 +39,4 @@ export class Organisation {
     await expect(this.page).toHaveURL(orgaUrl)
     return orgaUrl.exec(this.page.url())![1]
   }
-
-  async goFromLandingPage() {
-    await this.page.goto('/')
-    await this.page.getByTestId('organisations-link').click()
-    await this.page.waitForURL(/organisations/)
-    await this.page.getByTestId('start-link').click()
-  }
 }

@@ -55,11 +55,11 @@ et preprod), et une partie **propre à chaque suite**.
 
 ### Suite preprod uniquement
 
-- `tests/preprod/fixtures/` — fixtures de données qui restaurent depuis l'état enregistré, le garde static-assets, et les helpers save/restore (`context.ts`).
-- `tests/preprod/state/` — états enregistrés (fichiers JSON `storageState`)
-  écrits par le projet setup.
-- `tests/preprod/setup/` — setup global qui enregistre les états.
-- `tests/preprod/features/` et `tests/preprod/pages/` — specs preprod.
+- `tests/preprod/*.spec.ts` — les parcours critiques : chaque test part d'un
+  nouveau visiteur et crée ses données par l'interface, sans projet setup ni
+  état enregistré.
+- `tests/preprod/helpers.ts` — les étapes communes à ces parcours.
+- `tests/preprod/fixtures/` — la base commune, plus le garde static-assets.
 
 ## Lancer les tests en local
 

@@ -68,11 +68,6 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
 
-      # The `Preprod setup` Playwright project runs in Desktop Chrome.
-      - name: Install Chromium for E2E state generation
-        if: ${{ matrix.browser != 'chromium' }}
-        run: pnpm playwright install chromium
-
       # Runs the preprod suite (tests/preprod).
       - name: Run E2E tests (${{ matrix.project }})
         env:
