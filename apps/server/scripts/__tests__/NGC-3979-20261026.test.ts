@@ -186,7 +186,12 @@ describe('addLastActivityAtToUser', () => {
   })
 
   it('should clamp an activity date already past the erasure threshold to the start of the notice window', async () => {
-    const ancientDate = faker.date.past({ years: 5 })
+    // Anchored to the notice cutoff: a random date within the last 21 months
+    // falls inside the notice window and is not clamped.
+    const ancientDate = faker.date.past({
+      years: 5,
+      refDate: retentionNoticeActivityDateCutoff(new Date()),
+    })
 
     const user = await userFactory
       .verified()
