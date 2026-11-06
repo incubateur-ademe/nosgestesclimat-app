@@ -8,8 +8,20 @@ export class Poll {
     return `${Organisation.url(organisationSlug)}/campagnes/${slug}`
   }
 
+  static parametersUrl(organisationSlug: string, slug: string) {
+    return `${Poll.url(organisationSlug, slug)}/parametres`
+  }
+
   static createUrl(organisationSlug: string) {
     return `${Organisation.url(organisationSlug)}/creer-campagne`
+  }
+
+  /**
+   * The invite link: the site's campagne route, which resolves a poll by id
+   * or slug.
+   */
+  static inviteLink(pollIdOrSlug: string) {
+    return `/simulateur/campagne/${pollIdOrSlug}`
   }
 
   constructor(public readonly page: Page) {}

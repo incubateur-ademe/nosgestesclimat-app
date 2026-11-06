@@ -156,9 +156,7 @@ test.describe('Public actions catalogue', () => {
         )
         .click()
 
-      await expect(page).toHaveURL(
-        `/actions/${highlightedAction.theme.slug}/${highlightedAction.slug}?from=index`
-      )
+      await expect(page).toHaveURL(ActionDetail.url(highlightedAction, 'index'))
       await expect(actionDetail.title()).toHaveText(highlightedAction.title)
       await expect(actionDetail.header()).toContainText(
         highlightedAction.theme.title

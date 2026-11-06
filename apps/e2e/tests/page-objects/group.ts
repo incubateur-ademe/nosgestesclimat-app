@@ -5,17 +5,28 @@ import { copyAndReadClipboard } from '../helpers/clipboard'
 export class Group {
   static CREATION_URL = '/amis/creer'
 
+  /** The group's results page (its dashboard), by group id. */
+  static url(groupId: string) {
+    return `/amis/resultats?groupId=${groupId}`
+  }
+
+  /** The invitation page an invited member lands on, by group id. */
+  static inviteLink(groupId: string) {
+    return `/amis/invitation?groupId=${groupId}`
+  }
+
   constructor(public readonly page: Page) {}
 
-  /** Fills the creation form and returns the URL of the created group. */
+  /** Fills the creation form and returns the id of the created group. */
   async create({ name, ownerName }: { name: string; ownerName: string }) {
     await this.page.getByTestId('group-input-owner-name').fill(ownerName)
     await this.page.getByTestId('group-name').fill(name)
     await this.page.getByTestId(`group-select-emoji-🍒`).click()
     await this.page.getByTestId('button-validate-create-group').click()
 
-    await expect(this.page).toHaveURL(/groupId=.*/)
-    return this.page.url()
+    const groupUrl = /groupId=([a-z0-9-]+)/
+    await expect(this.page).toHaveURL(groupUrl)
+    return groupUrl.exec(this.page.url())![1]
   }
 
   async delete() {

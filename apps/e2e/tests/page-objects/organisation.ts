@@ -12,6 +12,14 @@ export class Organisation {
     return `${Organisation.url(slug)}/parametres`
   }
 
+  /**
+   * The address the dashboard used before the poll redesign: it redirects to
+   * the organisation's most recent campaign.
+   */
+  static legacyResultsUrl(slug: string) {
+    return `${Organisation.url(slug)}/resultats-detailles`
+  }
+
   constructor(public readonly page: Page) {}
 
   /** Fills the creation form and returns the slug of the created organisation. */
