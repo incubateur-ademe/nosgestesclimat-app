@@ -294,6 +294,11 @@ server {
         proxy_cache_lock on;
     }
 
+    # ── Liens courts (/l/…) ───────────────────────────────
+    location = /l/empreinte-moyenne-2026 {
+        return 301 /blog/environnement/comparaison-moyenne-empreinte-carbone-individuelle$is_args$args;
+    }
+
 
     # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
     # Seuls les 200 sont cachés (`proxy_ignore_headers` + `proxy_cache_valid`) :
