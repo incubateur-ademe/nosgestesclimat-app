@@ -1,5 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
+import type { EngineEvaluation } from '../../rules/types/rule.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -25,13 +26,6 @@ export const buildRuleIdToDottedName = (
 
   return map
 }
-
-export type ActionEvaluationWithStatus =
-  | {
-      outcome: 'evaluated'
-      applicability: ActionEvaluation
-    }
-  | { outcome: 'unexpected_node_value'; nodeValueType: string }
 
 /**
  * Attaches an evaluation to the simulation it was made for.
@@ -66,7 +60,7 @@ export const evaluateAction = ({
 }: {
   engine: Engine
   dottedName: DottedName
-}): ActionEvaluationWithStatus => {
+}): EngineEvaluation<ActionEvaluation> => {
   const nodeValue = engine.evaluate(dottedName).nodeValue
 
   if (nodeValue === undefined) {
@@ -90,5 +84,5 @@ export const evaluateAction = ({
     }
   }
 
-  return { outcome: 'unexpected_node_value', nodeValueType: typeof nodeValue }
+  return { outcome: 'unexpected_node_value', nodeValue: typeof nodeValue }
 }

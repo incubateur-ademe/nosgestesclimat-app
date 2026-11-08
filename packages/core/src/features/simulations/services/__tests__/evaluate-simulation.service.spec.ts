@@ -186,7 +186,7 @@ describe('evaluateSimulation', () => {
       // Detected, not thrown: no `Error` to report, so the line names the shape
       // and the failure stays an anomaly to watch by rate.
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('Unexpected nodeValue type:'),
+        'Unexpected nodeValue: boolean',
         expect.objectContaining({ ruleId: BOOLEAN_RULE_ID })
       )
     })
@@ -675,7 +675,10 @@ describe('evaluateSimulation', () => {
         expect(await findRuleEvaluations(second.id)).toHaveLength(2)
       })
 
-      it('converges on the same rules when two workers process a new model', async () => {
+      // PGlite has a single connection, so the two evaluations interleave
+      // rather than truly race: this proves the upsert is idempotent across
+      // separate resolver caches, not that concurrent transactions are safe.
+      it('upserts the same Rule rows from two resolvers with separate caches', async () => {
         const [first, second] = await Promise.all([
           simulationOfModel('1.0.0'),
           simulationOfModel('1.0.0'),

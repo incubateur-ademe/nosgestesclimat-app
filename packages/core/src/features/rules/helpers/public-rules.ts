@@ -1,8 +1,13 @@
 import type Engine from 'publicodes'
-import type { Metric, PublicRule, PublicRuleEvaluation } from '../types/rule.ts'
+import type {
+  EngineEvaluation,
+  Metric,
+  PublicRule,
+  RuleApplicability,
+} from '../types/rule.ts'
 
 /** Reads the rules the model marks `public: oui`. */
-export const findPublicRules = (engine: Engine): PublicRule[] =>
+export const getPublicRules = (engine: Engine): PublicRule[] =>
   Object.entries(engine.getParsedRules())
     .filter(([, rule]) => rule.rawNode.public === 'oui')
     .map(([name, { rawNode }]) => ({
@@ -29,7 +34,7 @@ export const evaluatePublicRule = ({
   engine: Engine
   name: string
   metric: Metric
-}): PublicRuleEvaluation => {
+}): EngineEvaluation<RuleApplicability> => {
   const { nodeValue } = engine.evaluate({
     valeur: name,
     contexte: { métrique: `'${metric}'` },
