@@ -1,3 +1,4 @@
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { ActionAssessment, NewActionAssessment } from '../types/action.ts'
 import {
@@ -15,9 +16,10 @@ export const findActionAssessmentsBySimulation = async (
 }
 
 export const createActionAssessments = async (
-  assessments: NewActionAssessment[]
+  assessments: NewActionAssessment[],
+  { session = prisma }: { session?: Transaction } = {}
 ): Promise<void> => {
-  await prisma.actionAssessment.createMany({
+  await session.actionAssessment.createMany({
     data: assessments.map(mapNewActionAssessmentToPrisma),
   })
 }

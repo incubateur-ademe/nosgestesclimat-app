@@ -1,30 +1,43 @@
 import type Engine from 'publicodes'
 import { toError } from '../../../lib/to-error.ts'
-import type { Logger } from '../../logger/index.ts'
-import { ActionAssessmentPublicodesError } from '../errors/action-assessment.error.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
+import { ActionAssessmentPublicodesError } from '../../actions/errors/action-assessment.error.ts'
 import {
   buildRuleIdToDottedName,
   evaluateAction,
   toNewActionAssessment,
-} from '../helpers/action-assessment.ts'
-import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
-import { findActionRuleIds } from '../repositories/actions.repository.ts'
-import type { NewActionAssessment } from '../types/action.ts'
+} from '../../actions/helpers/action-assessment.ts'
+import { createActionAssessments } from '../../actions/repositories/action-assessments.repository.ts'
+import { findActionRuleIds } from '../../actions/repositories/actions.repository.ts'
+import type { NewActionAssessment } from '../../actions/types/action.ts'
+import type { Logger } from '../../logger/index.ts'
+import type { ModelString } from '../../models/helpers/model-versions.ts'
 
-interface AssessActionsDeps {
+interface EvaluateSimulationDeps {
   logger: Logger
 }
 
-export function createAssessActions(deps: AssessActionsDeps) {
-  return async function assessActions(
+/**
+ * Produces and persists everything derived from a simulation's situation:
+ * today, its action assessments.
+ *
+ * The engine's situation must already be set to the simulation's. Every write
+ * goes through `session`, so the caller commits them together with the job's
+ * status, or rolls them all back.
+ */
+export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
+  return async function evaluateSimulation(
     engine: Engine,
-    simulationId: string
+    simulation: { id: string; model: ModelString },
+    { session }: { session: Transaction }
   ): Promise<void> {
     const logger = deps.logger.child({
-      scope: 'core.service.assessActions',
-      simulationId: simulationId,
+      scope: 'core.service.evaluateSimulation',
+      simulationId: simulation.id,
+      model: simulation.model,
     })
-    const actions = await findActionRuleIds()
+    const simulationId = simulation.id
+    const actions = await findActionRuleIds({ session })
 
     if (actions.length === 0) {
       throw new ActionAssessmentPublicodesError({
@@ -86,7 +99,8 @@ export function createAssessActions(deps: AssessActionsDeps) {
       .filter((a) => a !== undefined)
 
     if (assessments.length > 0) {
-      await createActionAssessments(assessments)
+      await createActionAssessments(assessments, { session })
     }
   }
 }
+export type EvaluateSimulation = ReturnType<typeof createEvaluateSimulation>

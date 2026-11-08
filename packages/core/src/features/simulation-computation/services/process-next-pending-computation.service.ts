@@ -1,5 +1,8 @@
 import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
+import { transaction } from '../../../lib/transaction.ts'
+import { serializeModel } from '../../models/helpers/model-versions.ts'
+import type { EvaluateSimulation } from '../../simulations/services/evaluate-simulation.service.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
 import { SimulationComputationFailedError } from '../errors/simulation-computation.error.ts'
 import {
@@ -9,15 +12,16 @@ import {
 } from '../repositories/simulation-computations.repository.ts'
 
 interface ProcessNextPendingComputationDeps {
-  assessActions: (engine: Engine, simulationId: string) => Promise<void>
+  evaluateSimulation: EvaluateSimulation
 }
 
 /**
  * Entry point called by the worker in a loop.
  *
  * Claims the next pending SimulationComputation job, resolves the engine
- * matching the job's model, processes the job with it,
- * and marks it as completed or failed.
+ * matching the job's model and evaluates the simulation with it. The
+ * evaluation's writes and the `completed` status are committed in one
+ * transaction: on error they are rolled back and the job is marked failed.
  *
  * Returns `success(true)` when a job was processed, `success(false)` when the
  * queue was empty, and a failure otherwise.
@@ -25,7 +29,7 @@ interface ProcessNextPendingComputationDeps {
 export function createProcessNextPendingComputation(
   deps: ProcessNextPendingComputationDeps
 ) {
-  const { assessActions } = deps
+  const { evaluateSimulation } = deps
   return async function processNextPendingComputation(
     getEngine: (model: Simulation['model']) => Promise<Engine> | Engine
   ): Promise<Result<boolean, SimulationComputationFailedError>> {
@@ -37,10 +41,20 @@ export function createProcessNextPendingComputation(
     try {
       // Computes all data derived from a simulation in a single engine pass.
       // `setSituation` is called once — all subsequent evaluate() calls benefit from the publicodes internal cache.
-      engine = await getEngine(job.simulation.model)
-      engine.setSituation(job.simulation.situation)
-      await assessActions(engine, job.simulation.id)
-      await markSimulationComputationCompleted(job.simulation.id)
+      const { id, model, situation } = job.simulation
+      const situatedEngine = await getEngine(model)
+      engine = situatedEngine
+      situatedEngine.setSituation(situation)
+      // A reclaimed job whose earlier attempt crashed left nothing behind:
+      // its writes were never committed.
+      await transaction(async (session) => {
+        await evaluateSimulation(
+          situatedEngine,
+          { id, model: serializeModel(model) },
+          { session }
+        )
+        await markSimulationComputationCompleted(id, { session })
+      })
       return success(true)
     } catch (error) {
       try {
