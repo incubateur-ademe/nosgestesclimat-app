@@ -2,7 +2,7 @@
 export type Metric = 'carbone' | 'eau'
 
 /** The metrics every public rule is evaluated and stored for. */
-export const PUBLIC_RULE_METRICS: readonly Metric[] = ['carbone']
+export const PUBLIC_RULE_METRICS: readonly Metric[] = ['carbone', 'eau']
 
 /**
  * A rule of the model carrying `public: oui`: part of the model's output
@@ -39,6 +39,14 @@ export type RuleApplicability =
   | { applicable: true; value: number }
   | { applicable: false }
   | { applicable: null }
+
+/**
+ * How a public rule evaluated for a metric: a value to store, or one that
+ * cannot be (`true`, a string, NaN or ±Infinity), described by `nodeValue`.
+ */
+export type PublicRuleEvaluation =
+  | { outcome: 'evaluated'; applicability: RuleApplicability }
+  | { outcome: 'unexpected_node_value'; nodeValue: string }
 
 export type NewRuleEvaluation = {
   simulationId: string

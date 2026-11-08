@@ -14,7 +14,11 @@ import type { Logger } from '../../logger/index.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import { evaluatePublicRule } from '../../rules/helpers/public-rules.ts'
 import { createRuleEvaluations } from '../../rules/repositories/rule-evaluations.repository.ts'
-import type { NewRuleEvaluation, Rule } from '../../rules/types/rule.ts'
+import type {
+  NewRuleEvaluation,
+  PublicRuleEvaluation,
+  Rule,
+} from '../../rules/types/rule.ts'
 
 interface EvaluateSimulationDeps {
   logger: Logger
@@ -108,10 +112,25 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
 
     const ruleEvaluations = publicRules.flatMap(
       ({ id, name, metric }): NewRuleEvaluation[] => {
-        const applicability = evaluatePublicRule({ engine, name, metric })
-        return applicability
-          ? [{ simulationId, ruleId: id, ...applicability }]
-          : []
+        // A skipped rule never fails the simulation: its other evaluations are
+        // stored, and the model's mistake is found in the logs.
+        let evaluation: PublicRuleEvaluation
+        try {
+          evaluation = evaluatePublicRule({ engine, name, metric })
+        } catch (error) {
+          logger.warn(toError(error), { dottedName: name, metric })
+          return []
+        }
+
+        if (evaluation.outcome === 'unexpected_node_value') {
+          logger.warn(`Unexpected nodeValue: ${evaluation.nodeValue}`, {
+            dottedName: name,
+            metric,
+          })
+          return []
+        }
+
+        return [{ simulationId, ruleId: id, ...evaluation.applicability }]
       }
     )
 

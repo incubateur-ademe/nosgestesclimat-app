@@ -242,7 +242,7 @@ describe('evaluateSimulation', () => {
         .create()
     })
 
-    it('stores a carbon evaluation for each public rule with a numeric value, 0 included', async () => {
+    it('stores each public rule with a numeric value as applicable, 0 included', async () => {
       await evaluate(
         engineWith({
           'footprint . transport': { public: 'oui', valeur: 12.5 },
@@ -258,15 +258,103 @@ describe('evaluateSimulation', () => {
           valueNumber: 0,
         },
         {
+          name: 'footprint . food',
+          metric: 'water',
+          applicable: true,
+          valueNumber: 0,
+        },
+        {
           name: 'footprint . transport',
           metric: 'carbon',
+          applicable: true,
+          valueNumber: 12.5,
+        },
+        {
+          name: 'footprint . transport',
+          metric: 'water',
           applicable: true,
           valueNumber: 12.5,
         },
       ])
     })
 
-    it('evaluates each public rule for carbon', async () => {
+    it('stores a public rule valued null or false as not applicable', async () => {
+      await evaluate(
+        engineWith({
+          'footprint . null': { public: 'oui', 'non applicable si': 'oui' },
+          'footprint . false': { public: 'oui', valeur: 'non' },
+        })
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        {
+          name: 'footprint . false',
+          metric: 'carbon',
+          applicable: false,
+          valueNumber: null,
+        },
+        {
+          name: 'footprint . false',
+          metric: 'water',
+          applicable: false,
+          valueNumber: null,
+        },
+        {
+          name: 'footprint . null',
+          metric: 'carbon',
+          applicable: false,
+          valueNumber: null,
+        },
+        {
+          name: 'footprint . null',
+          metric: 'water',
+          applicable: false,
+          valueNumber: null,
+        },
+      ])
+    })
+
+    it('stores a public rule the situation leaves undefined, or without a formula, as not defined', async () => {
+      await evaluate(
+        engineWith({
+          'footprint . unanswered': {
+            public: 'oui',
+            question: 'Combien ?',
+            unité: 'kgCO2e',
+          },
+          'footprint . no formula': { public: 'oui' },
+        })
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        {
+          name: 'footprint . no formula',
+          metric: 'carbon',
+          applicable: null,
+          valueNumber: null,
+        },
+        {
+          name: 'footprint . no formula',
+          metric: 'water',
+          applicable: null,
+          valueNumber: null,
+        },
+        {
+          name: 'footprint . unanswered',
+          metric: 'carbon',
+          applicable: null,
+          valueNumber: null,
+        },
+        {
+          name: 'footprint . unanswered',
+          metric: 'water',
+          applicable: null,
+          valueNumber: null,
+        },
+      ])
+    })
+
+    it('evaluates each public rule for carbon and for water', async () => {
       await evaluate(
         engineWith({
           'footprint . water dependent': {
@@ -279,7 +367,18 @@ describe('evaluateSimulation', () => {
       )
 
       expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({ metric: 'carbon', valueNumber: 10 }),
+        {
+          name: 'footprint . water dependent',
+          metric: 'carbon',
+          applicable: true,
+          valueNumber: 10,
+        },
+        {
+          name: 'footprint . water dependent',
+          metric: 'water',
+          applicable: true,
+          valueNumber: 5,
+        },
       ])
     })
 
@@ -293,21 +392,128 @@ describe('evaluateSimulation', () => {
       )
 
       expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({ name: 'footprint . public' }),
+        expect.objectContaining({
+          name: 'footprint . public',
+          metric: 'carbon',
+        }),
+        expect.objectContaining({
+          name: 'footprint . public',
+          metric: 'water',
+        }),
       ])
     })
 
-    it('skips a public rule whose value is not a number and stores the others', async () => {
-      await evaluate(
-        engineWith({
-          'footprint . number': { public: 'oui', valeur: 1 },
-          'footprint . string': { public: 'oui', valeur: "'texte'" },
-        })
-      )
+    describe('skipped public rules', () => {
+      it('skips a public rule valued true or a string, warns, and stores the others', async () => {
+        await evaluate(
+          engineWith({
+            'footprint . number': { public: 'oui', valeur: 1 },
+            'footprint . true': { public: 'oui', valeur: 'oui' },
+            'footprint . string': { public: 'oui', valeur: "'texte'" },
+          })
+        )
 
-      expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({ name: 'footprint . number' }),
-      ])
+        expect(await findRuleEvaluations()).toEqual([
+          expect.objectContaining({
+            name: 'footprint . number',
+            metric: 'carbon',
+          }),
+          expect.objectContaining({
+            name: 'footprint . number',
+            metric: 'water',
+          }),
+        ])
+
+        // The simulation is named by the logger's bindings.
+        expect(logger.child).toHaveBeenCalledWith(
+          expect.objectContaining({ simulationId: simulation.id })
+        )
+        for (const dottedName of ['footprint . true', 'footprint . string']) {
+          for (const metric of ['carbone', 'eau']) {
+            expect(logger.warn).toHaveBeenCalledWith(
+              expect.stringContaining('Unexpected nodeValue'),
+              expect.objectContaining({ dottedName, metric })
+            )
+          }
+        }
+      })
+
+      it('skips a public rule valued NaN or ±Infinity, warns, and stores the others', async () => {
+        const nonFiniteEngine = engineWith({
+          'footprint . number': { public: 'oui', valeur: 1 },
+          'footprint . nan': { public: 'oui', valeur: 1 },
+          'footprint . infinity': { public: 'oui', valeur: 1 },
+          'footprint . minus infinity': { public: 'oui', valeur: 1 },
+        })
+        // No publicodes formula evaluates to a non-finite number.
+        const nonFiniteValues: Record<string, number> = {
+          'footprint . nan': NaN,
+          'footprint . infinity': Infinity,
+          'footprint . minus infinity': -Infinity,
+        }
+        const evaluateRule = nonFiniteEngine.evaluate.bind(nonFiniteEngine)
+        vi.spyOn(nonFiniteEngine, 'evaluate').mockImplementation(
+          (expression) => {
+            const evaluated = evaluateRule(expression)
+            const name =
+              typeof expression === 'object' && 'valeur' in expression
+                ? String(expression.valeur)
+                : String(expression)
+            return name in nonFiniteValues
+              ? { ...evaluated, nodeValue: nonFiniteValues[name] }
+              : evaluated
+          }
+        )
+
+        await evaluate(nonFiniteEngine)
+
+        expect(await findRuleEvaluations()).toEqual([
+          expect.objectContaining({
+            name: 'footprint . number',
+            metric: 'carbon',
+          }),
+          expect.objectContaining({
+            name: 'footprint . number',
+            metric: 'water',
+          }),
+        ])
+        for (const [dottedName, nodeValue] of Object.entries(nonFiniteValues)) {
+          for (const metric of ['carbone', 'eau']) {
+            expect(logger.warn).toHaveBeenCalledWith(
+              `Unexpected nodeValue: ${nodeValue}`,
+              expect.objectContaining({ dottedName, metric })
+            )
+          }
+        }
+      })
+
+      it('skips a public rule whose evaluation throws, warns, and stores the others', async () => {
+        await expect(
+          evaluate(
+            engineWith({
+              'footprint . number': { public: 'oui', valeur: 1 },
+              'footprint . throwing': { public: 'oui', valeur: '1 / 0' },
+            })
+          )
+        ).resolves.not.toThrow()
+
+        expect(await findRuleEvaluations()).toEqual([
+          expect.objectContaining({
+            name: 'footprint . number',
+            metric: 'carbon',
+          }),
+          expect.objectContaining({
+            name: 'footprint . number',
+            metric: 'water',
+          }),
+        ])
+        for (const metric of ['carbone', 'eau']) {
+          expect(logger.warn).toHaveBeenCalledWith(expect.any(Error), {
+            dottedName: 'footprint . throwing',
+            metric,
+          })
+        }
+      })
     })
 
     it('stores no evaluation when the model has no public rules, and still assesses actions', async () => {
@@ -357,8 +563,20 @@ describe('evaluateSimulation', () => {
             description: null,
           },
           {
+            name: 'footprint . bare',
+            metric: 'water',
+            title: null,
+            description: null,
+          },
+          {
             name: 'footprint . described',
             metric: 'carbon',
+            title: 'Transport',
+            description: 'Les trajets du quotidien',
+          },
+          {
+            name: 'footprint . described',
+            metric: 'water',
             title: 'Transport',
             description: 'Les trajets du quotidien',
           },
@@ -396,14 +614,18 @@ describe('evaluateSimulation', () => {
         expect(await findRules()).toEqual([
           expect.objectContaining({
             name: 'footprint . described',
+            metric: 'carbon',
+            title: 'Transport',
+          }),
+          expect.objectContaining({
+            name: 'footprint . described',
+            metric: 'water',
             title: 'Transport',
           }),
         ])
         expect(await findRuleEvaluations(second.id)).toEqual([
-          expect.objectContaining({
-            name: 'footprint . described',
-            valueNumber: 2,
-          }),
+          expect.objectContaining({ metric: 'carbon', valueNumber: 2 }),
+          expect.objectContaining({ metric: 'water', valueNumber: 2 }),
         ])
       })
 
@@ -442,9 +664,15 @@ describe('evaluateSimulation', () => {
             title: 'Mobilité',
             description: null,
           },
+          {
+            name: 'footprint . described',
+            metric: 'water',
+            title: 'Mobilité',
+            description: null,
+          },
         ])
-        expect(await findRuleEvaluations(first.id)).toHaveLength(1)
-        expect(await findRuleEvaluations(second.id)).toHaveLength(1)
+        expect(await findRuleEvaluations(first.id)).toHaveLength(2)
+        expect(await findRuleEvaluations(second.id)).toHaveLength(2)
       })
 
       it('converges on the same rules when two workers process a new model', async () => {
@@ -468,10 +696,16 @@ describe('evaluateSimulation', () => {
           }),
         ])
 
-        expect(await findRules()).toHaveLength(1)
-        const evaluations = await prisma.ruleEvaluation.findMany()
-        expect(evaluations).toHaveLength(2)
-        expect(evaluations[0].ruleId).toBe(evaluations[1].ruleId)
+        expect(await findRules()).toHaveLength(2)
+        const ruleIdsOf = async (simulationId: string) =>
+          (
+            await prisma.ruleEvaluation.findMany({
+              where: { simulationId },
+              orderBy: { ruleId: 'asc' },
+            })
+          ).map(({ ruleId }) => ruleId)
+        expect(await ruleIdsOf(first.id)).toHaveLength(2)
+        expect(await ruleIdsOf(second.id)).toEqual(await ruleIdsOf(first.id))
       })
     })
 

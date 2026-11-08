@@ -203,6 +203,11 @@ describe('processNextPendingComputation', () => {
               name: 'footprint . transport',
               metric: 'carbone',
             },
+            {
+              id: expect.any(Number),
+              name: 'footprint . transport',
+              metric: 'eau',
+            },
           ],
         }
       )
@@ -237,7 +242,8 @@ describe('processNextPendingComputation', () => {
 
       expect(failed.success).toBe(false)
       expect(processed).toEqual(success(true))
-      expect(await prisma.ruleEvaluation.count()).toBe(1)
+      // One evaluation per metric of the model's single public rule.
+      expect(await prisma.ruleEvaluation.count()).toBe(2)
     })
   })
 
