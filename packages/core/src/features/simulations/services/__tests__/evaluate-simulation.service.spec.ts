@@ -74,12 +74,11 @@ describe('evaluateSimulation', () => {
       resolve = resolvePublicRules,
     }: { evaluated?: Simulation; resolve?: ResolvePublicRules } = {}
   ) => {
-    const model = serializeModel(evaluated.model)
-    const publicRules = await resolve(withEngine, model)
+    const publicRules = await resolve(withEngine, evaluated.model)
     return transaction((session) =>
       evaluateSimulation(
         withEngine,
-        { id: evaluated.id, model },
+        { id: evaluated.id, model: serializeModel(evaluated.model) },
         { session, publicRules }
       )
     )
@@ -626,6 +625,45 @@ describe('evaluateSimulation', () => {
         expect(await findRuleEvaluations(second.id)).toEqual([
           expect.objectContaining({ metric: 'carbon', valueNumber: 2 }),
           expect.objectContaining({ metric: 'water', valueNumber: 2 }),
+        ])
+      })
+
+      it('reuses the rules of the same model in another locale', async () => {
+        const [french, english] = await Promise.all([
+          simulationOfModel('1.0.0'),
+          simulationFactory
+            .completed()
+            .withModelRegion('FR')
+            .withModelLocale('en')
+            .withModelVersion({ publishedTag: '1.0.0' })
+            .create(),
+        ])
+
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Transport',
+              valeur: 1,
+            },
+          }),
+          { evaluated: french }
+        )
+        // Locales share the fr rules: the rules are not read again.
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Mobilité',
+              valeur: 2,
+            },
+          }),
+          { evaluated: english }
+        )
+
+        expect(await findRules()).toEqual([
+          expect.objectContaining({ metric: 'carbon', title: 'Transport' }),
+          expect.objectContaining({ metric: 'water', title: 'Transport' }),
         ])
       })
 

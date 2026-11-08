@@ -57,7 +57,7 @@ export function createProcessNextPendingComputation(
         }
         // Outside the transaction: the resolver caches the ids of the rules it
         // stores, which a rollback must not take away.
-        const publicRules = await resolvePublicRules(engine, simulation.model)
+        const publicRules = await resolvePublicRules(engine, model)
         // A reclaimed job whose earlier attempt crashed left nothing behind:
         // its writes were never committed.
         await transaction(async (session) => {
