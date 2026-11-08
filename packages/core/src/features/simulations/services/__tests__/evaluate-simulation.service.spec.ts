@@ -8,6 +8,10 @@ import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ActionAssessmentPublicodesError } from '../../../actions/errors/action-assessment.error.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
+import {
+  createResolvePublicRules,
+  type ResolvePublicRules,
+} from '../../../rules/services/resolve-public-rules.service.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import type { Simulation } from '../../types/simulation.ts'
@@ -15,6 +19,18 @@ import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
 
 const logger = createTestLogger()
 const evaluateSimulation = createEvaluateSimulation({ logger })
+
+/**
+ * Required by any rule evaluated for a metric: the evaluation sets it in its
+ * context. Copied from the model.
+ */
+const METRIC_RULE: RawPublicodes<string> = {
+  métrique: {
+    avec: { carbone: null, eau: null },
+    'une possibilité': ['carbone', 'eau'],
+    'par défaut': "'carbone'",
+  },
+}
 
 const APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000001'
 const NOT_APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000002'
@@ -43,22 +59,35 @@ describe('evaluateSimulation', () => {
   const engine = createTestEngine(testRules)
 
   let simulation: Simulation
+  let resolvePublicRules: ResolvePublicRules
 
   /**
-   * Evaluates inside a transaction, like the worker does. PGlite has a single
-   * connection, so a write that bypasses the session would hang the test.
+   * Evaluates like the worker does: the public rules are resolved first, their
+   * `Rule` rows committed on their own, then the simulation is evaluated
+   * inside a transaction. PGlite has a single connection, so a write that
+   * bypasses the session would hang the test.
    */
-  const evaluate = (withEngine: Engine = engine) =>
-    transaction((session) =>
+  const evaluate = async (
+    withEngine: Engine = engine,
+    {
+      evaluated = simulation,
+      resolve = resolvePublicRules,
+    }: { evaluated?: Simulation; resolve?: ResolvePublicRules } = {}
+  ) => {
+    const model = serializeModel(evaluated.model)
+    const publicRules = await resolve(withEngine, model)
+    return transaction((session) =>
       evaluateSimulation(
         withEngine,
-        { id: simulation.id, model: serializeModel(simulation.model) },
-        { session }
+        { id: evaluated.id, model },
+        { session, publicRules }
       )
     )
+  }
 
   beforeEach(async () => {
     simulation = await simulationFactory.completed().create()
+    resolvePublicRules = createResolvePublicRules()
   })
 
   afterEach(async () => {
@@ -183,6 +212,277 @@ describe('evaluateSimulation', () => {
           ActionAssessmentPublicodesError
         )
       })
+    })
+  })
+
+  describe('public rule evaluations', () => {
+    /** An engine with the given rules, next to the ones actions need. */
+    const engineWith = (rules: RawPublicodes<string>) =>
+      createTestEngine({ ...testRules, ...METRIC_RULE, ...rules })
+
+    const findRuleEvaluations = async (simulationId = simulation.id) => {
+      const rows = await prisma.ruleEvaluation.findMany({
+        where: { simulationId },
+        include: { rule: true },
+        orderBy: [{ rule: { name: 'asc' } }, { rule: { metric: 'asc' } }],
+      })
+      return rows.map(({ rule, applicable, valueNumber }) => ({
+        name: rule.name,
+        metric: rule.metric,
+        applicable,
+        valueNumber,
+      }))
+    }
+
+    beforeEach(async () => {
+      // Evaluating a simulation assesses actions too, which needs at least one.
+      await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+    })
+
+    it('stores a carbon evaluation for each public rule with a numeric value, 0 included', async () => {
+      await evaluate(
+        engineWith({
+          'footprint . transport': { public: 'oui', valeur: 12.5 },
+          'footprint . food': { public: 'oui', valeur: 0 },
+        })
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        {
+          name: 'footprint . food',
+          metric: 'carbon',
+          applicable: true,
+          valueNumber: 0,
+        },
+        {
+          name: 'footprint . transport',
+          metric: 'carbon',
+          applicable: true,
+          valueNumber: 12.5,
+        },
+      ])
+    })
+
+    it('evaluates each public rule for carbon', async () => {
+      await evaluate(
+        engineWith({
+          'footprint . water dependent': {
+            public: 'oui',
+            valeur: {
+              variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+            },
+          },
+        })
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        expect.objectContaining({ metric: 'carbon', valueNumber: 10 }),
+      ])
+    })
+
+    it('stores no evaluation for rules not marked public', async () => {
+      await evaluate(
+        engineWith({
+          'footprint . public': { public: 'oui', valeur: 1 },
+          'footprint . private': { valeur: 2 },
+          'footprint . explicitly private': { public: 'non', valeur: 3 },
+        })
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        expect.objectContaining({ name: 'footprint . public' }),
+      ])
+    })
+
+    it('skips a public rule whose value is not a number and stores the others', async () => {
+      await evaluate(
+        engineWith({
+          'footprint . number': { public: 'oui', valeur: 1 },
+          'footprint . string': { public: 'oui', valeur: "'texte'" },
+        })
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        expect.objectContaining({ name: 'footprint . number' }),
+      ])
+    })
+
+    it('stores no evaluation when the model has no public rules, and still assesses actions', async () => {
+      await evaluate(engineWith({}))
+
+      expect(await findRuleEvaluations()).toEqual([])
+      expect(await prisma.rule.count()).toBe(0)
+      expect(
+        await prisma.actionAssessment.count({
+          where: { simulationId: simulation.id },
+        })
+      ).toBe(1)
+    })
+
+    describe('rules', () => {
+      const findRules = () =>
+        prisma.rule.findMany({
+          select: { name: true, metric: true, title: true, description: true },
+          orderBy: [{ name: 'asc' }, { metric: 'asc' }],
+        })
+
+      const simulationOfModel = (publishedTag: string) =>
+        simulationFactory
+          .completed()
+          .withModelRegion('FR')
+          .withModelVersion({ publishedTag })
+          .create()
+
+      it('stores each public rule with its French title and description', async () => {
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Transport',
+              description: 'Les trajets du quotidien',
+              valeur: 1,
+            },
+            'footprint . bare': { public: 'oui', valeur: 1 },
+          })
+        )
+
+        expect(await findRules()).toEqual([
+          {
+            name: 'footprint . bare',
+            metric: 'carbon',
+            title: null,
+            description: null,
+          },
+          {
+            name: 'footprint . described',
+            metric: 'carbon',
+            title: 'Transport',
+            description: 'Les trajets du quotidien',
+          },
+        ])
+      })
+
+      it('reuses the rules of a model already processed', async () => {
+        const [first, second] = await Promise.all([
+          simulationOfModel('1.0.0'),
+          simulationOfModel('1.0.0'),
+        ])
+
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Transport',
+              valeur: 1,
+            },
+          }),
+          { evaluated: first }
+        )
+        // Same model: its rules are not read again, the wording is unchanged.
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Mobilité',
+              valeur: 2,
+            },
+          }),
+          { evaluated: second }
+        )
+
+        expect(await findRules()).toEqual([
+          expect.objectContaining({
+            name: 'footprint . described',
+            title: 'Transport',
+          }),
+        ])
+        expect(await findRuleEvaluations(second.id)).toEqual([
+          expect.objectContaining({
+            name: 'footprint . described',
+            valueNumber: 2,
+          }),
+        ])
+      })
+
+      it('refreshes the title and description when a new model is first processed', async () => {
+        const [first, second] = await Promise.all([
+          simulationOfModel('1.0.0'),
+          simulationOfModel('1.1.0'),
+        ])
+
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Transport',
+              description: 'Les trajets',
+              valeur: 1,
+            },
+          }),
+          { evaluated: first }
+        )
+        await evaluate(
+          engineWith({
+            'footprint . described': {
+              public: 'oui',
+              titre: 'Mobilité',
+              valeur: 1,
+            },
+          }),
+          { evaluated: second }
+        )
+
+        expect(await findRules()).toEqual([
+          {
+            name: 'footprint . described',
+            metric: 'carbon',
+            title: 'Mobilité',
+            description: null,
+          },
+        ])
+        expect(await findRuleEvaluations(first.id)).toHaveLength(1)
+        expect(await findRuleEvaluations(second.id)).toHaveLength(1)
+      })
+
+      it('converges on the same rules when two workers process a new model', async () => {
+        const [first, second] = await Promise.all([
+          simulationOfModel('1.0.0'),
+          simulationOfModel('1.0.0'),
+        ])
+        const publicRulesEngine = engineWith({
+          'footprint . transport': { public: 'oui', valeur: 1 },
+        })
+
+        // One resolver per worker process, each with its own cache.
+        await Promise.all([
+          evaluate(publicRulesEngine, {
+            evaluated: first,
+            resolve: createResolvePublicRules(),
+          }),
+          evaluate(publicRulesEngine, {
+            evaluated: second,
+            resolve: createResolvePublicRules(),
+          }),
+        ])
+
+        expect(await findRules()).toHaveLength(1)
+        const evaluations = await prisma.ruleEvaluation.findMany()
+        expect(evaluations).toHaveLength(2)
+        expect(evaluations[0].ruleId).toBe(evaluations[1].ruleId)
+      })
+    })
+
+    // The model marks its public rules with an attribute publicodes does not
+    // know: it must reach the parsed rules for them to be found.
+    it('keeps `public: oui` on the parsed rules', () => {
+      const parsedRules = createTestEngine({
+        'footprint . transport': { public: 'oui', valeur: 1 },
+      }).getParsedRules()
+
+      expect(parsedRules['footprint . transport'].rawNode.public).toBe('oui')
     })
   })
 })

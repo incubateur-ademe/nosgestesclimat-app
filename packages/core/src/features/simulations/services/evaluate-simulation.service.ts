@@ -12,24 +12,28 @@ import { findActionRuleIds } from '../../actions/repositories/actions.repository
 import type { NewActionAssessment } from '../../actions/types/action.ts'
 import type { Logger } from '../../logger/index.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
+import { evaluatePublicRule } from '../../rules/helpers/public-rules.ts'
+import { createRuleEvaluations } from '../../rules/repositories/rule-evaluations.repository.ts'
+import type { NewRuleEvaluation, Rule } from '../../rules/types/rule.ts'
 
 interface EvaluateSimulationDeps {
   logger: Logger
 }
 
 /**
- * Produces and persists everything derived from a simulation's situation:
- * today, its action assessments.
+ * Produces and persists everything derived from a simulation's situation: its
+ * action assessments and the evaluations of its model's public rules.
  *
- * The engine's situation must already be set to the simulation's. Every write
- * goes through `session`, so the caller commits them together with the job's
- * status, or rolls them all back.
+ * The engine's situation must already be set to the simulation's.
+ * `publicRules` are the model's stored public rules, resolved beforehand by
+ * `resolvePublicRules`. Every write goes through `session`, so the caller
+ * commits them together with the job's status, or rolls them all back.
  */
 export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
   return async function evaluateSimulation(
     engine: Engine,
     simulation: { id: string; model: ModelString },
-    { session }: { session: Transaction }
+    { session, publicRules }: { session: Transaction; publicRules: Rule[] }
   ): Promise<void> {
     const logger = deps.logger.child({
       scope: 'core.service.evaluateSimulation',
@@ -100,6 +104,19 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
 
     if (assessments.length > 0) {
       await createActionAssessments(assessments, { session })
+    }
+
+    const ruleEvaluations = publicRules.flatMap(
+      ({ id, name, metric }): NewRuleEvaluation[] => {
+        const applicability = evaluatePublicRule({ engine, name, metric })
+        return applicability
+          ? [{ simulationId, ruleId: id, ...applicability }]
+          : []
+      }
+    )
+
+    if (ruleEvaluations.length > 0) {
+      await createRuleEvaluations(ruleEvaluations, { session })
     }
   }
 }

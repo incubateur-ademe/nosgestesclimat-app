@@ -2,6 +2,7 @@ import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
 import { transaction } from '../../../lib/transaction.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
+import type { ResolvePublicRules } from '../../rules/services/resolve-public-rules.service.ts'
 import type { EvaluateSimulation } from '../../simulations/services/evaluate-simulation.service.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
 import { SimulationComputationFailedError } from '../errors/simulation-computation.error.ts'
@@ -13,6 +14,7 @@ import {
 
 interface ProcessNextPendingComputationDeps {
   evaluateSimulation: EvaluateSimulation
+  resolvePublicRules: ResolvePublicRules
 }
 
 /**
@@ -22,6 +24,8 @@ interface ProcessNextPendingComputationDeps {
  * matching the job's model and evaluates the simulation with it. The
  * evaluation's writes and the `completed` status are committed in one
  * transaction: on error they are rolled back and the job is marked failed.
+ * The model's public rules are resolved before that transaction, their `Rule`
+ * rows committed on their own.
  *
  * Returns `success(true)` when a job was processed, `success(false)` when the
  * queue was empty, and a failure otherwise.
@@ -29,7 +33,7 @@ interface ProcessNextPendingComputationDeps {
 export function createProcessNextPendingComputation(
   deps: ProcessNextPendingComputationDeps
 ) {
-  const { evaluateSimulation } = deps
+  const { evaluateSimulation, resolvePublicRules } = deps
   return async function processNextPendingComputation(
     getEngine: (model: Simulation['model']) => Promise<Engine> | Engine
   ): Promise<Result<boolean, SimulationComputationFailedError>> {
@@ -45,13 +49,17 @@ export function createProcessNextPendingComputation(
       const situatedEngine = await getEngine(model)
       engine = situatedEngine
       situatedEngine.setSituation(situation)
+      const modelString = serializeModel(model)
+      // Outside the transaction: the resolver caches the ids of the rules it
+      // stores, which a rollback must not take away.
+      const publicRules = await resolvePublicRules(situatedEngine, modelString)
       // A reclaimed job whose earlier attempt crashed left nothing behind:
       // its writes were never committed.
       await transaction(async (session) => {
         await evaluateSimulation(
           situatedEngine,
-          { id, model: serializeModel(model) },
-          { session }
+          { id, model: modelString },
+          { session, publicRules }
         )
         await markSimulationComputationCompleted(id, { session })
       })

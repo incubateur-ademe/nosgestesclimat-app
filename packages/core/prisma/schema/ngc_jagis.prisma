@@ -97,3 +97,44 @@ enum ComputationStatus {
 
   @@schema("ngc")
 }
+
+enum Metric {
+  carbon
+  water
+
+  @@schema("ngc")
+}
+
+/// A public rule of the model, for one metric. Its name is its identity
+/// across model versions: a stored rule is never renamed.
+model Rule {
+  id          Int              @id @default(autoincrement())
+  name        String
+  metric      Metric
+  /// In French, as the model's `titre`.
+  title       String?
+  /// In French, as the model's `description`.
+  description String?
+  evaluations RuleEvaluation[]
+
+  @@unique([name, metric])
+  @@schema("ngc")
+}
+
+/// The value of one Rule for one simulation:
+/// - applicable: `applicable = true`, `valueNumber` set (0 included)
+/// - not applicable: `applicable = false`, `valueNumber = null`
+/// - not defined: `applicable = null`, `valueNumber = null`
+model RuleEvaluation {
+  simulationId String     @db.Uuid
+  simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  ruleId       Int
+  rule         Rule       @relation(fields: [ruleId], references: [id], onDelete: Restrict)
+  applicable   Boolean?
+  valueNumber  Float?
+  createdAt    DateTime   @default(now())
+
+  @@id([simulationId, ruleId])
+  @@index([ruleId, createdAt])
+  @@schema("ngc")
+}

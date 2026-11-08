@@ -345,6 +345,7 @@ model Simulation {
   updatedAt                  DateTime                             @updatedAt
   actionAssessments          ActionAssessment[]
   computations               SimulationComputation[]
+  ruleEvaluations            RuleEvaluation[]
 
   @@index([userId])
   @@index([createdAt])

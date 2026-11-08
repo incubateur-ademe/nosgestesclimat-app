@@ -1,5 +1,6 @@
 import { createComputePollStats } from '@nosgestesclimat/core/features/polls/stats/legacy/compute-poll-stats'
 import { createProcessNextPendingPollStats } from '@nosgestesclimat/core/features/polls/stats/services/process-next-pending-poll-stats'
+import { createResolvePublicRules } from '@nosgestesclimat/core/features/rules/services/resolve-public-rules.service'
 import {
   createGetEngineForModel,
   createWarmUpHotEngines,
@@ -27,8 +28,10 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const warmUpHotEngines = createWarmUpHotEngines({ logger })
 const getEngineForModel = createGetEngineForModel({ logger })
 const evaluateSimulation = createEvaluateSimulation({ logger })
+const resolvePublicRules = createResolvePublicRules()
 const processNextPendingComputation = createProcessNextPendingComputation({
   evaluateSimulation,
+  resolvePublicRules,
 })
 const computePollStats = createComputePollStats({ logger })
 const processNextPendingPollStats = createProcessNextPendingPollStats({

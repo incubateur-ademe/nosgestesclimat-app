@@ -5,6 +5,8 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import { createActionAssessments } from '../../../actions/repositories/action-assessments.repository.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
+import { createRuleEvaluations } from '../../../rules/repositories/rule-evaluations.repository.ts'
+import { createResolvePublicRules } from '../../../rules/services/resolve-public-rules.service.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import type { EvaluateSimulation } from '../../../simulations/services/evaluate-simulation.service.ts'
 import { SimulationComputationFailedError } from '../../errors/simulation-computation.error.ts'
@@ -14,9 +16,9 @@ import { createProcessNextPendingComputation } from '../process-next-pending-com
 
 const evaluateSimulation = vi.fn<EvaluateSimulation>()
 
-const processNextPendingComputation = createProcessNextPendingComputation({
-  evaluateSimulation,
-})
+let processNextPendingComputation: ReturnType<
+  typeof createProcessNextPendingComputation
+>
 
 /**
  * Stands for any write `evaluateSimulation` makes through its session. The
@@ -41,6 +43,11 @@ describe('processNextPendingComputation', () => {
 
   beforeEach(() => {
     evaluateSimulation.mockResolvedValue(undefined)
+    // A fresh resolver per test: its cache would outlive the emptied database.
+    processNextPendingComputation = createProcessNextPendingComputation({
+      evaluateSimulation,
+      resolvePublicRules: createResolvePublicRules(),
+    })
   })
 
   afterEach(async () => {
@@ -68,7 +75,7 @@ describe('processNextPendingComputation', () => {
     expect(evaluateSimulation).toHaveBeenCalledExactlyOnceWith(
       engine,
       { id: simulation.id, model: serializeModel(simulation.model) },
-      { session: expect.anything() }
+      { session: expect.anything(), publicRules: [] }
     )
 
     const computation = await findSimulationComputation(simulation.id)
@@ -156,6 +163,82 @@ describe('processNextPendingComputation', () => {
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('completed')
     expect(computation!.completedAt).not.toBeNull()
+  })
+
+  describe('with public rules', () => {
+    const publicRulesEngine = createTestEngine({
+      métrique: {
+        avec: { carbone: null, eau: null },
+        'une possibilité': ['carbone', 'eau'],
+        'par défaut': "'carbone'",
+      },
+      'footprint . transport': { public: 'oui', valeur: 1 },
+    })
+
+    const simulationsOfOneModel = () =>
+      Promise.all(
+        [1, 2].map(() =>
+          simulationFactory
+            .completed()
+            .withModelRegion('FR')
+            .withModelVersion({ publishedTag: '1.0.0' })
+            .withPendingComputation()
+            .create()
+        )
+      )
+
+    it("evaluates the simulation with its model's public rules", async () => {
+      await simulationFactory.completed().withPendingComputation().create()
+
+      await processNextPendingComputation(() => publicRulesEngine)
+
+      expect(evaluateSimulation).toHaveBeenCalledExactlyOnceWith(
+        publicRulesEngine,
+        expect.anything(),
+        {
+          session: expect.anything(),
+          publicRules: [
+            {
+              id: expect.any(Number),
+              name: 'footprint . transport',
+              metric: 'carbone',
+            },
+          ],
+        }
+      )
+    })
+
+    // The rules are resolved once per model and cached: had they been stored
+    // within a rolled back job, the next jobs of the model would reference
+    // rules that do not exist.
+    it('keeps the rules resolved for a failed job usable by the next ones', async () => {
+      await simulationsOfOneModel()
+
+      evaluateSimulation
+        .mockRejectedValueOnce(new Error('Engine evaluation failed'))
+        .mockImplementationOnce((_engine, { id }, { session, publicRules }) =>
+          createRuleEvaluations(
+            publicRules.map((rule) => ({
+              simulationId: id,
+              ruleId: rule.id,
+              applicable: true,
+              value: 1,
+            })),
+            { session }
+          )
+        )
+
+      const failed = await processNextPendingComputation(
+        () => publicRulesEngine
+      )
+      const processed = await processNextPendingComputation(
+        () => publicRulesEngine
+      )
+
+      expect(failed.success).toBe(false)
+      expect(processed).toEqual(success(true))
+      expect(await prisma.ruleEvaluation.count()).toBe(1)
+    })
   })
 
   // `setSituation` resets the cache too: only a reset after the evaluation
