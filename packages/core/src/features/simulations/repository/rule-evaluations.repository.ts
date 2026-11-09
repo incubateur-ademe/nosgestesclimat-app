@@ -1,7 +1,7 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { NewRuleEvaluation } from '../types/rule.ts'
-import { mapNewRuleEvaluationToPrisma } from './rule.mapper.ts'
+import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
+import { mapNewRuleEvaluationToPrisma } from './rule-evaluation.mapper.ts'
 
 export const createRuleEvaluations = async (
   evaluations: NewRuleEvaluation[],

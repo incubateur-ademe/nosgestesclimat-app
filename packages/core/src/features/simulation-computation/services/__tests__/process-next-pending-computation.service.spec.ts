@@ -5,15 +5,19 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import { createActionAssessments } from '../../../actions/repositories/action-assessments.repository.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
-import { createRuleEvaluations } from '../../../rules/repositories/rule-evaluations.repository.ts'
-import { createResolvePublicRules } from '../../../rules/services/resolve-public-rules.service.ts'
+import { createResolvePublicRules } from '../../../models/services/resolve-public-rules.service.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
-import type { EvaluateSimulation } from '../../../simulations/services/evaluate-simulation.service.ts'
+import { createRuleEvaluations } from '../../../simulations/repository/rule-evaluations.repository.ts'
 import { SimulationComputationFailedError } from '../../errors/simulation-computation.error.ts'
 import { createTestEngine } from '../../factories/engine.factory.ts'
 import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
-import { createProcessNextPendingComputation } from '../process-next-pending-computation.service.ts'
+import {
+  createProcessNextPendingComputation,
+  type AssessActions,
+  type EvaluateSimulation,
+} from '../process-next-pending-computation.service.ts'
 
+const assessActions = vi.fn<AssessActions>()
 const evaluateSimulation = vi.fn<EvaluateSimulation>()
 
 let processNextPendingComputation: ReturnType<
@@ -21,15 +25,15 @@ let processNextPendingComputation: ReturnType<
 >
 
 /**
- * Stands for any write `evaluateSimulation` makes through its session. The
- * action is created beforehand: PGlite has a single connection, so a query
- * outside the open transaction would hang.
+ * Stands for any write `assessActions` makes through its session. The action
+ * is created beforehand: PGlite has a single connection, so a query outside
+ * the open transaction would hang.
  */
-const fakeEvaluationWriting = async (): Promise<EvaluateSimulation> => {
+const fakeActionsAssessing = async (): Promise<AssessActions> => {
   const action = await actionFactory.published().create()
-  return (_engine, { id }, { session }) =>
+  return (_engine, simulationId, { session }) =>
     createActionAssessments(
-      [{ simulationId: id, actionId: action.id, applicable: true, impact: 1 }],
+      [{ simulationId, actionId: action.id, applicable: true, impact: 1 }],
       { session }
     )
 }
@@ -42,9 +46,11 @@ describe('processNextPendingComputation', () => {
   const getEngine = () => engine
 
   beforeEach(() => {
+    assessActions.mockResolvedValue(undefined)
     evaluateSimulation.mockResolvedValue(undefined)
     // A fresh resolver per test: its cache would outlive the emptied database.
     processNextPendingComputation = createProcessNextPendingComputation({
+      assessActions,
       evaluateSimulation,
       resolvePublicRules: createResolvePublicRules(),
     })
@@ -52,6 +58,7 @@ describe('processNextPendingComputation', () => {
 
   afterEach(async () => {
     vi.restoreAllMocks()
+    assessActions.mockReset()
     evaluateSimulation.mockReset()
     await emptyDatabase(prisma)
   })
@@ -60,41 +67,23 @@ describe('processNextPendingComputation', () => {
     const result = await processNextPendingComputation(getEngine)
 
     expect(result).toEqual(success(false))
+    expect(assessActions).not.toHaveBeenCalled()
     expect(evaluateSimulation).not.toHaveBeenCalled()
   })
 
-  it('evaluates the claimed simulation and marks its job completed', async () => {
-    const simulation = await simulationFactory
-      .completed()
-      .withPendingComputation()
-      .create()
-
-    const result = await processNextPendingComputation(getEngine)
-
-    expect(result).toEqual(success(true))
-    expect(evaluateSimulation).toHaveBeenCalledExactlyOnceWith(
-      engine,
-      { id: simulation.id, model: serializeModel(simulation.model) },
-      { session: expect.anything(), publicRules: [] }
-    )
-
-    const computation = await findSimulationComputation(simulation.id)
-    expect(computation!.status).toBe('completed')
-    expect(computation!.completedAt).not.toBeNull()
-  })
-
-  it("sets the simulation's situation before evaluating it", async () => {
+  it('evaluates the claimed simulation in its situation, commits the writes and marks its job completed', async () => {
     const situatedEngine = createTestEngine({
       transport: null,
       'transport . voiture': null,
       'transport . voiture . km': { question: 'Combien ?', unité: 'km' },
     })
-    await simulationFactory
+    const simulation = await simulationFactory
       .completed()
       .withPendingComputation()
       .params({ situation: { 'transport . voiture . km': 12000 } })
       .create()
 
+    assessActions.mockImplementation(await fakeActionsAssessing())
     let evaluatedKm: unknown
     evaluateSimulation.mockImplementation((evaluatedEngine) => {
       evaluatedKm = evaluatedEngine.evaluate(
@@ -103,37 +92,36 @@ describe('processNextPendingComputation', () => {
       return Promise.resolve()
     })
 
-    await processNextPendingComputation(() => situatedEngine)
+    const result = await processNextPendingComputation(() => situatedEngine)
 
+    expect(result).toEqual(success(true))
+    expect(assessActions).toHaveBeenCalledExactlyOnceWith(
+      situatedEngine,
+      simulation.id,
+      { session: expect.anything() }
+    )
+    expect(evaluateSimulation).toHaveBeenCalledExactlyOnceWith(
+      situatedEngine,
+      simulation.id,
+      [],
+      { session: expect.anything() }
+    )
     expect(evaluatedKm).toBe(12000)
-  })
-
-  it('commits the evaluation writes together with the completed status', async () => {
-    const simulation = await simulationFactory
-      .completed()
-      .withPendingComputation()
-      .create()
-
-    evaluateSimulation.mockImplementation(await fakeEvaluationWriting())
-
-    await processNextPendingComputation(getEngine)
 
     expect(await findActionAssessments(simulation.id)).toHaveLength(1)
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('completed')
+    expect(computation!.completedAt).not.toBeNull()
   })
 
-  it('rolls the evaluation writes back and marks the job failed when the evaluation throws', async () => {
+  it('rolls the writes back and marks the job failed when the evaluation throws', async () => {
     const simulation = await simulationFactory
       .completed()
       .withPendingComputation()
       .create()
 
-    const writeAnActionAssessment = await fakeEvaluationWriting()
-    evaluateSimulation.mockImplementation(async (...args) => {
-      await writeAnActionAssessment(...args)
-      throw new Error('Engine evaluation failed')
-    })
+    assessActions.mockImplementation(await fakeActionsAssessing())
+    evaluateSimulation.mockRejectedValue(new Error('Engine evaluation failed'))
 
     const result = await processNextPendingComputation(getEngine)
 
@@ -142,6 +130,11 @@ describe('processNextPendingComputation', () => {
       throw new Error('Expected processNextPendingComputation to fail')
     }
     expect(result.error).toBeInstanceOf(SimulationComputationFailedError)
+    // The worker logs the failure with the simulation and its model.
+    expect(result.error).toMatchObject({
+      simulationId: simulation.id,
+      model: serializeModel(simulation.model),
+    })
 
     expect(await findActionAssessments(simulation.id)).toHaveLength(0)
     const computation = await findSimulationComputation(simulation.id)
@@ -154,7 +147,7 @@ describe('processNextPendingComputation', () => {
       .withStaleProcessingComputation()
       .create()
 
-    evaluateSimulation.mockImplementation(await fakeEvaluationWriting())
+    assessActions.mockImplementation(await fakeActionsAssessing())
 
     const result = await processNextPendingComputation(getEngine)
 
@@ -194,22 +187,20 @@ describe('processNextPendingComputation', () => {
 
       expect(evaluateSimulation).toHaveBeenCalledExactlyOnceWith(
         publicRulesEngine,
-        expect.anything(),
-        {
-          session: expect.anything(),
-          publicRules: [
-            {
-              id: expect.any(Number),
-              name: 'footprint . transport',
-              metric: 'carbone',
-            },
-            {
-              id: expect.any(Number),
-              name: 'footprint . transport',
-              metric: 'eau',
-            },
-          ],
-        }
+        expect.any(String),
+        [
+          {
+            id: expect.any(Number),
+            name: 'footprint . transport',
+            metric: 'carbon',
+          },
+          {
+            id: expect.any(Number),
+            name: 'footprint . transport',
+            metric: 'water',
+          },
+        ],
+        { session: expect.anything() }
       )
     })
 
@@ -221,16 +212,17 @@ describe('processNextPendingComputation', () => {
 
       evaluateSimulation
         .mockRejectedValueOnce(new Error('Engine evaluation failed'))
-        .mockImplementationOnce((_engine, { id }, { session, publicRules }) =>
-          createRuleEvaluations(
-            publicRules.map((rule) => ({
-              simulationId: id,
-              ruleId: rule.id,
-              applicable: true,
-              value: 1,
-            })),
-            { session }
-          )
+        .mockImplementationOnce(
+          (_engine, simulationId, publicRules, { session }) =>
+            createRuleEvaluations(
+              publicRules.map((rule) => ({
+                simulationId,
+                ruleId: rule.id,
+                applicable: true,
+                value: 1,
+              })),
+              { session }
+            )
         )
 
       const failed = await processNextPendingComputation(

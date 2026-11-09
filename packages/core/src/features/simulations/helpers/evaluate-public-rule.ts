@@ -1,22 +1,13 @@
 import type Engine from 'publicodes'
-import type {
-  EngineEvaluation,
-  Metric,
-  PublicRule,
-  RuleApplicability,
-} from '../types/rule.ts'
+import type { EngineEvaluation } from '../../models/types/engine-evaluation.ts'
+import type { Metric } from '../../models/types/rule.ts'
+import type { RuleApplicability } from '../types/rule-evaluation.ts'
 
-/** Reads the rules the model marks `public: oui`. */
-export const getPublicRules = (engine: Engine): PublicRule[] =>
-  Object.entries(engine.getParsedRules())
-    .filter(([, rule]) => rule.rawNode.public === 'oui')
-    .map(([name, { rawNode }]) => ({
-      name,
-      // Not `rule.title`, which publicodes derives from the name when the
-      // model gives no `titre`.
-      title: rawNode.titre ?? null,
-      description: rawNode.description ?? null,
-    }))
+/** The value the model's `métrique` rule takes for each metric. */
+const MODEL_METRIC = {
+  carbon: 'carbone',
+  water: 'eau',
+} as const satisfies Record<Metric, string>
 
 /**
  * Evaluates a public rule for a metric, the way the footprint is computed:
@@ -37,7 +28,7 @@ export const evaluatePublicRule = ({
 }): EngineEvaluation<RuleApplicability> => {
   const { nodeValue } = engine.evaluate({
     valeur: name,
-    contexte: { métrique: `'${metric}'` },
+    contexte: { métrique: `'${MODEL_METRIC[metric]}'` },
   })
 
   if (typeof nodeValue === 'number' && Number.isFinite(nodeValue)) {

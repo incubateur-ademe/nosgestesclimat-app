@@ -1,11 +1,8 @@
 import type Engine from 'publicodes'
-import {
-  serializeModel,
-  type ModelString,
-} from '../../models/helpers/model-versions.ts'
-import type { Model } from '../../models/types/model.ts'
+import { serializeModel, type ModelString } from '../helpers/model-versions.ts'
 import { getPublicRules } from '../helpers/public-rules.ts'
 import { upsertRules } from '../repositories/rules.repository.ts'
+import type { Model } from '../types/model.ts'
 import { PUBLIC_RULE_METRICS, type Rule } from '../types/rule.ts'
 
 /**
@@ -45,4 +42,3 @@ export function createResolvePublicRules() {
     return rules
   }
 }
-export type ResolvePublicRules = ReturnType<typeof createResolvePublicRules>

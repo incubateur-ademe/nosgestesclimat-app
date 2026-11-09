@@ -1,6 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import type { EngineEvaluation } from '../../rules/types/rule.ts'
+import type { EngineEvaluation } from '../../models/types/engine-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
