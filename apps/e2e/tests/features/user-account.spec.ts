@@ -143,10 +143,13 @@ test.describe('Email change', () => {
     await page.getByTestId('verification-code-submit-button').click()
 
     await expect(page.getByTestId('success-message')).toBeVisible()
+    await expect(page.getByTestId('user-email-display')).toHaveText(
+      newEmail.toLowerCase()
+    )
 
-    // The form stays open after the update: reload to read the stored address.
+    // The page could hold the address the update returned: reload to read the
+    // one the server stored.
     await page.reload()
-
     await expect(page.getByTestId('user-email-display')).toHaveText(
       newEmail.toLowerCase()
     )

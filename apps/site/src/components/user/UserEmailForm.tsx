@@ -29,6 +29,8 @@ interface Props {
   className?: string
   defaultEmail: string
   resetLocalState: () => void
+  /** The address the account now carries, once the change is verified. */
+  onUpdated: (email: string) => void
 }
 
 export default function UserEmailForm({
@@ -36,13 +38,13 @@ export default function UserEmailForm({
   className,
   defaultEmail,
   resetLocalState,
+  onUpdated,
 }: Props) {
   const router = useRouter()
-  const { mutateAsync: updateEmail, isSuccess } = useUpdateUserSettings()
+  const { mutateAsync: updateEmail } = useUpdateUserSettings()
 
   const [showVerificationModal, setShowVerificationModal] = useState(false)
   const [pendingEmail, setPendingEmail] = useState('')
-  const [showSuccess, setShowSuccess] = useState(false)
 
   const verify = useCallback(
     async (email: string, code: string) => {
@@ -52,11 +54,16 @@ export default function UserEmailForm({
     [updateEmail]
   )
 
-  const handleOnComplete = useCallback(() => {
-    setShowVerificationModal(false)
-    setShowSuccess(true)
-    setTimeout(() => router.refresh(), 100)
-  }, [router])
+  const handleOnComplete = useCallback(
+    ({ email }: { email: string }) => {
+      setShowVerificationModal(false)
+      // The parent gives way to the display: the success message lives there,
+      // so it outlives the form.
+      onUpdated(email)
+      router.refresh()
+    },
+    [onUpdated, router]
+  )
 
   return (
     <AuthProvider verify={verify} onComplete={handleOnComplete}>
@@ -66,7 +73,6 @@ export default function UserEmailForm({
         defaultEmail={defaultEmail}
         showVerificationModal={showVerificationModal}
         pendingEmail={pendingEmail}
-        showSuccess={showSuccess || isSuccess}
         onOpenVerification={(email: string) => {
           setPendingEmail(email)
           setShowVerificationModal(true)
@@ -86,7 +92,6 @@ function UserEmailFormContent({
   defaultEmail,
   showVerificationModal,
   pendingEmail,
-  showSuccess,
   onOpenVerification,
   onCloseVerification,
 }: {
@@ -95,7 +100,6 @@ function UserEmailFormContent({
   defaultEmail: string
   showVerificationModal: boolean
   pendingEmail: string
-  showSuccess: boolean
   onOpenVerification: (email: string) => void
   onCloseVerification: () => void
 }) {
@@ -150,17 +154,6 @@ function UserEmailFormContent({
           autoComplete="email"
           {...register('email')}
         />
-
-        {showSuccess && (
-          <p
-            data-testid="success-message"
-            role="status"
-            aria-live="polite"
-            aria-atomic="true"
-            className="mb-0 text-green-700">
-            <Trans>Vos informations ont bien été mises à jour.</Trans>
-          </p>
-        )}
 
         <div>
           <Button
