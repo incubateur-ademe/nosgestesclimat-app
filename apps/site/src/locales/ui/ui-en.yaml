@@ -1609,7 +1609,7 @@ entries:
   mon-espace.resultsList.hasMigratedSimulations.lock: Nous avons retrouvé des simulations sur ce navigateur et les avons ajoutées à votre espace. Vous pouvez les supprimer à tout moment.
   youthTutorial.secondlist.forYou.title: Answer for you
   youthTutorial.secondlist.forYou.title.lock: Réponds pour toi
-  youthTutorial.secondlist.result.title: Earnings + shares
+  youthTutorial.secondlist.result.title: Results + actions
   youthTutorial.secondlist.result.title.lock: Résultat + actions
   youthTutorial.secondlist.result.body: Your score and ideas for action
   youthTutorial.secondlist.result.body.lock: Ton score et des idées pour agir
@@ -2173,13 +2173,13 @@ entries:
   actions.plan.links.exploreActions.lock: Explorer les actions
   actions.components.actionCard.highlighted.addedButton.tooltip: Remove from your plan
   actions.components.actionCard.highlighted.addedButton.tooltip.lock: Retirer de votre plan
-  actions.basket.title.withActionChoices: My selection of shares
+  actions.basket.title.withActionChoices: My selection of actions
   actions.basket.title.withActionChoices.lock: Ma sélection d'actions
   actions.basket.saveButton.ariaLabel: Save my action plan and go to my action plan page
   actions.basket.saveButton.ariaLabel.lock: Sauvegarder mon plan d'actions et accéder à ma page plan d'actions
   actions.components.actionCard.highlighted.addedButton.label: Added
   actions.components.actionCard.highlighted.addedButton.label.lock: Ajouté
-  actions.basket.subtitle.empty: Add shares to your selection.
+  actions.basket.subtitle.empty: Add actions to your selection.
   actions.basket.subtitle.empty.lock: Ajoutez des actions à votre sélection.
   actions.basket.saveButton.label: Save my action plan
   actions.basket.saveButton.label.lock: Sauvegarder mon plan d'action
@@ -2191,14 +2191,14 @@ entries:
   actions.plan.links.myActionPlan.lock: Mon plan d'action
   actions.seeActionPlanLink.mobile.label.firstLine: View my action plan
   actions.seeActionPlanLink.mobile.label.firstLine.lock: Voir mon plan d'action
-  actions.plan.abandonCommitment.button.ariaLabel: Remove the share from your selection
+  actions.plan.abandonCommitment.button.ariaLabel: Remove the action from your selection
   actions.plan.abandonCommitment.button.ariaLabel.lock: Retirer l'action de votre sélection
-  actions.basket.subtitle.choices_other: '{{numberOfCommittedActions}} shares in your selection'
+  actions.basket.subtitle.choices_other: '{{numberOfCommittedActions}} actions in your selection'
   actions.basket.subtitle.choices_other.lock: '{{numberOfCommittedActions}} actions dans votre sélection'
-  actions.basket.subtitle.choices_many: '{{numberOfCommittedActions}} shares in your selection'
+  actions.basket.subtitle.choices_many: '{{numberOfCommittedActions}} actions in your selection'
   actions.basket.subtitle.choices_many.lock: '{{numberOfCommittedActions}} actions dans votre sélection'
-  actions.basket.subtitle.choices_one: '{{numberOfCommittedActions}} shares in your selection'
-  actions.basket.subtitle.choices_one.lock: '{{numberOfCommittedActions}} actions dans votre sélection'
+  actions.basket.subtitle.choices_one: '{{numberOfCommittedActions}} action in your selection'
+  actions.basket.subtitle.choices_one.lock: '{{numberOfCommittedActions}} action dans votre sélection'
   save-results-form.verification.button-label: Save my results
   save-results-form.verification.button-label.lock: Enregistrer mes résultats
   group.ranking.expand.button.label.singular: Show 1 more participant

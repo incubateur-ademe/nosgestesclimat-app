@@ -1,4 +1,5 @@
-import { test as base, expect, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
 import { START_SIMULATION_PATH } from '../constants'
 
 export class TutorialPage {
@@ -19,14 +20,3 @@ export class TutorialPage {
     await this.page.waitForURL(new RegExp(`^(?!.*${TutorialPage.URL}).*$`))
   }
 }
-
-interface TutorialPageFixtures {
-  tutorialPage: TutorialPage
-}
-const test = base.extend<TutorialPageFixtures>({
-  tutorialPage: async ({ page }, use) => {
-    await use(new TutorialPage(page))
-  },
-})
-
-export { expect, test }

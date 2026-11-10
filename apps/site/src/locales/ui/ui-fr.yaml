@@ -1449,7 +1449,7 @@ entries:
   actions.plan.links.myActionPlan: Mon plan d'action
   actions.seeActionPlanLink.mobile.label.firstLine: Voir mon plan d'action
   actions.plan.abandonCommitment.button.ariaLabel: Retirer l'action de votre sélection
-  actions.basket.subtitle.choices_one: '{{numberOfCommittedActions}} actions dans votre sélection'
+  actions.basket.subtitle.choices_one: '{{numberOfCommittedActions}} action dans votre sélection'
   actions.basket.subtitle.choices_many: '{{numberOfCommittedActions}} actions dans votre sélection'
   actions.basket.subtitle.choices_other: '{{numberOfCommittedActions}} actions dans votre sélection'
   save-results-form.verification.button-label: Enregistrer mes résultats

@@ -1,13 +1,15 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from '@nosgestesclimat/core/features/simulations/validators/situation.schema'
 import type { Page } from '@playwright/test'
-import { TutorialPage, test as base, expect } from './tutorial'
+
+import { TutorialPage } from './tutorial'
 
 export class NGCTest {
-  constructor(
-    public readonly page: Page,
-    public readonly tutorialPage: TutorialPage = new TutorialPage(page)
-  ) {}
+  public readonly tutorialPage: TutorialPage
+
+  constructor(public readonly page: Page) {
+    this.tutorialPage = new TutorialPage(page)
+  }
 
   async start() {
     await this.tutorialPage.start()
@@ -100,7 +102,7 @@ export class NGCTest {
 
   private async canEndTest() {
     // The end button stays disabled until the current question is folded;
-    // ending too early makes the following click wait for an enabled state
+    // ending too early would make the following click wait for an enabled state
     // that never comes.
     return await this.hasClickableButton('end-test-button')
   }
@@ -276,14 +278,3 @@ export class NGCTest {
     await this.page.waitForURL(/\/(fin|simulateur\/email)/)
   }
 }
-
-interface NGCPageFixtures {
-  ngcTest: NGCTest
-}
-const test = base.extend<NGCPageFixtures>({
-  ngcTest: async ({ page, tutorialPage }, use) => {
-    await use(new NGCTest(page, tutorialPage))
-  },
-})
-
-export { expect, test }

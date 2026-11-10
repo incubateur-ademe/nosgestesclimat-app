@@ -1,0 +1,22 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:4000",
+      "localStorage": [
+        {
+          "name": "__ph_opt_in_out_phc_bqjKhaaNS6ohpyBbN5DL1q2xp7qnUUPc7iMSO5MFg5G",
+          "value": "0"
+        },
+        {
+          "name": "ph_debug",
+          "value": "true"
+        },
+        {
+          "name": "cookie-management-state",
+          "value": "{\"posthog\":\"refused\",\"googleTag\":\"refused\"}"
+        }
+      ]
+    }
+  ]
+}
