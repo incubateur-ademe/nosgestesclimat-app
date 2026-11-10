@@ -1,4 +1,5 @@
 import type Engine from 'publicodes'
+import { toError } from '../../../lib/to-error.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
 import { UnexpectedNodeValueError } from '../../models/errors.ts'
@@ -77,8 +78,8 @@ export function createAssessActions(deps: AssessActionsDeps) {
           } else {
             // The action is skipped, never retried: the failure is captured,
             // so a rule the engine chokes on does not vanish with its
-            // assessment.
-            logger.error(evaluation.error, meta)
+            // assessment. What the engine threw is reported, not its wrapper.
+            logger.error(toError(evaluation.error.cause), meta)
           }
           return []
         }

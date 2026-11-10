@@ -116,8 +116,9 @@ describe('assessActions', () => {
       .published()
       .create()
 
+    const thrown = new Error('Engine evaluation failed')
     vi.spyOn(engine, 'evaluate').mockImplementation(() => {
-      throw new Error('Engine evaluation failed')
+      throw thrown
     })
 
     await assess()
@@ -126,7 +127,7 @@ describe('assessActions', () => {
 
     // The assessment is dropped, not skipped and forgotten: the failure is
     // reported.
-    expect(logger.error).toHaveBeenCalledWith(expect.any(Error), {
+    expect(logger.error).toHaveBeenCalledWith(thrown, {
       actionId: expect.any(String),
       ruleId: APPLICABLE_RULE_ID,
       dottedName: 'test . applicable',
