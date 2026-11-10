@@ -28,7 +28,7 @@ const main = async () => {
   try {
     const { values } = parseArgs({
       args: process.argv.slice(2),
-      options: { dry: { type: 'boolean', default: true } },
+      options: { dry: { type: 'boolean', default: false } },
       allowNegative: true,
     })
 
