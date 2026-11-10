@@ -11,6 +11,7 @@ import { simulationFactory } from '../../../simulations/factories/simulation.fac
 import type { Simulation } from '../../../simulations/types/simulation.ts'
 import { ActionAssessmentPublicodesError } from '../../errors/action-assessment.error.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
+import { findActionAssessmentsBySimulation } from '../../repositories/action-assessments.repository.ts'
 import { createAssessActions } from '../assess-actions.service.ts'
 
 const logger = createTestLogger()
@@ -54,9 +55,7 @@ describe('assessActions', () => {
     )
 
   const findActionAssessments = () =>
-    prisma.actionAssessment.findMany({
-      where: { simulationId: simulation.id },
-    })
+    findActionAssessmentsBySimulation(simulation.id)
 
   beforeEach(async () => {
     simulation = await simulationFactory.completed().create()
@@ -91,7 +90,7 @@ describe('assessActions', () => {
       (a) => a.actionId === notApplicableAction.id
     )!
     expect(notApplicableAssessment.applicable).toBe(false)
-    expect(notApplicableAssessment.impact).toBeNull()
+    expect(notApplicableAssessment.impact).toBeUndefined()
   })
 
   it('skips actions whose ruleId is not found in the engine', async () => {
