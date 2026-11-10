@@ -17,11 +17,11 @@ export const upsertRules = async (
 ): Promise<Rule[]> => {
   if (rules.length === 0) return []
 
-  // A lock-acquisition order, not a display order: sort so that every caller
-  // feeds the rows to the statement in the same fixed (name, metric) order
-  // (see `compare` below for why code units and not `toLocaleCompare`).
+  // A lock-acquisition order, not a display order: every caller feeds the rows
+  // to the statement in the same fixed (name, metric) order.
   const sorted = rules.toSorted(
-    (a, b) => compare(a.name, b.name) || compare(a.metric, b.metric)
+    (a, b) =>
+      codeUnitCompare(a.name, b.name) || codeUnitCompare(a.metric, b.metric)
   )
 
   // A raw query because Prisma's typed API has no batch upsert that returns
@@ -55,14 +55,6 @@ export const upsertRules = async (
   return rows.map(mapRule)
 }
 
-// Code-unit comparison, deliberately not `toLocaleCompare`: the sort above
-// is a lock order, so it must be a strict total order that every process
-// computes identically. `<` / `>` on strings is specified on UTF-16 code
-// units, hence identical in every engine and locale, and returns 0 only for
-// identical strings. `localeCompare` depends on the process default locale
-// and ICU data (two workers could order the same rules differently) and
-// returns 0 for distinct canonically equivalent strings (e.g. 'é' U+00E9 vs
-// 'e' + combining acute U+0301), so a tie would fall back to input order.
-// Either way, two concurrent callers could lock rows in different orders and
-// deadlock.
-const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
+// Not `localeCompare`, which depends on the process locale: every process must
+// lock the rows in the same order.
+const codeUnitCompare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
