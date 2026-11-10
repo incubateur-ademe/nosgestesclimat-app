@@ -151,6 +151,42 @@ describe('assessActions', () => {
     )
   })
 
+  it.each([
+    { nodeValue: NaN, impact: undefined },
+    { nodeValue: Infinity, impact: Infinity },
+    { nodeValue: -Infinity, impact: -Infinity },
+  ])(
+    'stores an action whose nodeValue is $nodeValue as applicable, of impact $impact',
+    async ({ nodeValue, impact }) => {
+      const action = await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+      // No publicodes formula evaluates to a non-finite number.
+      const evaluate = engine.evaluate.bind(engine)
+      vi.spyOn(engine, 'evaluate').mockImplementation((expression) => ({
+        ...evaluate(expression),
+        nodeValue,
+      }))
+
+      await assess()
+
+      expect(await findActionAssessments()).toEqual([
+        expect.objectContaining({
+          actionId: action.id,
+          applicable: true,
+          impact,
+        }),
+      ])
+      const reported = [
+        expect.anything(),
+        expect.objectContaining({ actionId: action.id }),
+      ]
+      expect(logger.warn).not.toHaveBeenCalledWith(...reported)
+      expect(logger.error).not.toHaveBeenCalledWith(...reported)
+    }
+  )
+
   describe('throws ActionAssessmentPublicodesError', () => {
     it('when there are no actions in database', async () => {
       await expect(assess()).rejects.toThrow(ActionAssessmentPublicodesError)

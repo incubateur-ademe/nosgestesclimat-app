@@ -12,7 +12,6 @@ export type RuleApplicability =
   | { applicable: undefined }
 
 /**
- * How the engine evaluated a rule: its applicability, or why it has none that
- * can be stored.
+ * How the engine evaluated a rule: its applicability, or why it has none.
  */
 export type EngineEvaluation = Result<RuleApplicability, RuleEvaluationError>

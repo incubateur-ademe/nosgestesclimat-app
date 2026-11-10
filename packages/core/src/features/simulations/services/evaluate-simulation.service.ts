@@ -2,7 +2,10 @@ import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { RuleEvaluationError } from '../../models/errors.ts'
-import { evaluatePublicRule } from '../../models/helpers/evaluate-public-rule.ts'
+import {
+  evaluatePublicRule,
+  requireFiniteValue,
+} from '../../models/helpers/evaluate-public-rule.ts'
 import type { Rule } from '../../models/types/rule.ts'
 import { PublicRulesEvaluationError } from '../errors/simulations.error.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
@@ -32,7 +35,10 @@ export async function evaluateSimulation(
   const errors: RuleEvaluationError[] = []
 
   for (const { id, name, metric } of publicRules) {
-    const evaluation = evaluatePublicRule({ engine, dottedName: name, metric })
+    const evaluation = requireFiniteValue(
+      evaluatePublicRule({ engine, dottedName: name, metric }),
+      { dottedName: name, metric }
+    )
 
     if (evaluation.success) {
       evaluations.push({ simulationId, ruleId: id, ...evaluation.data })

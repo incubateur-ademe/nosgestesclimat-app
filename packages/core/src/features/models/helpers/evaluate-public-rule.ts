@@ -17,13 +17,13 @@ const MODEL_METRIC = {
  * Evaluates a rule of the model, for a metric when one is given: the metric is
  * then set in the evaluation's context, the way the footprint is computed.
  *
- * A finite number, 0 included, is applicable; `null` and `false` are not
- * applicable; `undefined`, which a rule without a formula evaluates to, is not
- * defined. Any other value cannot be stored, `true`, a string, NaN or
- * ±Infinity, and fails with an `UnexpectedNodeValueError`; an evaluation that
+ * A number is applicable, whatever it is: 0, NaN and ±Infinity included;
+ * `null` and `false` are not applicable; `undefined`, which a rule without a
+ * formula evaluates to, is not defined. `true` and a string are no
+ * applicability and fail with an `UnexpectedNodeValueError`; an evaluation that
  * throws, a rule missing from the model for instance, fails with a
- * `RuleEvaluationThrewError`. What the applicability means is left to the
- * caller.
+ * `RuleEvaluationThrewError`. What the applicability means, and which values
+ * it may take, is left to the caller: see `requireFiniteValue`.
  */
 export const evaluatePublicRule = ({
   engine,
@@ -49,7 +49,7 @@ export const evaluatePublicRule = ({
     return failure(new RuleEvaluationThrewError({ dottedName, metric, cause }))
   }
 
-  if (typeof nodeValue === 'number' && Number.isFinite(nodeValue)) {
+  if (typeof nodeValue === 'number') {
     return success({ applicable: true, value: nodeValue })
   }
 
@@ -65,9 +65,35 @@ export const evaluatePublicRule = ({
     new UnexpectedNodeValueError({
       dottedName,
       metric,
-      // A number is named by its value, NaN or ±Infinity: its type says nothing.
-      nodeValue:
-        typeof nodeValue === 'number' ? String(nodeValue) : typeof nodeValue,
+      nodeValue: typeof nodeValue,
+    })
+  )
+}
+
+/**
+ * Fails an applicable evaluation whose value is not finite, NaN or ±Infinity,
+ * with an `UnexpectedNodeValueError`: a public rule's evaluation is stored as
+ * a finite number or not at all. An action's is not checked: it keeps the
+ * value the engine gave.
+ */
+export const requireFiniteValue = (
+  evaluation: EngineEvaluation,
+  { dottedName, metric }: { dottedName: string; metric?: Metric }
+): EngineEvaluation => {
+  if (
+    !evaluation.success ||
+    evaluation.data.applicable !== true ||
+    Number.isFinite(evaluation.data.value)
+  ) {
+    return evaluation
+  }
+
+  return failure(
+    new UnexpectedNodeValueError({
+      dottedName,
+      metric,
+      // Named by its value: its type, a number, says nothing.
+      nodeValue: String(evaluation.data.value),
     })
   )
 }

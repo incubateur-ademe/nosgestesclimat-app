@@ -56,7 +56,8 @@ export const toNewActionAssessment = (
 
 /**
  * Reads the applicability of an action's rule as the action's evaluation: its
- * value is the action's impact, an impact of 0 being no impact.
+ * value is the action's impact, whatever number it is, an impact of 0 or NaN
+ * being no impact.
  */
 export const toActionEvaluation = (
   applicability: RuleApplicability
