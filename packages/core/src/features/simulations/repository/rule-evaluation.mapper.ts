@@ -6,6 +6,6 @@ export const mapNewRuleEvaluationToPrisma = (
 ): Prisma.RuleEvaluationCreateManyInput => ({
   simulationId: evaluation.simulationId,
   ruleId: evaluation.ruleId,
-  applicable: evaluation.applicable,
+  applicable: evaluation.applicable ?? null,
   valueNumber: evaluation.applicable === true ? evaluation.value : null,
 })

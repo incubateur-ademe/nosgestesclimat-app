@@ -43,7 +43,7 @@ export const evaluatePublicRule = ({
   }
 
   if (nodeValue === undefined) {
-    return { outcome: 'evaluated', applicability: { applicable: null } }
+    return { outcome: 'evaluated', applicability: { applicable: undefined } }
   }
 
   return {
