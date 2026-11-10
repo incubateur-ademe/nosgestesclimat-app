@@ -38,14 +38,13 @@ export async function updateRegion(region: Region) {
 
 export default async function SettingsPage({ params }: DefaultPageProps) {
   const { locale } = await params
-  const [subscriptions, newsletters, user, regionData] = await throwNextError(
-    () =>
-      Promise.all([
-        getNewsletterSubscriptions(),
-        getNewsletters({ locale }),
-        requireAuthUser(),
-        getRegion(),
-      ])
+  const user = await requireAuthUser()
+  const [subscriptions, newsletters, regionData] = await throwNextError(() =>
+    Promise.all([
+      getNewsletterSubscriptions(user.email),
+      getNewsletters({ locale }),
+      getRegion(),
+    ])
   )
 
   return (
