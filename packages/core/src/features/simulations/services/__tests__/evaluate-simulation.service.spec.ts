@@ -248,6 +248,29 @@ describe('evaluateSimulation', () => {
     ])
   })
 
+  // The rules given are trusted to be public: the model's `public` mark is not
+  // checked again.
+  it('stores a given rule the model does not mark public like a public one', async () => {
+    const rules = await storeRules(['footprint . private'])
+
+    await evaluate(engineWith({ 'footprint . private': { valeur: 3 } }), rules)
+
+    expect(await findRuleEvaluations()).toEqual([
+      {
+        name: 'footprint . private',
+        metric: 'carbon',
+        applicable: true,
+        valueNumber: 3,
+      },
+      {
+        name: 'footprint . private',
+        metric: 'water',
+        applicable: true,
+        valueNumber: 3,
+      },
+    ])
+  })
+
   it('stores nothing when given no public rules', async () => {
     await evaluate(engineWith({}), [])
 
@@ -377,6 +400,35 @@ describe('evaluateSimulation', () => {
       for (const metric of PUBLIC_RULE_METRICS) {
         expect(logger.warn).toHaveBeenCalledWith(expect.any(Error), {
           dottedName: 'footprint . throwing',
+          metric,
+        })
+      }
+    })
+
+    it('skips a public rule missing from the model, warns, and stores the others', async () => {
+      const rules = await storeRules([
+        'footprint . number',
+        'footprint . missing',
+      ])
+
+      await evaluate(
+        engineWith({ 'footprint . number': { public: 'oui', valeur: 1 } }),
+        rules
+      )
+
+      expect(await findRuleEvaluations()).toEqual([
+        expect.objectContaining({
+          name: 'footprint . number',
+          metric: 'carbon',
+        }),
+        expect.objectContaining({
+          name: 'footprint . number',
+          metric: 'water',
+        }),
+      ])
+      for (const metric of PUBLIC_RULE_METRICS) {
+        expect(logger.warn).toHaveBeenCalledWith(expect.any(Error), {
+          dottedName: 'footprint . missing',
           metric,
         })
       }
