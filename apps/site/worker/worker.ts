@@ -6,7 +6,10 @@ import {
   createGetEngineForModel,
   createWarmUpHotEngines,
 } from '@nosgestesclimat/core/features/simulation-computation/services/engine-registry.service'
-import { createProcessNextPendingComputation } from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
+import {
+  createProcessNextPendingComputation,
+  isReportedComputationFailure,
+} from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
 import { evaluateSimulation } from '@nosgestesclimat/core/features/simulations/services/evaluate-simulation.service'
 import type { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
@@ -34,6 +37,7 @@ const processNextPendingComputation = createProcessNextPendingComputation({
   assessActions,
   evaluateSimulation,
   resolvePublicRules,
+  logger,
 })
 const computePollStats = createComputePollStats({ logger })
 const processNextPendingPollStats = createProcessNextPendingPollStats({
@@ -76,7 +80,13 @@ async function loop(
       const result = await processNext()
 
       if (!result.success) {
-        logger.error(result.error)
+        if (isReportedComputationFailure(result.error)) {
+          // Its service reported it, with what only it knows: a summary line
+          // keeps the failed job countable, without a second issue.
+          logger.warn(result.error)
+        } else {
+          logger.error(result.error)
+        }
         return
       }
 
