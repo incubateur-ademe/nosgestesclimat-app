@@ -1,4 +1,5 @@
 'use server'
+import { eraseContact } from '@/adapters/brevoClient'
 import logger from '@/logger/logger.server'
 import { eraseUser } from '@nosgestesclimat/core/features/users/services/erase-user.service'
 import { forbidden, unauthorized } from 'next/navigation'
@@ -16,6 +17,6 @@ export async function eraseUserAccount() {
       forbidden()
     }
 
-    await eraseUser(session.id)
+    await eraseUser(session.id, { eraseContact })
   })()
 }

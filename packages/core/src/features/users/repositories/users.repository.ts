@@ -62,6 +62,19 @@ export const findUserById = async (
   return row ? mapUser(row) : null
 }
 
+/** The email of a verified account, the only place it is stored. */
+export const findVerifiedEmail = async (
+  userId: string,
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<string | null> => {
+  const row = await session.verifiedUser.findFirst({
+    where: { id: userId },
+    select: { email: true },
+  })
+
+  return row?.email ?? null
+}
+
 /** Stamps the account as active */
 export const recordUserActivity = async (
   { userId }: { userId: string },

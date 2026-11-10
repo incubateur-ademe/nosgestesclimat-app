@@ -13,12 +13,16 @@ const logger = createLogger({
   onCapture: captureException,
 }).child({ scope: 'site.cron.sendRetentionSweep' })
 
-const { sendEmail } = createBrevoClient({
+const { sendEmail, eraseContact } = createBrevoClient({
   apiKey: env.BREVO_API_KEY,
   url: env.BREVO_URL,
 })
 
-const retentionSweep = createRunRetentionSweep({ logger, sendEmail })
+const retentionSweep = createRunRetentionSweep({
+  logger,
+  sendEmail,
+  eraseContact,
+})
 
 const main = async () => {
   try {

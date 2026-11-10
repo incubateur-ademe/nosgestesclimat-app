@@ -1,5 +1,5 @@
 import { toError } from '../../../lib/to-error.ts'
-import type { SendEmail } from '../../emails/types.ts'
+import type { EraseContact, SendEmail } from '../../emails/types.ts'
 import type { Logger } from '../../logger/index.ts'
 import { createRetentionNoticeEmail } from '../emails/retention-emails.ts'
 import { ErasureWithoutFinalNoticeError } from '../errors/erasure-without-final-notice.error.ts'
@@ -21,6 +21,7 @@ import { eraseUser } from './erase-user.service.ts'
 interface RetentionSweepDependencies {
   logger: Logger
   sendEmail: SendEmail
+  eraseContact: EraseContact
 }
 
 type RetentionSweepParams = {
@@ -45,6 +46,7 @@ const stampOf = (
 export const createRunRetentionSweep = ({
   logger,
   sendEmail,
+  eraseContact,
 }: RetentionSweepDependencies) =>
   logger.withSpan(
     'core.service.runRetentionSweep',
@@ -66,7 +68,7 @@ export const createRunRetentionSweep = ({
           if (dryRun) continue
 
           try {
-            await eraseUser(account.userId)
+            await eraseUser(account.userId, { eraseContact })
             erased++
           } catch (error) {
             logger.error(toError(error), {

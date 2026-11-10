@@ -4,8 +4,9 @@ import { faker } from '@faker-js/faker'
 import { describe, it, vi } from 'vitest'
 import { eraseUserAccount } from '../erase-user-account'
 
-const { eraseUserMock } = vi.hoisted(() => ({
+const { eraseUserMock, eraseContactMock } = vi.hoisted(() => ({
   eraseUserMock: vi.fn(),
+  eraseContactMock: vi.fn(),
 }))
 
 describe('eraseUserAccount', () => {
@@ -35,7 +36,9 @@ describe('eraseUserAccount', () => {
     eraseUserMock.mockResolvedValueOnce(undefined)
 
     await expect(eraseUserAccount()).resolves.toBeUndefined()
-    expect(eraseUserMock).toHaveBeenCalledWith(userId)
+    expect(eraseUserMock).toHaveBeenCalledWith(userId, {
+      eraseContact: eraseContactMock,
+    })
   })
   it('should propagate the error in case of a server error', async () => {
     vi.mocked(getUserSession).mockResolvedValue({
@@ -54,6 +57,8 @@ vi.mock('@/services/auth/get-user-session', () => ({
 }))
 
 vi.mock('@/logger/logger.server', () => ({ default: serverLoggerMock }))
+
+vi.mock('@/adapters/brevoClient', () => ({ eraseContact: eraseContactMock }))
 
 vi.mock('next/navigation', () => ({
   unauthorized: () => {
