@@ -347,7 +347,7 @@ model RuleEvaluation {
   rule         Rule       @relation(fields: [ruleId], references: [id], onDelete: Restrict)
   applicable   Boolean?
   valueNumber  Float?
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
 
   @@id([simulationId, ruleId])
   @@index([ruleId, createdAt])
