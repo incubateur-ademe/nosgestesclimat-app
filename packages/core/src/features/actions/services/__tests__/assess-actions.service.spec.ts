@@ -146,7 +146,7 @@ describe('assessActions', () => {
     // Detected, not thrown: no `Error` to report, so the line names the
     // shape and the failure stays an anomaly to watch by rate.
     expect(logger.warn).toHaveBeenCalledWith(
-      `Unexpected nodeValue: ${type}`,
+      `Unexpected nodeValue type: ${type}`,
       expect.objectContaining({ ruleId })
     )
   })

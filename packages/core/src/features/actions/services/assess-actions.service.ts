@@ -68,8 +68,12 @@ export function createAssessActions(deps: AssessActionsDeps) {
           const meta = { actionId: id, ruleId, dottedName }
           if (evaluation.error instanceof UnexpectedNodeValueError) {
             // Detected, not thrown: no stack to report, so the line names the
-            // shape and the failure stays an anomaly to watch by rate.
-            logger.warn(evaluation.error.message, meta)
+            // shape and the failure stays an anomaly to watch by rate. Only
+            // `true` and a string get here: `nodeValue` is their type.
+            logger.warn(
+              `Unexpected nodeValue type: ${evaluation.error.nodeValue}`,
+              meta
+            )
           } else {
             // The action is skipped, never retried: the failure is captured,
             // so a rule the engine chokes on does not vanish with its
