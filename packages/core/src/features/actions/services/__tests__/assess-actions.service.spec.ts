@@ -20,6 +20,7 @@ const assessActions = createAssessActions({ logger })
 const APPLICABLE_RULE_ID = faker.string.uuid()
 const NOT_APPLICABLE_RULE_ID = faker.string.uuid()
 const BOOLEAN_RULE_ID = faker.string.uuid()
+const STRING_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
   'test . applicable': {
@@ -37,6 +38,11 @@ const testRules: RawPublicodes<string> = {
     valeur: 'oui',
     titre: 'Test boolean',
     meta: { id: BOOLEAN_RULE_ID },
+  },
+  'test . string': {
+    valeur: "'texte'",
+    titre: 'Test string',
+    meta: { id: STRING_RULE_ID },
   },
 }
 
@@ -127,18 +133,21 @@ describe('assessActions', () => {
     })
   })
 
-  it('skips actions whose nodeValue is an unexpected type', async () => {
-    await actionFactory.params({ ruleId: BOOLEAN_RULE_ID }).published().create()
+  it.each([
+    { type: 'boolean', ruleId: BOOLEAN_RULE_ID },
+    { type: 'string', ruleId: STRING_RULE_ID },
+  ])('skips actions whose nodeValue is a $type', async ({ type, ruleId }) => {
+    await actionFactory.params({ ruleId }).published().create()
 
     await assess()
 
     expect(await findActionAssessments()).toHaveLength(0)
 
-    // Detected, not thrown: no `Error` to report, so the line names the shape
-    // and the failure stays an anomaly to watch by rate.
+    // Detected, not thrown: no `Error` to report, so the line names the
+    // shape and the failure stays an anomaly to watch by rate.
     expect(logger.warn).toHaveBeenCalledWith(
-      'Unexpected nodeValue: boolean',
-      expect.objectContaining({ ruleId: BOOLEAN_RULE_ID })
+      `Unexpected nodeValue: ${type}`,
+      expect.objectContaining({ ruleId })
     )
   })
 
