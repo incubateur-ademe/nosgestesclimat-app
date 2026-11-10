@@ -6,7 +6,7 @@ import type { VerifiedUser } from '@nosgestesclimat/core/features/users/types/us
 import { START_SIMULATION_PATH, TEST_EMAIL_DOMAIN } from '../constants'
 import { signIn } from '../helpers/session'
 import { UserMailbox } from '../helpers/user-mailbox'
-import { test as base, expect } from '../local/fixtures'
+import { type Page, test as base, expect } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
 
 /**
@@ -175,5 +175,58 @@ test.describe('Simulation deletion', () => {
 
     // The deletion goes through a server action (fetch + revalidatePath); on a
     await expect(deleteButtons).toHaveCount(initialCount - 1)
+  })
+})
+
+test.describe('Account deletion', () => {
+  // Same alias as above: the test runs signed in as a seeded verified user.
+  const test = signedInTest
+
+  /** Opens the settings page, then the deletion dialog it holds. */
+  const openDeletionDialog = async (page: Page) => {
+    await page.goto('/mon-espace/parametres')
+    await page.getByRole('button', { name: 'Supprimer mon compte' }).click()
+
+    const dialog = page.getByRole('dialog', { name: 'Suppression du compte' })
+    await expect(dialog).toBeVisible()
+    return dialog
+  }
+
+  test('can cancel the deletion and keep the account', async ({
+    page,
+    signedInUser,
+  }) => {
+    const dialog = await openDeletionDialog(page)
+
+    await dialog.getByRole('button', { name: 'Annuler' }).click()
+
+    await expect(dialog).toBeHidden()
+    await expect(page.getByTestId('user-email-display')).toHaveText(
+      signedInUser.email
+    )
+    await expect(page.getByTestId('my-space-button')).toBeVisible()
+  })
+
+  test('can delete the account, then is signed out and redirected home', async ({
+    page,
+  }) => {
+    const dialog = await openDeletionDialog(page)
+
+    await dialog
+      .getByRole('button', { name: 'Confirmer la suppression' })
+      .click()
+
+    // The toast outlives the redirect: both pages share the layout holding it.
+    await expect(
+      page
+        .getByRole('region', { name: /^Notifications/ })
+        .getByRole('listitem')
+        .filter({ hasText: 'Votre espace personnel a bien été supprimé' })
+    ).toBeVisible()
+
+    await expect(page).toHaveURL('/')
+    // The header comes from the session: a replayed shell would still show the
+    // logged-in menu.
+    await expect(page.getByTestId('my-space-connexion-link')).toBeVisible()
   })
 })
