@@ -1,5 +1,11 @@
 import type { JsonBodyType } from 'msw'
 import { http, HttpResponse } from 'msw'
+import {
+  deleteContact,
+  findContact,
+  updateContact,
+  upsertContact,
+} from './contacts.ts'
 import { clearEmails, findEmails, storeEmail } from './mailbox.ts'
 
 const json = (data: JsonBodyType, status = 200) =>
@@ -38,15 +44,33 @@ export const handlers = [
     return noContent()
   }),
 
-  // Brevo — contacts. The mock has no contact store: reads 404
-  // (document_not_found), writes succeed. Mirrors the server's
-  // isNotFound/isBadRequest handling.
-  http.post('/v3/contacts', () => json({}, 201)),
-  http.get('/v3/contacts/:email', () =>
-    json({ code: 'document_not_found' }, 404)
-  ),
-  http.delete('/v3/contacts/:email', () =>
-    json({ code: 'document_not_found' }, 404)
+  // Brevo — contacts, stored so that a read sees what the flow wrote before it.
+  http.post('/v3/contacts', async ({ request }) => {
+    upsertContact((await request.json()) as Parameters<typeof upsertContact>[0])
+    return json({}, 201)
+  }),
+  http.get('/v3/contacts/:email', ({ params }) => {
+    const contact = findContact(decodeURIComponent(String(params.email)))
+
+    return contact ? json(contact) : json({ code: 'document_not_found' }, 404)
+  }),
+  http.put('/v3/contacts/:email', async ({ params, request }) => {
+    // The path names the contact; the body carries what changes.
+    const body = (await request.json()) as Omit<
+      Parameters<typeof updateContact>[0],
+      'email'
+    >
+    const updated = updateContact({
+      ...body,
+      email: decodeURIComponent(String(params.email)),
+    })
+
+    return updated ? noContent() : json({ code: 'document_not_found' }, 404)
+  }),
+  http.delete('/v3/contacts/:email', ({ params }) =>
+    deleteContact(decodeURIComponent(String(params.email)))
+      ? noContent()
+      : json({ code: 'document_not_found' }, 404)
   ),
   http.post('/v3/contacts/lists/:id/contacts/remove', () => noContent()),
   http.get('/v3/contacts/lists/:id', () => json({ id: 1, name: 'e2e' })),
