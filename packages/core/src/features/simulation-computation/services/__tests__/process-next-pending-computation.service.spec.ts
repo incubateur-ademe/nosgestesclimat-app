@@ -3,7 +3,10 @@ import { success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
-import { createActionAssessments } from '../../../actions/repositories/action-assessments.repository.ts'
+import {
+  createActionAssessments,
+  findActionAssessmentsBySimulation,
+} from '../../../actions/repositories/action-assessments.repository.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
 import { createResolvePublicRules } from '../../../models/services/resolve-public-rules.service.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
@@ -37,9 +40,6 @@ const fakeActionsAssessing = async (): Promise<AssessActions> => {
       { session }
     )
 }
-
-const findActionAssessments = (simulationId: string) =>
-  prisma.actionAssessment.findMany({ where: { simulationId } })
 
 describe('processNextPendingComputation', () => {
   const engine = createTestEngine({})
@@ -108,7 +108,9 @@ describe('processNextPendingComputation', () => {
     )
     expect(evaluatedKm).toBe(12000)
 
-    expect(await findActionAssessments(simulation.id)).toHaveLength(1)
+    expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
+      1
+    )
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('completed')
     expect(computation!.completedAt).not.toBeNull()
@@ -136,7 +138,9 @@ describe('processNextPendingComputation', () => {
       model: serializeModel(simulation.model),
     })
 
-    expect(await findActionAssessments(simulation.id)).toHaveLength(0)
+    expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
+      0
+    )
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('failed')
   })
@@ -152,7 +156,9 @@ describe('processNextPendingComputation', () => {
     const result = await processNextPendingComputation(getEngine)
 
     expect(result).toEqual(success(true))
-    expect(await findActionAssessments(simulation.id)).toHaveLength(1)
+    expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
+      1
+    )
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('completed')
     expect(computation!.completedAt).not.toBeNull()
