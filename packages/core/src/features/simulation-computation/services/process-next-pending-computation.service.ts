@@ -4,6 +4,8 @@ import { transaction, type Transaction } from '../../../lib/transaction.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
 import type { Rule } from '../../models/types/rule.ts'
+import type { PublicRulesEvaluationError } from '../../simulations/errors/simulations.error.ts'
+import type { Simulation } from '../../simulations/types/simulation.ts'
 import { SimulationComputationFailedError } from '../errors/simulation-computation.error.ts'
 import {
   claimNextPendingSimulationComputation,
@@ -23,14 +25,15 @@ export type AssessActions = (
 
 /**
  * Evaluates the given public rules against the simulation the engine is
- * situated in, writing through `session` only.
+ * situated in, writing through `session` only. Writes nothing and fails when
+ * a rule cannot be evaluated.
  */
 export type EvaluateSimulation = (
   engine: Engine,
   simulationId: string,
   publicRules: Rule[],
   options: { session: Transaction }
-) => Promise<void>
+) => Promise<Result<void, PublicRulesEvaluationError>>
 
 /**
  * Resolves the stored `Rule` of each public rule of the model, for each
@@ -49,17 +52,44 @@ interface ProcessNextPendingComputationDeps {
 }
 
 /**
+ * Marks the simulation's job failed, failing with the `cause`, the failure of
+ * the marking added to it.
+ */
+const failComputation = async (
+  simulation: Simulation,
+  cause: unknown
+): Promise<Result<never, SimulationComputationFailedError>> => {
+  const fail = (failureCause: unknown) =>
+    failure(
+      new SimulationComputationFailedError({
+        simulationId: simulation.id,
+        model: serializeModel(simulation.model),
+        cause: failureCause,
+      })
+    )
+
+  try {
+    await markSimulationComputationFailed(simulation.id)
+  } catch (cleanupError) {
+    return fail(new SuppressedError(cleanupError, cause))
+  }
+  return fail(cause)
+}
+
+/**
  * Entry point called by the worker in a loop.
  *
  * Claims the next pending SimulationComputation job, resolves the engine
  * matching the job's model, then assesses the actions and evaluates the
  * model's public rules against the simulation. Those writes and the
- * `completed` status are committed in one transaction: on error they are
- * rolled back and the job is marked failed. The model's public rules are
- * resolved before that transaction, their `Rule` rows committed on their own.
+ * `completed` status are committed in one transaction: on error, or when a
+ * public rule cannot be evaluated, they are rolled back and the job is marked
+ * failed. The model's public rules are resolved before that transaction, their
+ * `Rule` rows committed on their own.
  *
  * Returns `success(true)` when a job was processed, `success(false)` when the
- * queue was empty, and a failure otherwise.
+ * queue was empty, and a failure otherwise, for the worker to report: its
+ * `cause` lists the public rules that could not be evaluated.
  */
 export function createProcessNextPendingComputation(
   deps: ProcessNextPendingComputationDeps
@@ -77,6 +107,7 @@ export function createProcessNextPendingComputation(
       // `setSituation` is called once — all subsequent evaluate() calls benefit from the publicodes internal cache.
       const { id, model, situation } = job.simulation
       const engine = await getEngine(model)
+      let computed: Result<void, PublicRulesEvaluationError>
       try {
         engine.setSituation(situation)
         // Outside the transaction: the resolver caches the ids of the rules it
@@ -84,10 +115,18 @@ export function createProcessNextPendingComputation(
         const publicRules = await resolvePublicRules(engine, model)
         // A reclaimed job whose earlier attempt crashed left nothing behind:
         // its writes were never committed.
-        await transaction(async (session) => {
+        computed = await transaction(async (session) => {
           await assessActions(engine, id, { session })
-          await evaluateSimulation(engine, id, publicRules, { session })
+          const evaluated = await evaluateSimulation(engine, id, publicRules, {
+            session,
+          })
+          // Rolls the action assessments back with it: a computed simulation
+          // has all of its evaluations.
+          if (!evaluated.success) {
+            return evaluated
+          }
           await markSimulationComputationCompleted(id, { session })
+          return success()
         })
       } finally {
         // The registry keeps engines alive across jobs, so the evaluation
@@ -98,26 +137,12 @@ export function createProcessNextPendingComputation(
         // they survive. Only safe while the worker processes jobs sequentially.
         engine.resetCache()
       }
+      if (!computed.success) {
+        return failComputation(job.simulation, computed.error)
+      }
       return success(true)
     } catch (error) {
-      try {
-        await markSimulationComputationFailed(job.simulation.id)
-      } catch (cleanupError) {
-        return failure(
-          new SimulationComputationFailedError({
-            simulationId: job.simulation.id,
-            model: serializeModel(job.simulation.model),
-            cause: new SuppressedError(cleanupError, error),
-          })
-        )
-      }
-      return failure(
-        new SimulationComputationFailedError({
-          simulationId: job.simulation.id,
-          model: serializeModel(job.simulation.model),
-          cause: error,
-        })
-      )
+      return failComputation(job.simulation, error)
     }
   }
 }

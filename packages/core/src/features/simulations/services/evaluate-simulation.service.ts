@@ -1,15 +1,12 @@
 import type Engine from 'publicodes'
+import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
-import type { Logger } from '../../logger/index.ts'
-import { UnexpectedNodeValueError } from '../../models/errors.ts'
+import type { RuleEvaluationError } from '../../models/errors.ts'
 import { evaluatePublicRule } from '../../models/helpers/evaluate-public-rule.ts'
 import type { Rule } from '../../models/types/rule.ts'
+import { PublicRulesEvaluationError } from '../errors/simulations.error.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
 import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
-
-interface EvaluateSimulationDeps {
-  logger: Logger
-}
 
 /**
  * Evaluates the given public rules of the simulation's model, each for its
@@ -20,46 +17,37 @@ interface EvaluateSimulationDeps {
  * `session`, so the caller commits them together with its own writes, or rolls
  * them all back.
  *
- * A rule whose evaluation throws, or yields a value that cannot be stored, is
- * skipped with a warning: it never fails the simulation, and the model's
- * mistake is found in the logs.
+ * A simulation's evaluations are stored whole or not at all: when a rule's
+ * evaluation throws, or yields a value that cannot be stored, nothing is
+ * written and every such rule is listed in the failure, for the caller to
+ * report.
  */
-export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
-  return async function evaluateSimulation(
-    engine: Engine,
-    simulationId: string,
-    publicRules: Rule[],
-    { session }: { session: Transaction }
-  ): Promise<void> {
-    const logger = deps.logger.child({
-      scope: 'core.service.evaluateSimulation',
-      simulationId,
-    })
+export async function evaluateSimulation(
+  engine: Engine,
+  simulationId: string,
+  publicRules: Rule[],
+  { session }: { session: Transaction }
+): Promise<Result<void, PublicRulesEvaluationError>> {
+  const evaluations: NewRuleEvaluation[] = []
+  const errors: RuleEvaluationError[] = []
 
-    const evaluations: NewRuleEvaluation[] = publicRules.flatMap(
-      ({ id, name, metric }) => {
-        const evaluation = evaluatePublicRule({
-          engine,
-          dottedName: name,
-          metric,
-        })
+  for (const { id, name, metric } of publicRules) {
+    const evaluation = evaluatePublicRule({ engine, dottedName: name, metric })
 
-        if (!evaluation.success) {
-          const meta = { dottedName: name, metric }
-          if (evaluation.error instanceof UnexpectedNodeValueError) {
-            logger.warn(evaluation.error.message, meta)
-          } else {
-            logger.warn(evaluation.error, meta)
-          }
-          return []
-        }
-
-        return [{ simulationId, ruleId: id, ...evaluation.data }]
-      }
-    )
-
-    if (evaluations.length > 0) {
-      await createRuleEvaluations(evaluations, { session })
+    if (evaluation.success) {
+      evaluations.push({ simulationId, ruleId: id, ...evaluation.data })
+    } else {
+      errors.push(evaluation.error)
     }
   }
+
+  if (errors.length > 0) {
+    return failure(new PublicRulesEvaluationError(errors))
+  }
+
+  if (evaluations.length > 0) {
+    await createRuleEvaluations(evaluations, { session })
+  }
+
+  return success()
 }

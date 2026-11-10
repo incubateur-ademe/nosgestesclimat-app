@@ -1,5 +1,6 @@
 import type { InvalidPayloadError } from '../../../lib/errors.ts'
 import { DomainError } from '../../../lib/errors.ts'
+import type { RuleEvaluationError } from '../../models/errors.ts'
 import type { ComputationAlreadyExistsError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
@@ -36,6 +37,28 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
     super('simulation_invalid_model', 'Modèle de simulation invalide')
     this.model = model
     this.simulationId = simulationId
+  }
+}
+
+/**
+ * Public rules of the simulation's model the engine gave no applicability that
+ * can be stored: none of the simulation's evaluations is, so the stored ones
+ * are always complete for the model. Each error names its rule and metric.
+ */
+export class PublicRulesEvaluationError extends DomainError<'public_rules_evaluation_failed'> {
+  public readonly errors: RuleEvaluationError[]
+
+  constructor(errors: RuleEvaluationError[]) {
+    super(
+      'public_rules_evaluation_failed',
+      `Public rules evaluation failed: ${errors
+        .map(
+          ({ dottedName, metric, message }) =>
+            `${dottedName}${metric ? ` (${metric})` : ''}: ${message}`
+        )
+        .join('; ')}`
+    )
+    this.errors = errors
   }
 }
 

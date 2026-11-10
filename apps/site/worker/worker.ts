@@ -7,7 +7,7 @@ import {
   createWarmUpHotEngines,
 } from '@nosgestesclimat/core/features/simulation-computation/services/engine-registry.service'
 import { createProcessNextPendingComputation } from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
-import { createEvaluateSimulation } from '@nosgestesclimat/core/features/simulations/services/evaluate-simulation.service'
+import { evaluateSimulation } from '@nosgestesclimat/core/features/simulations/services/evaluate-simulation.service'
 import type { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
 import type { Result } from '@nosgestesclimat/core/lib/result'
@@ -29,7 +29,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const warmUpHotEngines = createWarmUpHotEngines({ logger })
 const getEngineForModel = createGetEngineForModel({ logger })
 const assessActions = createAssessActions({ logger })
-const evaluateSimulation = createEvaluateSimulation({ logger })
 const resolvePublicRules = createResolvePublicRules()
 const processNextPendingComputation = createProcessNextPendingComputation({
   assessActions,

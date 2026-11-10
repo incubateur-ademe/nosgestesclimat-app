@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { success } from '../../../../lib/result.ts'
+import { failure, success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
@@ -7,9 +7,11 @@ import {
   createActionAssessments,
   findActionAssessmentsBySimulation,
 } from '../../../actions/repositories/action-assessments.repository.ts'
+import { UnexpectedNodeValueError } from '../../../models/errors.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
 import { upsertRules } from '../../../models/repositories/rules.repository.ts'
 import type { Rule } from '../../../models/types/rule.ts'
+import { PublicRulesEvaluationError } from '../../../simulations/errors/simulations.error.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { createRuleEvaluations } from '../../../simulations/repository/rule-evaluations.repository.ts'
 import { SimulationComputationFailedError } from '../../errors/simulation-computation.error.ts'
@@ -52,7 +54,7 @@ describe('processNextPendingComputation', () => {
 
   beforeEach(() => {
     assessActions.mockResolvedValue(undefined)
-    evaluateSimulation.mockResolvedValue(undefined)
+    evaluateSimulation.mockResolvedValue(success())
     resolvePublicRules.mockResolvedValue([])
   })
 
@@ -90,7 +92,7 @@ describe('processNextPendingComputation', () => {
       evaluatedKm = evaluatedEngine.evaluate(
         'transport . voiture . km'
       ).nodeValue
-      return Promise.resolve()
+      return Promise.resolve(success())
     })
 
     const result = await processNextPendingComputation(() => situatedEngine)
@@ -137,6 +139,45 @@ describe('processNextPendingComputation', () => {
     expect(result.error).toMatchObject({
       simulationId: simulation.id,
       model: serializeModel(simulation.model),
+    })
+
+    expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
+      0
+    )
+    const computation = await findSimulationComputation(simulation.id)
+    expect(computation!.status).toBe('failed')
+  })
+
+  // The stored evaluations of a computed simulation are complete for its
+  // model: the job fails rather than completing without some of them.
+  it('rolls the writes back, marks the job failed and fails with the public rules that cannot be evaluated', async () => {
+    const simulation = await simulationFactory
+      .completed()
+      .withPendingComputation()
+      .create()
+
+    assessActions.mockImplementation(await fakeActionsAssessing())
+    const evaluationError = new PublicRulesEvaluationError([
+      new UnexpectedNodeValueError({
+        dottedName: 'footprint . true',
+        metric: 'carbon',
+        nodeValue: 'boolean',
+      }),
+    ])
+    evaluateSimulation.mockResolvedValue(failure(evaluationError))
+
+    const result = await processNextPendingComputation(getEngine)
+
+    // The worker logs the failure as an error, its cause naming the rules.
+    expect(result).toEqual(
+      failure(expect.any(SimulationComputationFailedError))
+    )
+    expect(result).toMatchObject({
+      error: {
+        simulationId: simulation.id,
+        model: serializeModel(simulation.model),
+        cause: evaluationError,
+      },
     })
 
     expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
@@ -218,8 +259,8 @@ describe('processNextPendingComputation', () => {
       evaluateSimulation
         .mockRejectedValueOnce(new Error('Engine evaluation failed'))
         .mockImplementationOnce(
-          (_engine, simulationId, publicRules, { session }) =>
-            createRuleEvaluations(
+          async (_engine, simulationId, publicRules, { session }) => {
+            await createRuleEvaluations(
               publicRules.map((rule) => ({
                 simulationId,
                 ruleId: rule.id,
@@ -228,6 +269,8 @@ describe('processNextPendingComputation', () => {
               })),
               { session }
             )
+            return success()
+          }
         )
 
       const failed = await processNextPendingComputation(getEngine)

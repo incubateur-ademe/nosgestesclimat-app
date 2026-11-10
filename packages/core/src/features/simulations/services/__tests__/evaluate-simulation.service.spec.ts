@@ -1,19 +1,17 @@
 import type Engine from 'publicodes'
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { success, type Result } from '../../../../lib/result.ts'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
-import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
 import { PUBLIC_RULE_METRICS, type Rule } from '../../../models/types/rule.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { PublicRulesEvaluationError } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import type { Simulation } from '../../types/simulation.ts'
-import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
-
-const logger = createTestLogger()
-const evaluateSimulation = createEvaluateSimulation({ logger })
+import { evaluateSimulation } from '../evaluate-simulation.service.ts'
 
 /**
  * Required by any rule evaluated for a metric: the evaluation sets it in its
@@ -31,6 +29,15 @@ const METRIC_RULE: RawPublicodes<string> = {
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
 
+/** The rule evaluation errors a failed evaluation lists. */
+const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
+  if (result.success) {
+    throw new Error('Expected evaluateSimulation to fail')
+  }
+  expect(result.error).toBeInstanceOf(PublicRulesEvaluationError)
+  return result.error.errors
+}
+
 /** Stores each named rule for every metric. */
 const storeRules = (names: string[]): Promise<Rule[]> =>
   Promise.all(
@@ -43,8 +50,9 @@ describe('evaluateSimulation', () => {
   let simulation: Simulation
 
   /**
-   * Evaluates the simulation inside a transaction. PGlite has a single
-   * connection, so a write that bypasses the session would hang the test.
+   * Evaluates the simulation inside a transaction, rolled back when the
+   * evaluation fails. PGlite has a single connection, so a write that bypasses
+   * the session would hang the test.
    */
   const evaluate = (engine: Engine, publicRules: Rule[]) =>
     transaction((session) =>
@@ -253,8 +261,12 @@ describe('evaluateSimulation', () => {
   it('stores a given rule the model does not mark public like a public one', async () => {
     const rules = await storeRules(['footprint . private'])
 
-    await evaluate(engineWith({ 'footprint . private': { valeur: 3 } }), rules)
+    const result = await evaluate(
+      engineWith({ 'footprint . private': { valeur: 3 } }),
+      rules
+    )
 
+    expect(result).toEqual(success())
     expect(await findRuleEvaluations()).toEqual([
       {
         name: 'footprint . private',
@@ -272,20 +284,23 @@ describe('evaluateSimulation', () => {
   })
 
   it('stores nothing when given no public rules', async () => {
-    await evaluate(engineWith({}), [])
+    const result = await evaluate(engineWith({}), [])
 
+    expect(result).toEqual(success())
     expect(await findRuleEvaluations()).toEqual([])
   })
 
-  describe('skipped public rules', () => {
-    it('skips a public rule valued true or a string, warns, and stores the others', async () => {
+  // The stored evaluations of a simulation are complete for its model: one
+  // rule that cannot be evaluated fails them all.
+  describe('fails, storing nothing and listing each public rule that cannot be evaluated', () => {
+    it('when valued true or a string', async () => {
       const rules = await storeRules([
         'footprint . number',
         'footprint . true',
         'footprint . string',
       ])
 
-      await evaluate(
+      const result = await evaluate(
         engineWith({
           'footprint . number': { public: 'oui', valeur: 1 },
           'footprint . true': { public: 'oui', valeur: 'oui' },
@@ -294,32 +309,25 @@ describe('evaluateSimulation', () => {
         rules
       )
 
-      expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'carbon',
-        }),
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'water',
-        }),
-      ])
-
-      // The simulation is named by the logger's bindings.
-      expect(logger.child).toHaveBeenCalledWith(
-        expect.objectContaining({ simulationId: simulation.id })
-      )
-      for (const dottedName of ['footprint . true', 'footprint . string']) {
-        for (const metric of PUBLIC_RULE_METRICS) {
-          expect(logger.warn).toHaveBeenCalledWith(
-            expect.stringContaining('Unexpected nodeValue'),
-            { dottedName, metric }
+      expect(failedRules(result)).toEqual(
+        [
+          { dottedName: 'footprint . true', nodeValue: 'boolean' },
+          { dottedName: 'footprint . string', nodeValue: 'string' },
+        ].flatMap(({ dottedName, nodeValue }) =>
+          PUBLIC_RULE_METRICS.map((metric) =>
+            expect.objectContaining({
+              code: 'unexpected_node_value',
+              dottedName,
+              metric,
+              nodeValue,
+            })
           )
-        }
-      }
+        )
+      )
+      expect(await findRuleEvaluations()).toEqual([])
     })
 
-    it('skips a public rule valued NaN or ±Infinity, warns, and stores the others', async () => {
+    it('when valued NaN or ±Infinity', async () => {
       // No publicodes formula evaluates to a non-finite number.
       const nonFiniteValues: Record<string, number> = {
         'footprint . nan': NaN,
@@ -349,89 +357,72 @@ describe('evaluateSimulation', () => {
           : evaluated
       })
 
-      await evaluate(nonFiniteEngine, rules)
+      const result = await evaluate(nonFiniteEngine, rules)
 
-      expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'carbon',
-        }),
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'water',
-        }),
-      ])
-      for (const [dottedName, nodeValue] of Object.entries(nonFiniteValues)) {
-        for (const metric of PUBLIC_RULE_METRICS) {
-          expect(logger.warn).toHaveBeenCalledWith(
-            `Unexpected nodeValue: ${nodeValue}`,
-            { dottedName, metric }
+      expect(failedRules(result)).toEqual(
+        Object.entries(nonFiniteValues).flatMap(([dottedName, nodeValue]) =>
+          PUBLIC_RULE_METRICS.map((metric) =>
+            expect.objectContaining({
+              code: 'unexpected_node_value',
+              dottedName,
+              metric,
+              nodeValue: String(nodeValue),
+            })
           )
-        }
-      }
+        )
+      )
+      expect(await findRuleEvaluations()).toEqual([])
     })
 
-    it('skips a public rule whose evaluation throws, warns, and stores the others', async () => {
+    it('when its evaluation throws', async () => {
       const rules = await storeRules([
         'footprint . number',
         'footprint . throwing',
       ])
 
-      await expect(
-        evaluate(
-          engineWith({
-            'footprint . number': { public: 'oui', valeur: 1 },
-            'footprint . throwing': { public: 'oui', valeur: '1 / 0' },
-          }),
-          rules
-        )
-      ).resolves.not.toThrow()
+      const result = await evaluate(
+        engineWith({
+          'footprint . number': { public: 'oui', valeur: 1 },
+          'footprint . throwing': { public: 'oui', valeur: '1 / 0' },
+        }),
+        rules
+      )
 
-      expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'carbon',
-        }),
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'water',
-        }),
-      ])
-      for (const metric of PUBLIC_RULE_METRICS) {
-        expect(logger.warn).toHaveBeenCalledWith(expect.any(Error), {
-          dottedName: 'footprint . throwing',
-          metric,
-        })
-      }
+      expect(failedRules(result)).toEqual(
+        PUBLIC_RULE_METRICS.map((metric) =>
+          expect.objectContaining({
+            code: 'rule_evaluation_threw',
+            dottedName: 'footprint . throwing',
+            metric,
+            cause: expect.any(Error),
+          })
+        )
+      )
+      expect(await findRuleEvaluations()).toEqual([])
     })
 
-    it('skips a public rule missing from the model, warns, and stores the others', async () => {
+    it('when missing from the model', async () => {
       const rules = await storeRules([
         'footprint . number',
         'footprint . missing',
       ])
 
-      await evaluate(
+      const result = await evaluate(
         engineWith({ 'footprint . number': { public: 'oui', valeur: 1 } }),
         rules
       )
 
-      expect(await findRuleEvaluations()).toEqual([
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'carbon',
-        }),
-        expect.objectContaining({
-          name: 'footprint . number',
-          metric: 'water',
-        }),
-      ])
-      for (const metric of PUBLIC_RULE_METRICS) {
-        expect(logger.warn).toHaveBeenCalledWith(expect.any(Error), {
-          dottedName: 'footprint . missing',
-          metric,
-        })
-      }
+      expect(failedRules(result)).toEqual(
+        PUBLIC_RULE_METRICS.map((metric) =>
+          expect.objectContaining({
+            code: 'rule_evaluation_threw',
+            dottedName: 'footprint . missing',
+            metric,
+            cause: expect.any(Error),
+          })
+        )
+      )
+      expect(await findRuleEvaluations()).toEqual([])
     })
   })
 })
