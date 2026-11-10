@@ -44,9 +44,9 @@ export default function DeleteAccount() {
               <strong>Cette action est irréversible.</strong>
             </Trans>
           </p>
-          {/* The footer stacks in reverse on mobile: the confirmation goes on
-              top, the way out underneath. */}
-          <DialogFooter className="flex-col">
+          {/* The shared footer stacks in reverse, which shows « Annuler »
+              first: on mobile the confirmation goes on top instead. */}
+          <DialogFooter className="max-sm:flex-col">
             <Button onClick={eraseUserAccount} color="red" loading={isPending}>
               <Trans i18nKey="mon-espace.settings.delete.dialog.confirm">
                 Confirmer la suppression
