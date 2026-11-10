@@ -44,7 +44,9 @@ export default function DeleteAccount() {
               <strong>Cette action est irréversible.</strong>
             </Trans>
           </p>
-          <DialogFooter>
+          {/* The footer stacks in reverse on mobile: the confirmation goes on
+              top, the way out underneath. */}
+          <DialogFooter className="flex-col">
             <Button onClick={eraseUserAccount} color="red" loading={isPending}>
               <Trans i18nKey="mon-espace.settings.delete.dialog.confirm">
                 Confirmer la suppression
