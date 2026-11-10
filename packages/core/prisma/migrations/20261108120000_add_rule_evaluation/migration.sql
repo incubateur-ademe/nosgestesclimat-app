@@ -18,7 +18,7 @@ CREATE TABLE "ngc"."RuleEvaluation" (
     "ruleId" INTEGER NOT NULL,
     "applicable" BOOLEAN,
     "valueNumber" DOUBLE PRECISION,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "RuleEvaluation_pkey" PRIMARY KEY ("simulationId","ruleId")
 );
