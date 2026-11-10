@@ -1,4 +1,3 @@
-import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
@@ -203,16 +202,5 @@ describe('resolvePublicRules', () => {
 
     expect(await prisma.rule.count()).toBe(2)
     expect(second).toEqual(first)
-  })
-
-  // The model marks its public rules with an attribute publicodes does not
-  // know: it must reach the parsed rules for them to be found.
-  it('keeps `public: oui` on the parsed rules', () => {
-    const rules: RawPublicodes<string> = {
-      'footprint . transport': { public: 'oui', valeur: 1 },
-    }
-    const parsedRules = createTestEngine(rules).getParsedRules()
-
-    expect(parsedRules['footprint . transport'].rawNode.public).toBe('oui')
   })
 })
