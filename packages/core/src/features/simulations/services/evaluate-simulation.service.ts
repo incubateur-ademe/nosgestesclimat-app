@@ -1,9 +1,9 @@
 import type Engine from 'publicodes'
-import { toError } from '../../../lib/to-error.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
+import { UnexpectedNodeValueError } from '../../models/errors.ts'
+import { evaluatePublicRule } from '../../models/helpers/evaluate-public-rule.ts'
 import type { Rule } from '../../models/types/rule.ts'
-import { evaluatePublicRule } from '../helpers/evaluate-public-rule.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
 import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
 
@@ -38,20 +38,23 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
 
     const evaluations: NewRuleEvaluation[] = publicRules.flatMap(
       ({ id, name, metric }) => {
-        const meta = { dottedName: name, metric }
-        try {
-          const evaluation = evaluatePublicRule({ engine, name, metric })
+        const evaluation = evaluatePublicRule({
+          engine,
+          dottedName: name,
+          metric,
+        })
 
-          if (!evaluation.success) {
+        if (!evaluation.success) {
+          const meta = { dottedName: name, metric }
+          if (evaluation.error instanceof UnexpectedNodeValueError) {
             logger.warn(evaluation.error.message, meta)
-            return []
+          } else {
+            logger.warn(evaluation.error, meta)
           }
-
-          return [{ simulationId, ruleId: id, ...evaluation.data }]
-        } catch (error) {
-          logger.warn(toError(error), meta)
           return []
         }
+
+        return [{ simulationId, ruleId: id, ...evaluation.data }]
       }
     )
 

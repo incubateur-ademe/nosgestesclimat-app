@@ -1,8 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import { failure, success } from '../../../lib/result.ts'
-import { UnexpectedNodeValueError } from '../../models/errors.ts'
-import type { EngineEvaluation } from '../../models/types/engine-evaluation.ts'
+import type { RuleApplicability } from '../../models/types/engine-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -56,28 +54,20 @@ export const toNewActionAssessment = (
   return { simulationId, actionId, applicable: undefined, impact: undefined }
 }
 
-export const evaluateAction = ({
-  engine,
-  dottedName,
-}: {
-  engine: Engine
-  dottedName: DottedName
-}): EngineEvaluation<ActionEvaluation> => {
-  const nodeValue = engine.evaluate(dottedName).nodeValue
-
-  if (nodeValue === undefined) {
-    return success({ applicable: undefined, impact: undefined })
+/**
+ * Reads the applicability of an action's rule as the action's evaluation: its
+ * value is the action's impact, an impact of 0 being no impact.
+ */
+export const toActionEvaluation = (
+  applicability: RuleApplicability
+): ActionEvaluation => {
+  if (applicability.applicable === true) {
+    return { applicable: true, impact: applicability.value || undefined }
   }
 
-  if (typeof nodeValue === 'number') {
-    return success({ applicable: true, impact: nodeValue || undefined })
+  if (applicability.applicable === false) {
+    return { applicable: false, impact: undefined }
   }
 
-  if (nodeValue === null || nodeValue === false) {
-    return success({ applicable: false, impact: undefined })
-  }
-
-  return failure(
-    new UnexpectedNodeValueError({ dottedName, nodeValue: typeof nodeValue })
-  )
+  return { applicable: undefined, impact: undefined }
 }

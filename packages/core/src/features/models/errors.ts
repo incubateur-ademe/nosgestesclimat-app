@@ -63,3 +63,27 @@ export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value
     this.nodeValue = nodeValue
   }
 }
+
+/**
+ * The engine threw while evaluating a rule: a rule missing from the model, or
+ * a formula it cannot evaluate. The thrown value is the `cause`.
+ */
+export class RuleEvaluationThrewError extends DomainError<'rule_evaluation_threw'> {
+  public readonly dottedName: string
+  public readonly metric?: Metric
+
+  constructor(params: { dottedName: string; metric?: Metric; cause: unknown }) {
+    const { dottedName, metric, cause } = params
+    super('rule_evaluation_threw', 'Rule evaluation threw')
+    this.dottedName = dottedName
+    if (metric !== undefined) {
+      this.metric = metric
+    }
+    this.cause = cause
+  }
+}
+
+/** Why the engine gave a rule no applicability that can be stored. */
+export type RuleEvaluationError =
+  | UnexpectedNodeValueError
+  | RuleEvaluationThrewError

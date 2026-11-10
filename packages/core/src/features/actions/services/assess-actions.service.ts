@@ -1,11 +1,12 @@
 import type Engine from 'publicodes'
-import { toError } from '../../../lib/to-error.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
+import { UnexpectedNodeValueError } from '../../models/errors.ts'
+import { evaluatePublicRule } from '../../models/helpers/evaluate-public-rule.ts'
 import { ActionAssessmentPublicodesError } from '../errors/action-assessment.error.ts'
 import {
   buildRuleIdToDottedName,
-  evaluateAction,
+  toActionEvaluation,
   toNewActionAssessment,
 } from '../helpers/action-assessment.ts'
 import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
@@ -61,30 +62,29 @@ export function createAssessActions(deps: AssessActionsDeps) {
           return []
         }
 
-        try {
-          const evaluation = evaluateAction({ engine, dottedName })
+        const evaluation = evaluatePublicRule({ engine, dottedName })
 
-          if (!evaluation.success) {
-            logger.warn(evaluation.error.message, {
-              actionId: id,
-              ruleId,
-              dottedName,
-            })
-            return []
+        if (!evaluation.success) {
+          const meta = { actionId: id, ruleId, dottedName }
+          if (evaluation.error instanceof UnexpectedNodeValueError) {
+            // Detected, not thrown: no stack to report, so the line names the
+            // shape and the failure stays an anomaly to watch by rate.
+            logger.warn(evaluation.error.message, meta)
+          } else {
+            // The action is skipped, never retried: the failure is captured,
+            // so a rule the engine chokes on does not vanish with its
+            // assessment.
+            logger.error(evaluation.error, meta)
           }
-
-          return [
-            toNewActionAssessment(
-              { simulationId, actionId: id },
-              evaluation.data
-            ),
-          ]
-        } catch (error) {
-          // The action is skipped, never retried: the failure is captured, so
-          // a rule the engine chokes on does not vanish with its assessment.
-          logger.error(toError(error), { actionId: id, ruleId, dottedName })
           return []
         }
+
+        return [
+          toNewActionAssessment(
+            { simulationId, actionId: id },
+            toActionEvaluation(evaluation.data)
+          ),
+        ]
       }
     )
 
