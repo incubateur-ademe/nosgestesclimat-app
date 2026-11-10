@@ -64,8 +64,8 @@ export function createAssessActions(deps: AssessActionsDeps) {
         try {
           const evaluation = evaluateAction({ engine, dottedName })
 
-          if (evaluation.outcome === 'unexpected_node_value') {
-            logger.warn(`Unexpected nodeValue: ${evaluation.nodeValue}`, {
+          if (!evaluation.success) {
+            logger.warn(evaluation.error.message, {
               actionId: id,
               ruleId,
               dottedName,
@@ -76,7 +76,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
           return [
             toNewActionAssessment(
               { simulationId, actionId: id },
-              evaluation.applicability
+              evaluation.data
             ),
           ]
         } catch (error) {

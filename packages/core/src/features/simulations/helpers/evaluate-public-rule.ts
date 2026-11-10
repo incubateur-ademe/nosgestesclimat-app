@@ -1,4 +1,6 @@
 import type Engine from 'publicodes'
+import { failure, success } from '../../../lib/result.ts'
+import { UnexpectedNodeValueError } from '../../models/errors.ts'
 import type { EngineEvaluation } from '../../models/types/engine-evaluation.ts'
 import type { Metric } from '../../models/types/rule.ts'
 import type { RuleApplicability } from '../types/rule-evaluation.ts'
@@ -32,24 +34,24 @@ export const evaluatePublicRule = ({
   })
 
   if (typeof nodeValue === 'number' && Number.isFinite(nodeValue)) {
-    return {
-      outcome: 'evaluated',
-      applicability: { applicable: true, value: nodeValue },
-    }
+    return success({ applicable: true, value: nodeValue })
   }
 
   if (nodeValue === null || nodeValue === false) {
-    return { outcome: 'evaluated', applicability: { applicable: false } }
+    return success({ applicable: false })
   }
 
   if (nodeValue === undefined) {
-    return { outcome: 'evaluated', applicability: { applicable: undefined } }
+    return success({ applicable: undefined })
   }
 
-  return {
-    outcome: 'unexpected_node_value',
-    // A number is named by its value, NaN or ±Infinity: its type says nothing.
-    nodeValue:
-      typeof nodeValue === 'number' ? String(nodeValue) : typeof nodeValue,
-  }
+  return failure(
+    new UnexpectedNodeValueError({
+      dottedName: name,
+      metric,
+      // A number is named by its value, NaN or ±Infinity: its type says nothing.
+      nodeValue:
+        typeof nodeValue === 'number' ? String(nodeValue) : typeof nodeValue,
+    })
+  )
 }

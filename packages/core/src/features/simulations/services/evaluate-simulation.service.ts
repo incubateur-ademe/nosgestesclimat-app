@@ -42,12 +42,12 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
         try {
           const evaluation = evaluatePublicRule({ engine, name, metric })
 
-          if (evaluation.outcome === 'unexpected_node_value') {
-            logger.warn(`Unexpected nodeValue: ${evaluation.nodeValue}`, meta)
+          if (!evaluation.success) {
+            logger.warn(evaluation.error.message, meta)
             return []
           }
 
-          return [{ simulationId, ruleId: id, ...evaluation.applicability }]
+          return [{ simulationId, ruleId: id, ...evaluation.data }]
         } catch (error) {
           logger.warn(toError(error), meta)
           return []

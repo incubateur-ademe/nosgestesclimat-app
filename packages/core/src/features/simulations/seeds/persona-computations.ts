@@ -75,10 +75,9 @@ const computeActionAssessments = (
         ruleId,
         // A rule whose value cannot be read is left unassessed rather than
         // mis-assessed: "applicability unknown" is the shape that says so.
-        applicability:
-          evaluation.outcome === 'evaluated'
-            ? evaluation.applicability
-            : ({ applicable: undefined, impact: undefined } as const),
+        applicability: evaluation.success
+          ? evaluation.data
+          : ({ applicable: undefined, impact: undefined } as const),
       }
     }
   )

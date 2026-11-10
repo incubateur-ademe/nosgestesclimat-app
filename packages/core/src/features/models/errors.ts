@@ -1,4 +1,5 @@
 import { DomainError } from '../../lib/errors.ts'
+import type { Metric } from './types/rule.ts'
 
 export class ModelFileFetchFailedError extends DomainError<'model_file_fetch_failed'> {
   public readonly url: string
@@ -35,5 +36,30 @@ export class OutdatedModelVersionError extends DomainError<'outdated_model_versi
     super('outdated_model_version', message)
     this.publishedTag = publishedTag
     this.currentModelVersion = currentModelVersion
+  }
+}
+
+/**
+ * The engine evaluated a rule to a value that cannot be stored: `true`, a
+ * string, NaN or ±Infinity. `nodeValue` names it: its type, or its value for
+ * NaN and ±Infinity.
+ */
+export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value'> {
+  public readonly dottedName: string
+  public readonly metric?: Metric
+  public readonly nodeValue: string
+
+  constructor(params: {
+    dottedName: string
+    metric?: Metric
+    nodeValue: string
+  }) {
+    const { dottedName, metric, nodeValue } = params
+    super('unexpected_node_value', `Unexpected nodeValue: ${nodeValue}`)
+    this.dottedName = dottedName
+    if (metric !== undefined) {
+      this.metric = metric
+    }
+    this.nodeValue = nodeValue
   }
 }

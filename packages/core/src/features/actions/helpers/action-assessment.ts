@@ -1,5 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
+import { failure, success } from '../../../lib/result.ts'
+import { UnexpectedNodeValueError } from '../../models/errors.ts'
 import type { EngineEvaluation } from '../../models/types/engine-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
@@ -64,25 +66,18 @@ export const evaluateAction = ({
   const nodeValue = engine.evaluate(dottedName).nodeValue
 
   if (nodeValue === undefined) {
-    return {
-      outcome: 'evaluated',
-      applicability: { applicable: undefined, impact: undefined },
-    }
+    return success({ applicable: undefined, impact: undefined })
   }
 
   if (typeof nodeValue === 'number') {
-    return {
-      outcome: 'evaluated',
-      applicability: { applicable: true, impact: nodeValue || undefined },
-    }
+    return success({ applicable: true, impact: nodeValue || undefined })
   }
 
   if (nodeValue === null || nodeValue === false) {
-    return {
-      outcome: 'evaluated',
-      applicability: { applicable: false, impact: undefined },
-    }
+    return success({ applicable: false, impact: undefined })
   }
 
-  return { outcome: 'unexpected_node_value', nodeValue: typeof nodeValue }
+  return failure(
+    new UnexpectedNodeValueError({ dottedName, nodeValue: typeof nodeValue })
+  )
 }
