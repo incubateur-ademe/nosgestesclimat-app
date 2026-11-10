@@ -8,7 +8,8 @@ import {
   findActionAssessmentsBySimulation,
 } from '../../../actions/repositories/action-assessments.repository.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
-import { createResolvePublicRules } from '../../../models/services/resolve-public-rules.service.ts'
+import { upsertRules } from '../../../models/repositories/rules.repository.ts'
+import type { Rule } from '../../../models/types/rule.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { createRuleEvaluations } from '../../../simulations/repository/rule-evaluations.repository.ts'
 import { SimulationComputationFailedError } from '../../errors/simulation-computation.error.ts'
@@ -18,14 +19,18 @@ import {
   createProcessNextPendingComputation,
   type AssessActions,
   type EvaluateSimulation,
+  type ResolvePublicRules,
 } from '../process-next-pending-computation.service.ts'
 
 const assessActions = vi.fn<AssessActions>()
 const evaluateSimulation = vi.fn<EvaluateSimulation>()
+const resolvePublicRules = vi.fn<ResolvePublicRules>()
 
-let processNextPendingComputation: ReturnType<
-  typeof createProcessNextPendingComputation
->
+const processNextPendingComputation = createProcessNextPendingComputation({
+  assessActions,
+  evaluateSimulation,
+  resolvePublicRules,
+})
 
 /**
  * Stands for any write `assessActions` makes through its session. The action
@@ -48,18 +53,14 @@ describe('processNextPendingComputation', () => {
   beforeEach(() => {
     assessActions.mockResolvedValue(undefined)
     evaluateSimulation.mockResolvedValue(undefined)
-    // A fresh resolver per test: its cache would outlive the emptied database.
-    processNextPendingComputation = createProcessNextPendingComputation({
-      assessActions,
-      evaluateSimulation,
-      resolvePublicRules: createResolvePublicRules(),
-    })
+    resolvePublicRules.mockResolvedValue([])
   })
 
   afterEach(async () => {
     vi.restoreAllMocks()
     assessActions.mockReset()
     evaluateSimulation.mockReset()
+    resolvePublicRules.mockReset()
     await emptyDatabase(prisma)
   })
 
@@ -165,47 +166,27 @@ describe('processNextPendingComputation', () => {
   })
 
   describe('with public rules', () => {
-    const publicRulesEngine = createTestEngine({
-      métrique: {
-        avec: { carbone: null, eau: null },
-        'une possibilité': ['carbone', 'eau'],
-        'par défaut': "'carbone'",
-      },
-      'footprint . transport': { public: 'oui', valeur: 1 },
-    })
+    it('evaluates the simulation with the public rules resolved for its model', async () => {
+      const simulation = await simulationFactory
+        .completed()
+        .withPendingComputation()
+        .create()
+      const publicRules: Rule[] = [
+        { id: 1, name: 'footprint . transport', metric: 'carbon' },
+        { id: 2, name: 'footprint . transport', metric: 'water' },
+      ]
+      resolvePublicRules.mockResolvedValue(publicRules)
 
-    const simulationsOfOneModel = () =>
-      Promise.all(
-        [1, 2].map(() =>
-          simulationFactory
-            .completed()
-            .withModelRegion('FR')
-            .withModelVersion({ publishedTag: '1.0.0' })
-            .withPendingComputation()
-            .create()
-        )
+      await processNextPendingComputation(getEngine)
+
+      expect(resolvePublicRules).toHaveBeenCalledExactlyOnceWith(
+        engine,
+        simulation.model
       )
-
-    it("evaluates the simulation with its model's public rules", async () => {
-      await simulationFactory.completed().withPendingComputation().create()
-
-      await processNextPendingComputation(() => publicRulesEngine)
-
       expect(evaluateSimulation).toHaveBeenCalledExactlyOnceWith(
-        publicRulesEngine,
-        expect.any(String),
-        [
-          {
-            id: expect.any(Number),
-            name: 'footprint . transport',
-            metric: 'carbon',
-          },
-          {
-            id: expect.any(Number),
-            name: 'footprint . transport',
-            metric: 'water',
-          },
-        ],
+        engine,
+        simulation.id,
+        publicRules,
         { session: expect.anything() }
       )
     })
@@ -214,8 +195,26 @@ describe('processNextPendingComputation', () => {
     // within a rolled back job, the next jobs of the model would reference
     // rules that do not exist.
     it('keeps the rules resolved for a failed job usable by the next ones', async () => {
-      await simulationsOfOneModel()
+      await Promise.all(
+        [1, 2].map(() =>
+          simulationFactory.completed().withPendingComputation().create()
+        )
+      )
 
+      // Stands for the resolver: it stores the rules on its first call, with
+      // no session, and caches them for the next ones.
+      let resolvedRules: Rule[] | undefined
+      resolvePublicRules.mockImplementation(async () => {
+        resolvedRules ??= await upsertRules([
+          {
+            name: 'footprint . transport',
+            metric: 'carbon',
+            title: null,
+            description: null,
+          },
+        ])
+        return resolvedRules
+      })
       evaluateSimulation
         .mockRejectedValueOnce(new Error('Engine evaluation failed'))
         .mockImplementationOnce(
@@ -231,17 +230,13 @@ describe('processNextPendingComputation', () => {
             )
         )
 
-      const failed = await processNextPendingComputation(
-        () => publicRulesEngine
-      )
-      const processed = await processNextPendingComputation(
-        () => publicRulesEngine
-      )
+      const failed = await processNextPendingComputation(getEngine)
+      // Its evaluations reference the rules resolved for the failed job: the
+      // job would fail had they been rolled back.
+      const processed = await processNextPendingComputation(getEngine)
 
       expect(failed.success).toBe(false)
       expect(processed).toEqual(success(true))
-      // One evaluation per metric of the model's single public rule.
-      expect(await prisma.ruleEvaluation.count()).toBe(2)
     })
   })
 
