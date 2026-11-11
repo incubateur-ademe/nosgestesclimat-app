@@ -6,11 +6,8 @@ import {
   createGetEngineForModel,
   createWarmUpHotEngines,
 } from '@nosgestesclimat/core/features/simulation-computation/services/engine-registry.service'
-import {
-  createProcessNextPendingComputation,
-  isReportedComputationFailure,
-} from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
-import { evaluateSimulation } from '@nosgestesclimat/core/features/simulations/services/evaluate-simulation.service'
+import { createProcessNextPendingComputation } from '@nosgestesclimat/core/features/simulation-computation/services/process-next-pending-computation.service'
+import { createEvaluateSimulation } from '@nosgestesclimat/core/features/simulations/services/evaluate-simulation.service'
 import type { DomainError } from '@nosgestesclimat/core/lib/errors'
 import { memoryAttributes } from '@nosgestesclimat/core/lib/memory'
 import type { Result } from '@nosgestesclimat/core/lib/result'
@@ -33,11 +30,11 @@ const warmUpHotEngines = createWarmUpHotEngines({ logger })
 const getEngineForModel = createGetEngineForModel({ logger })
 const assessActions = createAssessActions({ logger })
 const resolvePublicRules = createResolvePublicRules()
+const evaluateSimulation = createEvaluateSimulation({ logger })
 const processNextPendingComputation = createProcessNextPendingComputation({
   assessActions,
   evaluateSimulation,
   resolvePublicRules,
-  logger,
 })
 const computePollStats = createComputePollStats({ logger })
 const processNextPendingPollStats = createProcessNextPendingPollStats({
@@ -80,13 +77,7 @@ async function loop(
       const result = await processNext()
 
       if (!result.success) {
-        if (isReportedComputationFailure(result.error)) {
-          // Its service reported it, with what only it knows: a summary line
-          // keeps the failed job countable, without a second issue.
-          logger.warn(result.error)
-        } else {
-          logger.error(result.error)
-        }
+        logger.error(result.error)
         return
       }
 

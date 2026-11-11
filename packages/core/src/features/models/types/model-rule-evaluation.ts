@@ -6,7 +6,7 @@ import type { RuleEvaluationError } from '../errors.ts'
  * rule is applicable; `applicable: undefined` means the rule is not defined
  * for the situation.
  */
-export type RuleApplicability =
+export type ModelRuleEvaluation =
   | { applicable: true; value: number }
   | { applicable: false }
   | { applicable: undefined }
@@ -14,4 +14,7 @@ export type RuleApplicability =
 /**
  * How the engine evaluated a rule: its applicability, or why it has none.
  */
-export type EngineEvaluation = Result<RuleApplicability, RuleEvaluationError>
+export type ModelRuleEvaluationResult = Result<
+  ModelRuleEvaluation,
+  RuleEvaluationError
+>

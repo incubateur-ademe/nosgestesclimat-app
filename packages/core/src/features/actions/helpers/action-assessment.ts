@@ -1,6 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import type { RuleApplicability } from '../../models/types/engine-evaluation.ts'
+import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -56,14 +56,19 @@ export const toNewActionAssessment = (
 
 /**
  * Reads the applicability of an action's rule as the action's evaluation: its
- * value is the action's impact, whatever number it is, an impact of 0 or NaN
- * being no impact.
+ * value is the action's impact when it is a finite number other than 0, an
+ * impact of 0 being no impact, or an issue with the model. NaN and ±Infinity
+ * are an issue with the model: the action stays applicable, without impact.
  */
 export const toActionEvaluation = (
-  applicability: RuleApplicability
+  applicability: ModelRuleEvaluation
 ): ActionEvaluation => {
   if (applicability.applicable === true) {
-    return { applicable: true, impact: applicability.value || undefined }
+    const { value } = applicability
+    return {
+      applicable: true,
+      impact: Number.isFinite(value) && value !== 0 ? value : undefined,
+    }
   }
 
   if (applicability.applicable === false) {

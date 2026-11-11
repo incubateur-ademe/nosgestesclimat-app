@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { toActionEvaluation } from '../action-assessment.ts'
 
 describe('toActionEvaluation', () => {
-  it.each([42, -3.5, Infinity, -Infinity])(
+  it.each([42, -3.5])(
     'reads an applicable rule valued %s as an action of that impact',
     (value) => {
       expect(toActionEvaluation({ applicable: true, value })).toEqual({
@@ -12,7 +12,7 @@ describe('toActionEvaluation', () => {
     }
   )
 
-  it.each([0, NaN])(
+  it.each([0, NaN, Infinity, -Infinity])(
     'reads an applicable rule valued %s as an action without impact',
     (value) => {
       expect(toActionEvaluation({ applicable: true, value })).toEqual({

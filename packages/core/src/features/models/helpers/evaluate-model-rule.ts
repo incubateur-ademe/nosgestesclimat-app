@@ -4,7 +4,7 @@ import {
   RuleEvaluationThrewError,
   UnexpectedNodeValueError,
 } from '../errors.ts'
-import type { EngineEvaluation } from '../types/engine-evaluation.ts'
+import type { ModelRuleEvaluationResult } from '../types/model-rule-evaluation.ts'
 import type { Metric } from '../types/rule.ts'
 
 /** The value the model's `métrique` rule takes for each metric. */
@@ -25,7 +25,7 @@ const MODEL_METRIC = {
  * `RuleEvaluationThrewError`. What the applicability means, and which values
  * it may take, is left to the caller: see `requireFiniteValue`.
  */
-export const evaluatePublicRule = ({
+export const evaluateModelRule = ({
   engine,
   dottedName,
   metric,
@@ -33,7 +33,7 @@ export const evaluatePublicRule = ({
   engine: Engine
   dottedName: string
   metric?: Metric
-}): EngineEvaluation => {
+}): ModelRuleEvaluationResult => {
   let nodeValue: unknown
 
   try {
@@ -77,9 +77,9 @@ export const evaluatePublicRule = ({
  * value the engine gave.
  */
 export const requireFiniteValue = (
-  evaluation: EngineEvaluation,
+  evaluation: ModelRuleEvaluationResult,
   { dottedName, metric }: { dottedName: string; metric?: Metric }
-): EngineEvaluation => {
+): ModelRuleEvaluationResult => {
   if (
     !evaluation.success ||
     evaluation.data.applicable !== true ||

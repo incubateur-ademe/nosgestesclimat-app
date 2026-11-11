@@ -2,17 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { failure, success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
-import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ActionAssessmentPublicodesError } from '../../../actions/errors/action-assessment.error.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import {
   createActionAssessments,
   findActionAssessmentsBySimulation,
 } from '../../../actions/repositories/action-assessments.repository.ts'
-import {
-  RuleEvaluationThrewError,
-  UnexpectedNodeValueError,
-} from '../../../models/errors.ts'
 import { serializeModel } from '../../../models/helpers/model-versions.ts'
 import { upsertRules } from '../../../models/repositories/rules.repository.ts'
 import type { Rule } from '../../../models/types/rule.ts'
@@ -24,7 +19,6 @@ import { createTestEngine } from '../../factories/engine.factory.ts'
 import { findSimulationComputation } from '../../repositories/simulation-computations.repository.ts'
 import {
   createProcessNextPendingComputation,
-  isReportedComputationFailure,
   type AssessActions,
   type EvaluateSimulation,
   type ResolvePublicRules,
@@ -33,13 +27,11 @@ import {
 const assessActions = vi.fn<AssessActions>()
 const evaluateSimulation = vi.fn<EvaluateSimulation>()
 const resolvePublicRules = vi.fn<ResolvePublicRules>()
-const logger = createTestLogger()
 
 const processNextPendingComputation = createProcessNextPendingComputation({
   assessActions,
   evaluateSimulation,
   resolvePublicRules,
-  logger,
 })
 
 /**
@@ -153,10 +145,6 @@ describe('processNextPendingComputation', () => {
         cause: assessmentError,
       },
     })
-    if (result.success) {
-      throw new Error('Expected processNextPendingComputation to fail')
-    }
-    expect(isReportedComputationFailure(result.error)).toBe(false)
     expect(evaluateSimulation).not.toHaveBeenCalled()
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('failed')
@@ -183,8 +171,6 @@ describe('processNextPendingComputation', () => {
       simulationId: simulation.id,
       model: serializeModel(simulation.model),
     })
-    expect(isReportedComputationFailure(result.error)).toBe(false)
-    expect(logger.error).not.toHaveBeenCalled()
 
     expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
       1
@@ -203,18 +189,12 @@ describe('processNextPendingComputation', () => {
       .create()
 
     assessActions.mockImplementation(await fakeActionsAssessing())
-    const evaluationError = new PublicRulesEvaluationError([
-      new UnexpectedNodeValueError({
-        dottedName: 'footprint . true',
-        metric: 'carbon',
-        nodeValue: 'boolean',
-      }),
-    ])
+    const evaluationError = new PublicRulesEvaluationError(1)
     evaluateSimulation.mockResolvedValue(failure(evaluationError))
 
     const result = await processNextPendingComputation(getEngine)
 
-    // The cause names the rules.
+    // The cause counts the rules, each reported by `evaluateSimulation`.
     expect(result).toEqual(
       failure(expect.any(SimulationComputationFailedError))
     )
@@ -231,61 +211,6 @@ describe('processNextPendingComputation', () => {
     )
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('failed')
-  })
-
-  // Only this service knows the job a rule failed: it reports each rule, and
-  // the worker does not report the failure a second time.
-  it('reports each public rule that cannot be evaluated with its job', async () => {
-    const simulation = await simulationFactory
-      .completed()
-      .withPendingComputation()
-      .create()
-    const unexpected = new UnexpectedNodeValueError({
-      dottedName: 'footprint . true',
-      metric: 'carbon',
-      nodeValue: 'boolean',
-    })
-    const threw = new RuleEvaluationThrewError({
-      dottedName: 'footprint . missing',
-      metric: 'water',
-      cause: new Error('Rule not found'),
-    })
-    evaluateSimulation.mockResolvedValue(
-      failure(new PublicRulesEvaluationError([unexpected, threw]))
-    )
-
-    const result = await processNextPendingComputation(getEngine)
-
-    expect(logger.child).toHaveBeenCalledWith({
-      scope: 'core.service.processNextPendingComputation',
-      simulationId: simulation.id,
-      model: serializeModel(simulation.model),
-    })
-    // The error carries what names the rule: its fields become the line's
-    // attributes, its `code` the `error.type`, its `cause` a chained exception.
-    expect(logger.error).toHaveBeenCalledTimes(2)
-    expect(logger.error).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        code: 'unexpected_node_value',
-        dottedName: 'footprint . true',
-        metric: 'carbon',
-        nodeValue: 'boolean',
-      })
-    )
-    expect(logger.error).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({
-        code: 'rule_evaluation_threw',
-        dottedName: 'footprint . missing',
-        metric: 'water',
-        cause: new Error('Rule not found'),
-      })
-    )
-    if (result.success) {
-      throw new Error('Expected processNextPendingComputation to fail')
-    }
-    expect(isReportedComputationFailure(result.error)).toBe(true)
   })
 
   it('reprocesses a reclaimed stale job without a duplicate-key failure', async () => {

@@ -153,13 +153,9 @@ describe('assessActions', () => {
     )
   })
 
-  it.each([
-    { nodeValue: NaN, impact: undefined },
-    { nodeValue: Infinity, impact: Infinity },
-    { nodeValue: -Infinity, impact: -Infinity },
-  ])(
-    'stores an action whose nodeValue is $nodeValue as applicable, of impact $impact',
-    async ({ nodeValue, impact }) => {
+  it.each([NaN, Infinity, -Infinity])(
+    'stores an action whose nodeValue is %s as applicable, without impact',
+    async (nodeValue) => {
       const action = await actionFactory
         .params({ ruleId: APPLICABLE_RULE_ID })
         .published()
@@ -177,7 +173,7 @@ describe('assessActions', () => {
         expect.objectContaining({
           actionId: action.id,
           applicable: true,
-          impact,
+          impact: undefined,
         }),
       ])
       const reported = [

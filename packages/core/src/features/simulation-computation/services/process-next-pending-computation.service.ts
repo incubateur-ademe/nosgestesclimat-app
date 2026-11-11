@@ -2,11 +2,10 @@ import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
 import { transaction, type Transaction } from '../../../lib/transaction.ts'
 import type { ActionAssessmentPublicodesError } from '../../actions/errors/action-assessment.error.ts'
-import type { Logger } from '../../logger/index.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
 import type { Rule } from '../../models/types/rule.ts'
-import { PublicRulesEvaluationError } from '../../simulations/errors/simulations.error.ts'
+import type { PublicRulesEvaluationError } from '../../simulations/errors/simulations.error.ts'
 import type { Simulation } from '../../simulations/types/simulation.ts'
 import { SimulationComputationFailedError } from '../errors/simulation-computation.error.ts'
 import {
@@ -31,7 +30,7 @@ export type AssessActions = (
 /**
  * Evaluates the given public rules against the simulation the engine is
  * situated in, writing through `session` only. Writes nothing and fails when
- * a rule cannot be evaluated.
+ * a rule cannot be evaluated, having reported each such rule.
  */
 export type EvaluateSimulation = (
   engine: Engine,
@@ -54,17 +53,7 @@ interface ProcessNextPendingComputationDeps {
   assessActions: AssessActions
   evaluateSimulation: EvaluateSimulation
   resolvePublicRules: ResolvePublicRules
-  logger: Logger
 }
-
-/**
- * Whether `processNextPendingComputation` already reported the failure, one
- * line per public rule that could not be evaluated: the worker must not report
- * it a second time.
- */
-export const isReportedComputationFailure = (error: Error): boolean =>
-  error instanceof SimulationComputationFailedError &&
-  error.cause instanceof PublicRulesEvaluationError
 
 /**
  * Marks the simulation's job failed, failing with the `cause`, the failure of
@@ -99,16 +88,16 @@ const failComputation = async (
  * model's public rules against the simulation. The action assessments are
  * committed on their own, and kept whatever happens next: a retried job does
  * not assess them again. When the actions cannot be assessed, the job is
- * marked failed without evaluating the simulation. The rule evaluations and the `completed` status are
- * then committed in one transaction: on error, or when a public rule cannot be
- * evaluated, they are rolled back and the job is marked failed. The model's
- * public rules are resolved before that transaction, their `Rule` rows
- * committed on their own.
+ * marked failed without evaluating the simulation. The rule evaluations and
+ * the `completed` status are then committed in one transaction: on error, or
+ * when a public rule cannot be evaluated, they are rolled back and the job is
+ * marked failed. The model's public rules are resolved before that
+ * transaction, their `Rule` rows committed on their own.
  *
  * Returns `success(true)` when a job was processed, `success(false)` when the
- * queue was empty, and a failure otherwise, for the worker to report. A public
- * rule that cannot be evaluated is reported here, one error per rule, with the
- * job it failed: the worker can tell by `isReportedComputationFailure`.
+ * queue was empty, and a failure otherwise, for the worker to report: nothing
+ * is reported here. The public rules that cannot be evaluated are reported by
+ * `evaluateSimulation`, and only counted by the failure's `cause`.
  */
 export function createProcessNextPendingComputation(
   deps: ProcessNextPendingComputationDeps
@@ -125,12 +114,6 @@ export function createProcessNextPendingComputation(
       // Computes all data derived from a simulation in a single engine pass.
       // `setSituation` is called once — all subsequent evaluate() calls benefit from the publicodes internal cache.
       const { id, model, situation } = job.simulation
-      // A job is named by its simulation: the computation has no id of its own.
-      const logger = deps.logger.child({
-        scope: 'core.service.processNextPendingComputation',
-        simulationId: id,
-        model: serializeModel(model),
-      })
       const engine = await getEngine(model)
       let computed: Result<void, PublicRulesEvaluationError>
       try {
@@ -171,12 +154,6 @@ export function createProcessNextPendingComputation(
         engine.resetCache()
       }
       if (!computed.success) {
-        for (const ruleError of computed.error.errors) {
-          // The error names its rule: `dottedName`, `metric` and `nodeValue`
-          // are carried as attributes, its `code` as `error.type`, and the
-          // value the engine threw is its `cause`, chained in the capture.
-          logger.error(ruleError)
-        }
         return failComputation(job.simulation, computed.error)
       }
       return success(true)

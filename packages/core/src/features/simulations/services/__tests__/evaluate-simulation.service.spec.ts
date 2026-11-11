@@ -5,13 +5,17 @@ import { success, type Result } from '../../../../lib/result.ts'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
+import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
 import { PUBLIC_RULE_METRICS, type Rule } from '../../../models/types/rule.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { PublicRulesEvaluationError } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
 import type { Simulation } from '../../types/simulation.ts'
-import { evaluateSimulation } from '../evaluate-simulation.service.ts'
+import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
+
+const logger = createTestLogger()
+const evaluateSimulation = createEvaluateSimulation({ logger })
 
 /**
  * Required by any rule evaluated for a metric: the evaluation sets it in its
@@ -29,13 +33,18 @@ const METRIC_RULE: RawPublicodes<string> = {
 const engineWith = (rules: RawPublicodes<string>) =>
   createTestEngine({ ...METRIC_RULE, ...rules })
 
-/** The rule evaluation errors a failed evaluation lists. */
+/**
+ * The rule evaluation errors reported for a failed evaluation, which counts
+ * them.
+ */
 const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   if (result.success) {
     throw new Error('Expected evaluateSimulation to fail')
   }
   expect(result.error).toBeInstanceOf(PublicRulesEvaluationError)
-  return result.error.errors
+  const reported = vi.mocked(logger.error).mock.calls.map(([error]) => error)
+  expect(result.error.failedCount).toBe(reported.length)
+  return reported
 }
 
 /** Stores each named rule for every metric. */
@@ -74,6 +83,7 @@ describe('evaluateSimulation', () => {
   }
 
   beforeEach(async () => {
+    vi.clearAllMocks()
     simulation = await simulationFactory.completed().create()
   })
 
@@ -283,6 +293,18 @@ describe('evaluateSimulation', () => {
     ])
   })
 
+  it('reports the rules it cannot evaluate with their simulation', async () => {
+    const rules = await storeRules(['footprint . missing'])
+
+    await evaluate(engineWith({}), rules)
+
+    expect(logger.child).toHaveBeenCalledWith({
+      scope: 'core.service.evaluateSimulation',
+      simulationId: simulation.id,
+    })
+    expect(logger.error).toHaveBeenCalledTimes(PUBLIC_RULE_METRICS.length)
+  })
+
   it('stores nothing when given no public rules', async () => {
     const result = await evaluate(engineWith({}), [])
 
@@ -292,7 +314,7 @@ describe('evaluateSimulation', () => {
 
   // The stored evaluations of a simulation are complete for its model: one
   // rule that cannot be evaluated fails them all.
-  describe('fails, storing nothing and listing each public rule that cannot be evaluated', () => {
+  describe('fails, storing nothing and reporting each public rule that cannot be evaluated', () => {
     it('when valued true or a string', async () => {
       const rules = await storeRules([
         'footprint . number',

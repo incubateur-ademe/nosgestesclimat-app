@@ -1,4 +1,4 @@
-import type { RuleApplicability } from '../../models/types/engine-evaluation.ts'
+import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 
 /**
  * The value of one Rule for one simulation, as the engine evaluated it: a
@@ -8,4 +8,4 @@ import type { RuleApplicability } from '../../models/types/engine-evaluation.ts'
 export type NewRuleEvaluation = {
   simulationId: string
   ruleId: number
-} & RuleApplicability
+} & ModelRuleEvaluation

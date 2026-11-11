@@ -3,8 +3,7 @@ import { failure, success, type Result } from '../../../lib/result.ts'
 import { toError } from '../../../lib/to-error.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
-import { UnexpectedNodeValueError } from '../../models/errors.ts'
-import { evaluatePublicRule } from '../../models/helpers/evaluate-public-rule.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import { ActionAssessmentPublicodesError } from '../errors/action-assessment.error.ts'
 import {
   buildRuleIdToDottedName,
@@ -78,23 +77,28 @@ export function createAssessActions(deps: AssessActionsDeps) {
           return []
         }
 
-        const evaluation = evaluatePublicRule({ engine, dottedName })
+        const evaluation = evaluateModelRule({ engine, dottedName })
 
         if (!evaluation.success) {
+          const { error } = evaluation
           const meta = { actionId: id, ruleId, dottedName }
-          if (evaluation.error instanceof UnexpectedNodeValueError) {
-            // Detected, not thrown: no stack to report, so the line names the
-            // shape and the failure stays an anomaly to watch by rate. Only
-            // `true` and a string get here: `nodeValue` is their type.
-            logger.warn(
-              `Unexpected nodeValue type: ${evaluation.error.nodeValue}`,
-              meta
-            )
-          } else {
-            // The action is skipped, never retried: the failure is captured,
-            // so a rule the engine chokes on does not vanish with its
-            // assessment. What the engine threw is reported, not its wrapper.
-            logger.error(toError(evaluation.error.cause), meta)
+          switch (error.code) {
+            case 'unexpected_node_value':
+              // Detected, not thrown: no stack to report, so the line names
+              // the shape and the failure stays an anomaly to watch by rate.
+              // Only `true` and a string get here: `nodeValue` is their type.
+              logger.warn(`Unexpected nodeValue type: ${error.nodeValue}`, meta)
+              break
+            case 'rule_evaluation_threw':
+              // The action is skipped, never retried: the failure is
+              // captured, so a rule the engine chokes on does not vanish with
+              // its assessment. What the engine threw is reported, not its
+              // wrapper.
+              logger.error(toError(error.cause), meta)
+              break
+            default:
+              logger.error(error, meta)
+              error satisfies never
           }
           return []
         }

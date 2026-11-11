@@ -1,6 +1,5 @@
 import type { InvalidPayloadError } from '../../../lib/errors.ts'
 import { DomainError } from '../../../lib/errors.ts'
-import type { RuleEvaluationError } from '../../models/errors.ts'
 import type { ComputationAlreadyExistsError } from '../../simulation-computation/errors/simulation-computation.error.ts'
 
 export class SimulationNotFoundError extends DomainError<'simulation_not_found'> {
@@ -43,22 +42,18 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
 /**
  * Public rules of the simulation's model the engine gave no applicability that
  * can be stored: none of the simulation's evaluations is, so the stored ones
- * are always complete for the model. Each error names its rule and metric.
+ * are always complete for the model. Each rule is reported where it failed:
+ * this only counts them, one per rule and metric.
  */
 export class PublicRulesEvaluationError extends DomainError<'public_rules_evaluation_failed'> {
-  public readonly errors: RuleEvaluationError[]
+  public readonly failedCount: number
 
-  constructor(errors: RuleEvaluationError[]) {
+  constructor(failedCount: number) {
     super(
       'public_rules_evaluation_failed',
-      `Public rules evaluation failed: ${errors
-        .map(
-          ({ dottedName, metric, message }) =>
-            `${dottedName}${metric ? ` (${metric})` : ''}: ${message}`
-        )
-        .join('; ')}`
+      `${failedCount} public rule evaluation(s) failed`
     )
-    this.errors = errors
+    this.failedCount = failedCount
   }
 }
 

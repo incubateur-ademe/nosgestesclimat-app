@@ -9,7 +9,7 @@ import {
   toActionEvaluation,
 } from '../../actions/helpers/action-assessment.ts'
 import type { ActionEvaluation } from '../../actions/types/action.ts'
-import { evaluatePublicRule } from '../../models/helpers/evaluate-public-rule.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import { createTestEngine } from '../../simulation-computation/factories/engine.factory.ts'
 import { getComputedResults } from '../../simulations/helpers/get-computed-results.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
@@ -70,7 +70,7 @@ const computeActionAssessments = (
 
   const assessments = [...ruleIdToDottedName.entries()].map(
     ([ruleId, dottedName]) => {
-      const evaluation = evaluatePublicRule({ engine, dottedName })
+      const evaluation = evaluateModelRule({ engine, dottedName })
 
       return {
         ruleId,
