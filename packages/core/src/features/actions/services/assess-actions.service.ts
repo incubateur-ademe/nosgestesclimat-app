@@ -1,4 +1,5 @@
 import type Engine from 'publicodes'
+import { failure, success, type Result } from '../../../lib/result.ts'
 import { toError } from '../../../lib/to-error.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
@@ -10,7 +11,10 @@ import {
   toActionEvaluation,
   toNewActionAssessment,
 } from '../helpers/action-assessment.ts'
-import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
+import {
+  createActionAssessments,
+  hasActionAssessments,
+} from '../repositories/action-assessments.repository.ts'
 import { findActionRuleIds } from '../repositories/actions.repository.ts'
 import type { NewActionAssessment } from '../types/action.ts'
 
@@ -23,36 +27,47 @@ interface AssessActionsDeps {
  *
  * The engine's situation must already be set to the simulation's. Every
  * action is evaluated before anything is written, and every write goes
- * through `session`, so the caller commits them together with its own writes,
- * or rolls them all back.
+ * through `session`. Fails, writing nothing, when the actions cannot be linked
+ * to the model's rules.
+ *
+ * Idempotent: a simulation that already has assessments is not assessed
+ * again, so a retried computation keeps the assessments of its first attempt.
  */
 export function createAssessActions(deps: AssessActionsDeps) {
   return async function assessActions(
     engine: Engine,
     simulationId: string,
     { session }: { session: Transaction }
-  ): Promise<void> {
+  ): Promise<Result<void, ActionAssessmentPublicodesError>> {
     const logger = deps.logger.child({
       scope: 'core.service.assessActions',
       simulationId,
     })
 
+    if (await hasActionAssessments(simulationId, { session })) {
+      return success()
+    }
+
     const actions = await findActionRuleIds({ session })
 
     if (actions.length === 0) {
-      throw new ActionAssessmentPublicodesError({
-        message: 'No actions found in database. Cannot assess actions.',
-      })
+      return failure(
+        new ActionAssessmentPublicodesError({
+          message: 'No actions found in database. Cannot assess actions.',
+        })
+      )
     }
 
     const ruleIdToDottedName = buildRuleIdToDottedName(engine)
 
     if (ruleIdToDottedName.size === 0) {
-      throw new ActionAssessmentPublicodesError({
-        message:
-          'No publicodes rules have meta.id, cannot link actions to dotted names. ' +
-          'Ensure the model includes meta.id on action rules.',
-      })
+      return failure(
+        new ActionAssessmentPublicodesError({
+          message:
+            'No publicodes rules have meta.id, cannot link actions to dotted names. ' +
+            'Ensure the model includes meta.id on action rules.',
+        })
+      )
     }
 
     const assessments: NewActionAssessment[] = actions.flatMap(
@@ -96,5 +111,6 @@ export function createAssessActions(deps: AssessActionsDeps) {
     if (assessments.length > 0) {
       await createActionAssessments(assessments, { session })
     }
+    return success()
   }
 }

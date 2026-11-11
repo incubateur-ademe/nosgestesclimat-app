@@ -1,6 +1,7 @@
 import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
 import { transaction, type Transaction } from '../../../lib/transaction.ts'
+import type { ActionAssessmentPublicodesError } from '../../actions/errors/action-assessment.error.ts'
 import type { Logger } from '../../logger/index.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
@@ -16,13 +17,16 @@ import {
 
 /**
  * Assesses every action against the simulation the engine is situated in,
- * writing through `session` only.
+ * writing through `session` only. Idempotent: writes nothing for a simulation
+ * already assessed, so a retried job keeps the assessments of its first
+ * attempt. Writes nothing and fails when the actions cannot be linked to the
+ * model's rules.
  */
 export type AssessActions = (
   engine: Engine,
   simulationId: string,
   options: { session: Transaction }
-) => Promise<void>
+) => Promise<Result<void, ActionAssessmentPublicodesError>>
 
 /**
  * Evaluates the given public rules against the simulation the engine is
@@ -92,11 +96,14 @@ const failComputation = async (
  *
  * Claims the next pending SimulationComputation job, resolves the engine
  * matching the job's model, then assesses the actions and evaluates the
- * model's public rules against the simulation. Those writes and the
- * `completed` status are committed in one transaction: on error, or when a
- * public rule cannot be evaluated, they are rolled back and the job is marked
- * failed. The model's public rules are resolved before that transaction, their
- * `Rule` rows committed on their own.
+ * model's public rules against the simulation. The action assessments are
+ * committed on their own, and kept whatever happens next: a retried job does
+ * not assess them again. When the actions cannot be assessed, the job is
+ * marked failed without evaluating the simulation. The rule evaluations and the `completed` status are
+ * then committed in one transaction: on error, or when a public rule cannot be
+ * evaluated, they are rolled back and the job is marked failed. The model's
+ * public rules are resolved before that transaction, their `Rule` rows
+ * committed on their own.
  *
  * Returns `success(true)` when a job was processed, `success(false)` when the
  * queue was empty, and a failure otherwise, for the worker to report. A public
@@ -131,15 +138,23 @@ export function createProcessNextPendingComputation(
         // Outside the transaction: the resolver caches the ids of the rules it
         // stores, which a rollback must not take away.
         const publicRules = await resolvePublicRules(engine, model)
-        // A reclaimed job whose earlier attempt crashed left nothing behind:
-        // its writes were never committed.
+        // Committed apart from the evaluations, so a failed evaluation does not
+        // take them away. A retried job finds them and skips the assessment.
+        const assessed = await transaction((session) =>
+          assessActions(engine, id, { session })
+        )
+        // Nothing to evaluate the simulation for: the actions are part of it.
+        if (!assessed.success) {
+          return failComputation(job.simulation, assessed.error)
+        }
+        // A reclaimed job whose earlier attempt crashed left no evaluation
+        // behind: they were never committed.
         computed = await transaction(async (session) => {
-          await assessActions(engine, id, { session })
           const evaluated = await evaluateSimulation(engine, id, publicRules, {
             session,
           })
-          // Rolls the action assessments back with it: a computed simulation
-          // has all of its evaluations.
+          // A computed simulation has all of its evaluations: none is kept
+          // when one of them fails.
           if (!evaluated.success) {
             return evaluated
           }

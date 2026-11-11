@@ -3,6 +3,7 @@ import { failure, success } from '../../../../lib/result.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
+import { ActionAssessmentPublicodesError } from '../../../actions/errors/action-assessment.error.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import {
   createActionAssessments,
@@ -48,11 +49,13 @@ const processNextPendingComputation = createProcessNextPendingComputation({
  */
 const fakeActionsAssessing = async (): Promise<AssessActions> => {
   const action = await actionFactory.published().create()
-  return (_engine, simulationId, { session }) =>
-    createActionAssessments(
+  return async (_engine, simulationId, { session }) => {
+    await createActionAssessments(
       [{ simulationId, actionId: action.id, applicable: true, impact: 1 }],
       { session }
     )
+    return success()
+  }
 }
 
 describe('processNextPendingComputation', () => {
@@ -60,7 +63,7 @@ describe('processNextPendingComputation', () => {
   const getEngine = () => engine
 
   beforeEach(() => {
-    assessActions.mockResolvedValue(undefined)
+    assessActions.mockResolvedValue(success())
     evaluateSimulation.mockResolvedValue(success())
     resolvePublicRules.mockResolvedValue([])
   })
@@ -127,7 +130,39 @@ describe('processNextPendingComputation', () => {
     expect(computation!.completedAt).not.toBeNull()
   })
 
-  it('rolls the writes back and marks the job failed when the evaluation throws', async () => {
+  // The worker reports the failure: only the assessment knows what failed.
+  it('marks the job failed without evaluating the simulation when the actions cannot be assessed', async () => {
+    const simulation = await simulationFactory
+      .completed()
+      .withPendingComputation()
+      .create()
+    const assessmentError = new ActionAssessmentPublicodesError({
+      message: 'No actions found in database. Cannot assess actions.',
+    })
+    assessActions.mockResolvedValue(failure(assessmentError))
+
+    const result = await processNextPendingComputation(getEngine)
+
+    expect(result).toEqual(
+      failure(expect.any(SimulationComputationFailedError))
+    )
+    expect(result).toMatchObject({
+      error: {
+        simulationId: simulation.id,
+        model: serializeModel(simulation.model),
+        cause: assessmentError,
+      },
+    })
+    if (result.success) {
+      throw new Error('Expected processNextPendingComputation to fail')
+    }
+    expect(isReportedComputationFailure(result.error)).toBe(false)
+    expect(evaluateSimulation).not.toHaveBeenCalled()
+    const computation = await findSimulationComputation(simulation.id)
+    expect(computation!.status).toBe('failed')
+  })
+
+  it('keeps the action assessments and marks the job failed when the evaluation throws', async () => {
     const simulation = await simulationFactory
       .completed()
       .withPendingComputation()
@@ -152,15 +187,16 @@ describe('processNextPendingComputation', () => {
     expect(logger.error).not.toHaveBeenCalled()
 
     expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
-      0
+      1
     )
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('failed')
   })
 
   // The stored evaluations of a computed simulation are complete for its
-  // model: the job fails rather than completing without some of them.
-  it('rolls the writes back, marks the job failed and fails with the public rules that cannot be evaluated', async () => {
+  // model: the job fails rather than completing without some of them. The
+  // action assessments do not depend on them: they are kept.
+  it('keeps the action assessments, marks the job failed and fails with the public rules that cannot be evaluated', async () => {
     const simulation = await simulationFactory
       .completed()
       .withPendingComputation()
@@ -191,7 +227,7 @@ describe('processNextPendingComputation', () => {
     })
 
     expect(await findActionAssessmentsBySimulation(simulation.id)).toHaveLength(
-      0
+      1
     )
     const computation = await findSimulationComputation(simulation.id)
     expect(computation!.status).toBe('failed')

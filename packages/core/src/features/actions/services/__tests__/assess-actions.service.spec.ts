@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import type Engine from 'publicodes'
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { failure, success } from '../../../../lib/result.ts'
 import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
@@ -81,7 +82,7 @@ describe('assessActions', () => {
         .create(),
     ])
 
-    await assess()
+    expect(await assess()).toEqual(success())
 
     const assessments = await findActionAssessments()
     expect(assessments).toHaveLength(2)
@@ -188,9 +189,46 @@ describe('assessActions', () => {
     }
   )
 
-  describe('throws ActionAssessmentPublicodesError', () => {
+  // A retried computation keeps the assessments of its first attempt.
+  describe('of a simulation already assessed', () => {
+    it('does not assess the actions again', async () => {
+      const action = await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+      await assess()
+      const [assessment] = await findActionAssessments()
+      const evaluate = vi.spyOn(engine, 'evaluate')
+
+      await assess()
+
+      expect(evaluate).not.toHaveBeenCalled()
+      expect(await findActionAssessments()).toEqual([assessment])
+      expect(assessment).toMatchObject({ actionId: action.id, impact: 42 })
+    })
+
+    it('does not assess an action published since', async () => {
+      await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+      await assess()
+      await actionFactory
+        .params({ ruleId: NOT_APPLICABLE_RULE_ID })
+        .published()
+        .create()
+
+      await assess()
+
+      expect(await findActionAssessments()).toHaveLength(1)
+    })
+  })
+
+  describe('fails with ActionAssessmentPublicodesError', () => {
     it('when there are no actions in database', async () => {
-      await expect(assess()).rejects.toThrow(ActionAssessmentPublicodesError)
+      expect(await assess()).toEqual(
+        failure(expect.any(ActionAssessmentPublicodesError))
+      )
     })
 
     it('when no publicodes rules have meta.id', async () => {
@@ -199,9 +237,10 @@ describe('assessActions', () => {
         .published()
         .create()
 
-      await expect(
-        assess(createTestEngine({ 'test . no-meta': { valeur: 42 } }))
-      ).rejects.toThrow(ActionAssessmentPublicodesError)
+      expect(
+        await assess(createTestEngine({ 'test . no-meta': { valeur: 42 } }))
+      ).toEqual(failure(expect.any(ActionAssessmentPublicodesError)))
+      expect(await findActionAssessments()).toHaveLength(0)
     })
   })
 })
