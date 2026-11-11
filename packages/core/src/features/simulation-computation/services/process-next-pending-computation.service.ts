@@ -15,11 +15,8 @@ import {
 } from '../repositories/simulation-computations.repository.ts'
 
 /**
- * Assesses every action against the simulation the engine is situated in,
- * writing through `session` only. Idempotent: writes nothing for a simulation
- * already assessed, so a retried job keeps the assessments of its first
- * attempt. Writes nothing and fails when the actions cannot be linked to the
- * model's rules.
+ * Writes through `session` only, and nothing when it fails. Idempotent, so a
+ * retried job keeps the assessments of its first attempt.
  */
 export type AssessActions = (
   engine: Engine,
@@ -28,9 +25,8 @@ export type AssessActions = (
 ) => Promise<Result<void, ActionAssessmentPublicodesError>>
 
 /**
- * Evaluates the given public rules against the simulation the engine is
- * situated in, writing through `session` only. Writes nothing and fails when
- * a rule cannot be evaluated, having reported each such rule.
+ * Writes through `session` only, and nothing when it fails. Logs each rule it
+ * fails on.
  */
 export type EvaluateSimulation = (
   engine: Engine,
@@ -40,9 +36,8 @@ export type EvaluateSimulation = (
 ) => Promise<Result<void, PublicRulesEvaluationError>>
 
 /**
- * Resolves the stored `Rule` of each public rule of the model, for each
- * metric. Its writes must be committed on their own: the rules are resolved
- * outside the job's transaction, so a rolled back job keeps them.
+ * Must commit its writes on its own: the rules it resolves outlive a rolled
+ * back job.
  */
 export type ResolvePublicRules = (
   engine: Engine,
@@ -55,10 +50,6 @@ interface ProcessNextPendingComputationDeps {
   resolvePublicRules: ResolvePublicRules
 }
 
-/**
- * Marks the simulation's job failed, failing with the `cause`, the failure of
- * the marking added to it.
- */
 const failComputation = async (
   simulation: Simulation,
   cause: unknown
@@ -83,21 +74,12 @@ const failComputation = async (
 /**
  * Entry point called by the worker in a loop.
  *
- * Claims the next pending SimulationComputation job, resolves the engine
- * matching the job's model, then assesses the actions and evaluates the
- * model's public rules against the simulation. The action assessments are
- * committed on their own, and kept whatever happens next: a retried job does
- * not assess them again. When the actions cannot be assessed, the job is
- * marked failed without evaluating the simulation. The rule evaluations and
- * the `completed` status are then committed in one transaction: on error, or
- * when a public rule cannot be evaluated, they are rolled back and the job is
- * marked failed. The model's public rules are resolved before that
- * transaction, their `Rule` rows committed on their own.
+ * A job completes with all of its simulation's rule evaluations, or fails
+ * with none. The action assessments are committed apart: they survive a failed
+ * job, which a retry does not assess again.
  *
  * Returns `success(true)` when a job was processed, `success(false)` when the
- * queue was empty, and a failure otherwise, for the worker to report: nothing
- * is reported here. The public rules that cannot be evaluated are reported by
- * `evaluateSimulation`, and only counted by the failure's `cause`.
+ * queue was empty, and a failure otherwise, for the worker to report.
  */
 export function createProcessNextPendingComputation(
   deps: ProcessNextPendingComputationDeps
@@ -121,8 +103,7 @@ export function createProcessNextPendingComputation(
         // Outside the transaction: the resolver caches the ids of the rules it
         // stores, which a rollback must not take away.
         const publicRules = await resolvePublicRules(engine, model)
-        // Committed apart from the evaluations, so a failed evaluation does not
-        // take them away. A retried job finds them and skips the assessment.
+        // Committed apart, so a failed evaluation does not take them away.
         const assessed = await transaction((session) =>
           assessActions(engine, id, { session })
         )
@@ -136,8 +117,6 @@ export function createProcessNextPendingComputation(
           const evaluated = await evaluateSimulation(engine, id, publicRules, {
             session,
           })
-          // A computed simulation has all of its evaluations: none is kept
-          // when one of them fails.
           if (!evaluated.success) {
             return evaluated
           }

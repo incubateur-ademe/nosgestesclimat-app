@@ -8,13 +8,9 @@ import { PUBLIC_RULE_METRICS, type Rule } from '../types/rule.ts'
 /**
  * Resolves the stored `Rule` of each public rule of a model, for each metric.
  *
- * The first call for a model upserts its public rules, which refreshes the
- * title and description of the rules already stored, and caches their ids.
- * Rule rows are never deleted, so a cached entry never goes stale.
- *
- * The upsert is committed on its own, outside any caller's transaction: a
- * rolled back transaction would otherwise leave the cache holding ids of rows
- * that no longer exist. It is idempotent, so a repeated upsert is harmless.
+ * Cached per model: rule rows are never deleted, so a cached id never goes
+ * stale. The rules are written outside any caller's transaction, whose
+ * rollback would leave the cache holding ids of rows that no longer exist.
  *
  * The cache lives apart from the engine registry, so evicting an engine keeps
  * its rule ids. Like engines, it ignores the model's locale: the rules of every

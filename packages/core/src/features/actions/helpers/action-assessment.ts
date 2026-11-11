@@ -55,10 +55,8 @@ export const toNewActionAssessment = (
 }
 
 /**
- * Reads the applicability of an action's rule as the action's evaluation: its
- * value is the action's impact when it is a finite number other than 0, an
- * impact of 0 being no impact, or an issue with the model. NaN and ±Infinity
- * are an issue with the model: the action stays applicable, without impact.
+ * NaN and ±Infinity are an issue with the model, not with the simulation: the
+ * action still applies, its impact unknown.
  */
 export const toActionEvaluation = (
   applicability: ModelRuleEvaluation

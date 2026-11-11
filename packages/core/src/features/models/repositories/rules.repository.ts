@@ -4,9 +4,6 @@ import type { NewRule, Rule } from '../types/rule.ts'
 import { mapRule, type RuleRow } from './rule.mapper.ts'
 
 /**
- * Inserts the missing rules and refreshes the title and description of the
- * existing ones, in a single statement. Returns every given rule with its id.
- *
  * Safe to run concurrently with itself: rows are locked in a fixed
  * (name, metric) order, so two callers cannot deadlock, and the conflict
  * clause makes the second one update the rows the first one inserted.

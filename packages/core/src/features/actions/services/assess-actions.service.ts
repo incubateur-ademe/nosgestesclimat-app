@@ -24,13 +24,10 @@ interface AssessActionsDeps {
 /**
  * Assesses every action against a simulation and persists the assessments.
  *
- * The engine's situation must already be set to the simulation's. Every
- * action is evaluated before anything is written, and every write goes
- * through `session`. Fails, writing nothing, when the actions cannot be linked
- * to the model's rules.
+ * The engine's situation must already be set to the simulation's.
  *
- * Idempotent: a simulation that already has assessments is not assessed
- * again, so a retried computation keeps the assessments of its first attempt.
+ * Idempotent, so a retried computation keeps the assessments of its first
+ * attempt.
  */
 export function createAssessActions(deps: AssessActionsDeps) {
   return async function assessActions(
@@ -84,16 +81,12 @@ export function createAssessActions(deps: AssessActionsDeps) {
           const meta = { actionId: id, ruleId, dottedName }
           switch (error.code) {
             case 'unexpected_node_value':
-              // Detected, not thrown: no stack to report, so the line names
-              // the shape and the failure stays an anomaly to watch by rate.
-              // Only `true` and a string get here: `nodeValue` is their type.
+              // No stack to report: an anomaly to watch by rate.
               logger.warn(`Unexpected nodeValue type: ${error.nodeValue}`, meta)
               break
             case 'rule_evaluation_threw':
-              // The action is skipped, never retried: the failure is
-              // captured, so a rule the engine chokes on does not vanish with
-              // its assessment. What the engine threw is reported, not its
-              // wrapper.
+              // A retry skips an assessed simulation: this log is the only
+              // trace of the action left unassessed.
               logger.error(toError(error.cause), meta)
               break
             default:

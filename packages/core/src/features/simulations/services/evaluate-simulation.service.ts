@@ -19,15 +19,11 @@ interface EvaluateSimulationDeps {
  * Evaluates the given public rules of the simulation's model, each for its
  * metric, and persists the evaluations.
  *
- * The engine's situation must already be set to the simulation's. Every rule
- * is evaluated before anything is written, and every write goes through
- * `session`, so the caller commits them together with its own writes, or rolls
- * them all back.
+ * The engine's situation must already be set to the simulation's. Writes go
+ * through `session`, for the caller to commit them with its own.
  *
- * A simulation's evaluations are stored whole or not at all: when a rule's
- * evaluation throws, or yields a value that cannot be stored, nothing is
- * written. Each such rule is reported here, one error per rule and metric, and
- * the failure only counts them.
+ * A simulation's evaluations are stored whole or not at all. Each rule that
+ * fails is logged here: the returned failure only counts them.
  */
 export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
   return async function evaluateSimulation(

@@ -40,10 +40,8 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
 }
 
 /**
- * Public rules of the simulation's model the engine gave no applicability that
- * can be stored: none of the simulation's evaluations is, so the stored ones
- * are always complete for the model. Each rule is reported where it failed:
- * this only counts them, one per rule and metric.
+ * Each failed rule is logged where it failed: this only counts them, one per
+ * rule and metric.
  */
 export class PublicRulesEvaluationError extends DomainError<'public_rules_evaluation_failed'> {
   public readonly failedCount: number

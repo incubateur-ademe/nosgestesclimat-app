@@ -26,10 +26,6 @@ export const hasActionAssessments = async (
   return row !== null
 }
 
-/**
- * Stores the assessments, skipping those of an action the simulation already
- * has one for.
- */
 export const createActionAssessments = async (
   assessments: NewActionAssessment[],
   { session = prisma }: { session?: Transaction } = {}

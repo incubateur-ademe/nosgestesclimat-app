@@ -47,7 +47,6 @@ const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
   return reported
 }
 
-/** Stores each named rule for every metric. */
 const storeRules = (names: string[]): Promise<Rule[]> =>
   Promise.all(
     names.flatMap((name) =>
@@ -59,9 +58,8 @@ describe('evaluateSimulation', () => {
   let simulation: Simulation
 
   /**
-   * Evaluates the simulation inside a transaction, rolled back when the
-   * evaluation fails. PGlite has a single connection, so a write that bypasses
-   * the session would hang the test.
+   * PGlite has a single connection, so a write that bypasses the session
+   * would hang the test.
    */
   const evaluate = (engine: Engine, publicRules: Rule[]) =>
     transaction((session) =>

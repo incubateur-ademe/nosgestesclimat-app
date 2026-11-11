@@ -53,8 +53,8 @@ describe('assessActions', () => {
   let simulation: Simulation
 
   /**
-   * Assesses the actions inside a transaction. PGlite has a single
-   * connection, so a write that bypasses the session would hang the test.
+   * PGlite has a single connection, so a write that bypasses the session
+   * would hang the test.
    */
   const assess = (withEngine: Engine = engine) =>
     transaction((session) =>
@@ -145,8 +145,6 @@ describe('assessActions', () => {
 
     expect(await findActionAssessments()).toHaveLength(0)
 
-    // Detected, not thrown: no `Error` to report, so the line names the
-    // shape and the failure stays an anomaly to watch by rate.
     expect(logger.warn).toHaveBeenCalledWith(
       `Unexpected nodeValue type: ${type}`,
       expect.objectContaining({ ruleId })

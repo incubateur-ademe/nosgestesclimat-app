@@ -14,16 +14,11 @@ const MODEL_METRIC = {
 } as const satisfies Record<Metric, string>
 
 /**
- * Evaluates a rule of the model, for a metric when one is given: the metric is
- * then set in the evaluation's context, the way the footprint is computed.
+ * Evaluates a rule of the model, for `metric` when given, as the model computes
+ * the footprint of that metric.
  *
- * A number is applicable, whatever it is: 0, NaN and ±Infinity included;
- * `null` and `false` are not applicable; `undefined`, which a rule without a
- * formula evaluates to, is not defined. `true` and a string are no
- * applicability and fail with an `UnexpectedNodeValueError`; an evaluation that
- * throws, a rule missing from the model for instance, fails with a
- * `RuleEvaluationThrewError`. What the applicability means, and which values
- * it may take, is left to the caller: see `requireFiniteValue`.
+ * Any number is applicable: which values make sense is up to the caller (see
+ * `requireFiniteValue`).
  */
 export const evaluateModelRule = ({
   engine,
@@ -70,12 +65,7 @@ export const evaluateModelRule = ({
   )
 }
 
-/**
- * Fails an applicable evaluation whose value is not finite, NaN or ±Infinity,
- * with an `UnexpectedNodeValueError`: a public rule's evaluation is stored as
- * a finite number or not at all. An action's is not checked: it keeps the
- * value the engine gave.
- */
+/** For an evaluation stored as a finite number or not at all. */
 export const requireFiniteValue = (
   evaluation: ModelRuleEvaluationResult,
   { dottedName, metric }: { dottedName: string; metric?: Metric }

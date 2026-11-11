@@ -39,14 +39,11 @@ export class OutdatedModelVersionError extends DomainError<'outdated_model_versi
   }
 }
 
-/**
- * The engine evaluated a rule to a value that cannot be stored: `true`, a
- * string, NaN or ±Infinity. `nodeValue` names it: its type, or its value for
- * NaN and ±Infinity.
- */
+/** The engine evaluated a rule to a value that cannot be stored. */
 export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value'> {
   public readonly dottedName: string
   public readonly metric?: Metric
+  /** Its type, or the value itself when its type says nothing. */
   public readonly nodeValue: string
 
   constructor(params: {
@@ -64,10 +61,7 @@ export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value
   }
 }
 
-/**
- * The engine threw while evaluating a rule: a rule missing from the model, or
- * a formula it cannot evaluate. The thrown value is the `cause`.
- */
+/** E.g. a rule missing from the model, or a formula the engine cannot evaluate. */
 export class RuleEvaluationThrewError extends DomainError<'rule_evaluation_threw'> {
   public readonly dottedName: string
   public readonly metric?: Metric

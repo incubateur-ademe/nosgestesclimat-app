@@ -1,7 +1,6 @@
 import type Engine from 'publicodes'
 import type { PublicRule } from '../types/rule.ts'
 
-/** Reads the rules the model marks `public: oui`. */
 export const getPublicRules = (engine: Engine): PublicRule[] =>
   Object.entries(engine.getParsedRules())
     .filter(([, rule]) => rule.rawNode.public === 'oui')
