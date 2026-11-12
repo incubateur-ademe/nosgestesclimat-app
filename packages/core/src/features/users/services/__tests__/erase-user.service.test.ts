@@ -18,7 +18,6 @@ describe('eraseUser', () => {
 
   describe('Given a verified account with a simulation, groups, an organisation and a session', () => {
     let userId: string
-    let email: string
     let simulationCount: number
     let administeredGroupId: string
     let joinedGroupId: string
@@ -28,7 +27,6 @@ describe('eraseUser', () => {
         .verified()
         .create({ name: faker.person.fullName() })
       userId = user.id
-      email = user.email
 
       const otherUser = await userFactory.verified().create()
 
@@ -80,7 +78,7 @@ describe('eraseUser', () => {
     it('deletes the organisation administrations', async () => {
       expect(
         await prisma.organisationAdministrator.findFirst({
-          where: { userEmail: email },
+          where: { userId },
         })
       ).toBeNull()
     })
