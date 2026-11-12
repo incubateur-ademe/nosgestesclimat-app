@@ -11,7 +11,7 @@ export default function DishesNumberInfo() {
 
   return (
     <>
-      <div aria-live="polite" className="-mt-2 mb-2 text-center text-sm">
+      <div aria-live="polite" className="-mt-2 mb-3 text-center text-sm">
         {totalNumberOfPlats !== 14 ? (
           <span className="text-red-700">
             <Trans
