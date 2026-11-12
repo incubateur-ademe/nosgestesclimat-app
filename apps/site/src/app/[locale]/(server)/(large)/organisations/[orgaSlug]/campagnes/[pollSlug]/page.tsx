@@ -3,6 +3,7 @@ import OrganisationFilAriane from '@/components/layout/FilAriane'
 import PollStatistics from '@/components/organisations/PollStatistics'
 import Trans from '@/components/translation/trans/TransServer'
 import ButtonLinkServer from '@/design-system/buttons/ButtonLinkServer'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { getPollResult } from '@/services/polls/get-poll-result'
@@ -42,19 +43,18 @@ export default async function CampagnePage({
       />
       <div className="mb-4 flex flex-col justify-between md:flex-nowrap">
         <div className="flex flex-col items-start justify-between sm:flex-row md:items-center">
-          <Title
-            title={<span className="text-primary-700">{poll.name}</span>}
-            subtitle={
-              <span>
-                <Trans>Test collectif créé par</Trans>{' '}
-                <strong className="text-primary-700">
-                  {poll.organisation.name}
-                </strong>
-                <Trans>, le</Trans> {dayjs(poll.createdAt).format('DD/MM/YYYY')}
-              </span>
-            }
-          />
-
+          <Title className="mb-2">
+            <span className="text-primary-700">{poll.name}</span>
+          </Title>
+          <Subtitle>
+            <span>
+              <Trans>Test collectif créé par</Trans>{' '}
+              <strong className="text-primary-700">
+                {poll.organisation.name}
+              </strong>
+              <Trans>, le</Trans> {dayjs(poll.createdAt).format('DD/MM/YYYY')}
+            </span>
+          </Subtitle>
           {isAdmin && (
             <div>
               <ButtonLinkServer

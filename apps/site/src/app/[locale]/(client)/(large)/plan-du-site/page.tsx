@@ -114,11 +114,9 @@ export default async function PlanDuSitePage() {
 
   return (
     <div data-testid="plan-links" className="mb-12">
-      <Title
-        title={
-          <Trans i18nKey="publicodes.planDuSite.title">Plan du site</Trans>
-        }
-      />
+      <Title>
+        <Trans i18nKey="publicodes.planDuSite.title">Plan du site</Trans>
+      </Title>
 
       <section className="mb-2">
         <h2 data-testid="plan-outils-title">

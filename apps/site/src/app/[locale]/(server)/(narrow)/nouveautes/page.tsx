@@ -30,15 +30,12 @@ export default async function Releases({ params }: DefaultPageProps) {
     <>
       <div className="mt-4 flex flex-wrap gap-0 pb-8 md:flex-nowrap md:gap-16">
         <div>
-          <Title
-            data-testid="news-title"
-            title={
-              <span className="flex items-center">
-                <Trans>Les nouveautés</Trans>
-                <SparklesIcon className="fill-divers-300 ml-2" />
-              </span>
-            }
-          />
+          <Title data-testid="news-title">
+            <span className="flex items-center">
+              <Trans>Les nouveautés</Trans>
+              <SparklesIcon className="fill-divers-300 ml-2" />
+            </span>
+          </Title>
 
           <p className="mb-0 max-w-74">
             <Trans>

@@ -9,7 +9,7 @@ export default function WhatIsWaterFootprint() {
   return (
     <div className="mb-12 flex flex-col gap-8 md:flex-row">
       <section className="bg-primary-100 flex-1 rounded-2xl p-8">
-        <Title hasSeparator={false} tag="h2" size="lg">
+        <Title tag="h2" size="lg">
           <Trans i18nKey="simulation.eau.whatIsWaterFootprint.titleInsec">
             L'empreinte eau, c'est quoi&nbsp;?
           </Trans>
@@ -79,7 +79,7 @@ export default function WhatIsWaterFootprint() {
       </section>
 
       <section className="bg-secondary-100 flex-1 rounded-2xl p-8">
-        <Title tag="h2" size="lg" hasSeparator={false}>
+        <Title tag="h2" size="lg">
           <Trans i18nKey="simulation.eau.whatIsWaterFootprint.showerWater.title">
             Et l'eau de ma douche dans tout ça ?
           </Trans>
