@@ -1,7 +1,21 @@
 CREATE UNIQUE INDEX "VerifiedUser_email_key" ON "ngc"."VerifiedUser"("email");
 
--- The administrations follow their user. The join mirrors the existing foreign
--- key's semantics, so it covers exactly the rows the constraint already allows.
+-- The primary key swap goes first: on duplicate "id" it is the only statement
+-- that can fail on rows already there, and here it fails while "userEmail",
+-- its links and the old key are still in place. Further down they are dropped,
+-- so a failure there would leave the table in a state the running application
+-- cannot read. The two sub-commands share one statement: PostgreSQL applies an
+-- ALTER TABLE atomically, so a rejected swap leaves the email key as it was.
+-- The foreign key is removed before because it depends on the index of the old
+-- key.
+ALTER TABLE "ngc"."OrganisationAdministrator" DROP CONSTRAINT "OrganisationAdministrator_userEmail_fkey";
+
+ALTER TABLE "ngc"."VerifiedUser"
+    DROP CONSTRAINT "VerifiedUser_pkey",
+    ADD CONSTRAINT "VerifiedUser_pkey" PRIMARY KEY ("id");
+
+-- The administrations follow their user. The join mirrors the semantics of the
+-- foreign key just dropped, so it covers exactly the rows it allowed.
 ALTER TABLE "ngc"."OrganisationAdministrator" ADD COLUMN "userId" UUID;
 
 UPDATE "ngc"."OrganisationAdministrator" oa
@@ -44,19 +58,14 @@ FROM "ngc"."OrganisationAdministrator";
 
 COMMIT;
 
--- Then the email-shaped link goes: dropping the column takes its index and its
--- foreign key with it, dropped explicitly to name the parts that disappear.
-ALTER TABLE "ngc"."OrganisationAdministrator" DROP CONSTRAINT "OrganisationAdministrator_userEmail_fkey";
+-- Then the email-shaped link goes: dropping the column takes its index with
+-- it, dropped explicitly to name the part that disappears.
 DROP INDEX "ngc"."OrganisationAdministrator_userEmail_key";
 ALTER TABLE "ngc"."OrganisationAdministrator" DROP COLUMN "userEmail";
 
--- The primary key swap.
-ALTER TABLE "ngc"."VerifiedUser" DROP CONSTRAINT "VerifiedUser_pkey";
-ALTER TABLE "ngc"."VerifiedUser" ADD CONSTRAINT "VerifiedUser_pkey" PRIMARY KEY ("id");
-
 -- The administrator's user id is unique, as the email was: one administration
--- per account. The foreign key is created after the swap because it needs the
--- referenced side to be unique.
+-- per account. The foreign key comes last: it needs the referenced side to be
+-- unique and every row backfilled.
 CREATE UNIQUE INDEX "OrganisationAdministrator_userId_key" ON "ngc"."OrganisationAdministrator"("userId");
 
 ALTER TABLE "ngc"."OrganisationAdministrator" ADD CONSTRAINT "OrganisationAdministrator_userId_fkey" FOREIGN KEY ("userId") REFERENCES "ngc"."VerifiedUser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
