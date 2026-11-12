@@ -8,7 +8,7 @@ export default function Plats({ question }: { question: DottedName }) {
 
   return (
     <Question
-      helpText={!isMissing ? <DishesNumberInfo /> : null}
+      beforeInputsHelpText={!isMissing ? <DishesNumberInfo /> : null}
       question={question}
     />
   )

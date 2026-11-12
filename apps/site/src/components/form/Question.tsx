@@ -32,7 +32,7 @@ interface Props {
   showInputsLabel?: React.ReactNode | string
   headingLevel?: 1 | 2 | 3
   className?: string
-  helpText?: React.ReactNode | string | null
+  beforeInputsHelpText?: React.ReactNode | string | null
 }
 
 export default function Question({
@@ -40,7 +40,7 @@ export default function Question({
   showInputsLabel,
   headingLevel,
   className,
-  helpText,
+  beforeInputsHelpText,
 }: Props) {
   const {
     type,
@@ -125,7 +125,7 @@ export default function Question({
           </Button>
         ) : null}
 
-        {helpText}
+        {beforeInputsHelpText}
         {isOpen && (
           <>
             {type === 'number' &&
