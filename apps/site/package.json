@@ -27,7 +27,7 @@
     "start:e2e": "NODE_OPTIONS=\"--require dotenv/config\" DOTENV_CONFIG_PATH=.env.e2e next start",
     "start:worker": "DATABASE_POOL_MAX=3 node --experimental-strip-types --import ./worker/observability.ts ./worker/worker.ts",
     "start:worker:e2e": "DATABASE_POOL_MAX=3 node --env-file=.env.e2e --experimental-strip-types --import ./worker/observability.ts ./worker/worker.ts",
-    "cron:runRetentionSweep": "DATABASE_POOL_MAX=2 node --experimental-strip-types --import ./cron/observability.ts ./cron/run-retention-sweep.ts",
+    "cron:runRetentionSweep": "DATABASE_POOL_MAX=2 node --experimental-strip-types --import ./cron/observability.ts ./cron/run-retention-sweep.ts --no-dry",
     "start:all": "pnpm run '/start(:worker)?$/'",
     "lint": "eslint",
     "typegen": "next typegen",
