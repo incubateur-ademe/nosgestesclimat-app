@@ -9,12 +9,15 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     description: (
       <Trans i18nKey="impact_matrix.items.first.description">
         <p>
-          <strong>Taux de sollicitation du support :</strong> 360 utilisateurs
-          ont fait appel au support (2025), soit 0,05% des utilisateurs ayant
-          terminé leur simulation
+          <strong>Taux de sollicitation du support :</strong>{' '}
+          <strong className="text-slate-600">360 utilisateurs</strong>
+          &nbsp;ont fait appel au support (2025), soit{' '}
+          <strong className="text-slate-600">0,05%</strong> des utilisateurs
+          ayant terminé leur simulation
         </p>
         <p>
-          <strong>Taux de complétion :</strong> 84% des utilisateurs ayant
+          <strong>Taux de complétion :</strong>{' '}
+          <strong className="text-slate-600">84%</strong> des utilisateurs ayant
           commencé le test sont arrivés jusqu’à la page de résultats (mai 2026)
         </p>
       </Trans>
@@ -27,16 +30,21 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     description: (
       <Trans i18nKey="impact_matrix.items.second.description">
         <p>
-          <strong>Nombre de visiteurs :</strong> 1,967 millions utilisateurs
+          <strong>Nombre de visiteurs :</strong>{' '}
+          <strong className="text-slate-600">
+            1,967 millions utilisateurs
+          </strong>{' '}
           ayant visité le site au cours de l’année (2025)
         </p>
         <p>
-          <strong>Nombre de simulations terminées :</strong> 630 334 simulations
-          sur l’année, soit un cumul de 3 millions au 30/04/2026
+          <strong>Nombre de simulations terminées :</strong>{' '}
+          <strong className="text-slate-600">630 334 simulations</strong> sur
+          l’année, soit un cumul de{' '}
+          <strong className="text-slate-600">3 millions</strong> au 30/04/2026
         </p>
         <p>
-          <strong>Nombre d’inscrits aux infolettres :</strong> 204 000 au
-          30/04/2025
+          <strong>Nombre d’inscrits aux infolettres :</strong>{' '}
+          <strong className="text-slate-600">204 000</strong> au 30/04/2025
         </p>
       </Trans>
     ),
@@ -53,16 +61,18 @@ export const impactMatrixData: ImpactMatrixItem[] = [
             terminé le test (déclaratif*) :
           </strong>
           <br />
-          <strong>83%</strong> : NGC leur a fait prendre conscience de leur
-          impact
+          <strong className="text-slate-600">83%</strong> : NGC leur a fait
+          prendre conscience de leur impact
           <br />
-          <strong>81%</strong> : NGC leur a donné envie d’agir
+          <strong className="text-slate-600">81%</strong> : NGC leur a donné
+          envie d’agir
           <br />
-          <strong>66%</strong> : NGC les a aidés à identifier des actions
-          concrètes pour réduire
+          <strong className="text-slate-600">66%</strong> : NGC les a aidés à
+          identifier des actions concrètes pour réduire
         </p>
         <p>
-          <strong>Net Promoter Score (S1 2026) :</strong> 35
+          <strong>Net Promoter Score (S1 2026) :</strong>{' '}
+          <strong className="text-slate-600">35</strong>
         </p>
       </Trans>
     ),
@@ -76,10 +86,11 @@ export const impactMatrixData: ImpactMatrixItem[] = [
         <p>
           <strong>
             Taux de passage à l’action des utilisateurs post test pour réduire
-            leur empreinte (déclaratif*) : 37%
+            leur empreinte (déclaratif*) :
           </strong>{' '}
-          des utilisateurs déclarent avoir mis en place de nouvelles actions
-          pour réduire leur empreinte après avoir fait le test NGC
+          <strong className="text-slate-600">37% des utilisateurs</strong>{' '}
+          déclarent avoir mis en place de nouvelles actions pour réduire leur
+          empreinte après avoir fait le test NGC
         </p>
       </Trans>
     ),
@@ -91,10 +102,16 @@ export const impactMatrixData: ImpactMatrixItem[] = [
     description: (
       <Trans i18nKey="impact_matrix.items.fifth.description">
         <p>
-          <strong>Budget sur l’année (2025) :</strong> 1 160 667 euros
+          <strong>Budget sur l’année (2025) :</strong>{' '}
+          <strong className="whitespace-nowrap text-slate-600">
+            1&nbsp;160&nbsp;667&nbsp;€
+          </strong>
         </p>
         <p>
-          <strong>Coût à la simulation terminée (2025) :</strong> 1,84&nbsp;€
+          <strong>Coût à la simulation terminée (2025) :</strong>{' '}
+          <strong className="whitespace-nowrap text-slate-600">
+            1,84&nbsp;€
+          </strong>
         </p>
       </Trans>
     ),
