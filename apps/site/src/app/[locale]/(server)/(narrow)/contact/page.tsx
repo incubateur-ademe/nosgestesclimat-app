@@ -22,15 +22,13 @@ export default function Contact() {
     <div className="pb-4">
       <div className="flex flex-wrap gap-8 pb-8 md:flex-nowrap">
         <div>
-          <Title
-            title={
-              <span className="flex items-center">
-                <Trans>Contact</Trans>
+          <Title>
+            <span className="flex items-center">
+              <Trans>Contact</Trans>
 
-                <MailIcon className="fill-primary-500 ml-3" />
-              </span>
-            }
-          />
+              <MailIcon className="fill-primary-500 ml-3" />
+            </span>
+          </Title>
 
           <p>
             <Trans>
