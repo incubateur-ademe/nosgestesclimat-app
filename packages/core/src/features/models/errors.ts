@@ -39,6 +39,19 @@ export class OutdatedModelVersionError extends DomainError<'outdated_model_versi
   }
 }
 
+/** The model has no `bilan` rule: its footprint structure cannot be read. */
+export class MissingFootprintRuleError extends DomainError<'missing_footprint_rule'> {
+  public readonly dottedName: string
+
+  constructor(dottedName: string) {
+    super(
+      'missing_footprint_rule',
+      `The model has no "${dottedName}" rule: its footprint structure cannot be read`
+    )
+    this.dottedName = dottedName
+  }
+}
+
 /** The engine evaluated a rule to a value that cannot be stored. */
 export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value'> {
   public readonly dottedName: string

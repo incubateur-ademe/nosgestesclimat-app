@@ -5,7 +5,7 @@ import type {
   NGCRuleNode,
   NGCRulesNodes,
 } from '@incubateur-ademe/nosgestesclimat'
-import { getSomme } from '@nosgestesclimat/core/features/simulations/helpers/get-somme'
+import { getSomme } from '@nosgestesclimat/core/features/models/helpers/get-somme'
 import { utils } from 'publicodes'
 
 const logger = _logger.child({ scope: 'site.engine.getSubcategories' })

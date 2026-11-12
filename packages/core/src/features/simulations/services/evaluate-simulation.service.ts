@@ -41,8 +41,12 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
 
     for (const { id, name, metric } of publicRules) {
       const evaluation = requireFiniteValue(
-        evaluateModelRule({ engine, dottedName: name, metric }),
-        { dottedName: name, metric }
+        evaluateModelRule({
+          engine,
+          dottedName: name,
+          metric: metric ?? undefined,
+        }),
+        { dottedName: name, metric: metric ?? undefined }
       )
 
       if (evaluation.success) {
