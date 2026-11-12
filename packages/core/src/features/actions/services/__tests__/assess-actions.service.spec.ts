@@ -127,12 +127,15 @@ describe('assessActions', () => {
     expect(await findActionAssessments()).toHaveLength(0)
 
     // The assessment is dropped, not skipped and forgotten: the failure is
-    // reported.
-    expect(logger.error).toHaveBeenCalledWith(thrown, {
-      actionId: expect.any(String),
-      ruleId: APPLICABLE_RULE_ID,
-      dottedName: 'test . applicable',
-    })
+    // reported, whatever the engine threw.
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'rule_evaluation_threw', cause: thrown }),
+      {
+        actionId: expect.any(String),
+        ruleId: APPLICABLE_RULE_ID,
+        dottedName: 'test . applicable',
+      }
+    )
   })
 
   it.each([
@@ -145,8 +148,11 @@ describe('assessActions', () => {
 
     expect(await findActionAssessments()).toHaveLength(0)
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      `Unexpected nodeValue type: ${type}`,
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'unexpected_node_value',
+        nodeValue: type,
+      }),
       expect.objectContaining({ ruleId })
     )
   })
