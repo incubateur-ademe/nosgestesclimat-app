@@ -22,6 +22,7 @@ const createOrUpdateUser = async (
   const existingUser = await session.user.findUnique({
     where: {
       id,
+      deletedAt: null,
     },
     select: {
       id: true,
@@ -77,6 +78,7 @@ export const transferOwnershipToUser = async (
         not: userId,
       },
       email,
+      deletedAt: null,
     },
     orderBy: {
       createdAt: 'desc',
@@ -221,6 +223,7 @@ export const transferOwnershipToUser = async (
           not: userId,
         },
         email,
+        deletedAt: null,
       },
     }),
     session.simulationPoll.deleteMany({
@@ -253,7 +256,7 @@ export const transferSimulationsFromUser = async (
   }
 
   const preExistingUser = await session.user.findUnique({
-    where: { id: preExistingUserId },
+    where: { id: preExistingUserId, deletedAt: null },
     select: { id: true },
   })
 
@@ -314,6 +317,6 @@ export const transferSimulationsFromUser = async (
   })
 
   await session.user.deleteMany({
-    where: { id: preExistingUserId },
+    where: { id: preExistingUserId, deletedAt: null },
   })
 }

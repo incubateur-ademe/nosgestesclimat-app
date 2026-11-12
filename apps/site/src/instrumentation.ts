@@ -1,6 +1,5 @@
 import type { OtelAttributes } from '@nosgestesclimat/core/features/logger/index'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
-import * as Sentry from '@sentry/nextjs'
 import type { Instrumentation } from 'next'
 
 export async function register() {
@@ -13,14 +12,13 @@ export async function register() {
     // is also compiled for the edge runtime, and pino, the OTel SDK and
     // `node:crypto` have no edge build — a static import would ship them there.
     const { env } = await import('@/env/server')
-    const { initObservability, shutdownObservability } =
-      await import('@/observability/setup')
+    const { initOtel, shutdownOtel } = await import('@/observability/otel')
     const { default: logger } = await import('@/logger/logger.server')
 
     // Validates the server environment — the file throws on a missing or
     // malformed variable — and hands the observability settings over: this
-    // provider is the one Sentry and pino read their trace context from, so it
-    // must be registered before anything instrumented is imported.
+    // provider is the one pino reads its trace context from, so it must be
+    // registered before anything instrumented is imported.
     const {
       NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: token,
       POSTHOG_OTLP_ENDPOINT: endpoint,
@@ -28,9 +26,8 @@ export async function register() {
     } = env
     // No token or no endpoint: nothing to export, so nothing to instrument.
     if (token && endpoint) {
-      initObservability('web-server', version, { token, endpoint })
+      initOtel('web-server', version, { token, endpoint })
     }
-    await import('../sentry.server.config')
     const { posthogClient } = await import('@/services/tracking/posthogServer')
 
     async function shutdown() {
@@ -39,7 +36,7 @@ export async function register() {
         // SIGTERM handler drains the server and terminates the process, so
         // exiting here would cut the drain short. The flush only has to finish
         // enqueueing before that, which `shutdown` guarantees.
-        await shutdownObservability()
+        await shutdownOtel()
         await posthogClient.shutdown()
       } catch (error) {
         logger.error(toError(error))
@@ -54,8 +51,7 @@ export async function register() {
     async function crash(error: Error) {
       logger.fatal(error)
       await Promise.allSettled([
-        Sentry.flush(2_000),
-        shutdownObservability(),
+        shutdownOtel(),
         // `fatal` queued the exception to PostHog just above: without this
         // flush, the crash — the one failure nobody gets to retry — is the one
         // PostHog never sees.
@@ -78,8 +74,7 @@ export async function register() {
 }
 
 /** Catches errors no boundary controlled. The logger is the only capture
- * path: Sentry's own `captureRequestError` would file the same error twice.
- * HTTP attributes follow OTel semconv so one filter spans nginx logs and
+ * path. HTTP attributes follow OTel semconv so one filter spans nginx logs and
  * traces. */
 export const onRequestError: Instrumentation.onRequestError = async (
   error,

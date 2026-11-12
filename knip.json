@@ -9,7 +9,6 @@
     },
     "apps/site": {
       "entry": [
-        "sentry.*.config.ts",
         ".storybook/**/*.{ts,tsx,js,jsx}",
         "scripts/**/*.{ts,tsx,js,jsx,mjs,cjs}",
         "src/i18nConfig.ts",

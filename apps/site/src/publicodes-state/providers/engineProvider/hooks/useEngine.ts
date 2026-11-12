@@ -42,8 +42,8 @@ export function useEngine(
           console.error(`[publicodes:error] ${msg}`)
 
           // A situation that cannot be updated is a diagnostic about the rules,
-          // not a failure: PostHog Logs reads its rate, where Sentry would
-          // capture it without a stack.
+          // not a failure: PostHog Logs reads its rate, where Error Tracking
+          // would open an issue for a message with no stack.
           if (/[ Erreur lors de la mise à jour de la situation ]/.exec(msg)) {
             logger.warn(msg)
           }

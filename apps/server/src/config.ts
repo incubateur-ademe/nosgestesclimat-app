@@ -68,10 +68,6 @@ const ScalewaySchema = v.strictObject({
   rootPath: v.optional(v.string(), 'ngc'),
 })
 
-const SentrySchema = v.strictObject({
-  dsn: v.optional(v.string()),
-})
-
 const NotionSchema = v.strictObject({
   apiKey: v.string(),
   actionDatabaseId: v.string(),
@@ -89,7 +85,6 @@ const ThirdPartySchema = v.strictObject({
   notion: NotionSchema,
   posthog: PosthogSchema,
   scaleway: ScalewaySchema,
-  sentry: SentrySchema,
 })
 
 const ConfigSchema = v.pipe(
@@ -145,7 +140,6 @@ const {
     SCALEWAY_ENDPOINT,
     SCALEWAY_REGION,
     SCALEWAY_ROOT_PATH,
-    SENTRY_DSN,
     SERVER_URL,
   },
 } = process
@@ -197,9 +191,6 @@ export const config = v.parse(ConfigSchema, {
       region: SCALEWAY_REGION,
       rootPath: SCALEWAY_ROOT_PATH,
     },
-    sentry: {
-      dsn: SENTRY_DSN,
-    },
   },
 })
 
@@ -208,8 +199,9 @@ const up = (str: string) => new URLPattern(str) // improves readability of confi
 const ALLOWED_ORIGINS_BY_APP_ENV: Record<AppEnv, URLPattern[]> = {
   development: [up('http://localhost:3000'), up('https://localhost:3000')],
   test: [up('https://nosgestesclimat.test')],
-  // The e2e stack (apps/e2e) serves the site from localhost:3000.
-  e2e: [up('http://localhost:3000'), up('https://localhost:3000')],
+  // The e2e stacks (apps/e2e/stack) serve one site per Playwright worker, each
+  // on its own localhost port. The unset port matches any, redirects included.
+  e2e: [new URLPattern({ protocol: 'http', hostname: 'localhost' })],
   preproduction: [up('https://preprod.nosgestesclimat.fr')],
   review: [up('https://nosgestesclimat-site-preprod-pr*.osc-fr1.scalingo.io')],
   production: [up('https://nosgestesclimat.fr')],

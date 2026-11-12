@@ -24,19 +24,20 @@ scalingo --app nosgestesclimat-preprod logs --filter one-off-XXXX
 A one-off worker is killed after **1 hour without stdout output**: the job
 prints a heartbeat every 5 minutes, plus the progression of every batch.
 
-| Option                        | Default | Role                                                      |
-| ----------------------------- | ------- | --------------------------------------------------------- |
-| `-p`, `--period`              | —       | Month to export (`YYYY-MM`)                               |
-| `--start-date` / `--end-date` | —       | Explicit period (`--end-date` included)                   |
-| `-b`, `--batch`               | `1000`  | Batch size (~20 s per batch)                              |
-| `-s`, `--schema`              | `ngc`   | Postgres schema                                           |
-| `-f`, `--from`                | `auto`  | Resume from the bucket checkpoint, or `0` to start over   |
-| `--no-upload`                 | —       | Write locally only (debug)                                |
-| `--sample-per-version`        | —       | **Pre-flight**: at most N simulations per version         |
-| `--sample-mode`               | `first` | Pre-flight: `first`, `spread` (evenly spaced) or `random` |
-| `--sample-seed`               | `0`     | Pre-flight, `random` mode: draw seed                      |
-| `--versions`                  | —       | Pre-flight: restrict to some versions                     |
-| `-v`, `--verbose`             | —       | Per-simulation detail                                     |
+| Option                        | Default | Role                                                           |
+| ----------------------------- | ------- | -------------------------------------------------------------- |
+| `-p`, `--period`              | —       | Month to export (`YYYY-MM`)                                    |
+| `--start-date` / `--end-date` | —       | Explicit period (`--end-date` included)                        |
+| `-b`, `--batch`               | `1000`  | Batch size (~20 s per batch)                                   |
+| `-s`, `--schema`              | `ngc`   | Postgres schema                                                |
+| `-f`, `--from`                | `auto`  | Resume from the bucket checkpoint, or `0` to start over        |
+| `--no-upload`                 | —       | Write locally only (debug)                                     |
+| `--sample-per-version`        | —       | **Pre-flight**: at most N simulations per version              |
+| `--sample-mode`               | `first` | Pre-flight: `first`, `spread` (evenly spaced) or `random`      |
+| `--sample-seed`               | `0`     | Pre-flight, `random` mode: draw seed                           |
+| `--versions`                  | —       | Pre-flight: restrict to some versions                          |
+| `--retry-skipped`             | —       | Recompute only simulations listed as skipped in the checkpoint |
+| `-v`, `--verbose`             | —       | Per-simulation detail                                          |
 
 ## Outputs
 
@@ -49,6 +50,17 @@ ngc/export-subcategories/_model-cache/<version>.json
 The CSV and the checkpoint are uploaded every 25 batches and at the end of the
 run: an interrupted run resumes at the next batch with `--from auto` (default).
 The model rules cache avoids downloading the npm tarballs again on resume.
+
+To retry only simulations that were previously skipped, use the existing
+checkpoint and CSV:
+
+```sh
+scalingo --app nosgestesclimat-preprod run --detached \
+  "npm run jobs:exportSubcategories -- --period 2026-02 --retry-skipped"
+```
+
+Successful retries are appended to the CSV and removed from the checkpoint's
+`skipped` list. Simulations that are still unsupported remain skipped.
 
 ## Pre-flight before a full run
 
@@ -104,6 +116,11 @@ otherwise be lost without an error.
 - **Model rules**: downloaded from npm version by version
   (`lib/model-rules.ts`), with 4 attempts and a bucket cache fallback. An
   isolated `ECONNRESET` does not lose a simulation.
+- **Legacy `0.0.0` models**: when a simulation has `0.0.0`, the job resolves
+  the model package version from the versioned snapshot of the dated git
+  history of `package.json` (`lib/model-version-history.ts`). One-off
+  containers do not contain `.git`, so the snapshot must be updated when the
+  model dependency is upgraded.
 - **Memory**: ~45 MB RSS per Publicodes engine, cached per version without
   eviction. Over a month (≤ 9 versions in practice) this stays below ~500 MB; on
   a long period, run month by month. Size **L** is enough.

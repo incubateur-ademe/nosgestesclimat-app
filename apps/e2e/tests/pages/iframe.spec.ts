@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures'
+import { expect, test } from '../local/fixtures'
 
 test.describe('/demo-iframe-datashare.html', () => {
   test.beforeEach(async ({ page }) => {

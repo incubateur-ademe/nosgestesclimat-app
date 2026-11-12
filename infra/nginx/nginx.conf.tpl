@@ -294,6 +294,11 @@ server {
         proxy_cache_lock on;
     }
 
+    # ── Liens courts (/l/…) ───────────────────────────────
+    location = /l/empreinte-moyenne-2026 {
+        return 301 /blog/environnement/comparaison-moyenne-empreinte-carbone-individuelle$is_args$args;
+    }
+
 
     # Assets Next.js : noms hashés par le contenu, donc immuables, cachés un an.
     # Seuls les 200 sont cachés (`proxy_ignore_headers` + `proxy_cache_valid`) :
@@ -446,6 +451,10 @@ server {
         proxy_ssl_server_name on;
         proxy_ssl_name $ph_assets;
         proxy_ssl_verify on;
+        # Défaut = 1 : nginx refuse au-delà d'un intermédiaire, or la chaîne
+        # d'eu-assets en compte deux (YE2 → Root YE). La profondeur ne borne que
+        # la longueur de la chaîne, pas la confiance.
+        proxy_ssl_verify_depth 5;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
         proxy_intercept_errors off;
@@ -460,6 +469,7 @@ server {
         proxy_ssl_server_name on;
         proxy_ssl_name $ph_assets;
         proxy_ssl_verify on;
+        proxy_ssl_verify_depth 5;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         proxy_cache off;
         proxy_intercept_errors off;
@@ -474,6 +484,7 @@ server {
         proxy_ssl_server_name on;
         proxy_ssl_name $ph_api;
         proxy_ssl_verify on;
+        proxy_ssl_verify_depth 5;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
         # Conserve l'IP réelle du visiteur pour PostHog (geolocation, IP-based flags).
         # `$remote_addr` et non `$proxy_add_x_forwarded_for` : nginx est en frontal,

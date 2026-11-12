@@ -1,5 +1,5 @@
-/** Node `Logger` port: pino → stdout, OTLP → PostHog, Sentry via injected
- * capture. Wired by `logger.server.ts` (site) and `worker/observability.ts`. */
+/** Node `Logger` port: pino → stdout, OTLP → PostHog, capture via injected
+ * reporter. Wired by `logger.server.ts` (site) and `worker/observability.ts`. */
 import { toAttributeKey } from '@nosgestesclimat/core/features/logger/attribute-key'
 import type {
   Logger,
@@ -14,8 +14,8 @@ import { context, SpanStatusCode, trace } from '@opentelemetry/api'
 import pino, { type Logger as PinoLogger } from 'pino'
 
 import { emitLogRecord } from '../observability/log-bridge.ts'
+import { appTracer } from '../observability/otel.ts'
 import { toSpanAttributes } from '../observability/otlp-attributes.ts'
-import { appTracer } from '../observability/setup.ts'
 import {
   captureProperties,
   exceptionAttributes,
@@ -56,9 +56,9 @@ export function createLogger({
   verbosity?: LogVerbosity
   pretty?: boolean
   /**
-   * Receives the original `Error` — Sentry needs its prototype and its stack —
-   * and the line it was reported with, so a reader of the issue gets the same
-   * attributes as a reader of the trace.
+   * Receives the original `Error` — the capture needs its prototype and its
+   * stack — and the line it was reported with, so a reader of the issue gets
+   * the same attributes as a reader of the trace.
    */
   onCapture: (error: Error, line: LogMeta) => void
   /**

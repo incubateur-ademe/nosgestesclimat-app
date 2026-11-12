@@ -4,7 +4,7 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { findUserLastActivityAt } from '../../../users/repositories/users.repository.ts'
 import { hashToken } from '../../helpers/hash-token.ts'
-import { findAllByUserId } from '../../repositories/refresh-token.repository.ts'
+import { findAllRefreshTokenByUserId } from '../../repositories/refresh-token.repository.ts'
 import { createSession } from '../create-session.service.ts'
 import { decryptSession } from '../decrypt-session.service.ts'
 
@@ -29,7 +29,7 @@ describe('createSession', () => {
     expect.assert(payload)
     expect(payload.userId).toBe(userId)
 
-    const dbTokens = await findAllByUserId(userId)
+    const dbTokens = await findAllRefreshTokenByUserId(userId)
     expect(dbTokens).toHaveLength(1)
     expect(dbTokens[0].expiresAt.getTime()).toBeGreaterThan(Date.now())
     expect(dbTokens[0].token).toBe(hashToken(tokens.refreshToken))

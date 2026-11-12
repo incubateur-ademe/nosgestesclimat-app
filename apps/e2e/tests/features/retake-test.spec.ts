@@ -1,5 +1,24 @@
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
-import { expect, test } from '../fixtures'
+import { simulationFactory } from '@nosgestesclimat/core/features/simulations/factories/simulation.factory'
+import { userFactory } from '@nosgestesclimat/core/features/users/factories/user.factory'
+import type { UnverifiedUser } from '@nosgestesclimat/core/features/users/types/user'
+import { signIn } from '../helpers/session'
+import { test as base, expect } from '../local/fixtures'
+import { NGCTest } from '../page-objects/ngc-test'
+
+const test = base.extend<{
+  /** An anonymous user seeded in the e2e database and signed in. */
+  user: UnverifiedUser
+}>({
+  user: [
+    async ({ context }, use) => {
+      const user = await userFactory.unverified().create()
+      await signIn(context, user)
+      await use(user)
+    },
+    { auto: true },
+  ],
+})
 
 test.setTimeout(250_000)
 
@@ -7,16 +26,28 @@ const persona = Object.values(personas)[0]
 
 test.describe('Given a user that completed a test', () => {
   test('« Repasser le test » should start a brand new simulation', async ({
-    ngcTest,
     page,
+    user,
   }) => {
-    // Given a first completed simulation
+    const ngcTest = new NGCTest(page)
+
+    // The first question of a fresh test, read from a test start that is
+    // never answered: running a whole test through the UI is what makes this
+    // suite slow, so the completed simulation below is seeded instead.
     await ngcTest.start()
     await page.waitForURL(/question=/)
     const firstQuestion = new URL(page.url()).searchParams.get('question')
 
-    await ngcTest.answerTest(persona.situation)
-    await page.waitForURL(/\/fin/)
+    // Given a first completed simulation, seeded in the e2e database through
+    // the core factories rather than run through the UI. Seeded after the
+    // test start above, it is the user's current (latest) simulation.
+    await simulationFactory
+      .completed()
+      .params({ userId: user.id, situation: persona.situation })
+      .withValidComputedResults()
+      .create()
+
+    await page.goto('/fin')
 
     // When the user goes back to the home page and retakes the test
     // (client-side navigation on purpose: a full reload would hide the bug)

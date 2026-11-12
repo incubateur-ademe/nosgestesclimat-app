@@ -32,13 +32,12 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1023.0",
     "@aws-sdk/s3-request-presigner": "^3.1023.0",
-    "@incubateur-ademe/nosgestesclimat": "4.17.3",
+    "@incubateur-ademe/nosgestesclimat": "4.18.0",
     "@nosgestesclimat/core": "workspace:*",
     "@notionhq/client": "^2.3.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@publicodes/tools": "^1.8.0",
-    "@sentry/node": "^10.47.0",
     "axios": "^1.14.0",
     "axios-retry": "^4.5.0",
     "cors": "^2.8.6",
@@ -55,7 +54,6 @@
     "slugify": "^1.6.9",
     "valibot": "^1.4.0",
     "winston": "^3.19.0",
-    "winston-transport-sentry-node": "^3.0.0",
     "xlsx": "^0.18.5",
     "yargs": "^18.0.0"
   },

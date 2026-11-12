@@ -7,7 +7,7 @@ import { SESSION_ROTATION_TOLERANCE_SECONDS } from '../../constants/session.ts'
 import { refreshTokenFactory } from '../../factories/refresh-token.factory.ts'
 import { hashToken } from '../../helpers/hash-token.ts'
 import {
-  findAllByUserId,
+  findAllRefreshTokenByUserId,
   findByPreviousToken,
 } from '../../repositories/refresh-token.repository.ts'
 import { renewSession } from '../renew-session.service.ts'
@@ -38,7 +38,7 @@ describe('renewSession', () => {
 
     expect.assert(outcome.status === 'rotated')
 
-    const rows = await findAllByUserId(userId)
+    const rows = await findAllRefreshTokenByUserId(userId)
     expect(rows).toHaveLength(1)
     expect(rows[0].token).toBe(hashToken(outcome.tokens.refreshToken!))
 
@@ -50,13 +50,13 @@ describe('renewSession', () => {
 
   it('does not push the expiry back', async () => {
     const { token } = await refreshTokenFactory.create({ userId })
-    const [before] = await findAllByUserId(userId)
+    const [before] = await findAllRefreshTokenByUserId(userId)
 
     await renewSession({ refreshToken: token })
 
     // `expiresAt` carries the 180-day ceiling: a renewal that moved it would
     // make the session immortal.
-    const [after] = await findAllByUserId(userId)
+    const [after] = await findAllRefreshTokenByUserId(userId)
     expect(after.expiresAt).toEqual(before.expiresAt)
   })
 
@@ -70,7 +70,7 @@ describe('renewSession', () => {
     const statuses = outcomes.map((outcome) => outcome.status).sort()
 
     expect(statuses).toEqual(['concurrent', 'rotated'])
-    expect(await findAllByUserId(userId)).toHaveLength(1)
+    expect(await findAllRefreshTokenByUserId(userId)).toHaveLength(1)
 
     const concurrent = outcomes.find(
       (outcome) => outcome.status === 'concurrent'
@@ -94,7 +94,7 @@ describe('renewSession', () => {
     expect(outcome.ageMs).toBeGreaterThan(
       SESSION_ROTATION_TOLERANCE_SECONDS * 1000
     )
-    expect(await findAllByUserId(userId)).toHaveLength(0)
+    expect(await findAllRefreshTokenByUserId(userId)).toHaveLength(0)
   })
 
   it('reports an unknown key without touching another session', async () => {
@@ -103,7 +103,7 @@ describe('renewSession', () => {
     const outcome = await renewSession({ refreshToken: 'never-issued' })
 
     expect(outcome.status).toBe('unrecognised')
-    expect(await findAllByUserId(userId)).toHaveLength(1)
+    expect(await findAllRefreshTokenByUserId(userId)).toHaveLength(1)
   })
 
   it('reports an expired key as unrecognised', async () => {

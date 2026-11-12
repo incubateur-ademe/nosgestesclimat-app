@@ -23,6 +23,7 @@ export default defineConfig([
     'packages/core/src/prisma/generated/**',
     'packages/core/bin/**',
     'apps/site/.next/**',
+    'apps/site/.next-e2e-*/**',
     'apps/site/build/**',
     'apps/site/next-env.d.ts',
     'apps/site/coverage/**',

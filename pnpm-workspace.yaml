@@ -34,6 +34,5 @@ onlyBuiltDependencies:
   # upload the build's source maps.
   - '@posthog/cli'
   - '@prisma/engines'
-  - '@sentry/cli'
   - msw
   - prisma

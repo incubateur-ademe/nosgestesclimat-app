@@ -9,8 +9,8 @@ export function isServerReportedError(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'digest' in error
 }
 
-/** The browser's only capture path — the SDKs' own is off. `logger.error` files
- * the error in Sentry and PostHog, with the scope that makes it findable. */
+/** The browser's only capture path — the SDK's own is off. `logger.error` files
+ * the error in Error Tracking, with the scope that makes it findable. */
 export function reportUncaughtError(error: unknown, scope: ScopeName): void {
   if (isServerReportedError(error)) return
   logger.error(toError(error), { scope })

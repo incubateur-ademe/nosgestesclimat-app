@@ -52,6 +52,7 @@ export default function ActionsBasket({
             <Trans
               i18nKey="actions.basket.subtitle.choices"
               count={numberOfCommittedActions}
+              defaultValue_one="{{numberOfCommittedActions}} action dans votre sélection"
               values={{
                 numberOfCommittedActions,
               }}>
