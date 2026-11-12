@@ -9,8 +9,8 @@ import { deleteUser } from '../repositories/users.repository.ts'
 
 export const eraseUser = async (userId: string) => {
   await transaction(async (session) => {
-    // `OrganisationAdministrator.userEmail` restricts `VerifiedUser.email`:
-    // the administrations go first or the verified record cannot be deleted.
+    // `OrganisationAdministrator.userId` restricts `VerifiedUser.id`: the
+    // administrations go first or the verified record cannot be deleted.
     await deleteOrganisationAdministrationsForUser({ userId }, { session })
     // The groups the user runs go with the account; the ones they joined keep
     // their other members.
