@@ -1,21 +1,24 @@
 CREATE UNIQUE INDEX "VerifiedUser_email_key" ON "ngc"."VerifiedUser"("email");
 
--- The primary key swap goes first: on duplicate "id" it is the only statement
--- that can fail on rows already there, and here it fails while "userEmail",
--- its links and the old key are still in place. Further down they are dropped,
--- so a failure there would leave the table in a state the running application
--- cannot read. The two sub-commands share one statement: PostgreSQL applies an
--- ALTER TABLE atomically, so a rejected swap leaves the email key as it was.
--- The foreign key is removed before because it depends on the index of the old
--- key.
+-- The primary key swap comes before the columns the running application reads
+-- are dropped: it is the statement a remaining duplicate "id" rejects, and it
+-- rejects it while "userEmail", its links and the old key are still in place,
+-- the state the deployed application expects. The migration before this one,
+-- 20261112110000_verified_user_deduplicate_ids, leaves one row per id, so the
+-- swap is expected to go through; were it ever rejected, no column would have
+-- been dropped yet. The two sub-commands share one statement: PostgreSQL
+-- applies an ALTER TABLE atomically, so a rejected swap leaves the email key
+-- as it was. The foreign key is removed before because it depends on the index
+-- of the old key.
 ALTER TABLE "ngc"."OrganisationAdministrator" DROP CONSTRAINT "OrganisationAdministrator_userEmail_fkey";
 
 ALTER TABLE "ngc"."VerifiedUser"
     DROP CONSTRAINT "VerifiedUser_pkey",
     ADD CONSTRAINT "VerifiedUser_pkey" PRIMARY KEY ("id");
 
--- The administrations follow their user. The join mirrors the semantics of the
--- foreign key just dropped, so it covers exactly the rows it allowed.
+-- The organisation administrators follow their user. The join mirrors the
+-- semantics of the foreign key just dropped, so it covers exactly the rows it
+-- allowed; the deduplication left one row per email, so the join picks one.
 ALTER TABLE "ngc"."OrganisationAdministrator" ADD COLUMN "userId" UUID;
 
 UPDATE "ngc"."OrganisationAdministrator" oa
@@ -63,9 +66,12 @@ COMMIT;
 DROP INDEX "ngc"."OrganisationAdministrator_userEmail_key";
 ALTER TABLE "ngc"."OrganisationAdministrator" DROP COLUMN "userEmail";
 
--- The administrator's user id is unique, as the email was: one administration
--- per account. The foreign key comes last: it needs the referenced side to be
--- unique and every row backfilled.
+-- The organisation administrator's user id is unique, as the email was: one
+-- organisation administrator per account. The deduplication migration
+-- guarantees one row per id and at most one organisation administrator per
+-- account, which is what lets this index build.
 CREATE UNIQUE INDEX "OrganisationAdministrator_userId_key" ON "ngc"."OrganisationAdministrator"("userId");
 
+-- The foreign key comes last: it needs the referenced side to be unique and
+-- every row backfilled.
 ALTER TABLE "ngc"."OrganisationAdministrator" ADD CONSTRAINT "OrganisationAdministrator_userId_fkey" FOREIGN KEY ("userId") REFERENCES "ngc"."VerifiedUser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
