@@ -5,7 +5,7 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { TemplateIds } from '../../../emails/email.constant.ts'
 import { EmailRequestError } from '../../../emails/errors.ts'
-import type { SendEmail } from '../../../emails/types.ts'
+import type { EraseContact, SendEmail } from '../../../emails/types.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import { ErasureWithoutFinalNoticeError } from '../../errors/erasure-without-final-notice.error.ts'
 import { userFactory } from '../../factories/user.factory.ts'
@@ -13,6 +13,7 @@ import { createRunRetentionSweep } from '../run-retention-sweep.service.ts'
 
 const logger = createTestLogger()
 const sendEmail = vi.fn<SendEmail>()
+const eraseContact = vi.fn<EraseContact>()
 
 /** The sweep takes "now" as a parameter, so its windows are set in the
  * fixtures rather than waited for. */
@@ -48,6 +49,7 @@ const erasureDueAfterFinalNoticeDate = new Date('2026-10-20T06:00:00.000Z')
 describe('runRetentionSweep', () => {
   beforeEach(() => {
     sendEmail.mockResolvedValue(success())
+    eraseContact.mockResolvedValue(success())
   })
 
   afterEach(async () => {
@@ -402,6 +404,7 @@ describe('runRetentionSweep', () => {
       })
 
       sendEmail.mockResolvedValue(success())
+      eraseContact.mockResolvedValue(success())
       await runSweep()
 
       expect(sendEmail).toHaveBeenCalledTimes(3)
@@ -455,6 +458,14 @@ describe('runRetentionSweep', () => {
 
       expect(await erasureStamp(account.id)).toBeInstanceOf(Date)
       expect(await verifiedRecord(account.id)).toBeNull()
+    })
+
+    it('erases the account data of the emailing contact', async () => {
+      const account = await seedAccount({ lastActivityAt: erasureDueDate })
+
+      await runSweep()
+
+      expect(eraseContact).toHaveBeenCalledWith({ email: account.email })
     })
 
     it('leaves an account one day short of the period alone', async () => {
@@ -598,7 +609,11 @@ const runSweep = ({
 }: {
   now?: Date
   dryRun?: boolean
-} = {}) => createRunRetentionSweep({ logger, sendEmail })({ now: at, dryRun })
+} = {}) =>
+  createRunRetentionSweep({ logger, sendEmail, eraseContact })({
+    now: at,
+    dryRun,
+  })
 
 const noticeStamps = (userId: string) =>
   prisma.user.findFirst({

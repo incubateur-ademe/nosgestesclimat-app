@@ -5,7 +5,12 @@ import type { EmailRecord } from '../mailbox/types'
 const adapter = createMailboxAdapter()
 
 export class UserMailbox {
-  constructor(private readonly email: string) {}
+  private readonly email: string
+
+  /** The site lowercases an address before it sends to it. */
+  constructor(email: string) {
+    this.email = email.toLocaleLowerCase()
+  }
 
   async getVerificationCode(): Promise<string> {
     const email = await this.lookup(TemplateIds.fr.VERIFICATION_CODE)
