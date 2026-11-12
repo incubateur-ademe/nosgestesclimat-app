@@ -634,10 +634,6 @@ entries:
   cookieConsent.board.title: Panneau de gestion des cookies
   simulator.customQuestions.textile.open: Je détaille ma garde-robe
   'Pour plus de précision:': 'Pour plus de précision:'
-  simulator.customQuestions.plats.meals: repas
-  simulator.customQuestions.plats.perWeek: par semaine, miam
-  simulator.customQuestions.plats.selectionEnd: sur les 14 habituels
-  simulator.customQuestions.plats.selectionStart: Vous avez sélectionné
   simulator.customQuestions.voiture.passengers: passager(s)
   simulator.customQuestions.voiture.summaryEnd: C’est bien cette distance qui sera comptabilisée en fin de test.
   simulator.customQuestions.voiture.summaryKmPerPerson: km par personne
@@ -1121,17 +1117,13 @@ entries:
   ctaButtons.retake.label: Repasser le test
   Résultats immédiats, confidentiel et gratuit.: Résultats immédiats, confidentiel et gratuit.
   (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.): (Cela peut durer quelques dizaines de secondes pour les tests avec un grand nombre de participants ! Merci pour votre patience.)
-  '{mode.descriptionDefault}': '{mode.descriptionDefault}'
-  '{mode.titleDefault}': '{mode.titleDefault}'
   collectiveTest.form.name.label: Choisissez un nom pour votre test collectif
   collectiveTest.form.name.placeholder: 'ex : Défi climat équipe RH, Classe 5ème A…'
   collectiveTest.form.name.required: Veuillez renseigner un nom
-  collectiveTest.mode.title: Choisissez le mode du test
   collectiveTest.text1: Créez un lien personnalisé <2>à partager dans votre organisation</2>.
   collectiveTest.text2: Les participants passent le test <1>anonymement</1> et vous accédez à une <3>synthèse des résultats</3>.
   collectiveTest.title: Choisissez un nom pour votre test collectif
   common.facultatif: facultatif
-  common.suivant: Suivant
   Communiquez sur le test collectif: Communiquez sur le test collectif
   Créer mon lien de test: Créer mon lien de test
   Créer mon premier test collectif: Créer mon premier test collectif
@@ -1266,8 +1258,6 @@ entries:
   iframe.safari.title: Autorisation requise pour afficher le calculateur d'empreinte
   results.actions.afterLink.label: Découvrir mes actions personnalisées
   homepage.dynamicCounter.text: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
-  actions.beta-banner.content: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
-  actions.beta-banner.link.aria-label: Laisser votre avis, nouvelle fenêtre
   event.ctas.card1.alt: À titre individuel
   event.ctas.card1.buttonLabel: Je participe
   event.ctas.card1.description: Calculez votre empreinte en 10 minutes et découvrez vos leviers d'action personnalisés.
@@ -1414,24 +1404,17 @@ entries:
   footer.ademe.ariaLabel: ADEME (ouvrir dans une nouvelle fenêtre)
   tutorial.email.title.defaultContest: Votre adresse e-mail pour le tirage au sort
   tutorial.email.title.youthContest: Ton adresse e-mail pour le tirage au sort
-  poll.creation.mode.error: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
-  poll.creation.mode.select: Sélectionner
-  poll.creation.mode.tempDisabled: Fonctionnalité désactivée temporairement, en cours d'amélioration
-  poll.creation.mode.title: Choisissez le mode du test
   appCrash.metadata.description: Le site connaît une forte affluence, nos équipes travaillent à rétablir l’accès.
   appCrash.metadata.title: Erreur - Nos Gestes Climat
   common.errors.reload: Recharger la page
   common.errors.description: L'application rencontre quelques difficultés en ce moment. Nos équipes sont prévenues et mettent tout en œuvre pour rétablir la situation au plus vite.
   common.errors.retryLater: Merci de réessayer dans quelques minutes.
   common.errors.title: Oups, une erreur est survenue
-  Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.
-  Cette section est générée via Posthog.: Cette section est générée via Posthog.
   Face à une affluence très élevée, notre site connaît quelques ralentissements.: Face à une affluence très élevée, notre site connaît quelques ralentissements.
   Nous mettons tout en œuvre pour rétablir l'accès rapidement, n'hésitez pas à réessayer dans quelques minutes. Merci de votre patience et de votre mobilisation pour le climat !: Nous mettons tout en œuvre pour rétablir l'accès rapidement, n'hésitez pas à réessayer dans quelques minutes. Merci de votre patience et de votre mobilisation pour le climat !
   Pour patienter, testez vos connaissances avec le Quiz Carbone de l'ADEME: Pour patienter, testez vos connaissances avec le Quiz Carbone de l'ADEME
   shared.english: anglais
   shared.french: français
-  Statistiques publiques du site Nos Gestes Climat.: Statistiques publiques du site Nos Gestes Climat.
   switchLang.linkTitle: '{{languageAbbreviation}} - Définir le {{completeLanguageString}} comme langue du site'
   actions.commitToActionButton.error: Une erreur s'est produite, veuillez réessayer.
   actions.plan.header.description: Ces actions sont personnalisées selon vos réponses au test. Choisissez celles qui vous semblent atteignables et ajoutez-les à votre plan d’action !
@@ -1525,3 +1508,5 @@ entries:
   impact_matrix.title: Matrice d'impact
   stats.iframe.description: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.
   stats.iframe.title: Statistiques publiques du site Nos Gestes Climat.
+  simulator.customQuestions.plats.selection.equal_or_over_14: <0>{{totalNumberOfPlats}} repas</0> par semaine, miam <3>😋</3>
+  simulator.customQuestions.plats.selection.under_14: Vous avez sélectionné <2>{{totalNumberOfPlats}} repas</2> sur les 14 habituels <5>🍽️</5>
