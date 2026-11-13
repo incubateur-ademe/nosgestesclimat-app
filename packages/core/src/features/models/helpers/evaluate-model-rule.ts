@@ -17,8 +17,8 @@ const MODEL_METRIC = {
  * Evaluates a rule of the model, for `metric` when given, as the model computes
  * the footprint of that metric.
  *
- * A non-finite number (NaN, ±Infinity) is an error, not a value: it is an
- * issue with the model, not with the situation.
+ * Any number is applicable: which values make sense is up to the caller (see
+ * `requireFiniteValue`).
  */
 export const evaluateModelRule = ({
   engine,
@@ -45,17 +45,6 @@ export const evaluateModelRule = ({
   }
 
   if (typeof nodeValue === 'number') {
-    if (!Number.isFinite(nodeValue)) {
-      return failure(
-        new UnexpectedNodeValueError({
-          dottedName,
-          metric,
-          // Named by its value: its type, a number, says nothing.
-          nodeValue: String(nodeValue),
-        })
-      )
-    }
-
     return success({ applicable: true, value: nodeValue })
   }
 
@@ -72,6 +61,29 @@ export const evaluateModelRule = ({
       dottedName,
       metric,
       nodeValue: typeof nodeValue,
+    })
+  )
+}
+
+/** For an evaluation stored as a finite number or not at all. */
+export const requireFiniteValue = (
+  evaluation: ModelRuleEvaluationResult,
+  { dottedName, metric }: { dottedName: string; metric?: Metric }
+): ModelRuleEvaluationResult => {
+  if (
+    !evaluation.success ||
+    evaluation.data.applicable !== true ||
+    Number.isFinite(evaluation.data.value)
+  ) {
+    return evaluation
+  }
+
+  return failure(
+    new UnexpectedNodeValueError({
+      dottedName,
+      metric,
+      // Named by its value: its type, a number, says nothing.
+      nodeValue: String(evaluation.data.value),
     })
   )
 }

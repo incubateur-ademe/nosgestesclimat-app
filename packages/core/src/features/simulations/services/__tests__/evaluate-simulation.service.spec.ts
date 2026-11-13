@@ -7,7 +7,10 @@ import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
-import { PUBLIC_RULE_METRICS, type Rule } from '../../../models/types/rule.ts'
+import {
+  FOOTPRINT_RULE_METRICS,
+  type Rule,
+} from '../../../models/types/rule.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { PublicRulesEvaluationError } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
@@ -50,7 +53,9 @@ const failedRules = (result: Result<void, PublicRulesEvaluationError>) => {
 const storeRules = (names: string[]): Promise<Rule[]> =>
   Promise.all(
     names.flatMap((name) =>
-      PUBLIC_RULE_METRICS.map((metric) => ruleFactory.create({ name, metric }))
+      FOOTPRINT_RULE_METRICS.map((metric) =>
+        ruleFactory.create({ name, metric })
+      )
     )
   )
 
@@ -248,6 +253,42 @@ describe('evaluateSimulation', () => {
     ])
   })
 
+  it('evaluates a rule without a metric context when it has none', async () => {
+    const rule = await ruleFactory.create({
+      name: 'footprint . no metric',
+      metric: null,
+    })
+    const engine = engineWith({
+      'footprint . no metric': {
+        public: 'oui',
+        valeur: {
+          variations: [{ si: "métrique = 'eau'", alors: 5 }, { sinon: 10 }],
+        },
+      },
+    })
+    const evaluateRule = vi.spyOn(engine, 'evaluate')
+
+    await evaluate(engine, [rule])
+
+    expect(evaluateRule).toHaveBeenCalledWith('footprint . no metric')
+    expect(
+      evaluateRule.mock.calls.filter(
+        ([expression]) =>
+          typeof expression === 'object' &&
+          expression !== null &&
+          'contexte' in expression
+      )
+    ).toEqual([])
+    expect(await findRuleEvaluations()).toEqual([
+      {
+        name: 'footprint . no metric',
+        metric: null,
+        applicable: true,
+        valueNumber: 10,
+      },
+    ])
+  })
+
   it('evaluates only the public rules it is given', async () => {
     const [carbonRule] = await storeRules(['footprint . given'])
 
@@ -300,7 +341,7 @@ describe('evaluateSimulation', () => {
       scope: 'core.service.evaluateSimulation',
       simulationId: simulation.id,
     })
-    expect(logger.error).toHaveBeenCalledTimes(PUBLIC_RULE_METRICS.length)
+    expect(logger.error).toHaveBeenCalledTimes(FOOTPRINT_RULE_METRICS.length)
   })
 
   it('stores nothing when given no public rules', async () => {
@@ -334,7 +375,7 @@ describe('evaluateSimulation', () => {
           { dottedName: 'footprint . true', nodeValue: 'boolean' },
           { dottedName: 'footprint . string', nodeValue: 'string' },
         ].flatMap(({ dottedName, nodeValue }) =>
-          PUBLIC_RULE_METRICS.map((metric) =>
+          FOOTPRINT_RULE_METRICS.map((metric) =>
             expect.objectContaining({
               code: 'unexpected_node_value',
               dottedName,
@@ -381,7 +422,7 @@ describe('evaluateSimulation', () => {
 
       expect(failedRules(result)).toEqual(
         Object.entries(nonFiniteValues).flatMap(([dottedName, nodeValue]) =>
-          PUBLIC_RULE_METRICS.map((metric) =>
+          FOOTPRINT_RULE_METRICS.map((metric) =>
             expect.objectContaining({
               code: 'unexpected_node_value',
               dottedName,
@@ -409,7 +450,7 @@ describe('evaluateSimulation', () => {
       )
 
       expect(failedRules(result)).toEqual(
-        PUBLIC_RULE_METRICS.map((metric) =>
+        FOOTPRINT_RULE_METRICS.map((metric) =>
           expect.objectContaining({
             code: 'rule_evaluation_threw',
             dottedName: 'footprint . throwing',
@@ -433,7 +474,7 @@ describe('evaluateSimulation', () => {
       )
 
       expect(failedRules(result)).toEqual(
-        PUBLIC_RULE_METRICS.map((metric) =>
+        FOOTPRINT_RULE_METRICS.map((metric) =>
           expect.objectContaining({
             code: 'rule_evaluation_threw',
             dottedName: 'footprint . missing',

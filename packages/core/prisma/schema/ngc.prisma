@@ -320,18 +320,24 @@ model QuizzAnswer {
   @@schema("ngc")
 }
 
-/// A public rule of the model, for one metric. Its name is its identity
-/// across model versions: a stored rule is never renamed.
+/// A public rule of the model, either for one metric or, when `metric` is null,
+/// outside any metric's context. Its name is its identity across model versions:
+/// a stored rule is never renamed, and rows are never deleted. A name can have
+/// both forms across model versions, so consumers must not assume a single row
+/// per name.
 model Rule {
   id          Int              @id @default(autoincrement())
   name        String
-  metric      Metric
+  metric      Metric?
   /// In French, as the model's `titre`.
   title       String?
   /// In French, as the model's `description`.
   description String?
   evaluations RuleEvaluation[]
 
+  // A rule without a metric is unique by name: the index below lets NULL
+  // repeat, so a partial unique index on that case is added in migration
+  // 20261112152750_allow_rule_without_metric.
   @@unique([name, metric])
   @@schema("ngc")
 }

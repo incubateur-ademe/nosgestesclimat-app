@@ -7,6 +7,14 @@ import { mapRule, type RuleRow } from './rule.mapper.ts'
  * Safe to run concurrently with itself: rows are locked in a fixed
  * (name, metric) order, so two callers cannot deadlock, and the conflict
  * clause makes the second one update the rows the first one inserted.
+ *
+ * The rules without a metric are upserted apart: PostgreSQL lets `NULL` repeat
+ * in the unique index on (name, metric), so a partial unique index enforces one
+ * row per name for them instead.
+ *
+ * Rows are never deleted: a name can keep metric rows from a model version
+ * that evaluated it for each metric, next to the null row of a version that
+ * does not.
  */
 export const upsertRules = async (
   rules: NewRule[],
@@ -14,11 +22,30 @@ export const upsertRules = async (
 ): Promise<Rule[]> => {
   if (rules.length === 0) return []
 
+  const upsertedRulesWithMetric = await upsertRulesWithMetric(
+    rules.filter((rule) => rule.metric !== null),
+    session
+  )
+  const upsertedRulesWithoutMetric = await upsertRulesWithoutMetric(
+    rules.filter((rule) => rule.metric === null),
+    session
+  )
+
+  return [...upsertedRulesWithMetric, ...upsertedRulesWithoutMetric]
+}
+
+const upsertRulesWithMetric = async (
+  rules: NewRule[],
+  session: Transaction
+): Promise<Rule[]> => {
+  if (rules.length === 0) return []
+
   // A lock-acquisition order, not a display order: every caller feeds the rows
   // to the statement in the same fixed (name, metric) order.
   const sorted = rules.toSorted(
     (a, b) =>
-      codeUnitCompare(a.name, b.name) || codeUnitCompare(a.metric, b.metric)
+      codeUnitCompare(a.name, b.name) ||
+      codeUnitCompare(a.metric ?? '', b.metric ?? '')
   )
 
   // A raw query because Prisma's typed API has no batch upsert that returns
@@ -45,6 +72,33 @@ export const upsertRules = async (
       ${sorted.map((rule) => rule.description)}::text[]
     ) AS input(name, metric, title, description)
     ON CONFLICT (name, metric) DO UPDATE
+      SET title = EXCLUDED.title, description = EXCLUDED.description
+    RETURNING id, name, metric
+  `
+
+  return rows.map(mapRule)
+}
+
+const upsertRulesWithoutMetric = async (
+  rules: NewRule[],
+  session: Transaction
+): Promise<Rule[]> => {
+  if (rules.length === 0) return []
+
+  // A lock-acquisition order, as above: the name identifies these rows.
+  const sorted = rules.toSorted((a, b) => codeUnitCompare(a.name, b.name))
+
+  // `ON CONFLICT (name) WHERE "metric" IS NULL` infers the partial unique index
+  // on the names of the rules without a metric.
+  const rows = await session.$queryRaw<RuleRow[]>`
+    INSERT INTO "ngc"."Rule" (name, metric, title, description)
+    SELECT name, NULL, title, description
+    FROM unnest(
+      ${sorted.map((rule) => rule.name)}::text[],
+      ${sorted.map((rule) => rule.title)}::text[],
+      ${sorted.map((rule) => rule.description)}::text[]
+    ) AS input(name, title, description)
+    ON CONFLICT (name) WHERE "metric" IS NULL DO UPDATE
       SET title = EXCLUDED.title, description = EXCLUDED.description
     RETURNING id, name, metric
   `

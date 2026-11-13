@@ -1,5 +1,6 @@
 import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
+import { toError } from '../../../lib/to-error.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
 import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
@@ -76,7 +77,22 @@ export function createAssessActions(deps: AssessActionsDeps) {
         const evaluation = evaluateModelRule({ engine, dottedName })
 
         if (!evaluation.success) {
-          logger.error(evaluation.error, { actionId: id, ruleId, dottedName })
+          const { error } = evaluation
+          const meta = { actionId: id, ruleId, dottedName }
+          switch (error.code) {
+            case 'unexpected_node_value':
+              // No stack to report: an anomaly to watch by rate.
+              logger.warn(`Unexpected nodeValue type: ${error.nodeValue}`, meta)
+              break
+            case 'rule_evaluation_threw':
+              // A retry skips an assessed simulation: this log is the only
+              // trace of the action left unassessed.
+              logger.error(toError(error.cause), meta)
+              break
+            default:
+              logger.error(error, meta)
+              error satisfies never
+          }
           return []
         }
 

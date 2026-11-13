@@ -54,11 +54,7 @@ export default function EngineProvider({
     rawMissingVariables,
   } = useRules({ engine: pristineEngine, root })
 
-  const { categories, subcategories } = useCategories({
-    parsedRules,
-    everyRules,
-    safeGetRule,
-  })
+  const { categories, subcategories } = useCategories({ parsedRules })
 
   const { addToEngineSituation } = useAddToEngineSituation({
     engine,
