@@ -10,6 +10,7 @@ import type {
 const mapValueToPrisma = (value: ModelRuleValue | undefined) => ({
   valueNumber: typeof value === 'number' ? value : null,
   valueBoolean: typeof value === 'boolean' ? value : null,
+  valueString: typeof value === 'string' ? value : null,
 })
 
 export const mapNewRuleEvaluationToPrisma = (
@@ -33,7 +34,7 @@ export const mapRuleEvaluation = (db: RuleEvaluationModel): RuleEvaluation => {
     ruleId: db.ruleId,
     createdAt: db.createdAt,
   }
-  const values = [db.valueNumber, db.valueBoolean].filter(
+  const values = [db.valueNumber, db.valueBoolean, db.valueString].filter(
     (value) => value !== null
   )
 
