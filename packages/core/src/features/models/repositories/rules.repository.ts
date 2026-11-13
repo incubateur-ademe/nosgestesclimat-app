@@ -22,16 +22,16 @@ export const upsertRules = async (
 ): Promise<Rule[]> => {
   if (rules.length === 0) return []
 
-  const withMetric = await upsertRulesWithMetric(
+  const upsertedRulesWithMetric = await upsertRulesWithMetric(
     rules.filter((rule) => rule.metric !== null),
     session
   )
-  const withoutMetric = await upsertRulesWithoutMetric(
+  const upsertedRulesWithoutMetric = await upsertRulesWithoutMetric(
     rules.filter((rule) => rule.metric === null),
     session
   )
 
-  return [...withMetric, ...withoutMetric]
+  return [...upsertedRulesWithMetric, ...upsertedRulesWithoutMetric]
 }
 
 const upsertRulesWithMetric = async (

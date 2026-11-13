@@ -1,11 +1,11 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import { utils } from 'publicodes'
 import { MissingFootprintRuleError } from '../errors.ts'
 import { getSomme } from './get-somme.ts'
+import { getSubcategories } from './get-subcategories.ts'
 
 /** The rule whose value is the footprint of the simulation. */
-export const ROOT_DOTTED_NAME = 'bilan' as DottedName
+export const ROOT_DOTTED_NAME: DottedName = 'bilan'
 
 /** The categories the footprint sums, and the subcategories each sums. */
 export interface FootprintRules {
@@ -32,16 +32,7 @@ export const getFootprintRules = (engine: Engine): FootprintRules => {
 
   const categories = getSomme(rootRule.rawNode) ?? ([] as DottedName[])
 
-  const subcategories = categories.flatMap((category) =>
-    (getSomme(parsedRules[category]?.rawNode) ?? []).map(
-      (partialName) =>
-        utils.disambiguateReference(
-          parsedRules,
-          category,
-          partialName
-        ) as DottedName
-    )
-  )
+  const subcategories = getSubcategories({ categories, parsedRules })
 
   return { categories, subcategories }
 }
