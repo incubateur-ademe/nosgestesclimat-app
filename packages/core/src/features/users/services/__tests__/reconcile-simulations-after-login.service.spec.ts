@@ -29,6 +29,12 @@ const createGroupParticipant = ({
     select: { userId: true },
   })
 
+const createRule = () =>
+  prisma.rule.create({
+    data: { name: 'alimentation', metric: 'carbon' },
+    select: { id: true },
+  })
+
 const logger = createTestLogger()
 
 describe('reconcileSimulationsAfterLogin', () => {
@@ -97,6 +103,47 @@ describe('reconcileSimulationsAfterLogin', () => {
       })
 
       expect(simulations.map(({ id }) => id)).toContain(anonymousSimulation.id)
+    })
+
+    it('keeps the rule evaluations of the transferred simulations', async () => {
+      const verifiedUser = await userFactory.verified().create()
+      const anonymousUser = await userFactory.create()
+      const anonymousSimulation = await simulationFactory
+        .params({ userId: anonymousUser.id })
+        .create()
+      const rule = await createRule()
+      await prisma.ruleEvaluation.create({
+        data: {
+          simulationId: anonymousSimulation.id,
+          ruleId: rule.id,
+          applicable: true,
+          valueNumber: 42,
+        },
+      })
+
+      await createReconcileSimulationsAfterLogin({ logger })({
+        userId: verifiedUser.id,
+        preExistingUserId: anonymousUser.id,
+      })
+
+      expect(
+        await prisma.ruleEvaluation.findMany({
+          where: { simulation: { userId: verifiedUser.id } },
+          select: {
+            simulationId: true,
+            ruleId: true,
+            applicable: true,
+            valueNumber: true,
+          },
+        })
+      ).toEqual([
+        {
+          simulationId: anonymousSimulation.id,
+          ruleId: rule.id,
+          applicable: true,
+          valueNumber: 42,
+        },
+      ])
     })
 
     it('leaves the anonymous session without any simulations', async () => {
