@@ -1,7 +1,11 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
-import { UnexpectedNodeValueError } from '../../models/errors.ts'
+import {
+  UnexpectedNodeValueError,
+  type RuleEvaluationError,
+} from '../../models/errors.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
@@ -87,4 +91,19 @@ export const toActionEvaluation = (
   }
 
   return success({ applicable: undefined, impact: undefined })
+}
+
+/** Evaluates the rule of the action named `dottedName`. */
+export const evaluateAction = ({
+  engine,
+  dottedName,
+}: {
+  engine: Engine
+  dottedName: DottedName
+}): Result<ActionEvaluation, RuleEvaluationError> => {
+  const evaluation = evaluateModelRule({ engine, dottedName })
+
+  return evaluation.success
+    ? toActionEvaluation(evaluation.data, dottedName)
+    : evaluation
 }
