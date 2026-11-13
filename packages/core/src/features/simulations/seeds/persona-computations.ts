@@ -6,9 +6,10 @@ import type Engine from 'publicodes'
 import type { Situation } from 'publicodes'
 import {
   buildRuleIdToDottedName,
-  evaluateAction,
+  toActionEvaluation,
 } from '../../actions/helpers/action-assessment.ts'
 import type { ActionEvaluation } from '../../actions/types/action.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import { createTestEngine } from '../../simulation-computation/factories/engine.factory.ts'
 import { getComputedResults } from '../../simulations/helpers/get-computed-results.ts'
 import type { ComputedResults } from '../../simulations/validators/computed-results.schema.ts'
@@ -69,16 +70,15 @@ const computeActionAssessments = (
 
   const assessments = [...ruleIdToDottedName.entries()].map(
     ([ruleId, dottedName]) => {
-      const evaluation = evaluateAction({ engine, dottedName })
+      const evaluation = evaluateModelRule({ engine, dottedName })
 
       return {
         ruleId,
         // A rule whose value cannot be read is left unassessed rather than
         // mis-assessed: "applicability unknown" is the shape that says so.
-        applicability:
-          evaluation.outcome === 'evaluated'
-            ? evaluation.applicability
-            : ({ applicable: undefined, impact: undefined } as const),
+        applicability: evaluation.success
+          ? toActionEvaluation(evaluation.data)
+          : ({ applicable: undefined, impact: undefined } as const),
       }
     }
   )

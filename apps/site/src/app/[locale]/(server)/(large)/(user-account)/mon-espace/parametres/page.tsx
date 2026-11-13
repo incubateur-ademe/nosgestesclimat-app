@@ -1,6 +1,6 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import UserSpaceTabs from '@/components/layout/UserSpaceTabs'
-import Trans from '@/components/translation/trans/TransServer'
+import TransServer from '@/components/translation/trans/TransServer'
 import Title from '@/design-system/layout/Title'
 import { buildAlternates } from '@/helpers/metadata/getMetadataObject'
 import { throwNextError } from '@/helpers/server/error'
@@ -13,6 +13,7 @@ import { requireAuthUser } from '@/services/auth/require-auth-user'
 import { getRegion, setRegion } from '@/services/users/region'
 import type { DefaultPageProps } from '@/types'
 import type { Metadata } from 'next'
+import DeleteAccount from './_components/DeleteAccount'
 import Localisation from './_components/Localisation'
 import NewsletterSettings from './_components/NewsletterSettings'
 import UserEmail from './_components/UserEmail'
@@ -37,42 +38,43 @@ export async function updateRegion(region: Region) {
 
 export default async function SettingsPage({ params }: DefaultPageProps) {
   const { locale } = await params
-  const [subscriptions, newsletters, user, regionData] = await throwNextError(
-    () =>
-      Promise.all([
-        getNewsletterSubscriptions(),
-        getNewsletters({ locale }),
-        requireAuthUser(),
-        getRegion(),
-      ])
+  const user = await requireAuthUser()
+  const [subscriptions, newsletters, regionData] = await throwNextError(() =>
+    Promise.all([
+      getNewsletterSubscriptions(user.email),
+      getNewsletters({ locale }),
+      getRegion(),
+    ])
   )
 
   return (
     <div className="flex flex-col">
       <UserSpaceTabs isAuth activeTabId="settings" />
 
-      <div className="mb-6 flex w-full items-start justify-between">
+      <div className="mb-6">
         <Title className="mb-0">
-          <Trans i18nKey="mon-espace.settings.title">Paramètres</Trans>
+          <TransServer i18nKey="mon-espace.settings.title">
+            Paramètres
+          </TransServer>
         </Title>
       </div>
 
       <section aria-labelledby="user-info-title" className="mb-10">
         <h2 id="user-info-title" className="mb-4">
-          <Trans i18nKey="mon-espace.settings.userInfos.title">
+          <TransServer i18nKey="mon-espace.settings.userInfos.title">
             Mes informations
-          </Trans>
+          </TransServer>
         </h2>
 
-        <div className="flex max-w-[720px] flex-col gap-8">
+        <div className="flex max-w-180 flex-col gap-8">
           <QueryClientProviderWrapper>
             <UserEmail user={user} />
           </QueryClientProviderWrapper>
 
           <h2 className="mt-8">
-            <Trans i18nKey="settings.newsletters.title">
+            <TransServer i18nKey="settings.newsletters.title">
               Inscription à nos contenus
-            </Trans>
+            </TransServer>
           </h2>
           <NewsletterSettings {...{ newsletters, subscriptions }} />
         </div>
@@ -86,6 +88,10 @@ export default async function SettingsPage({ params }: DefaultPageProps) {
           />
         ) : null}
       </section>
+
+      <div className="mt-10 border-t border-slate-200 pt-6 pb-10">
+        <DeleteAccount />
+      </div>
     </div>
   )
 }

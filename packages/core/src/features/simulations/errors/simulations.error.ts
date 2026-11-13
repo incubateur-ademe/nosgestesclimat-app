@@ -39,6 +39,22 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
   }
 }
 
+/**
+ * Each failed rule is logged where it failed: this only counts them, one per
+ * rule and metric.
+ */
+export class PublicRulesEvaluationError extends DomainError<'public_rules_evaluation_failed'> {
+  public readonly failedCount: number
+
+  constructor(failedCount: number) {
+    super(
+      'public_rules_evaluation_failed',
+      `${failedCount} public rule evaluation(s) failed`
+    )
+    this.failedCount = failedCount
+  }
+}
+
 export type UpdateSimulationSituationError =
   | SimulationNotFoundError
   | SimulationCompletedError

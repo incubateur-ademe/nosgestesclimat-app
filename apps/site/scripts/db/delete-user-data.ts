@@ -1,7 +1,14 @@
+import { createBrevoClient } from '@nosgestesclimat/core/features/emails/brevo/client'
 import { findVerifiedUserByEmail } from '@nosgestesclimat/core/features/users/repositories/users.repository'
 import { eraseUser } from '@nosgestesclimat/core/features/users/services/erase-user.service'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { parseArgs } from 'node:util'
+import { env } from '../../src/env/server.ts'
+
+const { eraseContact } = createBrevoClient({
+  apiKey: env.BREVO_API_KEY,
+  url: env.BREVO_URL,
+})
 
 export async function deleteUserData(email: string, isDryMode: boolean) {
   // `VerifiedUser.email` is the primary key: an email addresses at most one
@@ -19,7 +26,7 @@ export async function deleteUserData(email: string, isDryMode: boolean) {
     return
   }
 
-  await eraseUser(user.id)
+  await eraseUser(user.id, { eraseContact })
 
   console.log('Dry mode disabled: user erased')
 }

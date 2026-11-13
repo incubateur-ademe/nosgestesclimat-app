@@ -1,0 +1,83 @@
+{
+  "cookies": [
+    {
+      "name": "ngc_ff_overrides",
+      "value": "{\"abc-test-layout-catalogue\":\"control\",\"abc-test-action-card\":\"control\",\"ab-test-global-footprint-display\":\"control\"}",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ngc_region",
+      "value": "%7B%22current%22%3A%22FR%22%2C%22initial%22%3A%22FR%22%7D",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ngc_session",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..IAuL6AD6-me-wI-7.DLzwT4AIzJsDYsHQErJE0VAf3BvUtxmyN0z06C_87PdEUNO95lYN0I7X7wS2x1UWC1UAUDUM8G-hx7Ep2hAHIFfPioeEn2MoyZ_6wiOu1clEuzq09QrwM22KQrvIyK9syFvclLL5537RUh6deaHFo79G1mR0rVZA.8AOp402sp633v-yROEJOVA",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1809295405.37006,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ngc_refresh",
+      "value": "GkZg5Awsj7PYB9Qyd-NdN7Zu_EHlJX6IFf9eWtHUlgo",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1809295405.370156,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:4000",
+      "localStorage": [
+        {
+          "name": "ngc_tracking_first_question_seen_9ade394e-ae53-4db2-8863-c71b59e200b5",
+          "value": "true"
+        },
+        {
+          "name": "ph_debug",
+          "value": "true"
+        },
+        {
+          "name": "nosgestesclimat::v3",
+          "value": "{\"tutorials\":{}}"
+        },
+        {
+          "name": "ngc_tracking_first_question_answered_9ade394e-ae53-4db2-8863-c71b59e200b5",
+          "value": "true"
+        },
+        {
+          "name": "e2e-test-data::user",
+          "value": "{\"firstName\":\"Dennis\",\"lastName\":\"Baumbach\",\"email\":\"Dennis.Baumbach53@e2e.test\"}"
+        },
+        {
+          "name": "__ph_opt_in_out_phc_bqjKhaaNS6ohpyBbN5DL1q2xp7qnUUPc7iMSO5MFg5G",
+          "value": "0"
+        },
+        {
+          "name": "ngc_tracking_test_completed_9ade394e-ae53-4db2-8863-c71b59e200b5",
+          "value": "true"
+        },
+        {
+          "name": "cookie-management-state",
+          "value": "{\"posthog\":\"refused\",\"googleTag\":\"refused\"}"
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 
 import { NEWSLETTER_URL, USER_URL } from '@/constants/urls/main'
 import { getT } from '@/helpers/getServerTranslation'
+import { NotFoundError } from '@/helpers/server/error'
 import i18nConfig from '@/i18nConfig'
 import initI18next from '@/locales/initServer'
 import { isLocale } from '@/utils/is-locale'
@@ -23,10 +24,21 @@ export async function updateNewsletterSubscription({
   })
 }
 
-export async function getNewsletterSubscriptions() {
-  return await fetchServer<{ email: string; listIds: ListIds }>(
-    `${USER_URL}/me/contact`
-  )
+/**
+ * The newsletters the user is subscribed to. The API answers 404 when Brevo
+ * holds no contact for them: no subscription, not a missing user.
+ */
+export async function getNewsletterSubscriptions(email: string) {
+  try {
+    return await fetchServer<{ email: string; listIds: ListIds }>(
+      `${USER_URL}/me/contact`
+    )
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      return { email, listIds: [] }
+    }
+    throw error
+  }
 }
 
 export enum NEWSLETTER_IDS {

@@ -13,18 +13,22 @@ const logger = createLogger({
   onCapture: captureException,
 }).child({ scope: 'site.cron.sendRetentionSweep' })
 
-const { sendEmail } = createBrevoClient({
+const { sendEmail, eraseContact } = createBrevoClient({
   apiKey: env.BREVO_API_KEY,
   url: env.BREVO_URL,
 })
 
-const retentionSweep = createRunRetentionSweep({ logger, sendEmail })
+const retentionSweep = createRunRetentionSweep({
+  logger,
+  sendEmail,
+  eraseContact,
+})
 
 const main = async () => {
   try {
     const { values } = parseArgs({
       args: process.argv.slice(2),
-      options: { dry: { type: 'boolean', default: true } },
+      options: { dry: { type: 'boolean', default: false } },
       allowNegative: true,
     })
 

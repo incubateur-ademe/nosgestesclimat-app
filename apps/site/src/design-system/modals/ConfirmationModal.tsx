@@ -3,7 +3,13 @@
 import Trans from '@/components/translation/trans/TransClient'
 import type { ReactNode } from 'react'
 import Button from '../buttons/Button'
-import Modal from './Modal'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from '../shadcn/dialog'
 
 interface Props {
   onConfirm: () => void
@@ -25,31 +31,33 @@ export default function ConfirmationModal({
   disabled,
 }: Props) {
   return (
-    <Modal
-      ariaLabel={ariaLabel}
-      ariaLabelledBy={ariaLabelledBy}
-      isOpen
-      closeModal={closeModal}
-      hasAbortButton={false}>
-      <div>{children}</div>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open && !loading) {
+          closeModal()
+        }
+      }}>
+      <DialogContent aria-label={ariaLabel} aria-labelledby={ariaLabelledBy}>
+        <DialogHeader>{children}</DialogHeader>
 
-      <div className="mt-12 flex flex-wrap justify-center gap-4 md:justify-normal">
-        <Button
-          disabled={disabled || loading}
-          variant="outlined"
-          onClick={closeModal}>
-          <Trans i18nKey="common.cancel">Annuler</Trans>
-        </Button>
+        <DialogFooter>
+          <Button
+            color="red"
+            disabled={disabled}
+            loading={loading}
+            className="w-35"
+            onClick={onConfirm}>
+            <Trans i18nKey="common.confirm">Confirmer</Trans>
+          </Button>
 
-        <Button
-          color="primary"
-          disabled={disabled}
-          loading={loading}
-          className="xs:order-2 -order-1 w-35"
-          onClick={onConfirm}>
-          <Trans i18nKey="common.confirm">Confirmer</Trans>
-        </Button>
-      </div>
-    </Modal>
+          <DialogClose asChild>
+            <Button variant="outlined" disabled={disabled || loading}>
+              <Trans i18nKey="common.cancel">Annuler</Trans>
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
