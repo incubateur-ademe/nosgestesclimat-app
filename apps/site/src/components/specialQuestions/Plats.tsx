@@ -7,9 +7,9 @@ export default function Plats({ question }: { question: DottedName }) {
   const { isMissing } = useRule(question)
 
   return (
-    <Question
-      beforeInputsHelpText={!isMissing ? <DishesNumberInfo /> : null}
-      question={question}
-    />
+    <>
+      <Question question={question} />
+      {!isMissing ? <DishesNumberInfo /> : null}
+    </>
   )
 }
