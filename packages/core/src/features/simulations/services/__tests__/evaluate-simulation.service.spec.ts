@@ -149,10 +149,30 @@ describe('evaluateSimulation', () => {
     )
   })
 
+  it('stores each public rule with a string value as applicable, the empty string included', async () => {
+    const rules = await storeRules(['footprint . text', 'footprint . empty'])
+
+    await evaluate(
+      engineWith({
+        'footprint . text': { public: 'oui', valeur: "'texte'" },
+        'footprint . empty': { public: 'oui', valeur: "''" },
+      }),
+      rules
+    )
+
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, {
+        'footprint . text': { applicable: true, value: 'texte' },
+        'footprint . empty': { applicable: true, value: '' },
+      })
+    )
+  })
+
   it('stores a public rule valued null as not applicable, whatever its type', async () => {
     const rules = await storeRules([
       'footprint . number',
       'footprint . boolean',
+      'footprint . string',
     ])
 
     await evaluate(
@@ -167,6 +187,11 @@ describe('evaluateSimulation', () => {
           'applicable si': 'non',
           valeur: 'oui',
         },
+        'footprint . string': {
+          public: 'oui',
+          'applicable si': 'non',
+          valeur: "'texte'",
+        },
       }),
       rules
     )
@@ -175,6 +200,7 @@ describe('evaluateSimulation', () => {
       evaluationsOf(rules, {
         'footprint . number': { applicable: false },
         'footprint . boolean': { applicable: false },
+        'footprint . string': { applicable: false },
       })
     )
   })
@@ -286,36 +312,6 @@ describe('evaluateSimulation', () => {
   // The stored evaluations of a simulation are complete for its model: one
   // rule that cannot be evaluated fails them all.
   describe('fails, storing nothing and reporting each public rule that cannot be evaluated', () => {
-    it('when valued a string', async () => {
-      const rules = await storeRules([
-        'footprint . number',
-        'footprint . string',
-      ])
-
-      const result = await evaluate(
-        engineWith({
-          'footprint . number': { public: 'oui', valeur: 1 },
-          'footprint . string': { public: 'oui', valeur: "'texte'" },
-        }),
-        rules
-      )
-
-      expect(failedRules(result)).toEqual(
-        [{ dottedName: 'footprint . string', nodeValue: 'string' }].flatMap(
-          ({ dottedName, nodeValue }) =>
-            PUBLIC_RULE_METRICS.map((metric) =>
-              expect.objectContaining({
-                code: 'unexpected_node_value',
-                dottedName,
-                metric,
-                nodeValue,
-              })
-            )
-        )
-      )
-      expect(await findRuleEvaluations()).toEqual([])
-    })
-
     it('when valued NaN or ±Infinity', async () => {
       // No publicodes formula evaluates to a non-finite number.
       const nonFiniteValues: Record<string, number> = {

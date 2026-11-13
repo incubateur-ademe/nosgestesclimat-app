@@ -2,7 +2,7 @@ import type { Result } from '../../../lib/result.ts'
 import type { RuleEvaluationError } from '../errors.ts'
 
 /** The value of an applicable rule, its type read from the value itself. */
-export type ModelRuleValue = number | boolean
+export type ModelRuleValue = number | boolean | string
 
 /**
  * A rule's applicability, in Publicodes' terms: `applicable: undefined` means
