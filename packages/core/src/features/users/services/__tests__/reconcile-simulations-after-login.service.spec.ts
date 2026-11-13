@@ -11,6 +11,7 @@ import {
   createRuleEvaluations,
   findRuleEvaluationsBySimulation,
 } from '../../../simulations/repository/rule-evaluations.repository.ts'
+import { findSimulationById } from '../../../simulations/repository/simulation.repository.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { createReconcileSimulationsAfterLogin } from '../reconcile-simulations-after-login.service.ts'
 
@@ -125,8 +126,14 @@ describe('reconcileSimulationsAfterLogin', () => {
         preExistingUserId: anonymousUser.id,
       })
 
+      const verifiedUserSimulation = await findSimulationById({
+        id: anonymousSimulation.id,
+        userId: verifiedUser.id,
+      })
+      expect.assert(verifiedUserSimulation)
+
       expect(
-        await findRuleEvaluationsBySimulation(anonymousSimulation.id)
+        await findRuleEvaluationsBySimulation(verifiedUserSimulation.id)
       ).toEqual([
         {
           simulationId: anonymousSimulation.id,
