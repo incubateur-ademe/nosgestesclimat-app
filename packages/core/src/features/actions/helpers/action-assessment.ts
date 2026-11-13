@@ -1,5 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
+import { failure, success, type Result } from '../../../lib/result.ts'
+import { UnexpectedNodeValueError } from '../../models/errors.ts'
 import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
@@ -55,23 +57,34 @@ export const toNewActionAssessment = (
 }
 
 /**
+ * An action's impact is a number: any other value, `false` included, is a
+ * modelling mistake.
+ *
  * NaN and ±Infinity are an issue with the model, not with the simulation: the
  * action still applies, its impact unknown.
  */
 export const toActionEvaluation = (
-  applicability: ModelRuleEvaluation
-): ActionEvaluation => {
+  applicability: ModelRuleEvaluation,
+  dottedName: string
+): Result<ActionEvaluation, UnexpectedNodeValueError> => {
   if (applicability.applicable === true) {
     const { value } = applicability
-    return {
+
+    if (typeof value !== 'number') {
+      return failure(
+        new UnexpectedNodeValueError({ dottedName, nodeValue: typeof value })
+      )
+    }
+
+    return success({
       applicable: true,
       impact: Number.isFinite(value) && value !== 0 ? value : undefined,
-    }
+    })
   }
 
   if (applicability.applicable === false) {
-    return { applicable: false, impact: undefined }
+    return success({ applicable: false, impact: undefined })
   }
 
-  return { applicable: undefined, impact: undefined }
+  return success({ applicable: undefined, impact: undefined })
 }

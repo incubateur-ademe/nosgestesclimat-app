@@ -20,7 +20,8 @@ const assessActions = createAssessActions({ logger })
 
 const APPLICABLE_RULE_ID = faker.string.uuid()
 const NOT_APPLICABLE_RULE_ID = faker.string.uuid()
-const BOOLEAN_RULE_ID = faker.string.uuid()
+const TRUE_RULE_ID = faker.string.uuid()
+const FALSE_RULE_ID = faker.string.uuid()
 const STRING_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
@@ -31,14 +32,21 @@ const testRules: RawPublicodes<string> = {
     meta: { id: APPLICABLE_RULE_ID },
   },
   'test . not-applicable': {
-    'est non applicable': 'oui',
+    'non applicable si': 'oui',
+    valeur: 42,
+    unité: 'kgCO2e',
     titre: 'Test not applicable',
     meta: { id: NOT_APPLICABLE_RULE_ID },
   },
-  'test . boolean': {
+  'test . true': {
     valeur: 'oui',
-    titre: 'Test boolean',
-    meta: { id: BOOLEAN_RULE_ID },
+    titre: 'Test true',
+    meta: { id: TRUE_RULE_ID },
+  },
+  'test . false': {
+    valeur: 'non',
+    titre: 'Test false',
+    meta: { id: FALSE_RULE_ID },
   },
   'test . string': {
     valeur: "'texte'",
@@ -138,24 +146,40 @@ describe('assessActions', () => {
     )
   })
 
+  // An action's impact is a number: any other value is a modelling mistake.
   it.each([
-    { type: 'boolean', ruleId: BOOLEAN_RULE_ID },
-    { type: 'string', ruleId: STRING_RULE_ID },
-  ])('skips actions whose nodeValue is a $type', async ({ type, ruleId }) => {
-    await actionFactory.params({ ruleId }).published().create()
+    { value: 'true', type: 'boolean', ruleId: TRUE_RULE_ID },
+    { value: 'false', type: 'boolean', ruleId: FALSE_RULE_ID },
+    { value: 'a string', type: 'string', ruleId: STRING_RULE_ID },
+  ])(
+    'skips actions valued $value, assessing the others',
+    async ({ type, ruleId }) => {
+      const [, applicableAction] = await Promise.all([
+        actionFactory.params({ ruleId }).published().create(),
+        actionFactory
+          .params({ ruleId: APPLICABLE_RULE_ID })
+          .published()
+          .create(),
+      ])
 
-    await assess()
+      await assess()
 
-    expect(await findActionAssessments()).toHaveLength(0)
-
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.objectContaining({
-        code: 'unexpected_node_value',
-        nodeValue: type,
-      }),
-      expect.objectContaining({ ruleId })
-    )
-  })
+      expect(await findActionAssessments()).toEqual([
+        expect.objectContaining({
+          actionId: applicableAction.id,
+          applicable: true,
+          impact: 42,
+        }),
+      ])
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: 'unexpected_node_value',
+          nodeValue: type,
+        }),
+        expect.objectContaining({ ruleId })
+      )
+    }
+  )
 
   it.each([NaN, Infinity, -Infinity])(
     'skips actions whose nodeValue is %s',

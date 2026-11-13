@@ -129,21 +129,52 @@ describe('evaluateSimulation', () => {
     )
   })
 
-  it('stores a public rule valued null or false as not applicable', async () => {
-    const rules = await storeRules(['footprint . null', 'footprint . false'])
+  // A `non` is an answer, never a rule that does not apply.
+  it('stores each public rule with a boolean value as applicable, false included', async () => {
+    const rules = await storeRules(['footprint . yes', 'footprint . no'])
 
     await evaluate(
       engineWith({
-        'footprint . null': { public: 'oui', 'non applicable si': 'oui' },
-        'footprint . false': { public: 'oui', valeur: 'non' },
+        'footprint . yes': { public: 'oui', valeur: 'oui' },
+        'footprint . no': { public: 'oui', valeur: 'non' },
       }),
       rules
     )
 
     expect(await findRuleEvaluations()).toEqual(
       evaluationsOf(rules, {
-        'footprint . null': { applicable: false },
-        'footprint . false': { applicable: false },
+        'footprint . yes': { applicable: true, value: true },
+        'footprint . no': { applicable: true, value: false },
+      })
+    )
+  })
+
+  it('stores a public rule valued null as not applicable, whatever its type', async () => {
+    const rules = await storeRules([
+      'footprint . number',
+      'footprint . boolean',
+    ])
+
+    await evaluate(
+      engineWith({
+        'footprint . number': {
+          public: 'oui',
+          'non applicable si': 'oui',
+          valeur: 1,
+        },
+        'footprint . boolean': {
+          public: 'oui',
+          'applicable si': 'non',
+          valeur: 'oui',
+        },
+      }),
+      rules
+    )
+
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, {
+        'footprint . number': { applicable: false },
+        'footprint . boolean': { applicable: false },
       })
     )
   })
@@ -255,35 +286,31 @@ describe('evaluateSimulation', () => {
   // The stored evaluations of a simulation are complete for its model: one
   // rule that cannot be evaluated fails them all.
   describe('fails, storing nothing and reporting each public rule that cannot be evaluated', () => {
-    it('when valued true or a string', async () => {
+    it('when valued a string', async () => {
       const rules = await storeRules([
         'footprint . number',
-        'footprint . true',
         'footprint . string',
       ])
 
       const result = await evaluate(
         engineWith({
           'footprint . number': { public: 'oui', valeur: 1 },
-          'footprint . true': { public: 'oui', valeur: 'oui' },
           'footprint . string': { public: 'oui', valeur: "'texte'" },
         }),
         rules
       )
 
       expect(failedRules(result)).toEqual(
-        [
-          { dottedName: 'footprint . true', nodeValue: 'boolean' },
-          { dottedName: 'footprint . string', nodeValue: 'string' },
-        ].flatMap(({ dottedName, nodeValue }) =>
-          PUBLIC_RULE_METRICS.map((metric) =>
-            expect.objectContaining({
-              code: 'unexpected_node_value',
-              dottedName,
-              metric,
-              nodeValue,
-            })
-          )
+        [{ dottedName: 'footprint . string', nodeValue: 'string' }].flatMap(
+          ({ dottedName, nodeValue }) =>
+            PUBLIC_RULE_METRICS.map((metric) =>
+              expect.objectContaining({
+                code: 'unexpected_node_value',
+                dottedName,
+                metric,
+                nodeValue,
+              })
+            )
         )
       )
       expect(await findRuleEvaluations()).toEqual([])
