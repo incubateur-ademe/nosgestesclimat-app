@@ -48,17 +48,14 @@ export default async function Connexion({ searchParams }: DefaultPageProps) {
           mode={SIGNIN_MODE}
         />
 
-        <Title
-          containerClassName="order-0 max-w-[430px] mb-4"
-          title={labels.title}
-        />
+        <Title className="order-0">{labels.title}</Title>
 
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>
             <AuthenticateUserForm
               intent="create-account"
               mode="signIn"
-              redirectPathname={redirectPathname}
+              redirectTo={redirectPathname}
               tracker={captureLoginComplete}
               buttonLabel={labels.buttonLabel}
             />

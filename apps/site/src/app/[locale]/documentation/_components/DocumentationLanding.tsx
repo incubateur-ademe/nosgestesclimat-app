@@ -39,7 +39,9 @@ export default async function DocumentationLanding({
     <div className="mt-4">
       <div className="flex flex-wrap gap-8 md:flex-nowrap">
         <div>
-          <Title title={<Trans>Documentation</Trans>} />
+          <Title>
+            <Trans>Documentation</Trans>
+          </Title>
           <p>
             <Trans>
               Le calculateur Nos Gestes Climat est basé sur le modèle de calcul

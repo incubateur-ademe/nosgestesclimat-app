@@ -629,8 +629,8 @@ entries:
   cookies.management.privacyLink.lock: Données personnelles et cookies
   cookies.management.confirm: Confirm my choices
   cookies.management.confirm.lock: Confirmer mes choix
-  cookies.management.preferences: 'Preferences for all services. '
-  cookies.management.preferences.lock: 'Préférences pour tous les services. '
+  cookies.management.preferences: Preferences for all services.
+  cookies.management.preferences.lock: Préférences pour tous les services.
   cookies.banner.description: We use cookies to improve your experience and our services, measure our audience and manage our campaign budget.
   cookies.banner.description.lock: Nous utilisons des cookies pour améliorer votre expérience, nos services, mesurer l'audience et piloter notre budget de campagnes.
   cookies.banner.title: At Nos Gestes Climat, your privacy counts
@@ -687,14 +687,6 @@ entries:
   simulator.customQuestions.textile.open: I want to detail my wardrobe
   simulator.customQuestions.textile.open.lock: Je détaille ma garde-robe
   'Pour plus de précision:': 'More precision:'
-  simulator.customQuestions.plats.selectionStart: You have selected
-  simulator.customQuestions.plats.selectionStart.lock: Vous avez sélectionné
-  simulator.customQuestions.plats.meals: meal
-  simulator.customQuestions.plats.meals.lock: repas
-  simulator.customQuestions.plats.perWeek: per week, yum
-  simulator.customQuestions.plats.perWeek.lock: par semaine, miam
-  simulator.customQuestions.plats.selectionEnd: out of the usual 14
-  simulator.customQuestions.plats.selectionEnd.lock: sur les 14 habituels
   simulator.customQuestions.voiture.passengers: passenger(s)
   simulator.customQuestions.voiture.passengers.lock: passager(s)
   simulator.customQuestions.voiture.summaryStart: In total
@@ -1543,14 +1535,10 @@ entries:
   Résultats immédiats, confidentiel et gratuit.: Instant results, confidential and free.
   common.facultatif: optional
   common.facultatif.lock: facultatif
-  common.suivant: Next
-  common.suivant.lock: Suivant
   Voir tous les tests collectifs: See all collective tests
   organisations.inscription.cta: Create my account
   organisations.inscription.cta.lock: Créer mon compte
   Test collectif personnalisé: Personalised collective test
-  collectiveTest.mode.title: Choose the test mode
-  collectiveTest.mode.title.lock: Choisissez le mode du test
   Créer mon premier test collectif: Creating my first collective test
   Créer mon lien de test: Create my test link
   Communiquez sur le test collectif: Communicate about the collective test
@@ -1751,8 +1739,8 @@ entries:
   common.authentication.verifyEmail.lock: Vérifier mon adresse e-mail
   tutorial.email.contest.youth: Check your email for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be saved in a personal account on Nos Gestes Climat.
   tutorial.email.contest.youth.lock: Vérifie ton e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Tes résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
-  tutorial.email.contest.default: Please check your email address for the prize draw <2>{{organisationName}}</2>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
-  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <2>{{organisationName}}</2>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
+  tutorial.email.contest.default: Please check your email address for the prize draw <1>{{organisationName}}</1>. Your carbon footprint results will also be stored in a personal account on Nos Gestes Climat.
+  tutorial.email.contest.default.lock: Veuillez vérifier votre adresse e-mail pour le tirage au sort du jeu concours <1>{{organisationName}}</1>. Vos résultats d’empreinte carbone seront également conservés dans un espace personnel sur Nos Gestes Climat.
   tutorial.email.subtitle.youth: To save your results and retrieve them in the future in <2>your personal space</2>
   tutorial.email.subtitle.youth.lock: Pour conserver tes résultats et les retrouver à l'avenir dans <2>ton espace personnel</2>
   tutorial.email.subtitle.default: To save your results and retrieve them in the future in <2>your personal space</2>
@@ -1834,10 +1822,6 @@ entries:
   homepage.dynamicCounter.text.lock: <0>3 millions</0> <2>de simulations d’empreinte carbone déjà réalisées</2>
   components.markdown.linkTargetBlankAriaLabel: (open in a new window)
   components.markdown.linkTargetBlankAriaLabel.lock: (ouvrir dans une nouvelle fenêtre)
-  actions.beta-banner.link.aria-label: Leave your opinion, new window
-  actions.beta-banner.link.aria-label.lock: Laisser votre avis, nouvelle fenêtre
-  actions.beta-banner.content: This <1>beta version</1> is currently being improved. Help us improve it by <4>leaving your feedback.</4>
-  actions.beta-banner.content.lock: Cette <1>version bêta</1> est en cours d'amélioration. Aidez-nous à l’améliorer en <4>laissant votre avis.</4>
   event.tutorial.carousel.nextSlide: Next slide
   event.tutorial.carousel.nextSlide.lock: Diapositive suivante
   event.ctas.card2.title: With your organisation
@@ -2128,14 +2112,6 @@ entries:
   tutorial.email.title.youthContest.lock: Ton adresse e-mail pour le tirage au sort
   tutorial.email.title.defaultContest: Your email address for the prize draw
   tutorial.email.title.defaultContest.lock: Votre adresse e-mail pour le tirage au sort
-  poll.creation.mode.select: Select
-  poll.creation.mode.select.lock: Sélectionner
-  poll.creation.mode.tempDisabled: This feature has been temporarily disabled whilst improvements are being made
-  poll.creation.mode.tempDisabled.lock: Fonctionnalité désactivée temporairement, en cours d'amélioration
-  poll.creation.mode.error: An error has occurred whilst creating your group test. Please try again.
-  poll.creation.mode.error.lock: Une erreur s'est produite lors de la création de votre test collectif. Veuillez réessayer.
-  poll.creation.mode.title: Select the test mode
-  poll.creation.mode.title.lock: Choisissez le mode du test
   pollResults.funFacts.refreshNote.lock: Les chiffres se mettent à jour toutes les {{duration}} environ
   appCrash.metadata.description: The website is experiencing high traffic; our teams are working to restore access.
   appCrash.metadata.description.lock: Le site connaît une forte affluence, nos équipes travaillent à rétablir l’accès.
@@ -2158,9 +2134,6 @@ entries:
   Pour patienter, testez vos connaissances avec le Quiz Carbone de l'ADEME: Whilst you wait, why not test your knowledge with the ADEME’s Carbon Quiz?
   Face à une affluence très élevée, notre site connaît quelques ralentissements.: Due to very high traffic, our website is experiencing some slowdowns.
   Nous mettons tout en œuvre pour rétablir l'accès rapidement, n'hésitez pas à réessayer dans quelques minutes. Merci de votre patience et de votre mobilisation pour le climat !: We are doing everything we can to restore access as quickly as possible; please do try again in a few minutes. Thank you for your patience and for taking action on climate change!
-  Statistiques publiques du site Nos Gestes Climat.: Public statistics from the Nos Gestes Climat website.
-  Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.: This dashboard displays website traffic statistics, including the number of visits, completed simulations and actions viewed. It also includes statistics on the use of the Organisations mode, such as the number of organisations created and participants.
-  Cette section est générée via Posthog.: This section is generated via Posthog.
   actions.commitToActionButton.error: An error has occurred. Please try again.
   actions.commitToActionButton.error.lock: Une erreur s'est produite, veuillez réessayer.
   actions.plan.header.title: Draw up your action plan
@@ -2311,3 +2284,61 @@ entries:
   actions.abandonCommitment.success.lock: Action retirée de votre plan
   actions.abandonCommitment.undo: Undo
   actions.abandonCommitment.undo.lock: Annuler
+  errors.generic_error: An error has occurred. Please try again.
+  errors.generic_error.lock: Une erreur s'est produite, veuillez réessayer.
+  my_space.account_deletion: Your account has been successfully deleted.
+  my_space.account_deletion.lock: Votre compte a été supprimé avec succès.
+  mon-espace.settings.delete.dialog.confirm: Confirm deletion
+  mon-espace.settings.delete.dialog.confirm.lock: Confirmer la suppression
+  mon-espace.settings.delete.dialog.cancel: Cancel
+  mon-espace.settings.delete.dialog.cancel.lock: Annuler
+  mon-espace.settings.delete.button: Delete my account
+  mon-espace.settings.delete.button.lock: Supprimer mon compte
+  mon-espace.settings.delete.dialog.description1: 'This action will permanently delete your account and all associated data: your results and the groups you have created.'
+  mon-espace.settings.delete.dialog.description1.lock: "Cette action supprimera définitivement votre compte ainsi que l'ensemble de vos données associées : vos résultats et vos groupes créés."
+  common.close: Close
+  common.close.lock: Fermer
+  mon-espace.settings.delete.dialog.title: Deleting an account
+  mon-espace.settings.delete.dialog.title.lock: Suppression du compte
+  mon-espace.settings.delete.dialog.description2: <0>This action cannot be undone.</0>
+  mon-espace.settings.delete.dialog.description2.lock: <0>Cette action est irréversible.</0>
+  mon-espace.settings.delete.success: Your personal space has been successfully deleted
+  mon-espace.settings.delete.success.lock: Votre espace personnel a bien été supprimé
+  impact_matrix.items.fifth.title: Efficient
+  impact_matrix.items.fifth.title.lock: Efficient
+  impact_matrix.badge.efficiency: Efficiency
+  impact_matrix.badge.efficiency.lock: Efficience
+  impact_matrix.items.third.title: Useful
+  impact_matrix.items.third.title.lock: Utile
+  impact_matrix.badge.usage: Usage
+  impact_matrix.badge.usage.lock: Usage
+  impact_matrix.badge.impact: Impact
+  impact_matrix.badge.impact.lock: Impact
+  impact_matrix.items.fourth.title: Impacting
+  impact_matrix.items.fourth.title.lock: Impactant
+  impact_matrix.items.first.title: Usable
+  impact_matrix.items.first.title.lock: Utilisable
+  impact_matrix.items.second.title: Used
+  impact_matrix.items.second.title.lock: Utilisé
+  impact_matrix.items.fifth.description: <0><0>Annual budget (2025):</0> <2>€1,160,667</2></0><1><0>Cost upon completion of the simulation (2025):</0> <2>€1.84</2></1>
+  impact_matrix.items.fifth.description.lock: <0><0>Budget sur l’année (2025) :</0> <2>1 160 667 €</2></0><1><0>Coût à la simulation terminée (2025) :</0> <2>1,84 €</2></1>
+  impact_matrix.description: <0>This matrix enables us to track<1>the impact of Nos Gestes Climat</1>.</0><1>Our usage and impact indicators are tracked using Posthog, Matomo and Metabase.</1><2>The self-reported feedback is based on the user survey carried out <1>in June 2026</1> amongst newsletter subscribers – <3>3,000 respondents</3> (*).</2>
+  impact_matrix.description.lock: <0>Cette matrice permet de suivre l’<1>impact de Nos Gestes Climat</1>.</0><1>Nos indicateurs d’usage et d’impact sont suivis grâce aux outils Posthog, Matomo et Metabase.</1><2>Les retours déclaratifs sont basés sur l’enquête utilisateurs réalisée <1>en juin 2026</1> auprès des inscrits à l’infolettre - <3>3 000 répondants</3> (*).</2>
+  impact_matrix.items.first.description: <0><0>Support utilisation rate:</0> <2>360 users</2> contacted support (2025), representing <5>0.05 per cent</5> of users who completed their simulation</0><1><0>Completion rate:</0> <2>84 per cent</2> of users who started the test reached the results page (May 2026)</1>
+  impact_matrix.items.first.description.lock: <0><0>Taux de sollicitation du support :</0> <2>360 utilisateurs</2> ont fait appel au support (2025), soit <5>0,05%</5> des utilisateurs ayant terminé leur simulation</0><1><0>Taux de complétion :</0> <2>84%</2> des utilisateurs ayant commencé le test sont arrivés jusqu’à la page de résultats (mai 2026)</1>
+  impact_matrix.items.third.description: '<0><0>Users who completed the test rated the tool’s usefulness (self-reported*):</0><1></1><2>83 per cent</2>: NGC made them aware of their impact<4></4><5>81 per cent</5>: NGC inspired them to take action<7></7><8>66 per cent</8>: NGC helped them identify concrete actions to reduce</0><1><0>Net Promoter Score (H1 2026):</0> <2>35</2></1>'
+  impact_matrix.items.third.description.lock: '<0><0>Appréciation de l’utilité de l’outil par les utilisateurs ayant terminé le test (déclaratif*) :</0><1></1><2>83%</2> : NGC leur a fait prendre conscience de leur impact<4></4><5>81%</5> : NGC leur a donné envie d’agir<7></7><8>66%</8> : NGC les a aidés à identifier des actions concrètes pour réduire</0><1><0>Net Promoter Score (S1 2026) :</0> <2>35</2></1>'
+  impact_matrix.items.second.description: <0><0>Number of visitors:</0> <2>1.967 million users</2> who visited the site during the year (2025)</0><1><0>Number of simulations completed:</0> <2>630,334 simulations</2> over the year, bringing the total to <5>3 million</5> as at 30 April 2026</1><2><0>Number of newsletter subscribers:</0> <2>204,000</2> as at 30 April 2025</2>
+  impact_matrix.items.second.description.lock: <0><0>Nombre de visiteurs :</0> <2>1,967 millions utilisateurs</2> ayant visité le site au cours de l’année (2025)</0><1><0>Nombre de simulations terminées :</0> <2>630 334 simulations</2> sur l’année, soit un cumul de <5>3 millions</5> au 30/04/2026</1><2><0>Nombre d’inscrits aux infolettres :</0> <2>204 000</2> au 30/04/2025</2>
+  impact_matrix.title: Impact matrix
+  impact_matrix.title.lock: Matrice d'impact
+  impact_matrix.items.fourth.description: <0><0>Proportion of post-test users who took action to reduce their carbon footprint (self-reported*):</0> <2>37 per cent of users</2> report having taken new steps to reduce their carbon footprint after completing the NGC test</0>
+  impact_matrix.items.fourth.description.lock: <0><0>Taux de passage à l’action des utilisateurs post test pour réduire leur empreinte (déclaratif*) :</0> <2>37% des utilisateurs</2> déclarent avoir mis en place de nouvelles actions pour réduire leur empreinte après avoir fait le test NGC</0>
+  stats.iframe.title: Public statistics from the Nos Gestes Climat website.
+  stats.iframe.title.lock: Statistiques publiques du site Nos Gestes Climat.
+  stats.iframe.description: This dashboard displays website traffic statistics, including the number of visits, completed simulations and actions viewed. It also includes statistics on the use of the Organisations mode, such as the number of organisations created and the number of participants.
+  stats.iframe.description.lock: Ce tableau de bord affiche les statistiques de fréquentation du site, incluant le nombre de visites, de simulations complétées, actions consultées. Sont inclues également des statistiques sur l'utilisation du mode Organisations, incluant le nombre d'organisations créées, de participants.
+  simulator.customQuestions.plats.selection.equal_or_over_14: <0>{{totalNumberOfPlats}} meals</0> a week, yum <3>😋</3>
+  simulator.customQuestions.plats.selection.equal_or_over_14.lock: <0>{{totalNumberOfPlats}} repas</0> par semaine, miam <3>😋</3>
+  simulator.customQuestions.plats.selection.under_14: You’ve selected <2>{{totalNumberOfPlats}} meals</2> out of the usual 14 <5>🍽️</5>
+  simulator.customQuestions.plats.selection.under_14.lock: Vous avez sélectionné <2>{{totalNumberOfPlats}} repas</2> sur les 14 habituels <5>🍽️</5>

@@ -34,12 +34,11 @@ export default async function ActionsBlock({ className }: Props) {
           <Title
             tag="h2"
             size="md"
-            hasSeparator={false}
             className="text-secondary-700 mb-0 font-medium">
             <Trans i18nKey="results.actions.title">Votre plan d'action</Trans>
           </Title>
 
-          <Title tag="h3" size="lg" hasSeparator={false} className="mb-8">
+          <Title tag="h3" size="lg" className="mb-8">
             <Trans i18nKey="results.actions.subtitle">
               Découvrez des gestes concrets pour y arriver
             </Trans>

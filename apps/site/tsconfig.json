@@ -27,5 +27,5 @@
     "next.config.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "cypress/**/*", "scripts/**/*", ".next/**/*"]
+  "exclude": ["node_modules", "cypress/**/*", ".next/**/*"]
 }

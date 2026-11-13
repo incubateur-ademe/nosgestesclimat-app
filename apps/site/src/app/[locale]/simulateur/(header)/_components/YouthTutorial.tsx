@@ -38,7 +38,7 @@ export default function YouthTutorial({ buttonNext }: Props) {
     <div className="mb-16 flex flex-col" data-testid="youth-tutorial">
       <section className="order-0 mt-8 mb-8 w-xl max-w-full md:mx-auto md:mb-10">
         <div className="mb-2 flex items-center md:gap-4">
-          <Title hasSeparator={false} size="lg">
+          <Title size="lg">
             <Trans i18nKey="youthTutorial.title">
               Découvre ton impact{' '}
               <span className="text-primary-600">sur la planète</span>

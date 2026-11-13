@@ -1,6 +1,5 @@
 import Trans from '@/components/translation/trans/TransClient'
 import Card from '@/design-system/layout/Card'
-import Title from '@/design-system/layout/Title'
 import CreateGroupButton from './emptyState/CreateGroupButton'
 import CreateOrganisation from './emptyState/CreateOrganisation'
 
@@ -9,15 +8,11 @@ export default function EmptyState() {
     <>
       <div className="mt-6 flex gap-8">
         <section>
-          <Title
-            tag="h2"
-            className="mb-4 text-2xl font-medium md:text-3xl"
-            title={
-              <Trans i18nKey="mon-espace.groups.empty.title">
-                Invitez votre entourage à calculer leur empreinte
-              </Trans>
-            }
-          />
+          <h2 className="mb-4 text-2xl font-medium md:text-3xl">
+            <Trans i18nKey="mon-espace.groups.empty.title">
+              Invitez votre entourage à calculer leur empreinte
+            </Trans>
+          </h2>
           <p className="mb-6">
             <strong>
               <Trans i18nKey="mon-espace.groups.empty.description1">

@@ -12,50 +12,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/design-system/shadcn/dropdown-menu'
-import { resetLocalState } from '@/helpers/user/resetLocalState'
+import { useLogout } from '@/components/authentication/_hooks/useLogout'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useUser } from '@/publicodes-state'
-import { PostHog } from '@/services/tracking/Posthog'
 import { cn } from 'cn'
 import Link from 'next/link'
 import { useState } from 'react'
 
 const MAX_EMAIL_LENGTH = 20
 
-const posthog = new PostHog()
-
 interface Props {
   email: string
-  onLogout: () => Promise<void>
 }
 
 const commonItemClassNames =
   'hover:bg-primary-50! transitions-colors active:bg-primary-200! text-sm px-4 py-2 focus-visible:ring-primary-700! focus-visible:ring-2! focus-visible:ring-offset-2!'
 
-export default function MySpaceDropdown({ email, onLogout }: Props) {
+export default function MySpaceDropdown({ email }: Props) {
   const { t } = useClientTranslation()
-  const { setUser, setSimulation } = useUser()
+  const logout = useLogout()
 
   const displayEmail =
     email.length > MAX_EMAIL_LENGTH
       ? `${email.substring(0, MAX_EMAIL_LENGTH)}…`
       : email
 
-  const handleLogout = async (closeMenu: () => void) => {
-    closeMenu()
+  const handleLogout = async () => {
+    setIsPopoverOpen(false)
 
-    resetLocalState({ setUser, setSimulation })
-
-    posthog.resetIdentity()
-
-    await onLogout()
-
-    // The server `logout()` action no longer calls `redirect()`: server-action
-    // redirects become soft RSC navigations that can replay the per-session
-    // prefetched App Shell (header still showing the logged-in user) from the
-    // client Router Cache. A full-document navigation forces a real request with
-    // the freshly-cleared cookies, so the proxy serves a logged-out header.
-    window.location.assign('/')
+    await logout()
   }
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
@@ -112,9 +96,7 @@ export default function MySpaceDropdown({ email, onLogout }: Props) {
               type="button"
               data-testid="my-space-logout-button"
               className="flex w-full items-center gap-2"
-              onClick={() => {
-                void handleLogout(() => setIsPopoverOpen(false))
-              }}>
+              onClick={() => void handleLogout()}>
               <Trans i18nKey="header.monEspace.logout">Déconnexion</Trans>
               <LogOutIcon className="fill-default w-4" />
             </button>

@@ -48,10 +48,7 @@ export default async function Connexion({ searchParams }: DefaultPageProps) {
           mode={SIGNUP_MODE}
         />
 
-        <Title
-          containerClassName="order-0 max-w-[430px] mb-4"
-          title={labels.title}
-        />
+        <Title className="order-0">{labels.title}</Title>
 
         <QueryClientProviderWrapper>
           <UserProvider userSession={userSession}>
@@ -59,7 +56,7 @@ export default async function Connexion({ searchParams }: DefaultPageProps) {
               intent="create-account"
               mode="signUp"
               buttonLabel={labels.buttonLabel}
-              redirectPathname={redirectPathname}
+              redirectTo={redirectPathname}
               tracker={captureSignupComplete}
             />
           </UserProvider>

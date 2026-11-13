@@ -1,9 +1,11 @@
 import QueryClientProviderWrapper from '@/app/[locale]/_components/mainLayoutProviders/QueryClientProviderWrapper'
 import AuthenticateUserForm from '@/components/authentication/AuthenticateUserForm'
 import StepsDisplay from '@/components/groups/StepsDisplay'
+import Trans from '@/components/translation/trans/TransServer'
 import { linkToGroupCreation, SHOW_STEP_KEY } from '@/constants/group'
 import { captureAmisCreationConnexionComplete } from '@/constants/tracking/trackers'
 import GoBackButton from '@/design-system/inputs/GoBackButton'
+import Subtitle from '@/design-system/layout/Subtitle'
 import Title from '@/design-system/layout/Title'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
 import { t } from '@/helpers/metadata/fakeMetadataT'
@@ -37,16 +39,19 @@ export default async function GroupConnexionPage() {
 
       <StepsDisplay currentStep={1} />
 
-      <Title
-        title={t("Créer un groupe d'amis")}
-        subtitle={t('Invitez vos proches à passer le test')}
-      />
+      <Title className="mb-2">
+        <Trans>Créer un groupe d'amis</Trans>
+      </Title>
+
+      <Subtitle>
+        <Trans>Invitez vos proches à passer le test</Trans>
+      </Subtitle>
 
       <QueryClientProviderWrapper>
         <UserProvider userSession={userSession}>
           <AuthenticateUserForm
             intent="create-group"
-            redirectPathname={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
+            redirectTo={`/amis/creer/votre-groupe?${SHOW_STEP_KEY}=true`}
             buttonLabel={t('auth.verifyemail', 'Vérifier mon adresse email')}
             tracker={captureAmisCreationConnexionComplete}
           />

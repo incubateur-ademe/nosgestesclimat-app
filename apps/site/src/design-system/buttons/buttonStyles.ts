@@ -25,6 +25,10 @@ const variantClassNames: Record<ButtonVariant, VariantStyles> = {
       'border-solid border-primary-700 border-2 text-primary-700 bg-transparent shadow-xs',
       'hover:text-primary-700 hover:bg-primary-100 hover:border-primary-700'
     ),
+    red: cn(
+      'border-solid border-red-700 border-2 text-red-700 bg-transparent shadow-xs stroke-red-700',
+      'hover:text-red-800 hover:bg-red-50 hover:border-red-800 hover:stroke-red-800'
+    ),
   },
   text: {
     primary: cn(
@@ -52,11 +56,11 @@ export function getVariantClassNames(
 }
 
 export const sizeClassNames: Record<ButtonSize, string> = {
-  xs: 'px-5 py-2 text-xs',
-  sm: 'px-6 py-2.5 text-sm',
-  md: 'px-4 sm:px-7 py-3 text-sm sm:text-base',
-  lg: 'px-8 py-3.5 text-lg',
-  xl: 'px-9 py-4 text-xl',
+  xs: 'px-5 py-2 text-xs/none',
+  sm: 'px-6 py-2.5 text-sm/none',
+  md: 'px-4 sm:px-7 py-3 text-sm/none sm:text-base/none',
+  lg: 'px-8 py-3.5 text-lg/none',
+  xl: 'px-9 py-4 text-xl/none',
 }
 
 export const loaderColorMap: Partial<Record<ButtonVariant, 'light' | 'dark'>> =

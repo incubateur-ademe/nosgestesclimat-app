@@ -33,14 +33,12 @@ export default async function ParametresPage({
       />
 
       <div className="pb-12">
-        <Title
-          title={
-            <span>
-              <Trans>Paramètres de </Trans>
-              <strong className="text-primary-700">{organisation.name}</strong>
-            </span>
-          }
-        />
+        <Title>
+          <span>
+            <Trans>Paramètres de </Trans>
+            <strong className="text-primary-700">{organisation.name}</strong>
+          </span>
+        </Title>
         <QueryClientProviderWrapper>
           <OrganisationForm
             slug={organisation.slug}
