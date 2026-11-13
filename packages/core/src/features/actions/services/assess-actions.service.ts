@@ -74,16 +74,23 @@ export function createAssessActions(deps: AssessActionsDeps) {
         }
 
         const evaluation = evaluateModelRule({ engine, dottedName })
+        const actionEvaluation = evaluation.success
+          ? toActionEvaluation(evaluation.data, dottedName)
+          : evaluation
 
-        if (!evaluation.success) {
-          logger.error(evaluation.error, { actionId: id, ruleId, dottedName })
+        if (!actionEvaluation.success) {
+          logger.error(actionEvaluation.error, {
+            actionId: id,
+            ruleId,
+            dottedName,
+          })
           return []
         }
 
         return [
           toNewActionAssessment(
             { simulationId, actionId: id },
-            toActionEvaluation(evaluation.data)
+            actionEvaluation.data
           ),
         ]
       }

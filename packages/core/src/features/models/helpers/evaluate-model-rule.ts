@@ -59,7 +59,11 @@ export const evaluateModelRule = ({
     return success({ applicable: true, value: nodeValue })
   }
 
-  if (nodeValue === null || nodeValue === false) {
+  if (typeof nodeValue === 'boolean') {
+    return success({ applicable: true, value: nodeValue })
+  }
+
+  if (nodeValue === null) {
     return success({ applicable: false })
   }
 

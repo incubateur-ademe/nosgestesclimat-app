@@ -71,13 +71,16 @@ const computeActionAssessments = (
   const assessments = [...ruleIdToDottedName.entries()].map(
     ([ruleId, dottedName]) => {
       const evaluation = evaluateModelRule({ engine, dottedName })
+      const actionEvaluation = evaluation.success
+        ? toActionEvaluation(evaluation.data, dottedName)
+        : evaluation
 
       return {
         ruleId,
         // A rule whose value cannot be read is left unassessed rather than
         // mis-assessed: "applicability unknown" is the shape that says so.
-        applicability: evaluation.success
-          ? toActionEvaluation(evaluation.data)
+        applicability: actionEvaluation.success
+          ? actionEvaluation.data
           : ({ applicable: undefined, impact: undefined } as const),
       }
     }
