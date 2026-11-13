@@ -336,10 +336,11 @@ model Rule {
   @@schema("ngc")
 }
 
-/// The value of one Rule for one simulation:
-/// - applicable: `applicable = true`, `valueNumber` set (0 included)
-/// - not applicable: `applicable = false`, `valueNumber = null`
-/// - not defined: `applicable = null`, `valueNumber = null`
+/// The value of one Rule for one simulation, a number, a boolean or a string:
+/// - applicable: `applicable = true`, exactly one of `valueNumber`,
+///   `valueBoolean` and `valueString` set (0, `false` and `''` included)
+/// - not applicable: `applicable = false`, no value set
+/// - not defined: `applicable = null`, no value set
 model RuleEvaluation {
   simulationId String     @db.Uuid
   simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
@@ -347,6 +348,8 @@ model RuleEvaluation {
   rule         Rule       @relation(fields: [ruleId], references: [id], onDelete: Restrict)
   applicable   Boolean?
   valueNumber  Float?
+  valueBoolean Boolean?
+  valueString  String?
   createdAt    DateTime   @default(now()) @db.Timestamptz(3)
 
   @@id([simulationId, ruleId])
