@@ -1,3 +1,7 @@
+-- Email stops being the primary key below, which drops the uniqueness it
+-- carried. The index re-establishes it (one verified account per email) so it
+-- survives the swap, matching the schema's email @unique. Created first: it is
+-- non-destructive, so it fails nowhere while the risky swap is still ahead.
 CREATE UNIQUE INDEX "VerifiedUser_email_key" ON "ngc"."VerifiedUser"("email");
 
 -- The primary key swap goes first: on duplicate "id" it is the only statement
