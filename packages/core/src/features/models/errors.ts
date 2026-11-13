@@ -39,7 +39,10 @@ export class OutdatedModelVersionError extends DomainError<'outdated_model_versi
   }
 }
 
-/** The engine evaluated a rule to a value that cannot be stored. */
+/**
+ * The engine evaluated a rule to a value its reader cannot use: one that
+ * cannot be stored, or an action's impact that is not a number.
+ */
 export class UnexpectedNodeValueError extends DomainError<'unexpected_node_value'> {
   public readonly dottedName: string
   public readonly metric?: Metric
