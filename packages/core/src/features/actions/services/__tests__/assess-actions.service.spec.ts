@@ -23,6 +23,8 @@ const NOT_APPLICABLE_RULE_ID = faker.string.uuid()
 const TRUE_RULE_ID = faker.string.uuid()
 const FALSE_RULE_ID = faker.string.uuid()
 const STRING_RULE_ID = faker.string.uuid()
+const ZERO_RULE_ID = faker.string.uuid()
+const UNANSWERED_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
   'test . applicable': {
@@ -52,6 +54,18 @@ const testRules: RawPublicodes<string> = {
     valeur: "'texte'",
     titre: 'Test string',
     meta: { id: STRING_RULE_ID },
+  },
+  'test . zero': {
+    valeur: 0,
+    unité: 'kgCO2e',
+    titre: 'Test zero',
+    meta: { id: ZERO_RULE_ID },
+  },
+  'test . unanswered': {
+    question: 'Combien ?',
+    unité: 'kgCO2e',
+    titre: 'Test unanswered',
+    meta: { id: UNANSWERED_RULE_ID },
   },
 }
 
@@ -106,6 +120,40 @@ describe('assessActions', () => {
     )!
     expect(notApplicableAssessment.applicable).toBe(false)
     expect(notApplicableAssessment.impact).toBeUndefined()
+  })
+
+  it('stores an action valued 0 as applicable without impact', async () => {
+    const action = await actionFactory
+      .params({ ruleId: ZERO_RULE_ID })
+      .published()
+      .create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toEqual([
+      expect.objectContaining({
+        actionId: action.id,
+        applicable: true,
+        impact: undefined,
+      }),
+    ])
+  })
+
+  it('stores an action the situation leaves undefined as unassessed', async () => {
+    const action = await actionFactory
+      .params({ ruleId: UNANSWERED_RULE_ID })
+      .published()
+      .create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toEqual([
+      expect.objectContaining({
+        actionId: action.id,
+        applicable: undefined,
+        impact: undefined,
+      }),
+    ])
   })
 
   it('skips actions whose ruleId is not found in the engine', async () => {
