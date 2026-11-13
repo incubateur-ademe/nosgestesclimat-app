@@ -17,9 +17,6 @@ const MODEL_METRIC = {
  * Evaluates a rule of the model, for `metric` when given, as the model computes
  * the footprint of that metric.
  *
- * The value's type is read from the value itself. A `false` value is an
- * applicable rule saying "no": only `null` means not applicable.
- *
  * A non-finite number (NaN, ±Infinity) is an error, not a value: it is an
  * issue with the model, not with the situation.
  *
