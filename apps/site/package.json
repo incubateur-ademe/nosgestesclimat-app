@@ -49,7 +49,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@incubateur-ademe/nosgestesclimat": "4.18.0",
+    "@incubateur-ademe/nosgestesclimat": "4.18.1",
     "@next/mdx": "^16.4.3",
     "@nosgestesclimat/core": "workspace:*",
     "@opentelemetry/api": "^1.9.1",
