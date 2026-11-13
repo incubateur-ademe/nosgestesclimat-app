@@ -78,22 +78,18 @@ describe('evaluateSimulation', () => {
 
   /**
    * The evaluations expected of the simulation for `rules`, each given by its
-   * rule's name, or by the rule itself when it depends on its metric.
+   * rule's name.
    */
   const evaluationsOf = (
     rules: Rule[],
-    evaluationOf:
-      | Record<string, ModelRuleEvaluation>
-      | ((rule: Rule) => ModelRuleEvaluation)
+    evaluationOf: Record<string, ModelRuleEvaluation>
   ): RuleEvaluation[] =>
     byRuleId(
       rules.map((rule) => ({
         simulationId: simulation.id,
         ruleId: rule.id,
         createdAt: expect.any(Date) as Date,
-        ...(typeof evaluationOf === 'function'
-          ? evaluationOf(rule)
-          : evaluationOf[rule.name]),
+        ...evaluationOf[rule.name],
       }))
     )
 
@@ -247,10 +243,15 @@ describe('evaluateSimulation', () => {
     )
 
     expect(await findRuleEvaluations()).toEqual(
-      evaluationsOf(rules, ({ metric }) => ({
-        applicable: true,
-        value: metric === 'water' ? 5 : 10,
-      }))
+      byRuleId(
+        rules.map(({ id, metric }) => ({
+          simulationId: simulation.id,
+          ruleId: id,
+          createdAt: expect.any(Date) as Date,
+          applicable: true,
+          value: metric === 'water' ? 5 : 10,
+        }))
+      )
     )
   })
 
