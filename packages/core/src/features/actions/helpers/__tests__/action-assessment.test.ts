@@ -1,8 +1,9 @@
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { describe, expect, it } from 'vitest'
 import { success } from '../../../../lib/result.ts'
 import { toActionEvaluation } from '../action-assessment.ts'
 
-const DOTTED_NAME = 'test . action'
+const DOTTED_NAME = 'test . action' as DottedName
 
 describe('toActionEvaluation', () => {
   it.each([42, -3.5])(
