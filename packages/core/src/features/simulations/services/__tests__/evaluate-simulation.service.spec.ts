@@ -7,10 +7,13 @@ import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { ruleFactory } from '../../../models/factories/rule.factory.ts'
+import type { ModelRuleEvaluation } from '../../../models/types/model-rule-evaluation.ts'
 import { PUBLIC_RULE_METRICS, type Rule } from '../../../models/types/rule.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { PublicRulesEvaluationError } from '../../errors/simulations.error.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
+import { findRuleEvaluationsBySimulation } from '../../repository/rule-evaluations.repository.ts'
+import type { RuleEvaluation } from '../../types/rule-evaluation.ts'
 import type { Simulation } from '../../types/simulation.ts'
 import { createEvaluateSimulation } from '../evaluate-simulation.service.ts'
 
@@ -54,6 +57,10 @@ const storeRules = (names: string[]): Promise<Rule[]> =>
     )
   )
 
+/** Sorted, for evaluations to compare whatever order they are stored in. */
+const byRuleId = (evaluations: RuleEvaluation[]) =>
+  evaluations.toSorted((a, b) => a.ruleId - b.ruleId)
+
 describe('evaluateSimulation', () => {
   let simulation: Simulation
 
@@ -66,19 +73,29 @@ describe('evaluateSimulation', () => {
       evaluateSimulation(engine, simulation.id, publicRules, { session })
     )
 
-  const findRuleEvaluations = async () => {
-    const rows = await prisma.ruleEvaluation.findMany({
-      where: { simulationId: simulation.id },
-      include: { rule: true },
-      orderBy: [{ rule: { name: 'asc' } }, { rule: { metric: 'asc' } }],
-    })
-    return rows.map(({ rule, applicable, valueNumber }) => ({
-      name: rule.name,
-      metric: rule.metric,
-      applicable,
-      valueNumber,
-    }))
-  }
+  const findRuleEvaluations = async () =>
+    byRuleId(await findRuleEvaluationsBySimulation(simulation.id))
+
+  /**
+   * The evaluations expected of the simulation for `rules`, each given by its
+   * rule's name, or by the rule itself when it depends on its metric.
+   */
+  const evaluationsOf = (
+    rules: Rule[],
+    evaluationOf:
+      | Record<string, ModelRuleEvaluation>
+      | ((rule: Rule) => ModelRuleEvaluation)
+  ): RuleEvaluation[] =>
+    byRuleId(
+      rules.map((rule) => ({
+        simulationId: simulation.id,
+        ruleId: rule.id,
+        createdAt: expect.any(Date) as Date,
+        ...(typeof evaluationOf === 'function'
+          ? evaluationOf(rule)
+          : evaluationOf[rule.name]),
+      }))
+    )
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -104,32 +121,12 @@ describe('evaluateSimulation', () => {
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . food',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 0,
-      },
-      {
-        name: 'footprint . food',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 0,
-      },
-      {
-        name: 'footprint . transport',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 12.5,
-      },
-      {
-        name: 'footprint . transport',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 12.5,
-      },
-    ])
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, {
+        'footprint . transport': { applicable: true, value: 12.5 },
+        'footprint . food': { applicable: true, value: 0 },
+      })
+    )
   })
 
   it('stores a public rule valued null or false as not applicable', async () => {
@@ -143,32 +140,12 @@ describe('evaluateSimulation', () => {
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . false',
-        metric: 'carbon',
-        applicable: false,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . false',
-        metric: 'water',
-        applicable: false,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . null',
-        metric: 'carbon',
-        applicable: false,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . null',
-        metric: 'water',
-        applicable: false,
-        valueNumber: null,
-      },
-    ])
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, {
+        'footprint . null': { applicable: false },
+        'footprint . false': { applicable: false },
+      })
+    )
   })
 
   it('stores a public rule the situation leaves undefined, or without a formula, as not defined', async () => {
@@ -189,32 +166,12 @@ describe('evaluateSimulation', () => {
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . no formula',
-        metric: 'carbon',
-        applicable: null,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . no formula',
-        metric: 'water',
-        applicable: null,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . unanswered',
-        metric: 'carbon',
-        applicable: null,
-        valueNumber: null,
-      },
-      {
-        name: 'footprint . unanswered',
-        metric: 'water',
-        applicable: null,
-        valueNumber: null,
-      },
-    ])
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, {
+        'footprint . unanswered': { applicable: undefined },
+        'footprint . no formula': { applicable: undefined },
+      })
+    )
   })
 
   it('evaluates each public rule for its metric', async () => {
@@ -232,20 +189,12 @@ describe('evaluateSimulation', () => {
       rules
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . water dependent',
-        metric: 'carbon',
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, ({ metric }) => ({
         applicable: true,
-        valueNumber: 10,
-      },
-      {
-        name: 'footprint . water dependent',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 5,
-      },
-    ])
+        value: metric === 'water' ? 5 : 10,
+      }))
+    )
   })
 
   it('evaluates only the public rules it is given', async () => {
@@ -259,9 +208,11 @@ describe('evaluateSimulation', () => {
       [carbonRule]
     )
 
-    expect(await findRuleEvaluations()).toEqual([
-      expect.objectContaining({ name: 'footprint . given', metric: 'carbon' }),
-    ])
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf([carbonRule], {
+        'footprint . given': { applicable: true, value: 1 },
+      })
+    )
   })
 
   // The rules given are trusted to be public: the model's `public` mark is not
@@ -275,20 +226,11 @@ describe('evaluateSimulation', () => {
     )
 
     expect(result).toEqual(success())
-    expect(await findRuleEvaluations()).toEqual([
-      {
-        name: 'footprint . private',
-        metric: 'carbon',
-        applicable: true,
-        valueNumber: 3,
-      },
-      {
-        name: 'footprint . private',
-        metric: 'water',
-        applicable: true,
-        valueNumber: 3,
-      },
-    ])
+    expect(await findRuleEvaluations()).toEqual(
+      evaluationsOf(rules, {
+        'footprint . private': { applicable: true, value: 3 },
+      })
+    )
   })
 
   it('reports the rules it cannot evaluate with their simulation', async () => {

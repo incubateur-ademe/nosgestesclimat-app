@@ -5,7 +5,12 @@ import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { actionFactory } from '../../../actions/factories/action.factory.ts'
 import { commitToAction } from '../../../actions/services/commit-to-action.service.ts'
+import { ruleFactory } from '../../../models/factories/rule.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
+import {
+  createRuleEvaluations,
+  findRuleEvaluationsBySimulation,
+} from '../../../simulations/repository/rule-evaluations.repository.ts'
 import { userFactory } from '../../factories/user.factory.ts'
 import { createReconcileSimulationsAfterLogin } from '../reconcile-simulations-after-login.service.ts'
 
@@ -27,12 +32,6 @@ const createGroupParticipant = ({
   prisma.groupParticipant.create({
     data: { groupId, userId, simulationId },
     select: { userId: true },
-  })
-
-const createRule = () =>
-  prisma.rule.create({
-    data: { name: 'alimentation', metric: 'carbon' },
-    select: { id: true },
   })
 
 const logger = createTestLogger()
@@ -111,15 +110,15 @@ describe('reconcileSimulationsAfterLogin', () => {
       const anonymousSimulation = await simulationFactory
         .params({ userId: anonymousUser.id })
         .create()
-      const rule = await createRule()
-      await prisma.ruleEvaluation.create({
-        data: {
+      const rule = await ruleFactory.create()
+      await createRuleEvaluations([
+        {
           simulationId: anonymousSimulation.id,
           ruleId: rule.id,
           applicable: true,
-          valueNumber: 42,
+          value: 42,
         },
-      })
+      ])
 
       await createReconcileSimulationsAfterLogin({ logger })({
         userId: verifiedUser.id,
@@ -127,21 +126,14 @@ describe('reconcileSimulationsAfterLogin', () => {
       })
 
       expect(
-        await prisma.ruleEvaluation.findMany({
-          where: { simulation: { userId: verifiedUser.id } },
-          select: {
-            simulationId: true,
-            ruleId: true,
-            applicable: true,
-            valueNumber: true,
-          },
-        })
+        await findRuleEvaluationsBySimulation(anonymousSimulation.id)
       ).toEqual([
         {
           simulationId: anonymousSimulation.id,
           ruleId: rule.id,
           applicable: true,
-          valueNumber: 42,
+          value: 42,
+          createdAt: expect.any(Date),
         },
       ])
     })

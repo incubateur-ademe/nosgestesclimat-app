@@ -5,3 +5,8 @@ export type NewRuleEvaluation = {
   simulationId: string
   ruleId: number
 } & ModelRuleEvaluation
+
+/** A stored rule evaluation. */
+export type RuleEvaluation = NewRuleEvaluation & {
+  createdAt: Date
+}
