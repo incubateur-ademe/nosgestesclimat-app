@@ -203,3 +203,7 @@ export const captureCookieBannerStatus = ({ cookieState }: PosthogProps) => ({
     googleTagCookie: cookieState?.googleTag,
   },
 })
+
+export const accountDeletionCompleted = {
+  eventName: 'account_deletion_completed',
+}

@@ -8,3 +8,4 @@ const emailClient = createBrevoClient({
 
 export const sendEmail = emailClient.sendEmail
 export const addOrUpdateContact = emailClient.addOrUpdateContact
+export const eraseContact = emailClient.eraseContact

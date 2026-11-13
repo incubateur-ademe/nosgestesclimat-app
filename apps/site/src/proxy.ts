@@ -52,7 +52,6 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const email = middlewareStripEmail(request)
   if (email.redirect) return email.redirect
 
-
   const ff = middlewareFeatureFlags(request)
   if (ff.redirect) return ff.redirect
 

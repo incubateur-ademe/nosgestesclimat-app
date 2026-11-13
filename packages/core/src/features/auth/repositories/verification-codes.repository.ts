@@ -31,6 +31,14 @@ export const createVerificationCode = async (
   })
 }
 
+/** Deletes every code issued to an address, which they carry in clear. */
+export const deleteVerificationCodesForEmail = async (
+  { email }: { email: string },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<void> => {
+  await session.verificationCode.deleteMany({ where: { email } })
+}
+
 export const findValidVerificationCode = async (
   { email, code, usage }: Pick<VerificationCode, 'email' | 'code' | 'usage'>,
   { session = prisma }: { session?: Transaction } = {}

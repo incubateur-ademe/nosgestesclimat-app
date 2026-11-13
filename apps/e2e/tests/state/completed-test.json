@@ -1,0 +1,79 @@
+{
+  "cookies": [
+    {
+      "name": "ngc_ff_overrides",
+      "value": "{\"abc-test-layout-catalogue\":\"control\",\"abc-test-action-card\":\"control\",\"ab-test-global-footprint-display\":\"control\"}",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ngc_region",
+      "value": "%7B%22current%22%3A%22FR%22%2C%22initial%22%3A%22FR%22%7D",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ngc_session",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..vFdGjYf79YSLA6Na.ERUTlbIlsbF3DlT-3hruSZFQRJi-bcgQO3rgh6jp47Gv2v2AZTUmoo9xBUXLXUborT4vFyy9nUniSdtDhospzpDT23pdgZR3sDO-rb0iUMsmc98.ZGxOUcuXNmMIXwQXsjvV3Q",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1809293041.81868,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ngc_refresh",
+      "value": "ZLcf_UVuYEBO40c4bqziXCi2aCBc4uCr22pD4kxFxlI",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1809293041.818761,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:4000",
+      "localStorage": [
+        {
+          "name": "__ph_opt_in_out_phc_bqjKhaaNS6ohpyBbN5DL1q2xp7qnUUPc7iMSO5MFg5G",
+          "value": "0"
+        },
+        {
+          "name": "ngc_tracking_first_question_seen_688ddc3b-25e8-46f9-8c53-db91ab30c55d",
+          "value": "true"
+        },
+        {
+          "name": "ph_debug",
+          "value": "true"
+        },
+        {
+          "name": "ngc_tracking_first_question_answered_688ddc3b-25e8-46f9-8c53-db91ab30c55d",
+          "value": "true"
+        },
+        {
+          "name": "nosgestesclimat::v3",
+          "value": "{\"tutorials\":{}}"
+        },
+        {
+          "name": "ngc_tracking_test_completed_688ddc3b-25e8-46f9-8c53-db91ab30c55d",
+          "value": "true"
+        },
+        {
+          "name": "cookie-management-state",
+          "value": "{\"posthog\":\"refused\",\"googleTag\":\"refused\"}"
+        }
+      ]
+    }
+  ]
+}

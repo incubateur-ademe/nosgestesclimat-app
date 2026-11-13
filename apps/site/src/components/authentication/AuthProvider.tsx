@@ -10,7 +10,8 @@ import { useAuthEffects } from './_hooks/useAuthEffects'
 import { usePersistentAuthPhase } from './_hooks/usePersistentAuthPhase'
 import type {
   AuthPhase,
-  AuthenticatedUser,
+  OnAuthComplete,
+  RedirectTarget,
   Tracker,
   VerifyStrategy,
 } from './types'
@@ -41,8 +42,8 @@ interface AuthProviderProps {
   children: ReactNode
   verify: VerifyStrategy
   mode?: AuthenticationMode
-  redirectPathname?: string
-  onComplete?: (user: AuthenticatedUser) => void | Promise<void>
+  redirectTo?: RedirectTarget
+  onComplete?: OnAuthComplete
   tracker?: Tracker
 }
 
@@ -50,7 +51,7 @@ export function AuthProvider({
   children,
   verify,
   mode,
-  redirectPathname,
+  redirectTo,
   onComplete,
   tracker,
 }: AuthProviderProps) {
@@ -65,7 +66,7 @@ export function AuthProvider({
     dispatch,
     verify,
     onComplete,
-    redirectPathname,
+    redirectTo,
     tracker,
   })
 

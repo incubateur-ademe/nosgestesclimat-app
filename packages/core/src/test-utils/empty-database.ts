@@ -17,8 +17,8 @@ interface RawQueryClient {
 // `DELETE` rather than `TRUNCATE`: the latter rewrites the relation file of
 // every table and fsyncs it, which costs ~3ms per table whether or not it holds
 // any row — around 100ms per call against a real PostgreSQL, versus 3ms here.
-// Sequences are not reset as a result, which no model relies on (no
-// `autoincrement()` in the schema).
+// Sequences are not reset as a result: an `autoincrement()` id such as
+// `Rule.id` keeps growing across tests, so tests must not expect literal ids.
 //
 // `session_replication_role` disables the foreign key triggers, so no deletion
 // order has to be maintained — `DELETE`, unlike `TRUNCATE`, takes no `CASCADE`
