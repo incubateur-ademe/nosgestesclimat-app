@@ -34,20 +34,79 @@ interface PlannedRow {
   action: 'keep' | 'move_organisation_administrator' | 'reassign' | 'delete'
 }
 
-const countDuplicates = async (): Promise<DuplicateCount> => {
-  const [counts] = await prisma.$queryRaw<DuplicateCount[]>`
-    SELECT
-      COUNT(*)::int AS "duplicateIds",
-      COALESCE(SUM("rows" - 1), 0)::int AS "extraRows"
-    FROM (
-      SELECT COUNT(*)::int AS "rows"
-      FROM "ngc"."VerifiedUser"
-      GROUP BY "id"
-      HAVING COUNT(*) > 1
-    ) duplicates
+const main = async () => {
+  try {
+    const userEmailColumn = await hasUserEmailColumn()
+
+    if (userEmailColumn) {
+      const plan = await fetchPlan()
+
+      logger.info('Deduplication plan', {
+        rows: plan.length,
+        byAction: plan.reduce<Record<string, number>>((counts, row) => {
+          counts[row.action] = (counts[row.action] ?? 0) + 1
+          return counts
+        }, {}),
+      })
+
+      for (const row of plan) {
+        logger.info('Deduplication plan row', {
+          // The email is the identity being arbitrated: it is reported as is,
+          // this is what the operator reviews.
+          id: row.id,
+          email: row.email,
+          position: row.position,
+          hasOrganisationAdministrator: row.hasOrganisationAdministrator,
+          lastLoginAt: row.lastLoginAt,
+          updatedAt: row.updatedAt,
+          action: row.action,
+        })
+      }
+    } else {
+      // Once "id" is the primary key, duplicates cannot exist and there is no
+      // plan to review: the count below is the whole story.
+      logger.info('Deduplication plan skipped: id is already the primary key')
+    }
+
+    const duplicates = await countDuplicates()
+    const integrity = await fetchIntegrity(userEmailColumn)
+
+    const checks = {
+      duplicateIds: duplicates.duplicateIds,
+      extraRows: duplicates.extraRows,
+      orphanOrganisationAdministrators:
+        integrity.orphanOrganisationAdministrators,
+      accountsWithSeveralOrganisationAdministrators:
+        integrity.accountsWithSeveralOrganisationAdministrators,
+    }
+
+    const failed = Object.values(checks).some((count) => count > 0)
+
+    if (failed) {
+      logger.error('Deduplication checks failed', checks)
+    } else {
+      logger.info('Deduplication checks passed', checks)
+    }
+
+    process.exit(failed ? 1 : 0)
+  } catch (error) {
+    logger.error('Deduplication report failed', errorMeta(error))
+    process.exit(1)
+  }
+}
+
+const hasUserEmailColumn = async (): Promise<boolean> => {
+  const [column] = await prisma.$queryRaw<{ present: boolean }[]>`
+    SELECT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = 'ngc'
+        AND table_name = 'OrganisationAdministrator'
+        AND column_name = 'userEmail'
+    ) AS "present"
   `
 
-  return counts ?? { duplicateIds: 0, extraRows: 0 }
+  return column?.present ?? false
 }
 
 /**
@@ -134,6 +193,22 @@ const fetchPlan = async (): Promise<PlannedRow[]> => {
   `
 }
 
+const countDuplicates = async (): Promise<DuplicateCount> => {
+  const [counts] = await prisma.$queryRaw<DuplicateCount[]>`
+    SELECT
+      COUNT(*)::int AS "duplicateIds",
+      COALESCE(SUM("rows" - 1), 0)::int AS "extraRows"
+    FROM (
+      SELECT COUNT(*)::int AS "rows"
+      FROM "ngc"."VerifiedUser"
+      GROUP BY "id"
+      HAVING COUNT(*) > 1
+    ) duplicates
+  `
+
+  return counts ?? { duplicateIds: 0, extraRows: 0 }
+}
+
 /**
  * The organisation administrator links on an email before the primary key
  * refactor and on a user id after it: the same checks, read from the column
@@ -194,81 +269,6 @@ const fetchIntegrity = async (userEmailColumn: boolean) => {
       reference?.orphanOrganisationAdministrators ?? 0,
     accountsWithSeveralOrganisationAdministrators:
       multiple?.accountsWithSeveralOrganisationAdministrators ?? 0,
-  }
-}
-
-const hasUserEmailColumn = async (): Promise<boolean> => {
-  const [column] = await prisma.$queryRaw<{ present: boolean }[]>`
-    SELECT EXISTS (
-      SELECT 1
-      FROM information_schema.columns
-      WHERE table_schema = 'ngc'
-        AND table_name = 'OrganisationAdministrator'
-        AND column_name = 'userEmail'
-    ) AS "present"
-  `
-
-  return column?.present ?? false
-}
-
-const main = async () => {
-  try {
-    const userEmailColumn = await hasUserEmailColumn()
-
-    if (userEmailColumn) {
-      const plan = await fetchPlan()
-
-      logger.info('Deduplication plan', {
-        rows: plan.length,
-        byAction: plan.reduce<Record<string, number>>((counts, row) => {
-          counts[row.action] = (counts[row.action] ?? 0) + 1
-          return counts
-        }, {}),
-      })
-
-      for (const row of plan) {
-        logger.info('Deduplication plan row', {
-          // The email is the identity being arbitrated: it is reported as is,
-          // this is what the operator reviews.
-          id: row.id,
-          email: row.email,
-          position: row.position,
-          hasOrganisationAdministrator: row.hasOrganisationAdministrator,
-          lastLoginAt: row.lastLoginAt,
-          updatedAt: row.updatedAt,
-          action: row.action,
-        })
-      }
-    } else {
-      // Once "id" is the primary key, duplicates cannot exist and there is no
-      // plan to review: the count below is the whole story.
-      logger.info('Deduplication plan skipped: id is already the primary key')
-    }
-
-    const duplicates = await countDuplicates()
-    const integrity = await fetchIntegrity(userEmailColumn)
-
-    const checks = {
-      duplicateIds: duplicates.duplicateIds,
-      extraRows: duplicates.extraRows,
-      orphanOrganisationAdministrators:
-        integrity.orphanOrganisationAdministrators,
-      accountsWithSeveralOrganisationAdministrators:
-        integrity.accountsWithSeveralOrganisationAdministrators,
-    }
-
-    const failed = Object.values(checks).some((count) => count > 0)
-
-    if (failed) {
-      logger.error('Deduplication checks failed', checks)
-    } else {
-      logger.info('Deduplication checks passed', checks)
-    }
-
-    process.exit(failed ? 1 : 0)
-  } catch (error) {
-    logger.error('Deduplication report failed', errorMeta(error))
-    process.exit(1)
   }
 }
 
