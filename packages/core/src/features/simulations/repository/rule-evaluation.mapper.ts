@@ -1,6 +1,7 @@
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import type { RuleEvaluationModel } from '../../../prisma/generated/models/RuleEvaluation.ts'
 import type { ModelRuleValue } from '../../models/types/model-rule-evaluation.ts'
+import { CorruptRuleEvaluationError } from '../errors/simulations.error.ts'
 import type {
   NewRuleEvaluation,
   RuleEvaluation,
@@ -24,10 +25,7 @@ export const mapNewRuleEvaluationToPrisma = (
   ),
 })
 
-/**
- * Throws on a row breaking the invariant, exactly one value if applicable and
- * none otherwise: corrupt data is never reinterpreted.
- */
+/** Throws a `CorruptRuleEvaluationError` on a row breaking the invariant. */
 export const mapRuleEvaluation = (db: RuleEvaluationModel): RuleEvaluation => {
   const base = {
     simulationId: db.simulationId,
@@ -40,17 +38,21 @@ export const mapRuleEvaluation = (db: RuleEvaluationModel): RuleEvaluation => {
 
   if (db.applicable === true) {
     if (values.length !== 1) {
-      throw new Error(
-        `Rule evaluation of rule ${db.ruleId} for simulation ${db.simulationId} is applicable with ${values.length} values`
-      )
+      throw new CorruptRuleEvaluationError({
+        simulationId: db.simulationId,
+        ruleId: db.ruleId,
+        reason: `is applicable with ${values.length} values`,
+      })
     }
     return { ...base, applicable: true, value: values[0] }
   }
 
   if (values.length > 0) {
-    throw new Error(
-      `Rule evaluation of rule ${db.ruleId} for simulation ${db.simulationId} has a value without being applicable`
-    )
+    throw new CorruptRuleEvaluationError({
+      simulationId: db.simulationId,
+      ruleId: db.ruleId,
+      reason: 'has a value without being applicable',
+    })
   }
 
   return { ...base, applicable: db.applicable ?? undefined }
