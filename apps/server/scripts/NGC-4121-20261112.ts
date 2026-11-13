@@ -19,11 +19,6 @@ import logger, { errorMeta } from '../src/logger.ts'
  * migration runs.
  */
 
-interface DuplicateCount {
-  duplicateIds: number
-  extraRows: number
-}
-
 interface PlannedRow {
   id: string
   email: string
@@ -36,49 +31,31 @@ interface PlannedRow {
 
 const main = async () => {
   try {
-    const userEmailColumn = await hasUserEmailColumn()
+    const plan = await fetchPlan()
 
-    if (userEmailColumn) {
-      const plan = await fetchPlan()
+    logger.info('Deduplication plan', {
+      rows: plan.length,
+      byAction: plan.reduce<Record<string, number>>((counts, row) => {
+        counts[row.action] = (counts[row.action] ?? 0) + 1
+        return counts
+      }, {}),
+    })
 
-      logger.info('Deduplication plan', {
-        rows: plan.length,
-        byAction: plan.reduce<Record<string, number>>((counts, row) => {
-          counts[row.action] = (counts[row.action] ?? 0) + 1
-          return counts
-        }, {}),
+    for (const row of plan) {
+      logger.info('Deduplication plan row', {
+        // The email is the identity being arbitrated: it is reported as is,
+        // this is what the operator reviews.
+        id: row.id,
+        email: row.email,
+        position: row.position,
+        hasOrganisationAdministrator: row.hasOrganisationAdministrator,
+        lastLoginAt: row.lastLoginAt,
+        updatedAt: row.updatedAt,
+        action: row.action,
       })
-
-      for (const row of plan) {
-        logger.info('Deduplication plan row', {
-          // The email is the identity being arbitrated: it is reported as is,
-          // this is what the operator reviews.
-          id: row.id,
-          email: row.email,
-          position: row.position,
-          hasOrganisationAdministrator: row.hasOrganisationAdministrator,
-          lastLoginAt: row.lastLoginAt,
-          updatedAt: row.updatedAt,
-          action: row.action,
-        })
-      }
-    } else {
-      // Once "id" is the primary key, duplicates cannot exist and there is no
-      // plan to review: the count below is the whole story.
-      logger.info('Deduplication plan skipped: id is already the primary key')
     }
 
-    const duplicates = await countDuplicates()
-    const integrity = await fetchIntegrity(userEmailColumn)
-
-    const checks = {
-      duplicateIds: duplicates.duplicateIds,
-      extraRows: duplicates.extraRows,
-      orphanOrganisationAdministrators:
-        integrity.orphanOrganisationAdministrators,
-      accountsWithSeveralOrganisationAdministrators:
-        integrity.accountsWithSeveralOrganisationAdministrators,
-    }
+    const checks = await fetchChecks()
 
     const failed = Object.values(checks).some((count) => count > 0)
 
@@ -95,19 +72,7 @@ const main = async () => {
   }
 }
 
-const hasUserEmailColumn = async (): Promise<boolean> => {
-  const [column] = await prisma.$queryRaw<{ present: boolean }[]>`
-    SELECT EXISTS (
-      SELECT 1
-      FROM information_schema.columns
-      WHERE table_schema = 'ngc'
-        AND table_name = 'OrganisationAdministrator'
-        AND column_name = 'userEmail'
-    ) AS "present"
-  `
-
-  return column?.present ?? false
-}
+main()
 
 /**
  * The rule of the migration, restated as a projection: one row survives per
@@ -196,8 +161,14 @@ const fetchPlan = async (): Promise<PlannedRow[]> => {
   `
 }
 
-const countDuplicates = async (): Promise<DuplicateCount> => {
-  const [counts] = await prisma.$queryRaw<DuplicateCount[]>`
+/**
+ * The checks the runbook runs after the migration. Every one of them must be 0
+ * for the next ticket - the primary key swap - to go through.
+ */
+const fetchChecks = async () => {
+  const [duplicates] = await prisma.$queryRaw<
+    { duplicateIds: number; extraRows: number }[]
+  >`
     SELECT
       COUNT(*)::int AS "duplicateIds",
       COALESCE(SUM("rows" - 1), 0)::int AS "extraRows"
@@ -209,70 +180,39 @@ const countDuplicates = async (): Promise<DuplicateCount> => {
     ) duplicates
   `
 
-  return counts ?? { duplicateIds: 0, extraRows: 0 }
-}
+  const [orphans] = await prisma.$queryRaw<
+    { orphanOrganisationAdministrators: number }[]
+  >`
+    SELECT COUNT(*)::int AS "orphanOrganisationAdministrators"
+    FROM "ngc"."OrganisationAdministrator" "oa"
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM "ngc"."VerifiedUser" "vu"
+      WHERE "vu"."email" = "oa"."userEmail"
+    )
+  `
 
-/**
- * The organisation administrator links on an email before the primary key
- * refactor and on a user id after it: the same checks, read from the column
- * that exists.
- */
-const fetchIntegrity = async (userEmailColumn: boolean) => {
-  const [reference] = userEmailColumn
-    ? await prisma.$queryRaw<{ orphanOrganisationAdministrators: number }[]>`
-        SELECT COUNT(*)::int AS "orphanOrganisationAdministrators"
-        FROM "ngc"."OrganisationAdministrator" "oa"
-        WHERE NOT EXISTS (
-          SELECT 1
-          FROM "ngc"."VerifiedUser" "vu"
-          WHERE "vu"."email" = "oa"."userEmail"
-        )
-      `
-    : await prisma.$queryRaw<{ orphanOrganisationAdministrators: number }[]>`
-        SELECT COUNT(*)::int AS "orphanOrganisationAdministrators"
-        FROM "ngc"."OrganisationAdministrator" "oa"
-        WHERE NOT EXISTS (
-          SELECT 1
-          FROM "ngc"."VerifiedUser" "vu"
-          WHERE "vu"."id" = "oa"."userId"
-        )
-      `
-
-  const [multiple] = userEmailColumn
-    ? await prisma.$queryRaw<
-        {
-          accountsWithSeveralOrganisationAdministrators: number
-        }[]
-      >`
-        SELECT COUNT(*)::int AS "accountsWithSeveralOrganisationAdministrators"
-        FROM (
-          SELECT "vu"."id"
-          FROM "ngc"."OrganisationAdministrator" "oa"
-          JOIN "ngc"."VerifiedUser" "vu" ON "vu"."email" = "oa"."userEmail"
-          GROUP BY "vu"."id"
-          HAVING COUNT(*) > 1
-        ) accounts
-      `
-    : await prisma.$queryRaw<
-        {
-          accountsWithSeveralOrganisationAdministrators: number
-        }[]
-      >`
-        SELECT COUNT(*)::int AS "accountsWithSeveralOrganisationAdministrators"
-        FROM (
-          SELECT "oa"."userId"
-          FROM "ngc"."OrganisationAdministrator" "oa"
-          GROUP BY "oa"."userId"
-          HAVING COUNT(*) > 1
-        ) accounts
-      `
+  // The next migration makes "OrganisationAdministrator"."userId" unique: two
+  // organisation administrators of one account would make it fail.
+  const [several] = await prisma.$queryRaw<
+    { accountsWithSeveralOrganisationAdministrators: number }[]
+  >`
+    SELECT COUNT(*)::int AS "accountsWithSeveralOrganisationAdministrators"
+    FROM (
+      SELECT "vu"."id"
+      FROM "ngc"."OrganisationAdministrator" "oa"
+      JOIN "ngc"."VerifiedUser" "vu" ON "vu"."email" = "oa"."userEmail"
+      GROUP BY "vu"."id"
+      HAVING COUNT(*) > 1
+    ) accounts
+  `
 
   return {
+    duplicateIds: duplicates?.duplicateIds ?? 0,
+    extraRows: duplicates?.extraRows ?? 0,
     orphanOrganisationAdministrators:
-      reference?.orphanOrganisationAdministrators ?? 0,
+      orphans?.orphanOrganisationAdministrators ?? 0,
     accountsWithSeveralOrganisationAdministrators:
-      multiple?.accountsWithSeveralOrganisationAdministrators ?? 0,
+      several?.accountsWithSeveralOrganisationAdministrators ?? 0,
   }
 }
-
-main()
