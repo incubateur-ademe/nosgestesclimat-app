@@ -69,7 +69,7 @@ export const toNewActionAssessment = (
  */
 export const toActionEvaluation = (
   applicability: ModelRuleEvaluation,
-  dottedName: string
+  dottedName: DottedName
 ): Result<ActionEvaluation, UnexpectedNodeValueError> => {
   if (applicability.applicable === true) {
     const { value } = applicability
