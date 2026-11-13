@@ -173,6 +173,9 @@ const fetchPlan = async (): Promise<PlannedRow[]> => {
       "ranked"."updatedAt",
       CASE
         WHEN "ranked"."position" = 1 THEN 'keep'
+        -- A row beaten in the arbitration (position > 1) with no
+        -- OrganisationAdministrator holds nothing downstream references by
+        -- email: deleting it orphans no link and drops no responsibility.
         WHEN NOT "ranked"."hasOrganisationAdministrator" THEN 'delete'
         WHEN "administered"."administratorPosition" = 1
           AND NOT EXISTS (
