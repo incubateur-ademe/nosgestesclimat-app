@@ -40,6 +40,29 @@ export class SimulationInvalidModelStringError extends DomainError<'simulation_i
 }
 
 /**
+ * A stored rule evaluation breaking its invariant: exactly one value when
+ * applicable, none otherwise. Corrupt data is never reinterpreted.
+ */
+export class CorruptRuleEvaluationError extends DomainError<'corrupt_rule_evaluation'> {
+  public readonly simulationId: string
+  public readonly ruleId: number
+
+  constructor(params: {
+    simulationId: string
+    ruleId: number
+    reason: string
+  }) {
+    const { simulationId, ruleId, reason } = params
+    super(
+      'corrupt_rule_evaluation',
+      `Rule evaluation of rule ${ruleId} for simulation ${simulationId} ${reason}`
+    )
+    this.simulationId = simulationId
+    this.ruleId = ruleId
+  }
+}
+
+/**
  * Each failed rule is logged where it failed: this only counts them, one per
  * rule and metric.
  */
