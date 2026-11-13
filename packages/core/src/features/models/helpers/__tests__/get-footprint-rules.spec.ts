@@ -9,45 +9,6 @@ import { getModelFileName } from '../get-model-file-name.ts'
 import { getSomme } from '../get-somme.ts'
 import { importCurrentModel } from '../import-current-model.ts'
 
-/** The categories the installed model's `bilan` sums. */
-const EXPECTED_CATEGORIES: DottedName[] = [
-  'logement',
-  'transport',
-  'alimentation',
-  'divers',
-  'services sociétaux',
-]
-
-const MODEL_METRICS = ['carbone', 'eau'] as const
-
-/**
- * The sums a category declares, including every branch of a `variations`.
- * `getSomme` returns only the first branch; the footprint collection must not
- * miss a subcategory that only a later branch declares.
- */
-const allSums = (rawNode: unknown): DottedName[][] => {
-  if (!rawNode || typeof rawNode !== 'object') return []
-
-  const rule = rawNode as Record<string, unknown>
-  const formula = rule.formule
-  const definition =
-    formula && typeof formula === 'object'
-      ? (formula as Record<string, unknown>)
-      : rule
-
-  if (Array.isArray(definition.somme)) {
-    return [definition.somme as DottedName[]]
-  }
-
-  if (Array.isArray(definition.variations)) {
-    return (
-      definition.variations as Array<{ alors?: { somme?: DottedName[] } }>
-    ).flatMap(({ alors }) => (alors?.somme ? [alors.somme] : []))
-  }
-
-  return []
-}
-
 describe('getFootprintRules', () => {
   it('throws an explicit error when the model has no bilan', () => {
     const engine = createTestEngine({ 'footprint . other': { valeur: 1 } })
@@ -151,3 +112,42 @@ describe('getFootprintRules on the installed model', () => {
     expect(failures).toEqual([])
   }, 60_000)
 })
+
+/** The categories the installed model's `bilan` sums. */
+const EXPECTED_CATEGORIES: DottedName[] = [
+  'logement',
+  'transport',
+  'alimentation',
+  'divers',
+  'services sociétaux',
+]
+
+const MODEL_METRICS = ['carbone', 'eau'] as const
+
+/**
+ * The sums a category declares, including every branch of a `variations`.
+ * `getSomme` returns only the first branch; the footprint collection must not
+ * miss a subcategory that only a later branch declares.
+ */
+const allSums = (rawNode: unknown): DottedName[][] => {
+  if (!rawNode || typeof rawNode !== 'object') return []
+
+  const rule = rawNode as Record<string, unknown>
+  const formula = rule.formule
+  const definition =
+    formula && typeof formula === 'object'
+      ? (formula as Record<string, unknown>)
+      : rule
+
+  if (Array.isArray(definition.somme)) {
+    return [definition.somme as DottedName[]]
+  }
+
+  if (Array.isArray(definition.variations)) {
+    return (
+      definition.variations as Array<{ alors?: { somme?: DottedName[] } }>
+    ).flatMap(({ alors }) => (alors?.somme ? [alors.somme] : []))
+  }
+
+  return []
+}
