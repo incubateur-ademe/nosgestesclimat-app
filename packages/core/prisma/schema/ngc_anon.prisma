@@ -32,11 +32,11 @@ view AnonUser {
 }
 
 view AnonVerifiedUser {
-  userId                   String   @unique @db.Uuid
-  user                     AnonUser @relation(fields: [userId], references: [id])
+  id                       String   @unique
+  user_id                  String   @db.Uuid
+  user                     AnonUser @relation(fields: [user_id], references: [id])
   // name and telephone are left out: the view is exported to the PostHog
-  // warehouse, see 20260923123000. The identity is the shared user id: no
-  // column here is derived from the email.
+  // warehouse, see 20260923123000.
   position                 String?
   optedInForCommunications Boolean
   createdAt                DateTime
@@ -64,7 +64,7 @@ view AnonOrganisation {
 
 view AnonOrganisationAdministrator {
   id             String           @unique
-  userId         String           @unique @db.Uuid
+  userEmail      String
   organisationId String
   organisation   AnonOrganisation @relation(fields: [organisationId], references: [id])
   createdAt      DateTime

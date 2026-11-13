@@ -75,7 +75,7 @@ export async function addLastActivityAtToUser(props?: Props) {
         UNION ALL
         SELECT v_u.id, oa."updatedAt" AS dates
           FROM ngc."OrganisationAdministrator" oa
-          JOIN ngc."VerifiedUser" v_u ON v_u.id = oa."userId"
+          JOIN ngc."VerifiedUser" v_u ON v_u.email = oa."userEmail"
           JOIN targeted_users t_u ON t_u.id = v_u.id
 
         UNION ALL

@@ -122,7 +122,7 @@ describe('getPollResult', () => {
     })
     expect(serviceMock.isOrganisationAdministrator).toHaveBeenCalledWith({
       organisationSlug: 'my-org',
-      userId,
+      userEmail: 'alice@example.com',
     })
     expect(result.isAdmin).toBe(true)
   })

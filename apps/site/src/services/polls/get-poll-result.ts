@@ -13,8 +13,8 @@ import { notFound } from 'next/navigation'
  *
  * The core use case never learns who is looking — only `userId` crosses the
  * boundary — so the organisation right is asked separately, and only for a
- * signed-in viewer: an anonymous session has no user id to look an
- * administrator up with.
+ * signed-in viewer: an anonymous session has no email to look an administrator
+ * up with.
  */
 export const getPollResult = async ({
   organisationSlug,
@@ -34,7 +34,7 @@ export const getPollResult = async ({
     session?.isAuth
       ? isOrganisationAdministrator({
           organisationSlug,
-          userId: session.id,
+          userEmail: session.email,
         })
       : false,
   ])

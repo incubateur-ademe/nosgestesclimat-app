@@ -1,20 +1,31 @@
 import { PGlite } from '@electric-sql/pglite'
 import { readFile, readdir } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import path from 'node:path'
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import {
+  deduplicateVerifiedUsers,
+  type DeduplicationClient,
+} from '../NGC-4121-20261112.ts'
 
 /**
- * The deduplication is a data migration: it only does something on a database
- * that still allows two rows to share a "VerifiedUser"."id". The migrated test
- * database cannot hold that state, so this test builds its own from the
- * migrations that precede it, seeds the duplicates and the organisation
- * administrators the migration has to arbitrate, and runs it.
+ * The deduplication only does something on a database that holds several rows
+ * sharing a "VerifiedUser"."id". The migrated test database cannot hold that
+ * state, so this test builds its own from the project's migrations, seeds the
+ * duplicates and the organisation administrators the script has to arbitrate,
+ * and runs it.
  */
 
-const MIGRATIONS_DIR = path.join('.', 'prisma', 'migrations')
-const DEDUPLICATION = '20261112110000_verified_user_deduplicate_ids'
+const require = createRequire(import.meta.url)
+const coreMain = require.resolve('@nosgestesclimat/core')
+const MIGRATIONS_DIR = path.join(
+  path.dirname(coreMain),
+  '..',
+  'prisma',
+  'migrations'
+)
 
-/** The accounts the test arbitrates, with the outcome the migration promises. */
+/** The accounts the test arbitrates, with the outcome the script promises. */
 const FRESH_EMAIL_ID = '11111111-1111-1111-1111-111111111111'
 const TWICE_SIGNED_UP_ID = '22222222-2222-2222-2222-222222222222'
 const TWO_ADMINS_ID = '33333333-3333-3333-3333-333333333333'
@@ -51,6 +62,30 @@ const FIXTURES = `
     ('admin-2', 'admin2@example.fr', 'org-2', '2025-01-01');
 `
 
+/**
+ * The script talks to the client through raw statements: this exposes PGlite
+ * the same way, with the transaction the writes are wrapped in.
+ */
+const clientOf = (pg: PGlite): DeduplicationClient => {
+  const client: DeduplicationClient = {
+    $queryRawUnsafe: async <T>(query: string): Promise<T> =>
+      (await pg.query(query)).rows as T,
+    $executeRawUnsafe: (query: string) => pg.exec(query),
+    $transaction: async (transaction) => {
+      await pg.exec('BEGIN')
+      try {
+        await transaction({ $executeRawUnsafe: client.$executeRawUnsafe })
+        await pg.exec('COMMIT')
+      } catch (error) {
+        await pg.exec('ROLLBACK')
+        throw error
+      }
+    },
+  }
+
+  return client
+}
+
 const readMigration = async (name: string): Promise<string> => {
   const sql = await readFile(
     path.join(MIGRATIONS_DIR, name, 'migration.sql'),
@@ -61,38 +96,55 @@ const readMigration = async (name: string): Promise<string> => {
   return sql.replaceAll('CREATE INDEX CONCURRENTLY', 'CREATE INDEX')
 }
 
-const verifiedUsersOf = (db: PGlite) =>
-  db.query<{ id: string; email: string }>(
-    `SELECT id, email FROM ngc."VerifiedUser" ORDER BY email`
-  )
+describe('deduplicateVerifiedUsers', () => {
+  const pg = new PGlite()
+  const client = clientOf(pg)
 
-describe('VerifiedUser deduplication migration', () => {
-  const db = new PGlite()
+  const verifiedUsersOf = async () =>
+    (
+      await pg.query<{ id: string; email: string }>(
+        `SELECT id, email FROM ngc."VerifiedUser" ORDER BY email`
+      )
+    ).rows
 
-  afterAll(async () => {
-    await db.close()
-  })
-
-  it('leaves one row per id and no organisation administrator pointing at a deleted email', async () => {
+  beforeAll(async () => {
     const migrations = (await readdir(MIGRATIONS_DIR))
       .filter((name) => name !== 'migration_lock.toml')
       .sort()
 
-    for (const name of migrations.filter((name) => name < DEDUPLICATION)) {
-      await db.exec(await readMigration(name))
+    for (const name of migrations) {
+      await pg.exec(await readMigration(name))
     }
 
-    await db.exec(FIXTURES)
+    await pg.exec(FIXTURES)
+  })
 
-    const migration = await readMigration(DEDUPLICATION)
-    await db.exec(migration)
+  afterAll(async () => {
+    await pg.close()
+  })
 
-    const duplicates = await db.query<{ id: string }>(
+  it('leaves one row per id and no organisation administrator pointing at a deleted email', async () => {
+    const before = await verifiedUsersOf()
+
+    await deduplicateVerifiedUsers({ client })
+
+    expect(await verifiedUsersOf()).toEqual(before)
+
+    const checks = await deduplicateVerifiedUsers({ client, dry: false })
+
+    expect(checks).toEqual({
+      duplicateIds: 0,
+      extraRows: 0,
+      orphanOrganisationAdministrators: 0,
+      accountsWithSeveralOrganisationAdministrators: 0,
+    })
+
+    const duplicates = await pg.query<{ id: string }>(
       `SELECT id FROM ngc."VerifiedUser" GROUP BY id HAVING COUNT(*) > 1`
     )
     expect(duplicates.rows).toEqual([])
 
-    const orphans = await db.query<{ id: string }>(`
+    const orphans = await pg.query<{ id: string }>(`
       SELECT oa.id
         FROM ngc."OrganisationAdministrator" oa
         LEFT JOIN ngc."VerifiedUser" vu ON vu.email = oa."userEmail"
@@ -100,41 +152,41 @@ describe('VerifiedUser deduplication migration', () => {
     `)
     expect(orphans.rows).toEqual([])
 
-    const verifiedUsers = await verifiedUsersOf(db)
+    const verifiedUsers = await verifiedUsersOf()
 
     // new/old, dup1, admin1, admin2, solo
-    expect(verifiedUsers.rows).toHaveLength(5)
+    expect(verifiedUsers).toHaveLength(5)
 
     // The most recent login decides, not the most recently written row, and
     // the administration follows the surviving email.
-    expect(verifiedUsers.rows).toContainEqual({
+    expect(verifiedUsers).toContainEqual({
       id: TWICE_SIGNED_UP_ID,
       email: 'dup1@example.fr',
     })
 
-    expect(verifiedUsers.rows).toContainEqual({
+    expect(verifiedUsers).toContainEqual({
       id: FRESH_EMAIL_ID,
       email: 'new@example.fr',
     })
 
     // Two organisation administrators of one id cannot both move to the
     // surviving email: the extra row keeps its own email under a new id.
-    const admin1 = verifiedUsers.rows.find(
+    const admin1 = verifiedUsers.find(
       (row) => row.email === 'admin1@example.fr'
     )
     expect(admin1?.id).not.toBe(TWO_ADMINS_ID)
-    expect(verifiedUsers.rows).toContainEqual({
+    expect(verifiedUsers).toContainEqual({
       id: TWO_ADMINS_ID,
       email: 'admin2@example.fr',
     })
 
     // A row whose id is not duplicated is left as it was.
-    expect(verifiedUsers.rows).toContainEqual({
+    expect(verifiedUsers).toContainEqual({
       id: UNTOUCHED_ID,
       email: 'solo@example.fr',
     })
 
-    const organisationAdministrators = await db.query<{
+    const organisationAdministrators = await pg.query<{
       userEmail: string
       userId: string
     }>(`
@@ -152,18 +204,18 @@ describe('VerifiedUser deduplication migration', () => {
 
     // "User"."email" mirrors the surviving verified email. The fixture leaves
     // it empty - a column that holds NULL never satisfies "<>" - so this only
-    // checks that the migration does not add one.
-    const users = await db.query<{ email: string | null }>(
+    // checks that the script does not add one.
+    const users = await pg.query<{ email: string | null }>(
       `SELECT email FROM ngc."User" WHERE id = '${FRESH_EMAIL_ID}'`
     )
     expect(users.rows).toEqual([{ email: null }])
 
     // A second run finds nothing to do.
-    await db.exec(migration)
-    expect((await verifiedUsersOf(db)).rows).toEqual(verifiedUsers.rows)
+    await deduplicateVerifiedUsers({ client, dry: false })
+    expect(await verifiedUsersOf()).toEqual(verifiedUsers)
     expect(
       (
-        await db.query<{ count: number }>(
+        await pg.query<{ count: number }>(
           `SELECT COUNT(*)::int AS count FROM ngc."User"`
         )
       ).rows

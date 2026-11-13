@@ -19,18 +19,18 @@ describe('isOrganisationAdministrator', () => {
 
     const result = await isOrganisationAdministrator({
       organisationSlug: organisation.slug,
-      userId: user.id,
+      userEmail: user.email,
     })
 
     expect(result).toBe(true)
   })
 
-  it('returns false for a user that administrates nothing', async () => {
+  it('returns false for an email that administrates nothing', async () => {
     const organisation = await organisationFactory.create()
 
     const result = await isOrganisationAdministrator({
       organisationSlug: organisation.slug,
-      userId: faker.string.uuid(),
+      userEmail: faker.internet.email().toLocaleLowerCase(),
     })
 
     expect(result).toBe(false)
@@ -43,7 +43,7 @@ describe('isOrganisationAdministrator', () => {
 
     const result = await isOrganisationAdministrator({
       organisationSlug: otherOrganisation.slug,
-      userId: user.id,
+      userEmail: user.email,
     })
 
     expect(result).toBe(false)
@@ -54,7 +54,7 @@ describe('isOrganisationAdministrator', () => {
 
     const result = await isOrganisationAdministrator({
       organisationSlug: 'does-not-exist',
-      userId: user.id,
+      userEmail: user.email,
     })
 
     expect(result).toBe(false)
