@@ -137,12 +137,11 @@ export const findVerifiedUserByEmail = async (
  * the user aggregate owns, the timestamps being the database's - `createdAt`
  * is never written on an update.
  *
- * Prisma's `upsert` does not fit: the verified record's primary key is the
- * email, which is exactly what an update can change, and a nested upsert
- * keys on the *new* email - on an email change it would create a second
- * verified record instead of renaming the existing one. The existing
- * verified email must be read first either way, so the branches stay
- * explicit.
+ * The write branches on whether a verified record already exists: an update
+ * carries only the fields the write owns, a create carries all of them. Both
+ * reach the record through the user's id, which is the record's primary key,
+ * so an email change renames the existing record instead of creating a second
+ * one.
  */
 export async function createOrUpdateUser(
   user: NewVerifiedUser | VerifiedUser,
@@ -164,7 +163,7 @@ export async function createOrUpdateUser(
       deletedAt: true,
       verifiedUsers: {
         select: {
-          email: true,
+          id: true,
         },
       },
     },
@@ -179,7 +178,7 @@ export async function createOrUpdateUser(
     )
   }
 
-  const existingVerifiedEmail = existingUser?.verifiedUsers[0]?.email
+  const hasVerifiedRecord = !!existingUser?.verifiedUsers.length
 
   // The verified record is the source of truth for the email; the user
   // table's email column mirrors it for the readers that have not migrated
@@ -211,11 +210,11 @@ export async function createOrUpdateUser(
         data: {
           ...userData,
           ...(verifiedUserData && {
-            verifiedUsers: existingVerifiedEmail
+            verifiedUsers: hasVerifiedRecord
               ? {
                   update: {
                     where: {
-                      email: existingVerifiedEmail,
+                      id: user.id,
                     },
                     data: verifiedUserData,
                   },
