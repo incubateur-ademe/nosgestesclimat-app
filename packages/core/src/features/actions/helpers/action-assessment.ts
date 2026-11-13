@@ -6,7 +6,6 @@ import {
   type RuleEvaluationError,
 } from '../../models/errors.ts'
 import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
-import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -61,16 +60,26 @@ export const toNewActionAssessment = (
 }
 
 /**
- * An action's impact is a number: any other value, `false` included, is a
- * modelling mistake.
+ * Evaluates the rule of the action named `dottedName`.
  *
- * NaN and ±Infinity are an issue with the model, not with the simulation: the
- * action still applies, its impact unknown.
+ * An action's impact is a number, 0 meaning no impact: any other value,
+ * `false` included, is a modelling mistake.
  */
-export const toActionEvaluation = (
-  applicability: ModelRuleEvaluation,
+export const evaluateAction = ({
+  engine,
+  dottedName,
+}: {
+  engine: Engine
   dottedName: DottedName
-): Result<ActionEvaluation, UnexpectedNodeValueError> => {
+}): Result<ActionEvaluation, RuleEvaluationError> => {
+  const evaluation = evaluateModelRule({ engine, dottedName })
+
+  if (!evaluation.success) {
+    return evaluation
+  }
+
+  const applicability = evaluation.data
+
   if (applicability.applicable === true) {
     const { value } = applicability
 
@@ -82,7 +91,7 @@ export const toActionEvaluation = (
 
     return success({
       applicable: true,
-      impact: Number.isFinite(value) && value !== 0 ? value : undefined,
+      impact: value !== 0 ? value : undefined,
     })
   }
 
@@ -91,19 +100,4 @@ export const toActionEvaluation = (
   }
 
   return success({ applicable: undefined, impact: undefined })
-}
-
-/** Evaluates the rule of the action named `dottedName`. */
-export const evaluateAction = ({
-  engine,
-  dottedName,
-}: {
-  engine: Engine
-  dottedName: DottedName
-}): Result<ActionEvaluation, RuleEvaluationError> => {
-  const evaluation = evaluateModelRule({ engine, dottedName })
-
-  return evaluation.success
-    ? toActionEvaluation(evaluation.data, dottedName)
-    : evaluation
 }
