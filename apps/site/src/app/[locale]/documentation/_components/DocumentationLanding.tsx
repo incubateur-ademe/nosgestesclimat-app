@@ -23,11 +23,11 @@ export default async function DocumentationLanding({
     'services sociétaux': t(
       'Les constantes de **services publics et marchands** calculées à partir des travaux du SDES'
     ),
-    'alimentation . plats': t(
+    'alimentation . repas . déjeuner et dîner': t(
       '**6 repas** représentatifs de notre consommation'
     ),
     'alimentation . déchets': t("Un modèle inédit d'empreinte des **déchets**"),
-    'logement . chauffage . empreinte par défaut': t(
+    'logement . chauffage': t(
       'Un calcul statistique du **chauffage** résidentiel français moyen'
     ),
     'transport . voiture': t(
