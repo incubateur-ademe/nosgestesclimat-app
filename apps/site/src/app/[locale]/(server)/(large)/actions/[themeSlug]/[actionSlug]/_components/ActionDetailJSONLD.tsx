@@ -10,11 +10,5 @@ export default function ActionDetailJSONLD({
   action: Action
   locale: Locale
 }) {
-  const jsonLd = buildActionDetailJsonLd(action, locale)
-
-  if (jsonLd.length === 0) {
-    return null
-  }
-
-  return <JSONLD jsonLd={jsonLd} />
+  return <JSONLD jsonLd={buildActionDetailJsonLd(action, locale)} />
 }

@@ -1,25 +1,24 @@
-'use client'
+/**
+ * Serializes JSON-LD for a `<script>` tag. `<` is escaped so that a payload
+ * containing `</script>` cannot break out of the script element.
+ */
+const serializeJsonLd = (jsonLd: Record<string, unknown>[]) =>
+  JSON.stringify(jsonLd).replace(/</g, '\\u003c')
 
-import { useEffect, useState } from 'react'
-
+/**
+ * Renders JSON-LD in the served HTML. Kept free of client-only code: structured
+ * data injected after hydration is invisible to crawlers that do not run JS.
+ */
 export default function JSONLD({
   jsonLd,
 }: {
   jsonLd: Record<string, unknown>[]
 }) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
-
   return (
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(jsonLd),
+        __html: serializeJsonLd(jsonLd),
       }}
     />
   )

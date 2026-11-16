@@ -80,7 +80,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     title: action.metadata.title ?? action.title,
     description: action.metadata.description ?? action.longDescription,
     alternates: {
-      canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
+      canonical: ACTION_DETAIL_PATH(action.theme.slug, action.slug),
       languages,
     },
   })

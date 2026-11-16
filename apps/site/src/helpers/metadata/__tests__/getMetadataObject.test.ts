@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { getMetadataObject } from '../getMetadataObject'
+import { getSiteUrl } from '../getSiteUrl'
 
-const BASE_URL = 'https://nosgestesclimat.fr'
+const BASE_URL = getSiteUrl()
 
 describe('getMetadataObject', () => {
   it('defaults languages from canonical when not explicitly provided, including x-default', () => {
@@ -128,5 +129,14 @@ describe('getMetadataObject', () => {
     })
 
     expect(result.alternates?.canonical).toBe(`${BASE_URL}/en/budget`)
+  })
+
+  it('states the document language for social networks', () => {
+    expect(
+      getMetadataObject({ locale: 'fr', description: 'desc' }).openGraph?.locale
+    ).toBe('fr_FR')
+    expect(
+      getMetadataObject({ locale: 'en', description: 'desc' }).openGraph?.locale
+    ).toBe('en_GB')
   })
 })
