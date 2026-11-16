@@ -8,7 +8,8 @@ import {
   getBorderCategoryColor,
   getTextCategoryColor,
 } from '@/helpers/getCategoryColorClass'
-import { useFormState, useRule } from '@/publicodes-state'
+import { useDismissNotification, useFormAdvancement } from '@/form-controller'
+import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { motion } from 'framer-motion'
 
@@ -17,8 +18,9 @@ interface Props {
 }
 
 export default function Notification({ notification }: Props) {
-  const { description, setValue } = useRule(notification)
-  const { currentCategory } = useFormState()
+  const { description } = useRule(notification)
+  const dismiss = useDismissNotification()
+  const { currentCategory } = useFormAdvancement()
 
   if (!notification || !description) return null
 
@@ -36,7 +38,7 @@ export default function Notification({ notification }: Props) {
         size="sm"
         variant="outlined"
         data-testid="notification-button"
-        onClick={() => setValue(false)}>
+        onClick={() => dismiss(notification)}>
         <Trans>J'ai compris</Trans>
       </Button>
     </motion.div>

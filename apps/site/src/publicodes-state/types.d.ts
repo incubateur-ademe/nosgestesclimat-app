@@ -2,7 +2,6 @@ import type { Group } from '@/types/groups'
 import type {
   DottedName,
   Metrics,
-  NodeValue,
   SuggestionValue,
 } from '@incubateur-ademe/nosgestesclimat'
 import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
@@ -56,13 +55,8 @@ export type ComputedResults = Record<Metric, ComputedResultsFootprint>
 
 export interface UpdateCurrentSimulationProps {
   situation?: Situation
-  foldedSteps?: DottedName[]
-  foldedStepToAdd?: {
-    foldedStep: DottedName
-    value?: NodeValue
-    isMosaicParent?: boolean
-    isMosaicChild?: boolean
-  }
+  /** An array replaces the list; a function receives the current one. */
+  foldedSteps?: DottedName[] | ((foldedSteps: DottedName[]) => DottedName[])
   defaultAdditionalQuestionsAnswers?: Record<string, string>
   customAdditionalQuestionsAnswers?: Record<string, string>
   computedResults?: ComputedResults

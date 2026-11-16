@@ -12,20 +12,100 @@ import {
   QUESTION_DESCRIPTION_BUTTON_ID,
 } from '@/constants/accessibility'
 import Button from '@/design-system/buttons/Button'
+import {
+  useFormAdvancement,
+  useFormNavigation,
+  useFormQuestion,
+  type FormQuestion,
+} from '@/form-controller'
 import { getWarningId } from '@/helpers/question/getWarningId'
 import { useUpdatePageTitle } from '@/hooks/simulation/useUpdatePageTitle'
-import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useLocale } from '@/hooks/useLocale'
-import { useFormState, useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { cn } from 'cn'
 import { AnimatePresence } from 'framer-motion'
-import type { Evaluation } from 'publicodes'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import Trans from '../translation/trans/TransClient'
 import DontKnowButton from './question/DontKnowButton'
 import NumberInputWithAssistance from './question/NumberInputWithAssistance'
 import Warning from './question/Warning'
+
+/**
+ * The input matching the question's type. The switch gives each branch its own
+ * variant, so a number branch sees a number — no cast, no assertion.
+ */
+function QuestionInput({
+  formQuestion,
+  warningId,
+}: {
+  formQuestion: FormQuestion
+  warningId: string
+}) {
+  const locale = useLocale()
+
+  const common = {
+    'data-testid': formQuestion.question,
+    'aria-describedby': `${QUESTION_DESCRIPTION_BUTTON_ID}-content ${warningId} notification-message`,
+    'aria-labelledby': 'question-label',
+  }
+
+  switch (formQuestion.type) {
+    case 'number': {
+      const placeholder =
+        formQuestion.isMissing && typeof formQuestion.defaultValue === 'number'
+          ? formQuestion.defaultValue.toLocaleString(locale, {
+              maximumFractionDigits: formQuestion.defaultValue < 10 ? 1 : 0,
+            })
+          : ''
+
+      const numberProps = {
+        ...common,
+        unit: formQuestion.unit,
+        value: formQuestion.value,
+        setValue: formQuestion.setValue,
+        placeholder,
+        id: DEFAULT_FOCUS_ELEMENT_ID,
+      }
+
+      return formQuestion.assistance ? (
+        <NumberInputWithAssistance
+          {...numberProps}
+          assistance={formQuestion.assistance}
+        />
+      ) : (
+        <NumberInput {...numberProps} />
+      )
+    }
+
+    case 'boolean':
+      return (
+        <BooleanInput
+          {...common}
+          value={formQuestion.value}
+          setValue={formQuestion.setValue}
+          label={formQuestion.label || ''}
+          firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
+        />
+      )
+
+    case 'choices':
+      return (
+        <ChoicesInput
+          {...common}
+          question={formQuestion.question}
+          choices={formQuestion.choices}
+          value={formQuestion.value}
+          setValue={formQuestion.setValue}
+          label={formQuestion.label || ''}
+          firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
+        />
+      )
+
+    case 'numberMosaic':
+    case 'selectMosaic':
+      return <Mosaic formQuestion={formQuestion} />
+  }
+}
 
 interface Props {
   question: DottedName
@@ -42,60 +122,25 @@ export default function Question({
   className,
   beforeInputsHelpText,
 }: Props) {
-  const {
-    type,
-    label,
-    description,
-    unit,
-    value,
-    situationValue,
-    setValue,
-    isMissing,
-    choices,
-    assistance,
-    questionsOfMosaicFromParent,
-    activeNotifications,
-    category,
-  } = useRule(question)
-
-  const { overLimitQuestions } = useIsDisabledByBounds(question)
-
-  const { questionsByCategories } = useFormState()
-
-  const currentCategoryQuestions = questionsByCategories[category]
-
-  const refCurrentCategoryQuestions = useRef(currentCategoryQuestions)
-
-  // Set dynamically the page title
-  useUpdatePageTitle({
-    category,
-    countCategoryQuestions: currentCategoryQuestions.length,
-    currentQuestionIndex:
-      refCurrentCategoryQuestions.current.indexOf(question) + 1,
-  })
+  const formQuestion = useFormQuestion(question)
+  const { questionPosition } = useFormAdvancement()
+  const { skipQuestion } = useFormNavigation()
 
   const [isOpen, setIsOpen] = useState(showInputsLabel ? false : true)
-  const locale = useLocale()
 
+  // Set dynamically the page title, for the question actually rendered: a
+  // custom question renders its own nested questions.
+  const position = questionPosition(question)
+  useUpdatePageTitle({
+    category: position.category,
+    countCategoryQuestions: position.count,
+    currentQuestionIndex: position.index,
+  })
+
+  const { label, description, overLimitQuestions, activeNotifications } =
+    formQuestion
   const warningId = getWarningId(question)
-
-  const numberInputProps = {
-    question,
-    unit,
-    value: situationValue as Evaluation<number>,
-    setValue: (value: number | string | undefined) =>
-      setValue(value, { questionDottedName: question }),
-    placeholder:
-      isMissing && typeof value === 'number'
-        ? value.toLocaleString(locale, {
-            maximumFractionDigits: value < 10 ? 1 : 0,
-          })
-        : '',
-    'data-testid': question,
-    id: DEFAULT_FOCUS_ELEMENT_ID,
-    'aria-describedby': `${QUESTION_DESCRIPTION_BUTTON_ID}-content ${warningId} notification-message`,
-    'aria-labelledby': 'question-label',
-  }
+  const lastNotification = activeNotifications.at(-1)
 
   return (
     <>
@@ -110,9 +155,8 @@ export default function Question({
 
         <Suggestions
           question={question}
-          setValue={(value) =>
-            setValue(value, { questionDottedName: question })
-          }
+          suggestions={formQuestion.suggestions}
+          commitNow={formQuestion.commitNow}
         />
 
         {showInputsLabel ? (
@@ -127,61 +171,7 @@ export default function Question({
 
         {beforeInputsHelpText}
         {isOpen && (
-          <>
-            {type === 'number' &&
-              (assistance ? (
-                <NumberInputWithAssistance
-                  {...numberInputProps}
-                  // Unit is required on assistance mode
-                  unit={unit!}
-                  assistance={assistance}
-                />
-              ) : (
-                <NumberInput {...numberInputProps} />
-              ))}
-
-            {type === 'boolean' && (
-              <BooleanInput
-                value={situationValue as Evaluation<boolean>}
-                setValue={(value: string | undefined) =>
-                  setValue(value, { questionDottedName: question })
-                }
-                data-testid={question}
-                label={label || ''}
-                firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content  ${warningId} notification-message`}
-                aria-labelledby="question-label"
-              />
-            )}
-
-            {type === 'choices' && (
-              <ChoicesInput
-                question={question}
-                choices={choices}
-                value={situationValue as Evaluation<string>}
-                setValue={(value) =>
-                  setValue(value, { questionDottedName: question })
-                }
-                data-testid={question}
-                label={label || ''}
-                firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content ${warningId} notification-message`}
-                aria-labelledby="question-label"
-              />
-            )}
-
-            {(type === 'numberMosaic' || type === 'selectMosaic') && (
-              <Mosaic
-                question={question}
-                questionsOfMosaic={questionsOfMosaicFromParent}
-                aria-describedby={`${QUESTION_DESCRIPTION_BUTTON_ID}-content  ${warningId} notification-message`}
-                aria-labelledby="question-label"
-                firstInputId={DEFAULT_FOCUS_ELEMENT_ID}
-                label={label || ''}
-                overLimitQuestions={overLimitQuestions}
-              />
-            )}
-          </>
+          <QuestionInput formQuestion={formQuestion} warningId={warningId} />
         )}
       </div>
 
@@ -196,12 +186,11 @@ export default function Question({
         ))}
       </AnimatePresence>
 
-      {activeNotifications.length > 0 && (
-        <Notification
-          notification={activeNotifications[activeNotifications.length - 1]}
-        />
-      )}
-      <DontKnowButton question={question} />
+      {lastNotification && <Notification notification={lastNotification} />}
+      <DontKnowButton
+        isMissing={formQuestion.isMissing}
+        onSkip={() => skipQuestion(question)}
+      />
     </>
   )
 }

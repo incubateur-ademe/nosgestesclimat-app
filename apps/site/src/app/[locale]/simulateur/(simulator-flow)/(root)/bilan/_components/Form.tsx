@@ -1,27 +1,23 @@
 'use client'
+import { useFormAdvancement, useCustomQuestion } from '@/form-controller'
 
 import Navigation from '@/components/form/Navigation'
 import Question from '@/components/form/Question'
 import ContentLarge from '@/components/layout/ContentLarge'
-import questions from '@/components/specialQuestions'
 import { getBgCategoryColor } from '@/helpers/getCategoryColorClass'
 import { useIframe } from '@/hooks/useIframe'
 
 import CategoryIllustration from '@/app/[locale]/simulateur/(simulator-flow)/(root)/bilan/_components/summary/CategoryIllustration'
 import { useIsClient } from '@/hooks/useIsClient'
-import { useFormState } from '@/publicodes-state'
 import { cn } from 'cn'
 import { useEffect } from 'react'
-import { useCompleteSimulation } from '../_hooks/useCompleteSimulation'
 import FunFact from './form/FunFact'
 import ResultsBlocksDesktop from './form/ResultsBlockDesktop'
 import ResultsBlockMobile from './form/ResultsBlockMobile'
 
 export default function Form() {
-  const { remainingQuestions, currentQuestion, currentCategory } =
-    useFormState()
-
-  const { completeSimulation, isPending } = useCompleteSimulation()
+  const { currentQuestion, currentCategory } = useFormAdvancement()
+  const customQuestion = useCustomQuestion()
 
   const { isIframe } = useIframe()
 
@@ -39,8 +35,6 @@ export default function Form() {
     return null
   }
 
-  const QuestionComponent = questions[currentQuestion] || Question
-
   return (
     <>
       <ContentLarge className="px-4 pt-2">
@@ -48,20 +42,18 @@ export default function Form() {
 
         <div className="relative flex flex-1 flex-col gap-2 md:flex-row md:gap-8 lg:mt-0 lg:gap-12">
           <div className="relative flex flex-1 flex-col">
-            <QuestionComponent
-              question={currentQuestion}
-              key={currentQuestion}
-            />
-
-            {isIframe && (
-              <Navigation
-                key="iframe-navigation"
-                question={currentQuestion}
-                remainingQuestions={remainingQuestions}
-                onComplete={completeSimulation}
-                isPending={isPending}
+            {customQuestion ? (
+              <customQuestion.Renderer
+                question={customQuestion.question}
+                draft={customQuestion.draft}
+                onChange={customQuestion.onChange}
+                key={currentQuestion}
               />
+            ) : (
+              <Question question={currentQuestion} key={currentQuestion} />
             )}
+
+            {isIframe && <Navigation key="iframe-navigation" />}
           </div>
 
           <div
@@ -81,15 +73,7 @@ export default function Form() {
         </div>
       </ContentLarge>
 
-      {!isIframe && (
-        <Navigation
-          key="default-navigation"
-          question={currentQuestion}
-          remainingQuestions={remainingQuestions}
-          onComplete={completeSimulation}
-          isPending={isPending}
-        />
-      )}
+      {!isIframe && <Navigation key="default-navigation" />}
     </>
   )
 }

@@ -1,12 +1,10 @@
-import { requestIdleCallback } from '@/utils/requestIdleCallback'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import type { Evaluation } from 'publicodes'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Choice from './choicesInput/Choice'
 
 interface Props {
   question: DottedName
-  value: Evaluation<string>
+  value: string | undefined
   choices: (string | number)[] | null
   setValue: (value: string | undefined) => void
   'data-testid': string
@@ -32,34 +30,12 @@ export default function ChoicesInput(props: Props) {
     ? choices.length >= SHOULD_USE_GRID_THRESHOLD
     : undefined
 
-  const [currentValue, setCurrentValue] = useState<
-    string | number | null | undefined
-  >(value)
-
-  // The choice value can be overriden in the very specific case of divers.textile.volume question,
-  // where a modification in the mosaic can change the answer in the choice question above.
-  // So we need to sync its state with the one from the evaluation
+  // A lone option is auto-selected so the user is not asked a pointless question.
   useEffect(() => {
-    if (value !== undefined && currentValue !== value) {
-      setCurrentValue(value)
+    if (choices?.length === 1 && choices[0] && value === undefined) {
+      setValue(String(choices[0]))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  // If there's only one choice and no value is selected yet, select it automatically
-  useEffect(() => {
-    if (
-      choices?.length === 1 &&
-      choices[0] &&
-      value === undefined &&
-      currentValue === undefined
-    ) {
-      const singleChoice = choices[0]
-      setCurrentValue(singleChoice)
-      requestIdleCallback(() => setValue(String(singleChoice)))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [choices, value])
+  }, [choices, value, setValue])
 
   return (
     <fieldset
@@ -76,15 +52,9 @@ export default function ChoicesInput(props: Props) {
             key={choice}
             question={question}
             choice={choice}
-            active={currentValue === choice}
+            active={value === choice}
             setValue={(choice: string | number) => {
-              if (currentValue === choice) {
-                setCurrentValue(undefined)
-                requestIdleCallback(() => setValue(undefined))
-              } else {
-                setCurrentValue(choice)
-                requestIdleCallback(() => setValue(String(choice)))
-              }
+              setValue(value === choice ? undefined : String(choice))
             }}
             isWithinGrid={isGrid}
             {...otherProps}

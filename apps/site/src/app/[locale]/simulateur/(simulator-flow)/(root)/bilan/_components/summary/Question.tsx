@@ -1,21 +1,21 @@
 'use client'
+import {
+  useFormAdvancement,
+  useFormDebug,
+  useFormNavigation,
+} from '@/form-controller'
 
 import ChoicesValue from '@/components/misc/ChoicesValue'
 import NumberValue from '@/components/misc/NumberValue'
-import { foldEveryQuestionsUntil } from '@/helpers/foldEveryQuestionsUntil'
 import {
   getBackgroundDarkColor,
   getBackgroundLightColor,
   getBorderColor,
   getTextDarkColor,
 } from '@/helpers/getCategoryColorClass'
+import { useCurrentSimulation } from '@/publicodes-state'
 import { useDebug } from '@/hooks/useDebug'
-import {
-  useCurrentSimulation,
-  useFormState,
-  useRule,
-  useUser,
-} from '@/publicodes-state'
+import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { cn } from 'cn'
 
@@ -40,14 +40,10 @@ export default function Question({
   } = useRule(question)
 
   const { foldedSteps } = useCurrentSimulation()
-  const { updateCurrentSimulation } = useUser()
 
-  const {
-    currentQuestion,
-    setCurrentQuestion,
-    relevantQuestions,
-    missingVariables,
-  } = useFormState()
+  const { currentQuestion } = useFormAdvancement()
+  const { missingVariables } = useFormDebug()
+  const { goto } = useFormNavigation()
 
   const isDebug = useDebug()
 
@@ -74,14 +70,7 @@ export default function Question({
       onClick={() => {
         if (isDisabled) return
 
-        if (isDebug) {
-          foldEveryQuestionsUntil({
-            question,
-            relevantQuestions,
-            updateCurrentSimulation,
-          })
-        }
-        setCurrentQuestion(question)
+        goto(question)
 
         // Reset the scroll position to the top of the page
         window.scrollTo({ top: 0, behavior: 'instant' })

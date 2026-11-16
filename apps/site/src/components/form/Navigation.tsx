@@ -1,47 +1,16 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import {
-  DEFAULT_FOCUS_ELEMENT_ID,
-  QUESTION_DESCRIPTION_BUTTON_ID,
-} from '@/constants/accessibility'
-import { captureClickFormNav } from '@/constants/tracking/trackers'
 import Button from '@/design-system/buttons/Button'
 import Loader from '@/design-system/layout/Loader'
+import {
+  useFormNavigation,
+  type SubmitButtonKind,
+} from '@/form-controller'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIframe } from '@/hooks/useIframe'
-import { useIsDisabledByBounds } from '@/hooks/useIsDisabledByBounds'
 import { useMagicKey } from '@/hooks/useMagicKey'
-import logger from '@/logger/logger.browser'
-import {
-  useCurrentSimulation,
-  useEngine,
-  useFormState,
-  useRule,
-  useUser,
-} from '@/publicodes-state'
-import { useGotoNextQuestion } from '@/publicodes-state/hooks/useGotoNextQuestion/useGotoNextQuestion'
-import { trackEvent } from '@/utils/analytics/trackEvent'
-import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import { ErrorWithCode } from '@nosgestesclimat/core/lib/errors'
 import { cn } from 'cn'
-import { useRouter } from 'next/navigation'
-import type { MouseEvent } from 'react'
-import { useCallback, useEffect, useState } from 'react'
-
-type SubmitButtonKind = 'loading' | 'finish' | 'next'
-
-function getSubmitButtonKind({
-  isPending,
-  isLastQuestion,
-}: {
-  isPending?: boolean
-  isLastQuestion?: boolean
-}): SubmitButtonKind {
-  if (isPending) return 'loading'
-  if (isLastQuestion) return 'finish'
-  return 'next'
-}
 
 function SubmitButtonContent({ kind }: { kind: SubmitButtonKind }) {
   if (kind === 'loading') {
@@ -72,271 +41,15 @@ function SubmitButtonContent({ kind }: { kind: SubmitButtonKind }) {
   )
 }
 
-export default function Navigation({
-  question,
-  onComplete = () => '',
-  isEmbedded,
-  remainingQuestions,
-  isPending,
-}: {
-  question: DottedName
-  onComplete?: () => void
-  isEmbedded?: boolean
-  remainingQuestions: DottedName[]
-  isPending?: boolean
-}) {
+export default function Navigation() {
   const { t } = useClientTranslation()
-
-  const router = useRouter()
-
   const { isIframe } = useIframe()
 
-  const [persistedRemainingQuestions] = useState(remainingQuestions)
-
-  const {
-    gotoPrevQuestion,
-    noPrevQuestion,
-    noNextQuestion,
-    currentQuestion,
-    setCurrentQuestion,
-    forgottenQuestions,
-  } = useFormState()
-
-  const { goToNextQuestion, isIntercalaireNext } = useGotoNextQuestion()
-
-  // Determines if the current question is the last one of the test
-  const isLastQuestion = isEmbedded
-    ? (remainingQuestions.length === 1 &&
-        remainingQuestions[0] === currentQuestion) ||
-      remainingQuestions.length === 0
-    : noNextQuestion
-
-  const hasForgottenQuestionsOnLastQuestion =
-    isLastQuestion && forgottenQuestions.length > 0
-
-  const { situation } = useCurrentSimulation()
-  useEffect(() => {
-    if (hasForgottenQuestionsOnLastQuestion) {
-      logger.error(
-        new ErrorWithCode(
-          'forgotten_questions',
-          'Forgotten questions at the end of the test'
-        ),
-        {
-          scope: 'site.interaction.testNavigation',
-          forgottenQuestions,
-          situation,
-        }
-      )
-    }
-    // One line per detection: the rest changes on every answer.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasForgottenQuestionsOnLastQuestion])
-
-  const {
-    isMissing,
-    isFolded,
-    value,
-    activeNotifications,
-    questionsOfMosaicFromParent,
-  } = useRule(question)
-
-  const { getValue } = useEngine()
-
-  const canNavigateFromAnsweredForgottenQuestion =
-    forgottenQuestions.includes(question) && !isMissing
-
-  // Reset notifications when navigating away
-  const hasActiveNotifications = activeNotifications.length > 0
-  const { setValue: setNotificationValue } = useRule(
-    hasActiveNotifications
-      ? activeNotifications[activeNotifications.length - 1]
-      : question
-  )
-  const resetNotification = useCallback(() => {
-    if (hasActiveNotifications) {
-      setNotificationValue(false, {})
-    }
-  }, [hasActiveNotifications, setNotificationValue])
-
-  const { updateCurrentSimulation } = useUser()
-
-  // Check if the numeric value or one of numeric mosaic children is out of bounds (floor/ceiling)
-  const { isNextDisabled } = useIsDisabledByBounds(question)
-
-  // Disable "Précédent" only when there's truly no previous question
-  const hasNoPreviousQuestion = isEmbedded
-    ? persistedRemainingQuestions.indexOf(question) === 0
-    : noPrevQuestion
-
-  const [startTime, setStartTime] = useState(() => Date.now())
-
-  useEffect(() => {
-    setStartTime(Date.now())
-  }, [question])
-
-  const handleMoveFocus = () => {
-    setTimeout(() => {
-      const focusedElement =
-        document.getElementById(QUESTION_DESCRIPTION_BUTTON_ID) ??
-        document.getElementById(DEFAULT_FOCUS_ELEMENT_ID) ??
-        document.getElementById(`${DEFAULT_FOCUS_ELEMENT_ID}-0`)
-
-      if (focusedElement) {
-        focusedElement.focus()
-      }
-    })
-  }
-
-  const handleAnswerQuestion = useCallback(() => {
-    if (questionsOfMosaicFromParent.length > 0) {
-      questionsOfMosaicFromParent.forEach((mosaicQuestion) => {
-        updateCurrentSimulation({
-          foldedStepToAdd: {
-            foldedStep: mosaicQuestion,
-            value: getValue(mosaicQuestion),
-            isMosaicChild: true,
-          },
-        })
-      })
-    }
-
-    updateCurrentSimulation({
-      foldedStepToAdd: {
-        foldedStep: question,
-        value,
-        isMosaicParent: questionsOfMosaicFromParent.length > 0,
-      },
-    })
-  }, [
-    getValue,
-    question,
-    questionsOfMosaicFromParent,
-    updateCurrentSimulation,
-    value,
-  ])
-
-  const trackNextNavigation = useCallback(
-    (timeSpentOnQuestion: number) => {
-      trackEvent(
-        captureClickFormNav({
-          actionType: 'suivant',
-          question,
-          answer: value,
-          timeSpentOnQuestion,
-        })
-      )
-    },
-    [question, value]
-  )
-
-  const trackPrevNavigation = useCallback(
-    (timeSpentOnQuestion: number) => {
-      trackEvent(
-        captureClickFormNav({
-          actionType: 'précédent',
-          question,
-          answer: value,
-          timeSpentOnQuestion,
-        })
-      )
-    },
-    [question, value]
-  )
-
-  const navigateToNextEmbeddedQuestion = useCallback(() => {
-    const nextIndex = (persistedRemainingQuestions.indexOf(question) || 0) + 1
-    setCurrentQuestion(persistedRemainingQuestions[nextIndex] ?? null)
-  }, [question, setCurrentQuestion, persistedRemainingQuestions])
-
-  const navigateToPrevEmbeddedQuestion = useCallback(() => {
-    const prevIndex = (persistedRemainingQuestions.indexOf(question) || 0) - 1
-    setCurrentQuestion(persistedRemainingQuestions[prevIndex] ?? null)
-  }, [question, setCurrentQuestion, persistedRemainingQuestions])
-
-  const handleGoToNextQuestion = useCallback(
-    (e: KeyboardEvent | MouseEvent) => {
-      e.preventDefault()
-
-      const timeSpentOnQuestion = Date.now() - startTime
-
-      trackNextNavigation(timeSpentOnQuestion)
-
-      if (isMissing) {
-        handleAnswerQuestion()
-      }
-
-      handleMoveFocus()
-
-      resetNotification()
-
-      if (isEmbedded && persistedRemainingQuestions.length > 0) {
-        navigateToNextEmbeddedQuestion()
-      } else {
-        goToNextQuestion()
-      }
-
-      if (isLastQuestion && !isIntercalaireNext) {
-        onComplete()
-      }
-    },
-    [
-      startTime,
-      trackNextNavigation,
-      isMissing,
-      handleAnswerQuestion,
-      resetNotification,
-      isEmbedded,
-      goToNextQuestion,
-      navigateToNextEmbeddedQuestion,
-      isLastQuestion,
-      isIntercalaireNext,
-      onComplete,
-      persistedRemainingQuestions.length,
-    ]
-  )
-
-  const handleGoToPrevQuestion = useCallback(
-    (e: KeyboardEvent | MouseEvent) => {
-      e.preventDefault()
-
-      if (hasNoPreviousQuestion) {
-        router.back()
-        return
-      }
-
-      trackPrevNavigation(Date.now() - startTime)
-
-      if (isEmbedded) {
-        navigateToPrevEmbeddedQuestion()
-      } else {
-        gotoPrevQuestion()
-      }
-
-      resetNotification()
-
-      handleMoveFocus()
-    },
-    [
-      hasNoPreviousQuestion,
-      startTime,
-      trackPrevNavigation,
-      isEmbedded,
-      gotoPrevQuestion,
-      navigateToPrevEmbeddedQuestion,
-      resetNotification,
-      router,
-    ]
-  )
+  const { next, prev } = useFormNavigation()
 
   useMagicKey({
-    gotToNextQuestion: handleGoToNextQuestion,
-    isLastQuestion,
-  })
-
-  const submitButtonKind = getSubmitButtonKind({
-    isPending,
-    isLastQuestion: isLastQuestion && !isIntercalaireNext,
+    gotToNextQuestion: next.go,
+    isLastQuestion: next.kind !== 'next',
   })
 
   const submitButtonTitle = {
@@ -352,32 +65,25 @@ export default function Navigation({
       'common.navigation.nextQuestion.next.label',
       'Aller à la question suivante'
     ),
-  }[submitButtonKind]
+  }[next.kind]
 
-  const submitButtonIsDisabled =
-    isPending === true ||
-    isNextDisabled ||
-    (!isFolded && !canNavigateFromAnsweredForgottenQuestion)
-
-  const submitButtonColor = 'primary'
+  const showFinishEmphasis = next.kind === 'finish' && !next.isDisabled
 
   return (
     <div
       className={cn(
         'fixed right-0 bottom-0 left-0 z-50 min-h-16.5 bg-gray-100 py-3',
-        isEmbedded && 'static bg-transparent p-0',
         isIframe &&
           'relative right-auto bottom-auto left-auto z-0 bg-transparent'
       )}>
       <div
         className={cn(
-          'relative mx-auto flex w-full max-w-6xl justify-between gap-1 px-4 md:gap-4 lg:justify-start',
-          isEmbedded && 'justify-start'
+          'relative mx-auto flex w-full max-w-6xl justify-between gap-1 px-4 md:gap-4 lg:justify-start'
         )}>
         <Button
           size="md"
-          onClick={handleGoToPrevQuestion}
-          disabled={isPending}
+          onClick={prev.go}
+          disabled={prev.isDisabled}
           variant="text"
           className="px-3"
           title={t(
@@ -386,30 +92,28 @@ export default function Navigation({
           )}>
           <span aria-hidden className="hidden md:inline">
             ←
-          </span>
-           {t('Précédent')}
+          </span>{' '}
+          {t('Précédent')}
         </Button>
 
         <Button
-          color={submitButtonColor}
-          disabled={submitButtonIsDisabled}
+          color="primary"
+          disabled={next.isDisabled}
           size="md"
           title={submitButtonTitle}
-          onClick={handleGoToNextQuestion}
+          onClick={next.go}
           className={cn(
             'p-3 text-sm',
-            submitButtonKind === 'finish' &&
-              !submitButtonIsDisabled &&
+            showFinishEmphasis &&
               'animate-bg-pulse hover:bg-primary-900! motion-reduce:animate-none'
           )}>
           <span
             className={cn(
-              submitButtonKind === 'finish' &&
-                !submitButtonIsDisabled &&
+              showFinishEmphasis &&
                 'bg-rainbow animate-rainbow-fast bg-clip-text! text-transparent! duration-1000 motion-reduce:animate-none'
             )}
-            key={submitButtonKind}>
-            <SubmitButtonContent kind={submitButtonKind} />
+            key={next.kind}>
+            <SubmitButtonContent kind={next.kind} />
           </span>
         </Button>
       </div>

@@ -135,6 +135,28 @@ export default defineConfig([
     },
   },
   {
+    // The form controller exposes one public API (`index.ts`). Everything else
+    // under the folder is internal: importing it from outside is a mistake the
+    // reviewer should not have to catch.
+    name: 'ngc/form-controller-boundary',
+    files: ['apps/site/src/**/*.{ts,tsx}'],
+    ignores: ['apps/site/src/form-controller/**'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/form-controller/*'],
+              message:
+                "Import the form controller's public API from '@/form-controller'.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     name: 'ngc/jsx',
     files: ['**/*.{jsx,tsx}'],
     rules: {

@@ -2,8 +2,8 @@
 
 import { useRule } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
-import MosaicBooleanInput from './mosaicQuestion/MosaicBooleanInput'
-import MosaicNumberInput from './mosaicQuestion/MosaicNumberInput'
+import MosaicBooleanInput from './MosaicBooleanInput'
+import MosaicNumberInput from './MosaicNumberInput'
 
 interface Props {
   question: DottedName

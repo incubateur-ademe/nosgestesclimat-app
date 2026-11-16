@@ -1,20 +1,19 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 import ContentLarge from '@/components/layout/ContentLarge'
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
-import { useFormState } from '@/publicodes-state'
-import type { Categories } from '@incubateur-ademe/nosgestesclimat/types/categories'
 import TransitionButtons from './_components/TransitionButtons'
 import TransitionHeaderSection from './_components/TransitionHeaderSection'
 
 export default function IntercalaireLayout({
   children,
 }: LayoutProps<'/[locale]/simulateur/intercalaire'>) {
-  const { currentCategory, isInitialized, isFirstQuestionOfCategory } =
-    useFormState()
+  const { currentQuestion, currentCategory, isInitialized } =
+    useFormAdvancement()
 
   return (
     <ContentLarge className="mt-8 mb-16 px-4">
-      {!isInitialized || isFirstQuestionOfCategory ? (
+      {!isInitialized || !currentQuestion ? (
         <>
           <BlockSkeleton className="h-12 w-64" />
           <div className="inline-flex gap-4">
@@ -24,9 +23,7 @@ export default function IntercalaireLayout({
         </>
       ) : (
         <>
-          <TransitionHeaderSection
-            previousCategory={currentCategory as Categories}
-          />
+          <TransitionHeaderSection previousCategory={currentCategory} />
           <TransitionButtons />
         </>
       )}

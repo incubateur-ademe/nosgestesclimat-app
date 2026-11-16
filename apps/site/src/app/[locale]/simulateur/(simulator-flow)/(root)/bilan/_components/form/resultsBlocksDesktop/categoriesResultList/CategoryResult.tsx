@@ -1,4 +1,5 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 
 import Emoji from '@/design-system/utils/Emoji'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
@@ -6,7 +7,7 @@ import { getTextDarkColor } from '@/helpers/getCategoryColorClass'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import { useIsClient } from '@/hooks/useIsClient'
 import { useLocale } from '@/hooks/useLocale'
-import { useFormState, useRule } from '@/publicodes-state'
+import { useRule } from '@/publicodes-state'
 import type { DottedName, Metrics } from '@incubateur-ademe/nosgestesclimat'
 import { cn } from 'cn'
 
@@ -20,11 +21,7 @@ export default function CategoryResult({
   const locale = useLocale()
   const { t } = useClientTranslation()
 
-  const {
-    remainingQuestionsByCategories,
-    currentCategory,
-    questionsByCategories,
-  } = useFormState()
+  const { currentCategory, completionByCategory } = useFormAdvancement()
 
   const { title, icons, numericValue } = useRule(category, metric)
 
@@ -34,10 +31,7 @@ export default function CategoryResult({
   // keeps both renders identical.
   const isClient = useIsClient()
 
-  const completion =
-    (questionsByCategories[category].length -
-      remainingQuestionsByCategories[category].length) /
-    questionsByCategories[category].length
+  const completion = completionByCategory[category] ?? 0
 
   const isCompleted = isClient && completion === 1
   const isStarted = isClient && completion > 0
