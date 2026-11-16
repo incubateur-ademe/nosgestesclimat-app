@@ -1,9 +1,14 @@
 import { PGlite } from '@electric-sql/pglite'
+import { claimVerificationCode } from '@nosgestesclimat/core/features/auth/repositories/verification-codes.repository'
+import { prisma } from '@nosgestesclimat/core/prisma/client'
+import { VerificationCodeUsage } from '@nosgestesclimat/core/prisma/generated/client'
+import { emptyDatabase } from '@nosgestesclimat/core/test-utils/empty-database'
 import { readFile, readdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -22,9 +27,12 @@ import {
 /**
  * The deduplication only does something on a database that holds several rows
  * sharing a "VerifiedUser"."id". The migrated test database cannot hold that
- * state, so this test builds its own from the project's migrations, seeds the
- * duplicates and the organisation administrators the script has to arbitrate,
- * and runs it.
+ * state, so the first suite builds its own from the project's migrations, seeds
+ * the duplicates and the organisation administrators the script has to
+ * arbitrate, and runs the script against it. The last suite runs the script
+ * through the Prisma client the process uses, so the transaction and the
+ * statements of the production path are exercised rather than the PGlite
+ * wrapper.
  */
 
 /** The accounts the test arbitrates, with the outcome the script promises. */
@@ -37,14 +45,14 @@ const TIE_ID = '66666666-6666-6666-6666-666666666666'
 const LOGIN_CODE_ID = '77777777-7777-7777-7777-777777777777'
 
 const FIXTURES = `
-  INSERT INTO ngc."User" (id, name, email, "lastActivityAt", "updatedAt") VALUES
-    ('${FRESH_EMAIL_ID}', 'fresh email', NULL, NULL, '2025-06-01'),
-    ('${TWICE_SIGNED_UP_ID}', 'twice signed up', 'dup2@example.fr', NULL, '2025-06-01'),
-    ('${TWO_ADMINS_ID}', 'two admins', NULL, '2025-05-05', '2025-06-01'),
-    ('${UNTOUCHED_ID}', 'untouched', NULL, NULL, '2025-06-01'),
-    ('${THREE_ROWS_ID}', 'three rows', NULL, '2025-04-04', '2025-06-01'),
-    ('${TIE_ID}', 'tie', NULL, NULL, '2025-06-01'),
-    ('${LOGIN_CODE_ID}', 'login code', NULL, NULL, '2025-06-01');
+  INSERT INTO ngc."User" (id, name, email, "lastActivityAt", "retentionNoticeSentAt", "finalNoticeSentAt", "updatedAt") VALUES
+    ('${FRESH_EMAIL_ID}', 'fresh email', NULL, NULL, NULL, NULL, '2025-06-01'),
+    ('${TWICE_SIGNED_UP_ID}', 'twice signed up', 'dup2@example.fr', NULL, NULL, NULL, '2025-06-01'),
+    ('${TWO_ADMINS_ID}', 'two admins', NULL, '2025-05-05', '2025-04-01', '2025-04-02', '2025-06-01'),
+    ('${UNTOUCHED_ID}', 'untouched', NULL, NULL, NULL, NULL, '2025-06-01'),
+    ('${THREE_ROWS_ID}', 'three rows', NULL, '2025-04-04', NULL, NULL, '2025-06-01'),
+    ('${TIE_ID}', 'tie', NULL, NULL, NULL, NULL, '2025-06-01'),
+    ('${LOGIN_CODE_ID}', 'login code', NULL, NULL, NULL, NULL, '2025-06-01');
 
   INSERT INTO ngc."VerifiedUser" (email, id, "updatedAt") VALUES
     ('old@example.fr', '${FRESH_EMAIL_ID}', '2025-01-01'),
@@ -107,16 +115,22 @@ const NO_ANOMALY = {
   verifiedUserIdsWithSeveralOrganisationAdministrators: 0,
 }
 
-const USER_COLUMNS = `id, email, name, "lastActivityAt", "createdAt", "updatedAt"`
+const USER_COLUMNS = `id, email, name, "lastActivityAt", "deletedAt", "retentionNoticeSentAt", "finalNoticeSentAt", "createdAt", "updatedAt"`
 
 interface UserRow {
   id: string
   email: string | null
   name: string | null
   lastActivityAt: Date | null
+  deletedAt: Date | null
+  retentionNoticeSentAt: Date | null
+  finalNoticeSentAt: Date | null
   createdAt: Date
   updatedAt: Date
 }
+
+// The name the migration gives the foreign key the orphan test drops.
+const ADMINISTRATOR_FOREIGN_KEY = 'OrganisationAdministrator_userEmail_fkey'
 
 describe('deduplicateVerifiedUsers', () => {
   const pg = new PGlite()
@@ -164,6 +178,55 @@ describe('deduplicateVerifiedUsers', () => {
       )
     ).rows
 
+  /**
+   * Reads the definition of the foreign key before dropping it, so the test
+   * restores what the migrations built rather than a copy of it that could
+   * drift from them.
+   */
+  const administratorForeignKeyDefinition = async () => {
+    const [constraint] = (
+      await pg.query<{ definition: string }>(
+        `SELECT pg_get_constraintdef(oid) AS definition
+           FROM pg_constraint
+          WHERE conname = $1
+            AND conrelid = '"ngc"."OrganisationAdministrator"'::regclass`,
+        [ADMINISTRATOR_FOREIGN_KEY]
+      )
+    ).rows
+
+    expect(constraint?.definition).toBeDefined()
+
+    return constraint.definition
+  }
+
+  /**
+   * The winston mock records the message and the metadata of every call.
+   */
+  const loggedPlanCalls = () =>
+    vi.mocked(logger.info).mock.calls as unknown as [
+      string,
+      Record<string, unknown>,
+    ][]
+
+  const loggedPlanRows = () =>
+    loggedPlanCalls()
+      .filter(([message]) => message === 'VerifiedUser deduplication plan row')
+      .map(
+        ([, details]) =>
+          details as {
+            duplicateVerifiedUserId: string
+            verifiedUserEmail: string
+            survivalRank: number
+            arbitrationAction: string
+          }
+      )
+      .sort(
+        (left, right) =>
+          left.duplicateVerifiedUserId.localeCompare(
+            right.duplicateVerifiedUserId
+          ) || left.survivalRank - right.survivalRank
+      )
+
   beforeAll(async () => {
     const migrations = (await readdir(MIGRATIONS_DIR))
       .filter((name) => name !== 'migration_lock.toml')
@@ -202,13 +265,7 @@ describe('deduplicateVerifiedUsers', () => {
   it('reports the arbitration action of every row in dry mode', async () => {
     await deduplicateVerifiedUsers({ client })
 
-    // The winston mock records the message and the metadata of every call.
-    const loggedCalls = vi.mocked(logger.info).mock.calls as unknown as [
-      string,
-      Record<string, unknown>,
-    ][]
-
-    const planSummary = loggedCalls.find(
+    const planSummary = loggedPlanCalls().find(
       ([message]) => message === 'VerifiedUser deduplication plan'
     )
     expect(planSummary?.[1]).toEqual({
@@ -221,49 +278,72 @@ describe('deduplicateVerifiedUsers', () => {
       },
     })
 
-    const planRows = loggedCalls
-      .filter(([message]) => message === 'VerifiedUser deduplication plan row')
-      .map(
-        ([, details]) =>
-          details as { verifiedUserEmail: string; arbitrationAction: string }
-      )
-
-    const actionByEmail = new Map(
-      planRows.map(({ verifiedUserEmail, arbitrationAction }) => [
-        verifiedUserEmail,
-        arbitrationAction,
-      ])
-    )
-
-    // One row per case the header of the script documents.
-    expect(actionByEmail.get('new@example.fr')).toBe(
-      'keep_email_under_current_id'
-    )
-    expect(actionByEmail.get('dup2@example.fr')).toBe(
-      'delete_redundant_verified_user'
-    )
-    expect(actionByEmail.get('old@example.fr')).toBe(
-      'move_organisation_administrator_to_surviving_email'
-    )
-    expect(actionByEmail.get('a3@example.fr')).toBe(
-      'move_organisation_administrator_to_surviving_email'
-    )
-    expect(actionByEmail.get('admin1@example.fr')).toBe(
-      'keep_email_under_fresh_id'
-    )
-    expect(actionByEmail.get('b3@example.fr')).toBe('keep_email_under_fresh_id')
-
+    const planRows = loggedPlanRows()
     expect(planRows).toHaveLength(13)
+
+    // The rows of an id in rank order, one case of the script header each.
+    const actionsById = new Map<string, string[]>()
+    for (const row of planRows) {
+      const actions = actionsById.get(row.duplicateVerifiedUserId) ?? []
+      actions[row.survivalRank - 1] = row.arbitrationAction
+      actionsById.set(row.duplicateVerifiedUserId, actions)
+    }
+
+    expect(actionsById.get(FRESH_EMAIL_ID)).toEqual([
+      'keep_email_under_current_id',
+      'move_organisation_administrator_to_surviving_email',
+    ])
+    expect(actionsById.get(TWICE_SIGNED_UP_ID)).toEqual([
+      'keep_email_under_current_id',
+      'delete_redundant_verified_user',
+    ])
+    expect(actionsById.get(TWO_ADMINS_ID)).toEqual([
+      'keep_email_under_current_id',
+      'keep_email_under_fresh_id',
+    ])
+    expect(actionsById.get(THREE_ROWS_ID)).toEqual([
+      'keep_email_under_current_id',
+      'move_organisation_administrator_to_surviving_email',
+      'keep_email_under_fresh_id',
+    ])
+    expect(actionsById.get(TIE_ID)).toEqual([
+      'keep_email_under_current_id',
+      'delete_redundant_verified_user',
+    ])
+    expect(actionsById.get(LOGIN_CODE_ID)).toEqual([
+      'keep_email_under_current_id',
+      'delete_redundant_verified_user',
+    ])
+
     // An id held once carries no arbitration.
-    expect(actionByEmail.has('solo@example.fr')).toBe(false)
+    expect(actionsById.has(UNTOUCHED_ID)).toBe(false)
+  })
+
+  it('logs no clear email address', async () => {
+    await deduplicateVerifiedUsers({ client })
+
+    const loggedEmails = loggedPlanRows().map(
+      ({ verifiedUserEmail }) => verifiedUserEmail
+    )
+
+    expect(loggedEmails).toHaveLength(13)
+    expect(
+      loggedEmails.every((email) =>
+        /^[^@]{0,2}\*\*\*@[^.]{0,2}\*\*\*$/.test(email)
+      )
+    ).toBe(true)
+    expect(loggedEmails.some((email) => email.includes('example.fr'))).toBe(
+      false
+    )
   })
 
   it('counts an administrator row whose email no "VerifiedUser" row holds', async () => {
     // The foreign key makes the state impossible in production: the count is
     // the guard that reports it if the constraint is ever missing.
-    const foreignKey = '"OrganisationAdministrator_userEmail_fkey"'
+    const definition = await administratorForeignKeyDefinition()
+
     await pg.exec(
-      `ALTER TABLE ngc."OrganisationAdministrator" DROP CONSTRAINT ${foreignKey}`
+      `ALTER TABLE ngc."OrganisationAdministrator" DROP CONSTRAINT "${ADMINISTRATOR_FOREIGN_KEY}"`
     )
 
     try {
@@ -284,7 +364,7 @@ describe('deduplicateVerifiedUsers', () => {
         `DELETE FROM ngc."OrganisationAdministrator" WHERE id = 'admin-orphan'`
       )
       await pg.exec(
-        `ALTER TABLE ngc."OrganisationAdministrator" ADD CONSTRAINT ${foreignKey} FOREIGN KEY ("userEmail") REFERENCES ngc."VerifiedUser"("email") ON DELETE RESTRICT ON UPDATE CASCADE`
+        `ALTER TABLE ngc."OrganisationAdministrator" ADD CONSTRAINT "${ADMINISTRATOR_FOREIGN_KEY}" ${definition}`
       )
     }
   })
@@ -363,6 +443,25 @@ describe('deduplicateVerifiedUsers', () => {
     ).toEqual([{ count: 9 }])
   })
 
+  it('ranks a row whose login codes are gone last', async () => {
+    // A code can disappear after the connection it served: the row ranks as if
+    // it had never received one, so the sibling with an older "updatedAt" and a
+    // code left survives.
+    await pg.exec(
+      `DELETE FROM ngc."VerificationCode" WHERE email = 'dup1@example.fr'`
+    )
+
+    await deduplicateVerifiedUsers({ client, dry: false })
+
+    expect(await verifiedUsersOf()).toContainEqual({
+      email: 'dup2@example.fr',
+      id: TWICE_SIGNED_UP_ID,
+    })
+    expect((await verifiedUsersOf()).map(({ email }) => email)).not.toContain(
+      'dup1@example.fr'
+    )
+  })
+
   it('moves the administrator row to the surviving email and keeps its id, organisation and creation date', async () => {
     const before = await organisationAdministratorsOf()
 
@@ -394,11 +493,16 @@ describe('deduplicateVerifiedUsers', () => {
     ])
   })
 
-  it('copies the account row of a redundant administrator kept under a fresh id', async () => {
+  it('copies every column of the account row of a redundant administrator kept under a fresh id', async () => {
     await deduplicateVerifiedUsers({ client, dry: false })
 
     const source = await userById(TWO_ADMINS_ID)
     const copy = await userByEmail('admin1@example.fr')
+
+    // The copy carries the retention stamps of the account it is split from:
+    // the retention sweep reads the same dates on both accounts.
+    expect(source?.retentionNoticeSentAt).not.toBeNull()
+    expect(source?.finalNoticeSentAt).not.toBeNull()
 
     expect(copy).toEqual({
       ...source,
@@ -461,6 +565,93 @@ describe('deduplicateVerifiedUsers', () => {
   })
 })
 
+/**
+ * The production path: the script talks to the Prisma client the process uses,
+ * so the interactive transaction, the DDL and the statements run through the
+ * driver adapter rather than through the PGlite wrapper of the suite above.
+ */
+describe('deduplicateVerifiedUsers through the Prisma client', () => {
+  const SMOKE_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+  const CLAIM_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'
+  const CLAIM_CODE_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc'
+
+  // The driver adapter runs one statement per call: the fixtures are split.
+  const SMOKE_FIXTURES = [
+    `INSERT INTO ngc."User" (id, name, "updatedAt") VALUES ('${SMOKE_ID}', 'smoke', '2025-06-01')`,
+    `INSERT INTO ngc."VerifiedUser" (email, id, "updatedAt") VALUES
+      ('smoke-survivor@example.fr', '${SMOKE_ID}', '2025-06-01'),
+      ('smoke-redundant@example.fr', '${SMOKE_ID}', '2025-01-01')`,
+    `INSERT INTO ngc."Organisation" (id, name, slug, "updatedAt") VALUES
+      ('org-smoke', 'Org smoke', 'org-smoke', '2025-01-01')`,
+    `INSERT INTO ngc."OrganisationAdministrator" (id, "userEmail", "organisationId", "updatedAt") VALUES
+      ('admin-smoke', 'smoke-redundant@example.fr', 'org-smoke', '2025-01-01')`,
+  ]
+
+  const CLAIM_FIXTURES = [
+    `INSERT INTO ngc."User" (id, name, "updatedAt") VALUES ('${CLAIM_ID}', 'claim', '2025-06-01')`,
+    `INSERT INTO ngc."VerifiedUser" (email, id, "updatedAt") VALUES
+      ('issued-before@example.fr', '${CLAIM_ID}', '2025-06-01'),
+      ('claimed-later@example.fr', '${CLAIM_ID}', '2025-01-01')`,
+    `INSERT INTO ngc."VerificationCode" (id, email, code, "expirationDate", "updatedAt", usage) VALUES
+      ('${CLAIM_CODE_ID}', 'claimed-later@example.fr', '123456', '2099-01-01', '2025-01-01', 'login')`,
+  ]
+
+  const seed = async (statements: string[]) => {
+    for (const statement of statements) {
+      await prisma.$executeRawUnsafe(statement)
+    }
+  }
+
+  afterEach(async () => {
+    await emptyDatabase(prisma)
+  })
+
+  it('reads then applies the plan through the Prisma client', async () => {
+    await seed(SMOKE_FIXTURES)
+
+    expect(await deduplicateVerifiedUsers({ dry: true })).toEqual({
+      duplicatedVerifiedUserIds: 1,
+      redundantVerifiedUserRows: 1,
+      orphanOrganisationAdministrators: 0,
+      verifiedUserIdsWithSeveralOrganisationAdministrators: 0,
+    })
+
+    expect(await deduplicateVerifiedUsers({ dry: false })).toEqual(NO_ANOMALY)
+
+    expect(
+      await prisma.$queryRawUnsafe(
+        `SELECT email FROM ngc."VerifiedUser" ORDER BY email`
+      )
+    ).toEqual([{ email: 'smoke-survivor@example.fr' }])
+
+    expect(
+      await prisma.$queryRawUnsafe(
+        `SELECT "userEmail" FROM ngc."OrganisationAdministrator"`
+      )
+    ).toEqual([{ userEmail: 'smoke-survivor@example.fr' }])
+  })
+
+  it('ranks on the last login code activity, which the claim rewrites', async () => {
+    await seed(CLAIM_FIXTURES)
+
+    // The claim rewrites the expiration date of the code, so the "updatedAt"
+    // the arbitration reads moves to the claim: the row of the claimed code
+    // wins over the row written last.
+    expect(
+      await claimVerificationCode({
+        id: CLAIM_CODE_ID,
+        usage: VerificationCodeUsage.login,
+      })
+    ).toBe(true)
+
+    await deduplicateVerifiedUsers({ dry: false })
+
+    expect(
+      await prisma.$queryRawUnsafe(`SELECT email FROM ngc."VerifiedUser"`)
+    ).toEqual([{ email: 'claimed-later@example.fr' }])
+  })
+})
+
 describe('readDryFlag', () => {
   it('runs dry by default, on --dry and on -d', () => {
     expect(readDryFlag([])).toBe(true)
@@ -475,6 +666,12 @@ describe('readDryFlag', () => {
 
   it('rejects an option the command line does not accept', () => {
     expect(() => readDryFlag(['--apply'])).toThrow()
+  })
+
+  it('rejects both a dry and a no-dry option rather than let the last one win', () => {
+    expect(() => readDryFlag(['--dry', '--no-dry'])).toThrow('not both')
+    expect(() => readDryFlag(['--no-dry', '--dry'])).toThrow('not both')
+    expect(() => readDryFlag(['-d', '--no-d'])).toThrow('not both')
   })
 })
 
