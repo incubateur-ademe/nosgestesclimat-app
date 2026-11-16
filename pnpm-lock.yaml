@@ -75,8 +75,8 @@ importers:
   apps/e2e:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.18.0
-        version: 4.18.0(publicodes@1.10.4)
+        specifier: 4.18.1
+        version: 4.18.1(publicodes@1.10.4)
       '@mswjs/http-middleware':
         specifier: ^0.10.3
         version: 0.10.3(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))
@@ -118,8 +118,8 @@ importers:
         specifier: ^3.1023.0
         version: 3.1028.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.18.0
-        version: 4.18.0(publicodes@1.10.4)
+        specifier: 4.18.1
+        version: 4.18.1(publicodes@1.10.4)
       '@nosgestesclimat/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -248,8 +248,8 @@ importers:
   apps/site:
     dependencies:
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.18.0
-        version: 4.18.0(publicodes@1.10.4)
+        specifier: 4.18.1
+        version: 4.18.1(publicodes@1.10.4)
       '@next/mdx':
         specifier: ^16.4.3
         version: 16.4.3(@mdx-js/loader@3.1.1(webpack@5.105.4(esbuild@0.27.7)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.3.0))
@@ -573,8 +573,8 @@ importers:
         specifier: ^10.4.0
         version: 10.4.0
       '@incubateur-ademe/nosgestesclimat':
-        specifier: 4.18.0
-        version: 4.18.0(publicodes@1.10.4)
+        specifier: 4.18.1
+        version: 4.18.1(publicodes@1.10.4)
       '@incubateur-ademe/nosgestesclimat-previous':
         specifier: npm:@incubateur-ademe/nosgestesclimat@4.17.2
         version: '@incubateur-ademe/nosgestesclimat@4.17.2(publicodes@1.10.4)'
@@ -2131,8 +2131,8 @@ packages:
     peerDependencies:
       publicodes: ^1.8.5
 
-  '@incubateur-ademe/nosgestesclimat@4.18.0':
-    resolution: {integrity: sha512-7pTdrQIIcfrka7K8dgb784EcDW5+GBWSmB+GW8gyNrndvfnDpnPAeZzGlYhvgYlA1Chb2JPaQwXboYV1DGkYfQ==}
+  '@incubateur-ademe/nosgestesclimat@4.18.1':
+    resolution: {integrity: sha512-ACCjWsecPrKmD286wl+pPuNgVNOPJcaA4NrQhNXbCfvFndch2pvKmLIRDMQyyXuyEoDTuzbUWKk5nE+hhlPqRQ==}
     engines: {node: '>=24'}
     peerDependencies:
       publicodes: ^1.8.5
@@ -3975,7 +3975,9 @@ packages:
   '@smithy/smithy-client@4.12.9':
     resolution: {integrity: sha512-ovaLEcTU5olSeHcRXcxV6viaKtpkHZumn6Ps0yn7dRf2rRSfy794vpjOtrWDO0d1auDSvAqxO+lyhERSXQ03EQ==}
     engines: {node: '>=18.0.0'}
-    deprecated: Deprecated due to a bug in custom logger data redaction. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
+    deprecated: |-
+      Deprecated due to a bug in custom logger data redaction. Upgrade to the latest version. If you used a custom logger with
+        this version, review your logs and rotate any credentials or other secrets. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
   '@smithy/types@4.14.0':
     resolution: {integrity: sha512-OWgntFLW88kx2qvf/c/67Vno1yuXm/f9M7QFAtVkkO29IJXGBIg0ycEaBTH0kvCtwmvZxRujrgP5a86RvsXJAQ==}
@@ -5143,6 +5145,7 @@ packages:
 
   axios-retry@4.5.0:
     resolution: {integrity: sha512-aR99oXhpEDGo0UuAlYcn2iGRds30k366Zfa05XWScR9QaQD4JYiP3/1Qt1u7YlefUOK+cn0CcwoL1oefavQUlQ==}
+    deprecated: axios-retry is no longer maintained. See https://github.com/softonic/axios-retry for alternatives.
     peerDependencies:
       axios: 0.x || 1.x
 
@@ -7135,6 +7138,7 @@ packages:
   image-size@2.0.2:
     resolution: {integrity: sha512-IRqXKlaXwgSMAMtpNzZa1ZAe8m+Sa1770Dhk8VkSsP9LS+iHD62Zd8FQKs8fbPiagBE7BzoFX23cxFnwshpV6w==}
     engines: {node: '>=16.x'}
+    deprecated: Use latest 2.x please
     hasBin: true
 
   immediate@3.0.6:
@@ -8205,6 +8209,7 @@ packages:
 
   node-abort-controller@3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==}
+    deprecated: This package is no longer needed on supported Node.js versions. Node.js 16+ includes AbortController and AbortSignal as built-in globals. All Node.js versions requiring this polyfill are end-of-life. Use the built-in globals instead.
 
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
@@ -12565,7 +12570,7 @@ snapshots:
     dependencies:
       publicodes: 1.10.4
 
-  '@incubateur-ademe/nosgestesclimat@4.18.0(publicodes@1.10.4)':
+  '@incubateur-ademe/nosgestesclimat@4.18.1(publicodes@1.10.4)':
     dependencies:
       publicodes: 1.10.4
 
