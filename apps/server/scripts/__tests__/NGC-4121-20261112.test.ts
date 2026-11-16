@@ -16,15 +16,6 @@ import {
  * and runs it.
  */
 
-const require = createRequire(import.meta.url)
-const coreMain = require.resolve('@nosgestesclimat/core')
-const MIGRATIONS_DIR = path.join(
-  path.dirname(coreMain),
-  '..',
-  'prisma',
-  'migrations'
-)
-
 /** The accounts the test arbitrates, with the outcome the script promises. */
 const FRESH_EMAIL_ID = '11111111-1111-1111-1111-111111111111'
 const TWICE_SIGNED_UP_ID = '22222222-2222-2222-2222-222222222222'
@@ -61,40 +52,6 @@ const FIXTURES = `
     ('admin-1', 'admin1@example.fr', 'org-1', '2025-01-01'),
     ('admin-2', 'admin2@example.fr', 'org-2', '2025-01-01');
 `
-
-/**
- * The script talks to the client through raw statements: this exposes PGlite
- * the same way, with the transaction the writes are wrapped in.
- */
-const clientOf = (pg: PGlite): DeduplicationClient => {
-  const client: DeduplicationClient = {
-    $queryRawUnsafe: async <T>(query: string): Promise<T> =>
-      (await pg.query(query)).rows as T,
-    $executeRawUnsafe: (query: string) => pg.exec(query),
-    $transaction: async (transaction) => {
-      await pg.exec('BEGIN')
-      try {
-        await transaction({ $executeRawUnsafe: client.$executeRawUnsafe })
-        await pg.exec('COMMIT')
-      } catch (error) {
-        await pg.exec('ROLLBACK')
-        throw error
-      }
-    },
-  }
-
-  return client
-}
-
-const readMigration = async (name: string): Promise<string> => {
-  const sql = await readFile(
-    path.join(MIGRATIONS_DIR, name, 'migration.sql'),
-    'utf8'
-  )
-
-  // PGlite holds a single connection and cannot build an index concurrently.
-  return sql.replaceAll('CREATE INDEX CONCURRENTLY', 'CREATE INDEX')
-}
 
 describe('deduplicateVerifiedUsers', () => {
   const pg = new PGlite()
@@ -144,13 +101,13 @@ describe('deduplicateVerifiedUsers', () => {
     )
     expect(duplicates.rows).toEqual([])
 
-    const orphans = await pg.query<{ id: string }>(`
+    const orphanOrganisationAdministrators = await pg.query<{ id: string }>(`
       SELECT oa.id
         FROM ngc."OrganisationAdministrator" oa
         LEFT JOIN ngc."VerifiedUser" vu ON vu.email = oa."userEmail"
        WHERE vu.email IS NULL
     `)
-    expect(orphans.rows).toEqual([])
+    expect(orphanOrganisationAdministrators.rows).toEqual([])
 
     const verifiedUsers = await verifiedUsersOf()
 
@@ -222,3 +179,46 @@ describe('deduplicateVerifiedUsers', () => {
     ).toEqual([{ count: 5 }])
   })
 })
+
+/**
+ * The script talks to the client through raw statements: this exposes PGlite
+ * the same way, with the transaction the writes are wrapped in.
+ */
+const clientOf = (pg: PGlite): DeduplicationClient => {
+  const client: DeduplicationClient = {
+    $queryRawUnsafe: async <T>(query: string): Promise<T> =>
+      (await pg.query(query)).rows as T,
+    $executeRawUnsafe: (query: string) => pg.exec(query),
+    $transaction: async (transaction) => {
+      await pg.exec('BEGIN')
+      try {
+        await transaction({ $executeRawUnsafe: client.$executeRawUnsafe })
+        await pg.exec('COMMIT')
+      } catch (error) {
+        await pg.exec('ROLLBACK')
+        throw error
+      }
+    },
+  }
+
+  return client
+}
+
+const require = createRequire(import.meta.url)
+const coreMain = require.resolve('@nosgestesclimat/core')
+const MIGRATIONS_DIR = path.join(
+  path.dirname(coreMain),
+  '..',
+  'prisma',
+  'migrations'
+)
+
+const readMigration = async (name: string): Promise<string> => {
+  const sql = await readFile(
+    path.join(MIGRATIONS_DIR, name, 'migration.sql'),
+    'utf8'
+  )
+
+  // PGlite holds a single connection and cannot build an index concurrently.
+  return sql.replaceAll('CREATE INDEX CONCURRENTLY', 'CREATE INDEX')
+}
