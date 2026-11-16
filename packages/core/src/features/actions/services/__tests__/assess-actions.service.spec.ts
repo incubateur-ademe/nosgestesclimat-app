@@ -127,12 +127,15 @@ describe('assessActions', () => {
     expect(await findActionAssessments()).toHaveLength(0)
 
     // The assessment is dropped, not skipped and forgotten: the failure is
-    // reported.
-    expect(logger.error).toHaveBeenCalledWith(thrown, {
-      actionId: expect.any(String),
-      ruleId: APPLICABLE_RULE_ID,
-      dottedName: 'test . applicable',
-    })
+    // reported, whatever the engine threw.
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'rule_evaluation_threw', cause: thrown }),
+      {
+        actionId: expect.any(String),
+        ruleId: APPLICABLE_RULE_ID,
+        dottedName: 'test . applicable',
+      }
+    )
   })
 
   it.each([
@@ -145,16 +148,19 @@ describe('assessActions', () => {
 
     expect(await findActionAssessments()).toHaveLength(0)
 
-    expect(logger.warn).toHaveBeenCalledWith(
-      `Unexpected nodeValue type: ${type}`,
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'unexpected_node_value',
+        nodeValue: type,
+      }),
       expect.objectContaining({ ruleId })
     )
   })
 
   it.each([NaN, Infinity, -Infinity])(
-    'stores an action whose nodeValue is %s as applicable, without impact',
+    'skips actions whose nodeValue is %s',
     async (nodeValue) => {
-      const action = await actionFactory
+      await actionFactory
         .params({ ruleId: APPLICABLE_RULE_ID })
         .published()
         .create()
@@ -167,19 +173,15 @@ describe('assessActions', () => {
 
       await assess()
 
-      expect(await findActionAssessments()).toEqual([
+      expect(await findActionAssessments()).toHaveLength(0)
+
+      expect(logger.error).toHaveBeenCalledWith(
         expect.objectContaining({
-          actionId: action.id,
-          applicable: true,
-          impact: undefined,
+          code: 'unexpected_node_value',
+          nodeValue: String(nodeValue),
         }),
-      ])
-      const reported = [
-        expect.anything(),
-        expect.objectContaining({ actionId: action.id }),
-      ]
-      expect(logger.warn).not.toHaveBeenCalledWith(...reported)
-      expect(logger.error).not.toHaveBeenCalledWith(...reported)
+        expect.objectContaining({ ruleId: APPLICABLE_RULE_ID })
+      )
     }
   )
 
