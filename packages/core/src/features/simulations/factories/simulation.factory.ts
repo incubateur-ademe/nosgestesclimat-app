@@ -4,6 +4,7 @@ import { Factory } from 'fishery'
 import { prisma } from '../../../prisma/client.ts'
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import { serializeModel } from '../../models/helpers/model-versions.ts'
+import { simulationStatusFromProgression } from '../helpers/simulation-status.ts'
 import {
   ModelRegionSchema,
   type Model,
@@ -117,6 +118,7 @@ export const simulationFactory = SimulationFactory.define(
           id: data.id,
           date: data.date,
           progression: data.progression,
+          status: simulationStatusFromProgression(data.progression),
           model: serializeModel(data.model),
           computedResults:
             data.computedResults as unknown as Prisma.InputJsonValue,
