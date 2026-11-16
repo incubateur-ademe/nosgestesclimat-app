@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ngc"."SimulationStatus" AS ENUM ('not_started', 'answering_major_questions', 'major_questions_result_seen', 'answering_minor_questions', 'full_result_seen');
+CREATE TYPE "ngc"."SimulationStatus" AS ENUM ('not_started', 'answering_major_questions', 'major_result_seen', 'answering_minor_questions', 'full_result_seen');
 
 -- AlterTable
 ALTER TABLE "ngc"."Simulation" ADD COLUMN "status" "ngc"."SimulationStatus" NOT NULL DEFAULT 'not_started';
