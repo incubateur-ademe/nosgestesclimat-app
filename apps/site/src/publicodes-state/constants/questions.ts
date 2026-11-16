@@ -17,14 +17,12 @@ export const MUST_NOT_ASK_QUESTIONS = new Set<DottedName>([
   'futureco-data . transport . ferry . voiture',
 ])
 
-// We use the DottedName type from nosgestesclimat to make sure the build will break when using rules that are not in the model.
 const PRIORITY_QUESTIONS_BASE_MODE = new Set<DottedName>([
-  'alimentation . plats',
+  'alimentation . repas . déjeuner et dîner',
   'logement . type',
   'logement . propriétaire',
   'logement . lieu de vie',
   'logement . chauffage . bois . système',
-  'logement . électricité . réseau . consommation',
   'transport . voiture . km',
   'transport . voiture . voyageurs',
   'divers . numérique . internet . durée journalière',
@@ -41,7 +39,6 @@ export const PRIORITY_QUESTIONS = new Set([
 ]) as Set<DottedName>
 
 export const NON_PRIORITY_QUESTIONS = new Set<DottedName>([
-  'logement . électricité . réseau . consommation',
   'transport . voiture . thermique . consommation aux 100',
   'logement . chauffage . saisie précision consommation',
   'logement . chauffage . précision consommation . ressenti',
@@ -60,7 +57,7 @@ export const MUST_SHOW_DESCRIPTION = new Set<DottedName>([
   'logement . surface',
   'logement . chauffage . collectif',
   'divers . animaux domestiques . empreinte',
-  'alimentation . plats',
+  'alimentation . repas . déjeuner et dîner',
   'alimentation . local . consommation',
   'transport . avion . vols annuels',
   'transport . avion . vols amortis',
