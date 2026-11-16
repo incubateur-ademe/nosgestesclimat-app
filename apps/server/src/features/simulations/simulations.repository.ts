@@ -1,3 +1,4 @@
+import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import type { Prisma } from '../../adapters/prisma/generated.ts'
 import {
   simulationSelection,
@@ -62,6 +63,7 @@ export const createParticipantSimulation = async <
     situation,
     foldedSteps,
     progression,
+    status: simulationStatusFromProgression(progression),
     computedResults,
     ...(additionalQuestionsAnswers?.length
       ? {

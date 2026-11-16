@@ -367,10 +367,21 @@ model SeoMetadata {
   @@schema("ngc")
 }
 
+enum SimulationStatus {
+  not_started
+  answering_major_questions
+  major_result_seen
+  answering_minor_questions
+  full_result_seen
+
+  @@schema("ngc")
+}
+
 model Simulation {
   id                         String                               @id @default(uuid()) @db.Uuid
   date                       DateTime
   progression                Float                                @db.Real
+  status                     SimulationStatus
   model                      String                               @default("FR-fr-0.0.0")
   computedResults            Json
   /// @deprecated replaced by the ActionAssessment relation

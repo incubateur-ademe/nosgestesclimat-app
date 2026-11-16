@@ -3,6 +3,7 @@ import type { DottedName, NGCRuleNode } from '@incubateur-ademe/nosgestesclimat'
 import modelPackage from '@incubateur-ademe/nosgestesclimat/package.json' with { type: 'json' }
 import rules from '@incubateur-ademe/nosgestesclimat/public/co2-model.FR-lang.fr.json' with { type: 'json' }
 import personas from '@incubateur-ademe/nosgestesclimat/public/personas-fr.json' with { type: 'json' }
+import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import {
   SituationSchema,
   type Situation,
@@ -215,6 +216,7 @@ export const createSimulation = async ({
       situation: payload.situation as never,
       foldedSteps: (payload.foldedSteps ?? []) as never,
       progression: payload.progression,
+      status: simulationStatusFromProgression(payload.progression),
       computedResults: payload.computedResults as never,
       user: { connect: { id: userId } },
       ...(email ? { verifiedUser: { connect: { email } } } : {}),
