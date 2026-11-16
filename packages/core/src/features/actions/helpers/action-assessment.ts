@@ -1,5 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
+import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -25,13 +26,6 @@ export const buildRuleIdToDottedName = (
 
   return map
 }
-
-export type ActionEvaluationWithStatus =
-  | {
-      outcome: 'evaluated'
-      applicability: ActionEvaluation
-    }
-  | { outcome: 'unexpected_node_value'; nodeValueType: string }
 
 /**
  * Attaches an evaluation to the simulation it was made for.
@@ -60,35 +54,24 @@ export const toNewActionAssessment = (
   return { simulationId, actionId, applicable: undefined, impact: undefined }
 }
 
-export const evaluateAction = ({
-  engine,
-  dottedName,
-}: {
-  engine: Engine
-  dottedName: DottedName
-}): ActionEvaluationWithStatus => {
-  const nodeValue = engine.evaluate(dottedName).nodeValue
-
-  if (nodeValue === undefined) {
+/**
+ * NaN and ±Infinity are an issue with the model, not with the simulation: the
+ * action still applies, its impact unknown.
+ */
+export const toActionEvaluation = (
+  applicability: ModelRuleEvaluation
+): ActionEvaluation => {
+  if (applicability.applicable === true) {
+    const { value } = applicability
     return {
-      outcome: 'evaluated',
-      applicability: { applicable: undefined, impact: undefined },
+      applicable: true,
+      impact: Number.isFinite(value) && value !== 0 ? value : undefined,
     }
   }
 
-  if (typeof nodeValue === 'number') {
-    return {
-      outcome: 'evaluated',
-      applicability: { applicable: true, impact: nodeValue || undefined },
-    }
+  if (applicability.applicable === false) {
+    return { applicable: false, impact: undefined }
   }
 
-  if (nodeValue === null || nodeValue === false) {
-    return {
-      outcome: 'evaluated',
-      applicability: { applicable: false, impact: undefined },
-    }
-  }
-
-  return { outcome: 'unexpected_node_value', nodeValueType: typeof nodeValue }
+  return { applicable: undefined, impact: undefined }
 }

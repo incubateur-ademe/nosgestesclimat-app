@@ -1,13 +1,18 @@
 import type Engine from 'publicodes'
-import { toError } from '../../../lib/to-error.ts'
+import { failure, success, type Result } from '../../../lib/result.ts'
+import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import { ActionAssessmentPublicodesError } from '../errors/action-assessment.error.ts'
 import {
   buildRuleIdToDottedName,
-  evaluateAction,
+  toActionEvaluation,
   toNewActionAssessment,
 } from '../helpers/action-assessment.ts'
-import { createActionAssessments } from '../repositories/action-assessments.repository.ts'
+import {
+  createActionAssessments,
+  hasActionAssessments,
+} from '../repositories/action-assessments.repository.ts'
 import { findActionRuleIds } from '../repositories/actions.repository.ts'
 import type { NewActionAssessment } from '../types/action.ts'
 
@@ -15,78 +20,78 @@ interface AssessActionsDeps {
   logger: Logger
 }
 
+/**
+ * Assesses every action against a simulation and persists the assessments.
+ *
+ * The engine's situation must already be set to the simulation's.
+ *
+ * Idempotent, so a retried computation keeps the assessments of its first
+ * attempt.
+ */
 export function createAssessActions(deps: AssessActionsDeps) {
   return async function assessActions(
     engine: Engine,
-    simulationId: string
-  ): Promise<void> {
+    simulationId: string,
+    { session }: { session: Transaction }
+  ): Promise<Result<void, ActionAssessmentPublicodesError>> {
     const logger = deps.logger.child({
       scope: 'core.service.assessActions',
-      simulationId: simulationId,
+      simulationId,
     })
-    const actions = await findActionRuleIds()
+
+    if (await hasActionAssessments(simulationId, { session })) {
+      return success()
+    }
+
+    const actions = await findActionRuleIds({ session })
 
     if (actions.length === 0) {
-      throw new ActionAssessmentPublicodesError({
-        message: 'No actions found in database. Cannot assess actions.',
-      })
+      return failure(
+        new ActionAssessmentPublicodesError({
+          message: 'No actions found in database. Cannot assess actions.',
+        })
+      )
     }
 
     const ruleIdToDottedName = buildRuleIdToDottedName(engine)
 
     if (ruleIdToDottedName.size === 0) {
-      throw new ActionAssessmentPublicodesError({
-        message:
-          'No publicodes rules have meta.id, cannot link actions to dotted names. ' +
-          'Ensure the model includes meta.id on action rules.',
-      })
+      return failure(
+        new ActionAssessmentPublicodesError({
+          message:
+            'No publicodes rules have meta.id, cannot link actions to dotted names. ' +
+            'Ensure the model includes meta.id on action rules.',
+        })
+      )
     }
 
-    const assessments: NewActionAssessment[] = actions
-      .map(({ id, ruleId }) => {
+    const assessments: NewActionAssessment[] = actions.flatMap(
+      ({ id, ruleId }) => {
         const dottedName = ruleIdToDottedName.get(ruleId)
         if (!dottedName) {
-          logger.warn('No rule found with this id', {
-            actionId: id,
-            ruleId: ruleId,
-          })
-          return undefined
+          logger.warn('No rule found with this id', { actionId: id, ruleId })
+          return []
         }
 
-        try {
-          const evaluation = evaluateAction({ engine, dottedName })
+        const evaluation = evaluateModelRule({ engine, dottedName })
 
-          if (evaluation.outcome === 'unexpected_node_value') {
-            logger.warn(
-              `Unexpected nodeValue type: ${evaluation.nodeValueType}`,
-              {
-                actionId: id,
-                ruleId: ruleId,
-                dottedName: dottedName,
-              }
-            )
-            return undefined
-          }
+        if (!evaluation.success) {
+          logger.error(evaluation.error, { actionId: id, ruleId, dottedName })
+          return []
+        }
 
-          return toNewActionAssessment(
+        return [
+          toNewActionAssessment(
             { simulationId, actionId: id },
-            evaluation.applicability
-          )
-        } catch (error) {
-          // The action is skipped, never retried: the failure is captured, so
-          // a rule the engine chokes on does not vanish with its assessment.
-          logger.error(toError(error), {
-            actionId: id,
-            ruleId: ruleId,
-            dottedName: dottedName,
-          })
-          return undefined
-        }
-      })
-      .filter((a) => a !== undefined)
+            toActionEvaluation(evaluation.data)
+          ),
+        ]
+      }
+    )
 
     if (assessments.length > 0) {
-      await createActionAssessments(assessments)
+      await createActionAssessments(assessments, { session })
     }
+    return success()
   }
 }

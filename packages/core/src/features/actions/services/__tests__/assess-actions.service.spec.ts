@@ -1,20 +1,27 @@
+import { faker } from '@faker-js/faker'
+import type Engine from 'publicodes'
 import type { RawPublicodes } from 'publicodes'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { failure, success } from '../../../../lib/result.ts'
+import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
+import type { Simulation } from '../../../simulations/types/simulation.ts'
 import { ActionAssessmentPublicodesError } from '../../errors/action-assessment.error.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
+import { findActionAssessmentsBySimulation } from '../../repositories/action-assessments.repository.ts'
 import { createAssessActions } from '../assess-actions.service.ts'
 
 const logger = createTestLogger()
 const assessActions = createAssessActions({ logger })
 
-const APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000001'
-const NOT_APPLICABLE_RULE_ID = '00000000-0000-0000-0000-000000000002'
-const BOOLEAN_RULE_ID = '00000000-0000-0000-0000-000000000004'
+const APPLICABLE_RULE_ID = faker.string.uuid()
+const NOT_APPLICABLE_RULE_ID = faker.string.uuid()
+const BOOLEAN_RULE_ID = faker.string.uuid()
+const STRING_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
   'test . applicable': {
@@ -33,12 +40,29 @@ const testRules: RawPublicodes<string> = {
     titre: 'Test boolean',
     meta: { id: BOOLEAN_RULE_ID },
   },
+  'test . string': {
+    valeur: "'texte'",
+    titre: 'Test string',
+    meta: { id: STRING_RULE_ID },
+  },
 }
 
-describe('compute action assessments service', () => {
+describe('assessActions', () => {
   const engine = createTestEngine(testRules)
 
-  let simulation: Awaited<ReturnType<typeof simulationFactory.create>>
+  let simulation: Simulation
+
+  /**
+   * PGlite has a single connection, so a write that bypasses the session
+   * would hang the test.
+   */
+  const assess = (withEngine: Engine = engine) =>
+    transaction((session) =>
+      assessActions(withEngine, simulation.id, { session })
+    )
+
+  const findActionAssessments = () =>
+    findActionAssessmentsBySimulation(simulation.id)
 
   beforeEach(async () => {
     simulation = await simulationFactory.completed().create()
@@ -49,7 +73,7 @@ describe('compute action assessments service', () => {
     await emptyDatabase(prisma)
   })
 
-  it('computes applicable and non-applicable action assessments', async () => {
+  it('stores applicable and non-applicable action assessments', async () => {
     const [applicableAction, notApplicableAction] = await Promise.all([
       actionFactory.params({ ruleId: APPLICABLE_RULE_ID }).published().create(),
       actionFactory
@@ -58,13 +82,9 @@ describe('compute action assessments service', () => {
         .create(),
     ])
 
-    await assessActions(engine, simulation.id)
+    expect(await assess()).toEqual(success())
 
-    const assessments = await prisma.actionAssessment.findMany({
-      where: { simulationId: simulation.id },
-      orderBy: { actionId: 'asc' },
-    })
-
+    const assessments = await findActionAssessments()
     expect(assessments).toHaveLength(2)
 
     const applicableAssessment = assessments.find(
@@ -77,22 +97,18 @@ describe('compute action assessments service', () => {
       (a) => a.actionId === notApplicableAction.id
     )!
     expect(notApplicableAssessment.applicable).toBe(false)
-    expect(notApplicableAssessment.impact).toBeNull()
+    expect(notApplicableAssessment.impact).toBeUndefined()
   })
 
   it('skips actions whose ruleId is not found in the engine', async () => {
     await actionFactory
-      .params({ ruleId: '00000000-0000-0000-0000-ffffffffffff' })
+      .params({ ruleId: faker.string.uuid() })
       .published()
       .create()
 
-    await assessActions(engine, simulation.id)
+    await assess()
 
-    const assessments = await prisma.actionAssessment.findMany({
-      where: { simulationId: simulation.id },
-    })
-
-    expect(assessments).toHaveLength(0)
+    expect(await findActionAssessments()).toHaveLength(0)
   })
 
   it('skips actions whose rule evaluation throws', async () => {
@@ -101,64 +117,126 @@ describe('compute action assessments service', () => {
       .published()
       .create()
 
+    const thrown = new Error('Engine evaluation failed')
     vi.spyOn(engine, 'evaluate').mockImplementation(() => {
-      throw new Error('Engine evaluation failed')
+      throw thrown
     })
 
-    await assessActions(engine, simulation.id)
+    await assess()
 
-    const assessments = await prisma.actionAssessment.findMany({
-      where: { simulationId: simulation.id },
-    })
-    expect(assessments).toHaveLength(0)
+    expect(await findActionAssessments()).toHaveLength(0)
 
     // The assessment is dropped, not skipped and forgotten: the failure is
-    // reported.
-    expect(logger.error).toHaveBeenCalledWith(expect.any(Error), {
-      actionId: expect.any(String),
-      ruleId: APPLICABLE_RULE_ID,
-      dottedName: 'test . applicable',
-    })
-  })
-
-  it('skips actions whose nodeValue is an unexpected type', async () => {
-    await actionFactory.params({ ruleId: BOOLEAN_RULE_ID }).published().create()
-
-    await assessActions(engine, simulation.id)
-
-    const assessments = await prisma.actionAssessment.findMany({
-      where: { simulationId: simulation.id },
-    })
-    expect(assessments).toHaveLength(0)
-
-    // Detected, not thrown: no `Error` to report, so the line names the shape
-    // and the failure stays an anomaly to watch by rate.
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Unexpected nodeValue type:'),
-      expect.objectContaining({ ruleId: BOOLEAN_RULE_ID })
+    // reported, whatever the engine threw.
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'rule_evaluation_threw', cause: thrown }),
+      {
+        actionId: expect.any(String),
+        ruleId: APPLICABLE_RULE_ID,
+        dottedName: 'test . applicable',
+      }
     )
   })
 
-  describe('throws ActionAssessmentPublicodesError', () => {
+  it.each([
+    { type: 'boolean', ruleId: BOOLEAN_RULE_ID },
+    { type: 'string', ruleId: STRING_RULE_ID },
+  ])('skips actions whose nodeValue is a $type', async ({ type, ruleId }) => {
+    await actionFactory.params({ ruleId }).published().create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toHaveLength(0)
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'unexpected_node_value',
+        nodeValue: type,
+      }),
+      expect.objectContaining({ ruleId })
+    )
+  })
+
+  it.each([NaN, Infinity, -Infinity])(
+    'skips actions whose nodeValue is %s',
+    async (nodeValue) => {
+      await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+      // No publicodes formula evaluates to a non-finite number.
+      const evaluate = engine.evaluate.bind(engine)
+      vi.spyOn(engine, 'evaluate').mockImplementation((expression) => ({
+        ...evaluate(expression),
+        nodeValue,
+      }))
+
+      await assess()
+
+      expect(await findActionAssessments()).toHaveLength(0)
+
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: 'unexpected_node_value',
+          nodeValue: String(nodeValue),
+        }),
+        expect.objectContaining({ ruleId: APPLICABLE_RULE_ID })
+      )
+    }
+  )
+
+  // A retried computation keeps the assessments of its first attempt.
+  describe('of a simulation already assessed', () => {
+    it('does not assess the actions again', async () => {
+      const action = await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+      await assess()
+      const [assessment] = await findActionAssessments()
+      const evaluate = vi.spyOn(engine, 'evaluate')
+
+      await assess()
+
+      expect(evaluate).not.toHaveBeenCalled()
+      expect(await findActionAssessments()).toEqual([assessment])
+      expect(assessment).toMatchObject({ actionId: action.id, impact: 42 })
+    })
+
+    it('does not assess an action published since', async () => {
+      await actionFactory
+        .params({ ruleId: APPLICABLE_RULE_ID })
+        .published()
+        .create()
+      await assess()
+      await actionFactory
+        .params({ ruleId: NOT_APPLICABLE_RULE_ID })
+        .published()
+        .create()
+
+      await assess()
+
+      expect(await findActionAssessments()).toHaveLength(1)
+    })
+  })
+
+  describe('fails with ActionAssessmentPublicodesError', () => {
     it('when there are no actions in database', async () => {
-      await expect(assessActions(engine, simulation.id)).rejects.toThrow(
-        ActionAssessmentPublicodesError
+      expect(await assess()).toEqual(
+        failure(expect.any(ActionAssessmentPublicodesError))
       )
     })
 
     it('when no publicodes rules have meta.id', async () => {
-      const engineWithoutMeta = createTestEngine({
-        'test . no-meta': { valeur: 42 },
-      })
-
       await actionFactory
         .params({ ruleId: APPLICABLE_RULE_ID })
         .published()
         .create()
 
-      await expect(
-        assessActions(engineWithoutMeta, simulation.id)
-      ).rejects.toThrow(ActionAssessmentPublicodesError)
+      expect(
+        await assess(createTestEngine({ 'test . no-meta': { valeur: 42 } }))
+      ).toEqual(failure(expect.any(ActionAssessmentPublicodesError)))
+      expect(await findActionAssessments()).toHaveLength(0)
     })
   })
 })

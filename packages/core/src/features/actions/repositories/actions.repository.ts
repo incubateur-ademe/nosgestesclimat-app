@@ -1,3 +1,4 @@
+import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
 import type { ActionChoice } from '../../../prisma/generated/client.ts'
 import type { ISOSupportedLanguage } from '../../geo/types/language.ts'
@@ -50,10 +51,12 @@ export const findAllActions = async (
     })
 }
 
-export const findActionRuleIds = async (): Promise<
+export const findActionRuleIds = async ({
+  session = prisma,
+}: { session?: Transaction } = {}): Promise<
   { id: string; ruleId: string }[]
 > => {
-  return prisma.action.findMany({
+  return session.action.findMany({
     where: { deletedAt: null },
     select: { id: true, ruleId: true },
   })

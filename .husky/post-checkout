@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+# Set up freshly created git worktrees: copy the local files listed in
+# .worktreeinclude and .worktreeinclude.local from the main worktree,
+# then run pnpm install.
+
+# $3 is 1 on branch checkout (worktree add, branch switch), 0 on file checkout
+[ "$3" = "1" ] || exit 0
+
+# Only linked worktrees have a .git file; the main worktree has a .git dir
+[ -f .git ] || exit 0
+
+# Already set up
+[ -d node_modules ] && exit 0
+
+main_root=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
+
+copy_listed() {
+	list=$1
+	[ -f "$list" ] || return 0
+	while IFS= read -r path || [ -n "$path" ]; do
+		case $path in '' | \#*) continue ;; esac
+		src=$main_root/$path
+		if [ -e "$src" ]; then
+			mkdir -p "$(dirname "$path")"
+			cp -R "$src" "$path" || echo "worktree-setup: could not copy $path"
+		else
+			echo "worktree-setup: $path not found in main worktree, skipped"
+		fi
+	done < "$list"
+}
+
+echo "worktree-setup: setting up worktree $PWD"
+copy_listed "$main_root/.worktreeinclude"
+copy_listed "$main_root/.worktreeinclude.local"
+pnpm install

@@ -1,4 +1,5 @@
 import { DomainError } from '../../../lib/errors.ts'
+import type { ModelString } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
 
 export class UnsupportedModelError extends DomainError<'unsupported_model'> {
@@ -21,16 +22,21 @@ export class ComputationAlreadyExistsError extends DomainError<'computation_alre
 
 export class SimulationComputationFailedError extends DomainError<'simulation_computation_failed'> {
   public readonly simulationId: string
+  /** The model the simulation was computed with, logged with the failure. */
+  public readonly model: ModelString
 
   constructor({
     simulationId,
+    model,
     cause,
   }: {
     simulationId: string
+    model: ModelString
     cause?: unknown
   }) {
     super('simulation_computation_failed', 'Simulation computation failed')
     this.simulationId = simulationId
+    this.model = model
     if (cause !== undefined) {
       this.cause = cause
     }

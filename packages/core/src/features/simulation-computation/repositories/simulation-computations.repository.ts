@@ -89,9 +89,10 @@ export const claimNextPendingSimulationComputation = async () =>
   })
 
 export const markSimulationComputationCompleted = async (
-  simulationId: string
+  simulationId: string,
+  { session = prisma }: { session?: Transaction } = {}
 ): Promise<void> => {
-  await prisma.simulationComputation.update({
+  await session.simulationComputation.update({
     where: { simulationId },
     data: { status: 'completed', completedAt: new Date() },
   })

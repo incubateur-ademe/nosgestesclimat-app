@@ -1,0 +1,4 @@
+apps/site/.env
+apps/server/.env
+packages/core/.env
+AGENTS.md
