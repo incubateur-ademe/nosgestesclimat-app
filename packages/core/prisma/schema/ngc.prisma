@@ -228,8 +228,8 @@ model Organisation {
 
 model OrganisationAdministrator {
   id             String       @id @default(uuid())
-  user           VerifiedUser @relation(fields: [userEmail], references: [email])
-  userEmail      String       @unique
+  user           VerifiedUser @relation(fields: [userId], references: [id])
+  userId         String       @unique @db.Uuid
   organisation   Organisation @relation(fields: [organisationId], onDelete: Cascade, references: [id])
   organisationId String
   createdAt      DateTime     @default(now())
@@ -499,8 +499,8 @@ model VerificationCode {
 }
 
 model VerifiedUser {
-  email                    String                      @id
-  id                       String                      @db.Uuid
+  id                       String                      @id @db.Uuid
+  email                    String                      @unique
   user                     User                        @relation(fields: [id], references: [id], onDelete: Cascade)
   name                     String?
   telephone                String?

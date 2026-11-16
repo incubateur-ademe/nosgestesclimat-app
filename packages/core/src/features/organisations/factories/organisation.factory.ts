@@ -5,12 +5,12 @@ import type { Organisation } from '../../../prisma/generated/client.ts'
 import type { VerifiedUser } from '../../users/types/user.ts'
 
 class OrganisationFactory extends Factory<Organisation> {
-  /** Registers this email as an administrator of the organisation. */
+  /** Registers the user as an administrator of the organisation. */
   withAdministrator(user: VerifiedUser) {
     return this.afterCreate(async (organisation) => {
       await prisma.organisationAdministrator.create({
         data: {
-          userEmail: user.email,
+          userId: user.id,
           organisationId: organisation.id,
           updatedAt: user.updatedAt,
         },

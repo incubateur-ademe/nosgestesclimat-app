@@ -191,11 +191,9 @@ export const getSimulationPayload = ({
 
 export const createSimulation = async ({
   userId,
-  email,
   simulation = {},
 }: {
   userId?: string
-  email?: string
   simulation?: Partial<SimulationParticipantCreateInputDto>
 }) => {
   userId = userId ?? faker.string.uuid()
@@ -217,7 +215,6 @@ export const createSimulation = async ({
       progression: payload.progression,
       computedResults: payload.computedResults as never,
       user: { connect: { id: userId } },
-      ...(email ? { verifiedUser: { connect: { email } } } : {}),
     },
   })
 

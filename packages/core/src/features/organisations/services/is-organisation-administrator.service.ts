@@ -8,14 +8,14 @@ import { findOrganisationAdministrator } from '../repositories/organisation.repo
  */
 export const isOrganisationAdministrator = async ({
   organisationSlug,
-  userEmail,
+  userId,
 }: {
   organisationSlug: string
-  userEmail: string
+  userId: string
 }): Promise<boolean> => {
   const administrator = await findOrganisationAdministrator({
     organisationSlug,
-    userEmail,
+    userId,
   })
 
   return administrator !== null
