@@ -128,6 +128,11 @@ export const findVerifiedUserByEmail = async (
 }
 
 /**
+ * TLDR: a verified write writes `User` and its `VerifiedUser` in one nested
+ * statement keyed by `User.id`, so an email change renames the record instead
+ * of creating a second one; an update only rewrites the fields the aggregate
+ * owns and never touches `createdAt`.
+ *
  * Persists the user aggregate: the user is created or updated together with
  * its verified record on a verified write. The VerifiedUser.id -> User.id FK
  * requires the User row to exist first, so the verified record is written
