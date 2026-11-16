@@ -1,7 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
+import { getSomme } from '../../simulations/helpers/get-somme.ts'
 import { MissingFootprintRuleError } from '../errors.ts'
-import { getSomme } from './get-somme.ts'
 import { getSubcategories } from './get-subcategories.ts'
 
 /** The rule whose value is the footprint of the simulation. */

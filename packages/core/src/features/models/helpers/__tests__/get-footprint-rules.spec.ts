@@ -3,10 +3,10 @@ import type Engine from 'publicodes'
 import { utils } from 'publicodes'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import { getSomme } from '../../../simulations/helpers/get-somme.ts'
 import { MissingFootprintRuleError } from '../../errors.ts'
 import { getFootprintRules, ROOT_DOTTED_NAME } from '../get-footprint-rules.ts'
 import { getModelFileName } from '../get-model-file-name.ts'
-import { getSomme } from '../get-somme.ts'
 import { importCurrentModel } from '../import-current-model.ts'
 
 describe('getFootprintRules', () => {

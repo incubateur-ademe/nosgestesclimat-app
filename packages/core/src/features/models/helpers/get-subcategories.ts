@@ -1,7 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { ParsedRules } from 'publicodes'
 import { utils } from 'publicodes'
-import { getSomme } from './get-somme.ts'
+import { getSomme } from '../../simulations/helpers/get-somme.ts'
 
 /**
  * Resolves the subcategories the given categories sum, as full dotted names.
