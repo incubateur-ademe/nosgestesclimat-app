@@ -51,6 +51,21 @@ describe('getFootprintRules on the installed model', () => {
     expect(missing).toEqual([])
   })
 
+  // @TODO The installed model marks no footprint rule `public: oui`, so the
+  // server stores no evaluation: remove `.fails` once the model does.
+  it.fails(
+    'marks every footprint rule public, as only public rules are stored',
+    () => {
+      const notPublic = [
+        ROOT_DOTTED_NAME,
+        ...categories,
+        ...subcategories,
+      ].filter((name) => parsedRules[name]?.rawNode.public !== 'oui')
+
+      expect(notPublic).toEqual([])
+    }
+  )
+
   it('gives every category a non-empty sum', () => {
     const emptyCategories = categories.filter((category) => {
       const sum = getSomme(parsedRules[category].rawNode)
