@@ -14,14 +14,18 @@ const MODEL_METRIC = {
 } as const satisfies Record<Metric, string>
 
 /**
- * Evaluates a rule of the model, for `metric` when given, as the model computes
- * the footprint of that metric.
+ * Evaluates a rule of the model for `metric`, as the model computes the
+ * footprint of that metric.
  *
  * A non-finite number (NaN, ±Infinity) is an error, not a value: it is an
  * issue with the model, not with the situation.
  *
  * Publicodes evaluates a date to its text (e.g. `'01/03/2023'`), so a date is
  * read as a string: nothing but the engine's internals tells them apart.
+ *
+ * The missing variables are reported, never evaluated. A rule with a
+ * `par défaut` lists itself among them: it is left out, a rule is never its
+ * own missing variable.
  */
 export const evaluateModelRule = ({
   engine,
@@ -30,21 +34,28 @@ export const evaluateModelRule = ({
 }: {
   engine: Engine
   dottedName: string
-  metric?: Metric
+  metric: Metric
 }): ModelRuleEvaluationResult => {
   let nodeValue: unknown
+  let reported: Record<string, number>
 
   try {
-    ;({ nodeValue } = engine.evaluate(
-      metric === undefined
-        ? dottedName
-        : {
-            valeur: dottedName,
-            contexte: { métrique: `'${MODEL_METRIC[metric]}'` },
-          }
-    ))
+    ;({ nodeValue, missingVariables: reported } = engine.evaluate({
+      valeur: dottedName,
+      contexte: { métrique: `'${MODEL_METRIC[metric]}'` },
+    }))
   } catch (cause) {
     return failure(new RuleEvaluationThrewError({ dottedName, metric, cause }))
+  }
+
+  const rule = {
+    name: dottedName,
+    metric,
+    // In Publicodes, a rule with `par défaut` includes itself among its missing variables.
+    // In the domain and persistence layers however, it is avoided for simplicity reasons .
+    missingVariables: Object.entries(reported)
+      .filter(([name]) => name !== dottedName)
+      .map(([name, weight]) => ({ name, weight })),
   }
 
   if (typeof nodeValue === 'number') {
@@ -59,19 +70,19 @@ export const evaluateModelRule = ({
       )
     }
 
-    return success({ applicable: true, value: nodeValue })
+    return success({ ...rule, applicable: true, value: nodeValue })
   }
 
   if (typeof nodeValue === 'boolean' || typeof nodeValue === 'string') {
-    return success({ applicable: true, value: nodeValue })
+    return success({ ...rule, applicable: true, value: nodeValue })
   }
 
   if (nodeValue === null) {
-    return success({ applicable: false })
+    return success({ ...rule, applicable: false })
   }
 
   if (nodeValue === undefined) {
-    return success({ applicable: undefined })
+    return success({ ...rule, applicable: undefined })
   }
 
   return failure(

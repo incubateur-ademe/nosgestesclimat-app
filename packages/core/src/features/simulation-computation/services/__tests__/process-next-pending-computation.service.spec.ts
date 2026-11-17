@@ -292,6 +292,7 @@ describe('processNextPendingComputation', () => {
                 ruleId: rule.id,
                 applicable: true,
                 value: 1,
+                missingVariables: [],
               })),
               { session }
             )

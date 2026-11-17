@@ -118,6 +118,7 @@ describe('reconcileSimulationsAfterLogin', () => {
           ruleId: rule.id,
           applicable: true,
           value: 42,
+          missingVariables: [],
         },
       ])
 

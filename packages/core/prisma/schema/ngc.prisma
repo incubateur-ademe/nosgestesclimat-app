@@ -320,7 +320,8 @@ model QuizzAnswer {
   @@schema("ngc")
 }
 
-/// A public rule of the model, for one metric. Its name is its identity
+/// A stored model rule for one metric: a public rule, or a rule reported as a
+/// missing variable of a public rule evaluation. Its name is its identity
 /// across model versions: a stored rule is never renamed.
 model Rule {
   id          Int              @id @default(autoincrement())
@@ -352,8 +353,29 @@ model RuleEvaluation {
   valueString  String?
   createdAt    DateTime   @default(now()) @db.Timestamptz(3)
 
+  /// The missing variables this evaluation reported.
+  missingVariables  RuleEvaluationMissingVariable[] @relation("RuleEvaluation")
+  /// The evaluations that reported this one as a missing variable.
+  missingVariableOf RuleEvaluationMissingVariable[] @relation("MissingVariable")
+
   @@id([simulationId, ruleId])
   @@index([ruleId, createdAt])
+  @@schema("ngc")
+}
+
+/// A missing variable of one rule evaluation: the engine listed the rule in
+/// the evaluation's `missingVariables`, `weight` counting how many times it
+/// needed it. The missing variable has its own RuleEvaluation row for the
+/// simulation, stored like any rule's.
+model RuleEvaluationMissingVariable {
+  simulationId    String           @db.Uuid
+  ruleId          Int
+  evaluation      RuleEvaluation   @relation("RuleEvaluation", fields: [simulationId, ruleId], references: [simulationId, ruleId], onDelete: Cascade)
+  missingRuleId   Int
+  missingVariable RuleEvaluation   @relation("MissingVariable", fields: [simulationId, missingRuleId], references: [simulationId, ruleId], onDelete: Cascade)
+  weight          Int
+
+  @@id([simulationId, ruleId, missingRuleId])
   @@schema("ngc")
 }
 

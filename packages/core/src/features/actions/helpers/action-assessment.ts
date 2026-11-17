@@ -72,7 +72,7 @@ export const evaluateAction = ({
   engine: Engine
   dottedName: DottedName
 }): Result<ActionEvaluation, RuleEvaluationError> => {
-  const evaluation = evaluateModelRule({ engine, dottedName })
+  const evaluation = evaluateModelRule({ engine, dottedName, metric: 'carbon' })
 
   if (!evaluation.success) {
     return evaluation
