@@ -89,42 +89,6 @@ const action = {
   deletedAt: null,
 } satisfies Action
 
-const withStoredJsonLd = (jsonLd: unknown): Action => ({
-  ...action,
-  metadata: { jsonLd },
-})
-
-const buildGraph = (a: Action = action, locale: 'fr' | 'en' = 'fr') =>
-  buildActionDetailJsonLd(a, locale)[0]['@graph'] as Node[]
-
-const findNode = (graph: Node[], type: string) =>
-  graph.find((node) => node['@type'] === type)
-
-const findNodes = (graph: Node[], type: string) =>
-  graph.filter((node) => node['@type'] === type)
-
-/** Every `{ '@id': … }` reference of the document, wherever it sits. */
-const collectReferences = (value: unknown, references: string[] = []) => {
-  if (Array.isArray(value)) {
-    value.forEach((item) => collectReferences(item, references))
-    return references
-  }
-
-  if (typeof value !== 'object' || value === null) return references
-
-  const entries = Object.entries(value)
-  if (entries.length === 1 && entries[0][0] === '@id') {
-    references.push(String(entries[0][1]))
-    return references
-  }
-
-  entries.forEach(([, child]) => collectReferences(child, references))
-  return references
-}
-
-const collectIds = (graph: Node[]) =>
-  graph.map((node) => node['@id']).filter((id): id is string => Boolean(id))
-
 describe('buildActionDetailJsonLd', () => {
   describe('with a stored JSON-LD copied from the actions catalogue', () => {
     it('restores a valid @context', () => {
@@ -409,3 +373,39 @@ describe('buildActionDetailJsonLd', () => {
     })
   })
 })
+
+const withStoredJsonLd = (jsonLd: unknown): Action => ({
+  ...action,
+  metadata: { jsonLd },
+})
+
+const buildGraph = (a: Action = action, locale: 'fr' | 'en' = 'fr') =>
+  buildActionDetailJsonLd(a, locale)[0]['@graph'] as Node[]
+
+const findNode = (graph: Node[], type: string) =>
+  graph.find((node) => node['@type'] === type)
+
+const findNodes = (graph: Node[], type: string) =>
+  graph.filter((node) => node['@type'] === type)
+
+/** Every `{ '@id': … }` reference of the document, wherever it sits. */
+const collectReferences = (value: unknown, references: string[] = []) => {
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectReferences(item, references))
+    return references
+  }
+
+  if (typeof value !== 'object' || value === null) return references
+
+  const entries = Object.entries(value)
+  if (entries.length === 1 && entries[0][0] === '@id') {
+    references.push(String(entries[0][1]))
+    return references
+  }
+
+  entries.forEach(([, child]) => collectReferences(child, references))
+  return references
+}
+
+const collectIds = (graph: Node[]) =>
+  graph.map((node) => node['@id']).filter((id): id is string => Boolean(id))
