@@ -67,6 +67,80 @@ const storedCatalogueJsonLd: JsonLdDocument = {
   ],
 }
 
+/**
+ * Copy of the `seo_json_ld` value currently stored for an action (NGC-3570):
+ * no Markdown artefact is left, and the entity of the page is already declared
+ * as a `Guide` node. Its page and breadcrumb nodes still describe the home
+ * page, which is what the builder has to re-anchor.
+ */
+const storedActionJsonLd: JsonLdDocument = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': 'https://nosgestesclimat.fr/#webpage',
+      url: 'https://nosgestesclimat.fr/',
+      name: 'Avoir une consommation responsable de produits de la mer',
+      description:
+        'Empreinte carbone, surpêche, technique de pêche, comment consommer de façon responsable des produits de la mer ?',
+      inLanguage: 'fr-FR',
+      isPartOf: { '@id': 'https://nosgestesclimat.fr/#website' },
+      about: { '@id': 'https://www.ademe.fr/#organization' },
+      isAccessibleForFree: true,
+      breadcrumb: { '@id': 'https://nosgestesclimat.fr/#breadcrumb' },
+      hasPart: {
+        '@id':
+          'https://nosgestesclimat.fr/actions/alimentation/consommation-responsable-produit-mer',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': 'https://nosgestesclimat.fr/#breadcrumb',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Accueil',
+          item: 'https://nosgestesclimat.fr/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Actions',
+          item: 'https://nosgestesclimat.fr/',
+        },
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://nosgestesclimat.fr/#website',
+      url: 'https://nosgestesclimat.fr/',
+      name: 'Nos Gestes Climat',
+      publisher: { '@id': 'https://www.ademe.fr/#organization' },
+    },
+    {
+      '@type': 'GovernmentOrganization',
+      '@id': 'https://www.ademe.fr/#organization',
+      name: 'ADEME',
+      url: 'https://www.ademe.fr/',
+      description: 'Agence de la transition écologique',
+    },
+    {
+      '@type': 'Guide',
+      '@id':
+        'https://nosgestesclimat.fr/actions/alimentation/consommation-responsable-produit-mer',
+      name: 'Avoir une consommation responsable de produits de la mer',
+      description:
+        'Empreinte carbone, surpêche, technique de pêche, comment consommer de façon responsable des produits de la mer ?',
+      url: 'https://nosgestesclimat.fr/actions/alimentation/consommation-responsable-produit-mer',
+      inLanguage: 'fr-FR',
+      publisher: { '@id': 'https://www.ademe.fr/#organization' },
+      isPartOf: { '@id': 'https://nosgestesclimat.fr/#webpage' },
+      audience: { '@type': 'Audience', audienceType: 'Citoyens' },
+    },
+  ],
+}
+
 const action = {
   id: 'action-id',
   title: 'Limiter l’avion sur toutes les distances',
@@ -174,6 +248,44 @@ describe('buildActionDetailJsonLd', () => {
 
     it('only emits references that resolve inside the document', () => {
       const graph = buildGraph(withStoredJsonLd(storedCatalogueJsonLd))
+      const ids = collectIds(graph)
+
+      expect(
+        collectReferences(graph).filter((id) => !ids.includes(id))
+      ).toEqual([])
+    })
+  })
+
+  describe('with the JSON-LD currently stored for an action', () => {
+    it('re-anchors the page node and the stored breadcrumb on the action', () => {
+      const graph = buildGraph(withStoredJsonLd(storedActionJsonLd))
+
+      expect(findNode(graph, 'WebPage')).toEqual(
+        expect.objectContaining({
+          '@id': `${ACTION_URL}#webpage`,
+          url: ACTION_URL,
+          inLanguage: 'fr',
+        })
+      )
+      expect(findNode(graph, 'CollectionPage')).toBeUndefined()
+      expect(findNode(graph, 'BreadcrumbList')?.itemListElement).toHaveLength(3)
+    })
+
+    it('keeps the entity declared in the CMS and its authored fields', () => {
+      const graph = buildGraph(withStoredJsonLd(storedActionJsonLd))
+
+      expect(findNode(graph, 'Guide')).toEqual(
+        expect.objectContaining({
+          '@id': ACTION_URL,
+          url: ACTION_URL,
+          audience: { '@type': 'Audience', audienceType: 'Citoyens' },
+          isPartOf: { '@id': `${ACTION_URL}#webpage` },
+        })
+      )
+    })
+
+    it('only emits references that resolve inside the document', () => {
+      const graph = buildGraph(withStoredJsonLd(storedActionJsonLd))
       const ids = collectIds(graph)
 
       expect(

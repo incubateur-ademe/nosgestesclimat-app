@@ -19,7 +19,7 @@ export const buildPageNode = (
     base,
     {
       // A detail page is not a collection: `CollectionPage` comes from the
-      // catalogue template and would describe the wrong thing here.
+      // site-level template and would describe the wrong thing here.
       '@type': hasType(base, 'CollectionPage')
         ? 'WebPage'
         : (base['@type'] ?? 'WebPage'),
@@ -37,8 +37,8 @@ export const buildPageNode = (
         : {}),
       ...(context.image ? { image: context.image } : {}),
     },
-    // The page itself has no parts: the stored `hasPart` points to the
-    // catalogue entry, i.e. to the page, so it is dropped.
+    // The page itself has no parts: the stored `hasPart` points to the action
+    // entry, i.e. to the page, so it is dropped.
     ['hasPart']
   )
 

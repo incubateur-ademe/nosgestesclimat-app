@@ -32,8 +32,9 @@ export function readStoredJsonLd(
 }
 
 /** Rebuilds the stored nodes with the values owned by the page: the stored
- * document describes the actions catalogue, so slugs, locale and every URL of
- * the page are regenerated from the action itself. */
+ * document is authored from a site-level template (its page and breadcrumb
+ * nodes point at the home page), so slugs, locale and every URL of the page
+ * are regenerated from the action itself. */
 export function rebuildStoredNodes(
   nodes: JsonLdNode[],
   context: ActionJsonLdContext
@@ -63,6 +64,6 @@ const isSupportingNode = (node: JsonLdNode) =>
   isOrganization(node)
 
 /** The first node that is not one of the supporting entities is the page node
- * inherited from the catalogue template. */
+ * inherited from the site-level template. */
 const findPageNodeIndex = (nodes: JsonLdNode[]) =>
   nodes.findIndex((node) => !isSupportingNode(node))

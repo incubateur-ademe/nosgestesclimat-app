@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { cleanJsonLd } from '../notion-json-ld.ts'
 
-/** Verbatim JSON-LD stored in the actions catalogue (see NGC-3570): the
- * context is Markdown-wrapped, the organization URLs are too, and the editor
- * appended a Markdown heading to the graph. */
-const storedCatalogueJsonLd = {
+/** Document as read from Notion: `seo_json_ld` is a rich text property, so
+ * `convertNotionRichTextToMd` wraps every link it holds in a Markdown link
+ * (here the `@context` and the organization URLs), and the Markdown the editor
+ * typed inside the value ends up in the graph (here a heading). */
+const notionRichTextJsonLd = {
   '@context': 'https://schema.org](https://schema.org/)',
   '@graph': [
     {
@@ -24,19 +25,39 @@ const storedCatalogueJsonLd = {
   ],
 }
 
+/** Clean document, as currently stored for an action (see NGC-3570). */
+const cleanActionJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': 'https://nosgestesclimat.fr/#webpage',
+      url: 'https://nosgestesclimat.fr/',
+      inLanguage: 'fr-FR',
+      isPartOf: { '@id': 'https://nosgestesclimat.fr/#website' },
+    },
+    {
+      '@type': 'Guide',
+      '@id':
+        'https://nosgestesclimat.fr/actions/alimentation/consommation-responsable-produit-mer',
+      audience: { '@type': 'Audience', audienceType: 'Citoyens' },
+    },
+  ],
+}
+
 describe('cleanJsonLd', () => {
   it('states the schema.org context once, at document level', () => {
-    expect(cleanJsonLd(storedCatalogueJsonLd)?.['@context']).toBe(
+    expect(cleanJsonLd(notionRichTextJsonLd)?.['@context']).toBe(
       'https://schema.org'
     )
   })
 
   it('drops the graph entries that are not nodes', () => {
-    expect(cleanJsonLd(storedCatalogueJsonLd)?.['@graph']).toHaveLength(2)
+    expect(cleanJsonLd(notionRichTextJsonLd)?.['@graph']).toHaveLength(2)
   })
 
   it('unwraps the Markdown links Notion writes around URLs', () => {
-    const nodes = cleanJsonLd(storedCatalogueJsonLd)?.['@graph'] ?? []
+    const nodes = cleanJsonLd(notionRichTextJsonLd)?.['@graph'] ?? []
 
     expect(nodes[1]).toEqual({
       '@type': 'GovernmentOrganization',
@@ -62,6 +83,10 @@ describe('cleanJsonLd', () => {
         '@graph': [{ '@context': 'https://schema.org', '@type': 'WebPage' }],
       })?.['@graph']
     ).toEqual([{ '@type': 'WebPage' }])
+  })
+
+  it('keeps a document that holds no Notion artefact', () => {
+    expect(cleanJsonLd(cleanActionJsonLd)).toEqual(cleanActionJsonLd)
   })
 
   it.each([

@@ -23,9 +23,9 @@ import { readStoredJsonLd, rebuildStoredNodes } from './jsonLd/storedJsonLd'
 /**
  * Builds the JSON-LD document of an action detail page.
  *
- * The stored document is the one authored for the actions catalogue: it is
- * rebuilt so that it describes the current action and locale. When nothing is
- * stored, the document is generated from the action data.
+ * The stored document is authored from a template rooted at the home page: it
+ * is rebuilt so that it describes the current action and locale. When nothing
+ * is stored, the document is generated from the action data.
  */
 export function buildActionDetailJsonLd(
   action: Action,
