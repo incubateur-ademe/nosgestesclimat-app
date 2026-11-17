@@ -5,14 +5,13 @@ export type Metric = 'carbon' | 'water'
 export const PUBLIC_RULE_METRICS: readonly Metric[] = ['carbon', 'water']
 
 /**
- * A rule of the model
+ * A rule of the model. `title` and `description` are the model's French
+ * `titre` and `description`, persisted for readability in 3rd party tools.
  */
 export interface ModelRule {
-  /** Dotted name. A lax string is a more correct type due to the fact it may be a rule of any model version */
+  /** Dotted name, a plain string: it may be a rule of any model version. */
   name: string
-  /** In french, persisted in db for readability in 3rd party tools */
   title: string | null
-  /** In french, persisted in db for readability in 3rd party tools */
   description: string | null
 }
 

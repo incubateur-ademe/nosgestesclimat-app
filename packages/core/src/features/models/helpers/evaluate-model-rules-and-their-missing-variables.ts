@@ -26,7 +26,6 @@ export const evaluateModelRulesAndTheirMissingVariables = ({
   const evaluations: ModelRuleEvaluation[] = []
   const errors: RuleEvaluationError[] = []
 
-  /** Evaluates a rule, records its evaluation or its error, returns the former. */
   const evaluate = (name: string, metric: Metric) => {
     const evaluation = evaluateModelRule({ engine, dottedName: name, metric })
     if (!evaluation.success) {

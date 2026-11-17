@@ -136,7 +136,6 @@ describe('evaluateSimulation', () => {
     ])
   })
 
-  // A `non` is an answer, never a rule that does not apply.
   it('stores each public rule with a boolean value as applicable, false included', async () => {
     const rules = await storeRules(['footprint . yes', 'footprint . no'])
     const [yesCarbon, yesWater, noCarbon, noWater] = rules
@@ -703,7 +702,6 @@ describe('evaluateSimulation', () => {
       )
     })
 
-    // A rule with a `par défaut` lists itself in its own missing variables.
     it('never links a rule to itself', async () => {
       const rules = await storeRules(['footprint . self'])
       const [selfCarbon, selfWater] = rules
@@ -781,8 +779,6 @@ describe('evaluateSimulation', () => {
       )
     })
 
-    // The missing variables' rule rows are resolved in the job's transaction:
-    // a rollback leaves no orphan behind.
     it('stores nothing, not even the missing variables, when a rule fails', async () => {
       const rules = await storeRules(['footprint . ok', 'footprint . throwing'])
 
