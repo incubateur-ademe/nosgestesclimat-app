@@ -5,18 +5,19 @@ export type Metric = 'carbon' | 'water'
 export const PUBLIC_RULE_METRICS: readonly Metric[] = ['carbon', 'water']
 
 /**
- * A rule of the model carrying `public: oui`: part of the model's output
- * contract, whose evaluations are stored. `title` and `description` are the
- * model's French `titre` and `description`.
+ * A rule of the model
  */
-export interface PublicRule {
+export interface ModelRule {
+  /** Dotted name. A lax string is a more correct type due to the fact it may be a rule of any model version */
   name: string
+  /** In french, persisted in db for readability in 3rd party tools */
   title: string | null
+  /** In french, persisted in db for readability in 3rd party tools */
   description: string | null
 }
 
-/** A public rule to store for one metric. */
-export interface NewRule extends PublicRule {
+/** A model rule to store for one metric. */
+export interface NewRule extends ModelRule {
   metric: Metric
 }
 

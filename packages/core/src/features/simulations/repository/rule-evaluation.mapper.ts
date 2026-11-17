@@ -3,6 +3,7 @@ import type { RuleEvaluationModel } from '../../../prisma/generated/models/RuleE
 import type { ModelRuleValue } from '../../models/types/model-rule-evaluation.ts'
 import { CorruptRuleEvaluationError } from '../errors/simulations.error.ts'
 import type {
+  DetailedRuleEvaluation,
   NewRuleEvaluation,
   RuleEvaluation,
 } from '../types/rule-evaluation.ts'
@@ -24,6 +25,19 @@ export const mapNewRuleEvaluationToPrisma = (
     evaluation.applicable === true ? evaluation.value : undefined
   ),
 })
+
+/** One link per missing variable the evaluation reported. */
+export const mapNewRuleEvaluationMissingVariablesToPrisma = ({
+  simulationId,
+  ruleId,
+  missingVariables,
+}: NewRuleEvaluation): Prisma.RuleEvaluationMissingVariableCreateManyInput[] =>
+  missingVariables.map((missingVariable) => ({
+    simulationId,
+    ruleId,
+    missingRuleId: missingVariable.ruleId,
+    weight: missingVariable.weight,
+  }))
 
 /** Throws a `CorruptRuleEvaluationError` on a row breaking the invariant. */
 export const mapRuleEvaluation = (db: RuleEvaluationModel): RuleEvaluation => {
@@ -57,3 +71,16 @@ export const mapRuleEvaluation = (db: RuleEvaluationModel): RuleEvaluation => {
 
   return { ...base, applicable: db.applicable ?? undefined }
 }
+
+/** Throws a `CorruptRuleEvaluationError` on a row breaking the invariant. */
+export const mapDetailedRuleEvaluation = (
+  db: RuleEvaluationModel & {
+    missingVariables: { weight: number; missingVariable: RuleEvaluationModel }[]
+  }
+): DetailedRuleEvaluation => ({
+  ...mapRuleEvaluation(db),
+  missingVariables: db.missingVariables.map(({ weight, missingVariable }) => ({
+    ...mapRuleEvaluation(missingVariable),
+    weight,
+  })),
+})

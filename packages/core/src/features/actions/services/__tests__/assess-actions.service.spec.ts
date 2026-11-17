@@ -7,7 +7,10 @@ import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
-import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import {
+  createTestEngine,
+  METRIC_RULE,
+} from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import type { Simulation } from '../../../simulations/types/simulation.ts'
 import { ActionAssessmentPublicodesError } from '../../errors/action-assessment.error.ts'
@@ -27,6 +30,7 @@ const ZERO_RULE_ID = faker.string.uuid()
 const UNANSWERED_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
+  ...METRIC_RULE,
   'test . applicable': {
     valeur: 42,
     unité: 'kgCO2e',
@@ -306,7 +310,9 @@ describe('assessActions', () => {
         .create()
 
       expect(
-        await assess(createTestEngine({ 'test . no-meta': { valeur: 42 } }))
+        await assess(
+          createTestEngine({ ...METRIC_RULE, 'test . no-meta': { valeur: 42 } })
+        )
       ).toEqual(failure(expect.any(ActionAssessmentPublicodesError)))
       expect(await findActionAssessments()).toHaveLength(0)
     })
