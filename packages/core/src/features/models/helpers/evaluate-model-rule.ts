@@ -23,9 +23,7 @@ const MODEL_METRIC = {
  * Publicodes evaluates a date to its text (e.g. `'01/03/2023'`), so a date is
  * read as a string: nothing but the engine's internals tells them apart.
  *
- * The missing variables are reported, never evaluated. A rule with a
- * `par défaut` lists itself among them: it is left out, a rule is never its
- * own missing variable.
+ * A rule is never reported as its own missing variable.
  */
 export const evaluateModelRule = ({
   engine,
@@ -51,8 +49,7 @@ export const evaluateModelRule = ({
   const rule = {
     name: dottedName,
     metric,
-    // In Publicodes, a rule with `par défaut` includes itself among its missing variables.
-    // In the domain and persistence layers however, it is avoided for simplicity reasons .
+    // Publicodes lists a `par défaut` rule among its own missing variables.
     missingVariables: Object.entries(reported)
       .filter(([name]) => name !== dottedName)
       .map(([name, weight]) => ({ name, weight })),

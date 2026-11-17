@@ -26,7 +26,6 @@ export const mapNewRuleEvaluationToPrisma = (
   ),
 })
 
-/** One link per missing variable the evaluation reported. */
 export const mapNewRuleEvaluationMissingVariablesToPrisma = ({
   simulationId,
   ruleId,
@@ -72,7 +71,6 @@ export const mapRuleEvaluation = (db: RuleEvaluationModel): RuleEvaluation => {
   return { ...base, applicable: db.applicable ?? undefined }
 }
 
-/** Throws a `CorruptRuleEvaluationError` on a row breaking the invariant. */
 export const mapDetailedRuleEvaluation = (
   db: RuleEvaluationModel & {
     missingVariables: { weight: number; missingVariable: RuleEvaluationModel }[]

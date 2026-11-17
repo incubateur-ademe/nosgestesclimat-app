@@ -49,7 +49,6 @@ describe('toNewRuleEvaluations', () => {
     ])
   })
 
-  // The deepest level's missing variables are reported, never evaluated.
   it('drops the links to missing variables that were not evaluated', () => {
     expect(
       toNewRuleEvaluations(

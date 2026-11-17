@@ -36,8 +36,8 @@ export const findDetailedRuleEvaluationsBySimulation = async (
 }
 
 /**
- * Writes the evaluations, then the links to the missing variables they
- * reported: each missing variable must be one of `evaluations`.
+ * Writes the evaluations and the links to their missing variables; each
+ * linked rule must be one of `evaluations`.
  */
 export const createRuleEvaluations = async (
   evaluations: NewRuleEvaluation[],

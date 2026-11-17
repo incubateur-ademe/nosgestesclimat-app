@@ -20,13 +20,12 @@ interface EvaluateSimulationDeps {
  * metric, and persists the evaluations.
  *
  * The missing variables each public rule reports are evaluated and stored
- * too, as rule evaluations of their own linked to the evaluations that
- * reported them. Their own missing variables are not.
+ * too, linked to the evaluations that reported them; their own are not.
  *
  * The engine's situation must already be set to the simulation's. Writes go
- * through `session`, for the caller to commit them with its own: the missing
- * variables' rule rows are resolved in the same transaction, their ids used
- * only within it, so a rollback leaves no orphan behind.
+ * through `session`, for the caller to commit them with its own; the missing
+ * variables' rule rows are resolved in the same transaction, so a rollback
+ * leaves no orphan behind.
  *
  * A simulation's evaluations are stored whole or not at all. Each rule that
  * fails is logged here: the returned failure only counts them.

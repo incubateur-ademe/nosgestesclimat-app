@@ -198,7 +198,6 @@ describe('assessActions', () => {
     )
   })
 
-  // An action's impact is a number: any other value is a modelling mistake.
   it.each([
     { value: 'true', type: 'boolean', ruleId: TRUE_RULE_ID },
     { value: 'false', type: 'boolean', ruleId: FALSE_RULE_ID },

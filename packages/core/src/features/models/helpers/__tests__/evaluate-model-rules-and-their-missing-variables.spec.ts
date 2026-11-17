@@ -66,8 +66,6 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
     })
   })
 
-  // A `par défaut` rule is reported as missing and its default's own missing
-  // variables propagate: the missing variable's evaluation reports them too.
   it('reports the missing variables of a missing variable on its evaluation, each still evaluated once', () => {
     const engine = engineWith({
       'footprint . total': { public: 'oui', valeur: 'm . var * 2' },
@@ -253,8 +251,6 @@ describe('evaluateModelRulesAndTheirMissingVariables', () => {
     expect(errors[0]?.cause).toBeInstanceOf(Error)
   })
 
-  // The missing variables of a failed rule are not known: they are never
-  // evaluated.
   it('does not evaluate the missing variables of a failed rule', () => {
     const engine = engineWith({
       'footprint . ok': { public: 'oui', valeur: 'ghost . variable + 1' },

@@ -19,8 +19,7 @@ export type Applicability =
  * A rule of the model evaluated for a metric, with the missing variables the
  * engine reported for that same evaluation: the rules the situation does not
  * answer that it needed, each with a weight counting how many times it needed
- * it. They are reported, never evaluated: each is a rule evaluation of its
- * own, under the same metric.
+ * it. They are reported, never evaluated.
  */
 export type ModelRuleEvaluation = {
   name: string

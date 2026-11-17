@@ -76,7 +76,6 @@ describe('evaluateModelRule', () => {
     })
   })
 
-  // A `non` is an answer, never a rule that does not apply.
   it('evaluates a boolean value as applicable, false included', () => {
     const engine = engineWith({
       'footprint . yes': { public: 'oui', valeur: 'oui' },
@@ -287,8 +286,6 @@ describe('evaluateModelRule', () => {
     })
   })
 
-  // In Publicodes, a rule with `par défaut` lists itself among its missing
-  // variables: it is left out, a rule is never its own missing variable.
   it('never reports the rule as its own missing variable, a `par défaut` included', () => {
     const engine = engineWith({
       'footprint . default': { public: 'oui', 'par défaut': 5 },

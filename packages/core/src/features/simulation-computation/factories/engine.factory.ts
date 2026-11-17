@@ -6,10 +6,7 @@ const ENGINE_OPTIONS = {
   logger: { log: () => {}, warn: () => {}, error: () => {} },
 } as const
 
-/**
- * Required by any rule evaluated for a metric: the evaluation sets it in its
- * context. Copied from the model.
- */
+/** The model's `métrique` rule, set in the context of any rule evaluated for a metric. */
 export const METRIC_RULE: RawPublicodes<string> = {
   métrique: {
     avec: { carbone: null, eau: null },

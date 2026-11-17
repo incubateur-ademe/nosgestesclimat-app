@@ -27,7 +27,6 @@ export function createResolvePublicRules() {
     const cached = rulesByModel.get(key)
     if (cached) return cached
 
-    // The model's output contract: the rules carrying `public: oui`.
     const publicRules = Object.entries(engine.getParsedRules())
       .filter(([, rule]) => rule.rawNode.public === 'oui')
       .map(([name]) => getModelRule(engine, name))
