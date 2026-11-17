@@ -8,7 +8,11 @@ type TestPrismaClient = ReturnType<typeof createPrismaClient>
 
 interface TestDb {
   prisma: TestPrismaClient
-  migrate(migrationsDir: string): Promise<void>
+  migrate(
+    migrationsDir: string,
+    include?: (migrationName: string) => boolean
+  ): Promise<void>
+  exec(sql: string): Promise<void>
   teardown(): Promise<void>
 }
 
@@ -17,11 +21,13 @@ export async function createTestDatabase(): Promise<TestDb> {
   const adapter = await createPGliteAdapter(pgClient)
   const prisma = createPrismaClient(adapter)
 
-  async function migrate(migrationsDir: string) {
-    const migrationPaths = await readdir(migrationsDir)
-
-    await migrationPaths
+  async function migrate(
+    migrationsDir: string,
+    include: (migrationName: string) => boolean = () => true
+  ) {
+    const migrationPaths = (await readdir(migrationsDir))
       .filter((migrationPath) => migrationPath !== 'migration_lock.toml')
+      .filter(include)
       .map((migrationPath) =>
         path.join(migrationsDir, migrationPath, 'migration.sql')
       )
@@ -38,6 +44,12 @@ export async function createTestDatabase(): Promise<TestDb> {
         await promise
         await pgClient.exec(migration)
       }, Promise.resolve())
+
+    await migrationPaths
+  }
+
+  async function exec(sql: string) {
+    await pgClient.exec(sql)
   }
 
   async function teardown() {
@@ -45,7 +57,7 @@ export async function createTestDatabase(): Promise<TestDb> {
     await pgClient.close()
   }
 
-  return { prisma, migrate, teardown }
+  return { prisma, migrate, exec, teardown }
 }
 
 // Patch pglite-prisma-adapter's onError to map PostgreSQL error codes to typed
