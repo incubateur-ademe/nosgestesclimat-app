@@ -1,5 +1,9 @@
 import { getSiteUrl } from '@/helpers/metadata/getSiteUrl'
 import type { Action } from '@nosgestesclimat/core/features/actions/types/action'
+import type {
+  JsonLdDocument,
+  JsonLdNode,
+} from '@nosgestesclimat/core/features/actions/types/seo-metadata'
 import { describe, expect, it } from 'vitest'
 import { buildActionDetailJsonLd } from '../buildActionDetailJsonLd'
 
@@ -7,16 +11,13 @@ const SITE_URL = getSiteUrl()
 
 const ACTION_URL = `${SITE_URL}/actions/transport/limiter-avion-toutes-distances`
 
-type Node = Record<string, unknown>
-
 /**
- * Verbatim copy of the JSON-LD stored in the actions catalogue Notion database
- * (see NGC-3570): the context is Markdown-wrapped, the breadcrumb is
- * misspelled, it trails an invalid entry, and every URL points at the
- * catalogue.
+ * Copy of the JSON-LD stored in the actions catalogue Notion database (see
+ * NGC-3570), as cleaned and validated by the sync script: it describes a
+ * collection rooted at the home page, with a misspelled breadcrumb.
  */
-const storedCatalogueJsonLd = {
-  '@context': 'https://schema.org](https://schema.org/)',
+const storedCatalogueJsonLd: JsonLdDocument = {
+  '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'CollectionPage',
@@ -58,13 +59,11 @@ const storedCatalogueJsonLd = {
     },
     {
       '@type': 'GovernmentOrganization',
-      '@id':
-        '[https://www.ademe.fr/#organization](https://www.ademe.fr/#organization)',
+      '@id': 'https://www.ademe.fr/#organization',
       name: 'ADEME',
-      url: '[https://www.ademe.fr/](https://www.ademe.fr/)',
+      url: 'https://www.ademe.fr/',
       description: 'Agence de la transition écologique',
     },
-    '###',
   ],
 }
 
@@ -91,15 +90,6 @@ const action = {
 
 describe('buildActionDetailJsonLd', () => {
   describe('with a stored JSON-LD copied from the actions catalogue', () => {
-    it('restores a valid @context', () => {
-      const [document] = buildActionDetailJsonLd(
-        withStoredJsonLd(storedCatalogueJsonLd),
-        'fr'
-      )
-
-      expect(document['@context']).toBe('https://schema.org')
-    })
-
     it('describes a page, not a collection, and rebuilds the URLs from the action slugs', () => {
       const graph = buildGraph(withStoredJsonLd(storedCatalogueJsonLd))
       const page = findNode(graph, 'WebPage')
@@ -176,33 +166,10 @@ describe('buildActionDetailJsonLd', () => {
         })
       )
       expect(
-        (findNode(graph, 'BreadcrumbList')?.itemListElement as Node[]).map(
-          (item) => item.name
-        )
+        (
+          findNode(graph, 'BreadcrumbList')?.itemListElement as JsonLdNode[]
+        ).map((item) => item.name)
       ).toEqual(['Home', 'Actions', action.title])
-    })
-
-    it('unwraps the Markdown links Notion writes around URLs', () => {
-      const graph = buildGraph(withStoredJsonLd(storedCatalogueJsonLd))
-      const organization = findNode(graph, 'GovernmentOrganization')
-
-      expect(organization).toEqual(
-        expect.objectContaining({
-          '@id': 'https://www.ademe.fr/#organization',
-          url: 'https://www.ademe.fr/',
-        })
-      )
-      expect(findNode(graph, 'WebSite')?.publisher).toEqual({
-        '@id': 'https://www.ademe.fr/#organization',
-      })
-      expect(JSON.stringify(graph)).not.toContain('](')
-    })
-
-    it('drops the entries that are not nodes', () => {
-      const graph = buildGraph(withStoredJsonLd(storedCatalogueJsonLd))
-
-      expect(graph.every((node) => typeof node === 'object')).toBe(true)
-      expect(graph).toHaveLength(5)
     })
 
     it('only emits references that resolve inside the document', () => {
@@ -216,7 +183,8 @@ describe('buildActionDetailJsonLd', () => {
   })
 
   describe('with a partial stored JSON-LD', () => {
-    const partial = {
+    const partial: JsonLdDocument = {
+      '@context': 'https://schema.org',
       '@graph': [
         {
           '@type': 'Guide',
@@ -247,6 +215,7 @@ describe('buildActionDetailJsonLd', () => {
     it('rewrites the URLs of a node whose type it does not know', () => {
       const graph = buildGraph(
         withStoredJsonLd({
+          '@context': 'https://schema.org',
           '@graph': [
             { '@type': 'Article', '@id': `${SITE_URL}/`, url: `${SITE_URL}/` },
           ],
@@ -264,6 +233,7 @@ describe('buildActionDetailJsonLd', () => {
     it('keeps the types the CMS declares beyond the one used to recognise the node', () => {
       const graph = buildGraph(
         withStoredJsonLd({
+          '@context': 'https://schema.org',
           '@graph': [{ '@type': ['Guide', 'HowTo'], '@id': `${SITE_URL}/` }],
         })
       )
@@ -271,18 +241,6 @@ describe('buildActionDetailJsonLd', () => {
       expect(
         graph.find((node) => node['@id'] === ACTION_URL)?.['@type']
       ).toEqual(['Guide', 'HowTo'])
-    })
-
-    it('accepts a document given as a top-level array', () => {
-      const graph = buildGraph(
-        withStoredJsonLd([
-          { '@type': 'WebPage', '@id': `${SITE_URL}/`, url: `${SITE_URL}/` },
-        ])
-      )
-
-      expect(findNode(graph, 'WebPage')).toEqual(
-        expect.objectContaining({ url: ACTION_URL })
-      )
     })
   })
 
@@ -294,9 +252,9 @@ describe('buildActionDetailJsonLd', () => {
       )
 
       expect(documents).toHaveLength(1)
-      expect(
-        findNode(buildGraph(withStoredJsonLd({ '@graph': [] })), 'WebPage')
-      ).toEqual(expect.objectContaining({ '@id': `${ACTION_URL}#webpage` }))
+      expect(findNode(documents[0]['@graph'], 'WebPage')).toEqual(
+        expect.objectContaining({ '@id': `${ACTION_URL}#webpage` })
+      )
     })
   })
 
@@ -374,18 +332,18 @@ describe('buildActionDetailJsonLd', () => {
   })
 })
 
-const withStoredJsonLd = (jsonLd: unknown): Action => ({
+const withStoredJsonLd = (jsonLd: JsonLdDocument): Action => ({
   ...action,
   metadata: { jsonLd },
 })
 
 const buildGraph = (a: Action = action, locale: 'fr' | 'en' = 'fr') =>
-  buildActionDetailJsonLd(a, locale)[0]['@graph'] as Node[]
+  buildActionDetailJsonLd(a, locale)[0]['@graph']
 
-const findNode = (graph: Node[], type: string) =>
+const findNode = (graph: JsonLdNode[], type: string) =>
   graph.find((node) => node['@type'] === type)
 
-const findNodes = (graph: Node[], type: string) =>
+const findNodes = (graph: JsonLdNode[], type: string) =>
   graph.filter((node) => node['@type'] === type)
 
 /** Every `{ '@id': … }` reference of the document, wherever it sits. */
@@ -407,5 +365,5 @@ const collectReferences = (value: unknown, references: string[] = []) => {
   return references
 }
 
-const collectIds = (graph: Node[]) =>
+const collectIds = (graph: JsonLdNode[]) =>
   graph.map((node) => node['@id']).filter((id): id is string => Boolean(id))
