@@ -1,18 +1,6 @@
 import type { QuestionType } from '@/adapters/cmsClient'
 import JSONLD from '@/components/seo/JSONLD'
-
-interface BreadcrumbListItem {
-  '@type': 'ListItem'
-  position: number
-  name: string
-  item: string
-}
-
-interface BreadcrumbList extends Record<string, unknown> {
-  '@context': string
-  '@type': 'BreadcrumbList'
-  itemListElement: BreadcrumbListItem[]
-}
+import type { JsonLdNode } from '@nosgestesclimat/core/features/actions/types/seo-metadata'
 
 export default function CategoryJSONLD({
   title,
@@ -23,7 +11,7 @@ export default function CategoryJSONLD({
   questions: QuestionType[]
   categorySlug: string
 }) {
-  const jsonLd: (BreadcrumbList | Record<string, unknown>)[] = [
+  const jsonLd: JsonLdNode[] = [
     {
       '@context': 'https://schema.org/',
       '@type': 'BreadcrumbList',

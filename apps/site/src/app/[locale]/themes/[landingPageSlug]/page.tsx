@@ -100,14 +100,15 @@ export default async function ThematicLandingPage({
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            mainEntity: faq?.questions?.map((faq) => ({
-              '@type': 'Question',
-              name: faq.question,
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: faq.answer,
-              },
-            })),
+            mainEntity:
+              faq?.questions?.map((faq) => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: faq.answer,
+                },
+              })) ?? [],
           },
         ]}
       />
