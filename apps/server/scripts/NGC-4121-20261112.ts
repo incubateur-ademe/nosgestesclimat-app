@@ -325,18 +325,6 @@ const DELETE_REDUNDANT_ROWS_THAT_DID_NOT_KEEP_THEIR_EMAIL_SQL = /* sql */ `
     )`
 
 /**
- * Mirrors the surviving email into "User"."email", a deprecated column; a
- * "User"."email" that holds NULL stays NULL, since the comparison is never true
- * against a NULL.
- */
-const UPDATE_USER_EMAIL_TO_SURVIVING_EMAIL_SQL = /* sql */ `
-  UPDATE "ngc"."User" "account"
-     SET "email" = "surviving_row"."email"
-    FROM "surviving_verified_user_row" "surviving_row"
-   WHERE "account"."id" = "surviving_row"."id"
-     AND "account"."email" <> "surviving_row"."email"`
-
-/**
  * The statements that apply the plan, in this order and in one transaction:
  * each one reads what the previous ones created.
  */
@@ -349,7 +337,6 @@ const DEDUPLICATION_STATEMENTS = [
   ASSIGN_FRESH_ID_TO_REDUNDANT_ROWS_KEPT_UNDER_A_FRESH_ID_SQL,
   MOVE_ORGANISATION_ADMINISTRATOR_TO_SURVIVING_EMAIL_SQL,
   DELETE_REDUNDANT_ROWS_THAT_DID_NOT_KEEP_THEIR_EMAIL_SQL,
-  UPDATE_USER_EMAIL_TO_SURVIVING_EMAIL_SQL,
 ]
 
 /** Reads the arbitration plan: the query applies the rule and writes nothing. */

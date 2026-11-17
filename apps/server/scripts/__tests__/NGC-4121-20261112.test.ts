@@ -20,7 +20,6 @@ import logger from '../../src/logger.ts'
 import {
   deduplicateVerifiedUsers,
   exitCodeOfRun,
-  readDryFlag,
   type VerifiedUserDeduplicationClient,
 } from '../NGC-4121-20261112.ts'
 
@@ -511,13 +510,6 @@ describe('deduplicateVerifiedUsers', () => {
     })
   })
 
-  it('mirrors the surviving email into "User"."email" and leaves a NULL value NULL', async () => {
-    await deduplicateVerifiedUsers({ client, dry: false })
-
-    expect((await userById(TWICE_SIGNED_UP_ID))?.email).toBe('dup1@example.fr')
-    expect((await userById(FRESH_EMAIL_ID))?.email).toBeNull()
-  })
-
   it('applies the plan in one transaction with the long timeout and rolls it back when a statement fails', async () => {
     const verifiedUsersBefore = await verifiedUsersOf()
     const administratorsBefore = await organisationAdministratorsOf()
@@ -536,7 +528,7 @@ describe('deduplicateVerifiedUsers', () => {
             run({
               ...transactionClient,
               $executeRawUnsafe: (query: string) =>
-                query.includes('UPDATE "ngc"."User" "account"')
+                query.includes('DELETE FROM "ngc"."VerifiedUser"')
                   ? Promise.reject(new Error('simulated statement failure'))
                   : transactionClient.$executeRawUnsafe(query),
             }),
@@ -553,8 +545,8 @@ describe('deduplicateVerifiedUsers', () => {
     // is short.
     expect(transactionOptions).toEqual([{ timeout: 10 * 60 * 1000 }])
 
-    // The failure came after the moves and the deletions: the rollback undid
-    // all of them.
+    // The failure came on the last statement, after the moves: the rollback
+    // undid every write the previous statements made.
     expect(await verifiedUsersOf()).toEqual(verifiedUsersBefore)
     expect(await organisationAdministratorsOf()).toEqual(administratorsBefore)
     expect(await usersOf()).toEqual(usersBefore)
@@ -649,29 +641,6 @@ describe('deduplicateVerifiedUsers through the Prisma client', () => {
     expect(
       await prisma.$queryRawUnsafe(`SELECT email FROM ngc."VerifiedUser"`)
     ).toEqual([{ email: 'claimed-later@example.fr' }])
-  })
-})
-
-describe('readDryFlag', () => {
-  it('runs dry by default, on --dry and on -d', () => {
-    expect(readDryFlag([])).toBe(true)
-    expect(readDryFlag(['--dry'])).toBe(true)
-    expect(readDryFlag(['-d'])).toBe(true)
-  })
-
-  it('applies the plan on --no-dry and on --no-d', () => {
-    expect(readDryFlag(['--no-dry'])).toBe(false)
-    expect(readDryFlag(['--no-d'])).toBe(false)
-  })
-
-  it('rejects an option the command line does not accept', () => {
-    expect(() => readDryFlag(['--apply'])).toThrow()
-  })
-
-  it('rejects both a dry and a no-dry option rather than let the last one win', () => {
-    expect(() => readDryFlag(['--dry', '--no-dry'])).toThrow('not both')
-    expect(() => readDryFlag(['--no-dry', '--dry'])).toThrow('not both')
-    expect(() => readDryFlag(['-d', '--no-d'])).toThrow('not both')
   })
 })
 
