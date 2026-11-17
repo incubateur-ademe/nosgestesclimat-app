@@ -370,7 +370,7 @@ model SeoMetadata {
 enum SimulationStatus {
   not_started
   answering_major_questions
-  major_result_seen
+  major_questions_result_seen
   answering_minor_questions
   full_result_seen
 
