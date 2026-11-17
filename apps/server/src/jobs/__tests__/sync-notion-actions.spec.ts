@@ -91,7 +91,8 @@ describe('syncNotionActions', () => {
       further_explore_fr: 'updated further_explore_fr',
       seo_title_fr: 'updated seo_title_fr',
       seo_description_fr: 'updated seo_description_fr',
-      seo_json_ld: '{"@context": "https://schema.org","@graph": []}',
+      seo_json_ld:
+        '{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nosgestesclimat.fr/"}]}',
       published_at: new Date('2025-01-15').toISOString(),
     })
     const fetchAllPages = vi.fn().mockResolvedValue([row])
@@ -125,7 +126,9 @@ describe('syncNotionActions', () => {
           description: row.seo_description_fr,
           jsonLd: {
             '@context': 'https://schema.org',
-            '@graph': [],
+            '@graph': [
+              { '@type': 'WebPage', '@id': 'https://nosgestesclimat.fr/' },
+            ],
           },
         },
         publishedAt: new Date(row.published_at),
@@ -360,7 +363,8 @@ describe('syncNotionActions', () => {
         further_explore_en: 'English further explore',
         seo_title_en: 'English seo title',
         seo_description_en: 'English seo description',
-        seo_json_ld_en: '{"@context": "https://schema.org","@graph": []}',
+        seo_json_ld_en:
+          '{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nosgestesclimat.fr/"}]}',
       })
       const fetchAllPages = vi.fn().mockResolvedValue([row])
 
@@ -383,7 +387,12 @@ describe('syncNotionActions', () => {
         seoMetadata: {
           title: 'English seo title',
           description: 'English seo description',
-          jsonLd: { '@context': 'https://schema.org', '@graph': [] },
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              { '@type': 'WebPage', '@id': 'https://nosgestesclimat.fr/' },
+            ],
+          },
         },
       })
     })
@@ -425,7 +434,8 @@ describe('syncNotionActions', () => {
         further_explore_en: 'English further explore',
         seo_title_en: 'English seo title',
         seo_description_en: 'English seo description',
-        seo_json_ld_en: '{"@context": "https://schema.org","@graph": []}',
+        seo_json_ld_en:
+          '{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nosgestesclimat.fr/"}]}',
       })
       await syncNotionActions({
         fetchAllPages: vi.fn().mockResolvedValue([row]),

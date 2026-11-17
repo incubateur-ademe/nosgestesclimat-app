@@ -74,7 +74,7 @@ describe('getAction', () => {
         title: 'English SEO title',
         description: 'English SEO description',
         jsonLd: { '@context': 'https://schema.org', '@graph': [] },
-      } as const
+      }
       await actionFactory
         .published()
         .params({ tips: 'French tips' })
