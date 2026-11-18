@@ -1,7 +1,3 @@
-/**
- * Renders JSON-LD in the served HTML. Kept free of client-only code: structured
- * data injected after hydration is invisible to crawlers that do not run JS.
- */
 export default function JSONLD({
   jsonLd,
 }: {
