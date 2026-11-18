@@ -286,7 +286,7 @@ describe('getPersonalizedActionDetails', () => {
         title: 'English SEO title',
         description: 'English SEO description',
         jsonLd: { '@context': 'https://schema.org', '@graph': [] },
-      }
+      } as const
       const action = await actionFactory
         .published()
         .withTranslations({

@@ -1,13 +1,14 @@
+import type { Graph } from 'schema-dts'
 import type { Prisma } from '../../../prisma/generated/client.ts'
 import type { SeoMetadataModel } from '../../../prisma/generated/models.ts'
-import type { JsonLdDocument, SeoMetadata } from '../types/seo-metadata.ts'
+import type { SeoMetadata } from '../types/seo-metadata.ts'
 
 /** The stored JSON-LD is validated when written (see the Notion sync): reading
  * only casts the column back to the domain type. */
 const toJsonLd = (jsonLd: Prisma.JsonValue | null | undefined) =>
-  (jsonLd ?? undefined) as JsonLdDocument | undefined
+  (jsonLd ?? undefined) as Graph | undefined
 
-const toPrismaJsonLd = (jsonLd: JsonLdDocument | null | undefined) =>
+const toPrismaJsonLd = (jsonLd: Graph | null | undefined) =>
   jsonLd as unknown as Prisma.InputJsonValue | undefined
 
 export const mapSeoMetadata = (

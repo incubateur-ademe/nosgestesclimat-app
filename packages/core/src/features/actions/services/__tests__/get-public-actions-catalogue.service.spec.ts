@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { actionFactory } from '../../factories/action.factory.ts'
+import type { SeoMetadata } from '../../types/seo-metadata.ts'
 import { getPublicActionsCatalogue } from '../get-public-actions-catalogue.service.ts'
 
 describe('getPublicActionsCatalogue', () => {
@@ -115,7 +116,7 @@ describe('getPublicActionsCatalogue', () => {
         title: 'English SEO title',
         description: 'English SEO description',
         jsonLd: { '@context': 'https://schema.org', '@graph': [] },
-      }
+      } satisfies SeoMetadata
       const action = await actionFactory
         .published()
         .withTranslations({
