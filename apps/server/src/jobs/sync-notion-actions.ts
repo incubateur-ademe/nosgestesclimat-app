@@ -20,6 +20,7 @@ import type {
   UpdatedAction,
 } from '@nosgestesclimat/core/features/actions/types/action'
 import type { ActionMedia } from '@nosgestesclimat/core/features/actions/types/action-media'
+import type { SeoMetadata } from '@nosgestesclimat/core/features/actions/types/seo-metadata'
 import type { Theme } from '@nosgestesclimat/core/features/actions/types/theme'
 import { trackingIdSchema } from '@nosgestesclimat/core/features/tracking/schema'
 import { Client, isFullPage } from '@notionhq/client'
@@ -28,7 +29,6 @@ import * as v from 'valibot'
 import { config } from '../config.ts'
 import logger from '../logger.ts'
 import { convertNotionRichTextToMd } from './helpers/convert-notion-rich-text-to-md.ts'
-import { cleanJsonLd } from './helpers/notion-json-ld.ts'
 
 const trimmedString = v.pipe(v.string(), v.trim())
 const trimmedLowercaseString = v.pipe(trimmedString, v.toLowerCase())
@@ -72,12 +72,6 @@ const themeIdByNotionOption = {
   Divers: misc.id,
 } as const satisfies Record<ThemeNotionOption, string>
 
-const NotionJsonLdSchema = v.pipe(
-  v.string(),
-  v.parseJson(),
-  v.transform(cleanJsonLd)
-)
-
 const MediaNotionRowSchema = v.pipe(
   v.string(),
   v.rawTransform((ctx) => {
@@ -114,7 +108,7 @@ export const NotionActionRowSchema = v.pipe(
     further_explore_fr: nullishTrimmedString,
     seo_title_fr: nullishTrimmedString,
     seo_description_fr: nullishTrimmedString,
-    seo_json_ld: nullishString(NotionJsonLdSchema),
+    seo_json_ld: nullishString(v.pipe(v.string(), v.parseJson())),
     front_title_en: nullishTrimmedString,
     slug_en: nullishString(v.pipe(trimmedLowercaseString, v.slug())),
     short_description_en: nullishTrimmedString,
@@ -126,7 +120,7 @@ export const NotionActionRowSchema = v.pipe(
     further_explore_en: nullishTrimmedString,
     seo_title_en: nullishTrimmedString,
     seo_description_en: nullishTrimmedString,
-    seo_json_ld_en: nullishString(NotionJsonLdSchema),
+    seo_json_ld_en: nullishString(v.pipe(v.string(), v.parseJson())),
   })
 )
 
@@ -533,7 +527,7 @@ function extractEnglishTranslation(
     metadata: {
       title: row.seo_title_en,
       description: row.seo_description_en,
-      jsonLd: row.seo_json_ld_en,
+      jsonLd: row.seo_json_ld_en as SeoMetadata['jsonLd'],
     },
   }
 }
@@ -567,7 +561,7 @@ function mapNotionRowToAction(
         metadata: {
           title: row.seo_title_fr,
           description: row.seo_description_fr,
-          jsonLd: row.seo_json_ld,
+          jsonLd: row.seo_json_ld as SeoMetadata['jsonLd'],
         },
       },
       en: extractEnglishTranslation(row, duplicatedEnglishSlugs),

@@ -1,4 +1,3 @@
-import { OPEN_GRAPH_LOCALES } from '@/constants/localisation/openGraphLocales'
 import { noIndexObject } from '@/constants/metadata'
 import { getLocalizedPath } from '@/helpers/language/getLocalizedPath'
 import { getSiteUrl } from '@/helpers/metadata/getSiteUrl'
@@ -146,7 +145,6 @@ export function getMetadataObject({
       description,
       url,
       type: 'website',
-      locale: OPEN_GRAPH_LOCALES[locale],
       images: image ? image : '/_static/cms/metadata_1749c11cdc.png',
     },
     alternates: definitiveAlternates,

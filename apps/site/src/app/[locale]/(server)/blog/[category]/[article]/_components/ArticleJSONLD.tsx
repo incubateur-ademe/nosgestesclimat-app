@@ -49,13 +49,13 @@ export default function ArticleJSONLD({
           dateModified: article.updatedAt,
           image: {
             '@type': 'imageObject',
-            ...(article.image?.url ? { url: article.image.url } : {}),
+            url: article.image?.url,
             height: '640',
             width: '800',
           },
           author: {
             '@type': 'Person',
-            ...(article.author?.name ? { name: article.author.name } : {}),
+            name: article.author?.name,
           },
         },
       ]}

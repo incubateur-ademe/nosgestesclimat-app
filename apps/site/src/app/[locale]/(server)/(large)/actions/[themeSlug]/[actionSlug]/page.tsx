@@ -132,7 +132,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
   return (
     <div className="pt-2">
       <ActionTracker eventName="consulted" action={action} />
-      <ActionDetailJSONLD action={action} locale={locale} />
+      <ActionDetailJSONLD action={action} />
       <GoBackLink
         href={
           from && from in FROM_PATH_MAP

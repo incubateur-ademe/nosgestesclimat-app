@@ -130,13 +130,4 @@ describe('getMetadataObject', () => {
 
     expect(result.alternates?.canonical).toBe(`${BASE_URL}/en/budget`)
   })
-
-  it('states the document language for social networks', () => {
-    expect(
-      getMetadataObject({ locale: 'fr', description: 'desc' }).openGraph?.locale
-    ).toBe('fr_FR')
-    expect(
-      getMetadataObject({ locale: 'en', description: 'desc' }).openGraph?.locale
-    ).toBe('en_GB')
-  })
 })

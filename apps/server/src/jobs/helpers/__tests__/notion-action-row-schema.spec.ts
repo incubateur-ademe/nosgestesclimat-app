@@ -429,28 +429,15 @@ describe('NotionActionRowSchema', () => {
     })
 
     describe('seo_json_ld field', () => {
-      it('should clean and validate seo_json_ld', () => {
+      it('should handle seo_json_ld', () => {
         const row = generateValidRow({
-          seo_json_ld:
-            '{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "@id": "[https://nosgestesclimat.fr/](https://nosgestesclimat.fr/)"}]}',
+          seo_json_ld: '{"@context": "https://schema.org"}',
         })
         const result = v.safeParse(NotionActionRowSchema, row)
         expect.assert(result.success)
         expect(result.output.seo_json_ld).toEqual({
           '@context': 'https://schema.org',
-          '@graph': [
-            { '@type': 'WebPage', '@id': 'https://nosgestesclimat.fr/' },
-          ],
         })
-      })
-
-      it('should drop a seo_json_ld that holds no node', () => {
-        const row = generateValidRow({
-          seo_json_ld: '{"@context": "https://schema.org", "@graph": ["###"]}',
-        })
-        const result = v.safeParse(NotionActionRowSchema, row)
-        expect.assert(result.success)
-        expect(result.output.seo_json_ld).toBeNull()
       })
 
       it('should fail if seo_json_ld is not valid JSON', () => {

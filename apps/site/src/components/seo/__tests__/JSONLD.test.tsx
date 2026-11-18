@@ -16,7 +16,9 @@ describe('JSONLD', () => {
 
   it('serializes every document of the array', () => {
     const { container } = render(
-      <JSONLD jsonLd={[{ '@type': 'WebPage' }, { '@type': 'BreadcrumbList' }]} />
+      <JSONLD
+        jsonLd={[{ '@type': 'WebPage' }, { '@type': 'BreadcrumbList' }]}
+      />
     )
 
     expect(JSON.parse(getScript(container)?.textContent ?? '')).toHaveLength(2)
