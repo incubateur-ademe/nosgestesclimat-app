@@ -67,6 +67,7 @@ export interface UpdateCurrentSimulationProps {
   customAdditionalQuestionsAnswers?: Record<string, string>
   computedResults?: ComputedResults
   progression?: number
+  status?: SimulationStatus
 }
 export interface LocalStorage {
   user: User

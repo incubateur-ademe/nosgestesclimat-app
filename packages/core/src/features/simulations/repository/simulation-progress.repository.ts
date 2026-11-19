@@ -1,9 +1,8 @@
 import { prisma } from '../../../prisma/client.ts'
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
-import type {
-  CompletedSimulationProgress,
-  SimulationProgress,
-} from '../types/simulation-progress.ts'
+import { COMPLETED_SIMULATION_STATUSES } from '../helpers/simulation-guards.ts'
+import type { SimulationProgress } from '../types/simulation-progress.ts'
 import {
   hasValidComputedResults,
   type ComputedResults,
@@ -13,6 +12,7 @@ import { isValidSimulation } from '../validators/simulation.validator.ts'
 const latestSimulationSelect = {
   id: true,
   progression: true,
+  status: true,
   model: true,
   computedResults: true,
 } as const
@@ -20,23 +20,26 @@ const latestSimulationSelect = {
 type SimulationProgressRow = {
   id: string
   progression: number
+  status: SimulationStatus
   model: ModelString
   computedResults: ComputedResults
 }
 
-const toProgress = <Progression extends number>(row: {
-  id: string
-  progression: Progression
-  model: ModelString
-}): { id: string; progression: Progression; model: ModelString } => ({
-  id: row.id,
-  progression: row.progression,
-  model: row.model,
+const toProgress = ({
+  id,
+  progression,
+  status,
+  model,
+}: SimulationProgressRow): SimulationProgress => ({
+  id,
+  progression,
+  status,
+  model,
 })
 
 const findLatestValid = async (where: {
   userId: string
-  progression?: number
+  status?: { in: SimulationStatus[] }
 }): Promise<SimulationProgressRow | null> => {
   const row = await prisma.simulation.findFirst({
     where,
@@ -61,10 +64,13 @@ export const findLatestCompletedSimulationProgress = async ({
   userId,
 }: {
   userId: string
-}): Promise<CompletedSimulationProgress | null> => {
-  const row = await findLatestValid({ userId, progression: 1 })
+}): Promise<SimulationProgress | null> => {
+  const row = await findLatestValid({
+    userId,
+    status: { in: [...COMPLETED_SIMULATION_STATUSES] },
+  })
 
-  return row ? toProgress({ ...row, progression: 1 as const }) : null
+  return row ? toProgress(row) : null
 }
 
 export const findSimulationProgressById = async ({
