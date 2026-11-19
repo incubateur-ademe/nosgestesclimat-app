@@ -10,6 +10,7 @@ import type { Locale } from '@/i18nConfig'
 import logger from '@/logger/logger.server'
 import { EngineProvider, FormProvider } from '@/publicodes-state'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { redirect } from 'next/navigation'
 
 export default async function SimulationLayout({
@@ -32,7 +33,7 @@ export default async function SimulationLayout({
     })
     redirect(START_SIMULATION_PATH)
   }
-  if (currentSimulation.progression === 1) {
+  if (isSimulationCompleted(currentSimulation)) {
     redirect(END_PAGE_PATH)
   }
 
