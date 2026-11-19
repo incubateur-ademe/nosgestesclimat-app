@@ -1,6 +1,7 @@
 import type { Metric } from '@/publicodes-state/types'
 import type { Participant } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { getParticipantFootprint } from './getParticipantFootprint'
 import { sortParticipantsByFootprint } from './sortParticipantsByFootprint'
 
@@ -29,7 +30,7 @@ export const getTopThreeAndRestMembers = (
     membersWithUncompletedSimulations: Participant[]
   }>(
     (acc, member) => {
-      if (member.simulation.progression !== 1) {
+      if (!isSimulationCompleted(member.simulation)) {
         acc.membersWithUncompletedSimulations.push(member)
         return acc
       }
