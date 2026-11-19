@@ -369,6 +369,7 @@ describe('Given a NGC user', () => {
               email: null,
               simulation: {
                 ...simulation,
+                status: expect.any(String),
                 date: expect.any(String),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
