@@ -1,11 +1,14 @@
 import type { Logger } from '../../logger/index.ts'
+import { MODEL_METRIC } from '../../models/types/rule.ts'
 import { findSimulationComputation } from '../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { toComputedResults } from '../helpers/to-computed-results.ts'
 import { findNamedRuleEvaluationsBySimulation } from '../repository/rule-evaluations.repository.ts'
 import type { Simulation } from '../types/simulation.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
-const METRICS = ['carbone', 'eau'] as const
+/** The model metric names (`carbone`, `eau`), derived from the model's metric
+ * mapping so they live in one place. */
+const METRICS = Object.values(MODEL_METRIC)
 
 type Category = keyof ComputedResults[(typeof METRICS)[number]]['categories']
 

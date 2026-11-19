@@ -3,16 +3,15 @@ import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
 import { groupFactory } from '../../../groups/factories/group.factory.ts'
-import { ruleFactory } from '../../../models/factories/rule.factory.ts'
-import type { Applicability } from '../../../models/types/model-rule-evaluation.ts'
-import type { Metric, Rule } from '../../../models/types/rule.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import { computedResultsFactory } from '../../factories/computed-results.factory.ts'
 import { simulationFactory } from '../../factories/simulation.factory.ts'
-import { createRuleEvaluations } from '../../repository/rule-evaluations.repository.ts'
-import type { NewRuleEvaluation } from '../../types/rule-evaluation.ts'
-import type { Simulation } from '../../types/simulation.ts'
+import {
+  evaluateRule,
+  storeRule,
+  zeroedCategories,
+} from '../../test-utils/rule-evaluations.ts'
 import type { ComputedResults } from '../../validators/computed-results.schema.ts'
 import { getLatestSimulationResult } from '../get-latest-simulation-result.service.ts'
 
@@ -21,33 +20,6 @@ vi.mock('../../helpers/migrate-simulation.ts', () => ({
 }))
 
 const logger = createTestLogger()
-
-/** Seeds a rule evaluation of the simulation through the write path. */
-const evaluateRule = async (
-  simulation: Simulation,
-  rule: Rule,
-  applicability: Applicability
-): Promise<void> => {
-  const evaluation: NewRuleEvaluation = {
-    simulationId: simulation.id,
-    ruleId: rule.id,
-    ...applicability,
-    missingVariables: [],
-  }
-  await createRuleEvaluations([evaluation])
-}
-
-const storeRule = (name: string, metric: Metric): Promise<Rule> =>
-  ruleFactory.create({ name, metric })
-
-/** The five zeroed categories of a metric. */
-const zeroedCategories = () => ({
-  alimentation: 0,
-  transport: 0,
-  logement: 0,
-  divers: 0,
-  'services sociétaux': 0,
-})
 
 describe('getLatestSimulationResult', () => {
   beforeEach(() => {

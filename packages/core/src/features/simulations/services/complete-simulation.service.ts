@@ -256,7 +256,7 @@ const COMPUTATION_POLL_DELAYS_MS = [
  * running, logs one warning with the simulation id and the last seen status
  * and returns normally: the completion proceeds anyway.
  */
-export const waitForSimulationComputation = async ({
+const waitForSimulationComputation = async ({
   logger,
   sleep,
   simulationId,

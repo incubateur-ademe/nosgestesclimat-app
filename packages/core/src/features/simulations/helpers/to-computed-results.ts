@@ -15,7 +15,8 @@ const CATEGORIES = [
   'services sociétaux',
 ] as const
 
-const isFootprintLine = (name: string) =>
+/** A subcategory line: not the `bilan`, not one of the categories. */
+const isSubcategoryLine = (name: string) =>
   name !== BILAN_RULE_NAME && !(CATEGORIES as readonly string[]).includes(name)
 
 /**
@@ -58,8 +59,8 @@ export const toComputedResults = (
     }
 
     for (const evaluation of byName.values()) {
-      if (!isFootprintLine(evaluation.name)) continue
-      // A boolean or string value is not a footprint line: skipped, not 0.
+      if (!isSubcategoryLine(evaluation.name)) continue
+      // A boolean or string value is not a subcategory line: skipped, not 0.
       if (
         evaluation.applicable === true &&
         typeof evaluation.value !== 'number'
