@@ -1339,7 +1339,7 @@ entries:
   event.podium.empty.type.public-services: collectivité
   results.footprintBlock.actionsBlock.link: Découvrir mes actions
   results.footprintBlock.actionsBlock.title: 'Comment réduire votre empreinte :'
-  common.co2eAn.title: CO₂e / an
+  common.co2eAn.title: CO₂e / an
   iframe.safari.openInNewTab: Ouvrir le calculateur dans un nouvel onglet
   iframe.safari.errorDescription: Votre version de Safari ne permet pas à notre site de fonctionner correctement dans cette page intégrée. Pour utiliser le calculateur, mettez à jour votre navigateur Safari vers la dernière version ou ouvrez le calculateur dans une nouvelle fenêtre.
   iframe.safari.errorTitle: Version de Safari incompatible
@@ -1524,3 +1524,7 @@ entries:
   results.footprintBlock.carbone.objective.info.definition: C’est l’empreinte carbone maximale par personne et par an qui permettrait de respecter l’Accord de Paris, en limitant le réchauffement bien en dessous de 2 °C d’ici 2050.
   results.footprintBlock.carbone.objective.info.title: Pourquoi viser 2 tonnes ?
   results.footprintBlock.carbone.reduceLink: Réduire mes émissions
+  stats.description: Cette section est générée via Posthog.
+  stats.impact_matrix.description: Consultez notre <2>matrice d'impact</2> afin de prendre connaissance de <5>nos indicateurs d’usage et d’impact</5>.
+  stats.impact_matrix.title: Matrice d'impact
+  stats.title: Statistiques
