@@ -8,7 +8,8 @@ import CurrentSimulationTracker from '@/components/tracking/CurrentSimulationTra
 import { parseModel } from '@/helpers/server/model/models'
 import type { Locale } from '@/i18nConfig'
 import logger from '@/logger/logger.server'
-import { EngineProvider, FormProvider } from '@/publicodes-state'
+import { FormControllerProvider } from '@/form-controller'
+import { EngineProvider } from '@/publicodes-state'
 import { getCurrentSimulation } from '@/services/simulations/get-current-simulation'
 import { redirect } from 'next/navigation'
 
@@ -50,7 +51,9 @@ export default async function SimulationLayout({
       <CurrentSimulationTracker currentSimulation={currentSimulation} />
       <EngineProvider rules={rules} root="bilan">
         {model && <LocalisationBanner model={model} />}
-        <FormProvider root="bilan">{children}</FormProvider>
+        <FormControllerProvider root="bilan">
+          {children}
+        </FormControllerProvider>
       </EngineProvider>
     </ClientLayout>
   )

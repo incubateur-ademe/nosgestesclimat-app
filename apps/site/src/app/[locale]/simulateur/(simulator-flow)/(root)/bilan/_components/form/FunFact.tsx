@@ -1,4 +1,5 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 
 import Trans from '@/components/translation/trans/TransClient'
 import Emoji from '@/design-system/utils/Emoji'
@@ -6,7 +7,6 @@ import {
   getBgCategoryColor,
   getBorderCategoryColor,
 } from '@/helpers/getCategoryColorClass'
-import { useFormState } from '@/publicodes-state'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default function FunFact({ question }: Props) {
-  const { currentCategory } = useFormState()
+  const { currentCategory } = useFormAdvancement()
 
   const funFactClassName = `rounded-xl border-2 ${getBorderCategoryColor(currentCategory, '200')} ${getBgCategoryColor(
     currentCategory,

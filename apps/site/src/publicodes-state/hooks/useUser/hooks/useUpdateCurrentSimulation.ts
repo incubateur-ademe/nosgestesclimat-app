@@ -18,7 +18,6 @@ export default function useUpdateCurrentSimulation({ setSimulation }: Props) {
     ({
       situation,
       foldedSteps,
-      foldedStepToAdd,
       computedResults,
       progression,
     }: UpdateCurrentSimulationProps) => {
@@ -32,21 +31,10 @@ export default function useUpdateCurrentSimulation({ setSimulation }: Props) {
         }
 
         if (foldedSteps !== undefined) {
-          simulationToUpdate.foldedSteps = foldedSteps
-        }
-
-        if (foldedStepToAdd !== undefined) {
-          if (
-            !simulationToUpdate.foldedSteps.includes(
-              foldedStepToAdd.foldedStep
-            ) &&
-            !foldedStepToAdd.isMosaicChild
-          ) {
-            simulationToUpdate.foldedSteps = [
-              ...simulationToUpdate.foldedSteps,
-              foldedStepToAdd.foldedStep,
-            ]
-          }
+          simulationToUpdate.foldedSteps =
+            typeof foldedSteps === 'function'
+              ? foldedSteps(simulationToUpdate.foldedSteps)
+              : foldedSteps
         }
 
         if (computedResults !== undefined) {

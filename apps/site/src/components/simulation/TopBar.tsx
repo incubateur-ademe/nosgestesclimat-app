@@ -1,9 +1,9 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
 import Link from '@/design-system/links/Link'
 import { useIsClient } from '@/hooks/useIsClient'
-import { useFormState } from '@/publicodes-state'
 import { cn } from 'cn'
 import Logo from '../misc/Logo'
 import TotalFootprintNumber from '../misc/TotalFootprintNumber'
@@ -22,7 +22,7 @@ export default function TopBar({
   showTotal?: boolean
   className?: string
 }) {
-  const { currentCategory } = useFormState()
+  const { currentCategory } = useFormAdvancement()
 
   // The category comes from the engine, which only exists on the client: without
   // this the server would render the skeleton and the first client render the

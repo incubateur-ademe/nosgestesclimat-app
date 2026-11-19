@@ -1,10 +1,10 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 
 import TopBar from '@/components/simulation/TopBar'
 import { useDebug } from '@/hooks/useDebug'
 import { useIframe } from '@/hooks/useIframe'
 import { useIsClient } from '@/hooks/useIsClient'
-import { useFormState } from '@/publicodes-state'
 import { cn } from 'cn'
 import { useCallback, useState } from 'react'
 import Summary from './Summary'
@@ -16,7 +16,7 @@ export default function SimulateurLayout({
   children: React.ReactNode
 }) {
   const { isIframe } = useIframe()
-  const { currentCategory } = useFormState()
+  const { currentCategory } = useFormAdvancement()
 
   // The engine — and therefore the current category — only exists on the client
   // (see `useEngine`), so the skeleton must stay until the client has taken

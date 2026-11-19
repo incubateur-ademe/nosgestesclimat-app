@@ -15,14 +15,12 @@ import {
   EMPTY_SITUATION,
   useOptionalSimulation,
 } from '../useCurrentSimulation/useCurrentSimulation'
-import useUser from '../useUser/useUser'
 import useChoices from './hooks/useChoices'
 import useContent from './hooks/useContent'
 import useDisplayValue from './hooks/useDisplayValue'
 import useMissing from './hooks/useMissing'
 import useNotifications from './hooks/useNotifications'
 import useQuestionsOfMosaic from './hooks/useQuestionsOfMosaic'
-import useSetValue from './hooks/useSetValue'
 import useType from './hooks/useType'
 
 /**
@@ -40,17 +38,13 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
     safeEvaluate,
     getValue,
     getNumericValue,
-    parsedRules,
     everyNotifications,
     everyMosaicChildrenWithParent,
-    addToEngineSituation,
-    rawMissingVariables,
   } = useEngine()
 
   const simulation = useOptionalSimulation()
   const situation = simulation?.situation ?? EMPTY_SITUATION
   const foldedSteps = simulation?.foldedSteps ?? EMPTY_FOLDED_STEPS
-  const { updateCurrentSimulation } = useUser()
 
   const evaluation = useMemo(
     () => safeEvaluate<T>(dottedName, metric),
@@ -131,19 +125,6 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
   const displayValue = useDisplayValue({
     value,
     type,
-  })
-
-  const { setValue } = useSetValue({
-    dottedName,
-    parsedRules,
-    safeGetRule,
-    safeEvaluate,
-    evaluation,
-    type,
-    updateCurrentSimulation,
-    addToEngineSituation,
-    foldedSteps,
-    rawMissingVariables,
   })
 
   const situationValue =
@@ -251,9 +232,5 @@ export default function useRule<T extends PublicodesValue = PublicodesValue>(
      * True if the question is in the folded steps (answered or not)
      */
     isFolded,
-    /**
-     * Setter for the value of the rule, with the possibility to add a dottedName in the foldedSteps
-     */
-    setValue,
   }
 }

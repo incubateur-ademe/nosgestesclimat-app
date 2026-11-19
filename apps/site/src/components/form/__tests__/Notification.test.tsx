@@ -3,14 +3,17 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Notification from '../question/Notification'
 
-// Mock the publicodes-state hooks
-const mockSetValue = vi.fn()
 const mockUseRule = vi.fn()
-const mockUseFormState = vi.fn()
+const mockUseFormAdvancement = vi.fn()
+const mockDismissNotification = vi.fn()
 
 vi.mock('@/publicodes-state', () => ({
   useRule: () => mockUseRule(),
-  useFormState: () => mockUseFormState(),
+}))
+
+vi.mock('@/form-controller', () => ({
+  useFormAdvancement: () => mockUseFormAdvancement(),
+  useDismissNotification: () => mockDismissNotification,
 }))
 
 describe('Notification', () => {
@@ -22,11 +25,10 @@ describe('Notification', () => {
     // Default mock implementations
     mockUseRule.mockReturnValue({
       description: 'Test notification description',
-      setValue: mockSetValue,
     })
 
-    mockUseFormState.mockReturnValue({
-      currentQuestion: 'test-category',
+    mockUseFormAdvancement.mockReturnValue({
+      currentCategory: 'transport',
     })
   })
 
@@ -46,7 +48,6 @@ describe('Notification', () => {
   it('should not render when description is empty', () => {
     mockUseRule.mockReturnValue({
       description: '',
-      setValue: mockSetValue,
     })
 
     const { container } = render(
@@ -59,7 +60,6 @@ describe('Notification', () => {
   it('should not render when description is undefined', () => {
     mockUseRule.mockReturnValue({
       description: undefined,
-      setValue: mockSetValue,
     })
 
     const { container } = render(
@@ -77,13 +77,13 @@ describe('Notification', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('should call setValue with false when button is clicked', () => {
+  it('should dismiss the notification when button is clicked', () => {
     render(<Notification notification={mockNotification} />)
 
     const button = screen.getByTestId('notification-button')
     fireEvent.click(button)
 
-    expect(mockSetValue).toHaveBeenCalledWith(false)
+    expect(mockDismissNotification).toHaveBeenCalledWith(mockNotification)
   })
 
   it('should render with complex markdown content', () => {
@@ -93,7 +93,6 @@ describe('Notification', () => {
 
     mockUseRule.mockReturnValue({
       description: complexDescription,
-      setValue: mockSetValue,
     })
 
     render(<Notification notification={mockNotification} />)

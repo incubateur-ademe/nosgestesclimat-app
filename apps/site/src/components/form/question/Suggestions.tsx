@@ -1,4 +1,5 @@
 'use client'
+import { useFormAdvancement } from '@/form-controller'
 
 import { captureClickSuggestion } from '@/constants/tracking/trackers'
 import { baseClassNames, sizeClassNames } from '@/design-system/buttons/Button'
@@ -11,7 +12,6 @@ import {
   getHoverBorderCategoryColor,
   getTextCategoryColor,
 } from '@/helpers/getCategoryColorClass'
-import { useFormState, useRule } from '@/publicodes-state'
 import { trackEvent } from '@/utils/analytics/trackEvent'
 import { capitalizeString } from '@/utils/capitalizeString'
 import type { DottedName, NodeValue } from '@incubateur-ademe/nosgestesclimat'
@@ -19,13 +19,16 @@ import { cn } from 'cn'
 
 interface Props {
   question: DottedName
-  setValue: (value: NodeValue | Record<string, NodeValue>) => void
+  suggestions: { label: string; value: NodeValue | Record<string, NodeValue> }[]
+  commitNow: (value: NodeValue | Record<string, NodeValue>) => void
 }
 
-export default function Suggestions({ question, setValue }: Props) {
-  const { suggestions } = useRule(question)
-
-  const { currentCategory } = useFormState()
+export default function Suggestions({
+  question,
+  suggestions,
+  commitNow,
+}: Props) {
+  const { currentCategory } = useFormAdvancement()
 
   if (!suggestions?.length) return
 
@@ -58,7 +61,7 @@ export default function Suggestions({ question, setValue }: Props) {
                 label: suggestion.label,
               })
             )
-            setValue(suggestion.value)
+            commitNow(suggestion.value)
           }}
           aria-label={suggestion.label}>
           <Emoji className="flex items-center gap-1 leading-none">

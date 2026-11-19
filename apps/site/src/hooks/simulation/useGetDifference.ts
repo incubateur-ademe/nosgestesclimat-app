@@ -1,4 +1,5 @@
-import { useCurrentSimulation, useFormState, useRule } from '@/publicodes-state'
+import { useFormAdvancement } from '@/form-controller'
+import { useCurrentSimulation, useRule } from '@/publicodes-state'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import { useEffect, useRef, useState } from 'react'
 
@@ -19,7 +20,7 @@ export function useGetDifference({ metric }: { metric: Metrics }): {
 
   const { foldedSteps, situation } = useCurrentSimulation()
 
-  const { currentQuestion } = useFormState()
+  const { currentQuestion } = useFormAdvancement()
 
   const { type } = useRule(currentQuestion!)
 

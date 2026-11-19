@@ -1,37 +1,25 @@
 'use client'
 
 import Trans from '@/components/translation/trans/TransClient'
-import { SIMULATOR_PATH } from '@/constants/urls/paths'
 import Button from '@/design-system/buttons/Button'
-import ButtonLink from '@/design-system/buttons/ButtonLink'
+import { useFormNavigation } from '@/form-controller'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
-import { useFormState } from '@/publicodes-state'
-import getNamespace from '@/publicodes-state/helpers/getNamespace'
-import type { Categories } from '@incubateur-ademe/nosgestesclimat'
-import { useRouter } from 'next/navigation'
+import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { useTransition } from 'react'
-import { useCompleteSimulation } from '../../bilan/_hooks/useCompleteSimulation'
+
 export default function TransitionButtons() {
-  const { gotoNextQuestion, nextQuestion } = useFormState()
-  const nextQuestionCategory = getNamespace(nextQuestion)
+  const { next, prev } = useFormNavigation()
   const { t } = useClientTranslation()
+  // Leaving the intercalaire loads the simulator route: show it.
+  const [isLeaving, startLeaving] = useTransition()
 
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const { completeSimulation } = useCompleteSimulation()
-  function handleGoToNextQuestion() {
-    if (isPending) return
-    startTransition(() => {
-      if (!nextQuestionCategory) {
-        completeSimulation()
-      } else {
-        router.push(SIMULATOR_PATH)
-        gotoNextQuestion()
-      }
-    })
-  }
+  // Same mapping as the question navigation: the end-test id marks the button
+  // that finishes the test (loading included), the skip id a step that only
+  // advances.
+  const nextTestId =
+    next.kind === 'next' ? 'skip-question-button' : 'end-test-button'
 
-  const getCategoryString = (category: Categories) => {
+  const getCategoryString = (category: DottedName) => {
     switch (category) {
       case 'logement':
         return t('simulator.intercalaire.goToLogement', 'Passer au logement')
@@ -52,14 +40,14 @@ export default function TransitionButtons() {
 
   return (
     <div className="my-8 flex gap-4 md:flex-row">
-      <ButtonLink
+      <Button
         title={t(
           'common.previousExtended',
           'Précédent, revenir à la page précédente'
         )}
-        showLoadingOnClick
-        disabled={isPending}
-        href={SIMULATOR_PATH}
+        loading={isLeaving}
+        disabled={prev.isDisabled}
+        onClick={() => startLeaving(prev.go)}
         className="h-full w-14 md:w-auto"
         variant="outlined">
         <span aria-hidden className="text-xl md:mr-1.5">
@@ -68,20 +56,19 @@ export default function TransitionButtons() {
         <span className="sr-only md:not-sr-only">
           <Trans i18nKey="common.previous">Précédent</Trans>
         </span>
-      </ButtonLink>
+      </Button>
 
       <Button
-        data-testid={
-          !nextQuestionCategory ? 'end-test-button' : 'skip-question-button'
-        }
-        loading={isPending}
-        onClick={handleGoToNextQuestion}>
-        {!nextQuestionCategory ? (
+        data-testid={nextTestId}
+        loading={next.kind === 'loading'}
+        disabled={next.isDisabled}
+        onClick={next.go}>
+        {!next.category ? (
           <Trans i18nKey="simulator.intercalaire.seeResults">
             Voir mes résultats
           </Trans>
         ) : (
-          getCategoryString(nextQuestionCategory as Categories)
+          getCategoryString(next.category)
         )}
 
         <span aria-hidden className="ml-1.5 inline-block text-xl">
