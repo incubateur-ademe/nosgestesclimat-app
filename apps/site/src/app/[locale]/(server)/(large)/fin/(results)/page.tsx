@@ -42,7 +42,7 @@ export default async function FinPage({
 }: PageProps<'/[locale]/fin'>) {
   const { locale } = await params
   const { sid } = await searchParams
-  const logger = _logger.child({scope: 'site.view.page'})
+  const logger = _logger.child({ scope: 'site.view.page' })
 
   // Legacy feature, allowed to load a simulation data by passing an sid param in the URL, used in transactionnal e-mailing
   if (sid) {
@@ -62,17 +62,13 @@ export default async function FinPage({
 
   return (
     <>
-      <FootprintsLinks
-        currentPage="carbone"
-        basePathname={END_PAGE_PATH}
-      />
+      <FootprintsLinks currentPage="carbone" basePathname={END_PAGE_PATH} />
 
       <CarbonFootprintResults
         computedResults={result.simulation.computedResults}
         locale={locale as Locale}
         tendency={result.tendency ?? undefined}
         hasPreviousSimulation={result.tendency !== null}
-        enableHeroTest
         group={result.group ? getGroupDisplayInfo(result.group) : null}
       />
 

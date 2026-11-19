@@ -1,5 +1,4 @@
 import type { Page } from '@playwright/test'
-import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
 import {
   generateOrganisationName,
   generatePollName,
@@ -26,7 +25,8 @@ export async function completeSimulationFromTutorial(page: Page) {
 
 export async function expectResultsPage(page: Page) {
   await expect(page).toHaveURL(/\/fin/)
-  await expect(getCarbonFootprintElem(page)).toBeVisible()
+  // The results hero shows the figure and its unit in separate elements
+  await expect(page.getByTestId('carbon-footprint-value')).toBeVisible()
 }
 
 export async function createOrganisationFromHome(page: Page) {
