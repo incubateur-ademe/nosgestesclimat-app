@@ -1,6 +1,11 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import type { ModelRuleEvaluation } from '../../models/types/model-rule-evaluation.ts'
+import { failure, success, type Result } from '../../../lib/result.ts'
+import {
+  UnexpectedNodeValueError,
+  type RuleEvaluationError,
+} from '../../models/errors.ts'
+import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import type { ActionEvaluation, NewActionAssessment } from '../types/action.ts'
 
 /**
@@ -55,23 +60,44 @@ export const toNewActionAssessment = (
 }
 
 /**
- * NaN and ±Infinity are an issue with the model, not with the simulation: the
- * action still applies, its impact unknown.
+ * Evaluates the rule of the action named `dottedName`.
+ *
+ * An action's impact is a number, 0 meaning no impact: any other value,
+ * `false` included, is a modelling mistake.
  */
-export const toActionEvaluation = (
-  applicability: ModelRuleEvaluation
-): ActionEvaluation => {
+export const evaluateAction = ({
+  engine,
+  dottedName,
+}: {
+  engine: Engine
+  dottedName: DottedName
+}): Result<ActionEvaluation, RuleEvaluationError> => {
+  const evaluation = evaluateModelRule({ engine, dottedName, metric: 'carbon' })
+
+  if (!evaluation.success) {
+    return evaluation
+  }
+
+  const applicability = evaluation.data
+
   if (applicability.applicable === true) {
     const { value } = applicability
-    return {
-      applicable: true,
-      impact: Number.isFinite(value) && value !== 0 ? value : undefined,
+
+    if (typeof value !== 'number') {
+      return failure(
+        new UnexpectedNodeValueError({ dottedName, nodeValue: typeof value })
+      )
     }
+
+    return success({
+      applicable: true,
+      impact: value !== 0 ? value : undefined,
+    })
   }
 
   if (applicability.applicable === false) {
-    return { applicable: false, impact: undefined }
+    return success({ applicable: false, impact: undefined })
   }
 
-  return { applicable: undefined, impact: undefined }
+  return success({ applicable: undefined, impact: undefined })
 }

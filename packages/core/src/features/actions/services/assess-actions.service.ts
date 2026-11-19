@@ -2,11 +2,10 @@ import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
-import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
 import { ActionAssessmentPublicodesError } from '../errors/action-assessment.error.ts'
 import {
   buildRuleIdToDottedName,
-  toActionEvaluation,
+  evaluateAction,
   toNewActionAssessment,
 } from '../helpers/action-assessment.ts'
 import {
@@ -73,7 +72,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
           return []
         }
 
-        const evaluation = evaluateModelRule({ engine, dottedName })
+        const evaluation = evaluateAction({ engine, dottedName })
 
         if (!evaluation.success) {
           logger.error(evaluation.error, { actionId: id, ruleId, dottedName })
@@ -83,7 +82,7 @@ export function createAssessActions(deps: AssessActionsDeps) {
         return [
           toNewActionAssessment(
             { simulationId, actionId: id },
-            toActionEvaluation(evaluation.data)
+            evaluation.data
           ),
         ]
       }

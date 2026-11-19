@@ -2,11 +2,14 @@ import type Engine from 'publicodes'
 import { failure, success, type Result } from '../../../lib/result.ts'
 import type { Transaction } from '../../../lib/transaction.ts'
 import type { Logger } from '../../logger/index.ts'
-import { evaluateModelRule } from '../../models/helpers/evaluate-model-rule.ts'
+import { evaluateModelRulesAndTheirMissingVariables } from '../../models/helpers/evaluate-model-rules-and-their-missing-variables.ts'
+import { getModelRule } from '../../models/helpers/model-rules.ts'
+import { ruleKey } from '../../models/helpers/rule-key.ts'
+import { upsertRules } from '../../models/repositories/rules.repository.ts'
 import type { Rule } from '../../models/types/rule.ts'
 import { PublicRulesEvaluationError } from '../errors/simulations.error.ts'
+import { toNewRuleEvaluations } from '../helpers/to-new-rule-evaluations.ts'
 import { createRuleEvaluations } from '../repository/rule-evaluations.repository.ts'
-import type { NewRuleEvaluation } from '../types/rule-evaluation.ts'
 
 interface EvaluateSimulationDeps {
   logger: Logger
@@ -16,8 +19,13 @@ interface EvaluateSimulationDeps {
  * Evaluates the given public rules of the simulation's model, each for its
  * metric, and persists the evaluations.
  *
+ * The missing variables each public rule reports are evaluated and stored
+ * too, linked to the evaluations that reported them; their own are not.
+ *
  * The engine's situation must already be set to the simulation's. Writes go
- * through `session`, for the caller to commit them with its own.
+ * through `session`, for the caller to commit them with its own; the missing
+ * variables' rule rows are resolved in the same transaction, so a rollback
+ * leaves no orphan behind.
  *
  * A simulation's evaluations are stored whole or not at all. Each rule that
  * fails is logged here: the returned failure only counts them.
@@ -33,26 +41,34 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
       scope: 'core.service.evaluateSimulation',
       simulationId,
     })
-    const evaluations: NewRuleEvaluation[] = []
-    let failedCount = 0
 
-    for (const { id, name, metric } of publicRules) {
-      const evaluation = evaluateModelRule({ engine, dottedName: name, metric })
+    const { evaluations, errors } = evaluateModelRulesAndTheirMissingVariables({
+      engine,
+      rules: publicRules,
+    })
 
-      if (evaluation.success) {
-        evaluations.push({ simulationId, ruleId: id, ...evaluation.data })
-      } else {
-        logger.error(evaluation.error)
-        failedCount++
-      }
+    if (errors.length > 0) {
+      errors.forEach((error) => logger.error(error))
+      return failure(new PublicRulesEvaluationError(errors.length))
     }
 
-    if (failedCount > 0) {
-      return failure(new PublicRulesEvaluationError(failedCount))
-    }
+    const publicRuleSet = new Set(
+      publicRules.map(({ name, metric }) => ruleKey(metric, name))
+    )
+    const missingRules = await upsertRules(
+      evaluations
+        .filter(({ name, metric }) => !publicRuleSet.has(ruleKey(metric, name)))
+        .map(({ name, metric }) => ({ metric, ...getModelRule(engine, name) })),
+      { session }
+    )
 
-    if (evaluations.length > 0) {
-      await createRuleEvaluations(evaluations, { session })
+    const newEvaluations = toNewRuleEvaluations(simulationId, evaluations, [
+      ...publicRules,
+      ...missingRules,
+    ])
+
+    if (newEvaluations.length > 0) {
+      await createRuleEvaluations(newEvaluations, { session })
     }
 
     return success()

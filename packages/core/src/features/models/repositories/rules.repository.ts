@@ -1,7 +1,22 @@
 import type { Transaction } from '../../../lib/transaction.ts'
 import { prisma } from '../../../prisma/client.ts'
-import type { NewRule, Rule } from '../types/rule.ts'
+import type { Metric, NewRule, Rule } from '../types/rule.ts'
 import { mapRule, type RuleRow } from './rule.mapper.ts'
+
+/**
+ * Finds a stored rule by its identity, its name and metric being unique
+ * together.
+ */
+export const findRuleByNameAndMetric = async (
+  { name, metric }: { name: string; metric: Metric },
+  { session = prisma }: { session?: Transaction } = {}
+): Promise<Rule | null> => {
+  const row = await session.rule.findUnique({
+    where: { name_metric: { name, metric } },
+    select: { id: true, name: true, metric: true },
+  })
+  return row ? mapRule(row) : null
+}
 
 /**
  * Safe to run concurrently with itself: rows are locked in a fixed

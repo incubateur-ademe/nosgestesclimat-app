@@ -7,7 +7,10 @@ import { transaction } from '../../../../lib/transaction.ts'
 import { prisma } from '../../../../prisma/client.ts'
 import { emptyDatabase } from '../../../../test-utils/empty-database.ts'
 import { createTestLogger } from '../../../../test-utils/logger.ts'
-import { createTestEngine } from '../../../simulation-computation/factories/engine.factory.ts'
+import {
+  createTestEngine,
+  METRIC_RULE,
+} from '../../../simulation-computation/factories/engine.factory.ts'
 import { simulationFactory } from '../../../simulations/factories/simulation.factory.ts'
 import type { Simulation } from '../../../simulations/types/simulation.ts'
 import { ActionAssessmentPublicodesError } from '../../errors/action-assessment.error.ts'
@@ -20,10 +23,14 @@ const assessActions = createAssessActions({ logger })
 
 const APPLICABLE_RULE_ID = faker.string.uuid()
 const NOT_APPLICABLE_RULE_ID = faker.string.uuid()
-const BOOLEAN_RULE_ID = faker.string.uuid()
+const TRUE_RULE_ID = faker.string.uuid()
+const FALSE_RULE_ID = faker.string.uuid()
 const STRING_RULE_ID = faker.string.uuid()
+const ZERO_RULE_ID = faker.string.uuid()
+const UNANSWERED_RULE_ID = faker.string.uuid()
 
 const testRules: RawPublicodes<string> = {
+  ...METRIC_RULE,
   'test . applicable': {
     valeur: 42,
     unité: 'kgCO2e',
@@ -31,19 +38,38 @@ const testRules: RawPublicodes<string> = {
     meta: { id: APPLICABLE_RULE_ID },
   },
   'test . not-applicable': {
-    'est non applicable': 'oui',
+    'non applicable si': 'oui',
+    valeur: 42,
+    unité: 'kgCO2e',
     titre: 'Test not applicable',
     meta: { id: NOT_APPLICABLE_RULE_ID },
   },
-  'test . boolean': {
+  'test . true': {
     valeur: 'oui',
-    titre: 'Test boolean',
-    meta: { id: BOOLEAN_RULE_ID },
+    titre: 'Test true',
+    meta: { id: TRUE_RULE_ID },
+  },
+  'test . false': {
+    valeur: 'non',
+    titre: 'Test false',
+    meta: { id: FALSE_RULE_ID },
   },
   'test . string': {
     valeur: "'texte'",
     titre: 'Test string',
     meta: { id: STRING_RULE_ID },
+  },
+  'test . zero': {
+    valeur: 0,
+    unité: 'kgCO2e',
+    titre: 'Test zero',
+    meta: { id: ZERO_RULE_ID },
+  },
+  'test . unanswered': {
+    question: 'Combien ?',
+    unité: 'kgCO2e',
+    titre: 'Test unanswered',
+    meta: { id: UNANSWERED_RULE_ID },
   },
 }
 
@@ -100,6 +126,40 @@ describe('assessActions', () => {
     expect(notApplicableAssessment.impact).toBeUndefined()
   })
 
+  it('stores an action valued 0 as applicable without impact', async () => {
+    const action = await actionFactory
+      .params({ ruleId: ZERO_RULE_ID })
+      .published()
+      .create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toEqual([
+      expect.objectContaining({
+        actionId: action.id,
+        applicable: true,
+        impact: undefined,
+      }),
+    ])
+  })
+
+  it('stores an action the situation leaves undefined as unassessed', async () => {
+    const action = await actionFactory
+      .params({ ruleId: UNANSWERED_RULE_ID })
+      .published()
+      .create()
+
+    await assess()
+
+    expect(await findActionAssessments()).toEqual([
+      expect.objectContaining({
+        actionId: action.id,
+        applicable: undefined,
+        impact: undefined,
+      }),
+    ])
+  })
+
   it('skips actions whose ruleId is not found in the engine', async () => {
     await actionFactory
       .params({ ruleId: faker.string.uuid() })
@@ -139,23 +199,38 @@ describe('assessActions', () => {
   })
 
   it.each([
-    { type: 'boolean', ruleId: BOOLEAN_RULE_ID },
-    { type: 'string', ruleId: STRING_RULE_ID },
-  ])('skips actions whose nodeValue is a $type', async ({ type, ruleId }) => {
-    await actionFactory.params({ ruleId }).published().create()
+    { value: 'true', type: 'boolean', ruleId: TRUE_RULE_ID },
+    { value: 'false', type: 'boolean', ruleId: FALSE_RULE_ID },
+    { value: 'a string', type: 'string', ruleId: STRING_RULE_ID },
+  ])(
+    'skips actions valued $value, assessing the others',
+    async ({ type, ruleId }) => {
+      const [, applicableAction] = await Promise.all([
+        actionFactory.params({ ruleId }).published().create(),
+        actionFactory
+          .params({ ruleId: APPLICABLE_RULE_ID })
+          .published()
+          .create(),
+      ])
 
-    await assess()
+      await assess()
 
-    expect(await findActionAssessments()).toHaveLength(0)
-
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.objectContaining({
-        code: 'unexpected_node_value',
-        nodeValue: type,
-      }),
-      expect.objectContaining({ ruleId })
-    )
-  })
+      expect(await findActionAssessments()).toEqual([
+        expect.objectContaining({
+          actionId: applicableAction.id,
+          applicable: true,
+          impact: 42,
+        }),
+      ])
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: 'unexpected_node_value',
+          nodeValue: type,
+        }),
+        expect.objectContaining({ ruleId })
+      )
+    }
+  )
 
   it.each([NaN, Infinity, -Infinity])(
     'skips actions whose nodeValue is %s',
@@ -234,7 +309,9 @@ describe('assessActions', () => {
         .create()
 
       expect(
-        await assess(createTestEngine({ 'test . no-meta': { valeur: 42 } }))
+        await assess(
+          createTestEngine({ ...METRIC_RULE, 'test . no-meta': { valeur: 42 } })
+        )
       ).toEqual(failure(expect.any(ActionAssessmentPublicodesError)))
       expect(await findActionAssessments()).toHaveLength(0)
     })

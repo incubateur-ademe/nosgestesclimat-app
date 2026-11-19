@@ -320,7 +320,8 @@ model QuizzAnswer {
   @@schema("ngc")
 }
 
-/// A public rule of the model, for one metric. Its name is its identity
+/// A stored model rule for one metric: a public rule, or a rule reported as a
+/// missing variable of a public rule evaluation. Its name is its identity
 /// across model versions: a stored rule is never renamed.
 model Rule {
   id          Int              @id @default(autoincrement())
@@ -336,10 +337,11 @@ model Rule {
   @@schema("ngc")
 }
 
-/// The value of one Rule for one simulation:
-/// - applicable: `applicable = true`, `valueNumber` set (0 included)
-/// - not applicable: `applicable = false`, `valueNumber = null`
-/// - not defined: `applicable = null`, `valueNumber = null`
+/// The value of one Rule for one simulation, a number, a boolean or a string:
+/// - applicable: `applicable = true`, exactly one of `valueNumber`,
+///   `valueBoolean` and `valueString` set (0, `false` and `''` included)
+/// - not applicable: `applicable = false`, no value set
+/// - not defined: `applicable = null`, no value set
 model RuleEvaluation {
   simulationId String     @db.Uuid
   simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
@@ -347,10 +349,33 @@ model RuleEvaluation {
   rule         Rule       @relation(fields: [ruleId], references: [id], onDelete: Restrict)
   applicable   Boolean?
   valueNumber  Float?
+  valueBoolean Boolean?
+  valueString  String?
   createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+
+  /// The missing variables this evaluation reported.
+  missingVariables  RuleEvaluationMissingVariable[] @relation("RuleEvaluation")
+  /// The evaluations that reported this one as a missing variable.
+  missingVariableOf RuleEvaluationMissingVariable[] @relation("MissingVariable")
 
   @@id([simulationId, ruleId])
   @@index([ruleId, createdAt])
+  @@schema("ngc")
+}
+
+/// A missing variable of one rule evaluation: the engine listed the rule in
+/// the evaluation's `missingVariables`, `weight` counting how many times it
+/// needed it. The missing variable has its own RuleEvaluation row for the
+/// simulation, stored like any rule's.
+model RuleEvaluationMissingVariable {
+  simulationId    String           @db.Uuid
+  ruleId          Int
+  evaluation      RuleEvaluation   @relation("RuleEvaluation", fields: [simulationId, ruleId], references: [simulationId, ruleId], onDelete: Cascade)
+  missingRuleId   Int
+  missingVariable RuleEvaluation   @relation("MissingVariable", fields: [simulationId, missingRuleId], references: [simulationId, ruleId], onDelete: Cascade)
+  weight          Int
+
+  @@id([simulationId, ruleId, missingRuleId])
   @@schema("ngc")
 }
 

@@ -1,6 +1,6 @@
 import type Engine from 'publicodes'
+import { getModelRule } from '../helpers/model-rules.ts'
 import { serializeModel, type ModelString } from '../helpers/model-versions.ts'
-import { getPublicRules } from '../helpers/public-rules.ts'
 import { upsertRules } from '../repositories/rules.repository.ts'
 import type { Model } from '../types/model.ts'
 import { PUBLIC_RULE_METRICS, type Rule } from '../types/rule.ts'
@@ -27,7 +27,9 @@ export function createResolvePublicRules() {
     const cached = rulesByModel.get(key)
     if (cached) return cached
 
-    const publicRules = getPublicRules(engine)
+    const publicRules = Object.entries(engine.getParsedRules())
+      .filter(([, rule]) => rule.rawNode.public === 'oui')
+      .map(([name]) => getModelRule(engine, name))
     const rules = await upsertRules(
       PUBLIC_RULE_METRICS.flatMap((metric) =>
         publicRules.map((rule) => ({ ...rule, metric }))
