@@ -163,6 +163,7 @@ describe('Given a NGC user', () => {
                 userId: group1.administrator.id,
                 simulation: {
                   ...simulationUser1,
+                  status: expect.any(String),
                   date: expect.any(String),
                   createdAt: expect.any(String),
                   updatedAt: expect.any(String),
@@ -179,6 +180,7 @@ describe('Given a NGC user', () => {
                 simulation: {
                   computedResults: simulationUser2.computedResults,
                   progression: simulationUser2.progression,
+                  status: expect.any(String),
                 },
               },
             ],
@@ -199,6 +201,7 @@ describe('Given a NGC user', () => {
                 simulation: {
                   computedResults: simulationUser2.computedResults,
                   progression: simulationUser2.progression,
+                  status: expect.any(String),
                 },
               },
               {
@@ -207,6 +210,7 @@ describe('Given a NGC user', () => {
                 userId: group1.administrator.id,
                 simulation: {
                   ...simulationUser1,
+                  status: expect.any(String),
                   date: expect.any(String),
                   createdAt: expect.any(String),
                   updatedAt: expect.any(String),
@@ -250,6 +254,7 @@ describe('Given a NGC user', () => {
                   userId: group1.administrator.id,
                   simulation: {
                     ...simulationUser1,
+                    status: expect.any(String),
                     date: expect.any(String),
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
@@ -266,6 +271,7 @@ describe('Given a NGC user', () => {
                   simulation: {
                     computedResults: simulationUser2.computedResults,
                     progression: simulationUser2.progression,
+                    status: expect.any(String),
                   },
                 },
               ],

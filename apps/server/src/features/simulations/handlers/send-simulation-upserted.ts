@@ -1,3 +1,4 @@
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import {
   sendGroupCreatedEmail,
   sendGroupParticipantSimulationUpsertedEmail,
@@ -18,7 +19,7 @@ export const sendSimulationUpserted: Handler<SimulationUpsertedEvent> = ({
   const { email } = user
   const origin = config.app.origin
 
-  if (simulation?.progression === 1) {
+  if (simulation && isSimulationCompleted(simulation)) {
     if (attributes.group) {
       const { user, administrator, group } = attributes
       const isAdministrator = user.id === administrator.id
