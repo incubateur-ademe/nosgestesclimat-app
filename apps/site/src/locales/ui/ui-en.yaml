@@ -1980,7 +1980,7 @@ entries:
   results.footprintBlock.actionsBlock.link: Discover my actions
   results.footprintBlock.actionsBlock.link.lock: Découvrir mes actions
   common.co2eAn.title: CO₂e per year
-  common.co2eAn.title.lock: CO₂e / an
+  common.co2eAn.title.lock: CO₂e / an
   results.footprintBlock.actionsBlock.title: 'How to reduce your carbon footprint:'
   results.footprintBlock.actionsBlock.title.lock: 'Comment réduire votre empreinte :'
   iframe.safari.openInNewTab: Open the calculator in a new tab
@@ -2350,3 +2350,11 @@ entries:
   simulator.customQuestions.plats.selection.equal_or_over_14.lock: <0>{{totalNumberOfPlats}} repas</0> par semaine, miam <3>😋</3>
   simulator.customQuestions.plats.selection.under_14: You’ve selected <2>{{totalNumberOfPlats}} meals</2> out of the usual 14 <5>🍽️</5>
   simulator.customQuestions.plats.selection.under_14.lock: Vous avez sélectionné <2>{{totalNumberOfPlats}} repas</2> sur les 14 habituels <5>🍽️</5>
+  stats.impact_matrix.title: Impact matrix
+  stats.impact_matrix.title.lock: Matrice d'impact
+  stats.title: Statistics
+  stats.title.lock: Statistiques
+  stats.description: This section is generated via Posthog.
+  stats.description.lock: Cette section est générée via Posthog.
+  stats.impact_matrix.description: Please refer to our <2>impact matrix</2> to find out about <5>our usage and impact indicators</5>.
+  stats.impact_matrix.description.lock: Consultez notre <2>matrice d'impact</2> afin de prendre connaissance de <5>nos indicateurs d’usage et d’impact</5>.
