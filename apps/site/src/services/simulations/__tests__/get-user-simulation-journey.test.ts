@@ -47,6 +47,7 @@ describe('getUserSimulationJourney', () => {
         currentSimulation: {
           id: 'sim-1',
           progression: 0.5,
+          status: 'answering_major_questions',
           model: 'FR-fr-1.2.3' as ModelString,
         },
       }

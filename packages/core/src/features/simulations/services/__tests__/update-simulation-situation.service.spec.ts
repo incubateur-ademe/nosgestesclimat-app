@@ -233,6 +233,7 @@ describe('updateSimulationSituation', () => {
       simulationId: simulation.id,
       ...payload,
       progression: 1,
+      status: 'full_result_seen',
     })
 
     expect(result).toEqual({
@@ -291,6 +292,7 @@ const payload = {
   situation,
   foldedSteps,
   progression: 0.5,
+  status: 'answering_major_questions',
   computedResults,
 } satisfies Omit<
   Parameters<typeof updateSimulationSituation>[0],

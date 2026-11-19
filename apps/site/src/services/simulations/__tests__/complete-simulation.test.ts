@@ -106,19 +106,24 @@ describe('completeSimulation', () => {
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
   })
 
-  it('rejects a completion the client did not finish', async () => {
+  it('forwards a completion the client did not finish to the core service', async () => {
     vi.mocked(getUserSession).mockResolvedValue(aSession())
-
-    // The payload carries a finished simulation, so the schema settles it here;
-    // the core keeps its own check for the callers that do not come through an
-    // action.
-    const result = await completeSimulation(aPayload({ progression: 0.5 }))
-
-    expect(result).toMatchObject({
+    const failure = {
       success: false,
-      error: { code: 'invalid_payload' },
+      error: { code: 'simulation_incomplete' },
+    }
+    serviceMock.completeSimulation.mockResolvedValue(failure)
+
+    const payload = aPayload({
+      progression: 0.5,
+      status: 'answering_major_questions',
     })
-    expect(serviceMock.completeSimulation).not.toHaveBeenCalled()
+    const result = await completeSimulation(payload)
+
+    expect(serviceMock.completeSimulation).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'answering_major_questions' })
+    )
+    expect(result).toEqual(failure)
     expect(nextMock.revalidatePath).not.toHaveBeenCalled()
   })
 
@@ -136,6 +141,7 @@ describe('completeSimulation', () => {
       simulationId: payload.id,
       model: payload.model,
       progression: 1,
+      status: 'full_result_seen',
       situation: payload.situation,
       foldedSteps: payload.foldedSteps,
       computedResults: payload.computedResults,
@@ -255,11 +261,13 @@ const aPayload = (
   )
   simulation.computedResults.carbone.bilan = 1000
 
-  const { id, model, situation, foldedSteps, computedResults } = simulation
+  const { id, model, situation, foldedSteps, status, computedResults } =
+    simulation
   return {
     id,
     model,
     progression: 1,
+    status,
     situation: situation as CompleteSimulationPayload['situation'],
     foldedSteps,
     computedResults,

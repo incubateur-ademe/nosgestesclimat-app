@@ -1,3 +1,4 @@
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import type { ComputedResults } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
 import {
   addOrUpdateContactAfterIncompleteSimulationCreated,
@@ -9,7 +10,7 @@ import type { SimulationUpsertedEvent } from '../events/SimulationUpserted.event
 export const updateBrevoContact: Handler<SimulationUpsertedEvent> = async ({
   attributes,
   attributes: {
-    simulation: { progression, computedResults, date: lastSimulationDate },
+    simulation: { status, computedResults, date: lastSimulationDate },
     user: { id: userId, email, name },
     newsletters,
   },
@@ -18,7 +19,7 @@ export const updateBrevoContact: Handler<SimulationUpsertedEvent> = async ({
     return
   }
 
-  if (progression === 1) {
+  if (isSimulationCompleted({ status })) {
     let subscribeToGroupNewsletter = false
     if (attributes.group) {
       const { administrator } = attributes
