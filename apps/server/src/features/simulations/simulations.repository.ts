@@ -1,3 +1,4 @@
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import type { Prisma } from '../../adapters/prisma/generated.ts'
 import {
@@ -33,13 +34,15 @@ export const createParticipantSimulation = async <
   },
   { session }: { session: Session }
 ) => {
+  const incomingStatus = simulationStatusFromProgression(progression)
+
   const existingSimulation = await session.simulation.findUnique({
     where: {
       id,
     },
     select: {
       id: true,
-      progression: true,
+      status: true,
       userId: true,
     },
   })
@@ -48,7 +51,11 @@ export const createParticipantSimulation = async <
     throw new ForbiddenException('Simulation does not belong to the user')
   }
 
-  if (existingSimulation?.progression === 1 && progression !== 1) {
+  if (
+    existingSimulation &&
+    isSimulationCompleted(existingSimulation) &&
+    !isSimulationCompleted({ status: incomingStatus })
+  ) {
     throw new ImmutableSimulationException()
   }
 
@@ -63,7 +70,7 @@ export const createParticipantSimulation = async <
     situation,
     foldedSteps,
     progression,
-    status: simulationStatusFromProgression(progression),
+    status: incomingStatus,
     computedResults,
     ...(additionalQuestionsAnswers?.length
       ? {
