@@ -26,8 +26,7 @@ export function useAutoSaveSimulation() {
   )
 
   useEffect(() => {
-    const { id, model, situation, foldedSteps, progression, status } =
-      currentSimulation
+    const { id, model, situation, foldedSteps, status } = currentSimulation
 
     /**
      * Persisting a completed status freezes the simulation server-side and
@@ -41,7 +40,6 @@ export function useAutoSaveSimulation() {
       model,
       situation: situation as UpdateSimulationSituationPayload['situation'],
       foldedSteps,
-      progression,
       status,
       // The engine holds fresher results than the provider state, which only
       // catches up on the next render.

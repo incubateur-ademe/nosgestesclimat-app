@@ -116,7 +116,7 @@ export default function useFormState() {
      */
     forgottenQuestions,
     /**
-     * Advancement of the test between 0 and 1. This is different from "progression" which it is based on the current question index here and not on the number of answered questions.
+     * Advancement of the test between 0 and 1, based on the current question index
      */
     testAdvancement,
     /**

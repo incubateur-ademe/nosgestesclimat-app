@@ -3,7 +3,6 @@ import type { ModelString } from '../../models/helpers/model-versions.ts'
 
 export interface SimulationProgress {
   id: string
-  progression: number
   status: SimulationStatus
   model: ModelString
 }

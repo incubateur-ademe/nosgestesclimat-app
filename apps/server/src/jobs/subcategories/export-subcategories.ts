@@ -359,7 +359,6 @@ const subcategories = allSubcategories.filter(
 const header = [
   'simulationId',
   'date',
-  'progression',
   'bilan',
   'bilanCoherent',
   ...subcategories.map(csvEscape),
@@ -410,7 +409,6 @@ const computeRow = async (
     line: [
       csvEscape(simulation.id),
       csvEscape(simulation.createdAt),
-      csvEscape(simulation.progression),
       csvEscape(formatNumber(total)),
       String(subcategoriesTotal === total),
       ...cells,

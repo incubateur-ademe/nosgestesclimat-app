@@ -1,4 +1,5 @@
 import { DomainError } from '../../../lib/errors.ts'
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 import type { Model } from '../../models/types/model.ts'
 
@@ -45,20 +46,20 @@ export class SimulationComputationFailedError extends DomainError<'simulation_co
 
 export class SimulationNotFinishedError extends DomainError<'simulation_not_finished'> {
   public readonly simulationId: string
-  public readonly progression: number
+  public readonly status: SimulationStatus
 
   constructor({
     simulationId,
-    progression,
+    status,
     cause,
   }: {
     simulationId: string
-    progression: number
+    status: SimulationStatus
     cause?: unknown
   }) {
     super('simulation_not_finished', 'Simulation not finished')
     this.simulationId = simulationId
-    this.progression = progression
+    this.status = status
     if (cause !== undefined) {
       this.cause = cause
     }

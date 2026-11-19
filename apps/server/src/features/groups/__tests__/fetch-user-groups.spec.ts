@@ -179,7 +179,6 @@ describe('Given a NGC user', () => {
                 name: group2.administrator.name,
                 simulation: {
                   computedResults: simulationUser2.computedResults,
-                  progression: simulationUser2.progression,
                   status: expect.any(String),
                 },
               },
@@ -200,7 +199,6 @@ describe('Given a NGC user', () => {
                 name: group2.administrator.name,
                 simulation: {
                   computedResults: simulationUser2.computedResults,
-                  progression: simulationUser2.progression,
                   status: expect.any(String),
                 },
               },
@@ -270,7 +268,6 @@ describe('Given a NGC user', () => {
                   name: group2.administrator.name,
                   simulation: {
                     computedResults: simulationUser2.computedResults,
-                    progression: simulationUser2.progression,
                     status: expect.any(String),
                   },
                 },

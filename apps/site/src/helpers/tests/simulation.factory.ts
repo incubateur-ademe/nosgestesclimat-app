@@ -2,7 +2,6 @@ import type { Simulation } from '@/helpers/server/model/simulations'
 import type { ComputedResultsFootprint } from '@/publicodes-state/types'
 import { faker } from '@faker-js/faker'
 import type { ModelString } from '@nosgestesclimat/core/features/models/helpers/model-versions'
-import { simulationStatusFromProgression } from '@nosgestesclimat/core/features/simulations/helpers/simulation-status'
 import { Factory } from 'fishery'
 
 /** `categories` and `subcategories` are keyed by dotted name: only the engine
@@ -13,16 +12,16 @@ const emptyFootprint = () =>
 /** The simulation as the API hands it over (`model` is the serialized string,
  * where `core`'s factory builds the domain shape). Mirrors its builder API. */
 class SimulationFactory extends Factory<Simulation> {
-  withProgression(progression: number) {
-    return this.params({ progression })
+  withStatus(status: Simulation['status']) {
+    return this.params({ status })
   }
 
   started() {
-    return this.params({ progression: 0.1 })
+    return this.params({ status: 'answering_major_questions' })
   }
 
   completed() {
-    return this.params({ progression: 1 })
+    return this.params({ status: 'full_result_seen' })
   }
 }
 
@@ -35,7 +34,6 @@ export const simulationFactory = SimulationFactory.define(() => ({
     carbone: emptyFootprint(),
     eau: emptyFootprint(),
   },
-  progression: 0,
-  status: simulationStatusFromProgression(0),
+  status: 'not_started' as const,
   model: 'FR-fr-1.2.3' as ModelString,
 }))

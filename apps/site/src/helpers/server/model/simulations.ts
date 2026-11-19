@@ -15,7 +15,6 @@ export interface Simulation {
   foldedSteps: DottedName[]
   persona?: string
   computedResults: ComputedResults
-  progression: number
   status: SimulationStatus
   model: ModelString
   /** Server-owned: absent on simulations that have not been persisted yet. */

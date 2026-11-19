@@ -36,7 +36,7 @@ describe('getLatestSimulationResult', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

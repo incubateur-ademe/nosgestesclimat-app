@@ -26,7 +26,7 @@ describe('updateSimulationSituation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({
         userId: user.id,
         date: new Date('2024-01-01'),
@@ -72,7 +72,6 @@ describe('updateSimulationSituation', () => {
       expect.objectContaining({
         situation,
         foldedSteps,
-        progression: 0.5,
         computedResults,
         date: new Date('2024-01-01'),
       })
@@ -89,7 +88,7 @@ describe('updateSimulationSituation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({ userId: user.id })
       .create()
 
@@ -113,7 +112,7 @@ describe('updateSimulationSituation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({ userId: user.id })
       .create()
 
@@ -168,7 +167,7 @@ describe('updateSimulationSituation', () => {
     ])
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({ userId: other.id })
       .create()
 
@@ -188,7 +187,10 @@ describe('updateSimulationSituation', () => {
       userId: other.id,
     })
     expect(updated).toEqual(
-      expect.objectContaining({ progression: 0.2, situation: {} })
+      expect.objectContaining({
+        status: 'answering_major_questions',
+        situation: {},
+      })
     )
   })
 
@@ -216,7 +218,10 @@ describe('updateSimulationSituation', () => {
       userId: user.id,
     })
     expect(updated).toEqual(
-      expect.objectContaining({ progression: 1, situation: {} })
+      expect.objectContaining({
+        status: 'full_result_seen',
+        situation: {},
+      })
     )
   })
 
@@ -232,7 +237,6 @@ describe('updateSimulationSituation', () => {
       userId: user.id,
       simulationId: simulation.id,
       ...payload,
-      progression: 1,
       status: 'full_result_seen',
     })
 
@@ -252,7 +256,7 @@ describe('updateSimulationSituation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .params({ userId: user.id })
       .create()
 
@@ -291,7 +295,6 @@ const foldedSteps = ['transport . voiture . km'] as DottedName[]
 const payload = {
   situation,
   foldedSteps,
-  progression: 0.5,
   status: 'answering_major_questions',
   computedResults,
 } satisfies Omit<

@@ -14,7 +14,7 @@ const createParticipant = ({
     id,
     name: id,
     simulation: {
-      progression: 1,
+      status: 'full_result_seen',
       computedResults: Object.fromEntries(
         Object.entries(footprints).map(([metric, bilan]) => [metric, { bilan }])
       ),

@@ -1,6 +1,7 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { randomUUID } from 'node:crypto'
 import type { Situation } from 'publicodes'
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { Model } from '../../models/types/model.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 import { emptyComputedResults } from './empty-computed-results.ts'
@@ -19,7 +20,7 @@ export type NewSimulation = {
   userId: string | null
   model: Model
   date: Date
-  progression: number
+  status: SimulationStatus
   situation: Situation<DottedName>
   foldedSteps: DottedName[]
   computedResults: ComputedResults
@@ -43,7 +44,7 @@ export const newSimulation = ({
   userId,
   model,
   date: new Date(),
-  progression: 0,
+  status: 'not_started',
   situation: {},
   foldedSteps: [],
   computedResults: emptyComputedResults(),

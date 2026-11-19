@@ -14,7 +14,10 @@ afterAll(async () => {
 describe('20261116170000_add_simulation_status', () => {
   beforeAll(async () => {
     // Replay the schema as it stood before the status column was introduced.
-    await db.migrate(MIGRATIONS_DIR, (migration) => migration < STATUS_MIGRATION)
+    await db.migrate(
+      MIGRATIONS_DIR,
+      (migration) => migration < STATUS_MIGRATION
+    )
 
     await db.exec(`
       INSERT INTO "ngc"."Simulation" (
@@ -33,19 +36,22 @@ describe('20261116170000_add_simulation_status', () => {
         (gen_random_uuid(), NOW(), 1, '{}'::jsonb, '{}'::jsonb, ARRAY[]::jsonb[], NOW(), NOW())
     `)
 
-    await db.migrate(MIGRATIONS_DIR, (migration) => migration === STATUS_MIGRATION)
+    await db.migrate(
+      MIGRATIONS_DIR,
+      (migration) => migration === STATUS_MIGRATION
+    )
   })
 
   it('initializes status from the legacy progression value', async () => {
     const rows = await db.prisma.simulation.findMany({
-      select: { progression: true, status: true },
-      orderBy: { progression: 'asc' },
+      select: { status: true },
+      orderBy: { status: 'asc' },
     })
 
     expect(rows).toEqual([
-      { progression: 0, status: 'not_started' },
-      { progression: 0.5, status: 'answering_major_questions' },
-      { progression: 1, status: 'full_result_seen' },
+      { status: 'not_started' },
+      { status: 'answering_major_questions' },
+      { status: 'full_result_seen' },
     ])
   })
 })

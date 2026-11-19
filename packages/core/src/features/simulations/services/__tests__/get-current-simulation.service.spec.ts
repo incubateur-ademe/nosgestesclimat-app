@@ -32,7 +32,7 @@ describe('getCurrentSimulation', () => {
     const [, latest] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.2)
+        .withStatus('answering_major_questions')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -41,7 +41,7 @@ describe('getCurrentSimulation', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.5)
+        .withStatus('answering_major_questions')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -60,7 +60,6 @@ describe('getCurrentSimulation', () => {
         locale: 'fr',
         version: { publishedTag: expect.any(String) },
       },
-      progression: 0.5,
       status: 'answering_major_questions',
       situation: {},
       foldedSteps: [],
@@ -77,7 +76,7 @@ describe('getCurrentSimulation', () => {
       userFactory.create(),
     ])
     await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -90,7 +89,7 @@ describe('getCurrentSimulation', () => {
   it('returns null when the latest simulation has invalid computedResults', async () => {
     const user = await userFactory.create()
     await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withDeprecatedComputedResults()
       .params({ userId: user.id })
       .create()
@@ -103,7 +102,7 @@ describe('getCurrentSimulation', () => {
   it('returns null when the model string cannot be parsed', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -124,7 +123,7 @@ describe('getCurrentSimulation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
