@@ -1,8 +1,9 @@
 'use client'
 import BlockSkeleton from '@/design-system/layout/BlockSkeleton'
-import type { Simulation } from '@/helpers/server/model/simulations'
 import { EngineProvider } from '@/publicodes-state'
 import type { NGCRules } from '@incubateur-ademe/nosgestesclimat'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
+import type { Simulation } from '@nosgestesclimat/core/features/simulations/types/simulation'
 import dynamic from 'next/dynamic'
 import { useContext, type JSX } from 'react'
 import { IsDocumentationClientContext } from '../../_contexts/DocumentationStateContext'
@@ -32,7 +33,7 @@ export default function DocumentationRouter({
 
   if (
     isDocumentationClient ||
-    (currentSimulation && currentSimulation.progression > 0)
+    (currentSimulation && isSimulationCompleted(currentSimulation))
   )
     return (
       <EngineProvider
