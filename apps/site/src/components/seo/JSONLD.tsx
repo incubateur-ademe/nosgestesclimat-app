@@ -1,3 +1,5 @@
+import serialize from 'serialize-javascript'
+
 export default function JSONLD({
   jsonLd,
 }: {
@@ -6,10 +8,12 @@ export default function JSONLD({
   return (
     <script
       type="application/ld+json"
-      // `<` is escaped so that a value holding `</script>` cannot close the
-      // element it is inlined in.
+      // `serialize` escapes HTML characters (`<`, `>`, `/`) and the JS line
+      // terminators, so that a value holding `</script>` cannot close the
+      // element it is inlined in. `isJSON` keeps `JSON.stringify` semantics:
+      // `undefined` values are omitted instead of being emitted as `undefined`.
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+        __html: serialize(jsonLd, { isJSON: true }),
       }}
     />
   )

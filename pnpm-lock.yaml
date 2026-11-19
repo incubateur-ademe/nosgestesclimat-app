@@ -418,6 +418,9 @@ importers:
       remove-markdown:
         specifier: ^0.6.4
         version: 0.6.4
+      serialize-javascript:
+        specifier: ^7.1.4
+        version: 7.1.4
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -500,6 +503,9 @@ importers:
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
+      '@types/serialize-javascript':
+        specifier: ^5.0.4
+        version: 5.0.4
       '@types/webpack':
         specifier: ^5.28.5
         version: 5.28.5(esbuild@0.27.7)
@@ -4551,6 +4557,9 @@ packages:
 
   '@types/send@1.2.1':
     resolution: {integrity: sha512-arsCikDvlU99zl1g69TcAB3mzZPpxgw0UQnaHeC1Nwb015xp8bknZv5rIfri9xTOcMuaVgvabfIRA7PSZVuZIQ==}
+
+  '@types/serialize-javascript@5.0.4':
+    resolution: {integrity: sha512-Z2R7UKFuNWCP8eoa2o9e5rkD3hmWxx/1L0CYz0k2BZzGh0PhEVMp9kfGiqEml/0IglwNERXZ2hwNzIrSz/KHTA==}
 
   '@types/serve-static@1.15.10':
     resolution: {integrity: sha512-tRs1dB+g8Itk72rlSI2ZrW6vZg0YrLI81iQSTkMmOqnqCaNr/8Ek4VwWcN5vZgCYWbg/JJSGBlUaYGAOP73qBw==}
@@ -9485,6 +9494,10 @@ packages:
 
   seq-queue@0.0.5:
     resolution: {integrity: sha512-hr3Wtp/GZIc/6DAGPDcV4/9WoZhjrkXsi5B/07QgX8tsdc6ilr7BFM6PM6rbdAX1kFSDYeZGLipIZZKyQP0O5Q==}
+
+  serialize-javascript@7.1.4:
+    resolution: {integrity: sha512-FqlEuoTq/zRmA4Lg6aOqyH3lCHbUtCB0bmHCeFniX2GBdDqMJM3FwdvEhlE5Pim1dlt2FfBdVPmUNNiGhhKqpw==}
+    engines: {node: '>=20.0.0'}
 
   serve-static@1.16.3:
     resolution: {integrity: sha512-x0RTqQel6g5SY7Lg6ZreMmsOzncHFU7nhnRWkKgWuMTu5NN0DR5oruckMqRvacAN9d5w6ARnRBXl9xhDCgfMeA==}
@@ -15229,6 +15242,8 @@ snapshots:
     dependencies:
       '@types/node': 24.12.2
 
+  '@types/serialize-javascript@5.0.4': {}
+
   '@types/serve-static@1.15.10':
     dependencies:
       '@types/http-errors': 2.0.5
@@ -15451,24 +15466,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/browser@4.1.4(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.4)':
-    dependencies:
-      '@blazediff/core': 1.9.1
-      '@vitest/mocker': 4.1.4(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
-      '@vitest/utils': 4.1.4
-      magic-string: 0.30.21
-      pngjs: 7.0.0
-      sirv: 3.0.2
-      tinyrainbow: 3.1.0
-      vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@18.19.130)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
-      ws: 8.20.0
-    transitivePeerDependencies:
-      - bufferutil
-      - msw
-      - utf-8-validate
-      - vite
-    optional: true
-
   '@vitest/browser@4.1.4(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))(vite@6.4.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.4)':
     dependencies:
       '@blazediff/core': 1.9.1
@@ -15498,9 +15495,9 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@18.19.130)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))(vite@6.4.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
     optionalDependencies:
-      '@vitest/browser': 4.1.4(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.4)
+      '@vitest/browser': 4.1.4(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))(vite@6.4.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.1.4)
 
   '@vitest/eslint-plugin@1.6.14(@typescript-eslint/eslint-plugin@8.58.1(@typescript-eslint/parser@8.58.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.4)':
     dependencies:
@@ -15584,7 +15581,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@18.19.130)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@18.19.130)(typescript@5.9.3))(vite@6.4.1(@types/node@18.19.130)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(@vitest/ui@4.1.4)(happy-dom@20.8.9)(jsdom@27.4.0(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.2)(typescript@5.9.3))(vite@6.4.1(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -21086,6 +21083,8 @@ snapshots:
       - supports-color
 
   seq-queue@0.0.5: {}
+
+  serialize-javascript@7.1.4: {}
 
   serve-static@1.16.3:
     dependencies:
