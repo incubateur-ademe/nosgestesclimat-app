@@ -46,6 +46,7 @@ describe('getUserSimulationJourney', () => {
       currentSimulation: {
         id: latest.id,
         progression: 0.5,
+        status: 'answering_major_questions',
         model: serializeModel(latest.model),
       },
     })
@@ -78,11 +79,13 @@ describe('getUserSimulationJourney', () => {
       currentSimulation: {
         id: latestCompleted.id,
         progression: 1,
+        status: 'full_result_seen',
         model: serializeModel(latestCompleted.model),
       },
       completedSimulation: {
         id: latestCompleted.id,
         progression: 1,
+        status: 'full_result_seen',
         model: serializeModel(latestCompleted.model),
       },
     })
@@ -115,11 +118,13 @@ describe('getUserSimulationJourney', () => {
       currentSimulation: {
         id: current.id,
         progression: 0.5,
+        status: 'answering_major_questions',
         model: serializeModel(current.model),
       },
       completedSimulation: {
         id: completed.id,
         progression: 1,
+        status: 'full_result_seen',
         model: serializeModel(completed.model),
       },
     })
@@ -152,11 +157,13 @@ describe('getUserSimulationJourney', () => {
       currentSimulation: {
         id: completed.id,
         progression: 1,
+        status: 'full_result_seen',
         model: serializeModel(completed.model),
       },
       completedSimulation: {
         id: completed.id,
         progression: 1,
+        status: 'full_result_seen',
         model: serializeModel(completed.model),
       },
     })
@@ -202,6 +209,7 @@ describe('getUserSimulationJourney', () => {
       currentSimulation: {
         id: current.id,
         progression: 0.5,
+        status: 'answering_major_questions',
         model: serializeModel(current.model),
       },
     })
@@ -239,6 +247,7 @@ describe('getUserSimulationJourney', () => {
       currentSimulation: {
         id: current.id,
         progression: 0.5,
+        status: 'answering_major_questions',
         model: serializeModel(current.model),
       },
     })

@@ -5,6 +5,7 @@ import { updateSimulationSituation } from '@/services/simulations/update-simulat
 import type { UpdateSimulationSituationPayload } from '@/services/simulations/update-simulation-situation-payload.schema'
 import { useDebounce } from '@/utils/debounce'
 import { getComputedResults } from '@nosgestesclimat/core/features/simulations/helpers/get-computed-results'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { useEffect } from 'react'
 
 /**
@@ -25,17 +26,15 @@ export function useAutoSaveSimulation() {
   )
 
   useEffect(() => {
-    const { id, model, situation, foldedSteps, progression } = currentSimulation
-
-    // Avoid useless server calls and let completion be handled at the end of the test
-    if (progression === 0 || progression === 1) return
+    const { id, model, situation, foldedSteps, progression, status } =
+      currentSimulation
 
     /**
-     * Persisting a progression of 1 completes the simulation server-side, which
-     * freezes it and makes the simulator layout redirect to the end page.
-     * Completing is the "Terminer" button's job, so the last answer waits for it.
+     * Persisting a completed status freezes the simulation server-side and
+     * makes the simulator layout redirect to the end page. Completing is the
+     * "Terminer" button's job, so the last answer waits for it.
      */
-    if (progression === 1) return
+    if (status === 'not_started' || isSimulationCompleted({ status })) return
 
     debouncedSave({
       id,
@@ -43,6 +42,7 @@ export function useAutoSaveSimulation() {
       situation: situation as UpdateSimulationSituationPayload['situation'],
       foldedSteps,
       progression,
+      status,
       // The engine holds fresher results than the provider state, which only
       // catches up on the next render.
       computedResults: getComputedResults(engine),

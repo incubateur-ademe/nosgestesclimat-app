@@ -1,5 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { Situation } from 'publicodes'
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { Model } from '../../models/types/model.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
 
@@ -10,6 +11,7 @@ export interface Simulation {
   date: Date
   model: Model
   progression: number
+  status: SimulationStatus
   situation: Situation<DottedName>
   foldedSteps: DottedName[]
   computedResults: ComputedResults

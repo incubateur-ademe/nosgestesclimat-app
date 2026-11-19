@@ -78,6 +78,7 @@ describe('getLastCompletedSimulation', () => {
         version: { publishedTag: expect.any(String) },
       },
       progression: 1,
+      status: 'full_result_seen',
       situation: {},
       foldedSteps: [],
       computedResults: computedResultsFactory.valid().build(),
