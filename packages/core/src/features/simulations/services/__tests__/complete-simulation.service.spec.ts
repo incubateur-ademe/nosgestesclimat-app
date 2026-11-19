@@ -16,7 +16,11 @@ import type { ModelRegion } from '../../../models/types/model.ts'
 import { pollFactory } from '../../../polls/factories/poll.factory.ts'
 import { getPollStatsComputationStatus } from '../../../polls/stats/repositories/poll-stats-computations.repository.ts'
 import { ComputationAlreadyExistsError } from '../../../simulation-computation/errors/simulation-computation.error.ts'
-import { findSimulationComputation } from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
+import {
+  findSimulationComputation,
+  markSimulationComputationCompleted,
+  markSimulationComputationFailed,
+} from '../../../simulation-computation/repositories/simulation-computations.repository.ts'
 import { userFactory } from '../../../users/factories/user.factory.ts'
 import {
   SimulationCompletedError,
@@ -179,8 +183,8 @@ describe('completeSimulation', () => {
     }
   )
 
-  it('warns about an unsupported model and completes the simulation without programming a computation', async () => {
-    const { completeSimulation, logger } = setup()
+  it('warns about an unsupported model and completes the simulation without programming a computation or waiting for one', async () => {
+    const { completeSimulation, logger, sleep } = setup()
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('ZZ' as ModelRegion)
@@ -201,6 +205,7 @@ describe('completeSimulation', () => {
       model: { region: 'ZZ', locale: 'fr', version: { publishedTag: '1.0.0' } },
     })
     expect(await findSimulationComputation(simulation.id)).toBeNull()
+    expect(sleep).not.toHaveBeenCalled()
   })
 
   it('fails with computation_already_exists and rolls the answers back when a computation is already programmed', async () => {
@@ -660,6 +665,100 @@ describe('completeSimulation', () => {
       expect(logger.error).toHaveBeenCalledWith(error)
     })
   })
+
+  describe('wait for the computation', () => {
+    it('polls on the 1s / 500ms x4 / 1s x2 schedule, then warns and returns after the 5s cap while the computation is still pending', async () => {
+      const sleep = vi.fn((_ms: number) => Promise.resolve())
+      const { completeSimulation, logger } = setup(sleep)
+      const user = await userFactory.verified().create()
+      const simulation = await startedSimulation(user.id)
+
+      const result = await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+      })
+
+      expect(result).toEqual(expect.objectContaining({ success: true }))
+      // One read of the computation row after each delay: reads at 1s, 1.5s,
+      // 2s, 2.5s, 3s, 4s and 5s.
+      expect(sleep.mock.calls.map(([ms]) => ms)).toEqual([
+        1000, 500, 500, 500, 500, 1000, 1000,
+      ])
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Simulation computation unfinished after the 5s wait on completion',
+        { simulationId: simulation.id, status: 'pending' }
+      )
+    })
+
+    it('reports the last seen status when the computation is still processing after the 5s cap', async () => {
+      const user = await userFactory.verified().create()
+      const simulation = await startedSimulation(user.id)
+      const sleep = vi.fn(async (_ms: number) => {
+        await prisma.simulationComputation.update({
+          where: { simulationId: simulation.id },
+          data: { status: 'processing', startedAt: new Date() },
+        })
+      })
+      const { completeSimulation, logger } = setup(sleep)
+
+      const result = await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+      })
+
+      expect(result).toEqual(expect.objectContaining({ success: true }))
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Simulation computation unfinished after the 5s wait on completion',
+        { simulationId: simulation.id, status: 'processing' }
+      )
+    })
+
+    it('stops waiting as soon as the computation is completed', async () => {
+      const user = await userFactory.verified().create()
+      const simulation = await startedSimulation(user.id)
+      let sleeps = 0
+      const sleep = vi.fn(async (_ms: number) => {
+        sleeps += 1
+        // The worker finishes the job while the request is waiting.
+        if (sleeps === 3)
+          await markSimulationComputationCompleted(simulation.id)
+      })
+      const { completeSimulation, logger } = setup(sleep)
+
+      const result = await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+      })
+
+      expect(result).toEqual(expect.objectContaining({ success: true }))
+      // The read after the third delay saw `completed`: no further polling.
+      expect(sleep.mock.calls.map(([ms]) => ms)).toEqual([1000, 500, 500])
+      expect(logger.warn).not.toHaveBeenCalled()
+    })
+
+    it('stops waiting as soon as the computation has failed', async () => {
+      const user = await userFactory.verified().create()
+      const simulation = await startedSimulation(user.id)
+      const sleep = vi.fn(async (_ms: number) => {
+        await markSimulationComputationFailed(simulation.id)
+      })
+      const { completeSimulation, logger } = setup(sleep)
+
+      const result = await completeSimulation({
+        userSession: authenticated(user),
+        simulationId: simulation.id,
+        ...payload,
+      })
+
+      expect(result).toEqual(expect.objectContaining({ success: true }))
+      // The read after the first delay saw `failed`: no further polling.
+      expect(sleep.mock.calls.map(([ms]) => ms)).toEqual([1000])
+      expect(logger.warn).not.toHaveBeenCalled()
+    })
+  })
 })
 
 const origin = 'https://nosgestesclimat.fr'
@@ -667,9 +766,15 @@ const origin = 'https://nosgestesclimat.fr'
 /**
  * Builds the service with spied dependencies. `backgroundTaskRunner` keeps the
  * scheduled task so that `settleBackground` can await the side effects the
- * real runtime runs outside of the request lifecycle.
+ * real runtime runs outside of the request lifecycle. `sleep` defaults to an
+ * instant fake so the completion wait does not wait real seconds; the wait
+ * specs pass a controllable fake to observe the poll schedule.
  */
-const setup = () => {
+const setup = (
+  sleep: (ms: number) => Promise<void> = vi.fn((_ms: number) =>
+    Promise.resolve()
+  )
+) => {
   const logger = createTestLogger()
   const addOrUpdateContact = vi.fn().mockResolvedValue(success())
   const sendEmail = vi.fn().mockResolvedValue(success())
@@ -683,12 +788,14 @@ const setup = () => {
     addOrUpdateContact,
     sendEmail,
     backgroundTaskRunner,
+    sleep,
     completeSimulation: createCompleteSimulation({
       logger,
       addOrUpdateContact,
       sendEmail,
       origin,
       backgroundTaskRunner,
+      sleep,
     }),
     settleBackground: () => Promise.all(backgroundTasks),
   }
