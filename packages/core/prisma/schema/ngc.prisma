@@ -380,7 +380,6 @@ enum SimulationStatus {
 model Simulation {
   id                         String                               @id @default(uuid()) @db.Uuid
   date                       DateTime
-  progression                Float                                @db.Real
   status                     SimulationStatus
   model                      String                               @default("FR-fr-0.0.0")
   computedResults            Json
@@ -401,8 +400,8 @@ model Simulation {
 
   @@index([userId])
   @@index([createdAt])
-  // Created partial (progression = 1) by the migration: Prisma cannot express
-  // the predicate, so a schema edit would rebuild it whole.
+  // Created partial on completed statuses by the migration: Prisma cannot
+  // express the predicate, so a schema edit would rebuild it whole.
   @@index([createdAt, id])
   // Read by the PostHog warehouse sync and ordered by the retention sweep.
   @@index([updatedAt])
@@ -547,6 +546,7 @@ model RefreshToken {
 view ComputedResultsView {
   id                  String   @unique @default(uuid()) @db.Uuid
   date                DateTime
+  /// Derived from the status by the view, kept for existing consumers.
   progression         Float    @db.Real
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

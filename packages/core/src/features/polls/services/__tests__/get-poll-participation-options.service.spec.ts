@@ -41,7 +41,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -62,7 +62,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     const pollSimulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date('2024-06-01') })
       .create()
@@ -216,7 +216,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     const pollSimulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

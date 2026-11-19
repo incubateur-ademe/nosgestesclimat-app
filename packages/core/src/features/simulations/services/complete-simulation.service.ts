@@ -68,7 +68,6 @@ export function createCompleteSimulation({
     async ({
       userSession,
       simulationId,
-      progression,
       status,
       model,
       situation,
@@ -79,7 +78,6 @@ export function createCompleteSimulation({
     }: {
       userSession: AppUser
       simulationId: string
-      progression: number
       status: SimulationStatus
       /** The model the client ran the test with; persisted with the completion. */
       model: string
@@ -133,7 +131,6 @@ export function createCompleteSimulation({
             userId,
             situation,
             foldedSteps,
-            progression,
             status,
             computedResults,
             model: serializeModel(clientModel),

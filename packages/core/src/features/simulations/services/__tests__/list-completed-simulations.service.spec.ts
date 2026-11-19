@@ -31,7 +31,7 @@ describe('listCompletedSimulations', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -78,7 +78,6 @@ describe('listCompletedSimulations', () => {
           locale: 'fr',
           version: { publishedTag: expect.any(String) },
         },
-        progression: 1,
         status: 'full_result_seen',
         situation: {},
         foldedSteps: [],
@@ -87,7 +86,7 @@ describe('listCompletedSimulations', () => {
         updatedAt: newer.updatedAt,
         userId: user.id,
       },
-      expect.objectContaining({ id: older.id, progression: 1 }),
+      expect.objectContaining({ id: older.id, status: 'full_result_seen' }),
     ])
   })
 
@@ -105,7 +104,7 @@ describe('listCompletedSimulations', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .withProgression(0.5)
+        .withStatus('answering_major_questions')
         .withValidComputedResults()
         .params({
           userId: user.id,

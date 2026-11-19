@@ -11,7 +11,6 @@ export interface Simulation {
   id: string
   date: Date
   model: Model
-  progression: number
   status: SimulationStatus
   situation: Situation<DottedName>
   foldedSteps: DottedName[]

@@ -23,7 +23,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.2)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -32,7 +32,7 @@ describe('getUserSimulationJourney', () => {
       .create()
     const latest = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -45,7 +45,6 @@ describe('getUserSimulationJourney', () => {
     expect(result).toEqual({
       currentSimulation: {
         id: latest.id,
-        progression: 0.5,
         status: 'answering_major_questions',
         model: serializeModel(latest.model),
       },
@@ -78,13 +77,11 @@ describe('getUserSimulationJourney', () => {
     expect(result).toEqual({
       currentSimulation: {
         id: latestCompleted.id,
-        progression: 1,
         status: 'full_result_seen',
         model: serializeModel(latestCompleted.model),
       },
       completedSimulation: {
         id: latestCompleted.id,
-        progression: 1,
         status: 'full_result_seen',
         model: serializeModel(latestCompleted.model),
       },
@@ -104,7 +101,7 @@ describe('getUserSimulationJourney', () => {
       .create()
     const current = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -117,13 +114,11 @@ describe('getUserSimulationJourney', () => {
     expect(result).toEqual({
       currentSimulation: {
         id: current.id,
-        progression: 0.5,
         status: 'answering_major_questions',
         model: serializeModel(current.model),
       },
       completedSimulation: {
         id: completed.id,
-        progression: 1,
         status: 'full_result_seen',
         model: serializeModel(completed.model),
       },
@@ -134,7 +129,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -156,13 +151,11 @@ describe('getUserSimulationJourney', () => {
     expect(result).toEqual({
       currentSimulation: {
         id: completed.id,
-        progression: 1,
         status: 'full_result_seen',
         model: serializeModel(completed.model),
       },
       completedSimulation: {
         id: completed.id,
-        progression: 1,
         status: 'full_result_seen',
         model: serializeModel(completed.model),
       },
@@ -172,7 +165,7 @@ describe('getUserSimulationJourney', () => {
   it('excludes simulations whose computedResults do not match the current shape', async () => {
     const user = await userFactory.create()
     await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withDeprecatedComputedResults()
       .params({ userId: user.id })
       .create()
@@ -195,7 +188,7 @@ describe('getUserSimulationJourney', () => {
       .create()
     const current = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -208,7 +201,6 @@ describe('getUserSimulationJourney', () => {
     expect(result).toEqual({
       currentSimulation: {
         id: current.id,
-        progression: 0.5,
         status: 'answering_major_questions',
         model: serializeModel(current.model),
       },
@@ -228,7 +220,7 @@ describe('getUserSimulationJourney', () => {
       .create()
     const current = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -246,7 +238,6 @@ describe('getUserSimulationJourney', () => {
     expect(result).toEqual({
       currentSimulation: {
         id: current.id,
-        progression: 0.5,
         status: 'answering_major_questions',
         model: serializeModel(current.model),
       },
@@ -257,7 +248,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     const other = await userFactory.create()
     await simulationFactory
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -271,7 +262,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

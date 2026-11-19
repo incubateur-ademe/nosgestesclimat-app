@@ -24,7 +24,6 @@ export const updateSimulationSituation = async ({
   simulationId,
   situation,
   foldedSteps,
-  progression,
   status,
   computedResults,
   model,
@@ -33,7 +32,6 @@ export const updateSimulationSituation = async ({
   simulationId: string
   situation: Situation<DottedName>
   foldedSteps: DottedName[]
-  progression: number
   status: SimulationStatus
   computedResults: ComputedResults
   /** Written only when supplied in order to repair a broken model string */
@@ -69,7 +67,6 @@ export const updateSimulationSituation = async ({
     userId,
     situation,
     foldedSteps,
-    progression,
     status,
     computedResults,
     model,

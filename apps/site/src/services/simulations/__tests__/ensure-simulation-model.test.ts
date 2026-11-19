@@ -133,7 +133,7 @@ describe('simulation write paths', () => {
 
       expect(parseModel(captured.value?.model ?? '')).not.toBeNull()
       expect(captured.value?.model).not.toBe(DATABASE_DEFAULT_MODEL)
-      expect(captured.value?.progression).toBe(0)
+      expect(captured.value?.status).toBe('not_started')
     })
   })
 
@@ -150,7 +150,7 @@ describe('simulation write paths', () => {
       await updateGroupParticipant({ groupId: 'group-id', name: 'Alice' })
 
       expect(captured.value?.id).toBe(inProgress.id)
-      expect(captured.value?.progression).toBe(inProgress.progression)
+      expect(captured.value?.status).toBe(inProgress.status)
     })
   })
 

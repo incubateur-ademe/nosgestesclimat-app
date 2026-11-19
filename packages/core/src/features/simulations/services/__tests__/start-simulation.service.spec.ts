@@ -23,7 +23,6 @@ describe('startSimulation', () => {
       id: simulationId,
       date: expect.any(Date),
       model,
-      progression: 0,
       status: 'not_started',
       situation: {},
       foldedSteps: [],

@@ -67,7 +67,6 @@ const defaultSimulation: Simulation = {
       subcategories: {} as Record<DottedName, number>,
     },
   },
-  progression: 0,
   status: 'not_started',
 }
 
