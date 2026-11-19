@@ -129,6 +129,7 @@ describe('importLegacyLocalSimulations', () => {
       date: new Date('2025-06-01'),
       model: DATABASE_DEFAULT_MODEL,
       progression: 0.5,
+      status: 'answering_major_questions',
       situation,
       foldedSteps,
       computedResults,

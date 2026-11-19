@@ -1,13 +1,11 @@
+import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
 
 export interface SimulationProgress {
   id: string
   progression: number
+  status: SimulationStatus
   model: ModelString
-}
-
-export interface CompletedSimulationProgress extends SimulationProgress {
-  progression: 1
 }
 
 export interface EmptyUserSimulationJourney {
@@ -22,7 +20,7 @@ export interface ActiveUserSimulationJourney {
 
 export interface CompletedUserSimulationJourney {
   currentSimulation: SimulationProgress
-  completedSimulation: CompletedSimulationProgress
+  completedSimulation: SimulationProgress
 }
 
 export type UserSimulationJourney =
