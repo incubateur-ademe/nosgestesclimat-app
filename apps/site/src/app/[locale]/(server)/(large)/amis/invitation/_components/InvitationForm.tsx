@@ -6,6 +6,7 @@ import PrenomInput from '@/design-system/inputs/PrenomInput'
 import type { Simulation } from '@/helpers/server/model/simulations'
 import { useClientTranslation } from '@/hooks/useClientTranslation'
 import type { Group } from '@/types/groups'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { useTransition } from 'react'
 
 import { useForm as useReactHookForm } from 'react-hook-form'
@@ -33,7 +34,8 @@ export default function InvitationForm({
     formState: { errors },
   } = useReactHookForm<Inputs>()
 
-  const hasCompletedTest = currentSimulation?.progression === 1
+  const hasCompletedTest =
+    currentSimulation && isSimulationCompleted(currentSimulation)
 
   function onSubmit({ guestName }: Inputs) {
     startTransition(async () => {

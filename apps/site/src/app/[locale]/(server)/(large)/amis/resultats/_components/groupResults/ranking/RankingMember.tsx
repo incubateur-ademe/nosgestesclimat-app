@@ -12,6 +12,7 @@ import logger from '@/logger/logger.browser'
 import type { Group, Participant } from '@/types/groups'
 import type { Metrics } from '@incubateur-ademe/nosgestesclimat'
 import type { AppUser } from '@nosgestesclimat/core/features/auth/types/user-session'
+import { isSimulationCompleted } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { toError } from '@nosgestesclimat/core/lib/to-error'
 import { cn } from 'cn'
 import isMobile from 'is-mobile'
@@ -76,21 +77,20 @@ export default function RankingMember({
 
   const suffix = metric === carboneMetric ? t('CO₂e / an') : t('/ jour')
 
-  const quantity =
-    participant.simulation.progression !== 1 ? (
-      <span className="text-sm text-gray-600">
-        <Trans>En cours</Trans>
+  const quantity = !isSimulationCompleted(participant.simulation) ? (
+    <span className="text-sm text-gray-600">
+      <Trans>En cours</Trans>
+    </span>
+  ) : participant.simulation.computedResults?.[metric]?.bilan ? (
+    <span className="m-none leading-[160%]">
+      <strong>{formattedValue}</strong>{' '}
+      <span className="text-sm font-light">
+        {unit} {suffix}
       </span>
-    ) : participant.simulation.computedResults?.[metric]?.bilan ? (
-      <span className="m-none leading-[160%]">
-        <strong>{formattedValue}</strong>{' '}
-        <span className="text-sm font-light">
-          {unit} {suffix}
-        </span>
-      </span>
-    ) : (
-      '...'
-    )
+    </span>
+  ) : (
+    '...'
+  )
 
   function handleDelete() {
     startTransition(async () => {
@@ -102,7 +102,9 @@ export default function RankingMember({
 
         setIsConfirmationModalOpen(false)
       } catch (error) {
-        logger.error(toError(error), { scope: 'site.interaction.removeParticipant' })
+        logger.error(toError(error), {
+          scope: 'site.interaction.removeParticipant',
+        })
       }
     })
   }
@@ -117,7 +119,7 @@ export default function RankingMember({
               isTopThree ? 'text-lg md:text-2xl' : 'ml-1 text-base md:text-lg',
               textColor ?? ''
             )}>
-            {participant.simulation.progression !== 1
+            {!isSimulationCompleted(participant.simulation)
               ? // Display a placeholder
                 '--'
               : getRank(index)}
