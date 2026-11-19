@@ -11,7 +11,6 @@ import { isValidSimulation } from '../validators/simulation.validator.ts'
 
 const latestSimulationSelect = {
   id: true,
-  progression: true,
   status: true,
   model: true,
   computedResults: true,
@@ -19,7 +18,6 @@ const latestSimulationSelect = {
 
 type SimulationProgressRow = {
   id: string
-  progression: number
   status: SimulationStatus
   model: ModelString
   computedResults: ComputedResults
@@ -27,12 +25,10 @@ type SimulationProgressRow = {
 
 const toProgress = ({
   id,
-  progression,
   status,
   model,
 }: SimulationProgressRow): SimulationProgress => ({
   id,
-  progression,
   status,
   model,
 })

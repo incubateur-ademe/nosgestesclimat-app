@@ -44,10 +44,10 @@ describe('programSimulationComputation', () => {
     vi.clearAllMocks()
   })
 
-  it.each([0.5, 0])(
-    'throws SimulationNotFinishedError when progression is %s',
-    async (progression) => {
-      const { id } = await simulationFactory.params({ progression }).create()
+  it.each(['answering_major_questions', 'not_started'] as const)(
+    'throws SimulationNotFinishedError when the status is %s',
+    async (status) => {
+      const { id } = await simulationFactory.params({ status }).create()
 
       await expect(programSimulationComputation(id)).rejects.toThrow(
         SimulationNotFinishedError

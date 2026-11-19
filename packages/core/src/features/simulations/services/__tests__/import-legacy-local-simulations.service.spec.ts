@@ -33,7 +33,7 @@ describe('importLegacyLocalSimulations', () => {
       expect.objectContaining({
         model: DATABASE_DEFAULT_MODEL,
         userId: user.id,
-        progression: 1,
+        status: 'full_result_seen',
       })
     )
     expect(
@@ -128,7 +128,6 @@ describe('importLegacyLocalSimulations', () => {
       id: simulation.id,
       date: new Date('2025-06-01'),
       model: DATABASE_DEFAULT_MODEL,
-      progression: 0.5,
       status: 'answering_major_questions',
       situation,
       foldedSteps,

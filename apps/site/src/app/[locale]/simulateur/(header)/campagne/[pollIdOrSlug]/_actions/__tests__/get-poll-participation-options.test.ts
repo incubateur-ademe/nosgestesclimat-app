@@ -88,7 +88,7 @@ describe('getPollParticipationOptions', () => {
     })
     const inProgressSimulation = simulationFactory
       .withModelRegion('FR')
-      .withProgression(0.5)
+      .withStatus('answering_major_questions')
       .build()
     serviceMock.getPollParticipationOptions.mockResolvedValue({
       currentPollSimulation: inProgressSimulation,

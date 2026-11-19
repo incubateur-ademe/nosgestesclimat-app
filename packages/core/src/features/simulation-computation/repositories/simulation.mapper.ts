@@ -15,7 +15,6 @@ export const mapSimulation = (db: SimulationModel): Simulation => {
   return {
     id: db.id,
     date: db.date,
-    progression: db.progression,
     status: db.status,
     model,
     situation: db.situation as Situation<DottedName>,

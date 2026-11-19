@@ -18,7 +18,7 @@ const serverSimulation = {
   situation: {},
   foldedSteps: [],
   computedResults: { carbone: {}, eau: {} },
-  progression: 0,
+  status: 'not_started',
   model: 'FR-fr-9.9.9',
 } as unknown as Simulation
 
