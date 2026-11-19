@@ -6,6 +6,7 @@ import { cn } from 'cn'
 import { Target, TrendingDown } from 'lucide-react'
 import type { CSSProperties, ReactNode } from 'react'
 import Trans from '../../translation/trans/TransServer'
+import ClickProxy from '../ClickProxy'
 import FootprintInfoPopover from '../FootprintInfoPopover'
 import { THIRD_OBJECTIVE } from '../objective/_constants/objectives'
 import {
@@ -17,11 +18,9 @@ import {
 
 interface Props {
   value: number
-  /** Vertical bars next to the text on desktop, horizontal ones on mobile */
-  orientation: 'vertical' | 'horizontal'
+  /** Tells apart the ids of the charts rendered on mobile and on desktop */
+  idPrefix: string
   className?: string
-  /** Id of the footnote explaining the “*” on the average */
-  describedById?: string
 }
 
 interface Bar {
@@ -30,6 +29,8 @@ interface Bar {
   nameClassName: string
   /** Popover explaining the bar, next to its name */
   info?: ReactNode
+  /** Id of the popover button that a click on the bar opens */
+  opensInfoId?: string
   percent: number
   /** Where the value sits along the bar, when it differs from its length */
   valuePercent?: number
@@ -68,9 +69,6 @@ const revealClassName =
 // Height of a value label, in percent of the vertical chart
 const VALUE_LABEL_HEIGHT_PERCENT = 18
 
-// On mobile, the longest bar leaves room for its value on its right
-const HORIZONTAL_TRACK_RATIO = 0.75
-
 function targetStyle(percent: number, delayMs: number) {
   return {
     '--target-value': `${percent}%`,
@@ -80,9 +78,8 @@ function targetStyle(percent: number, delayMs: number) {
 
 export default async function FootprintComparisonChart({
   value,
-  orientation,
+  idPrefix,
   className,
-  describedById,
 }: Props) {
   const locale = await getLocale()
   const { t } = await getServerTranslation()
@@ -95,13 +92,16 @@ export default async function FootprintComparisonChart({
 
   const ariaLabel = t(
     'results.footprintBlock.carbone.chart.label',
-    'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.',
+    'Votre empreinte : {{footprint}}. Moyenne des participants : {{average}}. Objectif 2050 : {{objective}}.',
     {
       footprint: formatTons(value, locale, t, false),
       average: formatTons(AVERAGE_FOOTPRINT_KG, locale, t, false),
       objective: formatTons(THIRD_OBJECTIVE.value, locale, t, false),
     }
   )
+
+  // Lets the objective bar open the popover of its name
+  const objectiveInfoButtonId = `${idPrefix}-objective-info`
 
   const objectiveInfoTitle = t(
     'results.footprintBlock.carbone.objective.info.title',
@@ -134,7 +134,7 @@ export default async function FootprintComparisonChart({
       key: 'average',
       name: (
         <Trans i18nKey="results.footprintBlock.carbone.chart.average">
-          Moyenne*
+          Moyenne des participants
         </Trans>
       ),
       nameClassName: 'text-slate-600',
@@ -155,22 +155,43 @@ export default async function FootprintComparisonChart({
       info: (
         <FootprintInfoPopover
           className="ml-0.5 inline-flex size-5 align-middle [&_svg]:size-4.5"
+          triggerId={objectiveInfoButtonId}
           label={objectiveInfoTitle}
           title={objectiveInfoTitle}
           icon={<Target aria-hidden="true" className="size-5" />}
-          // On desktop the chart sits on the right of the card: the popover
+          // On desktop the chart sits on the right of the hero: the popover
           // opens on its left, hanging down from the button so that it leaves
           // the bars visible
-          {...(orientation === 'vertical' && {
+          desktopPlacement={{
             side: 'left',
             alignOffset: -16,
             withArrow: true,
-          })}>
+          }}>
           <p className="mb-0">
-            <Trans i18nKey="results.footprintBlock.carbone.objective.info.definition">
-              C’est l’empreinte carbone maximale par personne et par an qui
-              permettrait de respecter l’Accord de Paris, en limitant le
-              réchauffement bien en dessous de 2 °C d’ici 2050.
+            <Trans i18nKey="results.footprintBlock.carbone.objective.info.everyone">
+              Réduire les émissions de gaz à effet de serre, c’est l’affaire de
+              tous ! Citoyens, associations, collectivités, entreprises,
+              pouvoirs publics… nous avons tous un rôle à jouer.
+            </Trans>
+          </p>
+
+          <p className="mb-0">
+            <Trans i18nKey="results.footprintBlock.carbone.objective.info.neutrality">
+              Pour limiter le changement climatique sous 2 °C, il faut rétablir
+              un équilibre entre la quantité de gaz émis et la capacité de la
+              planète à les absorber. C’est ce qu’on appelle la{' '}
+              <strong className="text-default">neutralité carbone</strong>.
+              L’objectif est d’atteindre cet équilibre en 2050.
+            </Trans>
+          </p>
+
+          <p className="mb-0">
+            <Trans i18nKey="results.footprintBlock.carbone.objective.info.target">
+              Atteindre la neutralité carbone, c’est possible si nous émettons{' '}
+              <strong className="text-default">
+                moins de 2 tonnes de CO₂e par personne et par an
+              </strong>
+              .
             </Trans>
           </p>
 
@@ -190,91 +211,35 @@ export default async function FootprintComparisonChart({
           </div>
         </FootprintInfoPopover>
       ),
+      opensInfoId: objectiveInfoButtonId,
       percent: percents.objective,
       value: formatTons(THIRD_OBJECTIVE.value, locale, t),
       valueClassName: 'text-primary-800',
       // A target rather than emissions: outlined, not filled
-      barClassName: 'border-primary-400 bg-primary-50 border-2 border-dashed',
+      barClassName:
+        'border-primary-400 bg-primary-50 hover:border-primary-700 hover:bg-primary-100 cursor-pointer border-2 border-dashed transition-colors',
       delayMs: 800,
     },
   ]
 
-  if (orientation === 'horizontal') {
-    return (
-      <div
-        role="group"
-        aria-label={ariaLabel}
-        aria-describedby={describedById}
-        className={cn(
-          'grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 text-sm',
-          className
-        )}>
-        {bars.map((bar, index) => (
-          <div key={bar.key} className="contents">
-            <span
-              className={cn('col-start-1', bar.nameClassName)}
-              style={{ gridRowStart: index + 1 }}>
-              <span aria-hidden="true">{bar.name}</span>
-              {bar.info}
-            </span>
-
-            <div
-              aria-hidden="true"
-              className="col-start-2 flex h-7 items-center gap-2"
-              style={{ gridRowStart: index + 1 }}>
-              <div
-                className={cn(
-                  'animate-bar-grow-horizontal h-full w-0 rounded-l-sm rounded-r-lg motion-reduce:w-(--target-value)',
-                  barGrowClassName,
-                  bar.barClassName
-                )}
-                style={targetStyle(
-                  bar.percent * HORIZONTAL_TRACK_RATIO,
-                  bar.delayMs
-                )}
-              />
-              <span
-                className={cn(
-                  'font-bold whitespace-nowrap tabular-nums',
-                  bar.valueClassName,
-                  revealClassName
-                )}>
-                {bar.value}
-              </span>
-            </div>
-          </div>
-        ))}
-
-        {/* Spans all bars to mark the average level */}
-        <div
-          aria-hidden="true"
-          className="relative col-start-2 row-span-3 row-start-1 -my-1 self-stretch">
-          <div
-            className={cn(
-              'border-primary-300 absolute inset-y-0 border-l-2 border-dashed',
-              revealClassName
-            )}
-            style={{ left: `${percents.average * HORIZONTAL_TRACK_RATIO}%` }}
-          />
-        </div>
-      </div>
-    )
-  }
-
   const lowPercent = Math.min(percents.footprint, percents.average)
   const highPercent = Math.max(percents.footprint, percents.average)
 
+  // Under `lg`, the chart sits under the text: it shrinks, and leaves out the
+  // average line and the gap, which the pill above already states
   return (
     <div
       role="group"
       aria-label={ariaLabel}
-      aria-describedby={describedById}
-      className={cn('mx-auto w-98 text-sm', className)}>
+      className={cn(
+        'w-full text-xs md:mx-auto md:w-65 lg:w-98 lg:text-sm',
+        className
+      )}>
       {/* The top margin leaves room for the value above the tallest bar */}
-      <div aria-hidden="true" className="relative mt-9 h-52">
+      <div aria-hidden="true" className="relative mt-6 h-24 lg:mt-9 lg:h-52">
         <div
           className={cn(
-            'border-primary-300 absolute right-0 left-16 border-t-2 border-dashed',
+            'border-primary-300 absolute right-0 left-16 hidden border-t-2 border-dashed lg:block',
             revealClassName
           )}
           style={{ bottom: `${percents.average}%` }}
@@ -284,7 +249,7 @@ export default async function FootprintComparisonChart({
           <>
             <div
               className={cn(
-                'absolute left-17 w-2 rounded-l-md border-2 border-r-0',
+                'absolute left-17 hidden w-2 rounded-l-md border-2 border-r-0 lg:block',
                 colors.bracket,
                 revealClassName
               )}
@@ -295,7 +260,7 @@ export default async function FootprintComparisonChart({
             />
             <span
               className={cn(
-                'absolute left-0 w-16 translate-y-1/2 pr-1 text-right font-bold whitespace-nowrap tabular-nums',
+                'absolute left-0 hidden w-16 translate-y-1/2 pr-1 text-right font-bold whitespace-nowrap tabular-nums lg:block',
                 colors.text,
                 revealClassName
               )}
@@ -305,36 +270,46 @@ export default async function FootprintComparisonChart({
           </>
         )}
 
-        <div className="absolute inset-y-0 right-0 left-20 flex gap-6">
-          {bars.map((bar) => (
-            <div key={bar.key} className="relative flex w-22 items-end">
+        <div className="absolute inset-y-0 right-0 left-0 flex gap-4 md:gap-3 lg:left-20 lg:gap-6">
+          {bars.map((bar) => {
+            const barProps = {
+              className: cn(
+                'animate-bar-grow-vertical h-0 w-full rounded-t-md rounded-b-xs motion-reduce:h-(--target-value) md:mx-auto md:w-14 lg:w-full lg:rounded-t-xl lg:rounded-b-sm',
+                barGrowClassName,
+                bar.barClassName
+              ),
+              style: targetStyle(bar.percent, bar.delayMs),
+            }
+
+            return (
               <div
-                className={cn(
-                  'animate-bar-grow-vertical h-0 w-full rounded-t-xl rounded-b-sm motion-reduce:h-(--target-value)',
-                  barGrowClassName,
-                  bar.barClassName
+                key={bar.key}
+                className="relative flex flex-1 items-end lg:max-w-22">
+                {bar.opensInfoId ? (
+                  <ClickProxy targetId={bar.opensInfoId} {...barProps} />
+                ) : (
+                  <div {...barProps} />
                 )}
-                style={targetStyle(bar.percent, bar.delayMs)}
-              />
-              <span
-                className={cn(
-                  'absolute inset-x-0 mb-1.5 text-center text-lg font-bold whitespace-nowrap tabular-nums',
-                  bar.valueClassName,
-                  revealClassName
-                )}
-                style={{ bottom: `${bar.valuePercent ?? bar.percent}%` }}>
-                {bar.value}
-              </span>
-            </div>
-          ))}
+                <span
+                  className={cn(
+                    'absolute inset-x-0 mb-0.75 text-center text-[0.9rem] font-bold whitespace-nowrap tabular-nums lg:mb-1.5 lg:text-lg',
+                    bar.valueClassName,
+                    revealClassName
+                  )}
+                  style={{ bottom: `${bar.valuePercent ?? bar.percent}%` }}>
+                  {bar.value}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
-      <div className="mt-2 ml-20 flex gap-6 leading-tight">
+      <div className="mt-1.5 flex gap-4 leading-tight md:gap-3 lg:mt-2 lg:ml-20 lg:gap-6">
         {bars.map((bar) => (
           <span
             key={bar.key}
-            className={cn('w-22 text-center', bar.nameClassName)}>
+            className={cn('flex-1 text-center lg:max-w-22', bar.nameClassName)}>
             <span aria-hidden="true">{bar.name}</span>
             {bar.info}
           </span>

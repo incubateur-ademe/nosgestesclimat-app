@@ -1,6 +1,5 @@
 import { ACTIONS_SUGGESTED_PATH } from '@/constants/urls/paths'
 import ButtonLink from '@/design-system/buttons/ButtonLink'
-import Card from '@/design-system/layout/Card'
 import { formatFootprint } from '@/helpers/formatters/formatFootprint'
 import { getLocale } from '@/helpers/getLocale'
 import { getServerTranslation } from '@/helpers/getServerTranslation'
@@ -61,29 +60,29 @@ export default async function CarbonFootprintHero({
   if (deltaKg === 0) {
     comparisonLabel = t(
       'results.footprintBlock.carbone.comparison.equal',
-      'Égal à la moyenne*'
+      'Égal à la moyenne'
     )
   } else if (deltaKg > 0) {
     comparisonLabel = t(
       'results.footprintBlock.carbone.comparison.more',
-      '{{delta}} {{unit}} de plus que la moyenne*',
+      '{{delta}} {{unit}} de plus que la moyenne',
       deltaValues
     )
   } else {
     comparisonLabel = t(
       'results.footprintBlock.carbone.comparison.less',
-      '{{delta}} {{unit}} de moins que la moyenne*',
+      '{{delta}} {{unit}} de moins que la moyenne',
       deltaValues
     )
   }
 
   return (
-    <Card
+    <div
       className={cn(
-        'animate-fade-in-slide-from-top to-primary-100/80 via-primary-50 border-primary-100 grid items-center gap-6 overflow-hidden rounded-[20px] bg-linear-to-br from-white p-6 shadow-xs [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:px-11 md:py-7 lg:grid-cols-2 lg:gap-9',
+        'animate-fade-in-slide-from-top grid items-center gap-6 bg-white py-1 [animation-delay:200ms] [animation-fill-mode:both] motion-reduce:translate-y-0 motion-reduce:animate-none motion-reduce:opacity-100 md:py-2 lg:grid-cols-2 lg:gap-9',
         className
       )}>
-      <div className="flex w-full flex-col items-start gap-6">
+      <div className="flex w-full flex-col items-start gap-4 md:gap-6">
         <div className="flex flex-col items-start">
           <h1 className="mb-0 text-lg leading-tight font-bold">
             <Trans i18nKey="results.footprintBlock.carbone.title">
@@ -92,9 +91,10 @@ export default async function CarbonFootprintHero({
           </h1>
 
           {/* The big figure's line box overflows its glyphs, mostly below the
-            baseline: the negative margins bring the title and the pill
-            visually as close to it as they are to each other. */}
-          <div className="-mt-2 -mb-2 flex items-baseline-last gap-x-2.5 gap-y-1 md:flex-wrap md:gap-x-3.5">
+            baseline: from `md`, the negative margins bring the title and the
+            pill visually as close to it as they are to each other. On mobile,
+            the figure gets more room around it. */}
+          <div className="mt-1 mb-3 flex items-baseline-last gap-x-2.5 gap-y-1 md:-mt-2 md:-mb-2 md:flex-wrap md:gap-x-3.5">
             <p
               data-testid="carbon-footprint-value"
               className="text-primary-700 mb-0 text-[clamp(3.6rem,6vw,4.5rem)] leading-[0.9] font-extrabold tracking-tight tabular-nums">
@@ -114,12 +114,15 @@ export default async function CarbonFootprintHero({
                 label={infoTitle}
                 title={infoTitle}>
                 <p className="mb-0">
-                  <Trans i18nKey="results.footprintBlock.carbone.info.definition">
-                    Le CO₂e (équivalent CO₂) est une unité de mesure harmonisée
-                    permettant de regrouper tous les gaz à effet de serre
-                    (dioxyde de carbone, méthane, protoxyde d’azote, etc.) qui
-                    sont émis via nos modes de vie et les services sociétaux
-                    dont nous bénéficions.
+                  <Trans i18nKey="results.footprintBlock.carbone.info.commonUnit">
+                    Pour pouvoir comparer toutes les activités entre elles, les
+                    scientifiques ont décidé d’utiliser une mesure commune pour
+                    comptabiliser tous les gaz à effet de serre émis par les
+                    activités humaines : cette unité de mesure est le{' '}
+                    <strong className="text-default">
+                      CO₂e (équivalent CO₂)
+                    </strong>
+                    .
                   </Trans>
                 </p>
 
@@ -132,7 +135,7 @@ export default async function CarbonFootprintHero({
                   <p className="mb-0">
                     <Trans i18nKey="results.footprintBlock.carbone.info.impact">
                       Ces gaz retiennent la chaleur dans l’atmosphère : plus ils
-                      s’accumulent, plus le climat se dérègle, avec des
+                      s’accumulent, plus le climat se réchauffe, avec des
                       canicules, sécheresses et inondations plus fréquentes.
                     </Trans>
                   </p>
@@ -156,9 +159,8 @@ export default async function CarbonFootprintHero({
 
         <FootprintComparisonChart
           value={value}
-          orientation="horizontal"
+          idPrefix="footprint-chart-inline"
           className="lg:hidden"
-          describedById="footprint-average-legend"
         />
 
         <p className="mb-0 max-w-[46ch] leading-normal text-slate-600">
@@ -195,38 +197,26 @@ export default async function CarbonFootprintHero({
             .exhaustive()}
         </p>
 
-        <div className="flex w-full flex-col items-start gap-3">
-          <ButtonLink
-            href={ACTIONS_SUGGESTED_PATH}
-            color="primary"
-            size="md"
-            className="w-full md:w-auto">
-            <Trans i18nKey="results.footprintBlock.carbone.reduceLink">
-              Réduire mes émissions
-            </Trans>
+        <ButtonLink
+          href={ACTIONS_SUGGESTED_PATH}
+          color="primary"
+          size="md"
+          className="mt-0.5 w-full md:mt-0 md:w-auto">
+          <Trans i18nKey="results.footprintBlock.carbone.reduceLink">
+            Réduire mes émissions
+          </Trans>
 
-            <span aria-hidden="true" className="ml-2">
-              →
-            </span>
-          </ButtonLink>
-
-          <p
-            id="footprint-average-legend"
-            className="mb-0 text-sm text-slate-600">
-            <Trans i18nKey="results.footprintBlock.carbone.legend">
-              * Moyenne de nos utilisateurs (plus de 600 000 simulations par
-              an).
-            </Trans>
-          </p>
-        </div>
+          <span aria-hidden="true" className="ml-2">
+            →
+          </span>
+        </ButtonLink>
       </div>
 
       <FootprintComparisonChart
         value={value}
-        orientation="vertical"
+        idPrefix="footprint-chart-aside"
         className="hidden lg:block"
-        describedById="footprint-average-legend"
       />
-    </Card>
+    </div>
   )
 }
