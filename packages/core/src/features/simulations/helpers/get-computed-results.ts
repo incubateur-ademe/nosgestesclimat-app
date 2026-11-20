@@ -1,14 +1,14 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type Engine from 'publicodes'
-import { utils } from 'publicodes'
+import {
+  getFootprintRules,
+  ROOT_DOTTED_NAME,
+} from '../../models/helpers/get-footprint-rules.ts'
 import type { ComputedResults } from '../validators/computed-results.schema.ts'
-import { getSomme } from './get-somme.ts'
 
 /**
  * TODO: this is a duplicate of site code, refactor apps and server fixtures to use these functions.
  **/
-
-const ROOT_DOTTED_NAME = 'bilan' as DottedName
 
 const METRICS = ['carbone', 'eau'] as const
 
@@ -38,21 +38,7 @@ export const getComputedResults = (
     throw new Error('Engine is not defined')
   }
 
-  const parsedRules = engine.getParsedRules()
-
-  const categories =
-    getSomme(engine.getRule(ROOT_DOTTED_NAME)?.rawNode) ?? ([] as DottedName[])
-
-  const subcategories = categories.flatMap((category) =>
-    (getSomme(engine.getRule(category)?.rawNode) ?? []).map(
-      (partialName) =>
-        utils.disambiguateReference(
-          parsedRules,
-          category,
-          partialName
-        ) as DottedName
-    )
-  )
+  const { categories, subcategories } = getFootprintRules(engine)
 
   return Object.fromEntries(
     METRICS.map((metric) => [

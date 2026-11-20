@@ -37,7 +37,11 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
     let failedCount = 0
 
     for (const { id, name, metric } of publicRules) {
-      const evaluation = evaluateModelRule({ engine, dottedName: name, metric })
+      const evaluation = evaluateModelRule({
+        engine,
+        dottedName: name,
+        metric: metric ?? undefined,
+      })
 
       if (evaluation.success) {
         evaluations.push({ simulationId, ruleId: id, ...evaluation.data })

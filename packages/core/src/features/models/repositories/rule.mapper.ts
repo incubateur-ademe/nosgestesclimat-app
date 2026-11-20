@@ -4,7 +4,7 @@ import type { Rule } from '../types/rule.ts'
 export interface RuleRow {
   id: number
   name: string
-  metric: Metric
+  metric: Metric | null
 }
 
 export const mapRule = (row: RuleRow): Rule => ({

@@ -1,8 +1,8 @@
 /** What a footprint measures. The model names them `carbone` and `eau`. */
 export type Metric = 'carbon' | 'water'
 
-/** The metrics every public rule is evaluated and stored for. */
-export const PUBLIC_RULE_METRICS: readonly Metric[] = ['carbon', 'water']
+/** The metrics every footprint rule is evaluated and stored for. */
+export const FOOTPRINT_RULE_METRICS: readonly Metric[] = ['carbon', 'water']
 
 /**
  * A rule of the model carrying `public: oui`: part of the model's output
@@ -15,9 +15,12 @@ export interface PublicRule {
   description: string | null
 }
 
-/** A public rule to store for one metric. */
+/**
+ * A public rule to store, for one metric. `metric` is null for the rules the
+ * model computes without one.
+ */
 export interface NewRule extends PublicRule {
-  metric: Metric
+  metric: Metric | null
 }
 
 /**
@@ -27,5 +30,5 @@ export interface NewRule extends PublicRule {
 export interface Rule {
   id: number
   name: string
-  metric: Metric
+  metric: Metric | null
 }

@@ -22,10 +22,33 @@ const findRules = () =>
     orderBy: [{ name: 'asc' }, { metric: 'asc' }],
   })
 
+/** The model's root, outside the public contract: this engine has no footprint. */
+const PRIVATE_BILAN = { bilan: { public: 'non', valeur: 1 } } as const
+
 /** A model's rules, its public rule worded with `titre`. */
 const engineTitled = (titre: string) =>
   createTestEngine({
+    ...PRIVATE_BILAN,
     'footprint . described': { public: 'oui', titre, valeur: 1 },
+  })
+
+/**
+ * A model whose footprint sums two categories, one of which sums two
+ * subcategories, next to a public rule the footprint does not sum.
+ */
+const footprintEngine = () =>
+  createTestEngine({
+    bilan: { public: 'oui', formule: { somme: ['transport', 'food'] } },
+    transport: {
+      public: 'oui',
+      titre: 'Transport',
+      formule: { somme: ['voiture', 'train'] },
+    },
+    'transport . voiture': { public: 'oui', valeur: 1 },
+    'transport . train': { public: 'oui', valeur: 1 },
+    food: { public: 'oui', formule: { somme: ['repas'] } },
+    'food . repas': { public: 'oui', valeur: 1 },
+    'footprint . other': { public: 'oui', valeur: 2 },
   })
 
 describe('resolvePublicRules', () => {
@@ -40,9 +63,10 @@ describe('resolvePublicRules', () => {
     await emptyDatabase(prisma)
   })
 
-  it('stores each public rule for every metric with its French title and description, and returns them', async () => {
+  it('stores each public rule once without a metric, with its French title and description, and returns them', async () => {
     const rules = await resolvePublicRules(
       createTestEngine({
+        ...PRIVATE_BILAN,
         'footprint . described': {
           public: 'oui',
           titre: 'Transport',
@@ -59,28 +83,14 @@ describe('resolvePublicRules', () => {
       {
         id: expect.any(Number),
         name: 'footprint . bare',
-        metric: 'carbon',
-        title: null,
-        description: null,
-      },
-      {
-        id: expect.any(Number),
-        name: 'footprint . bare',
-        metric: 'water',
+        metric: null,
         title: null,
         description: null,
       },
       {
         id: expect.any(Number),
         name: 'footprint . described',
-        metric: 'carbon',
-        title: 'Transport',
-        description: 'Les trajets du quotidien',
-      },
-      {
-        id: expect.any(Number),
-        name: 'footprint . described',
-        metric: 'water',
+        metric: null,
         title: 'Transport',
         description: 'Les trajets du quotidien',
       },
@@ -93,9 +103,39 @@ describe('resolvePublicRules', () => {
     )
   })
 
+  it('stores the footprint, its categories and their subcategories for every metric, and every other rule without one', async () => {
+    const rules = await resolvePublicRules(footprintEngine(), modelOf('1.0.0'))
+
+    const stored = await findRules()
+    expect(stored).toEqual(
+      [
+        { name: 'bilan', metric: 'carbon', title: null },
+        { name: 'bilan', metric: 'water', title: null },
+        { name: 'food', metric: 'carbon', title: null },
+        { name: 'food', metric: 'water', title: null },
+        { name: 'food . repas', metric: 'carbon', title: null },
+        { name: 'food . repas', metric: 'water', title: null },
+        { name: 'footprint . other', metric: null, title: null },
+        { name: 'transport', metric: 'carbon', title: 'Transport' },
+        { name: 'transport', metric: 'water', title: 'Transport' },
+        { name: 'transport . train', metric: 'carbon', title: null },
+        { name: 'transport . train', metric: 'water', title: null },
+        { name: 'transport . voiture', metric: 'carbon', title: null },
+        { name: 'transport . voiture', metric: 'water', title: null },
+      ].map((rule) => ({ ...rule, id: expect.any(Number), description: null }))
+    )
+    expect(rules).toHaveLength(stored.length)
+    expect(rules).toEqual(
+      expect.arrayContaining(
+        stored.map(({ id, name, metric }) => ({ id, name, metric }))
+      )
+    )
+  })
+
   it('ignores the rules not marked public', async () => {
     const rules = await resolvePublicRules(
       createTestEngine({
+        ...PRIVATE_BILAN,
         'footprint . public': { public: 'oui', valeur: 1 },
         'footprint . private': { valeur: 2 },
         'footprint . explicitly private': { public: 'non', valeur: 3 },
@@ -103,16 +143,16 @@ describe('resolvePublicRules', () => {
       modelOf('1.0.0')
     )
 
-    expect(rules.map(({ name }) => name)).toEqual([
-      'footprint . public',
-      'footprint . public',
-    ])
-    expect(await prisma.rule.count()).toBe(2)
+    expect(rules.map(({ name }) => name)).toEqual(['footprint . public'])
+    expect(await prisma.rule.count()).toBe(1)
   })
 
   it('stores nothing when the model has no public rules', async () => {
     const rules = await resolvePublicRules(
-      createTestEngine({ 'footprint . private': { valeur: 1 } }),
+      createTestEngine({
+        ...PRIVATE_BILAN,
+        'footprint . private': { valeur: 1 },
+      }),
       modelOf('1.0.0')
     )
 
@@ -133,8 +173,7 @@ describe('resolvePublicRules', () => {
 
     expect(second).toEqual(first)
     expect(await findRules()).toEqual([
-      expect.objectContaining({ metric: 'carbon', title: 'Transport' }),
-      expect.objectContaining({ metric: 'water', title: 'Transport' }),
+      expect.objectContaining({ metric: null, title: 'Transport' }),
     ])
   })
 
@@ -151,14 +190,14 @@ describe('resolvePublicRules', () => {
 
     expect(english).toEqual(french)
     expect(await findRules()).toEqual([
-      expect.objectContaining({ metric: 'carbon', title: 'Transport' }),
-      expect.objectContaining({ metric: 'water', title: 'Transport' }),
+      expect.objectContaining({ metric: null, title: 'Transport' }),
     ])
   })
 
   it('refreshes the title and description when a new model is first resolved, keeping the rule ids', async () => {
     const first = await resolvePublicRules(
       createTestEngine({
+        ...PRIVATE_BILAN,
         'footprint . described': {
           public: 'oui',
           titre: 'Transport',
@@ -176,12 +215,7 @@ describe('resolvePublicRules', () => {
     expect(second).toEqual(first)
     expect(await findRules()).toEqual([
       expect.objectContaining({
-        metric: 'carbon',
-        title: 'Mobilité',
-        description: null,
-      }),
-      expect.objectContaining({
-        metric: 'water',
+        metric: null,
         title: 'Mobilité',
         description: null,
       }),
@@ -200,7 +234,7 @@ describe('resolvePublicRules', () => {
       createResolvePublicRules()(engine, modelOf('1.0.0')),
     ])
 
-    expect(await prisma.rule.count()).toBe(2)
+    expect(await prisma.rule.count()).toBe(1)
     expect(second).toEqual(first)
   })
 })
