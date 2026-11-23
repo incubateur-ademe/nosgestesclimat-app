@@ -55,7 +55,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -64,7 +64,7 @@ describe('getUserSimulationJourney', () => {
       .create()
     const latestCompleted = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -92,7 +92,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     const completed = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -138,7 +138,7 @@ describe('getUserSimulationJourney', () => {
       .create()
     const completed = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -179,7 +179,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withDeprecatedComputedResults()
       .params({
         userId: user.id,
@@ -211,7 +211,7 @@ describe('getUserSimulationJourney', () => {
     const user = await userFactory.create()
     const completed = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({
         userId: user.id,

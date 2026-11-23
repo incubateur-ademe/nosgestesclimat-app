@@ -73,7 +73,7 @@ describe('getPollParticipationOptions', () => {
     })
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date('2024-05-01') })
       .create()
@@ -93,7 +93,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     const pollSimulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date('2024-06-01') })
       .create()
@@ -105,7 +105,7 @@ describe('getPollParticipationOptions', () => {
     // Recent completed simulation, eligible for reuse on its own
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date() })
       .create()
@@ -124,7 +124,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     const completedSimulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date() })
       .create()
@@ -143,7 +143,7 @@ describe('getPollParticipationOptions', () => {
     const otherPoll = await pollFactory.create()
     const completedSimulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date() })
       .create()
@@ -166,7 +166,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.scolaire().create()
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date() })
       .create()
@@ -181,7 +181,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     await simulationFactory
       .withModelRegion('ED')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id, date: new Date() })
       .create()
@@ -196,7 +196,7 @@ describe('getPollParticipationOptions', () => {
     const poll = await pollFactory.create()
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({
         userId: user.id,
@@ -227,7 +227,7 @@ describe('getPollParticipationOptions', () => {
     })
     await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

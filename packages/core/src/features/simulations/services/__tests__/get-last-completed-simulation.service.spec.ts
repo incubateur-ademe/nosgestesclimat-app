@@ -49,7 +49,7 @@ describe('getLastCompletedSimulation', () => {
     const [, latest] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -58,7 +58,7 @@ describe('getLastCompletedSimulation', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -92,7 +92,7 @@ describe('getLastCompletedSimulation', () => {
     const [completed] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -123,7 +123,7 @@ describe('getLastCompletedSimulation', () => {
       userFactory.create(),
     ])
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -136,7 +136,7 @@ describe('getLastCompletedSimulation', () => {
   it('returns null when the latest completed simulation has invalid computedResults', async () => {
     const user = await userFactory.create()
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withDeprecatedComputedResults()
       .params({ userId: user.id })
       .create()
@@ -149,7 +149,7 @@ describe('getLastCompletedSimulation', () => {
   it('returns null when the model string cannot be parsed', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -170,7 +170,7 @@ describe('getLastCompletedSimulation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()

@@ -49,7 +49,7 @@ describe('listCompletedSimulations', () => {
     const [older, newer] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -58,7 +58,7 @@ describe('listCompletedSimulations', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -95,7 +95,7 @@ describe('listCompletedSimulations', () => {
     const [completed] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -125,7 +125,7 @@ describe('listCompletedSimulations', () => {
       userFactory.create(),
     ])
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: other.id })
       .create()
@@ -140,7 +140,7 @@ describe('listCompletedSimulations', () => {
     await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -149,7 +149,7 @@ describe('listCompletedSimulations', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -158,7 +158,7 @@ describe('listCompletedSimulations', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -181,7 +181,7 @@ describe('listCompletedSimulations', () => {
       Array.from({ length: 11 }, () =>
         simulationFactory
           .withModelRegion('FR')
-          .completed()
+          .withStatus('full_result_seen')
           .withValidComputedResults()
           .params({
             userId: user.id,
@@ -206,7 +206,7 @@ describe('listCompletedSimulations', () => {
   it('filters out simulations with invalid computedResults', async () => {
     const user = await userFactory.create()
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withDeprecatedComputedResults()
       .params({ userId: user.id })
       .create()
@@ -219,7 +219,7 @@ describe('listCompletedSimulations', () => {
   it('filters out simulations whose model string cannot be parsed', async () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withValidComputedResults()
       .params({ userId: user.id })
       .create()
@@ -241,7 +241,7 @@ describe('listCompletedSimulations', () => {
     const [older, newer] = await Promise.all([
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,
@@ -250,7 +250,7 @@ describe('listCompletedSimulations', () => {
         .create(),
       simulationFactory
         .withModelRegion('FR')
-        .completed()
+        .withStatus('full_result_seen')
         .withValidComputedResults()
         .params({
           userId: user.id,

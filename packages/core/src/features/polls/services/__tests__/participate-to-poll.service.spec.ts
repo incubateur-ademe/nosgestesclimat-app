@@ -377,7 +377,7 @@ const unverified = (user: { id: string }): AppUser => ({
 const completedSimulation = (userId: string) =>
   simulationFactory
     .withModelRegion('FR')
-    .completed()
+    .withStatus('full_result_seen')
     .params({ userId })
     .create()
 

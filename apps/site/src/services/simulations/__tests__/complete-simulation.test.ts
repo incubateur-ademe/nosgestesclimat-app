@@ -251,7 +251,7 @@ const aPayload = (
 ): CompleteSimulationPayload => {
   const simulation = toSimulationDto(
     simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({ foldedSteps: ['transport . voiture . km'] })
       .build()
   )

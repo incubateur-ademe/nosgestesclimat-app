@@ -21,14 +21,17 @@ describe('computePollStats', () => {
     const poll = await pollFactory.withOrganisation(organisation).create()
 
     const validSimulation1 = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPollId(poll.id)
       .create()
     const validSimulation2 = await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .withPollId(poll.id)
       .create()
-    await simulationFactory.started().withPollId(poll.id).create()
+    await simulationFactory
+      .withStatus('answering_major_questions')
+      .withPollId(poll.id)
+      .create()
 
     const { computedResults, participantsCount } = await computePollStats({
       pollId: poll.id,
@@ -50,7 +53,7 @@ describe('computePollStats', () => {
     const poll = await pollFactory.withOrganisation(organisation).create()
 
     await simulationFactory
-      .completed()
+      .withStatus('full_result_seen')
       .params({
         situation: {
           'transport . voiture . km': 12000,

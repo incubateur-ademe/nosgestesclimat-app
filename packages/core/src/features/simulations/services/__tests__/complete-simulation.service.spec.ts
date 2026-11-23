@@ -387,7 +387,7 @@ describe('completeSimulation', () => {
     const user = await userFactory.verified().create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .create()
 

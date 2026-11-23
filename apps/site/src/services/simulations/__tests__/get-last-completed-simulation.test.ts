@@ -50,7 +50,10 @@ describe('getLastCompletedSimulation', () => {
   it('maps the entity to a DTO', async () => {
     const userId = mockAuthenticatedSession()
 
-    const entity = simulationFactory.withModelRegion('FR').completed().build()
+    const entity = simulationFactory
+      .withModelRegion('FR')
+      .withStatus('full_result_seen')
+      .build()
     serviceMock.getLastCompletedSimulation.mockResolvedValue(entity)
 
     const result = await getLastCompletedSimulation()

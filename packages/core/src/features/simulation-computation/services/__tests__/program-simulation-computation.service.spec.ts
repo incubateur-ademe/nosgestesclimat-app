@@ -64,15 +64,18 @@ describe('programSimulationComputation', () => {
   it.each([
     [
       'FR region, current version',
-      () => simulationFactory.completed().withModelRegion('FR'),
+      () =>
+        simulationFactory.withStatus('full_result_seen').withModelRegion('FR'),
     ],
     [
       'a non-FR region, current version',
-      () => simulationFactory.completed().withModelRegion('UK'),
+      () =>
+        simulationFactory.withStatus('full_result_seen').withModelRegion('UK'),
     ],
     [
       'en locale, current version',
-      () => simulationFactory.completed().withModelLocale('en'),
+      () =>
+        simulationFactory.withStatus('full_result_seen').withModelLocale('en'),
     ],
     [
       // The engine registry retrieves any published version, so an outdated
@@ -80,12 +83,15 @@ describe('programSimulationComputation', () => {
       'an outdated published version',
       () =>
         simulationFactory
-          .completed()
+          .withStatus('full_result_seen')
           .withModelVersion({ publishedTag: '0.9.0' }),
     ],
     [
       'a PR version',
-      () => simulationFactory.completed().withModelVersion({ PRNumber: '42' }),
+      () =>
+        simulationFactory
+          .withStatus('full_result_seen')
+          .withModelVersion({ PRNumber: '42' }),
     ],
   ])(
     'creates a pending computation when simulation is finished: %s',
@@ -101,7 +107,9 @@ describe('programSimulationComputation', () => {
   )
 
   it('logs a warning when a computation already exists for the same finished simulation', async () => {
-    const { id } = await simulationFactory.completed().create()
+    const { id } = await simulationFactory
+      .withStatus('full_result_seen')
+      .create()
 
     await programSimulationComputation(id)
     await programSimulationComputation(id)
@@ -112,7 +120,9 @@ describe('programSimulationComputation', () => {
   })
 
   it('propagates a failure from createSimulationComputation', async () => {
-    const { id } = await simulationFactory.completed().create()
+    const { id } = await simulationFactory
+      .withStatus('full_result_seen')
+      .create()
     vi.mocked(createSimulationComputation).mockRejectedValueOnce(
       new Error('db down')
     )

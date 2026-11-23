@@ -192,7 +192,7 @@ describe('login', () => {
       const computedResults = computedResultsFactory.valid().build()
       await simulationFactory
         .params({ userId: verifiedUser.id, computedResults })
-        .completed()
+        .withStatus('full_result_seen')
         .create()
       const verificationCode = await verificationCodeFactory.create({
         email: verifiedUser.email,
@@ -569,7 +569,7 @@ describe('login', () => {
         const computedResults = computedResultsFactory.valid().build()
         const simulation = await simulationFactory
           .params({ userId: unverifiedUser.id, computedResults })
-          .completed()
+          .withStatus('full_result_seen')
           .create()
 
         const result = await login({
@@ -601,7 +601,7 @@ describe('login', () => {
         const unverifiedUser = await userFactory.create()
         await simulationFactory
           .params({ userId: unverifiedUser.id })
-          .completed()
+          .withStatus('full_result_seen')
           .withValidComputedResults()
           .create()
 
@@ -627,7 +627,7 @@ describe('login', () => {
         const unverifiedUser = await userFactory.create()
         await simulationFactory
           .params({ userId: unverifiedUser.id })
-          .started()
+          .withStatus('answering_major_questions')
           .withValidComputedResults()
           .create()
 
@@ -664,7 +664,7 @@ describe('login', () => {
         const unverifiedUser = await userFactory.create()
         await simulationFactory
           .params({ userId: unverifiedUser.id })
-          .completed()
+          .withStatus('full_result_seen')
           .withValidComputedResults()
           .create()
 

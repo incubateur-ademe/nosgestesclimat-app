@@ -60,14 +60,6 @@ class SimulationFactory extends Factory<
     })
   }
 
-  started() {
-    return this.params({ status: 'answering_major_questions' })
-  }
-
-  completed() {
-    return this.params({ status: 'full_result_seen' })
-  }
-
   withComputationStatus(
     status: 'completed' | 'pending' | 'processing' | 'failed'
   ) {

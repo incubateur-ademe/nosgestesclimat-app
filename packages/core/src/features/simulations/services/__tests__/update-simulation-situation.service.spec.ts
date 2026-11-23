@@ -198,7 +198,7 @@ describe('updateSimulationSituation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .create()
 
@@ -229,7 +229,7 @@ describe('updateSimulationSituation', () => {
     const user = await userFactory.create()
     const simulation = await simulationFactory
       .withModelRegion('FR')
-      .completed()
+      .withStatus('full_result_seen')
       .params({ userId: user.id })
       .create()
 
