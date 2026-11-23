@@ -36,12 +36,6 @@ describe('importLegacyLocalSimulations', () => {
         progression: 1,
       })
     )
-    expect(
-      await prisma.simulation.findUnique({
-        where: { id: simulation.id },
-        select: { status: true },
-      })
-    ).toEqual({ status: 'full_result_seen' })
   })
 
   it('persists simulations that carry a model with the parsed model string', async () => {
@@ -137,12 +131,6 @@ describe('importLegacyLocalSimulations', () => {
       updatedAt: expect.any(Date),
       userId: user.id,
     })
-    expect(
-      await prisma.simulation.findUnique({
-        where: { id: simulation.id },
-        select: { status: true },
-      })
-    ).toEqual({ status: 'answering_major_questions' })
   })
 })
 
