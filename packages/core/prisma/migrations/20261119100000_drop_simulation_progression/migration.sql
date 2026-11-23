@@ -1,11 +1,18 @@
 -- `status` is now the only lifecycle information stored. The views keep exposing
 -- a `progression` column, derived from it, so existing warehouse consumers need
 -- no migration.
+--
+-- Both views keep the same existing columns, in the same order, with the same
+-- types (`progression` stays real because every CASE arm is cast to REAL), so
+-- CREATE OR REPLACE VIEW is enough: the view OIDs survive, and with them the
+-- GRANTs and any object built on top of them. Dropping the views would leave
+-- them without privileges until the post-migrate script re-grants them.
+-- ComputedResultsView also gains `status`, which the Prisma model already
+-- declares; CREATE OR REPLACE VIEW only allows appending it at the end.
 
 BEGIN;
 
-DROP VIEW "ngc_anon"."Simulation";
-CREATE VIEW "ngc_anon"."Simulation" AS
+CREATE OR REPLACE VIEW "ngc_anon"."Simulation" AS
 SELECT
     "id",
     "date",
@@ -24,8 +31,7 @@ SELECT
     "updatedAt"
 FROM "ngc"."Simulation";
 
-DROP VIEW "ngc"."ComputedResultsView";
-CREATE VIEW "ngc"."ComputedResultsView" AS
+CREATE OR REPLACE VIEW "ngc"."ComputedResultsView" AS
 SELECT id,
     date,
     CASE
@@ -44,7 +50,11 @@ SELECT id,
     cast ("computedResults"->'eau'->'categories'->>'transport' as float) / 365 as transportEauJour,
     cast ("computedResults"->'eau'->'categories'->>'alimentation' as float) / 365 as alimentationEauJour,
     cast ("computedResults"->'eau'->'categories'->>'logement' as float) / 365 as logementEauJour,
-    cast ("computedResults"->'eau'->'categories'->>'divers' as float) / 365 as diversEauJour
+    cast ("computedResults"->'eau'->'categories'->>'divers' as float) / 365 as diversEauJour,
+    -- Appended last because CREATE OR REPLACE VIEW can only add columns at the
+    -- end. The Prisma model declares it between `progression` and `createdAt`,
+    -- which is harmless: Prisma maps columns by name, not by position.
+    "status"
 FROM ngc."Simulation";
 
 DROP VIEW "ngc_anon"."event_computation";
