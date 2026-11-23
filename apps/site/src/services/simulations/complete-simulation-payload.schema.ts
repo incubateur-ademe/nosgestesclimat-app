@@ -1,9 +1,7 @@
 import { ModelStringSchema } from '@nosgestesclimat/core/features/models/types/model'
+import { COMPLETED_SIMULATION_STATUSES } from '@nosgestesclimat/core/features/simulations/helpers/simulation-guards'
 import { ComputedResultsSchema } from '@nosgestesclimat/core/features/simulations/validators/computed-results.schema'
-import {
-  ProgressionSchema,
-  SimulationStatusSchema,
-} from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
+import { ProgressionSchema } from '@nosgestesclimat/core/features/simulations/validators/simulation.schema'
 import {
   FoldedStepsSchema,
   SituationSchema,
@@ -17,7 +15,7 @@ export const CompleteSimulationPayloadSchema = v.strictObject({
   // would judge computability from the persisted, possibly outdated model.
   model: ModelStringSchema,
   progression: ProgressionSchema,
-  status: SimulationStatusSchema,
+  status: v.picklist(COMPLETED_SIMULATION_STATUSES),
   situation: SituationSchema,
   foldedSteps: FoldedStepsSchema,
   computedResults: ComputedResultsSchema,
