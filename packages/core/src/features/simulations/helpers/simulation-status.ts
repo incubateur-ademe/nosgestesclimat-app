@@ -1,4 +1,4 @@
-import type { SimulationStatus } from '../../../prisma/generated/client.ts'
+import type { SimulationStatus } from '../types/simulation.ts'
 
 /**
  * Derives the status persisted alongside a progression value. Until the
