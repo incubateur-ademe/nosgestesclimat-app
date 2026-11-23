@@ -1,6 +1,6 @@
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import type { ModelString } from '@nosgestesclimat/core/features/models/helpers/model-versions'
-import type { SimulationStatus } from '@nosgestesclimat/core/prisma/generated/client'
+import type { SimulationStatus } from '@nosgestesclimat/core/features/simulations/types/simulation'
 import type {
   ComputedResults,
   Situation,
