@@ -10,6 +10,7 @@ import { findSimulationById } from '../../repository/simulation.repository.ts'
 import type { LegacySimulationInput } from '../import-legacy-local-simulations.service.ts'
 import { importLegacyLocalSimulations } from '../import-legacy-local-simulations.service.ts'
 
+// @TODO: delete this temp file when usued
 describe('importLegacyLocalSimulations', () => {
   afterEach(async () => {
     await emptyDatabase(prisma)
