@@ -20,3 +20,10 @@ export interface Simulation {
 }
 
 export type SimulationMode = 'scolaire' | 'standard'
+
+export type SimulationStatus =
+  | 'not_started'
+  | 'answering_major_questions'
+  | 'major_questions_result_seen'
+  | 'answering_minor_questions'
+  | 'full_result_seen'
