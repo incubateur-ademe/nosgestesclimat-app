@@ -1438,18 +1438,18 @@ entries:
   save-results-form.verification.button-label: Enregistrer mes résultats
   group.ranking.expand.button.label.plural: Afficher les {{croppedParticipantsLength}} autres participants
   group.ranking.expand.button.label.singular: Afficher 1 autre participant
-  results.footprintBlock.carbone.comparison.less: '{{delta}} {{unit}} de moins que la moyenne'
-  results.footprintBlock.carbone.comparison.more: '{{delta}} {{unit}} de plus que la moyenne'
+  results.footprintBlock.carbone.comparison.less: '{{delta}} {{unit}} de moins que la moyenne de nos utilisateurs*'
+  results.footprintBlock.carbone.comparison.more: '{{delta}} {{unit}} de plus que la moyenne de nos utilisateurs*'
   results.footprintBlock.carbone.info.impact: 'Ces gaz retiennent la chaleur dans l’atmosphère : plus ils s’accumulent, plus le climat se réchauffe, avec des canicules, sécheresses et inondations plus fréquentes.'
   results.footprintBlock.carbone.info.label: Qu’est-ce que l’empreinte carbone ?
   results.footprintBlock.carbone.message.above: <0>Il est toujours temps de réduire votre impact !</0> Explorez les actions que vous pourriez mettre en place à votre échelle pour faire baisser vos émissions.
   results.footprintBlock.carbone.title: Votre empreinte carbone
   results.footprintBlock.carbone.unitSuffix: de CO₂e / an
-  results.footprintBlock.carbone.message.below: <0>Bravo, vous montrez que c’est possible !</0> Votre empreinte tire notre moyenne vers le bas. Continuez sur votre lancée, et embarquez vos proches !
+  results.footprintBlock.carbone.message.below: <0>Bravo, vous montrez que c’est possible !</0> Votre empreinte tire la moyenne de nos utilisateurs vers le bas. Continuez sur votre lancée, et embarquez vos proches !
   results.footprintBlock.carbone.message.close: <0>Votre empreinte carbone est proche de celle de millions d’utilisateurs.</0> Ensemble, nous pouvons encore limiter les émissions de gaz à effet de serre. Consultez nos propositions d’actions et embarquez vos proches.
-  results.footprintBlock.carbone.comparison.equal: Égal à la moyenne
-  results.footprintBlock.carbone.chart.average: Moyenne des participants
-  results.footprintBlock.carbone.chart.label: 'Votre empreinte : {{footprint}}. Moyenne des participants : {{average}}. Objectif 2050 : {{objective}}.'
+  results.footprintBlock.carbone.comparison.equal: Égal à la moyenne de nos utilisateurs*
+  results.footprintBlock.carbone.chart.average: Moyenne de nos utilisateurs*
+  results.footprintBlock.carbone.chart.label: 'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.'
   results.footprintBlock.carbone.chart.objective: Objectif 2050
   results.footprintBlock.carbone.chart.you: Vous
   errors.unexpected: Une erreur innattendue s'est produite. Veuillez réessayer.
@@ -1525,3 +1525,4 @@ entries:
   results.footprintBlock.carbone.objective.info.everyone: Réduire les émissions de gaz à effet de serre, c’est l’affaire de tous ! Citoyens, associations, collectivités, entreprises, pouvoirs publics… nous avons tous un rôle à jouer.
   results.footprintBlock.carbone.objective.info.neutrality: Pour limiter le changement climatique sous 2 °C, il faut rétablir un équilibre entre la quantité de gaz émis et la capacité de la planète à les absorber. C’est ce qu’on appelle la <2>neutralité carbone</2>. L’objectif est d’atteindre cet équilibre en 2050.
   results.footprintBlock.carbone.objective.info.target: Atteindre la neutralité carbone, c’est possible si nous émettons <2>moins de 2 tonnes de CO₂e par personne et par an</2>.
+  results.footprintBlock.carbone.legend: '* Moyenne de nos utilisateurs (plus de 600 000 simulations par an).'

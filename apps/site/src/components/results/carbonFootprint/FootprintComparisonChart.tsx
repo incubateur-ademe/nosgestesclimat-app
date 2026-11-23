@@ -18,9 +18,10 @@ import {
 
 interface Props {
   value: number
-  /** Tells apart the ids of the charts rendered on mobile and on desktop */
-  idPrefix: string
+  variant: 'inline' | 'aside'
   className?: string
+  /** Id of the footnote explaining the “*” on the average */
+  describedById?: string
 }
 
 interface Bar {
@@ -29,7 +30,6 @@ interface Bar {
   nameClassName: string
   /** Popover explaining the bar, next to its name */
   info?: ReactNode
-  /** Id of the popover button that a click on the bar opens */
   opensInfoId?: string
   percent: number
   /** Where the value sits along the bar, when it differs from its length */
@@ -78,8 +78,9 @@ function targetStyle(percent: number, delayMs: number) {
 
 export default async function FootprintComparisonChart({
   value,
-  idPrefix,
+  variant,
   className,
+  describedById,
 }: Props) {
   const locale = await getLocale()
   const { t } = await getServerTranslation()
@@ -92,7 +93,7 @@ export default async function FootprintComparisonChart({
 
   const ariaLabel = t(
     'results.footprintBlock.carbone.chart.label',
-    'Votre empreinte : {{footprint}}. Moyenne des participants : {{average}}. Objectif 2050 : {{objective}}.',
+    'Votre empreinte : {{footprint}}. Moyenne de nos utilisateurs : {{average}}. Objectif 2050 : {{objective}}.',
     {
       footprint: formatTons(value, locale, t, false),
       average: formatTons(AVERAGE_FOOTPRINT_KG, locale, t, false),
@@ -100,8 +101,8 @@ export default async function FootprintComparisonChart({
     }
   )
 
-  // Lets the objective bar open the popover of its name
-  const objectiveInfoButtonId = `${idPrefix}-objective-info`
+  const isAside = variant === 'aside'
+  const objectiveInfoButtonId = `footprint-chart-${variant}-objective-info`
 
   const objectiveInfoTitle = t(
     'results.footprintBlock.carbone.objective.info.title',
@@ -134,7 +135,7 @@ export default async function FootprintComparisonChart({
       key: 'average',
       name: (
         <Trans i18nKey="results.footprintBlock.carbone.chart.average">
-          Moyenne des participants
+          Moyenne de nos utilisateurs*
         </Trans>
       ),
       nameClassName: 'text-slate-600',
@@ -159,14 +160,9 @@ export default async function FootprintComparisonChart({
           label={objectiveInfoTitle}
           title={objectiveInfoTitle}
           icon={<Target aria-hidden="true" className="size-5" />}
-          // On desktop the chart sits on the right of the hero: the popover
-          // opens on its left, hanging down from the button so that it leaves
-          // the bars visible
-          desktopPlacement={{
-            side: 'left',
-            alignOffset: -16,
-            withArrow: true,
-          }}>
+          side={isAside ? 'left' : undefined}
+          alignOffset={isAside ? -16 : undefined}
+          withArrow={isAside}>
           <p className="mb-0">
             <Trans i18nKey="results.footprintBlock.carbone.objective.info.everyone">
               Réduire les émissions de gaz à effet de serre, c’est l’affaire de
@@ -225,12 +221,11 @@ export default async function FootprintComparisonChart({
   const lowPercent = Math.min(percents.footprint, percents.average)
   const highPercent = Math.max(percents.footprint, percents.average)
 
-  // Under `lg`, the chart sits under the text: it shrinks, and leaves out the
-  // average line and the gap, which the pill above already states
   return (
     <div
       role="group"
       aria-label={ariaLabel}
+      aria-describedby={describedById}
       className={cn(
         'w-full text-xs md:mx-auto md:w-65 lg:w-98 lg:text-sm',
         className
@@ -309,7 +304,10 @@ export default async function FootprintComparisonChart({
         {bars.map((bar) => (
           <span
             key={bar.key}
-            className={cn('flex-1 text-center lg:max-w-22', bar.nameClassName)}>
+            className={cn(
+              'flex-1 text-center text-balance lg:max-w-22',
+              bar.nameClassName
+            )}>
             <span aria-hidden="true">{bar.name}</span>
             {bar.info}
           </span>

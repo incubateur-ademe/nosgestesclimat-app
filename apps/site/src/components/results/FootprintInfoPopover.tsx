@@ -8,24 +8,10 @@ import {
 } from '@/design-system/shadcn/popover'
 import { cn } from 'cn'
 import { Globe, Info } from 'lucide-react'
-import {
-  useSyncExternalStore,
-  type ComponentProps,
-  type ReactNode,
-} from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
-type Side = ComponentProps<typeof PopoverContent>['side']
-
-interface Placement {
-  side?: Side
-  alignOffset?: number
-  /** Points at the button, for a popover opened beside it */
-  withArrow?: boolean
-}
-
-interface Props extends Placement {
+interface Props {
   className?: string
-  /** Id of the button, for a control that opens the popover from elsewhere */
   triggerId?: string
   label: string
   title: ReactNode
@@ -33,27 +19,11 @@ interface Props extends Placement {
   /** Shown next to the title, as an element: a server component cannot hand
    * a component over to this client one */
   icon?: ReactNode
+  side?: ComponentProps<typeof PopoverContent>['side']
   align?: ComponentProps<typeof PopoverContent>['align']
-  /** Replaces the placement from the `lg` breakpoint */
-  desktopPlacement?: Placement
-}
-
-const DESKTOP_QUERY = '(min-width: 1024px)'
-
-function subscribeToDesktopQuery(onChange: () => void) {
-  const query = window.matchMedia(DESKTOP_QUERY)
-  query.addEventListener('change', onChange)
-  return () => query.removeEventListener('change', onChange)
-}
-
-const subscribeToNothing = () => () => {}
-
-function useIsDesktop(isEnabled: boolean) {
-  return useSyncExternalStore(
-    isEnabled ? subscribeToDesktopQuery : subscribeToNothing,
-    () => isEnabled && window.matchMedia(DESKTOP_QUERY).matches,
-    () => false
-  )
+  alignOffset?: number
+  /** Points at the button, for a popover opened beside it */
+  withArrow?: boolean
 }
 
 export default function FootprintInfoPopover({
@@ -63,17 +33,11 @@ export default function FootprintInfoPopover({
   title,
   children,
   icon = <Globe aria-hidden="true" className="size-5" />,
+  side,
   align = 'start',
-  desktopPlacement,
-  ...mobilePlacement
+  alignOffset,
+  withArrow = false,
 }: Props) {
-  const isDesktop = useIsDesktop(!!desktopPlacement)
-  const {
-    side,
-    alignOffset,
-    withArrow = false,
-  } = isDesktop && desktopPlacement ? desktopPlacement : mobilePlacement
-
   return (
     <Popover>
       <PopoverTrigger asChild>

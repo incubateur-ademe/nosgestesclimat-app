@@ -60,18 +60,18 @@ export default async function CarbonFootprintHero({
   if (deltaKg === 0) {
     comparisonLabel = t(
       'results.footprintBlock.carbone.comparison.equal',
-      'Égal à la moyenne'
+      'Égal à la moyenne de nos utilisateurs*'
     )
   } else if (deltaKg > 0) {
     comparisonLabel = t(
       'results.footprintBlock.carbone.comparison.more',
-      '{{delta}} {{unit}} de plus que la moyenne',
+      '{{delta}} {{unit}} de plus que la moyenne de nos utilisateurs*',
       deltaValues
     )
   } else {
     comparisonLabel = t(
       'results.footprintBlock.carbone.comparison.less',
-      '{{delta}} {{unit}} de moins que la moyenne',
+      '{{delta}} {{unit}} de moins que la moyenne de nos utilisateurs*',
       deltaValues
     )
   }
@@ -92,8 +92,7 @@ export default async function CarbonFootprintHero({
 
           {/* The big figure's line box overflows its glyphs, mostly below the
             baseline: from `md`, the negative margins bring the title and the
-            pill visually as close to it as they are to each other. On mobile,
-            the figure gets more room around it. */}
+            pill visually as close to it as they are to each other. */}
           <div className="mt-1 mb-3 flex items-baseline-last gap-x-2.5 gap-y-1 md:-mt-2 md:-mb-2 md:flex-wrap md:gap-x-3.5">
             <p
               data-testid="carbon-footprint-value"
@@ -159,8 +158,9 @@ export default async function CarbonFootprintHero({
 
         <FootprintComparisonChart
           value={value}
-          idPrefix="footprint-chart-inline"
+          variant="inline"
           className="lg:hidden"
+          describedById="footprint-average-legend"
         />
 
         <p className="mb-0 max-w-[46ch] leading-normal text-slate-600">
@@ -190,8 +190,8 @@ export default async function CarbonFootprintHero({
                 <strong className="text-default">
                   Bravo, vous montrez que c’est possible !
                 </strong>{' '}
-                Votre empreinte tire notre moyenne vers le bas. Continuez sur
-                votre lancée, et embarquez vos proches !
+                Votre empreinte tire la moyenne de nos utilisateurs vers le bas.
+                Continuez sur votre lancée, et embarquez vos proches !
               </Trans>
             ))
             .exhaustive()}
@@ -210,12 +210,21 @@ export default async function CarbonFootprintHero({
             →
           </span>
         </ButtonLink>
+
+        <p
+          id="footprint-average-legend"
+          className="mb-0 text-sm text-slate-600">
+          <Trans i18nKey="results.footprintBlock.carbone.legend">
+            * Moyenne de nos utilisateurs (plus de 600 000 simulations par an).
+          </Trans>
+        </p>
       </div>
 
       <FootprintComparisonChart
         value={value}
-        idPrefix="footprint-chart-aside"
+        variant="aside"
         className="hidden lg:block"
+        describedById="footprint-average-legend"
       />
     </div>
   )
