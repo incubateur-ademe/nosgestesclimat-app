@@ -10,7 +10,7 @@ interface Props {
   relevantQuestions: DottedName[]
   updateCurrentSimulation: (simulation: UpdateCurrentSimulationProps) => void
   /** Absent when there is no persisted simulation yet. */
-  currentStored: Pick<Simulation, 'status'> | undefined
+  currentStoredStatus: Pick<Simulation, 'status'> | undefined
 }
 
 /**
@@ -21,7 +21,7 @@ export default function useSimulationStatus({
   remainingQuestions,
   relevantQuestions,
   updateCurrentSimulation,
-  currentStored,
+  currentStoredStatus,
 }: Props) {
   const completion = useMemo(
     () =>
@@ -42,12 +42,12 @@ export default function useSimulationStatus({
 
     // Never retrograde a simulation which is already completed
     if (
-      currentStored &&
-      isSimulationCompleted(currentStored) &&
+      currentStoredStatus &&
+      isSimulationCompleted(currentStoredStatus) &&
       !isSimulationCompleted({ status })
     )
       return
 
     updateCurrentSimulation({ status })
-  }, [completion, updateCurrentSimulation, currentStored])
+  }, [completion, updateCurrentSimulation, currentStoredStatus])
 }
