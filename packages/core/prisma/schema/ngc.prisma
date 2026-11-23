@@ -406,6 +406,7 @@ model Simulation {
   @@index([createdAt, id])
   // Read by the PostHog warehouse sync and ordered by the retention sweep.
   @@index([updatedAt])
+  @@index([status])
   @@schema("ngc")
 }
 
