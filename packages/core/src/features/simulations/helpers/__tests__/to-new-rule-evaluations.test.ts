@@ -49,8 +49,8 @@ describe('toNewRuleEvaluations', () => {
     ])
   })
 
-  it('drops the links to missing variables that were not evaluated', () => {
-    expect(
+  it('throws on a missing variable that was not evaluated', () => {
+    expect(() =>
       toNewRuleEvaluations(
         SIMULATION_ID,
         [
@@ -63,14 +63,9 @@ describe('toNewRuleEvaluations', () => {
         ],
         rules
       )
-    ).toEqual([
-      {
-        simulationId: SIMULATION_ID,
-        ruleId: 2,
-        applicable: undefined,
-        missingVariables: [],
-      },
-    ])
+    ).toThrow(
+      'Invariant: no evaluation found for missing variable "carbon:not evaluated"'
+    )
   })
 
   it('throws on an evaluation without a stored rule', () => {
@@ -87,6 +82,6 @@ describe('toNewRuleEvaluations', () => {
         ],
         rules
       )
-    ).toThrow('No stored rule for footprint (water)')
+    ).toThrow('Invariant: no rule found for evaluation "water:footprint"')
   })
 })

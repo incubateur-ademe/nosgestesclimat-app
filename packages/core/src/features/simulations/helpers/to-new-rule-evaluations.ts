@@ -30,12 +30,16 @@ export const toNewRuleEvaluations = (
       simulationId,
       ruleId: ruleIdOf(ruleIdByKey, metric, name),
       ...evaluation,
-      missingVariables: missingVariables
-        .filter((missing) => evaluated.has(ruleKey(metric, missing.name)))
-        .map((missing) => ({
+      missingVariables: missingVariables.map((missing) => {
+        if (!evaluated.has(ruleKey(metric, missing.name)))
+          throw new Error(
+            `Invariant: no evaluation found for missing variable "${ruleKey(metric, missing.name)}"`
+          )
+        return {
           ruleId: ruleIdOf(ruleIdByKey, metric, missing.name),
           weight: missing.weight,
-        })),
+        }
+      }),
     })
   )
 }
@@ -47,7 +51,9 @@ const ruleIdOf = (
 ): number => {
   const id = ruleIdByKey.get(ruleKey(metric, name))
   if (id === undefined) {
-    throw new Error(`No stored rule for ${name} (${metric})`)
+    throw new Error(
+      `Invariant: no rule found for evaluation "${ruleKey(metric, name)}"`
+    )
   }
   return id
 }
