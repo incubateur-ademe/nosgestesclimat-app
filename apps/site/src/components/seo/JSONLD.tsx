@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import serialize from 'serialize-javascript'
 
 export default function JSONLD({
@@ -5,6 +8,14 @@ export default function JSONLD({
 }: {
   jsonLd: Record<string, unknown>[]
 }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
     <script
       type="application/ld+json"
