@@ -7,7 +7,6 @@ import type {
   UnverifiedUser,
   VerifiedUser,
 } from '@nosgestesclimat/core/features/users/types/user'
-import { getCarbonFootprintElem } from '../helpers/carbon-footprint'
 import { signIn } from '../helpers/session'
 import { test as base, expect } from '../local/fixtures'
 import { NGCTest } from '../page-objects/ngc-test'
@@ -72,7 +71,8 @@ base.describe('Given a user that completed a test without an account', () => {
   })
 
   test('should display the carbon footprint', async ({ page }) => {
-    const carbonFootprintElem = getCarbonFootprintElem(page)
+    // The results hero shows the figure and its unit in separate elements
+    const carbonFootprintElem = page.getByTestId('carbon-footprint-value')
     await expect(carbonFootprintElem).toBeInViewport()
 
     const carbonFootprintResult = parseFloat(
