@@ -10,7 +10,7 @@ interface Props {
   relevantQuestions: DottedName[]
   updateCurrentSimulation: (simulation: UpdateCurrentSimulationProps) => void
   /** Absent when there is no persisted simulation yet. */
-  currentStoredStatus: Pick<Simulation, 'status'> | undefined
+  currentStoredStatus: Simulation['status'] | undefined
 }
 
 /**
@@ -42,8 +42,8 @@ export default function useSimulationStatus({
 
     // Never retrograde a simulation which is already completed
     if (
-      currentStoredStatus &&
-      isSimulationCompleted(currentStoredStatus) &&
+      currentStoredStatus !== undefined &&
+      isSimulationCompleted({ status: currentStoredStatus }) &&
       !isSimulationCompleted({ status })
     )
       return

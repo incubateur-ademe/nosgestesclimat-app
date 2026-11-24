@@ -6,6 +6,7 @@ import type {
   SuggestionValue,
 } from '@incubateur-ademe/nosgestesclimat'
 import type { UserSession } from '@nosgestesclimat/core/features/auth/types/user-session'
+import type { SimulationStatus } from '@nosgestesclimat/core/features/simulations/types/simulation'
 import type PublicodesEngine from 'publicodes'
 import type {
   EvaluatedNode,

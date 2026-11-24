@@ -99,7 +99,7 @@ function FormProvider({ root, children }: PropsWithChildren<Props>) {
     remainingQuestions: reorderedRemainingQuestions,
     relevantQuestions: reorderedRelevantQuestions,
     updateCurrentSimulation,
-    currentStored: simulation,
+    currentStoredStatus: simulation?.status,
   })
 
   return (

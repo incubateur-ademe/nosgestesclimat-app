@@ -10,6 +10,61 @@
 -- ComputedResultsView also gains `status`, which the Prisma model already
 -- declares; CREATE OR REPLACE VIEW only allows appending it at the end.
 
+-- The event counter query scans completed simulations by creation date. The old
+-- index is partial on the `progression` column that this migration drops:
+-- rebuild it on `status` first, so the materialized view below does not scan the
+-- whole table. Prisma applies migration files without a transaction, which is
+-- what CREATE INDEX CONCURRENTLY requires.
+DROP INDEX CONCURRENTLY IF EXISTS "ngc"."Simulation_createdAt_id_idx";
+CREATE INDEX CONCURRENTLY "Simulation_createdAt_id_idx"
+  ON "ngc"."Simulation" ("createdAt", "id")
+  WHERE "status" = 'full_result_seen';
+
+-- Build the new materialized view under a temporary name, outside the swap
+-- transaction: readers keep hitting the old view while this runs. The
+-- `DROP ... IF EXISTS` makes a retry after a failed build safe.
+DROP MATERIALIZED VIEW IF EXISTS "ngc"."event_computation_next";
+
+CREATE MATERIALIZED VIEW "ngc"."event_computation_next" AS
+WITH sims AS MATERIALIZED (
+    SELECT
+        e."id" AS "eventId",
+        s."id" AS "simulationId"
+    FROM "ngc"."Event" e
+    LEFT JOIN LATERAL (
+        SELECT s."id"
+        FROM "ngc"."Simulation" s
+        WHERE s."status" = 'full_result_seen'
+          AND s."createdAt" >= e."startDate"
+          AND s."createdAt" <= e."endDate"
+        -- Without OFFSET 0 the planner flattens this subquery and turns the
+        -- event window back into a join filter applied after the joins, which
+        -- makes the refresh scan every completed simulation ever stored.
+        OFFSET 0
+    ) s ON TRUE
+)
+SELECT
+    "eventId",
+    NULL::TEXT AS "organisationId",
+    COUNT("simulationId")::INTEGER AS "simulationsCount"
+FROM sims
+GROUP BY "eventId"
+
+UNION ALL
+
+SELECT
+    sims."eventId",
+    p."organisationId",
+    COUNT(DISTINCT sims."simulationId")::INTEGER AS "simulationsCount"
+FROM sims
+INNER JOIN "ngc"."SimulationPoll" sp ON sp."simulationId" = sims."simulationId"
+INNER JOIN "ngc"."Poll" p ON p."id" = sp."pollId"
+WHERE p."organisationId" IS NOT NULL
+GROUP BY sims."eventId", p."organisationId";
+
+CREATE UNIQUE INDEX "event_computation_next_eventId_organisationId_key"
+  ON "ngc"."event_computation_next" ("eventId", "organisationId");
+
 BEGIN;
 
 CREATE OR REPLACE VIEW "ngc_anon"."Simulation" AS
@@ -17,7 +72,7 @@ SELECT
     "id",
     "date",
     CASE
-        WHEN "status" IN ('major_questions_result_seen', 'full_result_seen') THEN 1::REAL
+        WHEN "status" = 'full_result_seen' THEN 1::REAL
         WHEN "status" = 'not_started' THEN 0::REAL
         ELSE 0.5::REAL
     END AS "progression",
@@ -35,7 +90,7 @@ CREATE OR REPLACE VIEW "ngc"."ComputedResultsView" AS
 SELECT id,
     date,
     CASE
-        WHEN "status" IN ('major_questions_result_seen', 'full_result_seen') THEN 1::REAL
+        WHEN "status" = 'full_result_seen' THEN 1::REAL
         WHEN "status" = 'not_started' THEN 0::REAL
         ELSE 0.5::REAL
     END AS "progression",
@@ -59,44 +114,11 @@ FROM ngc."Simulation";
 
 DROP VIEW "ngc_anon"."event_computation";
 DROP MATERIALIZED VIEW "ngc"."event_computation";
+ALTER MATERIALIZED VIEW "ngc"."event_computation_next" RENAME TO "event_computation";
+ALTER INDEX "ngc"."event_computation_next_eventId_organisationId_key"
+  RENAME TO "event_computation_eventId_organisationId_key";
 
-CREATE MATERIALIZED VIEW "ngc"."event_computation" AS
-WITH sims AS MATERIALIZED (
-    SELECT
-        e."id" AS "eventId",
-        s."id" AS "simulationId"
-    FROM "ngc"."Event" e
-    LEFT JOIN LATERAL (
-        SELECT s."id"
-        FROM "ngc"."Simulation" s
-        WHERE s."status" IN ('major_questions_result_seen', 'full_result_seen')
-          AND s."createdAt" >= e."startDate"
-          AND s."createdAt" <= e."endDate"
-        OFFSET 0
-    ) s ON TRUE
-)
-SELECT
-    "eventId",
-    NULL::TEXT AS "organisationId",
-    COUNT("simulationId")::INTEGER AS "simulationsCount"
-FROM sims
-GROUP BY "eventId"
-
-UNION ALL
-
-SELECT
-    sims."eventId",
-    p."organisationId",
-    COUNT(DISTINCT sims."simulationId")::INTEGER AS "simulationsCount"
-FROM sims
-INNER JOIN "ngc"."SimulationPoll" sp ON sp."simulationId" = sims."simulationId"
-INNER JOIN "ngc"."Poll" p ON p."id" = sp."pollId"
-WHERE p."organisationId" IS NOT NULL
-GROUP BY sims."eventId", p."organisationId";
-
-CREATE UNIQUE INDEX "event_computation_eventId_organisationId_key"
-  ON "ngc"."event_computation" ("eventId", "organisationId");
-
+-- Reads the materialized view, so it is as fresh as the last refresh.
 CREATE VIEW "ngc_anon"."event_computation" AS
 SELECT
     "eventId",
@@ -106,10 +128,8 @@ FROM "ngc"."event_computation";
 
 COMMIT;
 
--- The event counter query scans completed simulations by creation date.
-DROP INDEX CONCURRENTLY IF EXISTS "ngc"."Simulation_createdAt_id_idx";
-CREATE INDEX CONCURRENTLY "Simulation_createdAt_id_idx"
-  ON "ngc"."Simulation" ("createdAt", "id")
-  WHERE "status" IN ('major_questions_result_seen', 'full_result_seen');
-
-ALTER TABLE "ngc"."Simulation" DROP COLUMN "progression";
+-- Destructive and irreversible: take a backup, and make sure the code reading
+-- `status` is live before applying. Kept last so every view above stops reading
+-- the column first. If the deployment runs migrations before switching traffic
+-- to the new code, move this statement to a follow-up release.
+ALTER TABLE "ngc"."Simulation" DROP COLUMN IF EXISTS "progression";
