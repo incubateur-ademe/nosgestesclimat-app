@@ -26,6 +26,7 @@ import { cn } from 'cn'
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { ActionCommitmentBanner } from './_components/ActionCommitmentBanner'
+import ActionDetailJSONLD from './_components/ActionDetailJSONLD'
 import { ActionMedia } from './_components/ActionMedia'
 import { Section, SectionTitle } from './_components/Section'
 
@@ -79,7 +80,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     title: action.metadata.title ?? action.title,
     description: action.metadata.description ?? action.longDescription,
     alternates: {
-      canonical: ACTION_DETAIL_PATH(action.theme.slug, actionSlug),
+      canonical: ACTION_DETAIL_PATH(action.theme.slug, action.slug),
       languages,
     },
   })
@@ -131,6 +132,7 @@ export default async function ActionPage({ params, searchParams }: Props) {
   return (
     <div className="pt-2">
       <ActionTracker eventName="consulted" action={action} />
+      <ActionDetailJSONLD action={action} />
       <GoBackLink
         href={
           from && from in FROM_PATH_MAP
