@@ -1,10 +1,12 @@
 import {
+  isMajorQuestion,
   MUST_ASK_QUESTIONS,
   MUST_NOT_ASK_QUESTIONS,
   NON_PRIORITY_QUESTIONS,
   PRIORITY_QUESTIONS,
 } from '@/publicodes-state/constants/questions'
 import getSortedQuestionsList from '@/publicodes-state/helpers/getSortedQuestionsList'
+import moveLastQuestionsToTheEnd from '@/publicodes-state/helpers/moveLastQuestionsToTheEnd'
 import type { DottedName } from '@incubateur-ademe/nosgestesclimat'
 import { utils } from 'publicodes'
 import { useCallback, useMemo } from 'react'
@@ -39,6 +41,11 @@ export default function useQuestions({
   everyQuestions,
   everyMosaicChildrenWithParent,
 }: Props) {
+  const majorQuestions = useMemo(
+    () => everyQuestions.filter(isMajorQuestion),
+    [everyQuestions]
+  )
+
   const missingVariables = useMemo(
     () => {
       const tempMissingVariables = Object.fromEntries(
@@ -47,7 +54,7 @@ export default function useQuestions({
             safeEvaluate(root)?.missingVariables || {}
           ) as Entries<MissingVariables>
         ).filter((missingVariable) =>
-          everyQuestions.includes(missingVariable[0])
+          majorQuestions.includes(missingVariable[0])
         )
       ) as MissingVariables
 
@@ -58,6 +65,9 @@ export default function useQuestions({
           DottedName[],
         ][]
       ).forEach(([mosaicParent, mosaicChildren]) => {
+        if (!isMajorQuestion(mosaicParent)) {
+          return
+        }
         // We avoid considering raw missing variable for mosaic parent but calculate score from children
         if (tempMissingVariables[mosaicParent]) {
           delete tempMissingVariables[mosaicParent]
@@ -111,23 +121,25 @@ export default function useQuestions({
       return tempMissingVariables
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [safeEvaluate, root, everyQuestions, situation]
+    [safeEvaluate, root, majorQuestions, situation]
   )
 
   const sortQuestions = useCallback(
     (questions: DottedName[]) =>
-      getSortedQuestionsList({
-        questions,
-        categories,
-        subcategories,
-        missingVariables,
-      }),
+      moveLastQuestionsToTheEnd(
+        getSortedQuestionsList({
+          questions,
+          categories,
+          subcategories,
+          missingVariables,
+        })
+      ),
     [categories, subcategories, missingVariables]
   )
 
   const remainingQuestions = useMemo(() => {
     // We take every questions
-    const questionsToSort = everyQuestions
+    const questionsToSort = majorQuestions
       // We remove all that are in mosaics,
       .filter(
         (question) =>
@@ -148,7 +160,7 @@ export default function useQuestions({
     return sortQuestions(questionsToSort)
   }, [
     everyMosaicChildrenWithParent,
-    everyQuestions,
+    majorQuestions,
     foldedSteps,
     missingVariables,
     sortQuestions,
@@ -158,12 +170,12 @@ export default function useQuestions({
     () =>
       foldedSteps.filter((foldedStep) => {
         // checks that there is still a question associated to the folded step
-        if (!everyQuestions.includes(foldedStep)) {
+        if (!majorQuestions.includes(foldedStep)) {
           return false
         }
         return true
       }),
-    [foldedSteps, everyQuestions]
+    [foldedSteps, majorQuestions]
   )
 
   const sortedRelevantQuestions = sortQuestions(
