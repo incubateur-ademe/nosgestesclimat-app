@@ -55,10 +55,21 @@ export function createEvaluateSimulation(deps: EvaluateSimulationDeps) {
     const publicRuleSet = new Set(
       publicRules.map(({ name, metric }) => ruleKey(metric, name))
     )
+    const missing = evaluations.filter(
+      ({ name, metric }) => !publicRuleSet.has(ruleKey(metric, name))
+    )
+
+    if (missing.length > 0) {
+      logger.info('Upserting rules', {
+        rules: missing.map(({ name, metric }) => ({ name, metric })),
+      })
+    }
+
     const missingRules = await upsertRules(
-      evaluations
-        .filter(({ name, metric }) => !publicRuleSet.has(ruleKey(metric, name)))
-        .map(({ name, metric }) => ({ metric, ...getModelRule(engine, name) })),
+      missing.map(({ name, metric }) => ({
+        metric,
+        ...getModelRule(engine, name),
+      })),
       { session }
     )
 
