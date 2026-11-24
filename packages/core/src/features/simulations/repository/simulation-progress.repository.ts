@@ -1,8 +1,14 @@
 import { prisma } from '../../../prisma/client.ts'
 import type { SimulationStatus } from '../../../prisma/generated/client.ts'
 import type { ModelString } from '../../models/helpers/model-versions.ts'
-import { COMPLETED_SIMULATION_STATUSES } from '../helpers/simulation-guards.ts'
-import type { SimulationProgress } from '../types/simulation-progress.ts'
+import {
+  COMPLETED_SIMULATION_STATUSES,
+  isCompletedSimulationStatus,
+} from '../helpers/simulation-guards.ts'
+import type {
+  CompletedSimulation,
+  SimulationProgress,
+} from '../types/simulation-progress.ts'
 import {
   hasValidComputedResults,
   type ComputedResults,
@@ -17,20 +23,20 @@ const latestSimulationSelect = {
   computedResults: true,
 } as const
 
-type SimulationProgressRow = {
+type SimulationProgressRow<S extends SimulationStatus = SimulationStatus> = {
   id: string
   progression: number
-  status: SimulationStatus
+  status: S
   model: ModelString
   computedResults: ComputedResults
 }
 
-const toProgress = ({
+const toProgress = <S extends SimulationStatus>({
   id,
   progression,
   status,
   model,
-}: SimulationProgressRow): SimulationProgress => ({
+}: SimulationProgressRow<S>): SimulationProgress & { status: S } => ({
   id,
   progression,
   status,
@@ -64,13 +70,15 @@ export const findLatestCompletedSimulationProgress = async ({
   userId,
 }: {
   userId: string
-}): Promise<SimulationProgress | null> => {
+}): Promise<CompletedSimulation | null> => {
   const row = await findLatestValid({
     userId,
     status: { in: [...COMPLETED_SIMULATION_STATUSES] },
   })
 
-  return row ? toProgress(row) : null
+  if (!row || !isCompletedSimulationStatus(row.status)) return null
+
+  return toProgress({ ...row, status: row.status })
 }
 
 export const findSimulationProgressById = async ({
