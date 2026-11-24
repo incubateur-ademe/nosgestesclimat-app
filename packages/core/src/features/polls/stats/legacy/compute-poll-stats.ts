@@ -20,10 +20,6 @@ import {
   isSimulationCompleted,
 } from '../../../simulations/helpers/simulation-guards.ts'
 import {
-  COMPLETED_SIMULATION_STATUSES,
-  isSimulationCompleted,
-} from '../../../simulations/helpers/simulation-guards.ts'
-import {
   ComputedResultsSchema,
   type ComputedResults,
 } from '../../../simulations/validators/computed-results.schema.ts'
